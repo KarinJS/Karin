@@ -1,0 +1,41 @@
+{
+  "name": "karin",
+  "version": "0.0.1",
+  "author": "Lain",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "app": "node ."
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "chalk": "^5.3.0",
+    "chokidar": "^3.6.0",
+    "express": "^4.18.3",
+    "image-size": "^1.1.1",
+    "inquirer": "^9.2.15",
+    "redis": "^4.6.13",
+    "log4js": "^6.9.1",
+    "md5": "^2.3.0",
+    "moment": "^2.30.1",
+    "node-schedule": "^2.1.1",
+    "puppeteer": "19.7.0",
+    "lodash": "^4.17.21",
+    "ws": "^8.16.0",
+    "yaml": "^2.4.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-promise": "^6.1.1"
+  },
+  "imports": {
+    "#Karin": "./lib/index.js",
+    "🌈Karin": "./lib/index.js",
+    "🌟Karin": "./lib/index.js",
+    "💎Karin": "./lib/index.js",
+    "上面是鳄梨酱的玩具~": "./lib/index.js"
+  }
+}

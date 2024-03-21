@@ -1,0 +1,21 @@
+# 日志等级:trace,debug,info,warn,fatal,mark,error,off
+# mark时只显示执行命令，不显示聊天记录
+log_level: info
+
+# HTTP服务器端口
+http_port: 7000
+
+# 此字段设置后，对应的id可直接设置、取消主人
+owner: ""
+
+# 主人列表
+master:
+
+# 功能黑名单
+blackList:
+  # 屏蔽插件包
+  - "examples"
+  # 屏蔽单个插件
+  - "examples/复读.js"
+  # 屏蔽插件包内的单个插件
+  - "examples/apps/复读.js"
