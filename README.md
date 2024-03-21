@@ -15,8 +15,9 @@
 - [ ] 支持主动ws
 - [ ] 支持被动ws
 - [ ] 支持onebot HTTP
-- [ ] 支持[noebos](https://github.com/lc-cn/onebots)
-- [ ] puppeteer渲染图片
+- [ ] 支持[noebots](https://github.com/lc-cn/onebots)
+- [√] puppeteer渲染图片
+- [ ] 外置puppeteer
 - [ ] 支持redis集群
 
 

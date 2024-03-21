@@ -8,6 +8,9 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module'
   },
+  globals: {
+    Karin: true
+  },
   rules: {
     eqeqeq: ['off'],
     'prefer-const': ['off'],
