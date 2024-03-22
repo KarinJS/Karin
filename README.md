@@ -1,6 +1,6 @@
 # Karin
  
-基于 [Kritor](https://github.com/KarinJS/kritor-kotlin) 和 [noebots](https://github.com/lc-cn/onebots) 进行开发的 [nodejs](https://nodejs.org/en) 机器人框架  
+基于 [Kritor](https://github.com/KarinJS/kritor-kotlin) 和 [onebots](https://github.com/lc-cn/onebots) 进行开发的 [nodejs](https://nodejs.org/en) 机器人框架  
 
 
 ---
@@ -15,7 +15,7 @@
 - [ ] 支持主动ws
 - [ ] 支持被动ws
 - [ ] 支持onebot HTTP
-- [ ] 支持[noebots](https://github.com/lc-cn/onebots)
+- [ ] 支持[onebots](https://github.com/lc-cn/onebots)
 - [√] puppeteer渲染图片
 - [ ] 外置puppeteer
 - [ ] 支持redis集群
