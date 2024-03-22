@@ -1,6 +1,6 @@
 # Karin
  
-根据[Kritor](https://github.com/KarinJS/kritor-kotlin) 和 [noebots](https://github.com/lc-cn/onebots)进行开发的[nodejs](https://nodejs.org/en)机器人框架  
+基于 [Kritor](https://github.com/KarinJS/kritor-kotlin) 和 [noebots](https://github.com/lc-cn/onebots) 进行开发的 [nodejs](https://nodejs.org/en) 机器人框架  
 
 
 ---
