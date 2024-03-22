@@ -30,7 +30,7 @@ npm --registry=https://registry.npmmirror.com install pnpm -g
 :::
 
 
-1. 使用git克隆项目
+2. 使用git克隆项目
 
 ```sh
 git clone --depth=1 https://github.com/KarinJS/Karin.git
