@@ -1,0 +1,1 @@
+import{_ as e,c as t,o}from"./chunks/framework.Bv7uf_ys.js";const i=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"develop.md","filePath":"develop.md"}'),a={name:"develop.md"};function r(s,c,n,p,d,l){return o(),t("div")}const m=e(a,[["render",r]]);export{i as __pageData,m as default};

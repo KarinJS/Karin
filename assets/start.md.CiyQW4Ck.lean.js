@@ -1,0 +1,1 @@
+import{_ as s,c as a,o as t,a2 as i}from"./chunks/framework.Bv7uf_ys.js";const b=JSON.parse('{"title":"快速上手","description":"","frontmatter":{},"headers":[],"relativePath":"start.md","filePath":"start.md"}'),e={name:"start.md"},l=i("",17),p=[l];function h(n,d,o,r,c,k){return t(),a("div",null,p)}const u=s(e,[["render",h]]);export{b as __pageData,u as default};
