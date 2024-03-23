@@ -1,7 +1,10 @@
 # Karin
  
+[文档](https://karinjs.github.io/Karin/)
+
 基于 [Kritor](https://github.com/KarinJS/kritor-kotlin) 和 [onebots](https://github.com/lc-cn/onebots) 进行开发的 [nodejs](https://nodejs.org/en) 机器人框架  
 
+> 本项目正在开发中，不建议用于生产环境
 
 ---
 
@@ -23,4 +26,4 @@
 
 ### 感谢：
 
-底层代码来自于[Miao-Yunzai](https://github.com/yoimiya-kokomi/Miao-Yunzai)和[Yunzai-Bot](https://gitee.com/le-niao/Yunzai-Bot) 
+底层结构来自于[Miao-Yunzai](https://github.com/yoimiya-kokomi/Miao-Yunzai)和[Yunzai-Bot](https://gitee.com/le-niao/Yunzai-Bot) 
