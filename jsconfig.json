@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    // 根目录
+    "baseUrl": ".",
+    "paths": {
+      // 别名解析
+      "#Karin": [
+        "./lib/index.js"
+      ]
+    }
+  }
+}
