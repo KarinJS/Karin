@@ -8,15 +8,16 @@ export default defineConfig({
     nav: [
       { text: '主页', link: '/' },
       { text: '快速开始', link: '/start' },
-      { text: '开发文档', link: '/develop' }
+      { text: '开发文档', link: '/develop/index' }
     ],
 
     sidebar: [
       {
         text: '导航栏',
         items: [
+          { text: '主页', link: '/' },
           { text: '快速开始', link: '/start' },
-          { text: '开发文档', link: '/develop' }
+          { text: '插件编写', link: '/develop/plugin' }
         ]
       }
     ],

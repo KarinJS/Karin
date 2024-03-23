@@ -16,7 +16,7 @@ hero:
       link: https://github.com/KarinJS/Karin
     - theme: brand
       text: 开发文档
-      link: /develop
+      link: /develop/index
     - theme: brand
       text: 快速上手
       link: /start
