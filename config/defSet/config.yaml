@@ -5,8 +5,8 @@ log_level: info
 # HTTP服务器端口
 http_port: 7000
 
-# 此字段设置后，对应的id可直接设置、取消主人
-owner: ""
+# WebSocket请求超时时间 单位:秒
+ws_timeout: 5
 
 # 主人列表
 master:
