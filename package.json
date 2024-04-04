@@ -5,22 +5,26 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "app": "node ."
+    "app": "node .",
+    "build": "cd ./lib/adapter/kritor && node build.js"
   },
   "dependencies": {
-    "art-template": "^4.13.2",
-    "axios": "^1.6.8",
-    "chalk": "^5.3.0",
-    "chokidar": "^3.6.0",
-    "express": "^4.18.3",
-    "redis": "^4.6.13",
-    "log4js": "^6.9.1",
-    "moment": "^2.30.1",
-    "node-schedule": "^2.1.1",
-    "puppeteer": "^22.6.0",
-    "lodash": "^4.17.21",
-    "ws": "^8.16.0",
-    "yaml": "^2.4.1"
+    "@grpc/grpc-js": "1.10.5",
+    "@grpc/proto-loader": "0.7.12",
+    "art-template": "4.13.2",
+    "axios": "1.6.8",
+    "chalk": "5.3.0",
+    "chokidar": "3.6.0",
+    "express": "4.18.3",
+    "lodash": "4.17.21",
+    "log4js": "6.9.1",
+    "moment": "2.30.1",
+    "node-schedule": "2.1.1",
+    "puppeteer": "22.6.0",
+    "protobufjs": "7.2.6",
+    "redis": "4.6.13",
+    "ws": "8.16.0",
+    "yaml": "2.4.1"
   },
   "devDependencies": {
     "eslint": "^8.57.0",

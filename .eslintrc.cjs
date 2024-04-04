@@ -9,7 +9,8 @@ module.exports = {
     sourceType: 'module'
   },
   globals: {
-    Karin: true
+    Karin: true,
+    logger: true
   },
   rules: {
     eqeqeq: ['off'],
