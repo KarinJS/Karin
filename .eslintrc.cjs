@@ -19,5 +19,6 @@ module.exports = {
     camelcase: [0, {
       properties: 'always'
     }]
-  }
+  },
+  ignorePatterns: ['lib/adapter/kritor/protos/compiled.js']
 }
