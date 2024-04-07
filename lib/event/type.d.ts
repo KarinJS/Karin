@@ -93,6 +93,64 @@ export declare namespace EventType {
     getGroupAvatar: (group_id: string, size?: number) => string;
   }
 
+  interface KarinNotice {
+    /** 机器人id */
+    self_id: string;
+    /** 用户id */
+    user_id: string;
+    /** 群id */
+    group_id?: string;
+    /** 事件类型 */
+    event: 'notice';
+    /** 子事件类型 */
+    type: 'group_recall',
+    /** 消息时间戳 */
+    time: number;
+    /** 消息id */
+    message_id: string;
+    /** 消息序列号 */
+    message_seq: string;
+    /** 适合人类阅读的消息体 */
+    raw_message: string;
+    /** 联系人信息 */
+    contact: {
+      /** 场景 */
+      scene: 'group' | 'friend';
+      /** 群聊/私聊id */
+      peer: string;
+      /** 群临时会话/子频道号 */
+      sub_peer?: string;
+    };
+    /** 发送者信息 */
+    sender: {
+      /** 操作者uid */
+      operator_uid?: string;
+      /** 操作者uin */
+      operator_uin?: string;
+      /** 目标uid */
+      target_uid?: string;
+      /** 目标uin */
+      target_uin?: string;
+    };
+    /** 对应事件的结构体 */
+    content: {
+
+    };
+    /** 日志函数字符串 */
+    logFnc: string;
+    /** 日志用户字符串 */
+    logText: string;
+    /**
+     * @param {string|Element} msg - 发送的消息
+     * @param {object} data - 回复数据
+     * @param {boolean} data.at - 是否at用户
+     * @param {boolean} data.reply - 是否引用回复
+     * @param {number} data.recallMsg - 群聊是否撤回消息，0-120秒，0不撤回
+     * @param {boolean} data.button - 是否使用按钮
+     */
+    reply: (msg: string | Element, data: ReplyData = {}) => { message_id?: string };
+  }
+
   interface ReplyData {
     /** 是否at用户 */
     at?: boolean;
