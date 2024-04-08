@@ -8,5 +8,15 @@
         "./lib/index.js"
       ]
     }
-  }
+  },
+  "include": [
+    // 包含所有文件
+    "./**/*"
+  ],
+  "exclude": [
+    "**/node_modules/*",
+    "resources",
+    "temp",
+    "data"
+  ]
 }
