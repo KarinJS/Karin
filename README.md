@@ -10,15 +10,15 @@
 
 ### 目前计划：
 
-- [ ] [kritor标准](https://github.com/KarinJS/kritor)
-- [ ] [onebot11](https://github.com/botuniverse/onebot-11)
+- [x] [kritor标准](https://github.com/KarinJS/kritor)
+- [x] [onebot11](https://github.com/botuniverse/onebot-11)
 - [ ] [onebot12](https://onebot.dev/)
 - [ ] 支持主动[grpc](https://grpc.io/)
-- [ ] 支持被动[grpc](https://grpc.io/)
+- [x] 支持被动[grpc](https://grpc.io/)
 - [ ] 支持主动ws
-- [ ] 支持被动ws
+- [x] 支持被动ws
 - [ ] 支持onebot HTTP
-- [ ] 支持[onebots](https://github.com/lc-cn/onebots)
+- [x] 支持[onebots](https://github.com/lc-cn/onebots)
 - [x] puppeteer渲染图片
 - [ ] 外置puppeteer
 - [ ] 支持redis集群
