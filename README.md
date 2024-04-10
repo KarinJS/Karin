@@ -27,11 +27,11 @@
 
 ### 感谢
 
-karin的开发离不开以下项目的帮助：
+Karin的开发离不开以下项目的帮助：
 
 - [Kritor](https://github.com/KarinJS/kritor) Kritor标准
 - [OpenShamrock](https://github.com/whitechi73/OpenShamrock) Kritor标准Kotlin的实现
 - [onebots](https://github.com/lc-cn/onebots) onebots适配器
-- [onebot-11](https://github.com/botuniverse/onebot-11) onebots11标准
+- [onebot-11](https://github.com/botuniverse/onebot-11) onebot11标准
 - [Miao-Yunzai](https://github.com/yoimiya-kokomi/Miao-Yunzai) 最开始的代码结构
 - [Yunzai-Bot](https://gitee.com/le-niao/Yunzai-Bot) 最开始的代码结构
