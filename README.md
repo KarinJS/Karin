@@ -27,7 +27,7 @@
 
 ### 感谢
 
-karin的开发离不开以下项目的帮助：
+Karin的开发离不开以下项目的帮助：
 
 - [Kritor](https://github.com/KarinJS/kritor) Kritor标准
 - [OpenShamrock](https://github.com/whitechi73/OpenShamrock) Kritor标准Kotlin的实现
