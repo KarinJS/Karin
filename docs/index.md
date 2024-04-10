@@ -3,7 +3,7 @@ layout: home
 
 hero:
   name: Karin
-  tagline: 基于 Kritor 和 noebots 进行开发的nodejs机器人框架
+  tagline: 基于 Kritor 标准进行开发的nodejs机器人框架
   actions:
     - theme: alt
       text: kritor标准

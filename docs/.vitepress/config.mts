@@ -17,7 +17,8 @@ export default defineConfig({
         items: [
           { text: '主页', link: '/' },
           { text: '快速开始', link: '/start' },
-          { text: '插件编写', link: '/develop/plugin' }
+          { text: '事件', link: '/event/message' },
+          { text: '插件编写', link: '/develop/plugin' },
         ]
       }
     ],

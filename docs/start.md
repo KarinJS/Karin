@@ -9,7 +9,7 @@
 
 | -                | 安装     | 说明                                                                           |
 | ---------------- | -------- | ------------------------------------------------------------------------------ |
-| [NodeJs][NodeJs] | √        | 推荐版本16以上                                                                 |
+| [NodeJs][NodeJs] | √        | 推荐版本18以上                                                                 |
 | [git][git]       | 推荐安装 | 分布式版本控制软件，国内用户推荐使用 [腾讯软件管家][腾讯软件管家] 进行加速下载 |
 | [redis][redis]   | 推荐安装 | 用于存储数据，大多数插件都用到，推荐安装                                       |
 
@@ -36,12 +36,19 @@ npm --registry=https://registry.npmmirror.com install pnpm -g
 git clone --depth=1 https://github.com/KarinJS/Karin.git
 ```
 
-3. 安装依赖
+3. 初始化项目
 
+> 进入项目目录
 ```sh
 cd Karin
 ```
 
+> 拉取子模块
+```sh
+git submodule update --init --recursive
+```
+
+> 安装依赖
 ::: code-group
 
 ```sh [安装生产依赖]
@@ -57,9 +64,16 @@ pnpm install
 
 4. 启动项目
 
-```sh
-node index
+::: code-group
+
+```sh [正常启动]
+node .
 ```
+
+```sh [开发模式启动]
+node . --dev
+```
+:::
 
 
 [NodeJs]: https://nodejs.org/en
