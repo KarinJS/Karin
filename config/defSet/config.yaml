@@ -1,12 +1,11 @@
 # 日志等级:trace,debug,info,warn,fatal,mark,error,off
-# mark时只显示执行命令，不显示聊天记录
 log_level: info
+
+# 日志保留天数
+log_daysToKeep: 7
 
 # HTTP服务器端口
 http_port: 7000
-
-# WebSocket请求超时时间 单位:秒
-ws_timeout: 5
 
 # 主人列表
 master:
