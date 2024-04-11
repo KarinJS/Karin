@@ -35,3 +35,9 @@ Karin的开发离不开以下项目的帮助：
 - [onebot-11](https://github.com/botuniverse/onebot-11) onebot11标准
 - [Miao-Yunzai](https://github.com/yoimiya-kokomi/Miao-Yunzai) 最开始的代码结构
 - [Yunzai-Bot](https://gitee.com/le-niao/Yunzai-Bot) 最开始的代码结构
+
+### 贡献者
+
+> 🌟星光闪烁，你们的智慧如同璀璨的夜空。感谢所有为Karin做出贡献的人！
+
+[![贡献者](https://contributors-img.web.app/image?repo=KarinJS/Karin)](https://github.com/KarinJS/Karin/graphs/contributors)
