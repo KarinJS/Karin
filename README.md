@@ -19,8 +19,8 @@
 - [x] 支持被动ws
 - [ ] 支持onebot HTTP
 - [x] 支持[onebots](https://github.com/lc-cn/onebots)
-- [x] puppeteer渲染图片
-- [ ] 外置puppeteer
+- [x] ~~puppeteer渲染图片~~
+- [x] 外置[puppeteer](https://github.com/KarinJS/karin-plugin-puppeteer)
 - [ ] 支持redis集群
 
 > 关于`puppeteer`，由于内置的chrome过于臃肿，将会移除内置的pupppeteer，分开搭建或使用远程、作为插件等方式使用puppeteer。
