@@ -1,7 +1,8 @@
 node_modules/
-/plugins
-/logs/
-/temp/
-/.idea
+plugins/
+logs/
+temp/
+.idea/
 pnpm-lock.yaml
 .vscode/launch.json
+.npmrc
