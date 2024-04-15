@@ -57,4 +57,4 @@ import { plugin, segment } from '#Karin'
 import segment from './lib/bot/segment.js'
 import plugin from './lib/plugins/plugin.js'
 ```
-详情请查看 [开发工具](./tools.md/#karin) 文档
+详情请查看 [开发工具](./tools.md) 文档
