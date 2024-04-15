@@ -27,22 +27,41 @@
 
 ## 插件示例
 
+::: warning 温馨提示
+未标注必选的参数，可选键入。
+:::
+
 1. 打开`plugins/karin-plugin-example`目录，在此新建一个`hello.js`文件。
 2. 打开`hello.js`文件，输入以下代码：
 
 ### 方法1
+
 ```js
 import { App } from '#Karin'
-// 插件名称为 hello
-const app = App.init({ name: 'hello' })
+
+const app = App.init({
+  /** 必选 插件名称 */
+  name: 'hello',
+  /** 插件描述 */
+  dsc: '发送你好回复hello',
+  /** 监听事件 默认message */
+  event: 'message',
+  /** 插件优先级 */
+  priority: 5000
+})
 
 app.reg({
-  // 使用正则匹配消息 你好
+  /** 命令匹配正则 */
   reg: '你好$',
+  /** 命令执行方法名称 */
   fnc: 'hello',
+  /** 是否显示操作日志 true=是 false=否 */
+  log: true,
+  /** 权限 master,owner,admin,all */
+  permission: 'all',
+  /** 调用 this.reply 方法回复 hello 关于参数2，请看下文 */
   async hello () {
-    // 调用 this.reply 方法回复 hello
-    this.reply('hello')
+    this.reply('hello', { at: false, recallMsg: 0, reply: true, button: false })
   }
 })
 
@@ -60,24 +79,32 @@ import { plugin } from '#Karin'
 export class hello extends plugin {
   constructor () {
     super({
-      // 插件名称
+      // 必选 插件名称
       name: 'hello',
       // 插件描述
       dsc: '发送你好回复hello',
+      // 监听消息事件 默认message
+      event: 'message',
+      // 优先级
+      priority: 5000,
       rule: [
         {
           /** 命令正则匹配 */
-          reg: '^你好$',
+          reg: '^#你好$',
           /** 执行方法 */
-          fnc: 'hello'
+          fnc: 'hello',
+          //  是否显示操作日志 true=是 false=否
+          log: true,
+          // 权限 master,owner,admin,all
+          permission: 'all'
         }
-      ]
+      ],
     })
   }
 
   async hello () {
-    // 调用 this.reply 方法回复 hello
-    this.reply('hello')
+    // 调用 this.reply 方法回复 hello 关于参数2，请看下文
+    this.reply('hello', { at: false, recallMsg: 0, reply: true, button: false })
   }
 }
 

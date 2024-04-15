@@ -12,6 +12,7 @@
   - [命名规范](#命名规范)
     - [温馨提示](#温馨提示)
   - [插件包目录参考结构](#插件包目录参考结构)
+  - [#karin](#karin)
 
 > 推荐使用 VSCode 进行开发  
 > 推荐安装 `pnpm` 进行包管理  
@@ -43,3 +44,17 @@ kritor-plugin-hello-world
 └── package.json
 
 ```
+## #karin
+
+在模板仓库下，有这么一段代码
+```js
+import { plugin, segment } from '#Karin'
+```
+
+`#Karin` 是一个别名，指向 `./lib/index.js` 文件。  
+此文件为入口文件，开发者无需像以下这样引入模块：
+```js
+import segment from './lib/bot/segment.js'
+import plugin from './lib/plugins/plugin.js'
+```
+详情请查看 [开发工具](./tools.md/#karin) 文档
