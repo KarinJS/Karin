@@ -7,6 +7,9 @@ log_daysToKeep: 7
 # HTTP服务器端口
 http_port: 7000
 
+# grpc服务器地址
+grpc: 0.0.0.0:7001
+
 # 主人列表
 master:
 

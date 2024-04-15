@@ -2,11 +2,15 @@
   "name": "karin",
   "version": "0.0.1",
   "author": "Lain",
-  "main": "index.js",
   "type": "module",
+  "imports": {
+    "#Karin": "./lib/index.js"
+  },
+  "main": "index.js",
   "scripts": {
     "app": "node .",
-    "build": "cd ./lib/adapter/kritor && node build.js"
+    "build": "cd ./lib/adapter/kritor && node build.js",
+    "sort:pack": "npx sort-package-json"
   },
   "dependencies": {
     "@grpc/grpc-js": "1.10.5",
@@ -30,9 +34,10 @@
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-n": "^16.6.2",
-    "eslint-plugin-promise": "^6.1.1"
+    "eslint-plugin-promise": "^6.1.1",
+    "sort-package-json": "^2.10.0"
   },
-  "imports": {
-    "#Karin": "./lib/index.js"
+  "engines": {
+    "node": ">=18"
   }
 }
