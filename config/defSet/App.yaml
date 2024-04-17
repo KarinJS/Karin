@@ -1,0 +1,37 @@
+# 黑名单相关
+black_list:
+  # 黑名单用户
+  users: false
+  # 黑名单群聊
+  groups: false
+  # 消息日志黑名单群聊 设置后不会打印该群的消息日志 暂未实现
+  msg_groups: false
+
+# 白名单相关
+white_list:
+  # 白名单用户
+  users: false
+  # 白名单群聊
+  groups: false
+  # 消息日志白名单群聊 设置后只会打印该群的消息日志 暂未实现
+  msg_groups: false
+
+# 群聊
+group_config:
+  # 群聊中所有消息冷却时间
+  global_cd: false
+
+  # 群聊中 每个人的消息冷却时间
+  personal_cd: false
+
+  # 机器人响应模式
+  mode: false
+
+  # 机器人前缀 设置后前缀+指令触发机器人
+  ailas: false
+
+  # 白名单插件、功能，只有在白名单中的插件、功能才会响应
+  enable: false
+
+  # 黑名单插件、功能，黑名单中的插件、功能不会响应
+  disable: false

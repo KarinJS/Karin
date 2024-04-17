@@ -2,7 +2,7 @@
 log_level: info
 
 # 日志保留天数
-log_daysToKeep: 7
+log_days_Keep: 7
 
 # HTTP服务器端口
 http_port: 7000
@@ -10,14 +10,26 @@ http_port: 7000
 # grpc服务器地址
 grpc: 0.0.0.0:7001
 
-# 主人列表
-master:
+# 主人列表 主权限
+master: []
 
-# 功能黑名单
-blackList:
-  # 屏蔽插件包
-  - "examples"
-  # 屏蔽单个插件
-  - "examples/复读.js"
-  # 屏蔽插件包内的单个插件
-  - "examples/apps/复读.js"
+# 管理员列表 子权限
+admin: []
+
+# 黑名单相关
+black_list:
+  # 黑名单用户
+  users: []
+  # 黑名单群聊
+  groups: []
+  # 消息日志黑名单群聊 设置后不会打印该群的消息日志
+  msg_groups: []
+
+# 白名单相关
+white_list:
+  # 白名单用户
+  users: []
+  # 白名单群聊
+  groups: []
+  # 消息日志白名单群聊 设置后只会打印该群的消息日志
+  msg_groups: []
