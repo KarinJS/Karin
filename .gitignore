@@ -2,6 +2,7 @@ node_modules/
 /plugins/
 /logs/
 /temp/
+/data/
 /.idea/
 pnpm-lock.yaml
 .vscode/launch.json
