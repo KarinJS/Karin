@@ -43,7 +43,8 @@ git clone --depth=1 https://github.com/KarinJS/Karin.git
 cd Karin
 ```
 
-> 拉取子模块
+> ~~拉取子模块~~
+> 可跳过，karin会自动拉取子模块
 ```sh
 git submodule update --init --recursive
 ```

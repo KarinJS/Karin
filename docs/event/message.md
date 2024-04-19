@@ -38,6 +38,7 @@ const message = {
   game: 'string', // 框架属性，通过前缀判断是否为游戏指令
   image: [], // 框架属性，图片数组
   at: [], // 框架属性，存放被@的用户uin、uid，如uid不存在则会键入uin
+  atAdmin: 
   atBot: false | true, // 框架属性，是否@机器人
   atAll: false | true, // 框架属性，是否@全体成员
   file: {}, // 框架属性，文件对象

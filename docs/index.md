@@ -11,9 +11,6 @@ hero:
     - theme: alt
       text: onebots
       link: https://docs.onebots.org/
-    - theme: alt
-      text: Github
-      link: https://github.com/KarinJS/Karin
     - theme: brand
       text: 开发文档
       link: /develop/index
