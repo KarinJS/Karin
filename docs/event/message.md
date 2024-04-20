@@ -38,7 +38,6 @@ const message = {
   game: 'string', // 框架属性，通过前缀判断是否为游戏指令
   image: [], // 框架属性，图片数组
   at: [], // 框架属性，存放被@的用户uin、uid，如uid不存在则会键入uin
-  atAdmin: 
   atBot: false | true, // 框架属性，是否@机器人
   atAll: false | true, // 框架属性，是否@全体成员
   file: {}, // 框架属性，文件对象
@@ -55,11 +54,12 @@ const message = {
 const elements = [
   { type: 'text', text: 'Hello' }, // 文本
   { type: 'face', id: 1 }, // 表情
-  { type: 'at', uid: '1234567890', uin: '1234567890' }, // @某人
+  { type: 'at', uid: '1234567890', uin: '1234567890' }, // @某人 开发者通常只需要关注uid即可
   { type: 'reply', message_id: 'abc1234567890' }, // 引用回复
   { type: 'image', file: 'https://example.com/image.png' }, // 图片
   { type: 'video', file: 'https://example.com/video.mp4' }, // 视频
-  { type: 'voice', file: 'https://example.com/voice.mp3' }, // 语音
+  { type: 'record', file: 'https://example.com/record.mp3' }, // 语音
+  
   // ...其他类型消息
 ]
 

@@ -161,7 +161,7 @@ console.log(at)
 关于这部分，见[mirai](https://github.com/mamoe/mirai/blob/f5eefae7ecee84d18a66afce3f89b89fe1584b78/mirai-core/src/commonMain/kotlin/net.mamoe.mirai/message/data/HummerMessage.kt#L49)
 
 ```js
-const poke = segment.poke(1, -1, '戳一戳')
+const poke = segment.poke(1, -1, 1)
 console.log(poke)
 ```
 
@@ -171,7 +171,7 @@ console.log(poke)
     type: 'poke',
     poke: 1, // 类型
     id: -1, // id
-    name: '戳一戳' //  表情名称
+    strength: 1 // 强度 已知只有shamrock可以发送
 }
 ```
 
