@@ -16,6 +16,11 @@ master: []
 # 管理员列表 子权限
 admin: []
 
+# 超时时间 秒
+timeout:
+  grpc: 30
+  ws: 30
+
 # 黑名单相关
 black_list:
   # 黑名单用户
