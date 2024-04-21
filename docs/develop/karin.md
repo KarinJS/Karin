@@ -1,52 +1,46 @@
-## #karin
-
-`./lib/index.js`
-
-```js
-import Bot from './bot/bot.js'
-import App from './plugins/app.js'
-import Cfg from './config/config.js'
-import logger from './config/log.js'
-import redis from './config/redis.js'
-import segment from './bot/segment.js'
-import common from './common/common.js'
-import plugin from './plugins/plugin.js'
-import Renderer from './Renderer/Renderer.js'
-import { kritor } from './adapter/kritor/protos/compiled.js'
-
-export { App, Bot, Cfg, common, logger, plugin, redis, segment, Renderer, kritor }
-
-```
-
-### 简介
-
-可以看到，`#Karin` 是一个别名，指向 `./lib/index.js` 文件。
-
-此文件为入口文件，开发者无需像以下这样引入模块：
+## 概述
+`#Karin`是`./lib/index.js`文件的别名，这是一个集中导出多个模块的入口文件。  
+通过使用别名，开发者可以更简洁地引入所需的模块，无需指定完整的路径。
 
 ```js
 import segment from './lib/bot/segment.js'
 import plugin from './lib/plugins/plugin.js'
+
+// 以上的导入麻烦且冗长，在使用别名后可以简化为
+import { segment, plugin } from '#Karin'
 ```
 
-### 使用
+## 使用
 
-- `APP`
+::: tip
+可能会更新不及时，有一定阅读能力的可以查看 [lib/index.js](https://github.com/KarinJS/Karin/blob/main/lib/index.js)
+:::
+
+- ## `segment`
+   请点击 [elements](./elements.md) 查看详情
+
+- ## `YamlEditor`  
+   请点击 [YamlEditor](./YamlEditor.md) 查看详情
+
+- ## `kritor`
+   内部方法，若无特殊需求，不建议使用
+
+- ## `APP`
     ```js
     import { App } from '#Karin'
     // ...
     ```
-- `Bot`
+- ## `Bot`
     ```js
     import { Bot } from '#Karin'
     // ...
     ```
-- `Cfg`
+- ## `Cfg`
     ```js
     import { Cfg } from '#Karin'
     // ...
     ```
-- `common`
+- ## `common`
     ```js
     import { common } from '#Karin'
 
@@ -80,7 +74,7 @@ import plugin from './lib/plugins/plugin.js'
     // 输出 buffer
 
     ```
-- `logger`
+- ## `logger`
     ```js
     import { logger } from '#Karin'
 
@@ -124,12 +118,12 @@ import plugin from './lib/plugins/plugin.js'
     logger.info(logger.chalk.hex('#FF0000')('这是一条自定义颜色的info日志'))
 
     ```
-- `plugin`
+- ## `plugin`
     ```js
     import { plugin } from '#Karin'
     // ...
     ```
-- `redis`
+- ## `redis`
     ```js
     import { redis } from '#Karin'
 
@@ -158,18 +152,9 @@ import plugin from './lib/plugins/plugin.js'
         console.log(value)
     }
     ```
-- `segment`
-    ```js
-    import { segment } from '#Karin'
-    // ...
-    ```
-- `Renderer`
+
+- ## `Renderer`
     ```js
     import { Renderer } from '#Karin'
     // ...
-    ```
-- `kritor`
-    ```js
-    import { kritor } from '#Karin'
-    // 内部方法，若无特殊需求，不建议使用
     ```
