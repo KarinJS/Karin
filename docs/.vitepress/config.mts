@@ -15,13 +15,24 @@ export default defineConfig({
     ],
     sidebar: [
       {
-        text: '导航栏',
+        text: '目录',
         items: [
           { text: '主页', link: '/' },
-          { text: '快速开始', link: '/start' },
-          { text: '事件', link: '/event/message' },
+          { text: '快速开始', link: '/start' }
+        ]
+      },
+      {
+        text: '事件',
+        items: [
+          { text: '消息事件', link: '/event/message' }
+        ]
+      },
+      {
+        text: '插件开发',
+        items: [
           { text: 'elements', link: '/develop/elements' },
-          { text: '开发工具', link: '/develop/tools' },
+          { text: '#karin', link: '/develop/karin' },
+          { text: 'YamlEditor', link: '/develop/YamlEditor' },
           { text: '插件编写', link: '/develop/plugin' },
         ]
       }
