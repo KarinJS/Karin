@@ -1,5 +1,5 @@
 import logger from './lib/config/log.js'
-import Bot from './lib/config/index.js'
+import Bot from './lib/init/index.js'
 
 /** 初始化Bot */
 await Bot.start()
