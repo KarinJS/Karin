@@ -1,4 +1,4 @@
-## elements
+# elements
 
 本文档介绍了 Krita 的消息元素结构和 `segment` 模块的使用方法。
 
@@ -7,6 +7,7 @@
 :::
 
 ## 导入
+
 ::: tip 温馨提示
 以下所有的示例都假设你已经导入了 `segment` 模块。
 :::
@@ -26,17 +27,20 @@ karin对于多媒体资源的标准化处理，遵循以下规则：
 
 ::: tip 注意
 对于`file://`格式，请开发者注意以下几点：
+
 - 请确保用户的协议端和karin运行环境一致，否则可能导致文件读取失败
 - 对于Linux系统，由于绝对路径前方有`/`，格式为`file:///root/...`，请注意区分`///`和`//`
 :::
 
 ## 文本 text
+
 ```js
 const text = segment.text('Hello, world!')
 console.log(text)
 ```
 
 输出：
+
 ```js
 {
     type: 'text',
@@ -56,13 +60,13 @@ console.log(face)
 ```
 
 输出：
+
 ```js
 {
     type: 'face',
     id: 1
 }
 ```
-
 
 ## 图片 image
 
@@ -79,6 +83,7 @@ console.log(image)
 ```
 
 输出：
+
 ```js
 {   // 对于网络图片，要求传入的url必须为https://或http://开头
     type: 'image',
@@ -110,6 +115,7 @@ console.log(record)
 ```
 
 输出：
+
 ```js
 {
     type:'record',
@@ -117,11 +123,11 @@ console.log(record)
 }
 ```
 
-
 ## 视频 video
+
 ::: tip 温馨提示
 遵循 [多媒体资源标准](#多媒体资源标准)
-::: 
+:::
 
 ```js
 const video = segment.video('https://example.com/video.mp4')
@@ -129,6 +135,7 @@ console.log(video)
 ```
 
 输出：
+
 ```js
 {
     type: 'video',
@@ -148,6 +155,7 @@ console.log(at)
 ```
 
 输出：
+
 ```js
 {
     type: 'at',
@@ -166,6 +174,7 @@ console.log(poke)
 ```
 
 输出：
+
 ```js
 {
     type: 'poke',
@@ -183,6 +192,7 @@ console.log(share)
 ```
 
 输出：
+
 ```js
 {
     type:'share',
@@ -200,8 +210,8 @@ const contact = segment.contact('qq', '12345')
 console.log(contact)
 ```
 
-
 输出：
+
 ```js
 {
     type: 'contact',
@@ -217,8 +227,8 @@ const location = segment.location('121.527328', '31.21515', '上海市浦东新�
 console.log(location)
 ```
 
-
 输出：
+
 ```js
 {
     type: 'location',
@@ -231,14 +241,13 @@ console.log(location)
 
 ## 音乐分享 music
 
-
 ```js
 const music = segment.music('qq', '12345')
 console.log(music)
 ```
 
-
 输出：
+
 ```js
 {
     type:'music',
@@ -254,8 +263,8 @@ const customMusic = segment.customMusic('https://example.com/music.mp3', 'https:
 console.log(customMusic)
 ```
 
-
 输出：
+
 ```js
 {
     type: 'customMusic',
@@ -275,6 +284,7 @@ console.log(reply)
 ```
 
 输出：
+
 ```js
 {
     type:'reply',
@@ -290,6 +300,7 @@ console.log(forward)
 ```
 
 输出：
+
 ```js
 {
     type: 'forward',
@@ -305,6 +316,7 @@ console.log(node)
 ```
 
 输出：
+
 ```js
 {
     type: 'node',
@@ -327,6 +339,7 @@ console.log(xml)
 ```
 
 输出：
+
 ```js
 {
     type: 'xml',
@@ -343,6 +356,7 @@ console.log(json)
 ```
 
 输出：
+
 ```js
 {
     type: 'json',
@@ -367,8 +381,8 @@ const markdown = segment.markdown({
 console.log(markdown)
 ```
 
-
 输出：
+
 ```js
 // 原生markdown内容
 {
@@ -550,6 +564,7 @@ rows和button的键入值一致，且比较复杂，请查看最下方的构建�
 :::
 
 ### 跳转按钮
+
 ```js:line-numbers {1}
 // 快速构建
 segment.rows({ link: 'https://example.com' })
@@ -569,6 +584,7 @@ segment.rows({
 ```
 
 ### 回调按钮
+
 ```js:line-numbers {1}
 // 快速构建
 segment.rows({ type: 1, text: '回调按钮'})
@@ -589,6 +605,7 @@ segment.rows({
 ```
 
 ### 指令按钮
+
 ```js:line-numbers {1}
 // 快速构建
 segment.rows({ text: '指令按钮' })

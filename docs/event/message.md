@@ -9,6 +9,7 @@
 :::
 
 ### 标准属性对象
+
 ```js
 const message = {
   self_id: 'string', // 机器人的ID，默认为uin
@@ -78,7 +79,6 @@ e.reply('Hello', { button: false }) // 暂未实现
 e.reply('Hello', { retry_count: 1 }) // 重试次数
 e.reply('Hello', { at: true, reply: true, recallMsg: 10, button: false, retry_count: 1 })
 ```
-
 
 | 参数                | 类型    | 说明                             |
 | ------------------- | ------- | -------------------------------- |

@@ -68,11 +68,13 @@ app.reg({
 export const hello = app.plugin(app)
 
 ```
+
 3. 保存，对机器人输入`你好`，机器人会回复`hello`。
 
 以上，是一个最基本的插件构建方法。
 
 ### 方法2
+
 ```js
 import { plugin } from '#Karin'
 
@@ -111,9 +113,11 @@ export class hello extends plugin {
 ```
 
 ## 完整参数
+>
 > 以下是一个完整的插件编写示例。
 
 ### 方法1
+
 ```js
 import { App } from '#Karin'
 
@@ -148,6 +152,7 @@ export const hello = app.plugin(app)
 ```
 
 ### 方法2
+
 ```js
 import { plugin } from '#Karin'
 
@@ -195,13 +200,11 @@ export class hello extends plugin {
 
 >高级监听事件：
 
-
 |          | 结构                             | 参考                 | 说明         |
 | -------- | -------------------------------- | -------------------- | ------------ |
 | 一级事件 | `post_type`                      | `message`            | 所有消息事件 |
 | 二级事件 | `post_type.notice_type`          | `message.group`      | 群消息事件   |
 | 三级事件 | `post_type.notice_type.sub_type` | `notice.notify.poke` | 群内戳一戳   |
-
 
 ## 消息匹配规则
 
@@ -211,7 +214,6 @@ export class hello extends plugin {
 | fnc        | √    | string  | 执行方法                    |
 | log        |      | boolean | 是否显示操作日志            |
 | permission |      | string  | 权限 master,owner,admin,all |
-
 
 > 一些正则...
 
@@ -227,8 +229,8 @@ export class hello extends plugin {
 | [^]  | 非字符集 |     | \B   | 非单词边界 |
 | ()   | 分组     |     | \|   | 或         |
 
-
 ## 快速回复
+
 | 参数      | 必须 | 类型    | 说明                                           |
 | --------- | ---- | ------- | ---------------------------------------------- |
 | at        |      | boolean | 是否@回复发送者消息                            |

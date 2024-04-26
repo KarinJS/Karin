@@ -6,17 +6,14 @@ hero:
   tagline: 基于 Kritor 标准进行开发的nodejs机器人框架
   actions:
     - theme: alt
-      text: kritor标准
-      link: https://github.com/KarinJS/kritor
-    - theme: alt
       text: onebots
       link: https://docs.onebots.org/
-    - theme: brand
-      text: 开发文档
-      link: /develop/index
-    - theme: brand
+    - theme: alt
       text: 快速上手
       link: /start
+    - theme: brand
+      text: 插件索引
+      link: /plugins/index
 
 features:
   - title: 轻量级
