@@ -8,12 +8,67 @@ export default defineConfig({
   themeConfig: {
     siteTitle: '主页',
     nav: [
-      { text: '快速开始', link: '/start' },
-      { text: '开发文档', link: '/develop/index' },
-      { text: 'elements', link: '/develop/elements' },
+      {
+        text: '快速开始',
+        items: [
+          { text: '目录', link: '/start/index' },
+          { text: '框架', link: '/start/start' },
+          { text: '渲染器', link: '/start/Renderer' },
+          { text: '适配器', link: '/start/adapter' }
+        ]
+      },
+      {
+        text: '事件',
+        items: [
+          { text: '目录', link: '/event/index' },
+          { text: '消息事件', link: '/event/message' },
+          { text: '通知事件', link: '/event/notice' },
+          { text: '请求事件', link: '/event/request' }
+        ]
+      },
+      {
+        text: '开发指南',
+        items: [
+          { text: '目录', link: '/develop/index' },
+          { text: '插件规范', link: '/develop/standard' },
+          { text: '开发插件', link: '/develop/plugin' },
+          { text: '开发插件包', link: '/develop/plugins' }
+        ]
+      },
+      {
+        text: '开发工具',
+        items: [
+          { text: '目录', link: '/utils/index' },
+          { text: 'karin', link: '/utils/karin' },
+          { text: 'segment', link: '/utils/segment' },
+          { text: 'redis', link: '/utils/redis' },
+          { text: 'update', link: '/utils/update' },
+          { text: 'YamlEditor', link: '/utils/YamlEditor' },
+          { text: 'Renderer', link: '/utils/Renderer' }
+        ]
+      },
+      {
+        text: 'Api',
+        items: [
+          { text: '目录', link: '/api/index' },
+          { text: 'kritor', link: '/api/kritor' },
+          { text: 'OneBot11', link: '/api/OneBot11' }
+        ]
+      },
       { text: '插件索引', link: '/plugins/index' },
     ],
     sidebar: {
+      '/start/': [
+        {
+          text: '快速开始',
+          items: [
+            { text: '目录', link: '/start/index' },
+            { text: '框架', link: '/start/start' },
+            { text: '渲染器', link: '/start/Renderer' },
+            { text: '适配器', link: '/start/adapter' }
+          ],
+        }
+      ],
       '/event/': [
         {
           text: '事件',
@@ -27,13 +82,38 @@ export default defineConfig({
         {
           text: '插件开发',
           items: [
-            { text: 'elements', link: '/develop/elements' },
-            { text: '#karin', link: '/develop/karin' },
-            { text: 'YamlEditor', link: '/develop/YamlEditor' },
-            { text: '插件编写', link: '/develop/plugin' },
+            { text: '目录', link: '/develop/index' },
+            { text: '插件规范', link: '/develop/standard' },
+            { text: '开发插件', link: '/develop/plugin' },
+            { text: '开发插件包', link: '/develop/plugins' }
           ]
         }
-      ]
+      ],
+      '/utils/': [
+        {
+          text: '开发工具',
+          items: [
+            { text: 'karin', link: '/utils/karin' },
+            { text: 'segment', link: '/utils/segment' },
+            { text: 'logger', link: '/utils/logger' },
+            { text: 'common', link: '/utils/common' },
+            { text: 'redis', link: '/utils/redis' },
+            { text: 'update', link: '/utils/update' },
+            { text: 'YamlEditor', link: '/utils/YamlEditor' },
+            { text: 'Renderer', link: '/utils/Renderer' }
+          ]
+        }
+      ],
+      '/api/': [
+        {
+          text: 'Api',
+          items: [
+            { text: '目录', link: '/api/index' },
+            { text: 'kritor', link: '/api/kritor' },
+            { text: 'OneBot11', link: '/api/OneBot11' }
+          ],
+        }
+      ],
     },
     socialLinks: [
       { icon: 'github', link: 'https://github.com/KarinJS/Karin' }

@@ -5,13 +5,14 @@
 ## 环境
 
 > 支持 Windows、Linux、MacOS、Docker 等环境  
-> 推荐安装的没有强制性需求，可根据个人需求进行安装
+> 推荐安装的没有强制性需求，可根据个人需求进行安装  
+> karin开发的场景，默认您拥有以下全部环境，若有特殊需求，请自行安装
 
 | -                | 安装     | 说明                                                                           |
 | ---------------- | -------- | ------------------------------------------------------------------------------ |
-| [NodeJs][NodeJs] | √        | 推荐版本18以上                                                                 |
+| [NodeJs][NodeJs] | √        | 推荐版本18+                                                                    |
 | [git][git]       | 推荐安装 | 分布式版本控制软件，国内用户推荐使用 [腾讯软件管家][腾讯软件管家] 进行加速下载 |
-| [redis][redis]   | 推荐安装 | 用于存储数据，大多数插件都用到，推荐安装                                       |
+| [redis][redis]   | 推荐安装 | 一个高性能的内存数据库，windows用户推荐使用[redis-windows][redis-windows]      |
 
 ## 安装
 
@@ -99,19 +100,22 @@ node . --dev
 
 :::
 
-## 渲染器
+## 安装适配器
 
-::: tip
-`Karin`开放了`Renderer`接口，开发者可自行注册渲染器，实现自定义渲染器
-:::
+> 适配器的作用就是在不同的聊天平台之间建立桥梁，使karin可以与不同平台的用户进行交互  
 
-如果你不需要进行渲染`html`页面等操作，可跳过此步骤。
+- [安装适配器](./adapter.md)
 
-默认提供[karin-puppeteer][karin-puppeteer]作为渲染器，可根据需求自行安装。  
-通过`WebSocketServer`进行通信，详情请查看[karin-puppeteer][karin-puppeteer]
+## 安装渲染器
 
-[karin-puppeteer]: https://github.com/KarinJS/karin-puppeteer
+> 渲染器在karin的定义可能它更是一个单纯的截图工具  
+> 默认提供了`puppeteer`，`puppeteer`打开html -> 渲染 -> 截图 -> 返回图片base64编码  
+> 当然，你也可以自行注册渲染器，实现自定义截图逻辑
+
+- [安装渲染器](../Renderer/Renderer.md)
+
 [NodeJs]: https://nodejs.org/en
 [git]: https://git-scm.com/
 [腾讯软件管家]: https://sw.pcmgr.qq.com/1e05804bd17b358a8c88284df8331fcd/65fcde89/spcmgr/download/Git-2.44.0-64-bit.exe
 [redis]: https://github.com/redis-windows/redis-windows/releases
+[redis-windows]: https://github.com/redis-windows/redis-windows

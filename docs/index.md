@@ -10,7 +10,7 @@ hero:
       link: https://docs.onebots.org/
     - theme: alt
       text: 快速上手
-      link: /start
+      link: /start/start
     - theme: brand
       text: 插件索引
       link: /plugins/index

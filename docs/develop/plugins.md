@@ -5,15 +5,17 @@
 打开[模板仓库](https://github.com/KarinJS/karin-plugin-template)
 
 ## 克隆模板仓库
+
 点击`Use this template`或`使用此模板`按钮，创建自己的仓库。
-![](https://cdn.jsdelivr.net/gh/Zyy955/imgs/img/202404121412587.png)
+![202404121412587](https://cdn.jsdelivr.net/gh/Zyy955/imgs/img/202404121412587.png)
 
 填写仓库名称，描述，选择是否公开。
-![](https://cdn.jsdelivr.net/gh/Zyy955/imgs/img/202404121414580.png)
+![202404121414580](https://cdn.jsdelivr.net/gh/Zyy955/imgs/img/202404121414580.png)
 
 ## 克隆仓库到本地
 
 以下命令，在karin根目录执行
+
 ```bash
 git clone https://github.com/karinjs/karin-plugin-template.git ./plugins/karin-plugin-template.
 ```
@@ -29,4 +31,3 @@ pnpm install --filter=karin-plugin-template
 ```bash
 node . --dev
 ```
-
