@@ -68,8 +68,8 @@ kritor-plugin-hello
 
 ### 配置文件
 
-- karin要求插件包的配置文件均存在热更新机制
-- 统一使用`yaml`、`json`等格式，并将`用户可编辑的配置`文件存放在`karin/config/`下  
+- ~~karin要求插件包的配置文件均存在热更新机制~~ 可不提供 由开发者自行处理
+- 统一使用`yaml`、`json`等格式，并将`用户可编辑的配置`文件存放在插件根目录的`config/config`下  
 - 对于默认配置文件，统一存放在`config/defSet/`下，由开发者进行维护修改，此处禁止用户编辑修改
 - 如无特殊需求，请不要在`config`文件夹下创建其他文件夹
 - 如对此处有疑问，请查看[插件包模板仓库](https://github.com/KarinJS/karin-plugin-template)进行参考
