@@ -41,3 +41,7 @@ white_list:
   groups: []
   # 消息日志白名单群聊 设置后只会打印该群的消息日志
   msg_groups: []
+
+# ffmpeg配置 用于音视频处理
+ffmpeg_path: ""
+ffprobe_path: ""
