@@ -1,22 +1,19 @@
 {
   "compilerOptions": {
-    // 根目录
     "baseUrl": ".",
     "paths": {
-      // 别名解析
       "#Karin": [
         "./lib/index.js"
       ]
     }
   },
-  "include": [
-    // 包含所有文件
-    "./**/*"
-  ],
   "exclude": [
     "**/node_modules/*",
     "resources",
     "temp",
     "data"
+  ],
+  "include": [
+    "./**/*.js"
   ]
 }
