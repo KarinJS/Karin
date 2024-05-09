@@ -7,6 +7,21 @@ log_days_Keep: 7
 # HTTP服务器端口
 http_port: 7000
 
+# HTTP渲染器配置
+http_render:
+  # 是否开启http渲染
+  enable: false
+  # 渲染地址 需要和karin-puppeteer的同时处于公网或者内网环境的地址
+  host: http://127.0.0.1:2956
+  # karin-puppeteer请求地址
+  url: http://127.0.0.1:7005/api/render
+  # karin-puppet请求token
+  token: Karin-Puppeteer
+  # 请求的非html或非有效路径的返回内容 可以填http地址 例如：https://ys.mihoyo.com
+  not_found: "404 Not Found"
+  # 渲染超时时间 秒
+  timeout: 30
+
 # grpc服务器地址
 grpc: 0.0.0.0:7001
 
