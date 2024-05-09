@@ -75,6 +75,7 @@ layout: home
 | 名称           | 作者                       | 仓库地址                         | 镜像仓库 | 开源协议                      | 简介                 |
 | -------------- | -------------------------- | -------------------------------- | -------- | ----------------------------- | -------------------- |
 | server-watcher | [ikechan8370][ikechan8370] | [server-watcher][server-watcher] | -        | [GPL-3.0][server-watcher-tab] | 监控服务器状态的插件 |
+| suno           | [Alcedo][HalcyonAlcedo]    | [suno][suno]                     | -        | [GPL-3.0][suno-tab]           | suno歌曲生成插件 |
 
 ## 📖其他插件
 
@@ -106,3 +107,6 @@ layout: home
 [ikechan8370]: https://github.com/ikechan8370
 [server-watcher]: https://github.com/ikechan8370/karin-plugin-server-watcher
 [server-watcher-tab]: https://github.com/ikechan8370/karin-plugin-server-watcher?tab=GPL-3.0-1-ov-file#readme
+[HalcyonAlcedo]: https://github.com/HalcyonAlcedo
+[suno]: https://github.com/HalcyonAlcedo/karin-plugin-suno
+[suno-tab]: https://github.com/HalcyonAlcedo/karin-plugin-suno?tab=GPL-3.0-1-ov-file#readme
