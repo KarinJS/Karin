@@ -76,6 +76,7 @@ layout: home
 | -------------- | -------------------------- | -------------------------------- | -------- | ----------------------------- | -------------------- |
 | server-watcher | [ikechan8370][ikechan8370] | [server-watcher][server-watcher] | -        | [GPL-3.0][server-watcher-tab] | 监控服务器状态的插件 |
 | suno           | [Alcedo][HalcyonAlcedo]    | [suno][suno]                     | -        | [GPL-3.0][suno-tab]           | suno歌曲生成插件 |
+| MakeLove       | [lava081][lava081]         | [MakeLove][MakeLove]    | [gitee][MakeLove-gitee]        | [GPL-3.0][MakeLove-tab]           | 透群友插件 |
 
 ## 📖其他插件
 
@@ -112,3 +113,7 @@ layout: home
 [suno-tab]: https://github.com/HalcyonAlcedo/karin-plugin-suno?tab=GPL-3.0-1-ov-file#readme
 [wormhole]: https://github.com/HalcyonAlcedo/wormhole/blob/main/demo/karin-wormhole-client.js
 [wormhole-tab]: https://github.com/HalcyonAlcedo/wormhole?tab=MIT-1-ov-file#readme
+[lava081]: https://github.com/lava081
+[MakeLove]: https://github.com/lava081/karin-plugin-MakeLove
+[MakeLove-gitee]: https://gitee.com/lava081/karin-plugin-MakeLove
+[MakeLove-tab]: https://github.com/lava081/karin-plugin-MakeLove?tab=GPL-3.0-1-ov-file#readme
