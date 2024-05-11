@@ -81,9 +81,9 @@ layout: home
 
 > 可提交一些单个`js`插件，请省略前缀哦~  
 
-| 名称 | 作者 | 仓库地址 | 镜像仓库 | 开源协议 | 简介 |
-| ---- | ---- | -------- | -------- | -------- | ---- |
-
+| 名称     | 作者                    | 仓库地址             | 镜像仓库 | 开源协议            | 简介                   |
+| -------- | ----------------------- | -------------------- | -------- | ------------------- | --------------------- |
+| wormhole | [Alcedo][HalcyonAlcedo] | [wormhole][wormhole] | -        | [MIT][wormhole-tab] | 用于Karin的渲染代理插件 |
 ## 🌐其他
 
 > 可以存放一些脚本类、工具类、资源类，但请不要制作一键安装插件~
@@ -110,3 +110,5 @@ layout: home
 [HalcyonAlcedo]: https://github.com/HalcyonAlcedo
 [suno]: https://github.com/HalcyonAlcedo/karin-plugin-suno
 [suno-tab]: https://github.com/HalcyonAlcedo/karin-plugin-suno?tab=GPL-3.0-1-ov-file#readme
+[wormhole]: https://github.com/HalcyonAlcedo/wormhole/blob/main/demo/karin-wormhole-client.js
+[wormhole-tab]: https://github.com/HalcyonAlcedo/wormhole?tab=MIT-1-ov-file#readme
