@@ -76,7 +76,7 @@ layout: home
 | -------------- | -------------------------- | -------------------------------- | -------- | ----------------------------- | -------------------- |
 | server-watcher | [ikechan8370][ikechan8370] | [server-watcher][server-watcher] | -        | [GPL-3.0][server-watcher-tab] | 监控服务器状态的插件 |
 | suno           | [Alcedo][HalcyonAlcedo]    | [suno][suno]                     | -        | [GPL-3.0][suno-tab]           | suno歌曲生成插件 |
-| MakeLove       | [lava081][lava081]         | [MakeLove][MakeLove]    | [gitee][MakeLove-gitee]        | [GPL-3.0][MakeLove-tab]           | 透群友插件 |
+| MakeLove | [岩浆][lava081] | [MakeLove][MakeLove] | [gitee][MakeLove-gitee] | [GPL-3.0][MakeLove-tab] | 透群友插件 |
 
 ## 📖其他插件
 
@@ -85,6 +85,7 @@ layout: home
 | 名称     | 作者                    | 仓库地址             | 镜像仓库 | 开源协议            | 简介                   |
 | -------- | ----------------------- | -------------------- | -------- | ------------------- | --------------------- |
 | wormhole | [Alcedo][HalcyonAlcedo] | [wormhole][wormhole] | -        | [MIT][wormhole-tab] | 用于Karin的渲染代理插件 |
+| 随机老婆 | [岩浆][lava081] | [随机老婆][随机老婆] | -        | [GPL-3.0][随机老婆-tab] | 随机抽取群友 |
 ## 🌐其他
 
 > 可以存放一些脚本类、工具类、资源类，但请不要制作一键安装插件~
@@ -117,3 +118,5 @@ layout: home
 [MakeLove]: https://github.com/lava081/karin-plugin-MakeLove
 [MakeLove-gitee]: https://gitee.com/lava081/karin-plugin-MakeLove
 [MakeLove-tab]: https://github.com/lava081/karin-plugin-MakeLove?tab=GPL-3.0-1-ov-file#readme
+[随机老婆]: https://github.com/lava081/karin-plugin-example-lava-cv/blob/main/随机老婆.js
+[随机老婆-tab]: https://github.com/lava081/karin-plugin-example-lava-cv?tab=GPL-3.0-1-ov-file#readme
