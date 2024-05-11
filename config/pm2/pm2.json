@@ -1,0 +1,10 @@
+{
+  "apps": [
+    {
+      "name": "Karin",
+      "script": "./index.js",
+      "max_memory_restart": "512M",
+      "restart_delay": 10000
+    }
+  ]
+}

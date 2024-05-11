@@ -10,7 +10,11 @@
   "scripts": {
     "app": "node .",
     "build": "cd ./lib/adapter/kritor && node build.js",
-    "sort:pack": "npx sort-package-json"
+    "sort:pack": "npx sort-package-json",
+    "start": "pm2 start ./config/pm2/pm2.json",
+    "stop": "pm2 stop ./config/pm2/pm2.json",
+    "restart": "pm2 restart ./config/pm2/pm2.json",
+    "log": "pm2 logs --lines 1000 Karin"
   },
   "dependencies": {
     "@grpc/grpc-js": "1.10.5",
