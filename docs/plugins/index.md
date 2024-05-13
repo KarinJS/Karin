@@ -77,6 +77,7 @@ layout: home
 | server-watcher | [ikechan8370][ikechan8370] | [server-watcher][server-watcher] | -        | [GPL-3.0][server-watcher-tab] | 监控服务器状态的插件 |
 | suno           | [Alcedo][HalcyonAlcedo]    | [suno][suno]                     | -        | [GPL-3.0][suno-tab]           | suno歌曲生成插件 |
 | MakeLove | [岩浆][lava081] | [MakeLove][MakeLove] | [gitee][MakeLove-gitee] | [GPL-3.0][MakeLove-tab] | 透群友插件 |
+| MysTool        | [babanbang][babanbang]     | [MysTool][MysTool]               | -        | [GPL-3.0][MysTool-tab]        | 原神、星穹铁道信息查询 |
 
 ## 📖其他插件
 
@@ -120,3 +121,6 @@ layout: home
 [MakeLove-tab]: https://github.com/lava081/karin-plugin-MakeLove?tab=GPL-3.0-1-ov-file#readme
 [随机老婆]: https://github.com/lava081/karin-plugin-example-lava-cv/blob/main/随机老婆.js
 [随机老婆-tab]: https://github.com/lava081/karin-plugin-example-lava-cv?tab=GPL-3.0-1-ov-file#readme
+[babanbang]: https://github.com/babanbang
+[MysTool]: https://github.com/babanbang/karin-plugin-MysTool
+[MysTool-tab]: https://github.com/babanbang/karin-plugin-MysTool?tab=GPL-3.0-1-ov-file#readme
