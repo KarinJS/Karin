@@ -78,6 +78,7 @@ layout: home
 | suno           | [Alcedo][HalcyonAlcedo]    | [suno][suno]                     | -        | [GPL-3.0][suno-tab]           | suno歌曲生成插件 |
 | MakeLove | [岩浆][lava081] | [MakeLove][MakeLove] | [gitee][MakeLove-gitee] | [GPL-3.0][MakeLove-tab] | 透群友插件 |
 | MysTool        | [babanbang][babanbang]     | [MysTool][MysTool]               | -        | [GPL-3.0][MysTool-tab]        | 原神、星穹铁道信息查询 |
+| manage         | [Alcedo][HalcyonAlcedo]    | [manage][manage]                 | -        | [GPL-3.0][manage-tab]             | karin配置面板插件 |
 
 ## 📖其他插件
 
@@ -124,3 +125,5 @@ layout: home
 [babanbang]: https://github.com/babanbang
 [MysTool]: https://github.com/babanbang/karin-plugin-MysTool
 [MysTool-tab]: https://github.com/babanbang/karin-plugin-MysTool?tab=GPL-3.0-1-ov-file#readme
+[manage]: https://github.com/HalcyonAlcedo/karin-plugin-manage
+[manage-tab]: https://github.com/HalcyonAlcedo/karin-plugin-manage?tab=GPL-3.0-1-ov-file#readme
