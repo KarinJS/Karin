@@ -9,7 +9,6 @@
   "main": "index.js",
   "scripts": {
     "app": "node .",
-    "build": "cd ./lib/adapter/kritor && node build.js",
     "sort:pack": "npx sort-package-json"
   },
   "dependencies": {
