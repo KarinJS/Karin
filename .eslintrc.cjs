@@ -55,7 +55,6 @@ module.exports = {
     '/logs/',
     '/resources/',
     '/temp/',
-    'node_modules/',
-    'lib/adapter/kritor/protos/compiled.js'
+    'node_modules/'
   ]
 }
