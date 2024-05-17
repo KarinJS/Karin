@@ -11,8 +11,8 @@ http_port: 7000
 http_render:
   # 是否开启http渲染
   enable: false
-  # 渲染地址 需要和karin-puppeteer的同时处于公网或者内网环境的地址
-  host: http://127.0.0.1:2956
+  # 渲染地址 需要和karin-puppeteer的同时处于公网或者内网环境的地址 如果无法访问请使用Wormhole代理
+  host: http://127.0.0.1:7000
   # karin-puppeteer请求地址
   url: http://127.0.0.1:7005/api/render
   # karin-puppet请求token
@@ -20,7 +20,9 @@ http_render:
   # 请求的非html或非有效路径的返回内容 可以填http地址 例如：https://ys.mihoyo.com
   not_found: "404 Not Found"
   # 渲染超时时间 秒
-  timeout: 30
+  timeout: 60
+  # Wormhole代理地址 无公网环境的情况下使用
+  WormholeClient: ""
 
 # grpc服务器地址
 grpc: 0.0.0.0:7001
