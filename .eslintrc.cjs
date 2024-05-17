@@ -12,7 +12,6 @@ module.exports = {
     logger: true
   },
   plugins: [
-    'import',
     'promise'
   ],
   rules: {
@@ -22,8 +21,6 @@ module.exports = {
     camelcase: [0, {
       properties: 'always'
     }],
-    'import/no-unresolved': 2,
-    'import/named': 2,
     'import/default': 2,
     'import/namespace': 2,
     'promise/always-return': 'error',
@@ -41,11 +38,6 @@ module.exports = {
     'no-unused-vars': ['error', { args: 'all' }]
   },
   settings: {
-    'import/resolver': {
-      alias: [
-        ['#Karin', './lib/index.js']
-      ]
-    },
     node: {
       version: '>=18.0.0'
     }
