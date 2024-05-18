@@ -36,28 +36,28 @@ master: []
 # 管理员列表 子权限
 admin: []
 
-# 超时时间 秒
+# Api请求超时时间 秒
 timeout:
-  grpc: 30
-  ws: 30
+  grpc: 60
+  ws: 60
 
 # 黑名单相关
-black_list:
+BlackList:
   # 黑名单用户
   users: []
   # 黑名单群聊
   groups: []
   # 消息日志黑名单群聊 设置后不会打印该群的消息日志
-  msg_groups: []
+  GroupMsgLog: []
 
 # 白名单相关
-white_list:
+WhiteList:
   # 白名单用户
   users: []
   # 白名单群聊
   groups: []
   # 消息日志白名单群聊 设置后只会打印该群的消息日志
-  msg_groups: []
+  GroupMsgLog: []
 
 # ffmpeg配置 用于音视频处理
 ffmpeg_path: ""

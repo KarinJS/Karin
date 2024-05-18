@@ -1,28 +1,28 @@
 # 黑名单相关
-black_list:
+BlackList:
   # 黑名单用户
   users: false
   # 黑名单群聊
   groups: false
-  # 消息日志黑名单群聊 设置后不会打印该群的消息日志 暂未实现
-  msg_groups: false
+  # 消息日志黑名单群聊 设置后不会打印该群的消息日志
+  GroupMsgLog: false
 
 # 白名单相关
-white_list:
+WhiteList:
   # 白名单用户
   users: false
   # 白名单群聊
   groups: false
-  # 消息日志白名单群聊 设置后只会打印该群的消息日志 暂未实现
-  msg_groups: false
+  # 消息日志白名单群聊 设置后只会打印该群的消息日志
+  GroupMsgLog: false
 
 # 群聊
-group_config:
+GroupConfig:
   # 群聊中所有消息冷却时间
-  global_cd: false
+  GroupCD: false
 
   # 群聊中 每个人的消息冷却时间
-  personal_cd: false
+  GroupUserCD: true
 
   # 机器人响应模式
   mode: false
