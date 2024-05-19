@@ -42,3 +42,5 @@ Karin的开发离不开以下项目的帮助：
 > 🌟星光闪烁，你们的智慧如同璀璨的夜空。感谢所有为**Karin**做出贡献的人！
 
 [![贡献者](https://contributors-img.web.app/image?repo=KarinJS/Karin)](https://github.com/KarinJS/Karin/graphs/contributors)
+
+![Alt](https://repobeats.axiom.co/api/embed/aaaa2759c8885691443a4d80e5753f975d4f250e.svg "Repobeats analytics image")
