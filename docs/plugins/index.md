@@ -76,9 +76,10 @@ layout: home
 | -------------- | -------------------------- | -------------------------------- | -------- | ----------------------------- | -------------------- |
 | server-watcher | [ikechan8370][ikechan8370] | [server-watcher][server-watcher] | -        | [GPL-3.0][server-watcher-tab] | 监控服务器状态的插件 |
 | suno           | [Alcedo][HalcyonAlcedo]    | [suno][suno]                     | -        | [GPL-3.0][suno-tab]           | suno歌曲生成插件 |
-| MakeLove | [岩浆][lava081] | [MakeLove][MakeLove] | [gitee][MakeLove-gitee] | [GPL-3.0][MakeLove-tab] | 透群友插件 |
+| MakeLove       | [岩浆][lava081]            | [MakeLove][MakeLove]  | [gitee][MakeLove-gitee] | [GPL-3.0][MakeLove-tab] | 透群友插件 |
 | MysTool        | [babanbang][babanbang]     | [MysTool][MysTool]               | -        | [GPL-3.0][MysTool-tab]        | 原神、星穹铁道信息查询 |
-| manage         | [Alcedo][HalcyonAlcedo]    | [manage][manage]                 | -        | [GPL-3.0][manage-tab]             | karin配置面板插件 |
+| manage         | [Alcedo][HalcyonAlcedo]    | [manage][manage]                 | -        | [GPL-3.0][manage-tab]         | karin配置面板插件 |
+| auto-command   | [Alcedo][HalcyonAlcedo]    | [auto-command][auto-command]     | -        | [GPL-3.0][auto-command-tab]   | 自动命令插件 |
 
 ## 📖其他插件
 
@@ -86,8 +87,7 @@ layout: home
 
 | 名称     | 作者                    | 仓库地址             | 镜像仓库 | 开源协议            | 简介                   |
 | -------- | ----------------------- | -------------------- | -------- | ------------------- | --------------------- |
-| wormhole | [Alcedo][HalcyonAlcedo] | [wormhole][wormhole] | -        | [MIT][wormhole-tab] | 用于Karin的渲染代理插件 |
-| 随机老婆 | [岩浆][lava081] | [随机老婆][随机老婆] | -        | [GPL-3.0][随机老婆-tab] | 随机抽取群友 |
+| 随机老婆  | [岩浆][lava081]         | [随机老婆][随机老婆]   | -        | [GPL-3.0][随机老婆-tab] | 随机抽取群友 |
 ## 🌐其他
 
 > 可以存放一些脚本类、工具类、资源类，但请不要制作一键安装插件~
@@ -114,8 +114,6 @@ layout: home
 [HalcyonAlcedo]: https://github.com/HalcyonAlcedo
 [suno]: https://github.com/HalcyonAlcedo/karin-plugin-suno
 [suno-tab]: https://github.com/HalcyonAlcedo/karin-plugin-suno?tab=GPL-3.0-1-ov-file#readme
-[wormhole]: https://github.com/HalcyonAlcedo/wormhole/blob/main/demo/karin-wormhole-client.js
-[wormhole-tab]: https://github.com/HalcyonAlcedo/wormhole?tab=MIT-1-ov-file#readme
 [lava081]: https://github.com/lava081
 [MakeLove]: https://github.com/lava081/karin-plugin-MakeLove
 [MakeLove-gitee]: https://gitee.com/lava081/karin-plugin-MakeLove
@@ -127,3 +125,5 @@ layout: home
 [MysTool-tab]: https://github.com/babanbang/karin-plugin-MysTool?tab=GPL-3.0-1-ov-file#readme
 [manage]: https://github.com/HalcyonAlcedo/karin-plugin-manage
 [manage-tab]: https://github.com/HalcyonAlcedo/karin-plugin-manage?tab=GPL-3.0-1-ov-file#readme
+[auto-command]: https://github.com/HalcyonAlcedo/karin-plugin-auto-command
+[auto-command-tab]: https://github.com/HalcyonAlcedo/karin-plugin-auto-command?tab=GPL-3.0-1-ov-file#readme
