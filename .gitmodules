@@ -1,6 +1,0 @@
-[submodule "lib/adapter/kritor/kritor"]
-	path = lib/adapter/kritor/kritor
-	url = https://github.com/KarinJS/kritor.git
-[submodule "lib/adapter/kritor/kritorGitee"]
-	path = lib/adapter/kritor/kritorGitee
-	url = https://gitee.com/KarinJS/kritor.git
