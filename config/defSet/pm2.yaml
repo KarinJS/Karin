@@ -1,0 +1,18 @@
+apps:
+  - name: "Karin"
+    # 入口
+    script: "./index.js"
+    # 进程守护
+    autorestart: true
+    # 每分钟最大重启数量
+    max_restarts: 60
+    # 内存溢出重启，可以是“10M”、“100K”、“2G”等
+    max_memory_restart: "1G"
+    # 重启延迟 2s
+    restart_delay: 2000
+    # 避免使用进程 id 后缀日志文件
+    merge_logs: true
+    # 错误日志路径
+    error_file: "./logs/pm2_error.log"
+    # 输出日志路径
+    out_file: "./logs/pm2_out.log"

@@ -1,7 +1,7 @@
 {
   "name": "karin",
   "version": "0.0.1",
-  "author": "Lain",
+  "author": "Karin",
   "type": "module",
   "imports": {
     "#Karin": "./lib/index.js"
@@ -9,7 +9,13 @@
   "main": "index.js",
   "scripts": {
     "app": "node .",
-    "sort:pack": "npx sort-package-json"
+    "delete": "pm2 delete ./config/config/pm2.yaml",
+    "monit": "pm2 monit",
+    "log": "pm2 logs ./config/config/pm2.yaml",
+    "restart": "pm2 restart ./config/config/pm2.yaml",
+    "sort:pack": "npx sort-package-json",
+    "start": "pm2 start ./config/config/pm2.yaml && pm2 monit",
+    "stop": "pm2 delete ./config/config/pm2.yaml"
   },
   "dependencies": {
     "@grpc/grpc-js": "1.10.5",
