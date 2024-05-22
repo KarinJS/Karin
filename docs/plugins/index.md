@@ -76,7 +76,6 @@ layout: home
 | -------------- | -------------------------- | -------------------------------- | -------- | ----------------------------- | -------------------- |
 | server-watcher | [ikechan8370][ikechan8370] | [server-watcher][server-watcher] | -        | [GPL-3.0][server-watcher-tab] | 监控服务器状态的插件 |
 | suno           | [Alcedo][HalcyonAlcedo]    | [suno][suno]                     | -        | [GPL-3.0][suno-tab]           | suno歌曲生成插件 |
-| MakeLove       | [岩浆][lava081]            | [MakeLove][MakeLove]  | [gitee][MakeLove-gitee] | [GPL-3.0][MakeLove-tab] | 透群友插件 |
 | MysTool        | [babanbang][babanbang]     | [MysTool][MysTool]               | -        | [GPL-3.0][MysTool-tab]        | 原神、星穹铁道信息查询 |
 | manage         | [Alcedo][HalcyonAlcedo]    | [manage][manage]                 | -        | [GPL-3.0][manage-tab]         | karin配置面板插件 |
 | auto-command   | [Alcedo][HalcyonAlcedo]    | [auto-command][auto-command]     | -        | [GPL-3.0][auto-command-tab]   | 自动命令插件 |
@@ -87,7 +86,6 @@ layout: home
 
 | 名称     | 作者                    | 仓库地址             | 镜像仓库 | 开源协议            | 简介                   |
 | -------- | ----------------------- | -------------------- | -------- | ------------------- | --------------------- |
-| 随机老婆  | [岩浆][lava081]         | [随机老婆][随机老婆]   | -        | [GPL-3.0][随机老婆-tab] | 随机抽取群友 |
 ## 🌐其他
 
 > 可以存放一些脚本类、工具类、资源类，但请不要制作一键安装插件~
@@ -114,12 +112,6 @@ layout: home
 [HalcyonAlcedo]: https://github.com/HalcyonAlcedo
 [suno]: https://github.com/HalcyonAlcedo/karin-plugin-suno
 [suno-tab]: https://github.com/HalcyonAlcedo/karin-plugin-suno?tab=GPL-3.0-1-ov-file#readme
-[lava081]: https://github.com/lava081
-[MakeLove]: https://github.com/lava081/karin-plugin-MakeLove
-[MakeLove-gitee]: https://gitee.com/lava081/karin-plugin-MakeLove
-[MakeLove-tab]: https://github.com/lava081/karin-plugin-MakeLove?tab=GPL-3.0-1-ov-file#readme
-[随机老婆]: https://github.com/lava081/karin-plugin-example-lava-cv/blob/main/随机老婆.js
-[随机老婆-tab]: https://github.com/lava081/karin-plugin-example-lava-cv?tab=GPL-3.0-1-ov-file#readme
 [babanbang]: https://github.com/babanbang
 [MysTool]: https://github.com/babanbang/karin-plugin-MysTool
 [MysTool-tab]: https://github.com/babanbang/karin-plugin-MysTool?tab=GPL-3.0-1-ov-file#readme
