@@ -1,5 +1,5 @@
 # Karin
- 
+
 [文档](https://karinjs.github.io/Karin/)
 
 基于 [Kritor](https://github.com/KarinJS/kritor-kotlin) 标准进行开发的 [nodejs](https://nodejs.org/en) 机器人框架  
@@ -15,7 +15,7 @@
 - [ ] [onebot12](https://onebot.dev/)
 - [ ] 支持主动[grpc](https://grpc.io/)
 - [x] 支持被动[grpc](https://grpc.io/)
-- [ ] 支持主动ws
+- [x] 支持主动ws 12暂未支持
 - [x] 支持被动ws
 - [ ] 支持onebot HTTP
 - [x] 支持[onebots](https://github.com/lc-cn/onebots)

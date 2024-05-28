@@ -1,17 +1,21 @@
 {
   "name": "karin",
   "version": "0.0.1",
+  "private": true,
   "author": "Karin",
   "type": "module",
   "imports": {
     "#Karin": "./lib/index.js"
   },
   "main": "index.js",
+  "workspaces": [
+    "plugins/**"
+  ],
   "scripts": {
     "app": "node .",
     "delete": "pm2 delete ./config/config/pm2.yaml",
-    "monit": "pm2 monit",
     "log": "pm2 logs ./config/config/pm2.yaml",
+    "monit": "pm2 monit",
     "restart": "pm2 restart ./config/config/pm2.yaml",
     "sort:pack": "npx sort-package-json",
     "start": "pm2 start ./config/config/pm2.yaml && pm2 monit",
