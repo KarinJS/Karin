@@ -20,8 +20,12 @@
 - [ ] 支持onebot HTTP
 - [x] 支持[onebots](https://github.com/lc-cn/onebots)
 - [x] ~~puppeteer渲染图片~~
-- [x] 外置[puppeteer](https://github.com/KarinJS/karin-plugin-puppeteer)
-- [ ] 支持redis集群
+- [x] 外置[puppeteer](https://github.com/KarinJS/karin-plugin-puppeteer)\
+- [ ] 降低对`redis`的依赖
+- [ ] 支持 package.karin
+- [ ] 支持db通用接口
+- [ ] 支持动态加载插件
+- [ ] 支持`redis`集群
 
 > 关于`puppeteer`，由于内置的chrome过于臃肿，将会移除内置的pupppeteer，分开搭建或使用远程、作为插件等方式使用puppeteer。  
 > [karin-puppeteer](https://github.com/KarinJS/karin-puppeteer)
