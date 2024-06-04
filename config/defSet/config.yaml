@@ -4,6 +4,9 @@ log_level: info
 # 日志保留天数
 log_days_Keep: 7
 
+# 控制台触发插件日志颜色 十六进制 默认#FFFF00 不支持热更新
+log_color: "#E1D919"
+
 # ffmpeg配置 用于音视频处理
 ffmpeg_path: ""
 ffprobe_path: ""

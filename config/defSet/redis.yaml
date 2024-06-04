@@ -8,3 +8,11 @@ username:
 password:
 # redis数据库
 db: 0
+
+# 集群配置
+cluster:
+  # 是否启用集群
+  enable: false
+  # 集群地址
+  rootNodes:
+    - url: Redis://127.0.0.1:6379/0
