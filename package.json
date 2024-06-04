@@ -19,7 +19,8 @@
     "restart": "pm2 restart ./config/config/pm2.yaml",
     "sort:pack": "npx sort-package-json",
     "start": "pm2 start ./config/config/pm2.yaml && pm2 monit",
-    "stop": "pm2 delete ./config/config/pm2.yaml"
+    "stop": "pm2 delete ./config/config/pm2.yaml",
+    "ver": "node lib/tools/updateVersion.js"
   },
   "dependencies": {
     "@grpc/grpc-js": "1.10.5",
