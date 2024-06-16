@@ -3,6 +3,7 @@ import neostandard, { resolveIgnoresFromGitignore } from 'neostandard'
 const data = neostandard({
   ignores: resolveIgnoresFromGitignore(),
   globals: ['logger'],
+  ts: true
 })
 
 const newData = []

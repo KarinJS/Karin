@@ -7,7 +7,7 @@
   "imports": {
     "#Karin": "./lib/index.js"
   },
-  "main": "index.js",
+  "main": "./lib/index.js",
   "workspaces": [
     "plugins/**"
   ],
