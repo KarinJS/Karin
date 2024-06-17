@@ -17,7 +17,7 @@
     "init": "node lib/tools/install.js",
     "init:dev": "node lib/tools/install.js",
     "init:pack": "node lib/tools/install.js",
-    "log": "pm2 logs ./config/config/pm2.yaml",
+    "log": "node lib/tools/pm2Log.js",
     "monit": "pm2 monit",
     "restart": "pm2 restart ./config/config/pm2.yaml",
     "sort:pack": "npx sort-package-json",
