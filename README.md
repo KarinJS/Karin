@@ -1,5 +1,7 @@
 # Karin
 
+[![neostandard javascript style](https://img.shields.io/badge/code_style-neostandard-brightgreen?style=flat)](https://github.com/neostandard/neostandard)
+
 [文档](https://karinjs.github.io/Karin/)
 
 基于 [Kritor](https://github.com/KarinJS/kritor-kotlin) 标准进行开发的 [nodejs](https://nodejs.org/en) 机器人框架  
@@ -20,7 +22,7 @@
 - [ ] 支持onebot HTTP
 - [x] 支持[onebots](https://github.com/lc-cn/onebots)
 - [x] ~~puppeteer渲染图片~~
-- [x] 外置[puppeteer](https://github.com/KarinJS/karin-plugin-puppeteer)\
+- [x] 外置[puppeteer](https://github.com/KarinJS/karin-plugin-puppeteer)
 - [ ] 降低对`redis`的依赖
 - [ ] 支持 package.karin
 - [ ] 支持db通用接口

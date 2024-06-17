@@ -3,5 +3,9 @@
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
   "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
-  "javascript.format.insertSpaceAfterConstructor": true
+  "javascript.format.insertSpaceAfterConstructor": true,
+  // 单引号
+  "javascript.preferences.quoteStyle": "single",
+  // 分号
+  "javascript.format.semicolons": "remove"
 }
