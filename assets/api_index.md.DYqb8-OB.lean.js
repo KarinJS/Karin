@@ -1,0 +1,1 @@
+import{_ as a,c as e,o as t,a3 as o}from"./chunks/framework.qhYKWsEk.js";const f=JSON.parse('{"title":"目录","description":"","frontmatter":{},"headers":[],"relativePath":"api/index.md","filePath":"api/index.md"}'),r={name:"api/index.md"},i=o("",8),n=[i];function h(s,c,d,l,_,p){return t(),e("div",null,n)}const u=a(r,[["render",h]]);export{f as __pageData,u as default};

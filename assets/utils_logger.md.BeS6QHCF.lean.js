@@ -1,0 +1,1 @@
+import{_ as s,c as i,o as a,a3 as n}from"./chunks/framework.qhYKWsEk.js";const F=JSON.parse('{"title":"logger","description":"","frontmatter":{},"headers":[],"relativePath":"utils/logger.md","filePath":"utils/logger.md"}'),h={name:"utils/logger.md"},l=n("",2),k=[l];function p(t,e,E,g,r,d){return a(),i("div",null,k)}const o=s(h,[["render",p]]);export{F as __pageData,o as default};

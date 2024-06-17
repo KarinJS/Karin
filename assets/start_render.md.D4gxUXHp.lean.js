@@ -1,0 +1,1 @@
+import{_ as s,c as i,o as a,a3 as n}from"./chunks/framework.qhYKWsEk.js";const F=JSON.parse('{"title":"渲染器安装","description":"","frontmatter":{},"headers":[],"relativePath":"start/render.md","filePath":"start/render.md"}'),p={name:"start/render.md"},l=n("",25),h=[l];function t(e,k,d,r,g,E){return a(),i("div",null,h)}const o=s(p,[["render",t]]);export{F as __pageData,o as default};

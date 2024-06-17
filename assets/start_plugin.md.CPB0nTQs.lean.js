@@ -1,0 +1,1 @@
+import{_ as a,c as t,o as e,a3 as r}from"./chunks/framework.qhYKWsEk.js";const f=JSON.parse('{"title":"拓展插件安装","description":"","frontmatter":{},"headers":[],"relativePath":"start/plugin.md","filePath":"start/plugin.md"}'),n={name:"start/plugin.md"},o=r("",3),s=[o];function i(_,l,c,d,h,p){return e(),t("div",null,s)}const m=a(n,[["render",i]]);export{f as __pageData,m as default};

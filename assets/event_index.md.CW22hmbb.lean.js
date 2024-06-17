@@ -1,0 +1,1 @@
+import{_ as e,c as a,o as t,a3 as o}from"./chunks/framework.qhYKWsEk.js";const b=JSON.parse('{"title":"事件","description":"","frontmatter":{},"headers":[],"relativePath":"event/index.md","filePath":"event/index.md"}'),r={name:"event/index.md"},i=o("",10),l=[i];function n(c,d,h,s,_,u){return t(),a("div",null,l)}const f=e(r,[["render",n]]);export{b as __pageData,f as default};

@@ -1,0 +1,1 @@
+import{_ as s,c as i,o as a,a3 as t}from"./chunks/framework.qhYKWsEk.js";const u=JSON.parse('{"title":"概述","description":"","frontmatter":{},"headers":[],"relativePath":"utils/karin.md","filePath":"utils/karin.md"}'),e={name:"utils/karin.md"},n=t("",6),l=[n];function p(h,r,o,k,d,c){return a(),i("div",null,l)}const b=s(e,[["render",p]]);export{u as __pageData,b as default};

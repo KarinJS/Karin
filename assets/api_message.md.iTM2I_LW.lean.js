@@ -1,0 +1,1 @@
+import{_ as s,c as i,o as a,a3 as n}from"./chunks/framework.qhYKWsEk.js";const y=JSON.parse('{"title":"消息相关","description":"","frontmatter":{},"headers":[],"relativePath":"api/message.md","filePath":"api/message.md"}'),t={name:"api/message.md"},e=n("",13),l=[e];function h(p,k,d,r,E,g){return a(),i("div",null,l)}const o=s(t,[["render",h]]);export{y as __pageData,o as default};

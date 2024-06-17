@@ -1,0 +1,1 @@
+import{_ as t,c as e,o as l,a3 as d}from"./chunks/framework.qhYKWsEk.js";const p=JSON.parse('{"title":"标准API","description":"","frontmatter":{},"headers":[],"relativePath":"api/standard.md","filePath":"api/standard.md"}'),n={name:"api/standard.md"},a=d("",19),i=[a];function s(r,c,g,y,x,o){return l(),e("div",null,i)}const k=t(n,[["render",s]]);export{p as __pageData,k as default};
