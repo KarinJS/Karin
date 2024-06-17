@@ -1,3 +1,6 @@
+# 最多显示多少行日志
+lines: 1000
+
 apps:
   - name: "Karin"
     # 入口
