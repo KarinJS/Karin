@@ -1,8 +1,9 @@
 {
   "name": "karin",
   "author": "Lain",
+  "version": "0.0.3",
   "devDependencies": {
-    "vitepress": "^1.0.0"
+    "vitepress": "^1.2.3"
   },
   "scripts": {
     "dev": "vitepress dev docs",

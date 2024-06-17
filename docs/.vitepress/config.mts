@@ -6,15 +6,14 @@ export default defineConfig({
   title: 'Karin',
   description: '基于 Kritor 和 noebots 进行开发的nodejs机器人框架',
   themeConfig: {
-    siteTitle: '主页',
+    siteTitle: 'Karin主页',
     nav: [
       {
         text: '快速开始',
         items: [
-          { text: '目录', link: '/start/index' },
-          { text: '框架', link: '/start/start' },
-          { text: '渲染器', link: '/start/Renderer' },
-          { text: '适配器', link: '/start/adapter' }
+          { text: '总目录', link: '/start/index' },
+          { text: '快速开始', link: '/start/start' },
+          { text: '渲染器', link: '/start/render' }
         ]
       },
       {
@@ -29,10 +28,12 @@ export default defineConfig({
       {
         text: '开发指南',
         items: [
-          { text: '目录', link: '/develop/index' },
-          { text: '插件规范', link: '/develop/standard' },
-          { text: '开发插件', link: '/develop/plugin' },
-          { text: '开发插件包', link: '/develop/plugins' }
+          { text: '目录', link: '/plugins/index' },
+          { text: '开发规范', link: '/plugins/standard' },
+          { text: 'elements', link: '/plugins/elements' },
+          { text: '插件示例', link: '/plugins/demo' },
+          { text: '插件包示例', link: '/plugins/package' },
+          { text: '插件列表', link: '/plugins/list' }
         ]
       },
       {
@@ -51,8 +52,9 @@ export default defineConfig({
         text: 'Api',
         items: [
           { text: '目录', link: '/api/index' },
-          { text: 'kritor', link: '/api/kritor' },
-          { text: 'OneBot11', link: '/api/OneBot11' }
+          { text: '标准Api', link: '/api/standard' },
+          { text: '联系人相关', link: '/api/contact' },
+          { text: '消息相关', link: '/api/message' }
         ]
       },
       { text: '插件索引', link: '/plugins/index' },
@@ -64,8 +66,7 @@ export default defineConfig({
           items: [
             { text: '目录', link: '/start/index' },
             { text: '框架', link: '/start/start' },
-            { text: '渲染器', link: '/start/Renderer' },
-            { text: '适配器', link: '/start/adapter' }
+            { text: '渲染器', link: '/start/render' }
           ],
         }
       ],
@@ -78,14 +79,16 @@ export default defineConfig({
           ],
         }
       ],
-      '/develop/': [
+      '/plugins/': [
         {
           text: '插件开发',
           items: [
-            { text: '目录', link: '/develop/index' },
-            { text: '插件规范', link: '/develop/standard' },
-            { text: '开发插件', link: '/develop/plugin' },
-            { text: '开发插件包', link: '/develop/plugins' }
+            { text: '目录', link: '/plugins/index' },
+            { text: '开发规范', link: '/plugins/standard' },
+            { text: 'elements', link: '/plugins/elements' },
+            { text: '插件示例', link: '/plugins/demo' },
+            { text: '插件包示例', link: '/plugins/package' },
+            { text: '插件列表', link: '/plugins/list' }
           ]
         }
       ],
@@ -109,9 +112,10 @@ export default defineConfig({
           text: 'Api',
           items: [
             { text: '目录', link: '/api/index' },
-            { text: 'kritor', link: '/api/kritor' },
-            { text: 'OneBot11', link: '/api/OneBot11' }
-          ],
+            { text: '标准Api', link: '/api/standard' },
+            { text: '联系人相关', link: '/api/contact' },
+            { text: '消息相关', link: '/api/message' }
+          ]
         }
       ],
     },

@@ -9,11 +9,11 @@ hero:
       text: onebots
       link: https://docs.onebots.org/
     - theme: alt
-      text: 快速上手
-      link: /start/start
-    - theme: brand
       text: 插件索引
       link: /plugins/index
+    - theme: brand
+      text: 快速上手
+      link: /start/start
 
 features:
   - title: 轻量级

@@ -1,121 +1,152 @@
 # 快速上手
 
----
-
 ## 环境
 
-> 支持 Windows、Linux、MacOS、Docker 等环境  
-> 推荐安装的没有强制性需求，可根据个人需求进行安装  
-> karin开发的场景，默认您拥有以下全部环境，若有特殊需求，请自行安装
+环境说明：
 
-| -                | 安装     | 说明                                                                           |
-| ---------------- | -------- | ------------------------------------------------------------------------------ |
-| [NodeJs][NodeJs] | √        | 推荐版本18+                                                                    |
-| [git][git]       | 推荐安装 | 分布式版本控制软件，国内用户推荐使用 [腾讯软件管家][腾讯软件管家] 进行加速下载 |
-| [redis][redis]   | 推荐安装 | 一个高性能的内存数据库，windows用户推荐使用[redis-windows][redis-windows]      |
+::: warning 温馨提示
 
-## 安装
+以下，除了`NodeJs`，其他均为可选项，根据实际情况进行安装。
+:::
 
-> 以下命令均为默认您安装了`NodeJs`、`git`
+### NodeJs
 
-1. 安装`pnpm`(可选)
+[NodeJs官网][NodeJs]
+
+`Karin`基于`NodeJs`开发，推荐使用官方稳定长期支持的`LTS`版本`v20+`。
+
+- 目前最低要求支持版本为`v18+`。
+- `Karin`本身并未使用较新的`NodeJs`特性，理论来说支持16+版本。
+- `Karin`大部分插件开发者的开发环境均在`v20+`版本，推荐使用`v20+`版本。
+- 如果无需使用相关插件或功能，可自行选择是否安装`NodeJs`的版本。
+
+### Redis
+
+[redis官网](https://redis.io/)
+
+- 对于`redis`，如果你不使用到相关的插件和功能，可以选择跳过这里。
+- `windows`用户推荐使用[redis-windows][redis-windows]，非官方版本，请注意查看仓库说明。
+- 如果无需使用相关插件或功能，可自行选择是否安装`redis`。
+
+### Git
+
+[git官网](https://git-scm.com/)
+
+- `git`是一个分布式版本控制软件，`Karin`的所有文件默认均使用`git`进行管理、安装、更新。  
+- `windows`用户如下载缓慢，可使用[腾讯软件管家][腾讯软件管家]进行加速下载。
+- 还是一样，`git`也是一个可选项，所有插件包括`Karin`本身都可以直接下载压缩包进行安装。
+
+## 部署karin
+
+### 安装`pnpm`
+
 ::: code-group
 
-```sh [官方源]
+```bash [官方源]
 npm install pnpm -g
 ```
 
-```sh [国内源]
+```bash [国内源]
 npm --registry=https://registry.npmmirror.com install pnpm -g
 ```
 
 :::
 
-2. 使用git克隆项目
+### 更换npm源
 
-::: tip
-中国大陆服务器推荐使用`Gitee`镜像源  
-`Karin`官方的所有项目，均可通过将域名中的`github`更换为`gitee`进行加速下载~
+::: warning 注意
+如果你是中国大陆服务器，并且无法访问`npm`官方源，这里请务必更换为镜像源。
+:::
+
+- 查询当前镜像源
+
+```bash
+npm config get registry
+```
+
+- 更换镜像源
+
+::: code-group
+
+```bash [淘宝源]
+npm config set registry https://registry.npmmirror.com
+```
+
+```bash [腾讯源]
+# 在无法访问淘宝源的情况下，可以尝试使用腾讯源
+npm config set registry https://mirrors.cloud.tencent.com/npm
+```
+
+```bash [官方源]
+# 如果你需要恢复为官方源
+npm config set registry https://registry.npmjs.org
+```
+
+:::
+
+### 克隆项目
+
+::: warning 温馨提示  
+`KarinJS`组织的所有项目，均可通过将域名中的`github`更换为`gitee`进行加速下载~
 :::
 
 ::: code-group
 
-```sh [Github]
+```bash [Github]
 git clone --depth=1 https://github.com/KarinJS/Karin.git
 ```
 
-```sh [Gitee]
+```bash [Gitee]
 git clone --depth=1 https://gitee.com/KarinJS/Karin.git
 ```
 
 :::
 
-1. 初始化项目
+### 安装依赖
 
-> 进入项目目录
+::: warning 温馨提示
+开发依赖较为臃肿庞大，普通用户请安装生产依赖即可
+:::
 
-```sh
+```bash
 cd Karin
 ```
 
-2. ~~拉取子模块~~
-
-> 可跳过，karin会自动拉取子模块
-
-```sh
-git submodule update --init --recursive
-```
-
-3. 安装依赖
 ::: code-group
 
-```sh [安装生产依赖]
+```bash [安装生产依赖]
 pnpm install -P
 ```
 
-```sh [安装开发依赖]
+```bash [安装开发依赖]
 pnpm install
 ```
 
 :::
 
-> 你可以选择其中任何一种方式进行依赖安装。
+### 启动项目
 
-4. 启动项目
-
-::: tip
+::: warning 温馨提示
 开发模式支持`plugins/apps`文件夹热更新、插件包的`index.js`热更新  
 正常启动下，仅支持热更新非插件包例如自带的`karin-plugin-example`
 :::
 
 ::: code-group
 
-```sh [正常启动]
+```bash [正常启动]
 node .
 ```
 
-```sh [开发模式启动]
+```bash [开发模式]
 node . --dev
 ```
 
 :::
 
-## 安装适配器
-
-> 适配器的作用就是在不同的聊天平台之间建立桥梁，使karin可以与不同平台的用户进行交互  
-
-- [安装适配器](./adapter.md)
-
 ## 安装渲染器
 
-> 渲染器在karin的定义可能它更是一个单纯的截图工具  
-> 默认提供了`puppeteer`，`puppeteer`打开html -> 渲染 -> 截图 -> 返回图片base64编码  
-> 当然，你也可以自行注册渲染器，实现自定义截图逻辑
-
-- [安装渲染器](../Renderer/Renderer.md)
+- [karin-puppeteer](./render.md)
 
 [NodeJs]: https://nodejs.org/en
-[git]: https://git-scm.com/
 [腾讯软件管家]: https://sw.pcmgr.qq.com/1e05804bd17b358a8c88284df8331fcd/65fcde89/spcmgr/download/Git-2.44.0-64-bit.exe
-[redis]: https://github.com/redis-windows/redis-windows/releases
 [redis-windows]: https://github.com/redis-windows/redis-windows

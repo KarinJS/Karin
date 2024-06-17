@@ -22,7 +22,7 @@
 
 ## segment
 
-`segment`是一个用于构造消`element`的工具  
+`segment`是一个用于快速构建elements的工作，即`element`  
 详情查看[segment](./segment.md)
 
 ## Renderer
