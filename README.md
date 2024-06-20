@@ -1,5 +1,3 @@
-# Karin
-
 [![neostandard javascript style](https://img.shields.io/badge/code_style-neostandard-brightgreen?style=flat)](https://github.com/neostandard/neostandard)
 
 [文档](https://karinjs.github.io/Karin/)
@@ -42,6 +40,13 @@ Karin的开发离不开以下项目的帮助：
 - [onebot-11](https://github.com/botuniverse/onebot-11) onebot11标准
 - [Miao-Yunzai](https://github.com/yoimiya-kokomi/Miao-Yunzai) 最开始的代码结构
 - [Yunzai-Bot](https://gitee.com/le-niao/Yunzai-Bot) 最开始的代码结构
+
+### 来加入我们吧~
+
+QQGroup: 967068507 
+
+Discord: [☘Karin的喵趴～](https://discord.com/channels/1251552521957408878/1251552521957408881)
+
 
 ### 贡献者
 
