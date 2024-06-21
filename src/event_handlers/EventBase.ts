@@ -1,16 +1,14 @@
-import { GroupCfg } from './../types/config'
-import Review from './review.js'
-import common from '../core/Common.js'
-import config from '../core/Config.js'
-import segment from '../core/Segment.js'
-import logger from '../core/logger.js'
-import { KarinMessage } from '../event/KarinMessage.js'
-import { KarinNotice } from '../event/KarinNotice.js'
-import { KarinRequest } from '../event/KarinRequest.js'
-import { event, permission } from '../types/types.js'
-import Listeners from '../core/listener.js'
+import Review from './review'
+import config from '../core/Config'
+import logger from '../core/logger'
+import Listeners from '../core/Listener'
+import { GroupCfg } from '../types/Config'
+import { KarinMessage } from '../event/KarinMessage'
+import { KarinNotice } from '../event/KarinNotice'
+import { KarinRequest } from '../event/KarinRequest'
+import { Event, Permission } from '../types/Types'
 
-export default class Event {
+export default class EventBase {
   e: KarinMessage | KarinNotice | KarinRequest
   config: GroupCfg | {}
   /**
@@ -29,7 +27,7 @@ export default class Event {
    */
   review() {
     /** 检查CD */
-    if (!Review.CD(this.e, this.config)) {
+    if (!Review.CD(this.e, this.config as GroupCfg)) {
       logger.debug('[消息拦截] 正在冷却中')
       return true
     }
@@ -53,7 +51,7 @@ export default class Event {
   /**
    * 根据事件类型过滤事件
    */
-  filtEvent(event: event): boolean {
+  filtEvent(event: Event): boolean {
     /** 事件映射表 */
     const eventMap = {
       message: () => `message.${this.e.sub_event}`,
@@ -69,7 +67,7 @@ export default class Event {
   /**
    * 判断权限
    */
-  filterPermission(permission: permission): boolean {
+  filterPermission(permission: Permission): boolean {
     if (permission === 'all' || !permission) return true
 
     if (permission === 'master') {

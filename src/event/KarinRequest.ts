@@ -1,5 +1,5 @@
 import { KarinEvent } from './KarinEvent'
-import { contact, sender, SubEventForEvent, RequestEvent } from '../types/types'
+import { contact, Sender, SubEventForEvent, RequestEvent } from '../types/Types'
 
 /**
  * - 请求事件基类
@@ -39,7 +39,7 @@ export class KarinRequest extends KarinEvent {
     /**
      * 事件发送者信息
      */
-    sender: sender
+    sender: Sender
     /**
      * 事件子类型
      */

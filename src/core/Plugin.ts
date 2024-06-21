@@ -1,4 +1,4 @@
-import { KarinElement, KarinNodeElement } from '../types/element'
+import { KarinElement, KarinNodeElement } from '../types/Element'
 
 /**
  * 上下文状态

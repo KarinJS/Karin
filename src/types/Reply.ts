@@ -1,4 +1,4 @@
-import { KarinElement } from './element'
+import { KarinElement } from './Element'
 
 export type Reply = (
   /**

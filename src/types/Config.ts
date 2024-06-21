@@ -282,7 +282,7 @@ export interface GroupCfg {
   /**
    * 机器人前缀 设置后前缀+指令触发机器人
    */
-  alias: string
+  alias: string[]
   /**
    * 白名单插件、功能，只有在白名单中的插件、功能才会响应
    */

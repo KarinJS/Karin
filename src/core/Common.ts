@@ -6,7 +6,7 @@ import logger from './logger'
 import segment from './Segment'
 import { AxiosRequestConfig } from 'axios'
 import { pipeline, Readable } from 'stream'
-import { KarinElement, KarinNodeElement } from '../types/element'
+import { KarinElement, KarinNodeElement } from '../types/Element'
 
 /**
  * 常用方法

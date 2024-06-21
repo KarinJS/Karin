@@ -1,19 +1,23 @@
-import { KarinElement } from './element'
+import { KarinMessage } from '../event/KarinMessage'
+import { KarinNotice } from '../event/KarinNotice'
+import { KarinRequest } from '../event/KarinRequest'
+import { KarinElement } from './Element'
+import { Plugin, PluginRule } from './Plugin'
 
 /**
  * - 事件类型
  */
-export type event = 'message' | 'notice' | 'request' | 'meta_event'
+export type Event = 'message' | 'notice' | 'request' | 'meta_event'
 
 /**
  * - 事件来源
  */
-export type scene = 'group' | 'private' | 'guild' | 'nearby' | 'stranger' | 'stranger_from_group'
+export type Scene = 'group' | 'private' | 'guild' | 'nearby' | 'stranger' | 'stranger_from_group'
 
 /**
  * - 事件子类型
  */
-export type sub_event = 'group_message' | 'friend_message' | 'guild_message' | 'nearby' | 'stranger' | 'stranger_from_group' | 'friend_poke' | 'friend_recall' | 'friend_file_uploaded' | 'group_poke' | 'group_card_changed' | 'group_member_unique_title_changed' | 'group_essence_changed' | 'group_recall' | 'group_member_increase' | 'group_member_decrease' | 'group_admin_changed' | 'group_member_ban' | 'group_sign' | 'group_whole_ban' | 'group_file_uploaded' | 'friend_apply' | 'group_apply' | 'invited_group'
+export type Sub_event = 'group_message' | 'friend_message' | 'guild_message' | 'nearby' | 'stranger' | 'stranger_from_group' | 'friend_poke' | 'friend_recall' | 'friend_file_uploaded' | 'group_poke' | 'group_card_changed' | 'group_member_unique_title_changed' | 'group_essence_changed' | 'group_recall' | 'group_member_increase' | 'group_member_decrease' | 'group_admin_changed' | 'group_member_ban' | 'group_sign' | 'group_whole_ban' | 'group_file_uploaded' | 'friend_apply' | 'group_apply' | 'invited_group'
 
 /**
  * - 类型映射
@@ -28,12 +32,12 @@ export type EventToSubEvent = {
 /**
  * - 事件子类型泛型
  */
-export type SubEventForEvent<E extends event> = E extends keyof EventToSubEvent ? EventToSubEvent[E] : never
+export type SubEventForEvent<E extends Event> = E extends keyof EventToSubEvent ? EventToSubEvent[E] : never
 
 /**
  * - 权限类型
  */
-export type permission = 'all' | 'master' | 'admin' | 'group.owner' | 'group.admin'
+export type Permission = 'all' | 'master' | 'admin' | 'group.owner' | 'group.admin'
 
 /**
  * - 事件联系人信息
@@ -42,7 +46,7 @@ export interface contact {
   /**
    * - 事件来源场景
    */
-  scene: scene
+  scene: Scene
   /**
    * - 事件来源id 群号或者用户id
    */
@@ -56,7 +60,7 @@ export interface contact {
 /**
  * - 事件发送者信息
  */
-export interface sender {
+export interface Sender {
   /**
    * - 发送者uid
    */
@@ -78,7 +82,7 @@ export interface sender {
 /**
  * - 通知事件类型
  */
-export interface noticeTytpe {
+export interface NoticeTytpe {
   /**
    * - 私聊戳一戳
    */
@@ -527,12 +531,12 @@ export interface noticeTytpe {
 /**
  * - 通知事件泛型
  */
-export type NoticeEvent<E extends keyof noticeTytpe> = E extends keyof noticeTytpe ? noticeTytpe[E] : never
+export type NoticeEvent<E extends keyof NoticeTytpe> = E extends keyof NoticeTytpe ? NoticeTytpe[E] : never
 
 /**
  * - 请求事件类型
  */
-export interface requestType {
+export interface RequestType {
   /**
    * - 好友申请
    */
@@ -600,7 +604,7 @@ export interface requestType {
 /**
  * - 请求事件泛型
  */
-export type RequestEvent<E extends keyof requestType> = E extends keyof requestType ? requestType[E] : never
+export type RequestEvent<E extends keyof RequestType> = E extends keyof RequestType ? RequestType[E] : never
 
 /**
  * - 转发、历史消息返回的结构
@@ -625,7 +629,7 @@ export interface PushMessageBody {
   /**
    * - 消息发送者
    */
-  sender: sender
+  sender: Sender
   /**
    * - 消息元素
    */
@@ -900,4 +904,44 @@ export interface GroupHonorInfo {
    * - 荣誉描述
    */
   description: string
+}
+
+/**
+ * - e
+ */
+export type E = KarinMessage | KarinNotice | KarinRequest
+
+/**
+ * - Apps
+ */
+export interface Apps {
+  /**
+   * - 插件Class
+   */
+  App: Plugin
+  /**
+   * - 插件路径信息
+   */
+  file: {
+    /**
+     * - 插件根目录名称 例如: karin-plugin-example
+     */
+    dir: string
+    /**
+     * - 插件名称 例如: index.js
+     */
+    name: string
+  }
+  /**
+   * - 插件名称
+   */
+  name: string
+  /**
+   * - 插件事件
+   */
+  event: Event | `${Event}.${Sub_event}`
+  priority: number
+  permission: Permission
+  accept: boolean
+  rule: Array<PluginRule>
 }

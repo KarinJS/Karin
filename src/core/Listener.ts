@@ -1,11 +1,11 @@
 import { EventEmitter } from 'events'
 import loader from '../plugins/loader.js'
-import { KarinAdapter } from '../types/adapter.js'
+import { KarinAdapter } from '../types/Adapter.js'
 import Common from './Common.js'
 import logger from './logger.js'
 import Config from './Config.js'
-import { contact } from '../types/types.js'
-import { KarinElement } from '../types/element.js'
+import { contact } from '../types/Types.js'
+import { KarinElement } from '../types/Element.js'
 
 /**
  * 监听器管理

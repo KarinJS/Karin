@@ -1,5 +1,5 @@
-import { KarinElement, KarinNodeElement } from './element'
-import { contact, PushMessageBody, EssenceMessageBody, FriendInfo, GroupInfo, GroupMemberInfo, GroupHonorInfo } from './types'
+import { KarinElement, KarinNodeElement } from './Element'
+import { contact, PushMessageBody, EssenceMessageBody, FriendInfo, GroupInfo, GroupMemberInfo, GroupHonorInfo } from './Types'
 
 export interface KarinAdapter {
   /**

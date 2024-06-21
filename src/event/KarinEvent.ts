@@ -1,6 +1,6 @@
-import { Reply, replyCallback } from '../types/reply'
-import { KarinAdapter } from '../types/adapter'
-import { event, contact, sender, SubEventForEvent } from '../types/types'
+import { Reply, replyCallback } from '../types/Reply'
+import { KarinAdapter } from '../types/Adapter'
+import { Event, contact, Sender, SubEventForEvent } from '../types/Types'
 
 /**
  * - 事件基类 所有事件都继承自此类并且需要实现此类的所有属性
@@ -23,11 +23,11 @@ export class KarinEvent {
   /**
    * - 事件类型
    */
-  event: event
+  event: Event
   /**
    * - 事件子类型
    */
-  sub_event: SubEventForEvent<event>
+  sub_event: SubEventForEvent<Event>
   /**
    * - 事件ID
    */
@@ -43,7 +43,7 @@ export class KarinEvent {
   /**
    * - 事件发送者信息
    */
-  sender: sender
+  sender: Sender
   /**
    * - 是否为主人
    * @default false
@@ -113,7 +113,7 @@ export class KarinEvent {
     /**
      * - 事件类型
      */
-    event: event
+    event: Event
     /**
      * - 机器人ID 请尽量使用UID
      */
@@ -137,11 +137,11 @@ export class KarinEvent {
     /**
      * - 事件发送者信息
      */
-    sender: sender
+    sender: Sender
     /**
      * - 事件子类型
      */
-    sub_event: SubEventForEvent<event>
+    sub_event: SubEventForEvent<Event>
     /**
      * - 事件ID
      */

@@ -1,6 +1,6 @@
 import { KarinEvent } from './KarinEvent'
-import { KarinElement } from '../types/element'
-import { contact, sender } from '../types/types'
+import { KarinElement } from '../types/Element'
+import { contact, Sender } from '../types/Types'
 
 /**
  * - 消息事件基类
@@ -54,7 +54,7 @@ export class KarinMessage extends KarinEvent {
     /**
      * 事件发送者信息
      */
-    sender: sender
+    sender: Sender
     /**
      * 消息体元素
      */
@@ -108,6 +108,7 @@ export class KarinMessage extends KarinEvent {
     this.reply_id = ''
     this.atBot = false
     this.atAll = false
+    this.alias = ''
   }
 
   /**
@@ -154,4 +155,8 @@ export class KarinMessage extends KarinEvent {
    * - 引用消息ID
    */
   reply_id: string
+  /**
+   * - 消息别名
+   */
+  alias: string
 }

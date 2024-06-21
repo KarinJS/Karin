@@ -1,4 +1,4 @@
-import { TextElement, AtElement, ImageElement, FaceElement, BubbleFaceElement, ReplyElement, VoiceElement, VideoElement, BasketballElement, DiceElement, RpsElement, PokeElement, MusicElement, WeatherElement, LocationElement, ShareElement, GiftElement, MarketFaceElement, ForwardElement, ContactElement, JsonElement, XmlElement, FileElement, ButtonElement, CustomMusicElemen, TemplateElement, ContentElement, KarinNodeElement, KarinElement } from '../types/element'
+import { TextElement, AtElement, ImageElement, FaceElement, BubbleFaceElement, ReplyElement, VoiceElement, VideoElement, BasketballElement, DiceElement, RpsElement, PokeElement, MusicElement, WeatherElement, LocationElement, ShareElement, GiftElement, MarketFaceElement, ForwardElement, ContactElement, JsonElement, XmlElement, FileElement, ButtonElement, CustomMusicElemen, TemplateElement, ContentElement, KarinNodeElement, KarinElement } from '../types/Element'
 
 export default new (class Segment {
   /**
