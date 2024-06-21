@@ -1,6 +1,6 @@
+import fs from 'fs'
 import chalk from 'chalk'
 import log4js from 'log4js'
-import fs from 'fs'
 import Cfg from './Config'
 
 const logsDir = './logs'

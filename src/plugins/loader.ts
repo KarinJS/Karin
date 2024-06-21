@@ -12,23 +12,24 @@ import { common, logger, plugin, Renderer } from '#Karin'
  * 加载插件
  */
 class Plugins {
+  Apps: any
   constructor() {
     /**
-      * 插件列表
-      * @type {{
-      *   App: plugin,
-      *   file: {
-      *     name: string,
-      *     dir: string
-      *   },
-      *   name: string,
-      *   event: string,
-      *   priority: number,
-      *   permission: string,
-      *   accept: boolean,
-      *   rule: Array<{reg: RegExp, fnc: string, event?: string, permission?: string, log?: Function}>,
-      * }[]}
-      */
+     * 插件列表
+     * @type {{
+     *   App: plugin,
+     *   file: {
+     *     name: string,
+     *     dir: string
+     *   },
+     *   name: string,
+     *   event: string,
+     *   priority: number,
+     *   permission: string,
+     *   accept: boolean,
+     *   rule: Array<{reg: RegExp, fnc: string, event?: string, permission?: string, log?: Function}>,
+     * }[]}
+     */
     this.Apps = []
     /**
      * 定时任务
@@ -154,7 +155,7 @@ class Plugins {
       priority: Class.priority ?? 5000,
       permission: Class.permission || 'all',
       accept: !!Class.accept,
-      rule: Class.rule || []
+      rule: Class.rule || [],
     }
 
     /** 进一步处理rule */
@@ -178,7 +179,7 @@ class Plugins {
       let path = `../../plugins/${dir}/${name}`
       if (isOrderBy) path = path + `?${Date.now()}`
       const tmp = await import(path)
-      lodash.forEach(tmp, (App) => {
+      lodash.forEach(tmp, App => {
         if (!App.prototype) return
         /** new App() */
         const Class = new App()
@@ -187,7 +188,7 @@ class Plugins {
         Class.init && Class.init()
 
         /** 收集定时任务 */
-        lodash.forEach(Class.task, (val) => {
+        lodash.forEach(Class.task, val => {
           if (!val.name) return logger.error(`[${dir}][${name}] 定时任务name错误`)
           if (!val.cron) return logger.error(`[${dir}][${name}] 定时任务cron错误：${Class.name}`)
           this.task.push({ App, file: { dir, name }, cron: val.cron, fnc: val.fnc, name: val.name, log: val.log ?? true })
@@ -241,7 +242,7 @@ class Plugins {
   async creatTask() {
     this.task.forEach((val, index) => {
       if (val.schedule) return
-      val.log = val.log === false ? () => '' : (log) => logger.mark(log)
+      val.log = val.log === false ? () => '' : log => logger.mark(log)
       val.schedule = schedule.scheduleJob(val.cron, async () => {
         try {
           val.log(`[定时任务][${val.file.dir}][${val.name}] 开始执行`)
@@ -321,7 +322,8 @@ class Plugins {
         if (!res) return
         /** 延迟1秒 等待卸载完成 */
 
-        common.sleep(1000)
+        common
+          .sleep(1000)
           .then(() => {
             /** 停止整个文件夹监听 */
             watcher.close()
@@ -331,7 +333,7 @@ class Plugins {
             logger.mark(`[新增插件][${dir}][${name}]`)
             return true
           })
-          .catch((error) => logger.error(error))
+          .catch(error => logger.error(error))
       })
 
       /** 监听修改 */
@@ -367,14 +369,15 @@ class Plugins {
 
     /** 生成随机数0.5-2秒 */
     const random = Math.floor(Math.random() * 1000) + 500
-    common.sleep(random)
+    common
+      .sleep(random)
       .then(() => {
         /** 这里需要检查一下是否已经存在，已经存在就关掉之前的监听 */
         if (this.watcher[dir]) this.watcher[dir].close()
         this.watcher[dir] = watcher
         return true
       })
-      .catch(() => { })
+      .catch(() => {})
   }
 }
 

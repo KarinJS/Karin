@@ -1,6 +1,8 @@
 import Review from './review'
 import config from '../core/Config'
-import logger from '../core/logger'
+import logger from '../core/Logger'
+import Common from '../core/Common'
+import Segment from '../core/Segment'
 import Listeners from '../core/Listener'
 import { GroupCfg } from '../types/Config'
 import { KarinMessage } from '../event/KarinMessage'
@@ -8,7 +10,7 @@ import { KarinNotice } from '../event/KarinNotice'
 import { KarinRequest } from '../event/KarinRequest'
 import { Event, Permission } from '../types/Types'
 
-export default class EventBase {
+export default class KarinBaseEvent {
   e: KarinMessage | KarinNotice | KarinRequest
   config: GroupCfg | {}
   /**
@@ -108,65 +110,55 @@ export default class EventBase {
     return true
   }
 
-  // /**
-  //  * 快速回复
-  //  */
-  // reply() {
-  //   /**
-  //    * @param {string|object|Array} elements - 发送的消息
-  //    * @param {object} options - 回复数据
-  //    * @param {boolean} options.at - 是否at用户
-  //    * @param {boolean} options.reply - 是否引用回复
-  //    * @param {number} options.recallMsg - 群聊是否撤回消息，0-120秒，0不撤回
-  //    * @param {boolean} options.button - 是否使用按钮
-  //    * @param {number} options.retry_count - 重试次数
-  //    * @returns {Promise<{ message_id?: string }>} - 返回消息ID
-  //    */
-  //   this.e.reply = async (elements = '', options = { reply: false, recallMsg: 0, at: false, retry_count: 1 }) => {
-  //     /** 将msg格式化为数组 */
-  //     if (!Array.isArray(elements)) {
-  //       elements = [elements]
-  //     }
-  //     elements = elements.map(element => {
-  //       if (typeof element === 'string') {
-  //         return segment.text(element)
-  //       }
-  //       return element
-  //     })
-  //     const { reply, recallMsg, at, retry_count } = options
+  /**
+   * 快速回复
+   */
+  reply() {
+    /**
+     * 快速回复
+     * @param elements 回复内容
+     * @param options 回复选项
+     */
+    this.e.reply = async (elements = '', options = { reply: false, recallMsg: 0, at: false, retry_count: 1 }) => {
+      const message = Common.makeMessage(elements)
+      const { reply = false, recallMsg = 0, at, retry_count = 1 } = options
 
-  //     /** 加入at */
-  //     if (at && this.e.isGroup) elements.unshift(segment.at(this.e.user_id))
-  //     /** 加入引用回复 */
-  //     if (reply && this.e.message_id) elements.unshift(segment.reply(this.e.message_id))
+      /** 加入at */
+      if (at && this.e.isGroup) message.unshift(Segment.at(this.e.user_id))
 
-  //     /** 先发 提升速度 */
-  //     let msgRes = this.e.replyCallback(elements, retry_count)
-  //     const reply_log = common.makeMessageLog(elements)
+      /** 加入引用回复 */
+      if (reply && 'message_id' in this.e) message.unshift(Segment.reply(this.e.message_id))
 
-  //     if (this.e.isGroup) {
-  //       Review.GroupMsgPrint(this.e) && logger.bot('info', this.e.self_id, `${logger.green(`Send Group ${this.e.group_id}: `)}${reply_log}`)
-  //     } else {
-  //       logger.bot('info', this.e.self_id, `${logger.green(`Send private ${this.e.user_id}: `)}${reply_log}`)
-  //     }
+      /** 先发 提升速度 */
+      const result = this.e.replyCallback(message, retry_count)
+      const ReplyLog = Common.makeMessageLog(message)
 
-  //     try {
-  //       Listeners.emit('karin:count:send', 1)
-  //       /** 取结果 */
-  //       msgRes = await msgRes
-  //       logger.bot('debug', this.e.self_id, `回复消息结果:${JSON.stringify(msgRes)}`)
-  //     } catch (err) {
-  //       logger.bot('error', this.e.self_id, `回复消息失败:${reply_log}`)
-  //       logger.bot('error', this.e.self_id, err)
-  //     }
+      if (this.e.isGroup) {
+        Review.GroupMsgPrint(this.e) && logger.bot('info', this.e.self_id, `${logger.green(`Send Group ${this.e.group_id}: `)}${ReplyLog}`)
+      } else {
+        logger.bot('info', this.e.self_id, `${logger.green(`Send private ${this.e.user_id}: `)}${ReplyLog}`)
+      }
 
-  //     /** 快速撤回 */
-  //     if (recallMsg > 0 && msgRes?.message_id) {
-  //       setTimeout(() => this.e.bot.RecallMessage(this.e.contact, msgRes.message_id), recallMsg * 1000)
-  //     }
+      let message_id = ''
 
-  //     return msgRes
-  //   }
-  //   Object.freeze(this.e.reply)
-  // }
+      try {
+        Listeners.emit('karin:count:send', 1)
+        /** 取结果 */
+        const Res = await result
+        message_id = Res.message_id || ''
+        logger.bot('debug', this.e.self_id, `回复消息结果:${JSON.stringify(result)}`)
+      } catch (error: any) {
+        logger.bot('error', this.e.self_id, `回复消息失败:${ReplyLog}`)
+        logger.bot('error', this.e.self_id, error.stack || error.message || JSON.stringify(error))
+      }
+
+      /** 快速撤回 */
+      if (recallMsg > 0 && message_id) {
+        setTimeout(() => this.e.bot.RecallMessage(this.e.contact, message_id), recallMsg * 1000)
+      }
+
+      return result
+    }
+    Object.freeze(this.e.reply)
+  }
 }

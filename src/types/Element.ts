@@ -499,6 +499,7 @@ export interface TemplateElement extends Element {
  * - Markdown元素
  */
 export interface MarkdownElement extends Element {
+  markdown: any
   type: 'markdown'
   content: string
   /**
@@ -586,7 +587,6 @@ export interface RowElement extends Element {
   rows: Array<ButtonElement>
 }
 
-export type KarinElement = TextElement | AtElement | FaceElement | BubbleFaceElement | ReplyElement | ImageElement | VoiceElement | VideoElement | BasketballElement | DiceElement | RpsElement | PokeElement | MusicElement | WeatherElement | LocationElement | ShareElement | GiftElement | MarketFaceElement | ForwardElement | ContactElement | JsonElement | XmlElement | FileElement | MarkdownElement | ButtonElement | RowElement | RecordElement
 /**
  * - 构建自定义转发节点 此元素仅可通过专用接口发送 不支持混合发送
  */
@@ -596,3 +596,5 @@ export interface KarinNodeElement extends Element {
   nickname: string
   content: KarinElement | Array<KarinElement>
 }
+
+export type KarinElement = TextElement | AtElement | FaceElement | BubbleFaceElement | ReplyElement | ImageElement | VoiceElement | VideoElement | BasketballElement | DiceElement | RpsElement | PokeElement | MusicElement | WeatherElement | LocationElement | ShareElement | GiftElement | MarketFaceElement | ForwardElement | ContactElement | JsonElement | XmlElement | FileElement | MarkdownElement | ButtonElement | RowElement | RecordElement | KarinNodeElement

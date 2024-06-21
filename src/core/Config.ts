@@ -1,7 +1,7 @@
 import Yaml from 'yaml'
 import fs from 'fs'
 import chokidar from 'chokidar'
-import logger from './logger.js'
+import logger from './Logger.js'
 import { Redis, App, Config, Server, Package, GroupCfg } from '../types/Config.js'
 
 /** 配置文件 */

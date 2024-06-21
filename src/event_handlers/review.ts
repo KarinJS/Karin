@@ -1,5 +1,5 @@
 import Config from '../core/Config'
-import logger from '../core/logger'
+import logger from '../core/Logger'
 import { Apps, E } from '../types/Types'
 import { GroupCfg } from '../types/Config'
 import { KarinMessage } from '../event/KarinMessage'

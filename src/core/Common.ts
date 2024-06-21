@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import axios from 'axios'
 import { promisify } from 'util'
-import logger from './logger'
+import logger from './Logger'
 import segment from './Segment'
 import { AxiosRequestConfig } from 'axios'
 import { pipeline, Readable } from 'stream'
@@ -224,15 +224,18 @@ export default new (class Common {
    * 标准化发送的消息内容
    * @param elements - 消息内容
    */
-  makeMessage(elements: string | KarinElement | KarinElement[]): Array<KarinElement> {
+  makeMessage(elements: string | KarinElement | (string | KarinElement)[]): Array<KarinElement> {
     /** 将msg格式化为数组 */
-    if (!Array.isArray(elements)) elements = [elements] as KarinElement[]
-    elements = elements.map(element => {
-      /** 对字符串进行标准化处理 */
-      if (typeof element === 'string') element = segment.text(element)
-      return element
+    if (!Array.isArray(elements)) elements = [elements]
+    const message: Array<KarinElement> = []
+    elements.forEach(v => {
+      if (typeof v === 'string') {
+        message.push(segment.text(v))
+      } else {
+        message.push(v)
+      }
     })
-    return elements
+    return message
   }
 
   /**
