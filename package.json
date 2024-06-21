@@ -48,7 +48,8 @@
   "devDependencies": {
     "@types/lodash": "^4.17.5",
     "@types/node": "^20.14.2",
-    "@typescript-eslint/parser": "^5.62.0",
+    "@types/node-schedule": "^2.1.7",
+    "@types/ws": "8.5.10",
     "eslint": "9.4.0",
     "neostandard": "^0.7.2",
     "sort-package-json": "^2.10.0",
