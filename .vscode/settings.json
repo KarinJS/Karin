@@ -4,8 +4,20 @@
   "editor.formatOnSave": true,
   "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
   "javascript.format.insertSpaceAfterConstructor": true,
+  "editor.formatOnType": false,
+  "editor.formatOnPaste": true,
+  "editor.formatOnSaveMode": "file",
+  "files.autoSave": "onFocusChange",
   // 单引号
   "javascript.preferences.quoteStyle": "single",
   // 分号
-  "javascript.format.semicolons": "remove"
+  "javascript.format.semicolons": "remove",
+  // 删除分号
+  "typescript.format.semicolons": "remove",
+  // 单引号
+  "typescript.preferences.quoteStyle": "single",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }
