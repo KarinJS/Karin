@@ -13,6 +13,7 @@
   ],
   "scripts": {
     "app": "node .",
+    "debug": "node . --dev",
     "delete": "pm2 delete ./config/config/pm2.yaml",
     "init": "node lib/tools/install.js",
     "init:dev": "node lib/tools/install.js",
