@@ -380,6 +380,9 @@ export default new (class Common {
         case 'button':
           logs.push(`[button:${JSON.stringify(val.data)}]`)
           break
+        case 'long_msg':
+          logs.push(`[long_msg:${val.id}]`)
+          break
         default:
           logs.push(`[未知:${JSON.stringify(val)}]`)
       }

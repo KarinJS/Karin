@@ -1,4 +1,4 @@
-export type ElementType = 'text' | 'at' | 'face' | 'bubble_face' | 'reply' | 'image' | 'voice' | 'video' | 'basketball' | 'dice' | 'rps' | 'poke' | 'music' | 'weather' | 'location' | 'share' | 'gift' | 'market_face' | 'forward' | 'contact' | 'json' | 'xml' | 'file' | 'markdown' | 'keyboard' | 'node' | 'rows' | 'record'
+export type ElementType = 'text' | 'at' | 'face' | 'bubble_face' | 'reply' | 'image' | 'voice' | 'video' | 'basketball' | 'dice' | 'rps' | 'poke' | 'music' | 'weather' | 'location' | 'share' | 'gift' | 'market_face' | 'forward' | 'contact' | 'json' | 'xml' | 'file' | 'markdown' | 'keyboard' | 'node' | 'rows' | 'record' | 'long_msg'
 
 export interface Element {
   /**
@@ -587,6 +587,17 @@ export interface RowElement extends Element {
 }
 
 /**
+ * - 长消息元素
+ */
+export interface LongMsgElement extends Element {
+  type: 'long_msg'
+  /**
+   * - 消息ID
+   */
+  id: string
+}
+
+/**
  * - 构建自定义转发节点 此元素仅可通过专用接口发送 不支持混合发送
  */
 export interface KarinNodeElement extends Element {
@@ -596,4 +607,4 @@ export interface KarinNodeElement extends Element {
   content: KarinElement | Array<KarinElement>
 }
 
-export type KarinElement = TextElement | AtElement | FaceElement | BubbleFaceElement | ReplyElement | ImageElement | VoiceElement | VideoElement | BasketballElement | DiceElement | RpsElement | PokeElement | MusicElement | WeatherElement | LocationElement | ShareElement | GiftElement | MarketFaceElement | ForwardElement | ContactElement | JsonElement | XmlElement | FileElement | MarkdownElement | ButtonElement | RowElement | RecordElement
+export type KarinElement = TextElement | AtElement | FaceElement | BubbleFaceElement | ReplyElement | ImageElement | VoiceElement | VideoElement | BasketballElement | DiceElement | RpsElement | PokeElement | MusicElement | WeatherElement | LocationElement | ShareElement | GiftElement | MarketFaceElement | ForwardElement | ContactElement | JsonElement | XmlElement | FileElement | MarkdownElement | ButtonElement | RowElement | RecordElement | LongMsgElement

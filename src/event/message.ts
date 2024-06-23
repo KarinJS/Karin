@@ -22,7 +22,7 @@ export class KarinMessage extends KarinEvent {
     /**
      * - 事件类型
      */
-    event: 'message' | 'meta_event'
+    event: 'message' | 'message_sent'
     /**
      * - 机器人ID 请尽量使用UID
      */
@@ -63,38 +63,6 @@ export class KarinMessage extends KarinEvent {
      * 群ID
      */
     group_id: string
-    /**
-     * 框架处理后的文本
-     */
-    msg: string
-    /**
-     * 游戏类型
-     */
-    game: string
-    /**
-     * 图片数组
-     */
-    image: Array<string>
-    /**
-     * AT数组
-     */
-    at: Array<string>
-    /**
-     * 是否AT机器人
-     */
-    atBot: boolean
-    /**
-     * 是否AT全体
-     */
-    atAll: boolean
-    /**
-     * 文件元素
-     */
-    file: object
-    /**
-     * 引用消息ID
-     */
-    reply_id?: string
   }) {
     super({ event, event_id: message_id, self_id, user_id, group_id, time, contact, sender, sub_event: contact.scene === 'group' ? 'group_message' : 'friend_message' })
     this.message_id = message_id

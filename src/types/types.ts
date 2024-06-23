@@ -6,7 +6,7 @@ import { KarinRequest } from '../event/request'
 /**
  * - 事件类型
  */
-export type Event = 'message' | 'notice' | 'request' | 'meta_event'
+export type Event = 'message' | 'notice' | 'request' | 'meta_event' | 'message_sent'
 
 /**
  * - 事件来源
@@ -23,7 +23,7 @@ export type Sub_event = 'group_message' | 'friend_message' | 'guild_message' | '
  */
 export type EventToSubEvent = {
   message: 'group_message' | 'friend_message' | 'guild_message' | 'nearby' | 'stranger' | 'stranger_from_group'
-  notice: 'friend_poke' | 'friend_recall' | 'friend_file_uploaded' | 'group_poke' | 'group_card_changed' | 'group_member_unique_title_changed' | 'group_essence_changed' | 'group_recall' | 'group_member_increase' | 'group_member_decrease' | 'group_admin_changed' | 'group_member_ban' | 'group_sign' | 'group_whole_ban' | 'group_file_uploaded'
+  notice: 'friend_poke' | 'friend_recall' | 'friend_file_uploaded' | 'group_poke' | 'group_card_changed' | 'group_member_unique_title_changed' | 'group_essence_changed' | 'group_recall' | 'group_member_increase' | 'group_member_decrease' | 'group_admin_changed' | 'group_member_ban' | 'group_sign' | 'group_whole_ban' | 'group_file_uploaded' | 'group_message_reaction'
   request: 'friend_apply' | 'group_apply' | 'invited_group'
   meta_event: 'group_message' | 'friend_message' | 'guild_message'
 }
@@ -37,6 +37,11 @@ export type SubEventForEvent<E extends Event> = E extends keyof EventToSubEvent 
  * - 权限类型
  */
 export type Permission = 'all' | 'master' | 'admin' | 'group.owner' | 'group.admin'
+
+/**
+ * - 群角色
+ */
+export type Role = 'owner' | 'admin' | 'member' | 'unknown' | ''
 
 /**
  * - 事件联系人信息
@@ -75,7 +80,7 @@ export interface Sender {
   /**
    * - 发送者在群的角色身份
    */
-  role: 'owner' | 'admin' | 'member' | 'unknown' | ''
+  role: Role
 }
 
 /**
@@ -374,7 +379,7 @@ export interface NoticeTytpe {
     /**
      * - 加入方式 APPROVE:管理员批准 INVITE:管理员邀请
      */
-    type: 'invite' | 'apply'
+    type: 'invite' | 'approve'
   }
   /**
    * - 群成员减少
@@ -518,7 +523,7 @@ export interface NoticeTytpe {
      */
     message_id: string
     /**
-     * - 表情ID
+     * - 表情ID 参考: https://bot.q.qq.com/wiki/develop/api-v2/openapi/emoji/model.html#EmojiType
      */
     face_id: number
     /**

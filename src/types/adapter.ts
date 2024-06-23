@@ -63,12 +63,24 @@ export interface KarinAdapter {
      * - 连接时间
      */
     start_time: number
+    /**
+     * - 适配器连接地址
+     * - 仅在`http`、`ws`、`grpc`有效 比如 ws://127.0.0.1:7000
+     */
+    connect?: string
   }
 
   /**
    * 获取Bot自身UID
    */
   get self_id(): string
+
+  /**
+   * 专属当前Bot的日志打印方法
+   * @param level - 日志等级
+   * @param args - 日志内容
+   */
+  logger(level: 'info' | 'error' | 'trace' | 'debug' | 'mark' | 'warn' | 'fatal', ...args: any[]): void
 
   /**
    * - 获取头像url
@@ -212,7 +224,7 @@ export interface KarinAdapter {
      * - 获取消息数量 默认为1
      */
     count: number,
-  ): Promise<Array<PushMessageBody>>
+  ): Promise<Array<PushMessageBody> | void>
 
   /**
    * - 下载合并转发消息
@@ -222,7 +234,7 @@ export interface KarinAdapter {
      * - 资源ID
      */
     res_id: string,
-  ): Promise<Array<PushMessageBody>>
+  ): Promise<Array<PushMessageBody> | void>
 
   /**
    * - 获取精华消息
@@ -240,7 +252,7 @@ export interface KarinAdapter {
      * - 每页数量
      */
     page_size: number,
-  ): Promise<EssenceMessageBody>
+  ): Promise<EssenceMessageBody | void>
 
   /**
    * - 设置精华消息
@@ -395,7 +407,7 @@ export interface KarinAdapter {
     /**
      * - 群ID
      */
-    group_id: number,
+    group_id: string,
     /**
      * - 如果Bot是群主，是否解散群
      * - 此项属于拓展选项，Kritor标准没有，仅在OneBot11中有效
@@ -436,7 +448,7 @@ export interface KarinAdapter {
     /**
      * - 登录账户名称
      */
-    account_name: number
+    account_name: string
   }>
 
   /**
@@ -588,9 +600,34 @@ export interface KarinAdapter {
 
   /**
    * 发送合并转发消息
-   * @param {contact} contact
-   * @param {Array<KarinNodeElement>} elements
-   * @return {Promise<void>}
+   * @param contact 联系人信息
+   * @param elements 消息元素
+   * @return {Promise<{message_id?}>}
    */
   sendForwardMessage(contact: contact, elements: Array<KarinNodeElement>): Promise<{ message_id?: string }>
+
+  /**
+   * 对消息进行表情回应
+   * @param Contact - 联系人信息
+   * @param message_id - 消息ID
+   * @param face_id - 表情ID
+   */
+  ReactMessageWithEmojiRequest(contact: contact, message_id: string, face_id: number, is_set: boolean): Promise<void>
+
+  /**
+   * 上传群文件
+   * @param group_id - 群号
+   * @param file - 本地文件绝对路径
+   * @param name - 文件名称 必须提供
+   * @param folder - 父目录ID 不提供则上传到根目录
+   */
+  UploadGroupFile(group_id: string, file: string, name: string, folder?: string): Promise<void>
+
+  /**
+   * 上传私聊文件
+   * @param user_id - 用户ID
+   * @param file - 本地文件绝对路径
+   * @param name - 文件名称 必须提供
+   */
+  UploadPrivateFile(user_id: string, file: string, name: string): Promise<void>
 }
