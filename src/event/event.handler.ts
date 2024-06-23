@@ -57,6 +57,7 @@ export default class EventHandler {
     /** 事件映射表 */
     const eventMap = {
       message: () => `message.${this.e.sub_event}`,
+      message_sent: () => `message_sent.${this.e.sub_event}`,
       meta_event: () => `message.${this.e.sub_event}`,
       notice: () => `notice.${this.e.sub_event}`,
       request: () => `request.${this.e.sub_event}`,

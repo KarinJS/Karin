@@ -125,13 +125,13 @@ export default new (class PluginLoader {
        * - 例如: ./plugins/karin-plugin-example
        */
       const PluginPath = `${this.dir}/${dir}`
-      /** 带有packageon的视为插件包 */
-      if (fs.existsSync(`${PluginPath}/packageon`)) {
+      /** 带有package.json的视为插件包 */
+      if (fs.existsSync(`${PluginPath}/package.json`)) {
         /** index存在 */
-        if (fs.existsSync(`${PluginPath}/index`)) {
-          App.push({ dir, name: 'index' })
+        if (fs.existsSync(`${PluginPath}/index.js`)) {
+          App.push({ dir, name: 'index.js' })
           /** dev监听index */
-          if (process.env.karinMode === 'dev') this.watchList.push({ dir, name: 'index' })
+          if (process.env.karinMode === 'dev') this.watchList.push({ dir, name: 'index.js' })
         }
 
         /** apps存在 */
@@ -163,7 +163,7 @@ export default new (class PluginLoader {
     const list = fs.readdirSync(`${this.dir}/${dir}`, { withFileTypes: true })
     for (const file of list) {
       /** 忽略非js文件 */
-      if (!file.name.endsWith('')) continue
+      if (!file.name.endsWith('.js')) continue
       Apps.push({ dir, name: file.name as fileName })
     }
 
@@ -347,112 +347,99 @@ export default new (class PluginLoader {
    * 监听单个文件热更新
    */
   watch(dir: dirName, name: fileName) {
-    if (this.watcher.get(`${dir}.${name}`)) return
-
-    const file = `./plugins/${dir}/${name}`
-    const watcher = chokidar.watch(file)
-
-    /** 监听修改 */
-    watcher.on('change', async () => {
-      /** 卸载 */
-      this.uninstallApp(dir, name)
-      /** 载入插件 */
-      const res = await this.createdApp(dir, name, true)
-      if (!res) return
-      logger.mark(`[修改插件][${dir}][${name}]`)
-    })
-
+    // if (this.watcher.get(`${dir}.${name}`)) return
+    // const file = `./plugins/${dir}/${name}`
+    // const watcher = chokidar.watch(file)
+    // /** 监听修改 */
+    // watcher.on('change', async () => {
+    //   /** 卸载 */
+    //   this.uninstallApp(dir, name)
+    //   /** 载入插件 */
+    //   const res = await this.createdApp(dir, name, true)
+    //   if (!res) return
+    //   logger.mark(`[修改插件][${dir}][${name}]`)
+    // })
     /** 监听删除 */
-    watcher.on('unlink', async () => {
-      /** 卸载 */
-      this.uninstallApp(dir, name)
-      this.watcher.delete(`${dir}.${name}`)
-      logger.mark(`[卸载插件][${dir}][${name}]`)
-    })
-
-    this.watcher.set(`${dir}.${name}`, watcher)
+    // watcher.on('unlink', async () => {
+    //   /** 卸载 */
+    //   this.uninstallApp(dir, name)
+    //   this.watcher.delete(`${dir}.${name}`)
+    //   logger.mark(`[卸载插件][${dir}][${name}]`)
+    // })
+    // this.watcher.set(`${dir}.${name}`, watcher)
   }
 
   /**
    * 监听文件夹更新
    */
   watchDir(dir: dirName) {
-    if (this.watcher.get(dir)) return
-
-    const file = `${this.dir}/${dir}/`
-    const watcher = chokidar.watch(file)
-
-    /** 热更新 */
-    setTimeout(() => {
-      /** 新增文件 */
-      watcher.on('add', async filePath => {
-        logger.debug(`[热更新][新增插件] ${filePath}`)
-        const name = path.basename(filePath) as fileName
-        if (!name.endsWith('')) return
-        if (!fs.existsSync(`${file}/${name}`)) return
-
-        /** 载入插件 */
-        const res = await this.createdApp(dir, name, true)
-        if (!res) return
-        /** 延迟1秒 等待卸载完成 */
-
-        Common.sleep(1000)
-          .then(() => {
-            /** 停止整个文件夹监听 */
-            watcher.close()
-            /** 新增插件之后重新监听文件夹 */
-            this.watcher.delete(dir)
-            this.watchDir(dir)
-            logger.mark(`[新增插件][${dir}][${name}]`)
-            return true
-          })
-          .catch(error => logger.error(error))
-      })
-
-      /** 监听修改 */
-      watcher.on('change', async PluPath => {
-        const name = path.basename(PluPath) as fileName
-        if (!name.endsWith('')) return
-        if (!fs.existsSync(`${this.dir}/${dir}/${name}`)) return
-
-        /** 卸载 */
-        this.uninstallApp(dir, name)
-        /** 载入插件 */
-        const res = await this.createdApp(dir, name, true)
-        if (!res) return
-
-        logger.mark(`[修改插件][${dir}][${name}]`)
-      })
-
-      /** 监听删除 */
-      watcher.on('unlink', async PluPath => {
-        const name = path.basename(PluPath) as fileName
-        if (!name.endsWith('')) return
-
-        /** 卸载 */
-        this.uninstallApp(dir, name)
-        /** 停止监听 */
-        watcher.close()
-        /** 重新监听文件夹 */
-        this.watcher.delete(dir)
-        this.watchDir(dir)
-        logger.mark(`[卸载插件][${dir}][${name}]`)
-      })
-    }, 500)
-
-    /** 生成随机数0.5-2秒 */
-    const random = Math.floor(Math.random() * 1000) + 500
-    Common.sleep(random)
-      .then(() => {
-        const isExist = this.watcher.get(dir)
-        /** 这里需要检查一下是否已经存在，已经存在就关掉之前的监听 */
-        if (isExist) {
-          isExist.close()
-          this.watcher.delete(dir)
-        }
-        this.watcher.set(dir, watcher)
-        return true
-      })
-      .catch(() => {})
+    // if (dir) return
+    //   if (this.watcher.get(dir)) return
+    //   const file = `${this.dir}/${dir}/`
+    //   const watcher = chokidar.watch(file)
+    //   /** 热更新 */
+    //   setTimeout(() => {
+    //     /** 新增文件 */
+    //     watcher.on('add', async filePath => {
+    //       logger.debug(`[热更新][新增插件] ${filePath}`)
+    //       const name = path.basename(filePath) as fileName
+    //       if (!name.endsWith('')) return
+    //       if (!fs.existsSync(`${file}/${name}`)) return
+    //       /** 载入插件 */
+    //       const res = await this.createdApp(dir, name, true)
+    //       if (!res) return
+    //       /** 延迟1秒 等待卸载完成 */
+    //       Common.sleep(1000)
+    //         .then(() => {
+    //           /** 停止整个文件夹监听 */
+    //           watcher.close()
+    //           /** 新增插件之后重新监听文件夹 */
+    //           this.watcher.delete(dir)
+    //           this.watchDir(dir)
+    //           logger.mark(`[新增插件][${dir}][${name}]`)
+    //           return true
+    //         })
+    //         .catch(error => logger.error(error))
+    //     })
+    //     /** 监听修改 */
+    //     watcher.on('change', async PluPath => {
+    //       const name = path.basename(PluPath) as fileName
+    //       if (!name.endsWith('')) return
+    //       if (!fs.existsSync(`${this.dir}/${dir}/${name}`)) return
+    //       /** 卸载 */
+    //       this.uninstallApp(dir, name)
+    //       /** 载入插件 */
+    //       const res = await this.createdApp(dir, name, true)
+    //       if (!res) return
+    //       logger.mark(`[修改插件][${dir}][${name}]`)
+    //     })
+    //     /** 监听删除 */
+    //     watcher.on('unlink', async PluPath => {
+    //       const name = path.basename(PluPath) as fileName
+    //       if (!name.endsWith('')) return
+    //       /** 卸载 */
+    //       this.uninstallApp(dir, name)
+    //       /** 停止监听 */
+    //       watcher.close()
+    //       /** 重新监听文件夹 */
+    //       this.watcher.delete(dir)
+    //       this.watchDir(dir)
+    //       logger.mark(`[卸载插件][${dir}][${name}]`)
+    //     })
+    //   }, 500)
+    //   /** 生成随机数0.5-2秒 */
+    //   const random = Math.floor(Math.random() * 1000) + 500
+    //   Common.sleep(random)
+    //     .then(() => {
+    //       const isExist = this.watcher.get(dir)
+    //       /** 这里需要检查一下是否已经存在，已经存在就关掉之前的监听 */
+    //       if (isExist) {
+    //         isExist.close()
+    //         this.watcher.delete(dir)
+    //       }
+    //       this.watcher.set(dir, watcher)
+    //       return true
+    //     })
+    //     .catch(() => {})
   }
 })()

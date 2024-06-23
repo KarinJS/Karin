@@ -1,3 +1,5 @@
+import { WebSocket } from 'ws'
+import { IncomingMessage } from 'http'
 import { KarinElement, KarinNodeElement } from './element'
 import { contact, PushMessageBody, EssenceMessageBody, FriendInfo, GroupInfo, GroupMemberInfo, GroupHonorInfo } from './types'
 
@@ -81,6 +83,19 @@ export interface KarinAdapter {
    * @param args - 日志内容
    */
   logger(level: 'info' | 'error' | 'trace' | 'debug' | 'mark' | 'warn' | 'fatal', ...args: any[]): void
+
+  /**
+   * - 可选方法 仅ws有效 在注册适配器后 如果有符合的path则会调用此方法
+   * - @param socket - WebSocket实例
+   * - @param request - http请求实例
+   */
+  server?(socket: WebSocket, request: IncomingMessage): void
+
+  /**
+   * - 可选方法 仅ws有效 处理正向ws连接
+   * - @param connect - 连接地址
+   */
+  client?(connect: string): void
 
   /**
    * - 获取头像url

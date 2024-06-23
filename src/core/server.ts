@@ -1,57 +1,26 @@
 import fs from 'fs'
-import express from 'express'
+import express, { Express } from 'express'
 import { createServer } from 'http'
 import { WebSocketServer } from 'ws'
-import Renderer from '../renderer/App.js'
-import connect from '../renderer/Wormhole.js'
-import HttpRenderer from '../renderer/Http.js'
+// import Renderer from '../renderer/App.js'
+// import connect from '../renderer/Wormhole.js'
+// import HttpRenderer from '../renderer/Http.js'
+import logger from '../utils/logger'
+import common from '../utils/common'
+import config from '../utils/config'
+import listener from './listener'
+import exec from '../utils/exec'
+import { Server as ServerType, ServerResponse, IncomingMessage } from 'http'
 
-export default class Server {
-  /**
-   * @private
-   * @type {import('../index.js').logger}
-   */
-  #logger
-
-  /**
-   * @private
-   * @type {import('../index.js').common}
-   */
-  #common
-
-  /**
-   * @private
-   * @type {import('../index.js').config}
-   */
-  #config
-
-  /**
-   * @private
-   * @type {import('../index.js').listener}
-   */
-  #listener
-
-  /**
-   * @private
-   * @type {import('../index.js').exec}
-   */
-  #exec
-
-  /**
-   * @param {import('../index.js').logger} logger
-   * @param {import('../index.js').common} common
-   * @param {import('../index.js').config} config
-   * @param {import('../index.js').listener} listener
-   * @param {import('../index.js').exec} exec
-   */
-  constructor (logger, common, config, listener, exec) {
-    this.#exec = exec
-    this.#logger = logger
-    this.#common = common
-    this.#config = config
-    this.#listener = listener
-
-    this.reg = ''
+export default new (class Server {
+  reg: RegExp
+  list: string[]
+  app: Express
+  server: ServerType<typeof IncomingMessage, typeof ServerResponse>
+  WebSocketServer: WebSocketServer
+  RegExp: RegExp
+  constructor() {
+    this.reg = new RegExp('')
     this.list = []
     this.app = express()
     this.server = createServer(this.app)
@@ -61,29 +30,28 @@ export default class Server {
 
   /**
    * 监听WebSocket连接并初始化http服务器
-   * @returns {Server}
    */
-  init () {
+  init() {
     try {
       this.WebSocketServer.on('connection', (socket, request) => {
         const path = request.url
         const headers = request.headers
-        this.#logger.debug('[反向WS]', path, JSON.stringify(headers, null, 2))
+        logger.debug('[反向WS]', path, JSON.stringify(headers, null, 2))
         try {
-          const Adapter = this.#listener.getAdapter(path)
+          const Adapter = listener.getAdapter(path)
           if (!Adapter) {
-            this.#logger.error(`[反向WS] 适配器不存在：${path}`)
+            logger.error(`[反向WS] 适配器不存在：${path}`)
             return socket.close()
           }
-          new Adapter(this.#logger, this.#common, this.#listener, this.#config).server(socket, request)
-        } catch (error) {
-          this.#logger.error(`[反向WS] 注册适配器发生错误：${path}`, error)
+          const KarinAdapter = new Adapter()
+          if (typeof KarinAdapter?.server === 'function') {
+            KarinAdapter.server(socket, request)
+          }
+        } catch (error: any) {
+          logger.error(`[反向WS] 注册适配器发生错误：${path}`, error.stack || error.message || error)
           socket.close()
         }
       })
-
-      /** 监听连接断开 */
-      this.WebSocketServer.on('close', (socket, request) => this.#logger.error('WebSocket断开', request.url))
 
       /** GET接口 - 获取当前启动信息 */
       this.app.get('/api/info', (req, res) => {
@@ -101,48 +69,47 @@ export default class Server {
       })
 
       /** GET接口 - 退出当前进程 */
-      this.app.get('/api/exit', async (req) => {
+      this.app.get('/api/exit', async req => {
         /** 只允许本机ip访问 */
         if (req.hostname === 'localhost' || req.hostname === '127.0.0.1') {
-          this.#logger.mark('[服务器][HTTP] 收到退出请求，即将退出')
+          logger.mark('[服务器][HTTP] 收到退出请求，即将退出')
           /** 关闭服务器 */
-          this.#listener.emit('exit.grpc')
+          listener.emit('exit.grpc')
           this.server.close()
           /** 如果是pm2 获取当前pm2ID 使用 */
-          if (process.env.pm_id) await this.#exec(`pm2 delete ${process.env.pm_id}`)
+          if (process.env.pm_id) await exec(`pm2 delete ${process.env.pm_id}`)
           /** 正常启动的进程 */
           process.exit()
         }
       })
 
       /** 监听端口 */
-      const { host, port } = this.#config.Server.http
+      const { host, port } = config.Server.http
       this.server.listen(port, host, () => {
-        this.#logger.mark('[服务器][启动成功][HTTP]: ' + this.#logger.green(`http://${host}:${port}`))
+        logger.mark('[服务器][启动成功][HTTP]: ' + logger.green(`http://${host}:${port}`))
       })
 
-      this.#listener.once('restart.http', () => {
-        this.#logger.mark('[服务器][重启][HTTP] 正在重启HTTP服务器...')
+      listener.once('restart.http', () => {
+        logger.mark('[服务器][重启][HTTP] 正在重启HTTP服务器...')
         this.#restartServer()
       })
 
-      const { enable, WormholeClient } = this.#config.Server.HttpRender
+      const { enable, WormholeClient } = config.Server.HttpRender
       if (enable) {
-        this.static()
-        if (WormholeClient) {
-          connect(this.#config)
-          return this
-        }
-
-        const { host, post, token } = this.#config.Server.HttpRender
+        // this.static()
+        // if (WormholeClient) {
+        //   connect(config)
+        //   return this
+        // }
+        // const { host, post, token } = config.Server.HttpRender
         /** 注册渲染器 */
-        const rd = new HttpRenderer(host, post, token)
-        Renderer.app({ id: 'puppeteer', type: 'image', render: rd.render.bind(rd) })
+        // const rd = new HttpRenderer(host, post, token)
+        // Renderer.app({ id: 'puppeteer', type: 'image', render: rd.render.bind(rd) })
       }
 
       return this
     } catch (error) {
-      this.#logger.error('初始化HTTP服务器失败: ', error)
+      logger.error('初始化HTTP服务器失败: ', error)
       return false
     }
   }
@@ -150,17 +117,20 @@ export default class Server {
   /**
    * HTTP渲染器
    */
-  static () {
+  static() {
     this.staticPath()
 
     /** GET接口 - 渲染 */
     this.app.get('/api/renderHtml', (req, res) => {
       try {
         let { html } = req.query
-        html = decodeURIComponent(html).replace(/\\/g, '/').replace(/^\.\//, '')
+        if (!html) return res.status(404).send(JSON.stringify({ code: 404, msg: 'Not Found' }))
+        html = decodeURIComponent(html as string)
+          .replace(/\\/g, '/')
+          .replace(/^\.\//, '')
         /** 判断是否为html文件且路径存在 */
         if (!html.endsWith('.html') || !fs.existsSync(html)) {
-          const not_found = this.#config.Server.HttpRender.not_found
+          const not_found = config.Server.HttpRender.not_found
           if (not_found.startsWith('http')) {
             return res.redirect(not_found)
           } else {
@@ -173,23 +143,26 @@ export default class Server {
         content = content.replace(this.RegExp, '')
         res.send(content)
       } catch (e) {
-        this.#logger.error('[服务器][GET接口 - 渲染]', e)
+        logger.error('[服务器][GET接口 - 渲染]', e)
         res.status(500).send(JSON.stringify({ code: 500, msg: 'Internal Server Error' }))
       }
     })
 
     /** 拦截静态资源 防止恶意访问 */
     this.app.use((req, res, next) => {
-      this.#logger.debug(`[静态资源][${req.headers.host}] ${req.url}`)
+      logger.debug(`[静态资源][${req.headers.host}] ${req.url}`)
 
       /** 解码 */
       req.url = decodeURIComponent(req.url)
-      req.url = req.url.replace(/\\/g, '/').replace(/^\.\//, '').replace(/^(\.\.\/)+/, '')
+      req.url = req.url
+        .replace(/\\/g, '/')
+        .replace(/^\.\//, '')
+        .replace(/^(\.\.\/)+/, '')
 
       /** 拦截非资源文件 */
       this.reg.lastIndex = 0
       if (!this.reg.test(req.url)) {
-        this.#logger.mark(`[${req.ip}][拦截非资源文件]`, req.url)
+        logger.mark(`[${req.ip}][拦截非资源文件]`, req.url)
         res.status(404).send(JSON.stringify({ code: 404, msg: 'Not Found' }))
         return
       }
@@ -203,14 +176,14 @@ export default class Server {
   /**
    * 构建静态资源路径
    */
-  staticPath () {
+  staticPath() {
     this.list = []
     /** 读取./resources文件夹 */
     const resDir = './resources'
     const resdirs = fs.readdirSync(resDir)
     for (const dir of resdirs) {
       const file = `${resDir}/${dir}`
-      if (this.#common.isDir(file)) this.list.push(file.replace('.', ''))
+      if (common.isDir(file)) this.list.push(file.replace('.', ''))
     }
 
     /** 读取./temp/html下所有文件夹 */
@@ -218,7 +191,7 @@ export default class Server {
     const dirs = fs.readdirSync(htmlDir)
     for (const dir of dirs) {
       const file = `${htmlDir}/${dir}`
-      if (this.#common.isDir(file)) this.list.push(file.replace('.', ''))
+      if (common.isDir(file)) this.list.push(file.replace('.', ''))
     }
 
     /** 读取./plugins/html下所有文件夹 */
@@ -228,34 +201,32 @@ export default class Server {
       const file = `${pluginsDir}/${dir}`
       const resFile = `${file}/resources`
       /** 包含resources文件夹 */
-      if (this.#common.isDir(file) && this.#common.isDir(resFile)) this.list.push(resFile.replace('.', ''))
+      if (common.isDir(file) && common.isDir(resFile)) this.list.push(resFile.replace('.', ''))
       const componentsFile = `${file}/components`
       /** 包含components文件夹 兼容mys */
-      if (this.#common.isDir(file) && this.#common.isDir(componentsFile)) this.list.push(componentsFile.replace('.', ''))
+      if (common.isDir(file) && common.isDir(componentsFile)) this.list.push(componentsFile.replace('.', ''))
     }
     this.reg = new RegExp(`(${this.list.join('|')})`, 'g')
   }
 
   /** 重启当前HTTP服务器 */
-  async #restartServer () {
+  async #restartServer() {
     try {
       /** 断开所有 WebSocket 连接 */
-      for (const ws of this.WebSocketServer.clients) {
-        await ws.terminate()
-      }
+      for (const ws of this.WebSocketServer.clients) ws.terminate()
 
       /** 关闭当前HTTP服务器 */
       this.server.close()
       /** 延迟1秒 */
-      await this.#common.sleep(1000)
+      await common.sleep(1000)
 
       /** 创建一个新的服务器实例 */
       this.server = createServer(this.app)
       this.WebSocketServer = new WebSocketServer({ server: this.server })
-      this.init(false)
+      this.init()
       this.static()
     } catch (err) {
-      this.#logger.error('[服务器][重启失败]', err)
+      logger.error('[服务器][重启失败]', err)
     }
   }
-}
+})()

@@ -15,21 +15,6 @@ import segment from '../../utils/segment'
 import { KarinElement } from '../../types/element'
 
 /**
- * @typedef OneBotSegmentNode
- * @property {'node'} type - 节点类型
- * @property {object} data - 节点数据
- * @property data.uin - 用户QQ号
- * @property data.name - 用户昵称
- * @property {Array<object>} data.content - 节点内容
- */
-
-/**
- * @typedef {object} version 适配器版本信息
- * @property version.app_name - 适配器名称
- * @property version.version - 适配器版本
- */
-
-/**
  * @class OneBot11
  * @extends KarinAdapter
  */
@@ -46,7 +31,7 @@ export class OneBot11 implements KarinAdapter {
    * - 重连次数 仅正向ws使用
    */
   index: number
-  socket!: WebSocket.WebSocket
+  socket!: WebSocket
   account: KarinAdapter['account']
   adapter: KarinAdapter['adapter']
   version: KarinAdapter['version']
@@ -114,10 +99,12 @@ export class OneBot11 implements KarinAdapter {
       this.logger('debug', `[收到事件]：${data}`)
       const event = data.toString().trim() || '{"post_type":"error","error":"空事件"}'
       const json = JSON.parse(event)
-      if (json.echo) return this.socket.emit(json.echo, json)
-      /** 未初始化 */
-      if (!this.#init) return
-      this.#init && this.#event(json)
+      if (json.echo) {
+        return this.socket.emit(json.echo, json)
+      } else {
+        /** 未初始化 */
+        this.#init && this.#event(json)
+      }
     })
 
     /** 监听错误 */

@@ -12,13 +12,14 @@ import PluginLoader from '../core/plugin.loader'
  * 消息事件
  */
 export default class Message extends EventHandler {
-  e!: KarinMessage
+  e: KarinMessage
   /**
    * - 是否打印群消息日志
    */
   GroupMsgPrint: boolean = false
   constructor(e: KarinMessage) {
     super(e)
+    this.e = e
     Listener.emit('karin:count:recv', 1)
     /** 处理消息 保证日志的打印 */
     this.dealMsg()

@@ -1,5 +1,5 @@
-import Yaml from 'yaml'
 import fs from 'fs'
+import Yaml from 'yaml'
 import chokidar from 'chokidar'
 import logger from './logger'
 import { Redis, App, Config, Server, Package, GroupCfg } from '../types/config'
@@ -158,7 +158,7 @@ export default new (class Cfg {
    * 实时获取packageon文件
    */
   get package(): Package {
-    const data = fs.readFileSync('packageon', 'utf8')
+    const data = fs.readFileSync('./package.json', 'utf8')
     const pack = JSON.parse(data) as Package
     return pack
   }
