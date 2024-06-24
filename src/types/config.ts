@@ -19,6 +19,19 @@ export interface Redis {
    * 数据库
    */
   db: number
+  /**
+   * 集群
+   */
+  cluster: {
+    /**
+     * 是否启用
+     */
+    enable: boolean
+    /**
+     * 根节点
+     */
+    rootNodes: string[]
+  }
 }
 
 export interface App {

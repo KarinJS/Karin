@@ -1,8 +1,8 @@
 import fs from 'fs'
 import Yaml from 'yaml'
 import chokidar from 'chokidar'
-import logger from './logger'
 import { Redis, App, Config, Server, Package, GroupCfg } from '../types/config'
+import { Logger } from 'log4js'
 
 /** 配置文件 */
 export default new (class Cfg {
@@ -12,6 +12,7 @@ export default new (class Cfg {
   change: Map<string, any>
   watcher: Map<string, any>
   review: boolean
+  loggger!: Logger
   constructor() {
     this.dir = process.cwd()
     this._path = this.dir + '/config/config'
@@ -27,7 +28,7 @@ export default new (class Cfg {
   }
 
   /** 初始化配置 */
-  initCfg() {
+  async initCfg() {
     if (!fs.existsSync(this._path)) fs.mkdirSync(this._path)
     const files = fs.readdirSync(this._pathDef).filter(file => file.endsWith('.yaml'))
     for (const file of files) {
@@ -42,6 +43,7 @@ export default new (class Cfg {
     this.dirPath('temp', plugins)
     this.dirPath('resources', plugins)
     this.dirPath('temp/html', plugins)
+    this.loggger = (await import('../utils/logger')) as unknown as Logger
   }
 
   getPlugins() {
@@ -216,7 +218,7 @@ export default new (class Cfg {
     /** 监听文件变化 */
     watcher.on('change', () => {
       this.change.delete(key)
-      logger.mark(`[修改配置文件][${type}][${name}]`)
+      this.loggger.mark(`[修改配置文件][${type}][${name}]`)
       /** 文件修改后调用对应的方法 */
       switch (`change_${name}`) {
         case 'change_App':
@@ -241,7 +243,7 @@ export default new (class Cfg {
 
   async change_config() {
     /** 修改日志等级 */
-    logger.level = this.Config.log_level
+    this.loggger.level = this.Config.log_level
     await this.#review()
     // if (this.Server.HotUpdate) {
     //   const { Bot } = await import('../index')

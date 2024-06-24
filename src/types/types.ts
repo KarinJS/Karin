@@ -16,7 +16,7 @@ export type Scene = 'group' | 'private' | 'guild' | 'nearby' | 'stranger' | 'str
 /**
  * - 事件子类型
  */
-export type Sub_event = 'group_message' | 'friend_message' | 'guild_message' | 'nearby' | 'stranger' | 'stranger_from_group' | 'friend_poke' | 'friend_recall' | 'friend_file_uploaded' | 'group_poke' | 'group_card_changed' | 'group_member_unique_title_changed' | 'group_essence_changed' | 'group_recall' | 'group_member_increase' | 'group_member_decrease' | 'group_admin_changed' | 'group_member_ban' | 'group_sign' | 'group_whole_ban' | 'group_file_uploaded' | 'friend_apply' | 'group_apply' | 'invited_group'
+export type SubEvent = 'group_message' | 'friend_message' | 'guild_message' | 'nearby' | 'stranger' | 'stranger_from_group' | 'friend_poke' | 'friend_recall' | 'friend_file_uploaded' | 'group_poke' | 'group_card_changed' | 'group_member_unique_title_changed' | 'group_essence_changed' | 'group_recall' | 'group_member_increase' | 'group_member_decrease' | 'group_admin_changed' | 'group_member_ban' | 'group_sign' | 'group_whole_ban' | 'group_file_uploaded' | 'friend_apply' | 'group_apply' | 'invited_group'
 
 /**
  * - 类型映射

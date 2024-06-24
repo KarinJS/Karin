@@ -6,15 +6,17 @@
 import fs from 'fs'
 import Yaml from 'yaml'
 import lodash from 'lodash'
+import logger from './logger'
 
 export default class YamlEditor {
-  constructor (filePath) {
+  filePath: string
+  document!: Yaml.Document
+  constructor(filePath: string) {
     this.filePath = filePath
-    this.document = null
     this.load()
   }
 
-  load () {
+  load() {
     try {
       const fileContents = fs.readFileSync(this.filePath, 'utf8')
       this.document = Yaml.parseDocument(fileContents)
@@ -26,10 +28,9 @@ export default class YamlEditor {
 
   /**
    * 获取指定路径的值
-   * @param {string} path - 路径，用点号分隔，例如：'a.b.c'
-   * @returns {any}
+   * @param path - 路径，用点号分隔，例如：'a.b.c'
    */
-  get (path) {
+  get(path: string) {
     try {
       if (!path) return this.document.toJSON()
       return lodash.get(this.document.toJSON(), path)
@@ -41,12 +42,12 @@ export default class YamlEditor {
 
   /**
    * 设置指定路径的值
-   * @param {string} path - 路径，用点号分隔，例如：'a.b.c'
-   * @param {any} value - 要设置的值
+   * @param path - 路径，用点号分隔，例如：'a.b.c'
+   * @param value - 要设置的值
    */
-  set (path, value) {
+  set(path: string | string[], value: string) {
     try {
-      path = path.split('.')
+      path = typeof path === 'string' ? path.split('.') : path
       this.document.setIn(path, value)
     } catch (error) {
       logger.error(`[YamlEditor] 设置数据时出错：${error}`)
@@ -56,12 +57,12 @@ export default class YamlEditor {
 
   /**
    * 向指定路径添加新值
-   * @param {string} path - 路径，用点号分隔，例如：'a.b.c'
-   * @param {any} value - 要添加的值
+   * @param path - 路径，用点号分隔，例如：'a.b.c'
+   * @param value - 要添加的值
    */
-  add (path, value) {
+  add(path: string | string[], value: string) {
     try {
-      path = path.split('.')
+      path = typeof path === 'string' ? path.split('.') : path
       this.document.addIn(path, value)
       logger.debug(`[YamlEditor] 已在 ${path} 添加新的值`)
     } catch (error) {
@@ -71,12 +72,12 @@ export default class YamlEditor {
 
   /**
    * 删除指定路径
-   * @param {string} path - 路径，用点号分隔，例如：'a.b.c'
-   * @returns {boolean} 是否删除成功
+   * @param path - 路径，用点号分隔，例如：'a.b.c'
+   * @returns 是否删除成功
    */
-  del (path) {
+  del(path: string | string[]) {
     try {
-      path = path.split('.')
+      path = typeof path === 'string' ? path.split('.') : path
       this.document.deleteIn(path)
       return true
     } catch (error) {
@@ -87,13 +88,13 @@ export default class YamlEditor {
 
   /**
    * 向指定路径的数组添加新值，可以选择添加到数组的开始或结束
-   * @param {string} path - 路径，用点号分隔，例如：'a.b.c'
-   * @param {string|object|Array} value - 要添加的值
-   * @param {boolean} [prepend=false] - 如果为 true，则添加到数组的开头，否则添加到末尾
+   * @param path - 路径，用点号分隔，例如：'a.b.c'
+   * @param value - 要添加的值
+   * @param prepend - 如果为 true，则添加到数组的开头，否则添加到末尾
    */
-  append (path, value, prepend = false) {
+  append(path: string | string[], value: string, prepend = false) {
     try {
-      path = path.split('.') || []
+      path = typeof path === 'string' ? path.split('.') : path || []
       let current = this.document.getIn(path)
       if (!current) {
         current = new Yaml.YAMLSeq()
@@ -115,12 +116,11 @@ export default class YamlEditor {
 
   /**
    * 检查指定路径的键是否存在
-   * @param {string} path - 路径，用点号分隔
-   * @returns {boolean}
+   * @param path - 路径，用点号分隔
    */
-  has (path) {
+  has(path: string | string[]) {
     try {
-      path = path.split('.')
+      path = typeof path === 'string' ? path.split('.') : path
       return this.document.hasIn(path)
     } catch (error) {
       logger.error(`[YamlEditor] 检查路径是否存在时出错：${error}`)
@@ -130,13 +130,12 @@ export default class YamlEditor {
 
   /**
    * 查询指定路径中是否包含指定的值
-   * @param {string} path - 路径，用点号分隔
-   * @param {any} value - 要查询的值
-   * @returns {boolean}
+   * @param path - 路径，用点号分隔
+   * @param value - 要查询的值
    */
-  hasVal (path, value) {
+  hasVal(path: string | string[], value: any): boolean {
     try {
-      path = path.split('.')
+      path = typeof path === 'string' ? path.split('.') : path
       const current = this.document.getIn(path)
       if (!current) return false
 
@@ -146,7 +145,7 @@ export default class YamlEditor {
         return current.items.some(item => lodash.isEqual(item.toJSON(), value))
       } else if (current instanceof Yaml.YAMLMap) {
         /** 如果是映射，检查每个值 */
-        return Array.from(current.values()).some(v => lodash.isEqual(v.toJSON(), value))
+        return Array.from((current as any).values()).some((v: any) => lodash.isEqual(v.toJSON(), value))
       } else {
         /** 否则，直接比较值 */
         return lodash.isEqual(current, value)
@@ -159,9 +158,9 @@ export default class YamlEditor {
 
   /**
    * 向根节点新增元素，如果根节点不是数组，则将其转换为数组再新增元素
-   * @param {any} value - 要新增的元素
+   * @param value - 要新增的元素
    */
-  pusharr (value) {
+  pusharr(value: any) {
     try {
       if (!(this.document.contents instanceof Yaml.YAMLSeq)) {
         // 如果根节点不是数组，则将其转换为数组
@@ -178,10 +177,9 @@ export default class YamlEditor {
 
   /**
    * 根据索引从根节点数组删除元素
-   * @param {number} index - 要删除元素的索引
-   * @returns {boolean} 是否删除成功
+   * @param index - 要删除元素的索引
    */
-  delarr (index) {
+  delarr(index: number): boolean {
     try {
       if (!(this.document.contents instanceof Yaml.YAMLSeq)) {
         throw new Error('[YamlEditor] 根节点不是数组')
@@ -201,7 +199,7 @@ export default class YamlEditor {
   /**
    * 保存文件
    */
-  save () {
+  save() {
     try {
       fs.writeFileSync(this.filePath, this.document.toString())
       logger.info('[YamlEditor] 文件已保存')

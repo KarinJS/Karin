@@ -215,7 +215,7 @@ export class OneBot11 implements KarinAdapter {
             peer: data.message_type === 'private' ? data.sender.user_id : data.group_id,
             sub_peer: '',
           },
-          group_id: '',
+          group_id: 'group_id' in data ? data.group_id : '',
           raw_message: '',
         }
 
@@ -637,8 +637,8 @@ export class OneBot11 implements KarinAdapter {
    * */
   KarinConvertAdapter(data: Array<KarinElement>) {
     const elements = []
-    const selfUin = this.account.uin
-    const selfNick = this.account.name
+    // const selfUin = this.account.uin
+    // const selfNick = this.account.name
 
     for (const i of data) {
       switch (i.type) {
@@ -776,7 +776,7 @@ export class OneBot11 implements KarinAdapter {
    * @returns - 消息ID
    */
   async SendMessage(contact: contact, elements: Array<KarinElement>) {
-    let { scene, peer } = contact
+    const { scene, peer } = contact
     const message_type = scene === 'group' ? 'group' : 'private'
     const key = scene === 'group' ? 'group_id' : 'user_id'
     const message = this.KarinConvertAdapter(elements)
@@ -809,7 +809,7 @@ export class OneBot11 implements KarinAdapter {
    * @param id - 资源id
    * */
   async SendMessageByResId(contact: { scene: Scene; peer: string }, id: any) {
-    let { scene, peer } = contact
+    const { scene, peer } = contact
     const message_type = scene === 'group' ? 'group' : 'private'
     const key = scene === 'group' ? 'group_id' : 'user_id'
     const message = [{ type: 'forward', data: { id } }]

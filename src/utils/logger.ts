@@ -1,14 +1,12 @@
 import fs from 'fs'
 import chalk from 'chalk'
 import log4js from 'log4js'
-// import Cfg from './config'
+import Cfg from './config'
 
 const logsDir = './logs'
 if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir)
 
-// const { log_level: level, log_days_Keep: daysToKeep } = Cfg.Config
-const level = 'info'
-const daysToKeep = 7
+const { log_level: level, log_days_Keep: daysToKeep } = Cfg.Config
 
 let enableCallStack = false
 let pattern = '%[[Karin][%d{hh:mm:ss.SSS}][%4.4p]%] %m'
@@ -62,7 +60,7 @@ logger.cyan = chalk.cyan
 logger.white = chalk.white
 logger.gray = chalk.gray
 logger.violet = chalk.hex('#868ECC')
-logger.fnc = chalk.hex('#FFFF00')
+logger.fnc = chalk.hex(Cfg.Config.log_color || '#FFFF00')
 logger.bot = (level, id, ...args) => {
   switch (level) {
     case 'trace':
@@ -90,5 +88,7 @@ logger.bot = (level, id, ...args) => {
       logger.info(logger.violet(`[Bot:${id}] `), ...args)
   }
 }
+
+global.logger = logger
 
 export default Object.freeze(logger)

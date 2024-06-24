@@ -8,7 +8,7 @@ import { GroupCfg } from '../types/config'
 import { KarinMessage } from './message'
 import { KarinNotice } from './notice'
 import { KarinRequest } from './request'
-import { Event, Permission, Sub_event } from '../types/types'
+import { Event, Permission, SubEvent } from '../types/types'
 
 export default class EventHandler {
   e: KarinMessage | KarinNotice | KarinRequest
@@ -53,7 +53,7 @@ export default class EventHandler {
   /**
    * 根据事件类型过滤事件
    */
-  filtEvent(event: Event | `${Event}.${Sub_event}`): boolean {
+  filtEvent(event: Event | `${Event}.${SubEvent}`): boolean {
     /** 事件映射表 */
     const eventMap = {
       message: () => `message.${this.e.sub_event}`,

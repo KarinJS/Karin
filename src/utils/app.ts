@@ -1,11 +1,28 @@
 import lodash from 'lodash'
-import plugin from '../plugins/plugin'
+import plugin from '../core/plugin'
+import { PluginRule, PluginTask } from '../types/plugin'
+import { Event, SubEvent } from '../types/types'
+
+/**
+ * 插件构建器
+ */
+export class Karin {
+  /**
+   * - 开始上下文
+   */
+}
 
 export default class App {
-  constructor ({ name = '插件名称', dsc = '', event = 'message', priority = 5000, task = [], rule = [] }) {
+  name: string
+  dsc: string
+  event: Event | `${Event}.${SubEvent}`
+  priority: number
+  rule: Array<PluginRule>
+  task: Array<PluginTask>
+  constructor({ name = '插件名称', dsc = '', event = 'message', priority = 5000, task = [], rule = [] }) {
     this.name = name
     this.dsc = dsc || name
-    this.event = event
+    this.event = event as Event | `${Event}.${SubEvent}`
     this.priority = priority
     this.rule = rule
     this.task = task
@@ -13,16 +30,33 @@ export default class App {
 
   /**
    * karin插件构建器
-   * @param {object} params - 插件配置对象
-   * @param {string} params.name - 插件名称
-   * @param {string} [params.dsc='描述'] - 插件描述
-   * @param {string} [params.event='message'] - 监听事件
-   * @param {number} [params.priority=5000] - 插件优先级
-   * @param {object} [params.task={ fnc: '', cron: '' }[]] - 插件任务
-   * @param {Array} [params.rule=[]] - 插件规则
-   * @returns {App} - 返回插件对象
    */
-  static init (params) {
+  static init(params: {
+    /**
+     * - 插件名称
+     */
+    name: string
+    /**
+     * - 插件描述
+     */
+    dsc?: string
+    /**
+     * - 监听事件
+     */
+    event?: Event | `${Event}.${SubEvent}`
+    /**
+     * - 插件优先级
+     */
+    priority?: number
+    /**
+     * - 插件任务
+     */
+    task?: Array<PluginTask>
+    /**
+     * - 插件规则
+     */
+    rule?: Array<PluginRule>
+  }) {
     return new App(params)
   }
 
@@ -34,7 +68,7 @@ export default class App {
    * @throws {Error} 如果缺少fnc或fnc类型错误
    * @throws {Error} 如果指定的方法不存在
    */
-  reg (rule) {
+  reg(rule) {
     /** 判断是否传入reg和fnc */
     if (!rule.fnc) throw new Error('[插件构建] 缺少fnc')
     /** 如果fnc是字符串，则在传入的对象中查找对应的方法 */
@@ -70,7 +104,7 @@ export default class App {
    * @param {string} name - 函数名
    * @param {Function|Object} fnc - 要注册的函数或函数对象
    */
-  fnc (name, fnc) {
+  fnc(name, fnc) {
     if (!name) throw new Error('[插件构建] 缺少name')
     if (typeof fnc !== 'function') throw new Error('[插件构建] fnc类型错误')
     this[name] = fnc
@@ -80,7 +114,7 @@ export default class App {
    * 设置插件接收函数
    * @param {Function} fnc - 接收函数
    */
-  accept (fnc) {
+  accept(fnc) {
     if (typeof fnc === 'function') {
       this.accept = fnc
     }
@@ -99,7 +133,7 @@ export default class App {
    * @param {string|Function} task.fnc - 定时任务函数名或函数
    * @param {boolean} [task.log=true] - 是否记录日志
    */
-  cron (task) {
+  cron(task) {
     /** 检查传入的参数是否符合规则 */
     if (!task.name) throw new Error('[插件构建][定时任务] 缺少name')
     if (!task.cron) throw new Error('[插件构建][定时任务] 缺少cron')
@@ -141,9 +175,9 @@ export default class App {
    * @param {Object} app.rule - 插件规则对象
    * @returns {Class} - 返回创建的插件类
    */
-  plugin (app) {
+  plugin(app) {
     const cla = class extends plugin {
-      constructor () {
+      constructor() {
         super({
           name: app.name,
           dsc: app.dsc,

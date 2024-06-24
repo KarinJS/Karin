@@ -1,6 +1,6 @@
 import { KarinNodeElement } from './element'
 import { Reply, replyCallback } from './reply'
-import { E, Event, Permission, Sub_event } from './types'
+import { E, Event, Permission, SubEvent } from './types'
 
 /**
  * - 插件根目录名称
@@ -39,7 +39,7 @@ export interface PluginRule {
   /**
    * - 子事件
    */
-  event?: Event | `${Event}.${Sub_event}`
+  event?: Event | `${Event}.${SubEvent}`
   /**
    * - 子权限
    */
@@ -136,7 +136,7 @@ export interface PluginApps {
   /**
    * - 插件事件
    */
-  event: Event | `${Event}.${Sub_event}`
+  event: Event | `${Event}.${SubEvent}`
   priority: number
   accept: boolean
   rule: Array<PluginRule>
@@ -157,7 +157,7 @@ export interface Plugin {
   /**
    * - 监听事件 默认为message
    */
-  event: Event | `${Event}.${Sub_event}`
+  event: Event | `${Event}.${SubEvent}`
   /**
    * - 优先级 默认为5000
    */
