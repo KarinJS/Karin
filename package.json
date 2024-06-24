@@ -7,13 +7,14 @@
   "imports": {
     "#Karin": "./lib/index.js"
   },
-  "main": "./lib/index.js",
+  "main": "./dist/index.js",
   "workspaces": [
     "plugins/**"
   ],
   "scripts": {
     "app": "node .",
-    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix",
+    "fix": "npx eslint dist/**/*.js --fix",
     "delete": "pm2 delete ./config/config/pm2.yaml",
     "dev": "tsx ./src/index.ts",
     "init": "node lib/tools/install.js",

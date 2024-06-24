@@ -89,11 +89,11 @@ export default class Redis {
    * @param {import("redis").RedisClientOptions} options
    * @return {Promise<{status: 'ok', data: import("redis").RedisClientType} | {status: 'error', data: Error}>}
    */
-  async connect(options: redis.RedisClientOptions) {
+  async connect(options: redis.RedisClientOptions): Promise<{ status: 'ok'; data: redis.RedisClientType } | { status: 'error'; data: string }> {
     const client = createClient(options)
     try {
       await client.connect()
-      return { status: 'ok', data: client }
+      return { status: 'ok', data: client as redis.RedisClientType }
     } catch (error) {
       return { status: 'error', data: error as string }
     }

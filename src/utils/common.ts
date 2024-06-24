@@ -352,7 +352,6 @@ export default new (class Common {
         case 'forward':
           logs.push(`[forward:${val.res_id}]`)
           break
-          break
         case 'xml':
           logs.push(`[xml:${val.data}]`)
           break

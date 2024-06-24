@@ -2,9 +2,9 @@ import fs from 'fs'
 import express, { Express } from 'express'
 import { createServer } from 'http'
 import { WebSocketServer } from 'ws'
-// import Renderer from '../renderer/App.js'
-// import connect from '../renderer/Wormhole.js'
-// import HttpRenderer from '../renderer/Http.js'
+import { render } from '../index'
+import connect from '../renderer/wormhole'
+import HttpRenderer from '../renderer/http'
 import logger from '../utils/logger'
 import common from '../utils/common'
 import config from '../utils/config'
@@ -20,7 +20,7 @@ export default new (class Server {
   WebSocketServer: WebSocketServer
   RegExp: RegExp
   constructor() {
-    this.reg = new RegExp('')
+    this.reg = /(?:)/
     this.list = []
     this.app = express()
     this.server = createServer(this.app)
@@ -96,15 +96,15 @@ export default new (class Server {
 
       const { enable, WormholeClient } = config.Server.HttpRender
       if (enable) {
-        // this.static()
-        // if (WormholeClient) {
-        //   connect(config)
-        //   return this
-        // }
-        // const { host, post, token } = config.Server.HttpRender
+        this.static()
+        if (WormholeClient) {
+          connect()
+          return this
+        }
+        const { host, post, token } = config.Server.HttpRender
         /** 注册渲染器 */
-        // const rd = new HttpRenderer(host, post, token)
-        // Renderer.app({ id: 'puppeteer', type: 'image', render: rd.render.bind(rd) })
+        const rd = new HttpRenderer(host, post, token)
+        render.app({ id: 'puppeteer', type: 'image', render: rd.render.bind(rd) })
       }
 
       return this

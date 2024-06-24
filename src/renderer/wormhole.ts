@@ -2,18 +2,19 @@ import WebSocket from 'ws'
 import fs from 'fs'
 import path from 'path'
 import { URL } from 'url'
-import Renderer from './App'
-import HttpRenderer from './Http'
+import HttpRenderer from './http'
+import config from '../utils/config'
+import { render } from '../index'
 
-let ws
-let reConnect
+let ws: WebSocket
+let reConnect: NodeJS.Timeout | undefined
 const chunkSize = 1024 * 1024 * 3 // 文件分片大小
 
-export default function connect(Cfg) {
-  let heartbeat
+export default function connect() {
+  let heartbeat: string | number | NodeJS.Timeout | null | undefined
   let index = 0
   reConnect = undefined
-  const wsUrl = Cfg.Server.HttpRender.WormholeClient
+  const wsUrl = config.Server.HttpRender.WormholeClient
   ws = new WebSocket(wsUrl)
   ws.on('open', function open() {
     logger.info('连接到wormhole服务器' + wsUrl)
@@ -23,16 +24,17 @@ export default function connect(Cfg) {
     }, 30000) // 每30秒发送一次心跳
   })
 
-  ws.on('message', function incoming(data) {
+  ws.on('message', msg => {
+    let data: any = ''
     try {
-      data = JSON.parse(data)
+      data = JSON.parse(msg.toString())
     } catch (error) {
       logger.warn(`收到非法消息${data}`)
     }
     const echo = data.echo
     switch (data.type) {
       case 'msg': {
-        const { post, token, WormholeClient } = Cfg.Server.HttpRender
+        const { post, token, WormholeClient } = config.Server.HttpRender
         const parsedUrl = new URL(WormholeClient)
         const { hostname, port } = parsedUrl
         const ishttps = WormholeClient.includes('wss://')
@@ -40,7 +42,7 @@ export default function connect(Cfg) {
         logger.mark(`web渲染器已连接，地址：${host}`)
         /** 注册渲染器 */
         const rd = new HttpRenderer(host, post, token)
-        index = Renderer.app({ id: 'puppeteer', type: 'image', render: rd.render.bind(rd) })
+        index = render.app({ id: 'puppeteer', type: 'image', render: rd.render.bind(rd) })
         break
       }
       case 'web':
@@ -142,7 +144,7 @@ export default function connect(Cfg) {
 
   ws.on('close', function close() {
     /** 卸载渲染器 */
-    index && Renderer.unapp(index)
+    index && render.unapp(index)
     index = 0
     if (heartbeat) {
       clearInterval(heartbeat)
@@ -156,7 +158,7 @@ export default function connect(Cfg) {
 
   ws.on('error', function error() {
     /** 卸载渲染器 */
-    index && Renderer.unapp(index)
+    index && render.unapp(index)
     index = 0
     if (heartbeat) {
       clearInterval(heartbeat)

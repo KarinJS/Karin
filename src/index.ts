@@ -1,39 +1,41 @@
 // 基本模块
-import '../src/core/init'
-import config from '../src/utils/config'
-import logger from '../src/utils/logger'
+import './core/init'
+import config from './utils/config'
+import logger from './utils/logger'
 
 // 核心模块
-import listener from '../src/core/listener'
-import server from '../src/core/server'
-import Plugin from '../src/core/plugin'
-import PluginLoader from '../src/core/plugin.loader'
+import listener from './core/listener'
+import server from './core/server'
+import Plugin from './core/plugin'
+import PluginLoader from './core/plugin.loader'
 
 // 工具类
-import common from '../src/utils/common'
-import segment from '../src/utils/segment'
-import handler from '../src/utils/handler'
+import common from './utils/common'
+import segment from './utils/segment'
+import handler from './utils/handler'
 import ffmpeg from './utils/ffmpeg'
 import exec from './utils/exec'
 import button from './utils/button'
 import update from './utils/update'
 import YamlEditor from './utils/YamlEditor'
 import render from './renderer/app'
+import { KarinMessage } from './event/message'
 
 // 适配器
-import Puppeteer from '../src/renderer/server'
-import OneBot11 from '../src/adapter/onebot/onebot11'
+import Puppeteer from './renderer/server'
+import OneBot11 from './adapter/onebot/onebot11'
 
 // 数据库
 import level from './db/level'
 import Redis from './db/redis'
+import { RedisClientType } from 'redis'
 
 // proto
 import { kritor } from 'kritor-proto'
 
 // 初始化
 server.init()
-const redis = await new Redis().start()
+const redis: RedisClientType = (await new Redis().start()) as RedisClientType
 PluginLoader.load()
 listener.emit('adapter', Puppeteer)
 listener.emit('adapter', OneBot11)
@@ -64,4 +66,5 @@ export {
   YamlEditor,
   render as Renderer,
   update as Update,
+  KarinMessage,
 }

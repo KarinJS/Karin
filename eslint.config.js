@@ -14,9 +14,9 @@ data.forEach(val => {
     val.rules['camelcase'] = ['off']
   }
 
-  // 排除掉plugins
+  // 排除掉plugins dist
   if (Array.isArray(val.ignores)) {
-    val.ignores = val.ignores.filter((v) => !v.includes('plugins'))
+    val.ignores = val.ignores.filter((v) => !v.includes('plugins') && !v.includes('dist'))
   }
   newData.push(val)
 })
