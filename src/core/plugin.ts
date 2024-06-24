@@ -22,6 +22,7 @@ export const stateArr: {
  */
 export default class Plugin implements PluginType {
   e!: PluginType['e']
+  init?: () => void
   replyCallback!: PluginType['replyCallback']
 
   /**

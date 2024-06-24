@@ -251,7 +251,7 @@ export default new (class PluginLoader {
         const Class = new App()
         logger.debug(`载入插件 [${name}][${Class.name}]`)
         /** 执行初始化 */
-        'init' in Class && (Class.init as Function).call(Class)
+        Class.init && Class.init()
 
         /** 收集定时任务 */
         lodash.forEach(Class.task, val => {
