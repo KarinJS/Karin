@@ -24,6 +24,23 @@
 ### 其他提交
 - Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
 
+## [0.1.0](https://github.com/KarinJS/Karin/compare/v0.0.3...v0.1.0) (2024-06-26)
+
+
+### Features
+
+* ✧magic✧ ([e5f0771](https://github.com/KarinJS/Karin/commit/e5f077110734487725a33f138c5a34f9dacfc2f2))
+* add QQGroup Discord ([2ffb6b2](https://github.com/KarinJS/Karin/commit/2ffb6b21838b6821b20efe8cbea15fc7fa8fe7ac))
+* 新增群文件 私聊文件接口 移除SendMessageByResId接口 ([27910b4](https://github.com/KarinJS/Karin/commit/27910b45737b933c10b2e4d23a5769507efe9c7f))
+
+
+### Bug Fixes
+
+* 修复已知问题 详情查看描述 ([17a1b4f](https://github.com/KarinJS/Karin/commit/17a1b4f1e5e13c93c999e803e2232b925d908d0a))
+* 修复转发和上下文 ([aab34eb](https://github.com/KarinJS/Karin/commit/aab34eb3b0fe145ed70ce0e8f06fe198d196f47a))
+* 补充基类方法 ([365afcb](https://github.com/KarinJS/Karin/commit/365afcb517eaf201c8dc2c54ed62d24a3c9e14b8))
+* 适配自定义节点转发id ([435f23a](https://github.com/KarinJS/Karin/commit/435f23a2f51bd8581b0cc2a22da5551222b9e1ab))
+
 ## 0.0.2 (2024-6-4)
 
 ### Releases
