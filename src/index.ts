@@ -43,7 +43,7 @@ PluginLoader.load()
 listener.emit('adapter', Puppeteer)
 listener.emit('adapter', OneBot11)
 
-// Exporting Modules
+// 命名导出
 export {
   // 基本模块
   config,
@@ -72,5 +72,6 @@ export {
   KarinMessage,
 }
 
+// 默认导出
 const karin = new Karin()
 export default karin
