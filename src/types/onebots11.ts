@@ -1,23 +1,23 @@
 /**
  * - OneBot 11 标准事件
  */
-export type PostType = 'message' | 'notice' | 'request' | 'meta_event' | 'message_sent'
+export type EventPostType = 'message' | 'notice' | 'request' | 'meta_event' | 'message_sent'
 /**
  * - 消息事件类型
  */
-export type MessageType = 'private' | 'group'
+export type EventMessageType = 'private' | 'group'
 /**
  * - 消息子类型
  */
-export type MessageSubType = 'friend' | 'group' | 'other' | 'normal' | 'anonymous' | 'notice'
+export type EventMessageSubType = 'friend' | 'group' | 'other' | 'normal' | 'anonymous' | 'notice'
 /**
  * - 通知事件类型
  */
-export type NoticeType = 'group_upload' | 'group_admin' | 'group_decrease' | 'group_increase' | 'group_ban' | 'friend_add' | 'group_recall' | 'friend_recall' | 'notify' | 'group_msg_emoji_like'
+export type EventNoticeType = 'group_upload' | 'group_admin' | 'group_decrease' | 'group_increase' | 'group_ban' | 'friend_add' | 'group_recall' | 'friend_recall' | 'notify' | 'group_msg_emoji_like'
 /**
  * - 请求类型
  */
-export type RequestType = 'friend' | 'group'
+export type EventRequestType = 'friend' | 'group'
 
 /**
  * - 消息事件映射
@@ -30,7 +30,7 @@ export interface MessageToSubType {
 /**
  * - 消息子类型映射
  */
-export type MessageTypeToSubEvent<E extends MessageType> = E extends keyof MessageToSubType ? MessageToSubType[E] : never
+export type MessageTypeToSubEvent<E extends EventMessageType> = E extends keyof MessageToSubType ? MessageToSubType[E] : never
 
 /**
  * - 事件基类
@@ -43,7 +43,7 @@ export interface OneBot11 {
   /**
    * - 事件类型
    */
-  post_type: PostType
+  post_type: EventPostType
   /**
    * - 收到事件的机器人 QQ 号
    */
@@ -61,7 +61,7 @@ export interface OneBot11Notice extends OneBot11 {
   /**
    * - 通知类型
    */
-  notice_type: NoticeType
+  notice_type: EventNoticeType
 }
 
 /**
@@ -755,11 +755,11 @@ export interface OneBot11Message extends OneBot11 {
   /**
    * - 消息类型
    */
-  message_type: MessageType
+  message_type: EventMessageType
   /**
    * - 消息子类型
    */
-  sub_type: MessageTypeToSubEvent<MessageType>
+  sub_type: MessageTypeToSubEvent<EventMessageType>
   /**
    * - 消息 ID
    */
@@ -897,7 +897,7 @@ export type OneBot11Event = OneBot11GroupMessage | OneBot11PrivateMessage | OneB
 /**
  * - 传入 post_type 返回对应的事件类型
  */
-export type ByPostType<T extends PostType> = Extract<OneBot11Event, { post_type: T }>
+export type ByPostType<T extends EventPostType> = Extract<OneBot11Event, { post_type: T }>
 
 /**
  * - OneBot11公开Api

@@ -1,34 +1,54 @@
 {
-  "name": "karin",
+  "name": "node-karin",
   "version": "0.0.3",
-  "private": true,
+  "private": false,
+  "homepage": "https://github.com/KarinJS/Karin#readme",
+  "bugs": {
+    "url": "https://github.com/KarinJS/Karin/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarinJS/Karin.git"
+  },
+  "license": "GPL-3.0-only",
   "author": "Karin",
   "type": "module",
   "imports": {
     "#Karin": "./lib/index.js"
   },
   "main": "./lib/index.js",
+  "files": [
+    "/lib/**/*.js",
+    "/lib/**/*.d.ts",
+    "/config/defSet/*.yaml",
+    "/config/view/*.yaml",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ],
   "workspaces": [
     "plugins/**"
   ],
   "scripts": {
     "app": "node .",
-    "fix": "npx eslint lib/**/*.js --fix",
-    "delete": "pm2 delete ./config/config/pm2.yaml",
-    "js": "node .",
-    "js:dev": "node . --dev",
-    "ts": "tsx ./src/index.ts --dev",
-    "ts:dev": "tsx ./src/index.ts --dev",
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix",
+    "delete": "pm2 delete ./config/config/pm2.yaml",
+    "fix": "eslint lib/**/*.js --fix",
+    "fix:all": "eslint lib/**/*.js --fix && eslint src/**/*.ts --fix",
     "init": "node lib/tools/install.js",
     "init:dev": "node lib/tools/install.js",
     "init:pack": "node lib/tools/install.js",
+    "js": "node .",
+    "js:dev": "node . --dev",
     "log": "node lib/tools/pm2Log.js",
     "monit": "pm2 monit",
+    "pub": "npm publish --access public",
     "restart": "pm2 restart ./config/config/pm2.yaml",
     "sort:pack": "npx sort-package-json",
     "start": "pm2 start ./config/config/pm2.yaml && pm2 monit",
     "stop": "pm2 delete ./config/config/pm2.yaml",
+    "ts": "tsx ./src/index.ts --dev",
+    "ts:dev": "tsx ./src/index.ts --dev",
     "uninstall": "node lib/tools/uninstall.js",
     "ver": "node lib/tools/updateVersion.js"
   },
@@ -65,5 +85,9 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   }
 }

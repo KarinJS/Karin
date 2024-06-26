@@ -32,6 +32,7 @@ import { RedisClientType } from 'redis'
 
 // proto
 import { kritor } from 'kritor-proto'
+export * as types from './types/index'
 
 // 初始化
 server.init()

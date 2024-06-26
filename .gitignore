@@ -34,5 +34,6 @@ lib/adapter/kritor/kritor
 lib/adapter/kritor/kritorGitee
 
 # 编译后的文件
+lib/
 dist/
 build/

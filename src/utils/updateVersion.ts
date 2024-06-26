@@ -2,7 +2,24 @@ import fs from 'fs'
 import { exec } from 'child_process'
 
 export default class Version {
-  constructor (path) {
+  path: string
+  packageDir: string
+  CHANGELOGDir: string
+  packageJson: any
+  version: string
+  commitsMap: {
+    [key: string]: string[]
+  }
+
+  HEAD: string
+  cmd: string
+  stdout: string | string[]
+  url: string
+  constructor (path: string) {
+    this.cmd = ''
+    this.stdout = ''
+    this.url = ''
+    this.HEAD = ''
     this.path = path
     this.packageDir = this.path + '/packageon'
     this.CHANGELOGDir = this.path + '/CHANGELOG.md'
@@ -19,7 +36,7 @@ export default class Version {
       perf: ['### 性能优化'],
       chore: ['### 构建工具相关'],
       revert: ['### 回滚'],
-      others: ['### 其他提交']
+      others: ['### 其他提交'],
     }
   }
 
@@ -32,7 +49,7 @@ export default class Version {
     const HEAD = this.HEAD ? `${this.HEAD}..HEAD ` : ''
     this.cmd = `git log ${HEAD}--pretty=format:"HEAD: %H=分割=sha: %h=分割=log: %s"`
 
-    this.stdout = await this.exce(this.cmd)
+    this.stdout = (await this.exce(this.cmd))
     if (!this.stdout) throw new Error('commit为空...')
     this.stdout = this.stdout.trim().split('\n')
 
@@ -109,7 +126,7 @@ export default class Version {
    */
   async updateVersion () {
     /** 10进1 */
-    const versionArr = this.version.split('.').map(item => parseInt(item))
+    const versionArr = this.version.split('.').map((item: string) => parseInt(item))
     if (versionArr[2] === 9) {
       versionArr[1]++
       versionArr[2] = 0
@@ -132,7 +149,7 @@ export default class Version {
    * 封装exce方法
    * @param {string} cmd 执行的命令
    */
-  exce (cmd) {
+  exce (cmd: string): Promise<string> {
     return new Promise((resolve, reject) => {
       exec(cmd, { cwd: this.path }, (error, stdout) => {
         if (error) {
