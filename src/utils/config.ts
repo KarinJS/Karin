@@ -3,6 +3,7 @@ import Yaml from 'yaml'
 import chokidar from 'chokidar'
 import { Redis, App, Config, Server, Package, GroupCfg } from '../types/config'
 import { Logger } from 'log4js'
+import { karinDir } from '@/core/dir'
 
 /** 配置文件 */
 export default new (class Cfg {
@@ -14,8 +15,8 @@ export default new (class Cfg {
   review: boolean
   loggger!: Logger
   constructor () {
-    this.dir = process.cwd()
-    this._path = this.dir + '/config/config'
+    this.dir = karinDir
+    this._path = process.cwd() + '/config'
     this._pathDef = this.dir + '/config/defSet'
 
     /** 缓存 */
@@ -30,6 +31,8 @@ export default new (class Cfg {
   /** 初始化配置 */
   async initCfg () {
     if (!fs.existsSync(this._path)) fs.mkdirSync(this._path)
+    this._path = process.cwd() + '/config/config'
+    if (!fs.existsSync(this._path)) fs.mkdirSync(this._path)
     const files = fs.readdirSync(this._pathDef).filter(file => file.endsWith('.yaml'))
     for (const file of files) {
       const path = `${this._path}/${file}`
@@ -38,6 +41,8 @@ export default new (class Cfg {
     }
 
     // 创建插件文件夹文件夹
+    if (!fs.existsSync('./plugins')) fs.mkdirSync('./plugins')
+    if (!fs.existsSync('./plugins/karin-plugin-example')) fs.mkdirSync('./plugins/karin-plugin-example')
     const plugins = this.getPlugins()
     this.dirPath('data', plugins)
     this.dirPath('temp', plugins)
@@ -49,7 +54,7 @@ export default new (class Cfg {
   getPlugins () {
     const files = fs.readdirSync('./plugins', { withFileTypes: true })
     // 过滤掉非karin-plugin-开头或karin-adapter-开头的文件夹
-    return files.filter(file => file.isDirectory() && (file.name.startsWith('karin-plugin-') || file.name.startsWith('karin-adapter-'))).map(dir => dir.name)
+    return files.filter(file => file.isDirectory() && (file.name.startsWith('karin-plugin-'))).map(dir => dir.name)
   }
 
   /**

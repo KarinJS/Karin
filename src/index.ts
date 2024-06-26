@@ -1,4 +1,5 @@
 // 基本模块
+import './core/dir'
 import './core/init'
 import config from './utils/config'
 import logger from './utils/logger'

@@ -17,6 +17,9 @@
     "#Karin": "./lib/index.js"
   },
   "main": "./lib/index.js",
+  "bin": {
+    "init": "./lib/tools/init.js"
+  },
   "files": [
     "/lib/**/*.js",
     "/lib/**/*.d.ts",
