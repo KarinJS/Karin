@@ -21,6 +21,7 @@ import update from './utils/update'
 import YamlEditor from './utils/YamlEditor'
 import render from './renderer/app'
 import { KarinMessage } from './event/message'
+import Karin from './core/karin'
 
 // 适配器
 import Puppeteer from './renderer/server'
@@ -70,3 +71,6 @@ export {
   update as Update,
   KarinMessage,
 }
+
+const karin = new Karin()
+export default karin
