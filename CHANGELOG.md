@@ -24,6 +24,32 @@
 ### 其他提交
 - Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
 
+## [0.1.0](https://github.com/KarinJS/Karin/compare/v0.0.3...v0.1.0) (2024-06-26)
+
+
+### Features
+
+* add QQGroup Discord ([2ffb6b2](https://github.com/KarinJS/Karin/commit/2ffb6b21838b6821b20efe8cbea15fc7fa8fe7ac))
+* EventBase ([5b99630](https://github.com/KarinJS/Karin/commit/5b99630a334d0179fe457c46d10854096f6623e8))
+* KarinMessageEvent ([b52899d](https://github.com/KarinJS/Karin/commit/b52899d9f7b36d861798f3cd1bf25a5f847ded4a))
+* npm ([e1397a1](https://github.com/KarinJS/Karin/commit/e1397a13fa2dc762f0c7f16849dabf1a363f8972))
+* npm run dev ([ffeb0b6](https://github.com/KarinJS/Karin/commit/ffeb0b6f2fda8591acc04e236bbec5f15c90e8bb))
+* onebot11 adapter ([ed842f1](https://github.com/KarinJS/Karin/commit/ed842f1f0e7595693ebd47aed93c8fb25ba2cf6c))
+* run ([61e0423](https://github.com/KarinJS/Karin/commit/61e0423e8628cbda0f31d26e3d2a099fe3080a87))
+* ts ([7fd5951](https://github.com/KarinJS/Karin/commit/7fd5951fd794387ba0b1d0e777249ded5056c26a))
+* 完善基本架构 ([3b718ba](https://github.com/KarinJS/Karin/commit/3b718ba639a7a5fa4586c207140e951e43fecade))
+* 完成ts环境插件适配 ([5396a6c](https://github.com/KarinJS/Karin/commit/5396a6c37046ec90970664d4357619feeb51410e))
+* 完成编译 ([3b9edeb](https://github.com/KarinJS/Karin/commit/3b9edebcc5ce8350832d4eba78f6e59af9554d74))
+
+
+### Bug Fixes
+
+* node-version ([cb8b9b0](https://github.com/KarinJS/Karin/commit/cb8b9b0e734d25d74d0bd028dac6c3f7757fc39b))
+* Plugin.init ([519ca80](https://github.com/KarinJS/Karin/commit/519ca803cca7d63acce4e8e32adeb3f96da6b131))
+* 修复已知问题 详情查看描述 ([17a1b4f](https://github.com/KarinJS/Karin/commit/17a1b4f1e5e13c93c999e803e2232b925d908d0a))
+* 啊啊啊啊啊 ([a7ad104](https://github.com/KarinJS/Karin/commit/a7ad1044f5d479d3443267704dcfc08a25703333))
+* 更正token ([d200974](https://github.com/KarinJS/Karin/commit/d200974d66566b988b5b2381f03cf9d47d6eaf7c))
+
 ## 0.0.2 (2024-6-4)
 
 ### Releases
