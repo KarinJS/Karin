@@ -24,6 +24,13 @@
 ### 其他提交
 - Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
 
+## [0.1.1](https://github.com/KarinJS/Karin/compare/v0.1.0...v0.1.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* add pnpm init ([0afb342](https://github.com/KarinJS/Karin/commit/0afb3421e2237496c497ec5cab7ff5a9adb2d46b))
+
 ## [0.1.0](https://github.com/KarinJS/Karin/compare/v0.0.3...v0.1.0) (2024-06-26)
 
 
