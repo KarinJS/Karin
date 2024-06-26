@@ -15,11 +15,7 @@ jobs:
         with:
           release-type: node
           package-name: node-karin
-          fork: true
-          fork-repo: ${{ secrets.GITHUB_REPOSITORY }}
-          fork-token: ${{ secrets.GITHUB_TOKEN }}
-          primary-branch: dev
-          release-label: 'autorelease: pending'
+          default-branch: dev
       # Checkout
       - uses: actions/checkout@v4
         if: ${{ steps.release.outputs.release_created }}
