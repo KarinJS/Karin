@@ -270,7 +270,6 @@ export default new (class PluginLoader {
     })
     this.rule = lodash.orderBy(list, ['val'], ['asc']).map((v) => Number(v.key))
     logger.debug('rule排序完成...')
-    logger.info(this.rule)
   }
 
   /**

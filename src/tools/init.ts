@@ -5,6 +5,7 @@ import path from 'path'
 import { karinDir } from '@/core/dir'
 
 const pathList = ['./plugins', './config/config']
+
 for (const dir of pathList) mkdir(dir)
 
 function mkdir (dirname: string) {
@@ -18,8 +19,14 @@ function mkdir (dirname: string) {
 const delList = ['./config/defSet', './config/view']
 for (const dir of delList) {
   if (fs.existsSync(dir)) fs.rmdirSync(dir, { recursive: true })
-  // 复制整个文件夹过去
-  fs.copyFileSync(`${karinDir}${dir.replace('.', '')}`, dir)
+  mkdir(dir)
+  const root = `${karinDir}${dir.replace('.', '')}`
+  const files = fs.readdirSync(root).filter(file => file.endsWith('.yaml'))
+  for (const file of files) {
+    const path = `${dir}/${file}`
+    const pathDef = `${root}/${file}`
+    if (!fs.existsSync(path)) fs.copyFileSync(pathDef, path)
+  }
 }
 
 // 判断是否为第一次使用
