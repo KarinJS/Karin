@@ -3,7 +3,7 @@ import exec from './exec'
 
 export default new (class Update {
   dir: string
-  constructor() {
+  constructor () {
     this.dir = './plugins'
   }
 
@@ -11,7 +11,7 @@ export default new (class Update {
    * 获取插件列表 拥有packageon才会被识别
    * @returns {string[]}
    */
-  getPlugins() {
+  getPlugins () {
     const list: string[] = []
     const files = fs.readdirSync(this.dir, { withFileTypes: true })
     /** 忽略非文件夹、非karin-plugin-开头的文件夹或/karin-adapter-开头的文件夹 */
@@ -30,7 +30,7 @@ export default new (class Update {
    * @param cmd - 更新命令 默认git pull
    * @param time - 超时时间 默认120s
    */
-  async update(path: string, cmd = 'git pull', time = 120) {
+  async update (path: string, cmd = 'git pull', time = 120) {
     /** 检查一下路径是否存在 */
     if (!fs.existsSync(path)) return { status: 'failed', data: '路径不存在' }
     /** 检查是否有.git文件夹 */
@@ -75,7 +75,7 @@ export default new (class Update {
    * 获取指定仓库最后一次提交时间日期
    * @param path - 插件相对路径
    */
-  async getTime(path: string) {
+  async getTime (path: string) {
     const cmd = 'git log -1 --format=%cd --date=format:"%Y-%m-%d %H:%M:%S"'
     const data = await exec(cmd, false, { cwd: path, encoding: 'utf-8' })
     if (data.status === 'failed') return '获取时间失败，请重试或更新Git~'
@@ -88,7 +88,7 @@ export default new (class Update {
    * @param {boolean} [short] - 是否获取短哈希 默认true
    * @returns {Promise<string>}
    */
-  async getHash(path: string, short = true) {
+  async getHash (path: string, short = true) {
     const cmd = short ? 'git rev-parse --short HEAD' : 'git rev-parse HEAD'
     const data = await exec(cmd, false, { cwd: path, encoding: 'utf-8' })
     if (data.status === 'failed') {
@@ -110,7 +110,7 @@ export default new (class Update {
    * @param {string} [options.hash] - 指定HEAD
    * @returns {Promise<string>}
    */
-  async getCommit(options: { path: any; count?: any; hash?: any; branch?: any }) {
+  async getCommit (options: { path: any; count?: any; hash?: any; branch?: any }) {
     const { path, count = 1, hash, branch } = options
     let cmd = `git log -${count} --format="[%ad]%s %n" --date="format:%m-%d %H:%M"`
     /** 键入HEAD */
@@ -131,7 +131,7 @@ export default new (class Update {
    * @param {number} [time] - 超时时间 默认120s
    * @returns {Promise<{status: 'ok'|'failed', data: string|boolean}>}
    */
-  async checkUpdate(path: fs.PathLike, time = 120) {
+  async checkUpdate (path: fs.PathLike, time = 120) {
     /** 检查一下路径是否存在 */
     if (!fs.existsSync(path)) return { status: 'failed', data: '路径不存在' }
     /** 检查是否有.git文件夹 */

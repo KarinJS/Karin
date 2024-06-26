@@ -6,48 +6,110 @@ import Cfg from './config'
 const logsDir = './logs'
 if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir)
 
-const { log_level: level, log_days_Keep: daysToKeep } = Cfg.Config
+const { log_level, log_days_Keep, log4jsCfg } = Cfg.Config
+const level = log_level || log4jsCfg.level || 'info'
+const daysToKeep = log_days_Keep || log4jsCfg.daysToKeep || 7
+const { overall, fragments, maxLogSize } = log4jsCfg
+const defaultOptions = { appenders: ['console'], level, enableCallStack: process.env.KarinMode === 'dev' }
 
-let enableCallStack = false
-let pattern = '%[[Karin][%d{hh:mm:ss.SSS}][%4.4p]%] %m'
-
-/** 开发者模式 */
-if (process.env.karinMode === 'dev') {
-  enableCallStack = true
-  pattern = '%[[Karin][%d{hh:mm:ss.SSS}][%4.4p]%] [%f{3}:%l] %m'
-}
-
-log4js.configure({
+const options: {
+  appenders: {
+    console: {
+      type: string
+      layout: {
+        type: string
+        pattern: string
+      }
+    }
+    overall?: {
+      type: string
+      filename: string
+      pattern: string
+      keepFileExt: boolean
+      alwaysIncludePattern: boolean
+      daysToKeep: number
+      layout: {
+        type: string
+        pattern: string
+      }
+    }
+    fragments?: {
+      type: string
+      filename: string
+      pattern: string
+      keepFileExt: boolean
+      alwaysIncludePattern: boolean
+      daysToKeep: number
+      numBackups: number
+      layout: {
+        type: string
+        pattern: string
+      }
+      maxLogSize: number
+    }
+  }
+  categories: {
+    default: {
+      appenders: string[]
+      level: string
+      enableCallStack: boolean
+    }
+  }
+} = {
   appenders: {
     console: {
       type: 'console',
       layout: {
         type: 'pattern',
-        pattern,
-      },
-    },
-    out: {
-      /** 输出到文件 */
-      type: 'file',
-      filename: 'logs/logger',
-      pattern: 'yyyy-MM-dd.log',
-      /** 日期后缀 */
-      keepFileExt: true,
-      /** 日志文件名中包含日期模式 */
-      alwaysIncludePattern: true,
-      /** 日志文件保留天数 */
-      daysToKeep,
-      /** 日志输出格式 */
-      layout: {
-        type: 'pattern',
-        pattern: '[%d{hh:mm:ss.SSS}][%4.4p] %m',
+        pattern: `%[[Karin][%d{hh:mm:ss.SSS}][%4.4p]%] ${process.env.KarinMode === 'dev' ? '[%f{3}:%l] ' : ''}%m`,
       },
     },
   },
-  categories: {
-    default: { appenders: ['out', 'console'], level, enableCallStack },
-  },
-})
+  categories: { default: defaultOptions },
+}
+
+if (overall) {
+  defaultOptions.appenders.unshift('overall')
+  options.appenders.overall = {
+    /** 输出到文件 */
+    type: 'file',
+    filename: 'logs/logger',
+    pattern: 'yyyy-MM-dd.log',
+    /** 日期后缀 */
+    keepFileExt: true,
+    /** 日志文件名中包含日期模式 */
+    alwaysIncludePattern: true,
+    /** 日志文件保留天数 */
+    daysToKeep,
+    /** 日志输出格式 */
+    layout: {
+      type: 'pattern',
+      pattern: '[%d{hh:mm:ss.SSS}][%4.4p] %m',
+    },
+  }
+}
+
+if (fragments) {
+  defaultOptions.appenders.unshift('fragments')
+  options.appenders.fragments = {
+    type: 'file',
+    filename: 'logs/app.log',
+    pattern: 'MM-dd.log',
+    keepFileExt: true,
+    alwaysIncludePattern: true,
+    daysToKeep,
+    maxLogSize: (maxLogSize || 30) * 1024 * 1024,
+    /** 最大文件数 */
+    numBackups: 9999999,
+    /** 日志输出格式 */
+    layout: {
+      type: 'pattern',
+      pattern: '[%d{hh:mm:ss.SSS}][%4.4p] %m',
+    },
+  }
+}
+
+log4js.configure(options)
 
 const logger = log4js.getLogger('default')
 logger.chalk = chalk
@@ -90,5 +152,4 @@ logger.bot = (level, id, ...args) => {
 }
 
 global.logger = logger
-
-export default Object.freeze(logger)
+export default logger

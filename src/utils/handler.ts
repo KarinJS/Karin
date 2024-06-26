@@ -42,7 +42,8 @@ export default new (class EventHandler {
       priority: number
     }>
   }
-  constructor() {
+
+  constructor () {
     this.events = {}
   }
 
@@ -54,7 +55,7 @@ export default new (class EventHandler {
    * @param {Function} config.App 应用构造函数
    * @param {Object} config.Class 类配置
    */
-  add({ name, dir, App, Class }: { dir: dirName; name: fileName; App: new () => Plugin; Class: Plugin }) {
+  add ({ name, dir, App, Class }: { dir: dirName; name: fileName; App: new () => Plugin; Class: Plugin }) {
     for (const cfg of Class.handler) {
       const { key = '', fnc = '', priority = 2000 } = cfg
       if (!key) {
@@ -73,7 +74,7 @@ export default new (class EventHandler {
   /**
    * 删除事件处理器
    */
-  del({
+  del ({
     dir = '',
     name = '',
     key = '',
@@ -116,7 +117,7 @@ export default new (class EventHandler {
    * @param key 事件键
    * @param args 自定义参数 一般用来传递e之类的
    */
-  async call(key: string, args = {}) {
+  async call (key: string, args = {}) {
     let ret
     for (const v of this.events[key] || []) {
       const App = new v.App()
@@ -145,7 +146,7 @@ export default new (class EventHandler {
   /**
    * 检查是否存在指定键的事件处理器
    */
-  has(key: string): boolean {
+  has (key: string): boolean {
     return !!this.events[key]
   }
 })()

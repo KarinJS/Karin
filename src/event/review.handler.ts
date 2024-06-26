@@ -22,7 +22,7 @@ export default new (class Review {
   UserEnable: (e: E) => boolean
   GroupMsgPrint: (e: E) => boolean
   PluginEnable: (app: PluginApps, config: GroupCfg) => boolean
-  constructor() {
+  constructor () {
     /** 群聊所有消息cd */
     this.GroupCD = {}
     /** 群聊个人cd */
@@ -49,7 +49,7 @@ export default new (class Review {
     }, 1000)
   }
 
-  main() {
+  main () {
     this.App = Config.App
     this.Config = Config.Config
     this.#CD()
@@ -64,7 +64,7 @@ export default new (class Review {
   /**
    * 群聊黑白名单 允许哪个群触发事件
    */
-  #GroupEnable() {
+  #GroupEnable () {
     /** 同时启用 */
     if (this.App.WhiteList.groups && this.App.BlackList.groups) {
       this.GroupEnable = e => {
@@ -117,7 +117,7 @@ export default new (class Review {
   /**
    * 用户黑白名单 允许那个用户触发事件
    */
-  #UserEnable() {
+  #UserEnable () {
     /** 同时启用 */
     if (this.App.WhiteList.users && this.App.BlackList.users) {
       this.UserEnable = e => {
@@ -170,7 +170,7 @@ export default new (class Review {
   /**
    * 群聊事件日志 是否打印
    */
-  #GroupMsgPrint() {
+  #GroupMsgPrint () {
     /** 同时启用 */
     if (this.App.WhiteList.GroupMsgLog && this.App.BlackList.GroupMsgLog) {
       this.GroupMsgPrint = e => {
@@ -223,7 +223,7 @@ export default new (class Review {
   /**
    * 黑白名单插件 哪个插件可以被触发
    */
-  #PluginEnable() {
+  #PluginEnable () {
     /** 同时启用 */
     if (this.App.GroupConfig.enable && this.App.GroupConfig.disable) {
       this.PluginEnable = (app, config) => {
@@ -309,7 +309,7 @@ export default new (class Review {
   }
 
   /** 群聊cd */
-  #CD() {
+  #CD () {
     /** 同时启用 */
     if (this.App.GroupConfig.GroupCD && this.App.GroupConfig.GroupUserCD) {
       this.CD = (e, config) => {
@@ -363,7 +363,7 @@ export default new (class Review {
   /**
    * 响应模式
    */
-  #mode() {
+  #mode () {
     /** 启用 */
     if (this.App.GroupConfig.mode) {
       this.mode = (e, config) => {
@@ -394,7 +394,7 @@ export default new (class Review {
   /**
    * 前缀、别名
    */
-  #alias() {
+  #alias () {
     /** 启用 */
     if (this.App.GroupConfig.alias) {
       this.alias = (e, config) => {

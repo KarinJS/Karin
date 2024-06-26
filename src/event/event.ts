@@ -99,7 +99,7 @@ export class KarinEvent {
    */
   bot: KarinAdapter
 
-  constructor({
+  constructor ({
     event,
     self_id,
     user_id,

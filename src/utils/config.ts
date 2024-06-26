@@ -13,7 +13,7 @@ export default new (class Cfg {
   watcher: Map<string, any>
   review: boolean
   loggger!: Logger
-  constructor() {
+  constructor () {
     this.dir = process.cwd()
     this._path = this.dir + '/config/config'
     this._pathDef = this.dir + '/config/defSet'
@@ -28,7 +28,7 @@ export default new (class Cfg {
   }
 
   /** 初始化配置 */
-  async initCfg() {
+  async initCfg () {
     if (!fs.existsSync(this._path)) fs.mkdirSync(this._path)
     const files = fs.readdirSync(this._pathDef).filter(file => file.endsWith('.yaml'))
     for (const file of files) {
@@ -43,10 +43,10 @@ export default new (class Cfg {
     this.dirPath('temp', plugins)
     this.dirPath('resources', plugins)
     this.dirPath('temp/html', plugins)
-    this.loggger = (await import('../utils/logger')) as unknown as Logger
+    this.loggger = (await import('./logger')).default
   }
 
-  getPlugins() {
+  getPlugins () {
     const files = fs.readdirSync('./plugins', { withFileTypes: true })
     // 过滤掉非karin-plugin-开头或karin-adapter-开头的文件夹
     return files.filter(file => file.isDirectory() && (file.name.startsWith('karin-plugin-') || file.name.startsWith('karin-adapter-'))).map(dir => dir.name)
@@ -55,7 +55,7 @@ export default new (class Cfg {
   /**
    * 为每一个插件建立对应的文件夹
    */
-  async dirPath(name: string, plugins: string[]) {
+  async dirPath (name: string, plugins: string[]) {
     name = `./${name}`
     if (!fs.existsSync(name)) fs.mkdirSync(name)
     for (const plugin of plugins) {
@@ -67,7 +67,7 @@ export default new (class Cfg {
   /**
    * 超时时间
    */
-  timeout(type: 'ws' | 'grpc' = 'ws'): number {
+  timeout (type: 'ws' | 'grpc' = 'ws'): number {
     let timeout = 60
     if (type === 'ws') {
       timeout = this.Server.websocket.timeout
@@ -81,7 +81,7 @@ export default new (class Cfg {
    * Redis 配置
    * 采用实时读取优化性能
    */
-  get redis(): Redis {
+  get redis (): Redis {
     const config = this.getYaml('config', 'redis', false)
     const defSet = this.getYaml('defSet', 'redis', false)
     const data = { ...defSet, ...config }
@@ -92,19 +92,19 @@ export default new (class Cfg {
    * 主人列表
    * @returns {string[]}
    */
-  get master() {
+  get master () {
     return this.Config.master || []
   }
 
   /**
    * 管理员列表
    */
-  get admin(): string[] {
+  get admin (): string[] {
     return this.Config.admin || []
   }
 
   /** App管理 */
-  get App(): App {
+  get App (): App {
     const key = 'change.App'
     const res = this.change.get(key)
     /** 取缓存 */
@@ -122,7 +122,7 @@ export default new (class Cfg {
   /**
    * 基本配置
    */
-  get Config(): Config {
+  get Config (): Config {
     const key = 'change.config'
     const res = this.change.get(key)
     /** 取缓存 */
@@ -140,7 +140,7 @@ export default new (class Cfg {
   /**
    * Server 配置文档
    */
-  get Server(): Server {
+  get Server (): Server {
     const key = 'change.server'
     /** 取缓存 */
     const res = this.change.get(key)
@@ -159,7 +159,7 @@ export default new (class Cfg {
    * packageon
    * 实时获取packageon文件
    */
-  get package(): Package {
+  get package (): Package {
     const data = fs.readFileSync('./package.json', 'utf8')
     const pack = JSON.parse(data) as Package
     return pack
@@ -168,7 +168,7 @@ export default new (class Cfg {
   /**
    * 获取群配置
    */
-  group(group_id: string = ''): GroupCfg {
+  group (group_id: string = ''): GroupCfg {
     const key = 'change.group'
     /** 取缓存 */
     let res = this.change.get(key)
@@ -190,7 +190,7 @@ export default new (class Cfg {
   /**
    * 获取配置yaml
    */
-  getYaml(type: 'defSet' | 'config', name: string, isWatch = false) {
+  getYaml (type: 'defSet' | 'config', name: string, isWatch = false) {
     /** 文件路径 */
     const file = `./config/${type}/${name}.yaml`
 
@@ -208,7 +208,7 @@ export default new (class Cfg {
    * @param {string} name 文件名称 不带后缀
    * @param {string} file 文件路径
    */
-  async watch(type: 'defSet' | 'config', name: string, file: string) {
+  async watch (type: 'defSet' | 'config', name: string, file: string) {
     const key = `change.${name}`
     /** 已经监听过了 */
     const res = this.change.get(key)
@@ -237,11 +237,11 @@ export default new (class Cfg {
     this.watcher.set(key, watcher)
   }
 
-  async change_App() {
+  async change_App () {
     await this.#review()
   }
 
-  async change_config() {
+  async change_config () {
     /** 修改日志等级 */
     this.loggger.level = this.Config.log_level
     await this.#review()
@@ -252,11 +252,11 @@ export default new (class Cfg {
     // }
   }
 
-  async change_group() {
+  async change_group () {
     await this.#review()
   }
 
-  async #review() {
+  async #review () {
     // if (this.review) return
     // this.review = true
     // const review = await import('../event/review')

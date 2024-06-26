@@ -1,21 +1,6 @@
 import { Plugin as PluginType } from '../types/plugin'
 import { KarinElement, KarinNodeElement } from '../types/element'
-
-/**
- * 上下文状态
- */
-export const stateArr: {
-  [key: string]: {
-    /**
-     * @param plugin - 插件实例
-     */
-    plugin: Plugin
-    /**
-     * @param fnc - 执行方法名称
-     */
-    fnc: string
-  }
-} = {}
+import { E } from '@/types/types'
 
 /**
  * 插件基类
@@ -23,6 +8,7 @@ export const stateArr: {
 export default class Plugin implements PluginType {
   e!: PluginType['e']
   init?: () => void
+  accept?: (e: E) => Promise<void>
   replyCallback!: PluginType['replyCallback']
 
   /**
@@ -31,8 +17,13 @@ export default class Plugin implements PluginType {
   name: PluginType['name']
   /**
    * @param dsc - 插件描述
+   * @deprecated 请使用desc
    */
   dsc: PluginType['dsc']
+  /**
+   * @param desc - 插件描述
+   */
+  desc: PluginType['desc']
   /**
    * @param event - 监听事件
    */
@@ -66,9 +57,10 @@ export default class Plugin implements PluginType {
    */
   timeout: PluginType['timeout']
 
-  constructor({
+  constructor ({
     name,
     dsc = name,
+    desc = name,
     event = 'message',
     priority = 5000,
     task = [],
@@ -84,6 +76,10 @@ export default class Plugin implements PluginType {
      * - 插件描述 没有则默认为名称
      */
     dsc: string
+    /**
+     * - 插件描述 没有则默认为插件名称
+     */
+    desc?: string
     /**
      * - 监听事件 默认为message
      */
@@ -111,6 +107,7 @@ export default class Plugin implements PluginType {
   }) {
     this.name = name
     this.dsc = dsc
+    this.desc = desc
     this.event = event
     this.priority = priority
     this.task = task
@@ -122,7 +119,7 @@ export default class Plugin implements PluginType {
   /**
    * - 快速回复
    */
-  reply(
+  reply (
     msg: string | KarinElement | Array<KarinElement | string> = '',
     options: {
       /**
@@ -150,7 +147,7 @@ export default class Plugin implements PluginType {
        * @default 1
        */
       retry_count?: number
-    } = { reply: false, recallMsg: 0, at: false, button: false, retry_count: 1 },
+    } = { reply: false, recallMsg: 0, at: false, button: false, retry_count: 1 }
   ): Promise<{
     /**
      * @param message_id - 消息发送成功返回的消息ID
@@ -163,7 +160,7 @@ export default class Plugin implements PluginType {
   /**
    * - 快速回复合并转发
    */
-  async replyForward(msg: KarinNodeElement[]): Promise<{ message_id?: string }> {
+  async replyForward (msg: KarinNodeElement[]): Promise<{ message_id?: string }> {
     const result = await this.e.bot.sendForwardMessage(this.e.contact, msg)
     return result
   }
@@ -171,14 +168,14 @@ export default class Plugin implements PluginType {
   /**
    * - 构建上下文键
    */
-  conKey(): string {
+  conKey (): string {
     return `${this.e.isGroup ? `${this.e.group_id}.` : ''}` + (this.userId || this.e.user_id)
   }
 
   /**
    * 设置上下文状态
    */
-  setContext(
+  setContext (
     /**
      * @param fnc - 执行方法
      */
@@ -190,7 +187,7 @@ export default class Plugin implements PluginType {
     /**
      * @param time - 超时时间，默认120秒
      */
-    time = 120,
+    time = 120
   ) {
     const key = this.conKey()
     stateArr[key] = { plugin: this, fnc }
@@ -206,16 +203,7 @@ export default class Plugin implements PluginType {
   /**
    * 获取上下文状态
    */
-  getContext(): {
-    /**
-     * @param plugin - 插件实例
-     */
-    plugin: Plugin
-    /**
-     * @param fnc - 执行方法名称
-     */
-    fnc: string
-  } {
+  getContext (): { plugin: Plugin, fnc: string } {
     const key = this.conKey()
     return stateArr[key]
   }
@@ -223,7 +211,7 @@ export default class Plugin implements PluginType {
   /**
    * 清除上下文状态
    */
-  finish() {
+  finish () {
     const key = this.conKey()
     if (stateArr[key] && stateArr[key]) {
       /** 清除定时器 */
@@ -232,3 +220,19 @@ export default class Plugin implements PluginType {
     }
   }
 }
+
+/**
+ * 上下文状态
+ */
+export const stateArr: {
+  [key: string]: {
+    /**
+     * @param plugin - 插件实例
+     */
+    plugin: Plugin
+    /**
+     * @param fnc - 执行方法名称
+     */
+    fnc: string
+  }
+} = {}

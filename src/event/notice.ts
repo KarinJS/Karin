@@ -5,7 +5,7 @@ import { contact, Sender, SubEventForEvent, NoticeEvent } from '../types/types'
  * - 通知事件基类
  */
 export class KarinNotice extends KarinEvent {
-  constructor({
+  constructor ({
     self_id,
     event_id,
     user_id,

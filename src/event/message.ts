@@ -6,7 +6,7 @@ import { contact, Sender } from '../types/types'
  * - 消息事件基类
  */
 export class KarinMessage extends KarinEvent {
-  constructor({
+  constructor ({
     event = 'message',
     self_id,
     user_id,

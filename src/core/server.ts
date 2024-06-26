@@ -19,7 +19,7 @@ export default new (class Server {
   server: ServerType<typeof IncomingMessage, typeof ServerResponse>
   WebSocketServer: WebSocketServer
   RegExp: RegExp
-  constructor() {
+  constructor () {
     this.reg = /(?:)/
     this.list = []
     this.app = express()
@@ -31,7 +31,7 @@ export default new (class Server {
   /**
    * 监听WebSocket连接并初始化http服务器
    */
-  init() {
+  init () {
     try {
       this.WebSocketServer.on('connection', (socket, request) => {
         const path = request.url
@@ -117,7 +117,7 @@ export default new (class Server {
   /**
    * HTTP渲染器
    */
-  static() {
+  static () {
     this.staticPath()
 
     /** GET接口 - 渲染 */
@@ -176,7 +176,7 @@ export default new (class Server {
   /**
    * 构建静态资源路径
    */
-  staticPath() {
+  staticPath () {
     this.list = []
     /** 读取./resources文件夹 */
     const resDir = './resources'
@@ -210,7 +210,7 @@ export default new (class Server {
   }
 
   /** 重启当前HTTP服务器 */
-  async #restartServer() {
+  async #restartServer () {
     try {
       /** 断开所有 WebSocket 连接 */
       for (const ws of this.WebSocketServer.clients) ws.terminate()

@@ -10,13 +10,13 @@ let ws: WebSocket
 let reConnect: NodeJS.Timeout | undefined
 const chunkSize = 1024 * 1024 * 3 // 文件分片大小
 
-export default function connect() {
+export default function connect () {
   let heartbeat: string | number | NodeJS.Timeout | null | undefined
   let index = 0
   reConnect = undefined
   const wsUrl = config.Server.HttpRender.WormholeClient
   ws = new WebSocket(wsUrl)
-  ws.on('open', function open() {
+  ws.on('open', function open () {
     logger.info('连接到wormhole服务器' + wsUrl)
     // 发送心跳
     heartbeat = setInterval(() => {
@@ -86,7 +86,7 @@ export default function connect() {
                 state: 'complete',
                 part: 0,
                 echo,
-              }),
+              })
             )
           }
 
@@ -124,7 +124,7 @@ export default function connect() {
                   state: 'complete',
                   part,
                   echo,
-                }),
+                })
               )
             }
           })
@@ -142,7 +142,7 @@ export default function connect() {
     }
   })
 
-  ws.on('close', function close() {
+  ws.on('close', function close () {
     /** 卸载渲染器 */
     index && render.unapp(index)
     index = 0
@@ -156,7 +156,7 @@ export default function connect() {
     }
   })
 
-  ws.on('error', function error() {
+  ws.on('error', function error () {
     /** 卸载渲染器 */
     index && render.unapp(index)
     index = 0

@@ -160,6 +160,31 @@ export interface Config {
      */
     GroupMsgLog: string[]
   }
+  /**
+   * log4js 配置
+   */
+  log4jsCfg: {
+    /**
+     * 日志等级
+     */
+    level: string
+    /**
+     * 日志保留天数
+     */
+    daysToKeep: number
+    /**
+     * 整体化: 将日志输出到一个文件(一天为一个文件) 日志较多的情况下不建议与碎片化同时开启
+     */
+    overall: boolean
+    /**
+     * 碎片化: 将日志分片，达到指定大小后自动切割 日志较多的情况下不建议与整体化同时开启
+     */
+    fragments: boolean
+    /**
+     * 碎片化每个日志文件最大大小 MB
+     */
+    maxLogSize: number
+  }
 }
 
 export interface Server {

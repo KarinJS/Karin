@@ -13,10 +13,12 @@ export default class RenderBase implements KarinRender {
   html: {
     [key: string]: string
   }
+
   watcher: {
     [key: string]: chokidar.FSWatcher
   }
-  constructor() {
+
+  constructor () {
     this.dir = './temp/html'
     this.html = {}
     this.watcher = {}
@@ -28,7 +30,7 @@ export default class RenderBase implements KarinRender {
    * @param options 模板名称
    * @param isAbs 是否返回绝对路径
    */
-  dealTpl(options: KarinRenderType, isAbs: boolean = true): string {
+  dealTpl (options: KarinRenderType, isAbs: boolean = true): string {
     let { name, fileID, file: tplFile } = options
     fileID = fileID || name
     const filePath = `./temp/html/${name}/${fileID}.html`
@@ -65,7 +67,7 @@ export default class RenderBase implements KarinRender {
    * 监听模板文件
    * @param tplFile 模板文件路径
    */
-  watch(tplFile: string) {
+  watch (tplFile: string) {
     if (this.watcher[tplFile]) return
 
     const watcher = chokidar.watch(tplFile)
@@ -80,7 +82,7 @@ export default class RenderBase implements KarinRender {
   /**
    * 渲染标准方法
    */
-  async render(options: KarinRenderType): Promise<string | Array<string>> {
+  async render (options: KarinRenderType): Promise<string | Array<string>> {
     logger.error('未实现渲染方法')
     return ''
   }

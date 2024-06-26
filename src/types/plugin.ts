@@ -1,3 +1,4 @@
+import schedule from 'node-schedule'
 import { KarinNodeElement } from './element'
 import { Reply, replyCallback } from './reply'
 import { E, Event, Permission, SubEvent } from './types'
@@ -10,19 +11,9 @@ import { E, Event, Permission, SubEvent } from './types'
 export type dirName = `karin-plugin-${string}`
 /**
  * - 插件名称
- * - 例如: index
+ * - 例如: index.js index.ts
  */
-export type fileName = `${string}`
-
-/**
- * 上下文状态
- */
-export interface stateArr {
-  [key: string]: {
-    plugin: Plugin
-    fnc: string
-  }
-}
+export type fileName = `${string}.js` | `${string}.ts`
 
 /**
  * - 插件规则
@@ -35,13 +26,13 @@ export interface PluginRule {
   /**
    * - 命令执行方法名称
    */
-  fnc: string
+  fnc: string | Function
   /**
    * - 子事件
    */
   event?: Event | `${Event}.${SubEvent}`
   /**
-   * - 子权限
+   * 权限
    */
   permission?: Permission
   /**
@@ -63,13 +54,17 @@ export interface PluginTask {
    */
   cron: string
   /**
-   * - 执行方法名称
+   * - 执行方法名称或对应函数
    */
-  fnc: string
+  fnc: string | Function
   /**
    * - 是否显示执行日志 默认为true
    */
   log: boolean | Function
+  /**
+   * - 停止函数
+   */
+  schedule?: schedule.Job
 }
 
 /**
@@ -109,37 +104,21 @@ export interface PluginHandler {
 }
 
 /**
- * - Apps
+ * - 插件信息
  */
-export interface PluginApps {
+export interface AppInfo {
   /**
-   * - 插件Class
+   * - 插件根目录名称
+   * - karin-plugin-example
+   * - karin-plugin-example/apps
+   * - karin-plugin-example/src/apps
+   * - karin-plugin-example/dist/apps
    */
-  App: new () => Plugin
+  dir: dirName
   /**
-   * - 插件路径信息
+   * - 插件名称 例如: index.js index.ts
    */
-  file: {
-    /**
-     * - 插件根目录名称 例如: karin-plugin-example
-     */
-    dir: string
-    /**
-     * - 插件名称 例如: index
-     */
-    name: string
-  }
-  /**
-   * - 插件名称
-   */
-  name: string
-  /**
-   * - 插件事件
-   */
-  event: Event | `${Event}.${SubEvent}`
-  priority: number
-  accept: boolean
-  rule: Array<PluginRule>
+  name: fileName
 }
 
 /**
@@ -152,8 +131,13 @@ export interface Plugin {
   name: string
   /**
    * - 插件描述
+   * @deprecated 请使用desc
    */
   dsc: string
+  /**
+   * - 插件描述
+   */
+  desc: string
   /**
    * - 监听事件 默认为message
    */
@@ -247,4 +231,66 @@ export interface Plugin {
    * - accept标准方法 给通知、请求事件使用
    */
   accept?(e: E): Promise<void>
+}
+
+/**
+ * 上下文状态
+ */
+export interface stateArr {
+  [key: string]: {
+    plugin: Plugin
+    fnc: string
+  }
+}
+
+/**
+ * - Apps
+ */
+export interface PluginApps {
+  /**
+   * - 插件文件信息
+   */
+  file: AppInfo & {
+    /**
+     * - 插件类型
+     */
+    type: 'function' | 'class'
+    /**
+     * - 插件方法
+     */
+    Fnc: '' | (new () => Plugin)
+  }
+  /**
+   * - 插件名称
+   */
+  name: string
+  /**
+   * - 插件事件
+   */
+  event: Event | `${Event}.${SubEvent}`
+  /**
+   * - 插件优先级
+   * @default 10000
+   */
+  priority: number
+  /**
+   * - accept函数存在
+   */
+  accept: boolean
+  /**
+   * - 命令规则
+   */
+  rule: Array<PluginRule>
+  /**
+   * - 定时任务
+   */
+  task: Array<PluginTask>
+  /**
+   * - 按钮
+   */
+  button: Array<PluginButton>
+  /**
+   * - handler
+   */
+  handler: Array<PluginHandler>
 }

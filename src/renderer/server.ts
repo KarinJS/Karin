@@ -15,7 +15,7 @@ class Puppeteer extends RenderBase {
   url: string
   index: number
 
-  constructor() {
+  constructor () {
     super()
     this.id = 0
     this.index = 0
@@ -24,7 +24,7 @@ class Puppeteer extends RenderBase {
     this.url = ''
   }
 
-  async server(socket: WebSocket, request: IncomingMessage) {
+  async server (socket: WebSocket, request: IncomingMessage) {
     this.socket = socket
 
     this.id = request.headers['renderer-id']
@@ -90,7 +90,7 @@ class Puppeteer extends RenderBase {
    * @param {'load'|'domcontentloaded'|'networkidle0'|'networkidle2'} [options.pageGotoParams.waitUntil] 页面加载状态
    * @returns {Promise<string|string[]>} 返回图片base64或数组
    */
-  async render(options: KarinRenderType): Promise<string | string[]> {
+  async render (options: KarinRenderType): Promise<string | string[]> {
     /** 渲染模板 */
     let file = ''
 

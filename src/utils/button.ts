@@ -11,11 +11,12 @@ export default new (class Button {
     file: { dir: dirName; name: fileName }
     rule: Array<{ reg: RegExp; fnc: string }>
   }>
-  constructor() {
+
+  constructor () {
     this.Apps = []
   }
 
-  add({ name, dir, App, Class }: { dir: dirName; name: fileName; App: new () => Plugin; Class: Plugin }) {
+  add ({ name, dir, App, Class }: { dir: dirName; name: fileName; App: new () => Plugin; Class: Plugin }) {
     const rule = []
     /** 创建正则表达式 */
     for (const v of Class.button) {
@@ -42,7 +43,7 @@ export default new (class Button {
    * @param {string} dir 插件目录
    * @param {string} name 插件文件名称
    */
-  del(dir: dirName, name: fileName) {
+  del (dir: dirName, name: fileName) {
     /** 未传入name则删除所有 */
     if (!name) {
       this.Apps = this.Apps.filter(v => v.file.dir !== dir)
@@ -55,12 +56,12 @@ export default new (class Button {
     return this.Apps
   }
 
-  update({ dir, name, App, Class }: { dir: dirName; name: fileName; App: new () => Plugin; Class: Plugin }) {
+  update ({ dir, name, App, Class }: { dir: dirName; name: fileName; App: new () => Plugin; Class: Plugin }) {
     this.del(dir, name)
     this.add({ name, dir, App, Class })
   }
 
-  async get(e: KarinMessage) {
+  async get (e: KarinMessage) {
     const button = []
     for (const app of this.Apps) {
       for (const v of app.rule) {

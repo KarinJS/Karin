@@ -14,7 +14,7 @@ export default class HttpRenderer extends RenderBase {
    * @param url - 渲染接口
    * @param token - token
    */
-  constructor(host: string, url: string, token: string) {
+  constructor (host: string, url: string, token: string) {
     super()
     this.id = 'puppeteer'
     this.host = host
@@ -25,7 +25,7 @@ export default class HttpRenderer extends RenderBase {
   /**
    * 渲染
    */
-  async render(options: KarinRenderType): Promise<string | Array<string>> {
+  async render (options: KarinRenderType): Promise<string | Array<string>> {
     const name = options.name || 'render'
     let file = options.file
     /** 非http渲染模板并转为http静态资源 */

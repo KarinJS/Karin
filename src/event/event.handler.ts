@@ -16,7 +16,7 @@ export default class EventHandler {
   /**
    * 处理事件，加入自定义字段
    */
-  constructor(e: KarinMessage | KarinNotice | KarinRequest) {
+  constructor (e: KarinMessage | KarinNotice | KarinRequest) {
     this.e = e
     this.config = {}
     /** 加入e.bot */
@@ -27,7 +27,7 @@ export default class EventHandler {
   /**
    * 事件处理
    */
-  review() {
+  review () {
     /** 检查CD */
     if (!Review.CD(this.e, this.config as GroupCfg)) {
       logger.debug('[消息拦截] 正在冷却中')
@@ -53,7 +53,7 @@ export default class EventHandler {
   /**
    * 根据事件类型过滤事件
    */
-  filtEvent(event: Event | `${Event}.${SubEvent}`): boolean {
+  filtEvent (event: Event | `${Event}.${SubEvent}`): boolean {
     /** 事件映射表 */
     const eventMap = {
       message: () => `message.${this.e.sub_event}`,
@@ -70,7 +70,7 @@ export default class EventHandler {
   /**
    * 判断权限
    */
-  filterPermission(permission: Permission | undefined): boolean {
+  filterPermission (permission: Permission | undefined): boolean {
     if (!permission || permission === 'all') return true
 
     if (permission === 'master') {
@@ -114,7 +114,7 @@ export default class EventHandler {
   /**
    * 快速回复
    */
-  reply() {
+  reply () {
     /**
      * 快速回复
      * @param elements 回复内容

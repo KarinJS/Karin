@@ -7,7 +7,7 @@ const path = process.cwd() + '/data/db/Level'
  */
 class LevelDB extends Level {
   id: string
-  constructor() {
+  constructor () {
     super(path, { valueEncoding: 'json' })
     /**
      * @type {'Level'} 唯一标识符 用于区分不同的数据库
@@ -18,7 +18,7 @@ class LevelDB extends Level {
   /**
    * 对get方法进行重写 找不到数据时返回null
    */
-  async get(key: string): Promise<string> {
+  async get (key: string): Promise<string> {
     try {
       const res = await super.get(key)
       return res
@@ -32,7 +32,7 @@ class LevelDB extends Level {
    * @param {string} key 键
    * @param {object|string} value 值
    */
-  async set(key: string, value: string) {
+  async set (key: string, value: string) {
     return await super.put(key, value)
   }
 }

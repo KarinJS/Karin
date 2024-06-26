@@ -51,152 +51,6 @@ export interface OneBot11 {
 }
 
 /**
- * - 消息事件基类
- */
-export interface OneBot11Message extends OneBot11 {
-  /**
-   * - 事件类型
-   */
-  post_type: 'message' | 'message_sent'
-  /**
-   * - 消息类型
-   */
-  message_type: MessageType
-  /**
-   * - 消息子类型
-   */
-  sub_type: MessageTypeToSubEvent<MessageType>
-  /**
-   * - 消息 ID
-   */
-  message_id: string
-  /**
-   * - 发送者 QQ 号
-   */
-  user_id: string
-  /**
-   * - 消息内容
-   */
-  message: OneBot11Segment[]
-  /**
-   * - 原始消息内容
-   */
-  raw_message: string
-  /**
-   * - 字体
-   */
-  font: number
-  /**
-   * - 发送人信息
-   */
-  sender: {
-    /**
-     * - 发送者 QQ 号
-     */
-    user_id: string
-    /**
-     * - 昵称 不存在则为空字符串
-     */
-    nickname: string
-    /**
-     * - 性别
-     */
-    sex?: 'male' | 'female' | 'unknown'
-    /**
-     * - 年龄
-     */
-    age?: number
-  }
-}
-
-/**
- * - 私聊消息事件
- */
-export interface OneBot11PrivateMessage extends OneBot11Message {
-  /**
-   * - 消息类型
-   */
-  message_type: 'private'
-  /**
-   * - 消息子类型
-   */
-  sub_type: 'friend'
-}
-
-/**
- * - 群消息事件
- */
-export interface OneBot11GroupMessage extends OneBot11Message {
-  /**
-   * - 消息类型
-   */
-  message_type: 'group'
-  /**
-   * - 消息子类型
-   */
-  sub_type: 'normal' | 'anonymous' | 'notice'
-  /**
-   * - 群号
-   */
-  group_id: string
-  /**
-   * - 匿名信息
-   */
-  anonymous?: {
-    /**
-     * - 匿名用户 ID
-     */
-    id: string
-    /**
-     * - 匿名用户名称
-     */
-    name: string
-    /**
-     * - 匿名用户 flag，在调用禁言 API 时需要传入
-     */
-    flag: string
-  }
-  sender: {
-    /**
-     * - 发送者 QQ 号
-     */
-    user_id: string
-    /**
-     * - 昵称 不存在则为空字符串
-     */
-    nickname: string
-    /**
-     * - 性别
-     */
-    sex?: 'male' | 'female' | 'unknown'
-    /**
-     * - 年龄
-     */
-    age?: number
-    /**
-     * - 群名片/备注
-     */
-    card?: string
-    /**
-     * - 地区
-     */
-    area?: string
-    /**
-     * - 成员等级
-     */
-    level?: string
-    /**
-     * - 角色 不存在则为空字符串
-     */
-    role: 'owner' | 'admin' | 'member' | ''
-    /**
-     * - 专属头衔
-     */
-    title?: string
-  }
-}
-
-/**
  * - 通知事件基类
  */
 export interface OneBot11Notice extends OneBot11 {
@@ -630,7 +484,415 @@ export interface OneBot11Heartbeat extends OneBot11MetaEvent {
   }
 }
 
-// 所有事件
+/**
+ * - OneBot11消息类型
+ */
+export type OneBot11SegmentType = 'text' | 'face' | 'image' | 'record' | 'video' | 'at' | 'rps' | 'dice' | 'shake' | 'poke' | 'anonymous' | 'share' | 'contact' | 'location' | 'music' | 'music_custom' | 'reply' | 'forward' | 'node' | 'node_custom' | 'xml' | 'json'
+
+export interface Segment {
+  type: OneBot11SegmentType
+}
+
+/**
+ * - 纯文本
+ */
+export interface TextSegment extends Segment {
+  type: 'text'
+  data: {
+    text: string
+  }
+}
+
+/**
+ * - QQ表情
+ */
+export interface FaceSegment extends Segment {
+  type: 'face'
+  data: {
+    id: string
+  }
+}
+
+/*
+/**
+ * - 图片消息段
+ */
+export interface ImageSegment extends Segment {
+  type: 'image'
+  data: {
+    file: string
+    type?: 'flash'
+    url?: string
+    cache?: 0 | 1
+    proxy?: 0 | 1
+    timeout?: number
+  }
+}
+
+/**
+ * - 语音消息段
+ */
+export interface RecordSegment extends Segment {
+  type: 'record'
+  data: {
+    file: string
+    magic?: 0 | 1
+    url?: string
+    cache?: 0 | 1
+    proxy?: 0 | 1
+    timeout?: number
+  }
+}
+
+/**
+ * - 短视频消息段
+ */
+export interface VideoSegment extends Segment {
+  type: 'video'
+  data: {
+    file: string
+    url?: string
+    cache?: 0 | 1
+    proxy?: 0 | 1
+    timeout?: number
+  }
+}
+
+/**
+ * - @某人消息段
+ */
+export interface AtSegment extends Segment {
+  type: 'at'
+  data: {
+    qq: string | 'all'
+  }
+}
+
+/**
+ * - 猜拳魔法表情消息段
+ */
+export interface RpsSegment extends Segment {
+  type: 'rps'
+  data: {}
+}
+
+/**
+ * - 掷骰子魔法表情消息段
+ */
+export interface DiceSegment extends Segment {
+  type: 'dice'
+  data: {}
+}
+
+/**
+ * - 窗口抖动（戳一戳）消息段
+ */
+export interface ShakeSegment extends Segment {
+  type: 'shake'
+  data: {}
+}
+
+/**
+ * - 戳一戳消息段
+ */
+export interface PokeSegment extends Segment {
+  type: 'poke'
+  data: {
+    type: string
+    id: string
+    name?: string
+  }
+}
+
+/**
+ * - 匿名发消息消息段
+ */
+export interface AnonymousSegment extends Segment {
+  type: 'anonymous'
+  data: {
+    ignore?: 0 | 1
+  }
+}
+
+/**
+ * - 链接分享消息段
+ */
+export interface ShareSegment extends Segment {
+  type: 'share'
+  data: {
+    url: string
+    title: string
+    content?: string
+    image?: string
+  }
+}
+
+/**
+ * - 推荐好友/群消息段
+ */
+export interface ContactSegment extends Segment {
+  type: 'contact'
+  data: {
+    type: 'qq' | 'group'
+    id: string
+  }
+}
+
+/**
+ * - 位置消息段
+ */
+export interface LocationSegment extends Segment {
+  type: 'location'
+  data: {
+    lat: string
+    lon: string
+    title?: string
+    content?: string
+  }
+}
+
+/**
+ * - 音乐分享消息段
+ */
+export interface MusicSegment extends Segment {
+  type: 'music'
+  data: {
+    type: 'qq' | '163' | 'xm'
+    id: string
+  }
+}
+
+/**
+ * - 音乐自定义分享消息段
+ */
+export interface CustomMusicSegment extends Segment {
+  type: 'music'
+  data: {
+    type: 'custom'
+    url: string
+    audio: string
+    title: string
+    content?: string
+    image?: string
+  }
+}
+
+/**
+ * - 回复消息段
+ */
+export interface ReplySegment extends Segment {
+  type: 'reply'
+  data: {
+    id: string
+  }
+}
+
+/**
+ * - 合并转发消息段
+ */
+export interface ForwardSegment extends Segment {
+  type: 'forward'
+  data: {
+    id: string
+  }
+}
+
+/**
+ * - 合并转发节点消息段
+ */
+export interface NodeSegment extends Segment {
+  type: 'node'
+  data: {
+    id: string
+  }
+}
+
+/**
+ * - 合并转发自定义节点消息段
+ */
+export interface CustomNodeSegment extends Segment {
+  type: 'node'
+  data: {
+    user_id: string
+    nickname: string
+    content: string | Segment[]
+  }
+}
+
+/**
+ * - XML消息段
+ */
+export interface XmlSegment extends Segment {
+  type: 'xml'
+  data: {
+    data: string
+  }
+}
+
+/**
+ * - JSON消息段
+ */
+export interface JsonSegment extends Segment {
+  type: 'json'
+  data: {
+    data: string
+  }
+}
+
+/**
+ * - OneBot11消息段
+ */
+export type OneBot11Segment = TextSegment | FaceSegment | ImageSegment | RecordSegment | VideoSegment | AtSegment | RpsSegment | DiceSegment | ShakeSegment | PokeSegment | AnonymousSegment | ShareSegment | ContactSegment | LocationSegment | MusicSegment | CustomMusicSegment | ReplySegment | ForwardSegment | NodeSegment | CustomNodeSegment | XmlSegment | JsonSegment
+
+/**
+ * - 消息事件基类
+ */
+export interface OneBot11Message extends OneBot11 {
+  /**
+   * - 事件类型
+   */
+  post_type: 'message' | 'message_sent'
+  /**
+   * - 消息类型
+   */
+  message_type: MessageType
+  /**
+   * - 消息子类型
+   */
+  sub_type: MessageTypeToSubEvent<MessageType>
+  /**
+   * - 消息 ID
+   */
+  message_id: string
+  /**
+   * - 发送者 QQ 号
+   */
+  user_id: string
+  /**
+   * - 消息内容
+   */
+  message: OneBot11Segment[]
+  /**
+   * - 原始消息内容
+   */
+  raw_message: string
+  /**
+   * - 字体
+   */
+  font: number
+  /**
+   * - 发送人信息
+   */
+  sender: {
+    /**
+     * - 发送者 QQ 号
+     */
+    user_id: string
+    /**
+     * - 昵称 不存在则为空字符串
+     */
+    nickname: string
+    /**
+     * - 性别
+     */
+    sex?: 'male' | 'female' | 'unknown'
+    /**
+     * - 年龄
+     */
+    age?: number
+  }
+}
+
+/**
+ * - 私聊消息事件
+ */
+export interface OneBot11PrivateMessage extends OneBot11Message {
+  /**
+   * - 消息类型
+   */
+  message_type: 'private'
+  /**
+   * - 消息子类型
+   */
+  sub_type: 'friend'
+}
+
+/**
+ * - 群消息事件
+ */
+export interface OneBot11GroupMessage extends OneBot11Message {
+  /**
+   * - 消息类型
+   */
+  message_type: 'group'
+  /**
+   * - 消息子类型
+   */
+  sub_type: 'normal' | 'anonymous' | 'notice'
+  /**
+   * - 群号
+   */
+  group_id: string
+  /**
+   * - 匿名信息
+   */
+  anonymous?: {
+    /**
+     * - 匿名用户 ID
+     */
+    id: string
+    /**
+     * - 匿名用户名称
+     */
+    name: string
+    /**
+     * - 匿名用户 flag，在调用禁言 API 时需要传入
+     */
+    flag: string
+  }
+  sender: {
+    /**
+     * - 发送者 QQ 号
+     */
+    user_id: string
+    /**
+     * - 昵称 不存在则为空字符串
+     */
+    nickname: string
+    /**
+     * - 性别
+     */
+    sex?: 'male' | 'female' | 'unknown'
+    /**
+     * - 年龄
+     */
+    age?: number
+    /**
+     * - 群名片/备注
+     */
+    card?: string
+    /**
+     * - 地区
+     */
+    area?: string
+    /**
+     * - 成员等级
+     */
+    level?: string
+    /**
+     * - 角色 不存在则为空字符串
+     */
+    role: 'owner' | 'admin' | 'member' | ''
+    /**
+     * - 专属头衔
+     */
+    title?: string
+  }
+}
+
+/**
+ * 所有事件
+ */
 export type OneBot11Event = OneBot11GroupMessage | OneBot11PrivateMessage | OneBot11GroupUpload | OneBot11GroupAdmin | OneBot11GroupDecrease | OneBot11GroupIncrease | OneBot11GroupBan | OneBot11FriendAdd | OneBot11GroupRecall | OneBot11FriendRecall | OneBot11Poke | OneBot11LuckyKing | OneBot11Honor | OneBot11FriendRequest | OneBot11GroupRequest | OneBot11Lifecycle | OneBot11Heartbeat | OneBot11GroupMessageReaction
 /**
  * - 传入 post_type 返回对应的事件类型
@@ -1166,263 +1428,3 @@ export type OneBot11ApiParams = {
 export type OneBot11ApiParamsType = {
   [K in OneBot11Api]: OneBot11ApiParams[K]
 }
-
-/**
- * - OneBot11消息类型
- */
-export type OneBot11SegmentType = 'text' | 'face' | 'image' | 'record' | 'video' | 'at' | 'rps' | 'dice' | 'shake' | 'poke' | 'anonymous' | 'share' | 'contact' | 'location' | 'music' | 'music_custom' | 'reply' | 'forward' | 'node' | 'node_custom' | 'xml' | 'json'
-
-export interface Segment {
-  type: OneBot11SegmentType
-}
-
-/**
- * - 纯文本
- */
-export interface TextSegment extends Segment {
-  type: 'text'
-  data: {
-    text: string
-  }
-}
-
-/**
- * - QQ表情
- */
-export interface FaceSegment extends Segment {
-  type: 'face'
-  data: {
-    id: string
-  }
-}
-
-/* 
-/**
- * - 图片消息段
- */
-export interface ImageSegment extends Segment {
-  type: 'image'
-  data: {
-    file: string
-    type?: 'flash'
-    url?: string
-    cache?: 0 | 1
-    proxy?: 0 | 1
-    timeout?: number
-  }
-}
-
-/**
- * - 语音消息段
- */
-export interface RecordSegment extends Segment {
-  type: 'record'
-  data: {
-    file: string
-    magic?: 0 | 1
-    url?: string
-    cache?: 0 | 1
-    proxy?: 0 | 1
-    timeout?: number
-  }
-}
-
-/**
- * - 短视频消息段
- */
-export interface VideoSegment extends Segment {
-  type: 'video'
-  data: {
-    file: string
-    url?: string
-    cache?: 0 | 1
-    proxy?: 0 | 1
-    timeout?: number
-  }
-}
-
-/**
- * - @某人消息段
- */
-export interface AtSegment extends Segment {
-  type: 'at'
-  data: {
-    qq: string | 'all'
-  }
-}
-
-/**
- * - 猜拳魔法表情消息段
- */
-export interface RpsSegment extends Segment {
-  type: 'rps'
-  data: {}
-}
-
-/**
- * - 掷骰子魔法表情消息段
- */
-export interface DiceSegment extends Segment {
-  type: 'dice'
-  data: {}
-}
-
-/**
- * - 窗口抖动（戳一戳）消息段
- */
-export interface ShakeSegment extends Segment {
-  type: 'shake'
-  data: {}
-}
-
-/**
- * - 戳一戳消息段
- */
-export interface PokeSegment extends Segment {
-  type: 'poke'
-  data: {
-    type: string
-    id: string
-    name?: string
-  }
-}
-
-/**
- * - 匿名发消息消息段
- */
-export interface AnonymousSegment extends Segment {
-  type: 'anonymous'
-  data: {
-    ignore?: 0 | 1
-  }
-}
-
-/**
- * - 链接分享消息段
- */
-export interface ShareSegment extends Segment {
-  type: 'share'
-  data: {
-    url: string
-    title: string
-    content?: string
-    image?: string
-  }
-}
-
-/**
- * - 推荐好友/群消息段
- */
-export interface ContactSegment extends Segment {
-  type: 'contact'
-  data: {
-    type: 'qq' | 'group'
-    id: string
-  }
-}
-
-/**
- * - 位置消息段
- */
-export interface LocationSegment extends Segment {
-  type: 'location'
-  data: {
-    lat: string
-    lon: string
-    title?: string
-    content?: string
-  }
-}
-
-/**
- * - 音乐分享消息段
- */
-export interface MusicSegment extends Segment {
-  type: 'music'
-  data: {
-    type: 'qq' | '163' | 'xm'
-    id: string
-  }
-}
-
-/**
- * - 音乐自定义分享消息段
- */
-export interface CustomMusicSegment extends Segment {
-  type: 'music'
-  data: {
-    type: 'custom'
-    url: string
-    audio: string
-    title: string
-    content?: string
-    image?: string
-  }
-}
-
-/**
- * - 回复消息段
- */
-export interface ReplySegment extends Segment {
-  type: 'reply'
-  data: {
-    id: string
-  }
-}
-
-/**
- * - 合并转发消息段
- */
-export interface ForwardSegment extends Segment {
-  type: 'forward'
-  data: {
-    id: string
-  }
-}
-
-/**
- * - 合并转发节点消息段
- */
-export interface NodeSegment extends Segment {
-  type: 'node'
-  data: {
-    id: string
-  }
-}
-
-/**
- * - 合并转发自定义节点消息段
- */
-export interface CustomNodeSegment extends Segment {
-  type: 'node'
-  data: {
-    user_id: string
-    nickname: string
-    content: string | Segment[]
-  }
-}
-
-/**
- * - XML消息段
- */
-export interface XmlSegment extends Segment {
-  type: 'xml'
-  data: {
-    data: string
-  }
-}
-
-/**
- * - JSON消息段
- */
-export interface JsonSegment extends Segment {
-  type: 'json'
-  data: {
-    data: string
-  }
-}
-
-/**
- * - OneBot11消息段
- */
-export type OneBot11Segment = TextSegment | FaceSegment | ImageSegment | RecordSegment | VideoSegment | AtSegment | RpsSegment | DiceSegment | ShakeSegment | PokeSegment | AnonymousSegment | ShareSegment | ContactSegment | LocationSegment | MusicSegment | CustomMusicSegment | ReplySegment | ForwardSegment | NodeSegment | CustomNodeSegment | XmlSegment | JsonSegment

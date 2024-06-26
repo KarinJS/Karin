@@ -24,7 +24,7 @@ export default new (class Listeners extends EventEmitter {
   name: string
   list: Array<{ index: number; type: KarinAdapter['adapter']['type']; bot: KarinAdapter }>
   adapter: Array<{ type: KarinAdapter['adapter']['type']; adapter: new () => KarinAdapter; path: string }>
-  constructor() {
+  constructor () {
     super()
     this.index = 0
     this.name = 'Karin'
@@ -50,7 +50,7 @@ export default new (class Listeners extends EventEmitter {
   /**
    * 注册Bot 返回索引id
    */
-  addBot(data: { bot: KarinAdapter; type: KarinAdapter['adapter']['type'] }): number | false {
+  addBot (data: { bot: KarinAdapter; type: KarinAdapter['adapter']['type'] }): number | false {
     this.index++
     const index = this.index
     if (!data.bot) {
@@ -66,7 +66,7 @@ export default new (class Listeners extends EventEmitter {
    * 卸载Bot
    * @param index - Bot的索引id
    */
-  delBot(index: number) {
+  delBot (index: number) {
     this.list = this.list.filter(item => item.index !== index)
   }
 
@@ -74,7 +74,7 @@ export default new (class Listeners extends EventEmitter {
    * 通过Bot uid 获取Bot
    * @param uid - Bot的uid 未传入则返回第一个Bot
    */
-  getBot(uid = ''): KarinAdapter | undefined {
+  getBot (uid = ''): KarinAdapter | undefined {
     uid = String(uid)
     if (this.list.length === 0) {
       logger.error('[Bot管理][UID] 当前Bot列表为空')
@@ -96,7 +96,7 @@ export default new (class Listeners extends EventEmitter {
    * 根据索引获取Bot
    * @param index - Bot的索引id
    */
-  getBotByIndex(index: number): KarinAdapter {
+  getBotByIndex (index: number): KarinAdapter {
     index = this.list.findIndex(item => item.index === index)
     if (index === -1) {
       throw new Error('[Bot管理][索引] 无法找到对应的 Bot 实例')
@@ -107,7 +107,7 @@ export default new (class Listeners extends EventEmitter {
   /**
    * 获取当前已注册Bot数量
    */
-  getBotCount(): number {
+  getBotCount (): number {
     return this.list.length
   }
 
@@ -115,7 +115,7 @@ export default new (class Listeners extends EventEmitter {
    * 获取所有Bot列表
    * @param isIndex - 是否返回包含的索引列表 默认返回Bot实例列表
    */
-  getBotAll(isIndex = false): KarinAdapter[] | { index: number; bot: KarinAdapter }[] {
+  getBotAll (isIndex = false): KarinAdapter[] | { index: number; bot: KarinAdapter }[] {
     if (isIndex) return this.list
     return this.list.map(item => item.bot)
   }
@@ -127,7 +127,7 @@ export default new (class Listeners extends EventEmitter {
    * @param data.adapter - 适配器实例
    * @param data.path - 适配器路径
    */
-  addAdapter(data: { type: KarinAdapter['adapter']['type']; adapter: new () => KarinAdapter; path?: string }) {
+  addAdapter (data: { type: KarinAdapter['adapter']['type']; adapter: new () => KarinAdapter; path?: string }) {
     const adapter = { type: data.type, adapter: data.adapter, path: '' }
     if (data.path) adapter.path = data.path
     this.adapter.push(adapter)
@@ -137,7 +137,7 @@ export default new (class Listeners extends EventEmitter {
    * 通过path获取适配器 仅适用于反向WS适配器
    * @param path - 适配器路径
    */
-  getAdapter(path = ''): (new () => KarinAdapter) | undefined {
+  getAdapter (path = ''): (new () => KarinAdapter) | undefined {
     const index = this.adapter.findIndex(item => item?.path === path)
     if (index === -1) {
       logger.error('[适配器管理] 无法找到对应的适配器实例')
@@ -150,7 +150,7 @@ export default new (class Listeners extends EventEmitter {
    * 获取适配器列表
    * @param isType - 是否返回包含的类型列表 默认返回适配器实例列表
    */
-  getAdapterAll(isType = false) {
+  getAdapterAll (isType = false) {
     if (isType) return this.adapter
     return this.adapter.map(item => item.adapter)
   }
@@ -164,7 +164,7 @@ export default new (class Listeners extends EventEmitter {
    * @param options.recallMsg - 发送成功后撤回消息时间
    * @param options.retry_count - 重试次数
    */
-  async sendMsg(uid: string, contact: contact, elements: KarinElement, options = { recallMsg: 0, retry_count: 1 }): Promise<{ message_id: string }> {
+  async sendMsg (uid: string, contact: contact, elements: KarinElement, options = { recallMsg: 0, retry_count: 1 }): Promise<{ message_id: string }> {
     const bot = this.getBot(uid)
     if (!bot) throw new Error('发送消息失败: 未找到对应Bot实例')
     const { recallMsg, retry_count } = options

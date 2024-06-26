@@ -16,7 +16,7 @@ export default class RenderClient extends RenderBase {
   retry: number
   reg: RegExp
   ws: WebSocket
-  constructor(url: string) {
+  constructor (url: string) {
     super()
     this.url = url
     this.type = 'image'
@@ -31,7 +31,7 @@ export default class RenderClient extends RenderBase {
   /**
    * 初始化
    */
-  async start() {
+  async start () {
     /** 建立连接 */
     this.ws.on('open', () => {
       logger.mark(`[渲染器:${this.id}][WebSocket] 建立连接：${logger.green(this.url)}`)
@@ -73,7 +73,7 @@ export default class RenderClient extends RenderBase {
   /**
    * 心跳
    */
-  async heartbeat() {
+  async heartbeat () {
     /** 无限循环 错误则停止 */
     while (true) {
       try {
@@ -91,7 +91,7 @@ export default class RenderClient extends RenderBase {
   /**
    * 接受消息
    */
-  async message(str: string) {
+  async message (str: string) {
     const data: {
       echo: string
       action: string
@@ -129,7 +129,7 @@ export default class RenderClient extends RenderBase {
    * 渲染标准方法
    * @param options 渲染参数
    */
-  async render(options: KarinRenderType): Promise<string | string[]> {
+  async render (options: KarinRenderType): Promise<string | string[]> {
     /** 渲染模板 */
     let file = options.file
     let action = 'renderHtml'

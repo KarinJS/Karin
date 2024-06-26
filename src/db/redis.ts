@@ -7,7 +7,7 @@ import redis, { createClient, createCluster, RedisClientType } from 'redis'
 export default class Redis {
   id: 'redis'
   RunCmd: string
-  constructor() {
+  constructor () {
     this.id = 'redis'
     this.RunCmd = ''
   }
@@ -15,7 +15,7 @@ export default class Redis {
   /**
    * redis实例化
    */
-  async start(): Promise<(redis.RedisClientType | string) | RedisLevel | false> {
+  async start (): Promise<(redis.RedisClientType | string) | RedisLevel | false> {
     const { host, port, username, password, db: database, cluster } = config.redis
     /** 集群模式 */
     if (cluster && cluster.enable) {
@@ -71,7 +71,7 @@ export default class Redis {
   /**
    * 降级为 LevelDB
    */
-  async LevelDB() {
+  async LevelDB () {
     try {
       logger.mark(logger.red('正在降级为 LevelDB 代替 Redis 只能使用基础功能'))
       const redis = new RedisLevel()
@@ -89,7 +89,7 @@ export default class Redis {
    * @param {import("redis").RedisClientOptions} options
    * @return {Promise<{status: 'ok', data: import("redis").RedisClientType} | {status: 'error', data: Error}>}
    */
-  async connect(options: redis.RedisClientOptions): Promise<{ status: 'ok'; data: redis.RedisClientType } | { status: 'error'; data: string }> {
+  async connect (options: redis.RedisClientOptions): Promise<{ status: 'ok'; data: redis.RedisClientType } | { status: 'error'; data: string }> {
     const client = createClient(options)
     try {
       await client.connect()
@@ -102,7 +102,7 @@ export default class Redis {
   /**
    * 连接 Redis 集群
    */
-  async connectCluster(rootNodes: { url: string }[]) {
+  async connectCluster (rootNodes: { url: string }[]) {
     const client = createCluster({ rootNodes })
     try {
       await client.connect()
@@ -115,7 +115,7 @@ export default class Redis {
   /**
    * 判断是否为 ARM64 并返回参数
    */
-  async aarch64(): Promise<string> {
+  async aarch64 (): Promise<string> {
     try {
       /** 判断arch */
       const arch = await this.execSync('uname -m')
@@ -135,7 +135,7 @@ export default class Redis {
     }
   }
 
-  execSync(cmd: string): Promise<string> {
+  execSync (cmd: string): Promise<string> {
     return new Promise((resolve, reject) => {
       exec(cmd, (error, stdout) => {
         if (error) return reject(error)

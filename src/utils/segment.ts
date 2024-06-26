@@ -6,7 +6,7 @@ export default new (class Segment {
    * @param text - 文本内容
    * @returns {TextElement} 纯文本元素
    */
-  text(text: string): TextElement {
+  text (text: string): TextElement {
     return {
       type: 'text',
       text: text + '',
@@ -20,7 +20,7 @@ export default new (class Segment {
    * @param uin - uin
    * @returns {AtElement} 提及元素
    */
-  at(uid: string, uin?: string): AtElement {
+  at (uid: string, uin?: string): AtElement {
     return {
       type: 'at',
       uid: uid + '',
@@ -34,7 +34,7 @@ export default new (class Segment {
    * @param is_big - 是否大表情，默认不是
    * @returns {FaceElement} 表情元素
    */
-  face(id: number, is_big: boolean = false): FaceElement {
+  face (id: number, is_big: boolean = false): FaceElement {
     return {
       type: 'face',
       id: Number(id),
@@ -48,7 +48,7 @@ export default new (class Segment {
    * @param count - 数量
    * @returns {BubbleFaceElement} 弹射表情元素
    */
-  bubble_face(id: number, count = 1): BubbleFaceElement {
+  bubble_face (id: number, count = 1): BubbleFaceElement {
     return {
       type: 'bubble_face',
       id: Number(id),
@@ -61,7 +61,7 @@ export default new (class Segment {
    * @param message_id - 消息ID
    * @returns {ReplyElement} 引用回复元素
    */
-  reply(message_id: string): ReplyElement {
+  reply (message_id: string): ReplyElement {
     return {
       type: 'reply',
       message_id: message_id + '',
@@ -75,7 +75,7 @@ export default new (class Segment {
    * @param options - 图片类型、名称、MD5、子类型、宽度、高度
    * @returns {ImageElement} 图片元素
    */
-  image(
+  image (
     file: string,
     options: {
       /**
@@ -102,7 +102,7 @@ export default new (class Segment {
        * - 图片高度
        */
       height?: number
-    } = {},
+    } = {}
   ): ImageElement {
     const file_type = options.file_type || 'original'
     const name = options.name || ''
@@ -131,7 +131,7 @@ export default new (class Segment {
    * @param name - 语音名称
    * @returns {VoiceElement} 语音元素
    */
-  record(file: string, magic = false, md5 = '', name = ''): VoiceElement {
+  record (file: string, magic = false, md5 = '', name = ''): VoiceElement {
     return {
       type: 'voice',
       file,
@@ -140,6 +140,7 @@ export default new (class Segment {
       name,
     }
   }
+
   /**
    * 语音
    * @param file - 语音URL或路径、Base64
@@ -148,7 +149,7 @@ export default new (class Segment {
    * @param name - 语音名称
    * @returns {VoiceElement} 语音元素
    */
-  voice(file: string, magic = false, md5 = '', name = ''): VoiceElement {
+  voice (file: string, magic = false, md5 = '', name = ''): VoiceElement {
     return {
       type: 'voice',
       file,
@@ -165,7 +166,7 @@ export default new (class Segment {
    * @param name - 视频名称
    * @returns {VideoElement} 视频元素
    */
-  video(file: string, md5 = '', name = ''): VideoElement {
+  video (file: string, md5 = '', name = ''): VideoElement {
     return {
       type: 'video',
       file,
@@ -179,7 +180,7 @@ export default new (class Segment {
    * @param id - 篮球ID
    * @returns {BasketballElement} 篮球元素
    */
-  basketball(id: number): BasketballElement {
+  basketball (id: number): BasketballElement {
     return {
       type: 'basketball',
       id,
@@ -191,7 +192,7 @@ export default new (class Segment {
    * @param id - 骰子ID
    * @returns {DiceElement} 骰子元素
    */
-  dice(id: number): DiceElement {
+  dice (id: number): DiceElement {
     return {
       type: 'dice',
       id,
@@ -203,7 +204,7 @@ export default new (class Segment {
    * @param id - 石头剪刀布ID
    * @returns {RpsElement} 石头剪刀布元素
    */
-  rps(id: number): RpsElement {
+  rps (id: number): RpsElement {
     return {
       type: 'rps',
       id,
@@ -217,7 +218,7 @@ export default new (class Segment {
    * @param strength - 戳一戳强度(1-5 默认1)
    * @returns {PokeElement} 戳一戳元素
    */
-  poke(id: number, poke_type: number, strength: number = 1): PokeElement {
+  poke (id: number, poke_type: number, strength: number = 1): PokeElement {
     return {
       type: 'poke',
       id,
@@ -235,7 +236,7 @@ export default new (class Segment {
    * @param pic - 封面
    * @returns {CustomMusicElemen} 自定义音乐元素
    */
-  customMusic(url: string, audio: string, title: string, author: string, pic: string): CustomMusicElemen {
+  customMusic (url: string, audio: string, title: string, author: string, pic: string): CustomMusicElemen {
     return {
       type: 'music',
       platform: 'custom',
@@ -253,7 +254,7 @@ export default new (class Segment {
    * @param id - 音乐ID
    * @returns {MusicElement} 音乐元素
    */
-  music(platform: 'QQ' | 'netease' | 'custom', id: string): MusicElement {
+  music (platform: 'QQ' | 'netease' | 'custom', id: string): MusicElement {
     return {
       type: 'music',
       platform,
@@ -267,7 +268,7 @@ export default new (class Segment {
    * @param code - 城市代码
    * @returns {WeatherElement} 天气元素
    */
-  weather(city: string, code: string): WeatherElement {
+  weather (city: string, code: string): WeatherElement {
     return {
       type: 'weather',
       city,
@@ -283,7 +284,7 @@ export default new (class Segment {
    * @param address - 地址
    * @returns {LocationElement} 位置元素
    */
-  location(lat: number, lon: number, title: string, address: string): LocationElement {
+  location (lat: number, lon: number, title: string, address: string): LocationElement {
     return {
       type: 'location',
       lat,
@@ -301,7 +302,7 @@ export default new (class Segment {
    * @param image - 分享图片
    * @returns {ShareElement} 分享元素
    */
-  share(url: string, title: string, content: string, image: string): ShareElement {
+  share (url: string, title: string, content: string, image: string): ShareElement {
     return {
       type: 'share',
       url,
@@ -317,7 +318,7 @@ export default new (class Segment {
    * @param id - 礼物ID
    * @returns {GiftElement} 礼物元素
    */
-  gift(qq: number, id: number): GiftElement {
+  gift (qq: number, id: number): GiftElement {
     return {
       type: 'gift',
       qq,
@@ -330,7 +331,7 @@ export default new (class Segment {
    * @param id - 表情ID
    * @returns {MarketFaceElement} 商城表情元素
    */
-  marketFace(id: string): MarketFaceElement {
+  marketFace (id: string): MarketFaceElement {
     return {
       type: 'market_face',
       id,
@@ -345,7 +346,7 @@ export default new (class Segment {
    * @param description - 描述
    * @returns {ForwardElement} 转发元素
    */
-  forward(res_id: string, uniseq?: string, summary?: string, description?: string): ForwardElement {
+  forward (res_id: string, uniseq?: string, summary?: string, description?: string): ForwardElement {
     return {
       type: 'forward',
       res_id,
@@ -361,7 +362,7 @@ export default new (class Segment {
    * @param peer - 被推荐人的QQ号或者被推荐群的群号
    * @returns {ContactElement} 分享名片元素
    */
-  contact(scene: 'group' | 'friend', peer: string): ContactElement {
+  contact (scene: 'group' | 'friend', peer: string): ContactElement {
     return {
       type: 'contact',
       scene,
@@ -374,7 +375,7 @@ export default new (class Segment {
    * @param data - JSON序列化过的字符串
    * @returns {JsonElement} JSON元素
    */
-  json(data: string): JsonElement {
+  json (data: string): JsonElement {
     return {
       type: 'json',
       data,
@@ -386,7 +387,7 @@ export default new (class Segment {
    * @param data - XML字符串
    * @returns {XmlElement} XML元素
    */
-  xml(data: string): XmlElement {
+  xml (data: string): XmlElement {
     return {
       type: 'xml',
       data,
@@ -396,7 +397,7 @@ export default new (class Segment {
   /**
    * 文件
    */
-  file(options: {
+  file (options: {
     /**
      * - 文件URL
      */
@@ -449,7 +450,7 @@ export default new (class Segment {
    * @param content - 原生markdown内容
    * @returns {ContentElement} Markdown元素
    */
-  markdown(
+  markdown (
     /**
      * - 原生markdown内容 或 模板ID
      */
@@ -466,7 +467,7 @@ export default new (class Segment {
        * - 模板参数值
        */
       values: Array<string>
-    }> = [],
+    }> = []
   ): ContentElement | TemplateElement {
     if (typeof content === 'string') {
       return {
@@ -487,14 +488,14 @@ export default new (class Segment {
    * @param data - 按钮数据
    * @returns {ButtonElement} 按钮元素
    */
-  button(data: ButtonElement['data']): ButtonElement {
+  button (data: ButtonElement['data']): ButtonElement {
     return {
       type: 'button',
       data,
     }
   }
 
-  rows(data: Array<ButtonElement['data']>): {
+  rows (data: Array<ButtonElement['data']>): {
     type: 'rows'
     rows: Array<ButtonElement>
   } {
@@ -513,7 +514,7 @@ export default new (class Segment {
    * @param nickname - 用户昵称
    * @param content - 节点内容
    */
-  node(user_id: string, nickname: string, content: KarinElement | Array<KarinElement>): KarinNodeElement {
+  node (user_id: string, nickname: string, content: KarinElement | Array<KarinElement>): KarinNodeElement {
     return {
       type: 'node',
       user_id,

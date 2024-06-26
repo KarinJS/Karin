@@ -7,13 +7,16 @@ import segment from '../utils/segment'
 import { AxiosRequestConfig } from 'axios'
 import { pipeline, Readable } from 'stream'
 import { KarinElement, KarinNodeElement } from '../types/element'
+import { dirName } from '@/types/plugin'
+import lodash from 'lodash'
+import { fileURLToPath } from 'url'
 
 /**
  * 常用方法
  */
 export default new (class Common {
   streamPipeline: (stream1: Readable, stream2: fs.WriteStream) => Promise<void>
-  constructor() {
+  constructor () {
     this.streamPipeline = promisify(pipeline)
   }
 
@@ -21,7 +24,7 @@ export default new (class Common {
    * 休眠函数
    * @param ms 毫秒
    */
-  sleep(ms: number) {
+  sleep (ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms))
   }
 
@@ -31,7 +34,7 @@ export default new (class Common {
    * @param  savePath 保存路径
    * @param param axios参数
    */
-  async downFile(fileUrl: string, savePath: string, param: AxiosRequestConfig = {}) {
+  async downFile (fileUrl: string, savePath: string, param: AxiosRequestConfig = {}) {
     try {
       this.mkdir(path.dirname(savePath))
       logger && logger.info(`[下载文件] ${fileUrl}`)
@@ -48,7 +51,7 @@ export default new (class Common {
    * 递归创建目录
    * @param dirname - 要创建的文件夹路径
    */
-  mkdir(dirname: string): boolean {
+  mkdir (dirname: string): boolean {
     if (fs.existsSync(dirname)) return true
     /** 递归自调用 */
     if (this.mkdir(path.dirname(dirname))) fs.mkdirSync(dirname)
@@ -62,7 +65,7 @@ export default new (class Common {
    * @param isFile - 添加file://前缀
    * @returns 标准化后的路径
    */
-  absPath(file: string, isDir = true, isFile = false): string {
+  absPath (file: string, isDir = true, isFile = false): string {
     file = file.replace(/\\/g, '/')
     if (file.startsWith('file://')) {
       /** linux */
@@ -90,7 +93,7 @@ export default new (class Common {
    * @param path - 路径
    * @returns 返回true为文件夹
    */
-  isDir(path: string): boolean {
+  isDir (path: string): boolean {
     try {
       return fs.statSync(path).isDirectory()
     } catch {
@@ -99,16 +102,70 @@ export default new (class Common {
   }
 
   /**
+   * 判断是否为插件包
+   * @param path - 路径
+   * @returns 返回true为插件包
+   */
+  isPlugin (path: string): boolean {
+    return this.exists(`${path}/package.json`)
+  }
+
+  /**
    * 判断路径是否存在
    * @param path - 路径
    * @returns 返回true为存在
    */
-  exists(path: string): boolean {
+  exists (path: string): boolean {
     try {
       return fs.existsSync(path)
     } catch {
       return false
     }
+  }
+
+  /**
+   * 根据文件后缀名从指定路径下读取符合要求的文件
+   * @param path - 路径
+   * @param ext - 后缀名、或后缀名列表
+   * @example common.readDir('./plugins', '.js')
+   * @example common.readDir('./plugins', ['.js', '.ts'])
+   */
+  readDir (_path: string, ext: string | string[]): string[] | null {
+    if (!this.isDir(_path)) return null
+    const files = fs.readdirSync(_path, { withFileTypes: true })
+    const list: string[] = []
+    if (!Array.isArray(ext)) ext = [ext]
+    // 排除文件夹 和不符合后缀名的文件
+    files.forEach(v => {
+      if (v.isDirectory()) return
+      if (ext.includes(path.extname(v.name))) list.push(v.name)
+    })
+    return list
+  }
+
+  /**
+   * 传入 import.meta.url 自动构建../
+   * @param url - import.meta.url
+   */
+  urlToPath (url: string): string {
+    // 获取当前文件的绝对路径
+    const filePath = fileURLToPath(url)
+
+    // 获取当前文件所在目录的绝对路径
+    const dirPath = path.dirname(filePath)
+
+    // 获取项目根目录
+    const rootPath = process.cwd()
+
+    // 计算当前文件到项目根目录的相对路径
+    const relativePath = path.relative(dirPath, rootPath)
+
+    // 计算返回上一级目录的数量
+    const upLevelsCount = relativePath.split(path.sep).length
+
+    // 生成相应数量的 '../'
+    const upPath = lodash.repeat('../', upLevelsCount)
+    return upPath
   }
 
   /**
@@ -118,7 +175,7 @@ export default new (class Common {
    * @param - 为true时，http地址会直接返回，否则会下载文件并转换为base64字符串
    * @returns 返回base64字符串
    */
-  async base64(file: string | Buffer | Readable, options = { http: false }): Promise<string> {
+  async base64 (file: string | Buffer | Readable, options = { http: false }): Promise<string> {
     /** 先判断是否非字符串情况 */
     if (typeof file !== 'string') {
       /** buffer */
@@ -170,7 +227,7 @@ export default new (class Common {
    * @param {stream.Readable} stream - 要转换的数据流对象
    * @returns {Promise<Buffer>} - 返回Buffer
    */
-  stream(stream: Readable): Promise<Buffer> {
+  stream (stream: Readable): Promise<Buffer> {
     return new Promise((resolve, reject) => {
       const chunks: Buffer[] = []
       stream.on('data', chunk => chunks.push(chunk))
@@ -186,7 +243,7 @@ export default new (class Common {
    * @param {boolean} options.http - 为true时，http地址会直接返回，否则会下载文件并转换为Buffer对象
    * @returns {Promise<Buffer>} - 返回Buffer对象
    */
-  async buffer(file: string | Buffer | Readable, options = { http: false }): Promise<Buffer | Error | string> {
+  async buffer (file: string | Buffer | Readable, options = { http: false }): Promise<Buffer | Error | string> {
     if (typeof file !== 'string') {
       if (Buffer.isBuffer(file)) return file
       if (file instanceof Readable) return this.stream(file)
@@ -224,7 +281,7 @@ export default new (class Common {
    * 标准化发送的消息内容
    * @param elements - 消息内容
    */
-  makeMessage(elements: string | KarinElement | (string | KarinElement)[]): Array<KarinElement> {
+  makeMessage (elements: string | KarinElement | (string | KarinElement)[]): Array<KarinElement> {
     /** 将msg格式化为数组 */
     if (!Array.isArray(elements)) elements = [elements]
     const message: Array<KarinElement> = []
@@ -245,7 +302,7 @@ export default new (class Common {
    * @param fakeNick 用户昵称
    * @return {Array<KarinNodeElement>}
    */
-  makeForward(elements: KarinElement | KarinElement[], fakeUin: string, fakeNick: string): Array<KarinNodeElement> {
+  makeForward (elements: KarinElement | KarinElement[], fakeUin: string, fakeNick: string): Array<KarinNodeElement> {
     if (!Array.isArray(elements)) elements = [elements]
     return elements.map(element => {
       const NodeElement = this.makeMessage(element)
@@ -258,29 +315,21 @@ export default new (class Common {
    * @param isDir - 返回绝对路径
    * @param isPack - 屏蔽不带packageon的插件
    */
-  getPlugins(
-    isDir = false,
-    isPack = false,
-  ): Array<{
-    /**
-     * - 插件包名称 例如: karin-plugin-example
-     */
-    name: string
-  }> {
+  getPlugins (isDir = false, isPack = false): Array<dirName> {
     const dir = this.absPath('./plugins', isDir)
     let list = fs.readdirSync(dir, { withFileTypes: true })
     // 忽略非文件夹、非 karin-plugin-、karin-adapter- 开头的文件夹
-    list = list.filter(v => v.isDirectory() && (v.name.startsWith('karin-plugin-') || v.name.startsWith('karin-adapter-')))
+    list = list.filter(v => v.isDirectory() && v.name.startsWith('karin-plugin-'))
     if (isPack) list = list.filter(v => fs.existsSync(`${dir}/${v.name}/packageon`))
-
-    return list
+    const arr: dirName[] = []
+    list.map(v => arr.push(v.name as dirName))
+    return arr
   }
 
   /**
    * 获取运行时间
-   * @returns {string} - 返回运行时间
    */
-  uptime() {
+  uptime (): string {
     const time = process.uptime()
     const day = Math.floor(time / 86400)
     const hour = Math.floor((time % 86400) / 3600)
@@ -296,7 +345,7 @@ export default new (class Common {
    * 构建消息体日志
    * @param - 消息体
    */
-  makeMessageLog(message: Array<KarinElement>) {
+  makeMessageLog (message: Array<KarinElement>) {
     const logs = []
     for (const val of message) {
       switch (val.type) {

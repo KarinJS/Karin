@@ -4,7 +4,7 @@ export default class RedisLevel {
   #level
   #expireMap
   id: string
-  constructor() {
+  constructor () {
     const path = process.cwd() + '/data/db/RedisLevel'
     this.#level = new Level(path, { valueEncoding: 'json' })
     /**
@@ -26,7 +26,7 @@ export default class RedisLevel {
   /**
    * 过期时间处理 每分钟检查一次
    */
-  async #expireHandle() {
+  async #expireHandle () {
     setInterval(async () => {
       const now = Date.now()
       // 获取代理对象的键值对数组
@@ -75,7 +75,7 @@ export default class RedisLevel {
    * @param {string} key 键
    * @returns {Promise<string>|Error} 数据
    */
-  async get(key: string): Promise<string | null> {
+  async get (key: string): Promise<string | null> {
     try {
       /** 先查过期时间 */
       const expire = this.#expireMap.get(key)
@@ -100,7 +100,7 @@ export default class RedisLevel {
    * @param [options.EX] 过期时间 单位秒
    * @returns {Promise<void>|Error}
    */
-  async set(key: string, value: string, options?: { EX: number } | undefined) {
+  async set (key: string, value: string, options?: { EX: number } | undefined) {
     if (options && options.EX) {
       this.#expireMap.set(key, Date.now() + options.EX * 1000)
     }
@@ -113,7 +113,7 @@ export default class RedisLevel {
    * @param {string} key 键
    * @returns {Promise<void>|Error}
    */
-  async del(key: string) {
+  async del (key: string) {
     this.#expireMap.delete(key)
     return await this.#level.del(key)
   }
@@ -123,7 +123,7 @@ export default class RedisLevel {
    * @param {string} [prefix] 前缀
    * @returns {Promise<string[]>|Error} 键列表
    */
-  async keys(prefix = ''): Promise<string[]> {
+  async keys (prefix = ''): Promise<string[]> {
     const keys = []
     for await (const key of this.#level.keys({ gte: prefix, lt: prefix + '\xFF' })) {
       // Check if the key has expired
@@ -143,7 +143,7 @@ export default class RedisLevel {
    * @param {string} key 键
    * @returns {Promise<number>|Error}
    */
-  async incr(key: string): Promise<number> {
+  async incr (key: string): Promise<number> {
     let value = Number(await this.get(key))
     if (value === null) {
       value = 0
@@ -161,7 +161,7 @@ export default class RedisLevel {
    * @param {string} key 键
    * @returns {Promise<number>|Error}
    */
-  async decr(key: string): Promise<number> {
+  async decr (key: string): Promise<number> {
     let value = Number(await this.get(key))
     if (value === null) {
       value = 0
@@ -180,7 +180,7 @@ export default class RedisLevel {
    * @param seconds 过期时间 单位秒
    * @returns {Promise<number>|Error}
    */
-  async expire(key: string, seconds: number): Promise<number> {
+  async expire (key: string, seconds: number): Promise<number> {
     this.#expireMap.set(key, Date.now() + seconds * 1000)
     return seconds
   }
@@ -190,7 +190,7 @@ export default class RedisLevel {
    * @param {string} key 键
    * @returns {Promise<number>|Error}
    */
-  async ttl(key: string): Promise<number> {
+  async ttl (key: string): Promise<number> {
     const expire = this.#expireMap.get(key)
     if (expire) {
       return Math.ceil((expire - Date.now()) / 1000)
@@ -205,7 +205,7 @@ export default class RedisLevel {
    * @param {string} value 值
    * @returns {Promise<void>|Error}
    */
-  async setEx(key: string, seconds: number, value: string) {
+  async setEx (key: string, seconds: number, value: string) {
     this.#expireMap.set(key, Date.now() + seconds * 1000)
     return await this.#level.put(key, value)
   }
@@ -215,7 +215,7 @@ export default class RedisLevel {
    * @param {string} key 键
    * @returns {Promise<number>|Error}
    */
-  async exists(key: string): Promise<number> {
+  async exists (key: string): Promise<number> {
     const value = await this.get(key)
     return value === null ? 0 : 1
   }
@@ -227,7 +227,7 @@ export default class RedisLevel {
    * @param data.score 分数
    * @param {string} data.value 值
    */
-  async zAdd(key: string, { score, value }: { score: number; value: string }) {
+  async zAdd (key: string, { score, value }: { score: number; value: string }) {
     const set = await this.get(key)
     const arr = (set ? JSON.parse(set) : []) as any[]
 
@@ -241,7 +241,7 @@ export default class RedisLevel {
    * @param {string} key 键
    * @param {string} value 值
    */
-  async zRem(key: string, value: string) {
+  async zRem (key: string, value: string) {
     const set = await this.get(key)
     if (set === null) return
     let arr = JSON.parse(set) as any[]
@@ -256,7 +256,7 @@ export default class RedisLevel {
    * @param {string} value 值
    * @returns {Promise<number>|Error}
    */
-  async zIncrBy(key: string, increment: number, value: string): Promise<number> {
+  async zIncrBy (key: string, increment: number, value: string): Promise<number> {
     const set = await this.get(key)
     if (set === null) throw new Error('Set does not exist')
     const arr = JSON.parse(set) as any[]
@@ -274,7 +274,7 @@ export default class RedisLevel {
    * @param max 最大分数
    * @returns {Promise<string[]>|Error}
    */
-  async zRangeByScore(key: string, min: number, max: number) {
+  async zRangeByScore (key: string, min: number, max: number) {
     const set = await this.get(key)
     if (set === null) return []
     const arr = JSON.parse(set) as any[]
@@ -287,7 +287,7 @@ export default class RedisLevel {
    * @param {string} value 值
    * @returns {Promise<number>|Error}
    */
-  async zScore(key: string, value: string): Promise<number | null> {
+  async zScore (key: string, value: string): Promise<number | null> {
     const set = await this.get(key)
     if (set === null) return null
     const arr = JSON.parse(set)

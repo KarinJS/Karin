@@ -10,7 +10,7 @@ import { exec as execCmd } from 'child_process'
 export const exec = (
   cmd: string,
   log = true,
-  options = { cwd: process.cwd(), encoding: 'utf-8' },
+  options = { cwd: process.cwd(), encoding: 'utf-8' }
 ): Promise<{
   /**
    * - 执行状态

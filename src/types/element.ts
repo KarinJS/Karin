@@ -597,6 +597,8 @@ export interface LongMsgElement extends Element {
   id: string
 }
 
+export type KarinElement = TextElement | AtElement | FaceElement | BubbleFaceElement | ReplyElement | ImageElement | VoiceElement | VideoElement | BasketballElement | DiceElement | RpsElement | PokeElement | MusicElement | WeatherElement | LocationElement | ShareElement | GiftElement | MarketFaceElement | ForwardElement | ContactElement | JsonElement | XmlElement | FileElement | MarkdownElement | ButtonElement | RowElement | RecordElement | LongMsgElement
+
 /**
  * - 构建自定义转发节点 此元素仅可通过专用接口发送 不支持混合发送
  */
@@ -606,5 +608,3 @@ export interface KarinNodeElement extends Element {
   nickname: string
   content: KarinElement | Array<KarinElement>
 }
-
-export type KarinElement = TextElement | AtElement | FaceElement | BubbleFaceElement | ReplyElement | ImageElement | VoiceElement | VideoElement | BasketballElement | DiceElement | RpsElement | PokeElement | MusicElement | WeatherElement | LocationElement | ShareElement | GiftElement | MarketFaceElement | ForwardElement | ContactElement | JsonElement | XmlElement | FileElement | MarkdownElement | ButtonElement | RowElement | RecordElement | LongMsgElement

@@ -5,7 +5,7 @@ import { contact, Sender, SubEventForEvent, RequestEvent } from '../types/types'
  * - 请求事件基类
  */
 export class KarinRequest extends KarinEvent {
-  constructor({
+  constructor ({
     self_id,
     event_id,
     user_id,
@@ -56,6 +56,7 @@ export class KarinRequest extends KarinEvent {
     super({ event: 'request', event_id, self_id, user_id, group_id, time, contact, sender, sub_event })
     this.content = content
   }
+
   /**
    * - 事件对应的内容参数
    */

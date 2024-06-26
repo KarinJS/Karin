@@ -4,7 +4,7 @@ import logger from '../utils/logger'
 import Review from './review.handler'
 import Listener from '../core/listener'
 import { KarinMessage } from './message'
-import { stateArr } from '../core/plugin'
+import Plugin, { stateArr } from '../core/plugin'
 import EventHandler from './event.handler'
 import PluginLoader from '../core/plugin.loader'
 
@@ -17,7 +17,7 @@ export default class Message extends EventHandler {
    * - 是否打印群消息日志
    */
   GroupMsgPrint: boolean = false
-  constructor(e: KarinMessage) {
+  constructor (e: KarinMessage) {
     super(e)
     this.e = e
     Listener.emit('karin:count:recv', 1)
@@ -41,12 +41,13 @@ export default class Message extends EventHandler {
   /**
    * 处理消息
    */
-  async deal() {
+  async deal () {
     /** 上下文 */
     if (await this.context()) return
 
     /* eslint-disable no-labels */
-    a: for (const app of PluginLoader.Apps) {
+    a: for (const index of PluginLoader.rule) {
+      const app = PluginLoader.PluginList[index]
       /** 判断事件 */
       if (app.event && !this.filtEvent(app.event)) continue
 
@@ -69,9 +70,14 @@ export default class Message extends EventHandler {
           if (!this.filterPermission(v.permission)) break a
 
           try {
-            const App = new app.App()
-            App.e = this.e
-            let res = (App[v.fnc as keyof typeof App] as Function)()
+            let res
+            if (app.file.type === 'function' && typeof v.fnc === 'function') {
+              res = v.fnc(this.e)
+            } else {
+              const cla = new (app.file.Fnc as new () => Plugin)()
+              cla.e = this.e
+              res = (cla[v.fnc as keyof typeof cla] as Function)(this.e) as Promise<boolean>
+            }
 
             /** 计算插件处理时间 */
             const start = Date.now()
@@ -92,7 +98,7 @@ export default class Message extends EventHandler {
   /**
    * 处理消息体
    */
-  dealMsg() {
+  dealMsg () {
     const logs = []
     for (const val of this.e.elements) {
       switch (val.type) {
@@ -229,7 +235,7 @@ export default class Message extends EventHandler {
   /**
    * 处理上下文
    */
-  async context(): Promise<boolean> {
+  async context (): Promise<boolean> {
     const key = this.e.isGroup ? `${this.e.group_id}.${this.e.user_id}` : this.e.user_id
     const App = stateArr[key]
     if (App) {

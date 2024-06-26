@@ -1,47 +1,6 @@
 import chokidar from 'chokidar'
 
 /**
- * 渲染基类
- */
-export interface KarinRender {
-  dir: './temp/html'
-  html: {
-    [key: string]: string
-  }
-  watcher: {
-    [key: string]: chokidar.FSWatcher
-  }
-
-  /**
-   * 模板渲染
-   * @param options - 渲染参数
-   * @param isAbs - 是否返回绝对路径 默认true
-   */
-  dealTpl(options: KarinRenderType, isAbs: boolean): string
-  /**
-   * 监听模板文件
-   * @param tplFile 模板文件路径
-   */
-  watch(tplFile: string): void
-  /**
-   * 渲染
-   * @param options - 标准渲染方法
-   */
-  render: (options: KarinRenderType) => Promise<string | Array<string>>
-}
-
-/**
- * 渲染器管理
- */
-export interface KarinRenderApp {
-  index: number
-  id: string
-  type: string
-  time: number
-  render: KarinRender['render']
-}
-
-/**
  * 渲染标准方法传参
  */
 export interface KarinRenderType {
@@ -112,4 +71,45 @@ export interface KarinRenderType {
     waitUntil?: 'load' | 'domcontentloaded' | 'networkidle0' | 'networkidle2'
     [key: string]: any
   }
+}
+
+/**
+ * 渲染基类
+ */
+export interface KarinRender {
+  dir: './temp/html'
+  html: {
+    [key: string]: string
+  }
+  watcher: {
+    [key: string]: chokidar.FSWatcher
+  }
+
+  /**
+   * 模板渲染
+   * @param options - 渲染参数
+   * @param isAbs - 是否返回绝对路径 默认true
+   */
+  dealTpl (options: KarinRenderType, isAbs: boolean): string
+  /**
+   * 监听模板文件
+   * @param tplFile 模板文件路径
+   */
+  watch (tplFile: string): void
+  /**
+   * 渲染
+   * @param options - 标准渲染方法
+   */
+  render: (options: KarinRenderType) => Promise<string | Array<string>>
+}
+
+/**
+ * 渲染器管理
+ */
+export interface KarinRenderApp {
+  index: number
+  id: string
+  type: string
+  time: number
+  render: KarinRender['render']
 }
