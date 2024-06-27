@@ -2,6 +2,7 @@
   "name": "node-karin",
   "version": "0.2.1",
   "private": false,
+  "description": "基于 Kritor 进行开发的nodejs机器人框架",
   "homepage": "https://github.com/KarinJS/Karin",
   "bugs": {
     "url": "https://github.com/KarinJS/Karin/issues"

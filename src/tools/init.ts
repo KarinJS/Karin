@@ -30,7 +30,7 @@ for (const dir of delList) {
 }
 
 // 判断是否为第一次使用
-if (!fs.existsSync('./index.js') && !fs.existsSync('./plugins')) {
+if (!fs.existsSync('./index.js')) {
   // 创建一个index.js文件 以供初次开箱使用，写入默认配置
   fs.writeFileSync('./index.js', `import { Bot } from 'node-karin'
 console.log(Bot.name + '开始初始化~')
