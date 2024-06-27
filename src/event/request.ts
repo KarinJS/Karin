@@ -1,5 +1,5 @@
 import { KarinEvent } from './event'
-import { contact, Sender, SubEventForEvent, RequestEvent } from '../types/types'
+import { contact, Sender, SubEventForEvent, RequestEvent } from 'karin/types/index'
 
 /**
  * - 请求事件基类

@@ -1,14 +1,13 @@
 import util from 'util'
 import lodash from 'lodash'
-import Plugin from '../core/plugin'
-import { E } from '../types/types'
 import logger from './logger'
-import { dirName, fileName } from '../types/plugin'
+import { Plugin } from 'karin/core/index'
+import { dirName, fileName, E } from 'karin/types/index'
 
 /**
  * 事件处理器类
  */
-export default new (class EventHandler {
+export const handler = new (class EventHandler {
   events: {
     [key: string]: Array<{
       /**

@@ -1,12 +1,12 @@
 import fs from 'fs'
 import chalk from 'chalk'
 import log4js from 'log4js'
-import Cfg from './config'
+import { config } from './config'
 
 const logsDir = './logs'
 if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir)
 
-const { log_level, log_days_Keep, log4jsCfg } = Cfg.Config
+const { log_level, log_days_Keep, log4jsCfg } = config.Config
 const level = log_level || log4jsCfg.level || 'info'
 const daysToKeep = log_days_Keep || log4jsCfg.daysToKeep || 7
 const { overall, fragments, maxLogSize } = log4jsCfg
@@ -111,7 +111,7 @@ if (fragments) {
 
 log4js.configure(options)
 
-const logger = log4js.getLogger('default')
+export const logger = log4js.getLogger('default')
 logger.chalk = chalk
 logger.red = chalk.red
 logger.green = chalk.green
@@ -122,7 +122,7 @@ logger.cyan = chalk.cyan
 logger.white = chalk.white
 logger.gray = chalk.gray
 logger.violet = chalk.hex('#868ECC')
-logger.fnc = chalk.hex(Cfg.Config.log_color || '#FFFF00')
+logger.fnc = chalk.hex(config.Config.log_color || '#FFFF00')
 logger.bot = (level, id, ...args) => {
   switch (level) {
     case 'trace':

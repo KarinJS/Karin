@@ -2,7 +2,7 @@
 
 import fs from 'fs'
 import path from 'path'
-import { karinDir } from '@/core/dir'
+import { karinDir } from 'karin/core/dir'
 
 const pathList = ['./plugins', './config/config']
 

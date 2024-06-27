@@ -1,10 +1,8 @@
 /* eslint-disable no-dupe-class-members */
-import common from '@/utils/common'
-import { Permission } from '@/types/types'
-import { PluginApps } from '@/types/plugin'
-import { KarinElement } from '@/types/element'
-import { KarinMessage } from '@/event/message'
 import PluginApp from './plugin.app'
+import { common } from 'karin/utils/index'
+import { KarinMessage } from 'karin/event/message'
+import { Permission, PluginApps, KarinElement } from 'karin/types/index'
 
 type FncFunction = (e: KarinMessage) => Promise<boolean>
 type FncElement = string | KarinElement | Array<KarinElement>
@@ -62,7 +60,7 @@ export interface OptionsElement extends OptionsCommand {
   stop?: boolean
 }
 
-export default class Karin {
+export class Karin {
   /**
    * @param reg - 正则表达式
    * @param fnc - 函数

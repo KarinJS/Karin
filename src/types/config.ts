@@ -103,16 +103,22 @@ export interface App {
 export interface Config {
   /**
    * 日志等级
+   * @description 即将废弃，请使用log4jsCfg.level
    */
-  log_level: string
+  log_level?: string
   /**
    * 日志保留天数
+   * @description 即将废弃，请使用log4jsCfg.daysToKeep
    */
-  log_days_Keep: number
+  log_days_Keep?: number
   /**
    * 控制台触发插件日志颜色
    */
   log_color: string
+  /**
+   * 关闭后台进程失败后是否继续启动 继续启动会导致多进程
+   */
+  multi_progress: boolean
   /**
    * ffmpeg配置
    */
@@ -167,7 +173,7 @@ export interface Config {
     /**
      * 日志等级
      */
-    level: string
+    level: 'trace' | 'debug' | 'info' | 'warn' | 'fatal' | 'mark' | 'error' | 'off'
     /**
      * 日志保留天数
      */

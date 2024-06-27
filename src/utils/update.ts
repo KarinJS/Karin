@@ -1,7 +1,7 @@
 import fs from 'fs'
 import exec from './exec'
 
-export default new (class Update {
+export const update = new (class Update {
   dir: string
   constructor () {
     this.dir = './plugins'

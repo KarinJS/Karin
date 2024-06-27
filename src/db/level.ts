@@ -5,7 +5,7 @@ const path = process.cwd() + '/data/db/Level'
 /**
  * @type {Level}
  */
-class LevelDB extends Level {
+export default class LevelDB extends Level {
   id: string
   constructor () {
     super(path, { valueEncoding: 'json' })
@@ -36,6 +36,3 @@ class LevelDB extends Level {
     return await super.put(key, value)
   }
 }
-
-const level = new LevelDB()
-export default level

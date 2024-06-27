@@ -1,22 +1,19 @@
 import fs from 'fs'
-import lodash from 'lodash'
 import path from 'path'
+import lodash from 'lodash'
 import chokidar from 'chokidar'
 import schedule from 'node-schedule'
-import Renderer from '../renderer/app'
-import button from '../utils/button'
-import Common from '../utils/common'
-import handler from '../utils/handler'
-import listener from './listener'
-import logger from '../utils/logger'
-import Plugin from './plugin'
-import { Plugin as PluginType, PluginApps, PluginTask, dirName, fileName, AppInfo } from '../types/plugin'
+import { Plugin } from './plugin'
+import { listener } from './listener'
 import PluginApp from './plugin.app'
+import { render } from 'karin/renderer/index'
+import { button, common, handler, logger } from 'karin/utils/index'
+import { PluginType as PluginType, PluginApps, PluginTask, dirName, fileName, AppInfo } from 'karin/types/index'
 
 /**
  * 加载插件
  */
-export default new (class PluginLoader {
+export const PluginLoader = new (class PluginLoader {
   dir: './plugins'
   dirPath: string
   /**
@@ -71,7 +68,7 @@ export default new (class PluginLoader {
 
   constructor () {
     this.dir = './plugins'
-    this.dirPath = Common.urlToPath(import.meta.url)
+    this.dirPath = common.urlToPath(import.meta.url)
     this.Apps = []
     this.task = []
     this.watcher = new Map()
@@ -112,7 +109,7 @@ export default new (class PluginLoader {
 
     logger.info(`[按钮][${button.Apps.length}个] 加载完成`)
     logger.info(`[插件][${this.Apps.length}个] 加载完成`)
-    logger.info(`[渲染器][${Renderer.Apps.length}个] 加载完成`)
+    logger.info(`[渲染器][${render.Apps.length}个] 加载完成`)
     logger.info(`[定时任务][${this.task.length}个] 加载完成`)
     logger.info(`[Handler][Key:${handlerKeys.length}个][fnc:${handlerCount}个] 加载完成`)
     logger.info(logger.green('-----------'))
@@ -129,7 +126,7 @@ export default new (class PluginLoader {
   getPlugins () {
     const Apps: Array<AppInfo> = []
     /** 获取所有插件包 */
-    const plugins = Common.getPlugins()
+    const plugins = common.getPlugins()
 
     const isTs = process.env.karin_app_lang === 'ts'
 
@@ -141,7 +138,7 @@ export default new (class PluginLoader {
       const PluginPath = `${this.dir}/${dir}`
 
       // 非插件包
-      if (!Common.isPlugin(PluginPath)) {
+      if (!common.isPlugin(PluginPath)) {
         const list = fs.readdirSync(`${this.dir}/${dir}`, {
           withFileTypes: true,
         })
@@ -154,13 +151,13 @@ export default new (class PluginLoader {
       }
 
       /** js环境 */
-      if (Common.exists(`${PluginPath}/index.js`)) {
+      if (common.exists(`${PluginPath}/index.js`)) {
         Apps.push({ dir, name: 'index.js' as fileName })
       }
 
       const appList = ['apps', 'dist/apps']
       appList.forEach(app => {
-        if (Common.isDir(`${PluginPath}/${app}`)) {
+        if (common.isDir(`${PluginPath}/${app}`)) {
           const result = this.getApps((`${dir}/${app}`))
           Apps.push(...result)
         }
@@ -168,11 +165,11 @@ export default new (class PluginLoader {
 
       /** ts环境 */
       if (isTs) {
-        if (Common.exists(`${PluginPath}/index.ts`)) {
+        if (common.exists(`${PluginPath}/index.ts`)) {
           Apps.push({ dir, name: 'index.ts' as fileName })
         }
 
-        if (Common.isDir(`${PluginPath}/src/apps`)) {
+        if (common.isDir(`${PluginPath}/src/apps`)) {
           const result = this.getApps((`${dir}/src/apps`), true)
           Apps.push(...result)
         }

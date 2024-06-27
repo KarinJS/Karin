@@ -1,16 +1,16 @@
-import WebSocket from 'ws'
 import fs from 'fs'
 import path from 'path'
 import { URL } from 'url'
-import HttpRenderer from './http'
-import config from '../utils/config'
-import { render } from '../index'
+import WebSocket from 'ws'
+import { render } from './index'
+import { HttpRenderer } from './http'
+import { config } from 'karin/utils/index'
 
 let ws: WebSocket
 let reConnect: NodeJS.Timeout | undefined
 const chunkSize = 1024 * 1024 * 3 // 文件分片大小
 
-export default function connect () {
+export function Wormhole () {
   let heartbeat: string | number | NodeJS.Timeout | null | undefined
   let index = 0
   reConnect = undefined
@@ -152,7 +152,7 @@ export default function connect () {
     }
     logger.warn('连接关闭，10秒后尝试重新连接')
     if (!reConnect) {
-      reConnect = setTimeout(connect, 10000)
+      reConnect = setTimeout(Wormhole, 10000)
     }
   })
 
@@ -166,7 +166,7 @@ export default function connect () {
     }
     logger.warn('连接错误，10秒后尝试重新连接')
     if (!reConnect) {
-      reConnect = setTimeout(connect, 10000)
+      reConnect = setTimeout(Wormhole, 10000)
     }
   })
 }

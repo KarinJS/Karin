@@ -1,7 +1,7 @@
 import schedule from 'node-schedule'
 import { KarinNodeElement } from './element'
 import { Reply, replyCallback } from './reply'
-import { E, Event, Permission, SubEvent } from './types'
+import { E, Event, Permission, SubEvent } from './event'
 
 /**
  * - 插件根目录名称
@@ -124,7 +124,7 @@ export interface AppInfo {
 /**
  * - 插件基类
  */
-export interface Plugin {
+export interface PluginType {
   /**
    * - 插件名称
    */
@@ -220,7 +220,7 @@ export interface Plugin {
     /**
      * - 插件实例
      */
-    plugin: Plugin
+    plugin: PluginType
     /**
      * - 执行方法名称
      */
@@ -236,9 +236,9 @@ export interface Plugin {
 /**
  * 上下文状态
  */
-export interface stateArr {
+export interface stateArrType {
   [key: string]: {
-    plugin: Plugin
+    plugin: PluginType
     fnc: string
   }
 }
@@ -258,7 +258,7 @@ export interface PluginApps {
     /**
      * - 插件方法
      */
-    Fnc: '' | (new () => Plugin)
+    Fnc: '' | (new () => PluginType)
   }
   /**
    * - 插件名称

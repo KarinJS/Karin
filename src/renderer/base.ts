@@ -1,14 +1,13 @@
 import fs from 'fs'
 import chokidar from 'chokidar'
 import template from 'art-template'
-import common from '../utils/common'
-import logger from '../utils/logger'
-import { KarinRender, KarinRenderType } from '../types/render'
+import { common, logger } from 'karin/utils/index'
+import { KarinRender, KarinRenderType } from 'karin/types/render'
 
 /**
  * 渲染器基类 所有渲染器都应该继承这个类
  */
-export default class RenderBase implements KarinRender {
+export class RenderBase implements KarinRender {
   dir: './temp/html'
   html: {
     [key: string]: string

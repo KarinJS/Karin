@@ -1,12 +1,12 @@
-import fs from 'fs'
-import Yaml from 'yaml'
-import chokidar from 'chokidar'
-import { Redis, App, Config, Server, Package, GroupCfg } from '../types/config'
 import { Logger } from 'log4js'
-import { karinDir } from '@/core/dir'
+import { karinDir } from 'karin/core/dir'
+import { fs, yaml as Yaml, chokidar } from 'karin/modules'
+import { Redis, App, Config, Server, Package, GroupCfg } from 'karin/types/index'
 
-/** 配置文件 */
-export default new (class Cfg {
+/**
+ * 配置文件
+ */
+export const config = new (class Cfg {
   dir: string
   _path: string
   _pathDef: string
@@ -248,7 +248,7 @@ export default new (class Cfg {
 
   async change_config () {
     /** 修改日志等级 */
-    this.loggger.level = this.Config.log_level
+    this.loggger.level = this.Config.log4jsCfg.level
     await this.#review()
     // if (this.Server.HotUpdate) {
     //   const { Bot } = await import('../index')

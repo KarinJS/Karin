@@ -1,7 +1,5 @@
 import { KarinElement } from './element'
-import { KarinMessage } from '../event/message'
-import { KarinNotice } from '../event/notice'
-import { KarinRequest } from '../event/request'
+import { KarinMessage, KarinNotice, KarinRequest } from 'karin/event/index'
 
 /**
  * - 事件类型

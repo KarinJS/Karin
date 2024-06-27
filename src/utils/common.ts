@@ -1,20 +1,15 @@
-import fs from 'fs'
-import path from 'path'
-import axios from 'axios'
 import { promisify } from 'util'
-import logger from '../utils/logger'
-import segment from '../utils/segment'
+import { fileURLToPath } from 'url'
 import { AxiosRequestConfig } from 'axios'
 import { pipeline, Readable } from 'stream'
-import { KarinElement, KarinNodeElement } from '../types/element'
-import { dirName } from '@/types/plugin'
-import lodash from 'lodash'
-import { fileURLToPath } from 'url'
+import { logger, segment } from 'karin/utils/index'
+import { fs, path, axios, lodash } from 'karin/modules'
+import { dirName, KarinElement, KarinNodeElement } from 'karin/types/index'
 
 /**
  * 常用方法
  */
-export default new (class Common {
+export const common = new (class Common {
   streamPipeline: (stream1: Readable, stream2: fs.WriteStream) => Promise<void>
   constructor () {
     this.streamPipeline = promisify(pipeline)
@@ -44,6 +39,22 @@ export default new (class Common {
     } catch (err) {
       logger && logger.error(`下载文件错误：${err}`)
       return false
+    }
+  }
+
+  /**
+   * 对axios进行简单封装，超时、错误后返回null，不会抛出异常
+   * @param url 请求地址
+   * @param type 请求类型
+   * @param param axios参数
+   */
+  async axios (url: string, type: 'get' | 'post' = 'get', param: AxiosRequestConfig = {}): Promise<any | null> {
+    try {
+      if (type === 'post') return await axios.post(url, param.data, param)
+      return await axios.get(url, param)
+    } catch (error) {
+      logger.debug(error)
+      return null
     }
   }
 

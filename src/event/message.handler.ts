@@ -1,17 +1,14 @@
 import lodash from 'lodash'
-import Config from '../utils/config'
-import logger from '../utils/logger'
-import Review from './review.handler'
-import Listener from '../core/listener'
+import { review } from './review.handler'
 import { KarinMessage } from './message'
-import Plugin, { stateArr } from '../core/plugin'
 import EventHandler from './event.handler'
-import PluginLoader from '../core/plugin.loader'
+import { logger, config } from 'karin/utils/index'
+import { listener, Plugin, stateArr, PluginLoader } from 'karin/core/index'
 
 /**
  * 消息事件
  */
-export default class Message extends EventHandler {
+export class MessageHandler extends EventHandler {
   e: KarinMessage
   /**
    * - 是否打印群消息日志
@@ -20,14 +17,14 @@ export default class Message extends EventHandler {
   constructor (e: KarinMessage) {
     super(e)
     this.e = e
-    Listener.emit('karin:count:recv', 1)
+    listener.emit('karin:count:recv', 1)
     /** 处理消息 保证日志的打印 */
     this.dealMsg()
     /** 事件处理 */
     if (this.review()) return
 
     /** 响应模式 */
-    if (this.e.group_id && 'mode' in this.config && this.config.mode && !Review.mode(this.e, this.config)) {
+    if (this.e.group_id && 'mode' in this.config && this.config.mode && !review.mode(this.e, this.config)) {
       logger.debug('[消息拦截] 响应模式不匹配')
       return
     }
@@ -57,7 +54,7 @@ export default class Message extends EventHandler {
         v.reg.lastIndex = 0
         if (v.reg.test(this.e.msg)) {
           /** 检查黑白名单插件 */
-          if ('GroupCD' in this.config && !Review.PluginEnable(app, this.config)) continue
+          if ('GroupCD' in this.config && !review.PluginEnable(app, this.config)) continue
 
           /** 判断子事件 */
           if (v.event && !this.filtEvent(v.event)) continue
@@ -81,7 +78,7 @@ export default class Message extends EventHandler {
 
             /** 计算插件处理时间 */
             const start = Date.now()
-            Listener.emit('karin:count:fnc', this.e.logFnc)
+            listener.emit('karin:count:fnc', this.e.logFnc)
             res = await res
             this.GroupMsgPrint && typeof v.log === 'function' && v.log(this.e.self_id, `${logFnc} ${lodash.truncate(this.e.msg, { length: 80 })} 处理完成 ${logger.green(Date.now() - start + 'ms')}`)
             if (res !== false) break a
@@ -205,14 +202,14 @@ export default class Message extends EventHandler {
     this.e.raw_message = logs.join('')
 
     /** 前缀处理 */
-    this.e.group_id && 'GroupCD' in this.config && Review.alias(this.e, this.config)
+    this.e.group_id && 'GroupCD' in this.config && review.alias(this.e, this.config)
 
     /** 主人 这里强制是因为yaml在自动保存QQ号的时候会强制化为数字 */
     const masterId = (Number(this.e.user_id) || String(this.e.user_id)) as string
-    if (Config.master.includes(masterId)) {
+    if (config.master.includes(masterId)) {
       this.e.isMaster = true
       this.e.isAdmin = true
-    } else if (Config.admin.includes(masterId)) {
+    } else if (config.admin.includes(masterId)) {
       /** 管理员 */
       this.e.isAdmin = true
     }
@@ -225,7 +222,7 @@ export default class Message extends EventHandler {
     } else if (this.e.contact.scene === 'group') {
       this.e.isGroup = true
       this.e.logText = `[Group:${this.e.group_id}-${this.e.user_id}(${this.e.sender.nick || ''})]`
-      this.GroupMsgPrint = Review.GroupMsgPrint(this.e)
+      this.GroupMsgPrint = review.GroupMsgPrint(this.e)
       this.GroupMsgPrint && logger.bot('info', this.e.self_id, `群消息：[${this.e.group_id}-${this.e.user_id}(${this.e.sender.nick || ''})] ${this.e.raw_message}`)
     } else {
       logger.bot('info', this.e.self_id, `未知消息：${JSON.stringify(this.e)}`)

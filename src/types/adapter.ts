@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws'
 import { IncomingMessage } from 'http'
 import { KarinElement, KarinNodeElement } from './element'
-import { contact, PushMessageBody, EssenceMessageBody, FriendInfo, GroupInfo, GroupMemberInfo, GroupHonorInfo } from './types'
+import { contact, PushMessageBody, EssenceMessageBody, FriendInfo, GroupInfo, GroupMemberInfo, GroupHonorInfo } from './event'
 
 export interface KarinAdapter {
   /**
@@ -75,14 +75,14 @@ export interface KarinAdapter {
   /**
    * 获取Bot自身UID
    */
-  get self_id(): string
+  get self_id (): string
 
   /**
    * 专属当前Bot的日志打印方法
    * @param level - 日志等级
    * @param args - 日志内容
    */
-  logger(level: 'info' | 'error' | 'trace' | 'debug' | 'mark' | 'warn' | 'fatal', ...args: any[]): void
+  logger (level: 'info' | 'error' | 'trace' | 'debug' | 'mark' | 'warn' | 'fatal', ...args: any[]): void
 
   /**
    * - 可选方法 仅ws有效 在注册适配器后 如果有符合的path则会调用此方法
@@ -100,7 +100,7 @@ export interface KarinAdapter {
   /**
    * - 获取头像url
    */
-  getAvatarUrl(
+  getAvatarUrl (
     /**
      * - 用户ID
      */
@@ -114,7 +114,7 @@ export interface KarinAdapter {
   /**
    * - 获取群头像
    */
-  getGroupAvatar(
+  getGroupAvatar (
     /**
      * - 群号
      */
@@ -132,7 +132,7 @@ export interface KarinAdapter {
   /**
    * - 发送消息
    */
-  SendMessage(
+  SendMessage (
     /**
      * - 联系人信息
      */
@@ -156,7 +156,7 @@ export interface KarinAdapter {
    * - 上传合并转发消息返回一个资源ID
    * - 这一块会比较特殊，目前经测试有shamrock、Lagrange.OneBot支持这个功能(其他未测试)
    */
-  UploadForwardMessage(
+  UploadForwardMessage (
     /**
      * - 联系人信息
      */
@@ -175,7 +175,7 @@ export interface KarinAdapter {
   /**
    * - 通过资源ID发送转发消息
    */
-  SendMessageByResId(
+  SendMessageByResId (
     /**
      * - 联系人信息
      */
@@ -198,7 +198,7 @@ export interface KarinAdapter {
   /**
    * - 撤回消息
    */
-  RecallMessage(
+  RecallMessage (
     /**
      * - 联系人信息
      */
@@ -212,7 +212,7 @@ export interface KarinAdapter {
   /**
    * - 获取消息
    */
-  GetMessage(
+  GetMessage (
     /**
      * - 联系人信息
      */
@@ -226,7 +226,7 @@ export interface KarinAdapter {
   /**
    * - 获取msg_id获取历史消息
    */
-  GetHistoryMessage(
+  GetHistoryMessage (
     /**
      * - 联系人信息
      */
@@ -244,7 +244,7 @@ export interface KarinAdapter {
   /**
    * - 下载合并转发消息
    */
-  DownloadForwardMessage(
+  DownloadForwardMessage (
     /**
      * - 资源ID
      */
@@ -254,7 +254,7 @@ export interface KarinAdapter {
   /**
    * - 获取精华消息
    */
-  GetEssenceMessageList(
+  GetEssenceMessageList (
     /**
      * - 群ID
      */
@@ -272,7 +272,7 @@ export interface KarinAdapter {
   /**
    * - 设置精华消息
    */
-  SetEssenceMessage(
+  SetEssenceMessage (
     /**
      * - 群ID
      */
@@ -286,7 +286,7 @@ export interface KarinAdapter {
   /**
    * - 删除精华消息
    */
-  DeleteEssenceMessage(
+  DeleteEssenceMessage (
     /**
      * - 群ID
      */
@@ -300,7 +300,7 @@ export interface KarinAdapter {
   /**
    * - 发送好友赞
    */
-  VoteUser(
+  VoteUser (
     /**
      * - 好友UID或者UIN(QQ) 任选其一提供即可
      */
@@ -314,7 +314,7 @@ export interface KarinAdapter {
   /**
    * - 群踢人
    */
-  KickMember(
+  KickMember (
     /**
      * - 群ID
      */
@@ -336,7 +336,7 @@ export interface KarinAdapter {
   /**
    * - 禁言用户
    */
-  BanMember(
+  BanMember (
     /**
      * - 群ID
      */
@@ -354,7 +354,7 @@ export interface KarinAdapter {
   /**
    * - 群全员禁言
    */
-  SetGroupWholeBan(
+  SetGroupWholeBan (
     /**
      * - 群ID
      */
@@ -368,7 +368,7 @@ export interface KarinAdapter {
   /**
    * - 设置群管理员
    */
-  SetGroupAdmin(
+  SetGroupAdmin (
     /**
      * - 群ID
      */
@@ -386,7 +386,7 @@ export interface KarinAdapter {
   /**
    * - 修改群名片
    */
-  ModifyMemberCard(
+  ModifyMemberCard (
     /**
      * - 群ID
      */
@@ -404,7 +404,7 @@ export interface KarinAdapter {
   /**
    * - 设置群名
    */
-  ModifyGroupName(
+  ModifyGroupName (
     /**
      * - 群ID
      */
@@ -418,7 +418,7 @@ export interface KarinAdapter {
   /**
    * - 退出群组
    */
-  LeaveGroup(
+  LeaveGroup (
     /**
      * - 群ID
      */
@@ -433,7 +433,7 @@ export interface KarinAdapter {
   /**
    * - 设置群专属头衔
    */
-  SetGroupUniqueTitle(
+  SetGroupUniqueTitle (
     /**
      * - 群ID
      */
@@ -451,7 +451,7 @@ export interface KarinAdapter {
   /**
    * - 获取登录账号信息
    */
-  GetCurrentAccount(): Promise<{
+  GetCurrentAccount (): Promise<{
     /**
      * - 登录账户UID
      */
@@ -470,7 +470,7 @@ export interface KarinAdapter {
    * - 获取陌生人信息 不支持批量获取
    * - 此接口的请求参数需要明确是target_uid还是target_uin，请开发者注意
    */
-  GetStrangerProfileCard(
+  GetStrangerProfileCard (
     /**
      * - 用户UID或者UIN 任选其一
      */
@@ -480,7 +480,7 @@ export interface KarinAdapter {
   /**
    * - 获取好友列表
    */
-  GetFriendList(
+  GetFriendList (
     /**
      * - 是否刷新好友列表
      */
@@ -490,7 +490,7 @@ export interface KarinAdapter {
   /**
    * - 获取群信息
    */
-  GetGroupInfo(
+  GetGroupInfo (
     /**
      * - 群ID
      */
@@ -504,7 +504,7 @@ export interface KarinAdapter {
   /**
    * - 获取群列表
    */
-  GetGroupList(
+  GetGroupList (
     /**
      * - 是否刷新好友列表
      */
@@ -515,7 +515,7 @@ export interface KarinAdapter {
    * - 获取群成员信息
    * - 此接口在非QQ平台上很难获取到标准信息，因此返回的数据可能会有所不同
    */
-  GetGroupMemberInfo(
+  GetGroupMemberInfo (
     /**
      * - 群ID
      */
@@ -533,7 +533,7 @@ export interface KarinAdapter {
   /**
    * - 获取群成员列表
    */
-  GetGroupMemberList(
+  GetGroupMemberList (
     /**
      * - 群ID
      */
@@ -547,7 +547,7 @@ export interface KarinAdapter {
   /**
    * - 获取群荣誉信息
    */
-  GetGroupHonor(
+  GetGroupHonor (
     /**
      * - 群ID
      */
@@ -561,7 +561,7 @@ export interface KarinAdapter {
   /**
    * - 获取版本信息
    */
-  GetVersion(): Promise<{
+  GetVersion (): Promise<{
     version: string
     app_name: string
   }>
@@ -569,7 +569,7 @@ export interface KarinAdapter {
   /**
    * - 设置好友请求结果
    */
-  SetFriendApplyResult(
+  SetFriendApplyResult (
     /**
      * - 请求ID
      */
@@ -587,7 +587,7 @@ export interface KarinAdapter {
   /**
    * - 设置申请加入群请求结果
    */
-  SetGroupApplyResultRequest(
+  SetGroupApplyResultRequest (
     /**
      * - 请求ID
      */
@@ -605,7 +605,7 @@ export interface KarinAdapter {
   /**
    * - 设置邀请加入群请求结果
    */
-  SetInvitedJoinGroupResult(
+  SetInvitedJoinGroupResult (
     /**
      * - 请求ID
      */
@@ -619,7 +619,7 @@ export interface KarinAdapter {
    * @param elements 消息元素
    * @return {Promise<{message_id?}>}
    */
-  sendForwardMessage(contact: contact, elements: Array<KarinNodeElement>): Promise<{ message_id?: string }>
+  sendForwardMessage (contact: contact, elements: Array<KarinNodeElement>): Promise<{ message_id?: string }>
 
   /**
    * 对消息进行表情回应
@@ -627,7 +627,7 @@ export interface KarinAdapter {
    * @param message_id - 消息ID
    * @param face_id - 表情ID
    */
-  ReactMessageWithEmojiRequest(contact: contact, message_id: string, face_id: number, is_set: boolean): Promise<void>
+  ReactMessageWithEmojiRequest (contact: contact, message_id: string, face_id: number, is_set: boolean): Promise<void>
 
   /**
    * 上传群文件
@@ -636,7 +636,7 @@ export interface KarinAdapter {
    * @param name - 文件名称 必须提供
    * @param folder - 父目录ID 不提供则上传到根目录
    */
-  UploadGroupFile(group_id: string, file: string, name: string, folder?: string): Promise<void>
+  UploadGroupFile (group_id: string, file: string, name: string, folder?: string): Promise<void>
 
   /**
    * 上传私聊文件
@@ -644,5 +644,5 @@ export interface KarinAdapter {
    * @param file - 本地文件绝对路径
    * @param name - 文件名称 必须提供
    */
-  UploadPrivateFile(user_id: string, file: string, name: string): Promise<void>
+  UploadPrivateFile (user_id: string, file: string, name: string): Promise<void>
 }

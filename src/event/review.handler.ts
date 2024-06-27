@@ -1,20 +1,17 @@
-import Config from '../utils/config'
-import logger from '../utils/logger'
-import { E } from '../types/types'
-import { PluginApps } from '../types/plugin'
-import { GroupCfg } from '../types/config'
-import { KarinMessage } from '../event/message'
+import { KarinMessage } from 'karin/event/index'
+import { logger, config } from 'karin/utils/index'
+import { E, PluginApps, GroupCfg } from 'karin/types/index'
 
 /**
  * 事件拦截器
  * 利用可执行函数的特性，热更新所有拦截器
  * 所有拦截器返回的都是布尔值 为true说明通过 为false则未通过
  */
-export default new (class Review {
+export const review = new (class Handler {
   GroupCD: { [key: string]: boolean }
   GroupUserCD: { [key: string]: boolean }
-  App = Config['App']
-  Config = Config['Config']
+  App = config['App']
+  Config = config['Config']
   CD: (e: E, config: GroupCfg) => boolean
   mode: (e: KarinMessage, config: GroupCfg) => boolean
   alias: (e: KarinMessage, config: GroupCfg) => boolean
@@ -50,8 +47,8 @@ export default new (class Review {
   }
 
   main () {
-    this.App = Config.App
-    this.Config = Config.Config
+    this.App = config.App
+    this.Config = config.Config
     this.#CD()
     this.#mode()
     this.#alias()

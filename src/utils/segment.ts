@@ -1,6 +1,36 @@
-import { TextElement, AtElement, ImageElement, FaceElement, BubbleFaceElement, ReplyElement, VoiceElement, VideoElement, BasketballElement, DiceElement, RpsElement, PokeElement, MusicElement, WeatherElement, LocationElement, ShareElement, GiftElement, MarketFaceElement, ForwardElement, ContactElement, JsonElement, XmlElement, FileElement, ButtonElement, CustomMusicElemen, TemplateElement, ContentElement, KarinNodeElement, KarinElement } from '../types/element'
+import {
+  TextElement,
+  AtElement,
+  ImageElement,
+  FaceElement,
+  BubbleFaceElement,
+  ReplyElement,
+  VoiceElement,
+  VideoElement,
+  BasketballElement,
+  DiceElement,
+  RpsElement,
+  PokeElement,
+  MusicElement,
+  WeatherElement,
+  LocationElement,
+  ShareElement,
+  GiftElement,
+  MarketFaceElement,
+  ForwardElement,
+  ContactElement,
+  JsonElement,
+  XmlElement,
+  FileElement,
+  ButtonElement,
+  CustomMusicElemen,
+  TemplateElement,
+  ContentElement,
+  KarinNodeElement,
+  KarinElement,
+} from 'karin/types/index'
 
-export default new (class Segment {
+export const segment = new (class Segment {
   /**
    * 纯文本
    * @param text - 文本内容

@@ -1,14 +1,13 @@
 import fs from 'fs'
 import WebSocket from 'ws'
-import Renderer from './app'
-import RenderBase from './base'
+import { render } from './app'
+import { RenderBase } from './base'
 import { randomUUID } from 'crypto'
-import common from '../utils/common'
-import logger from '../utils/logger'
-import listener from '../core/listener'
-import { KarinRenderType } from '../types/render'
+import { listener } from 'karin/core/index'
+import { common, logger } from 'karin/utils/index'
+import { KarinRenderType } from 'karin/types/render'
 
-export default class RenderClient extends RenderBase {
+export class RenderClient extends RenderBase {
   url: string
   type: string
   id: string
@@ -37,7 +36,7 @@ export default class RenderClient extends RenderBase {
       logger.mark(`[渲染器:${this.id}][WebSocket] 建立连接：${logger.green(this.url)}`)
       /** 注册渲染器 */
       try {
-        this.index = Renderer.app({ id: this.id, type: this.type, render: this.render.bind(this) })
+        this.index = render.app({ id: this.id, type: this.type, render: this.render.bind(this) })
         this.retry = 0
       } catch (error) {
         logger.error(`[渲染器:${this.id}] 注册渲染器失败：`, error)
@@ -56,7 +55,7 @@ export default class RenderClient extends RenderBase {
       /** 停止监听 */
       this.ws.removeAllListeners()
       /** 卸载渲染器 */
-      this.index && Renderer.unapp(this.index) && (this.index = 0)
+      this.index && render.unapp(this.index) && (this.index = 0)
       logger.warn(`[渲染器:${this.id}][重连次数:${this.retry}] 连接断开，5秒后将尝试重连：${this.url}`)
       await common.sleep(5000)
       await this.start()

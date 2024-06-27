@@ -1,77 +1,36 @@
 // 基本模块
-import './core/dir'
-import './core/init'
-import config from './utils/config'
-import logger from './utils/logger'
+export * from 'kritor-proto'
+export * from 'karin/core/index'
+export * from 'karin/event/index'
+export * from 'karin/db/index'
+export * from 'karin/renderer/index'
+export * from 'karin/utils/index'
+export * from 'karin/types/index'
 
-// 核心模块
-import listener from './core/listener'
-import server from './core/server'
-import Plugin from './core/plugin'
-import PluginLoader from './core/plugin.loader'
-
-// 工具类
-import common from './utils/common'
-import segment from './utils/segment'
-import handler from './utils/handler'
-import ffmpeg from './utils/ffmpeg'
-import exec from './utils/exec'
-import button from './utils/button'
-import update from './utils/update'
-import YamlEditor from './utils/YamlEditor'
-import render from './renderer/app'
-import { KarinMessage } from './event/message'
-import Karin from './core/karin'
-
-// 适配器
-import Puppeteer from './renderer/server'
-import OneBot11 from './adapter/onebot/onebot11'
-
-// 数据库
-import level from './db/level'
-import Redis from './db/redis'
-import { RedisClientType } from 'redis'
-
-// proto
-import { kritor } from 'kritor-proto'
-export * as types from './types/index'
+import { config, update } from 'karin/utils/index'
+import { render } from 'karin/renderer/index'
+import { RenderServer } from 'karin/renderer/index'
+import OneBot11 from 'karin/adapter/onebot/onebot11'
+import { server, Karin, PluginLoader, listener, Plugin } from 'karin/core/index'
 
 // 初始化
 server.init()
-const redis: RedisClientType = (await new Redis().start()) as RedisClientType
 PluginLoader.load()
-listener.emit('adapter', Puppeteer)
+listener.emit('adapter', RenderServer)
 listener.emit('adapter', OneBot11)
 
-// 命名导出
-export {
-  // 基本模块
-  config,
-  config as Cfg,
-  common,
-  listener,
-  logger,
-  Plugin,
-  PluginLoader,
-  server,
-  Plugin as plugin,
-  listener as Bot,
-  segment,
-  handler,
-  ffmpeg,
-  exec,
-  button,
-  level,
-  redis,
-  update,
-  render,
-  kritor,
-  YamlEditor,
-  render as Renderer,
-  update as Update,
-  KarinMessage,
-}
+/**
+ * @description 即将废弃，请使用 `Plugin`
+*/
+export const plugin = Plugin
+/**
+ * @description 即将废弃，请使用 `render`
+*/
+export const Renderer = render
 
-// 默认导出
-const karin = new Karin()
+export const Cfg = config
+export const Bot = listener
+export const Update = update
+
+export const karin = new Karin()
 export default karin

@@ -1,18 +1,22 @@
-import { KarinMessage } from '../../event/message'
-import { KarinNotice } from '../../event/notice'
-import { KarinRequest } from '../../event/request'
 import WebSocket from 'ws'
-import { IncomingMessage } from 'http'
 import { randomUUID } from 'crypto'
-import { KarinAdapter } from '../../types/adapter'
-import logger from '../../utils/logger'
-import common from '../../utils/common'
-import listener from '../../core/listener'
-import config from '../../utils/config'
-import { ByPostType, CustomNodeSegment, OneBot11Api, OneBot11ApiParamsType, OneBot11Event, OneBot11Segment } from '../../types/onebots11'
-import { Role, Scene, contact } from '../../types/types'
-import segment from '../../utils/segment'
-import { KarinElement } from '../../types/element'
+import { IncomingMessage } from 'http'
+import { listener } from 'karin/core/listener'
+import { KarinAdapter } from 'karin/types/adapter'
+import { common, config, logger, segment } from 'karin/utils/index'
+import { KarinMessage, KarinNotice, KarinRequest } from 'karin/event/index'
+import {
+  Role,
+  Scene,
+  contact,
+  ByPostType,
+  OneBot11Api,
+  KarinElement,
+  OneBot11Event,
+  OneBot11Segment,
+  CustomNodeSegment,
+  OneBot11ApiParamsType,
+} from 'karin/types/index'
 
 /**
  * @class OneBot11
@@ -1145,7 +1149,7 @@ export class OneBot11 implements KarinAdapter {
     let level = 0
     try {
       level = parseInt(groupMemberInfo.level)
-    } catch (e) {}
+    } catch (e) { }
     return {
       uid: groupMemberInfo.user_id,
       uin: groupMemberInfo.user_id,
@@ -1175,7 +1179,7 @@ export class OneBot11 implements KarinAdapter {
       let level = 0
       try {
         level = parseInt(groupMemberInfo.level)
-      } catch (e) {}
+      } catch (e) { }
       return {
         uid: groupMemberInfo.user_id,
         uin: groupMemberInfo.user_id,
@@ -1298,14 +1302,14 @@ export class OneBot11 implements KarinAdapter {
     throw new Error('Method not implemented.')
   }
 
-  async SetEssenceMessage () {}
-  async DeleteEssenceMessage () {}
-  async SetFriendApplyResult () {}
-  async SetGroupApplyResultRequest () {}
-  async SetInvitedJoinGroupResult () {}
-  async ReactMessageWithEmojiRequest () {}
-  async UploadPrivateFile () {}
-  async UploadGroupFile () {}
+  async SetEssenceMessage () { }
+  async DeleteEssenceMessage () { }
+  async SetFriendApplyResult () { }
+  async SetGroupApplyResultRequest () { }
+  async SetInvitedJoinGroupResult () { }
+  async ReactMessageWithEmojiRequest () { }
+  async UploadPrivateFile () { }
+  async UploadGroupFile () { }
   async sendForwardMessage () {
     return {}
   }

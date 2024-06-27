@@ -1,6 +1,4 @@
-import { Reply, replyCallback } from '../types/reply'
-import { KarinAdapter } from '../types/adapter'
-import { Event, contact, Sender, SubEventForEvent } from '../types/types'
+import { KarinAdapter, Reply, replyCallback, Event, contact, Sender, SubEventForEvent } from 'karin/types/index'
 
 /**
  * - 事件基类 所有事件都继承自此类并且需要实现此类的所有属性

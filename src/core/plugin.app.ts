@@ -1,4 +1,4 @@
-import { dirName, fileName, PluginApps } from '@/types/plugin'
+import { dirName, fileName, PluginApps } from 'karin/types/index'
 
 export interface PluginAppType {
   file?: {

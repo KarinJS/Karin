@@ -1,6 +1,6 @@
 import exec from './exec'
 import logger from './logger'
-import Config from './config'
+import { config } from './config'
 
 /**
  * 执行 ffmpeg 命令
@@ -10,7 +10,7 @@ export default async function ffmpeg () {
   const { status } = await exec('ffmpeg -version', false)
   if (status !== 'ok') {
     logger.debug('ffmpeg 未安装，开始尝试读取配置文件是否存在ffmpeg路径')
-    const ffmpegPath = Config.Config.ffmpeg_path
+    const ffmpegPath = config.Config.ffmpeg_path
     if (!ffmpegPath) {
       logger.warn('ffmpeg 未安装，请安装 ffmpeg 或手动配置 ffmpeg 路径后重启')
       return false

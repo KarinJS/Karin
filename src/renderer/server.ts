@@ -1,11 +1,11 @@
-import Renderer from './app'
-import RenderBase from './base'
-import { randomUUID } from 'crypto'
-import logger from '../utils/logger'
-import listener from '../core/listener'
 import WebSocket from 'ws'
+import { render } from './app'
+import { RenderBase } from './base'
+import { randomUUID } from 'crypto'
 import { IncomingMessage } from 'http'
-import { KarinRenderType } from '../types/render'
+import { logger } from 'karin/utils/index'
+import { listener } from 'karin/core/listener'
+import { KarinRenderType } from 'karin/types/index'
 
 class Puppeteer extends RenderBase {
   socket!: WebSocket
@@ -51,13 +51,13 @@ class Puppeteer extends RenderBase {
     this.socket.on('close', () => {
       logger.warn(`[渲染器:${this.id}] 连接断开：${this.url}`)
       /** 卸载渲染器 */
-      this.index && Renderer.unapp(this.index)
+      this.index && render.unapp(this.index)
       this.index = 0
     })
 
     /** 注册渲染器 */
     try {
-      const index = Renderer.app({
+      const index = render.app({
         id: this.id,
         type: this.type,
         render: this.render.bind(this),
@@ -120,7 +120,7 @@ class Puppeteer extends RenderBase {
   }
 }
 
-export default {
+export const RenderServer = {
   type: 'render',
   path: '/puppeteer',
   adapter: Puppeteer,

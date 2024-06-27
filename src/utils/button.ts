@@ -1,11 +1,11 @@
 import lodash from 'lodash'
 import logger from './logger'
-import { Plugin, dirName, fileName } from '../types/plugin'
-import { KarinMessage } from '../event/message'
+import { KarinMessage } from 'karin/event/message'
+import { PluginType, dirName, fileName } from 'karin/types/plugin'
 
-export default new (class Button {
+export const button = new (class Button {
   Apps: Array<{
-    App: new () => Plugin
+    App: new () => PluginType
     name: string
     priority: number
     file: { dir: dirName; name: fileName }
@@ -16,7 +16,7 @@ export default new (class Button {
     this.Apps = []
   }
 
-  add ({ name, dir, App, Class }: { dir: dirName; name: fileName; App: new () => Plugin; Class: Plugin }) {
+  add ({ name, dir, App, Class }: { dir: dirName; name: fileName; App: new () => PluginType; Class: PluginType }) {
     const rule = []
     /** 创建正则表达式 */
     for (const v of Class.button) {
@@ -56,7 +56,7 @@ export default new (class Button {
     return this.Apps
   }
 
-  update ({ dir, name, App, Class }: { dir: dirName; name: fileName; App: new () => Plugin; Class: Plugin }) {
+  update ({ dir, name, App, Class }: { dir: dirName; name: fileName; App: new () => PluginType; Class: PluginType }) {
     this.del(dir, name)
     this.add({ name, dir, App, Class })
   }

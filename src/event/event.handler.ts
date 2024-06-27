@@ -1,14 +1,10 @@
-import Review from './review.handler'
-import config from '../utils/config'
-import logger from '../utils/logger'
-import Common from '../utils/common'
-import Segment from '../utils/segment'
-import Listeners from '../core/listener'
-import { GroupCfg } from '../types/config'
+import { review } from './review.handler'
 import { KarinMessage } from './message'
 import { KarinNotice } from './notice'
 import { KarinRequest } from './request'
-import { Event, Permission, SubEvent } from '../types/types'
+import { listener } from 'karin/core/index'
+import { segment, common, logger, config } from 'karin/utils/index'
+import { Event, Permission, SubEvent, GroupCfg } from 'karin/types/index'
 
 export default class EventHandler {
   e: KarinMessage | KarinNotice | KarinRequest
@@ -20,7 +16,7 @@ export default class EventHandler {
     this.e = e
     this.config = {}
     /** 加入e.bot */
-    Object.defineProperty(this.e, 'bot', { value: Listeners.getBot(this.e.self_id) })
+    Object.defineProperty(this.e, 'bot', { value: listener.getBot(this.e.self_id) })
     if (this.e.group_id) this.config = config.group(this.e.group_id)
   }
 
@@ -29,19 +25,19 @@ export default class EventHandler {
    */
   review () {
     /** 检查CD */
-    if (!Review.CD(this.e, this.config as GroupCfg)) {
+    if (!review.CD(this.e, this.config as GroupCfg)) {
       logger.debug('[消息拦截] 正在冷却中')
       return true
     }
 
     /** 检查群聊黑白名单 */
-    if (!Review.GroupEnable(this.e)) {
+    if (!review.GroupEnable(this.e)) {
       logger.debug('[消息拦截] 未通过群聊黑白名单检查')
       return true
     }
 
     /** 检查用户黑白名单 */
-    if (!Review.UserEnable(this.e)) {
+    if (!review.UserEnable(this.e)) {
       logger.debug('[消息拦截] 未通过用户黑白名单检查')
       return true
     }
@@ -121,21 +117,21 @@ export default class EventHandler {
      * @param options 回复选项
      */
     this.e.reply = async (elements = '', options = { reply: false, recallMsg: 0, at: false, retry_count: 1 }) => {
-      const message = Common.makeMessage(elements)
+      const message = common.makeMessage(elements)
       const { reply = false, recallMsg = 0, at, retry_count = 1 } = options
 
       /** 加入at */
-      if (at && this.e.isGroup) message.unshift(Segment.at(this.e.user_id))
+      if (at && this.e.isGroup) message.unshift(segment.at(this.e.user_id))
 
       /** 加入引用回复 */
-      if (reply && 'message_id' in this.e) message.unshift(Segment.reply(this.e.message_id))
+      if (reply && 'message_id' in this.e) message.unshift(segment.reply(this.e.message_id))
 
       /** 先发 提升速度 */
       const result = this.e.replyCallback(message, retry_count)
-      const ReplyLog = Common.makeMessageLog(message)
+      const ReplyLog = common.makeMessageLog(message)
 
       if (this.e.isGroup) {
-        Review.GroupMsgPrint(this.e) && logger.bot('info', this.e.self_id, `${logger.green(`Send Group ${this.e.group_id}: `)}${ReplyLog}`)
+        review.GroupMsgPrint(this.e) && logger.bot('info', this.e.self_id, `${logger.green(`Send Group ${this.e.group_id}: `)}${ReplyLog}`)
       } else {
         logger.bot('info', this.e.self_id, `${logger.green(`Send private ${this.e.user_id}: `)}${ReplyLog}`)
       }
@@ -143,7 +139,7 @@ export default class EventHandler {
       let message_id = ''
 
       try {
-        Listeners.emit('karin:count:send', 1)
+        listener.emit('karin:count:send', 1)
         /** 取结果 */
         const Res = await result
         message_id = Res.message_id || ''

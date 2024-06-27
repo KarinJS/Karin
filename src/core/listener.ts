@@ -1,17 +1,13 @@
 import { EventEmitter } from 'events'
-import loader from './plugin.loader'
-import { KarinAdapter } from '../types/adapter'
-import Common from '../utils/common'
-import logger from '../utils/logger'
-import Config from '../utils/config'
-import { contact } from '../types/types'
-import { KarinElement } from '../types/element'
-import MessageHandller from '../event/message.handler'
+import { PluginLoader } from './plugin.loader'
+import { common, logger, config } from 'karin/utils/index'
+import { MessageHandler } from 'karin/event/message.handler'
+import { KarinAdapter, contact, KarinElement } from 'karin/types/index'
 
 /**
  * 监听器管理
  */
-export default new (class Listeners extends EventEmitter {
+export const listener = new (class Listeners extends EventEmitter {
   /**
    * Bot索引
    * @type - Bot索引
@@ -31,10 +27,10 @@ export default new (class Listeners extends EventEmitter {
     this.list = []
     this.adapter = []
     this.on('error', data => logger.error(data))
-    this.on('plugin', () => loader.load())
+    this.on('plugin', () => PluginLoader.load())
     this.on('adapter', data => {
       let path = data.path || '无'
-      if (path && data.type !== 'grpc') path = `ws://127.0.0.1:/${Config.Server.http.port}${data.path}`
+      if (path && data.type !== 'grpc') path = `ws://127.0.0.1:/${config.Server.http.port}${data.path}`
       path = logger.green(path)
       logger.info(`[适配器][注册][${data.type}] ` + path)
       this.addAdapter(data)
@@ -44,7 +40,7 @@ export default new (class Listeners extends EventEmitter {
       logger.info(`[机器人][注册][${data.type}] ` + logger.green(`[account:${data.bot.account.uid || data.bot.account.uin}(${data.bot.account.name})]`))
       this.emit('karin:online', data.bot.account.uid || data.bot.account.uin)
     })
-    this.on('message', data => new MessageHandller(data))
+    this.on('message', data => new MessageHandler(data))
   }
 
   /**
@@ -169,12 +165,12 @@ export default new (class Listeners extends EventEmitter {
     if (!bot) throw new Error('发送消息失败: 未找到对应Bot实例')
     const { recallMsg, retry_count } = options
     /** 标准化 */
-    const NewElements = Common.makeMessage(elements)
+    const NewElements = common.makeMessage(elements)
 
     /** 结果 */
     let result = { message_id: '' }
 
-    const reply_log = Common.makeMessageLog(NewElements)
+    const reply_log = common.makeMessageLog(NewElements)
     const self_id = bot.account.uid || bot.account.uin
     if (contact.scene === 'group') {
       logger.bot('info', self_id, `Send Proactive Group ${contact.peer}: ${reply_log}`)

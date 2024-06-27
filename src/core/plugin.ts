@@ -1,11 +1,9 @@
-import { Plugin as PluginType } from '../types/plugin'
-import { KarinElement, KarinNodeElement } from '../types/element'
-import { E } from '@/types/types'
+import { PluginType as PluginType, KarinElement, KarinNodeElement, E } from 'karin/types/index'
 
 /**
  * 插件基类
  */
-export default class Plugin implements PluginType {
+export class Plugin implements PluginType {
   e!: PluginType['e']
   init?: () => void
   accept?: (e: E) => Promise<void>

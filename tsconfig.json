@@ -9,9 +9,9 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
+      "karin/*": [
         "src/*"
-      ]
+      ],
     },
     "rootDir": "./src",
     "declaration": true,

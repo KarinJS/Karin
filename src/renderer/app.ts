@@ -1,10 +1,7 @@
-import logger from '../utils/logger'
-import { KarinRender, KarinRenderApp, KarinRenderType } from '../types/render'
+import { logger } from 'karin/utils/index'
+import { KarinRender, KarinRenderApp, KarinRenderType } from 'karin/types/index'
 
-/**
- * 渲染器管理器
- */
-export default new (class Renderer {
+class Renderer {
   index: number
   Apps: Array<KarinRenderApp>
   constructor () {
@@ -19,26 +16,13 @@ export default new (class Renderer {
 
   /**
    * 注册渲染器
-   * @param {object} data 渲染器数据
-   * @param {string} data.id 渲染器ID
-   * @param {'image'|string} data.type 渲染器类型
-   * @param {RenderBase.render} data.render 渲染器标准方法
-   * @returns {number} 渲染器索引
+   * @param data 渲染器数据
+   * @param data.id 渲染器ID
+   * @param data.type 渲染器类型
+   * @param ata.render 渲染器标准方法
+   * @returns 渲染器索引
    */
-  app (data: {
-    /**
-     * 渲染器ID
-     */
-    id: string
-    /**
-     * 渲染器类型
-     */
-    type?: 'image' | string
-    /**
-     * 渲染器标准方法
-     */
-    render: KarinRender['render']
-  }) {
+  app (data: { id: string, type?: 'image' | string, render: KarinRender['render'] }) {
     this.index++
     const index = this.index
     const { id, type = 'image', render } = data
@@ -108,4 +92,9 @@ export default new (class Renderer {
       },
     })
   }
-})()
+}
+
+/**
+ * 渲染器管理器
+ */
+export const render = new Renderer()

@@ -1,18 +1,14 @@
 import fs from 'fs'
-import express, { Express } from 'express'
-import { createServer } from 'http'
+import Process from './process'
+import { listener } from './listener'
 import { WebSocketServer } from 'ws'
-import { render } from '../index'
-import connect from '../renderer/wormhole'
-import HttpRenderer from '../renderer/http'
-import logger from '../utils/logger'
-import common from '../utils/common'
-import config from '../utils/config'
-import listener from './listener'
-import exec from '../utils/exec'
+import { createServer } from 'http'
+import express, { Express } from 'express'
+import { exec, config, logger, common } from 'karin/utils/index'
+import { render, HttpRenderer, Wormhole } from 'karin/renderer/index'
 import { Server as ServerType, ServerResponse, IncomingMessage } from 'http'
 
-export default new (class Server {
+export const server = new (class Server {
   reg: RegExp
   list: string[]
   app: Express
@@ -31,8 +27,10 @@ export default new (class Server {
   /**
    * 监听WebSocket连接并初始化http服务器
    */
-  init () {
+  async init () {
     try {
+      // 防止多进程端口冲突 启动失败
+      await Process.check()
       this.WebSocketServer.on('connection', (socket, request) => {
         const path = request.url
         const headers = request.headers
@@ -98,7 +96,7 @@ export default new (class Server {
       if (enable) {
         this.static()
         if (WormholeClient) {
-          connect()
+          Wormhole()
           return this
         }
         const { host, post, token } = config.Server.HttpRender

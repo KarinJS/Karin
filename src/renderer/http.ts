@@ -1,9 +1,9 @@
 import axios from 'axios'
-import RenderBase from './base'
-import logger from '../utils/logger'
-import { KarinRenderType } from '../types/render'
+import { RenderBase } from './base'
+import logger from 'karin/utils/logger'
+import { KarinRenderType } from 'karin/types/render'
 
-export default class HttpRenderer extends RenderBase {
+export class HttpRenderer extends RenderBase {
   id: string
   host: string
   url: string
