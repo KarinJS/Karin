@@ -24,6 +24,13 @@
 ### 其他提交
 - Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
 
+## [0.2.2](https://github.com/KarinJS/Karin/compare/v0.2.1...v0.2.2) (2024-06-27)
+
+
+### Bug Fixes
+
+* 修正npx init ([9bd5d09](https://github.com/KarinJS/Karin/commit/9bd5d090ccfb27e1797fdff198f83ab6a0f766a3))
+
 ## [0.2.1](https://github.com/KarinJS/Karin/compare/v0.2.0...v0.2.1) (2024-06-27)
 
 
