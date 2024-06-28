@@ -68,17 +68,32 @@ view:
           path: 'BlackList.users'
           type: 'array'
           arrayType: 'number'
+          associated:
+            -
+              file: App
+              path: 'BlackList.users'
+              requirement: true
         -
           key: 黑名单群聊
           path: 'BlackList.groups'
           type: 'array'
           arrayType: 'number'
+          associated:
+            -
+              file: App
+              path: 'BlackList.groups'
+              requirement: true
         -
           key: 消息日志黑名单群聊
           comment: 设置后不会打印该群的消息日志
           path: 'BlackList.GroupMsgLog'
           type: 'array'
           arrayType: 'number'
+          associated:
+            -
+              file: App
+              path: 'BlackList.GroupMsgLog'
+              requirement: true
   -
     key: 白名单
     comment: 白名单相关
@@ -89,12 +104,27 @@ view:
           key: 白名单用户
           path: 'WhiteList.users'
           type: 'boolean'
+          associated:
+            -
+              file: App
+              path: 'WhiteList.users'
+              requirement: true
         -
           key: 白名单群聊
           path: 'WhiteList.groups'
           type: 'boolean'
+          associated:
+            -
+              file: App
+              path: 'WhiteList.groups'
+              requirement: true
         -
           key: 消息日志白名单群聊
           comment: 消息日志白名单群聊 设置后只会打印该群的消息日志
           path: 'WhiteList.GroupMsgLog'
           type: 'boolean'
+          associated:
+            -
+              file: App
+              path: 'WhiteList.GroupMsgLog'
+              requirement: true
