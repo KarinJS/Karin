@@ -5,8 +5,9 @@ import { WebSocketServer } from 'ws'
 import { createServer } from 'http'
 import express, { Express } from 'express'
 import { exec, config, logger, common } from 'karin/utils'
-import { render, HttpRenderer, Wormhole } from 'karin/render'
+import { render, HttpRenderer, Wormhole, RenderClient } from 'karin/render'
 import { Server as ServerType, ServerResponse, IncomingMessage } from 'http'
+import { OneBot11 } from 'karin/adapter/onebot/onebot11'
 
 export const server = new (class Server {
   reg: RegExp
@@ -103,6 +104,20 @@ export const server = new (class Server {
         /** 注册渲染器 */
         const rd = new HttpRenderer(host, post, token)
         render.app({ id: 'puppeteer', type: 'image', render: rd.render.bind(rd) })
+      }
+
+      const renderCfg = config.Server.websocket.render
+      if (Array.isArray(renderCfg) && renderCfg.length) {
+        for (const url of renderCfg) {
+          new RenderClient(url).start()
+        }
+      }
+
+      const Onebot11 = config.Server.websocket.OneBot11Host
+      if (Array.isArray(Onebot11) && Onebot11.length) {
+        for (const connect of Onebot11) {
+          new OneBot11().client(connect)
+        }
       }
 
       return this

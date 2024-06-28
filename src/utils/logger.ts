@@ -126,28 +126,28 @@ logger.fnc = chalk.hex(config.Config.log_color || '#FFFF00')
 logger.bot = (level, id, ...args) => {
   switch (level) {
     case 'trace':
-      logger.trace(logger.violet(`[Bot:${id}] `), ...args)
+      logger.trace(logger.violet(`[Bot:${id}]`), ...args)
       break
     case 'debug':
-      logger.debug(logger.violet(`[Bot:${id}] `), ...args)
+      logger.debug(logger.violet(`[Bot:${id}]`), ...args)
       break
     case 'mark':
-      logger.mark(logger.violet(`[Bot:${id}] `), ...args)
+      logger.mark(logger.violet(`[Bot:${id}]`), ...args)
       break
     case 'info':
-      logger.info(logger.violet(`[Bot:${id}] `), ...args)
+      logger.info(logger.violet(`[Bot:${id}]`), ...args)
       break
     case 'warn':
-      logger.warn(logger.violet(`[Bot:${id}] `), ...args)
+      logger.warn(logger.violet(`[Bot:${id}]`), ...args)
       break
     case 'error':
-      logger.error(logger.violet(`[Bot:${id}] `), ...args)
+      logger.error(logger.violet(`[Bot:${id}]`), ...args)
       break
     case 'fatal':
-      logger.fatal(logger.violet(`[Bot:${id}] `), ...args)
+      logger.fatal(logger.violet(`[Bot:${id}]`), ...args)
       break
     default:
-      logger.info(logger.violet(`[Bot:${id}] `), ...args)
+      logger.info(logger.violet(`[Bot:${id}]`), ...args)
   }
 }
 
