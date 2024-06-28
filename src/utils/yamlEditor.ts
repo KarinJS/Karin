@@ -8,7 +8,7 @@ import Yaml from 'yaml'
 import lodash from 'lodash'
 import logger from './logger'
 
-export default class YamlEditor {
+export class YamlEditor {
   filePath: string
   document!: Yaml.Document
   constructor (filePath: string) {
