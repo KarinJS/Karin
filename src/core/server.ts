@@ -93,19 +93,6 @@ export const server = new (class Server {
         this.#restartServer()
       })
 
-      const { enable, WormholeClient } = config.Server.HttpRender
-      if (enable) {
-        this.static()
-        if (WormholeClient) {
-          Wormhole()
-          return this
-        }
-        const { host, post, token } = config.Server.HttpRender
-        /** 注册渲染器 */
-        const rd = new HttpRenderer(host, post, token)
-        render.app({ id: 'puppeteer', type: 'image', render: rd.render.bind(rd) })
-      }
-
       const renderCfg = config.Server.websocket.render
       if (Array.isArray(renderCfg) && renderCfg.length) {
         for (const url of renderCfg) {
@@ -118,6 +105,19 @@ export const server = new (class Server {
         for (const connect of Onebot11) {
           new OneBot11().client(connect)
         }
+      }
+
+      const { enable, WormholeClient } = config.Server.HttpRender
+      if (enable) {
+        this.static()
+        if (WormholeClient) {
+          Wormhole()
+          return this
+        }
+        const { host, post, token } = config.Server.HttpRender
+        /** 注册渲染器 */
+        const rd = new HttpRenderer(host, post, token)
+        render.app({ id: 'puppeteer', type: 'image', render: rd.render.bind(rd) })
       }
 
       return this
