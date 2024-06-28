@@ -24,6 +24,13 @@
 ### 其他提交
 - Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
 
+## [0.3.4](https://github.com/KarinJS/Karin/compare/v0.3.3...v0.3.4) (2024-06-28)
+
+
+### Bug Fixes
+
+* reg string ([24715a1](https://github.com/KarinJS/Karin/commit/24715a1a25671eb94158b91271b06bf3aaa2e103))
+
 ## [0.3.3](https://github.com/KarinJS/Karin/compare/v0.3.2...v0.3.3) (2024-06-28)
 
 
