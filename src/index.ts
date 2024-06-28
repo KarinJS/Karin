@@ -1,4 +1,3 @@
-/// <reference types="./utils/kritor-proto.d.ts" />
 /// <reference types="@types/express" />
 /// <reference types="@types/lodash" />
 /// <reference types="@types/node" />
