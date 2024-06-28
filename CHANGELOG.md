@@ -24,6 +24,13 @@
 ### 其他提交
 - Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
 
+## [0.3.3](https://github.com/KarinJS/Karin/compare/v0.3.2...v0.3.3) (2024-06-28)
+
+
+### Bug Fixes
+
+* 正向适配器加载顺序 ([9db2cfe](https://github.com/KarinJS/Karin/commit/9db2cfe3617846e44a41fc9f31c342cf2d562b36))
+
 ## [0.3.2](https://github.com/KarinJS/Karin/compare/v0.3.1...v0.3.2) (2024-06-28)
 
 
