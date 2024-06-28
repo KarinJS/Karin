@@ -22,7 +22,7 @@ export interface PluginRule {
   /**
    * - 命令正则
    */
-  reg: RegExp
+  reg: string | RegExp
   /**
    * - 命令执行方法名称
    */

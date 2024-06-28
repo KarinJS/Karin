@@ -50,9 +50,8 @@ export class MessageHandler extends EventHandler {
 
       /** 正则匹配 */
       for (const v of app.rule) {
-        /** 这里的lastIndex是为了防止正则无法从头开始匹配 */
-        v.reg.lastIndex = 0
-        if (v.reg.test(this.e.msg)) {
+        const reg = v.reg as RegExp
+        if (reg.test(this.e.msg)) {
           /** 检查黑白名单插件 */
           if ('GroupCD' in this.config && !review.PluginEnable(app, this.config)) continue
 

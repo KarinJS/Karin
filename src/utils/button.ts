@@ -8,7 +8,6 @@ export const button = async (e: KarinMessage) => {
     const info = loader.PluginList[v]
     for (const v of info.button) {
       const reg = v.reg as RegExp
-      /** 这里的lastIndex是为了防止正则无法从头开始匹配 */
       if (reg.test(e.msg)) {
         try {
           let res

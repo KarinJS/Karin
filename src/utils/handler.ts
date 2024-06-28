@@ -80,7 +80,7 @@ export const handler = new (class EventHandler {
    * @param key 事件键
    * @param args 自定义参数 一般用来传递e之类的
    */
-  async call (key: string, args: { e?: EventType<unknown> } = {}) {
+  async call (key: string, args: { e?: EventType<unknown>, [key: string]: any }) {
     let res
     for (const v of loader.handlerIds[key] || []) {
       const info = loader.PluginList[v.index]
