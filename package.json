@@ -4,6 +4,7 @@
   "private": false,
   "description": "基于 Kritor 进行开发的nodejs机器人框架",
   "homepage": "https://github.com/KarinJS/Karin",
+  "types": "./lib/index.d.ts",
   "bugs": {
     "url": "https://github.com/KarinJS/Karin/issues"
   },
@@ -38,7 +39,7 @@
   "scripts": {
     "app": "node .",
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix && npm run cp",
-    "cp": "cp ./lib/modules.d.ts ./modules.d.ts && cp ./lib/modules.js ./modules.js",
+    "cp": "cp ./lib/modules.d.ts ./modules.d.ts && cp ./lib/modules.js ./modules.js && cp ./src/utils/kritor-proto.d.ts ./lib/utils/kritor-proto.d.ts",
     "delete": "pm2 delete ./config/config/pm2.yaml",
     "fix": "eslint lib/**/*.js --fix",
     "fix:all": "eslint lib/**/*.js --fix && eslint src/**/*.ts --fix",

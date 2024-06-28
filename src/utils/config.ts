@@ -13,7 +13,7 @@ export const config = new (class Cfg {
   change: Map<string, any>
   watcher: Map<string, any>
   review: boolean
-  loggger!: Logger
+  logger!: Logger
   constructor () {
     this.dir = karinDir
     this._path = process.cwd() + '/config'
@@ -48,7 +48,7 @@ export const config = new (class Cfg {
     this.dirPath('temp', plugins)
     this.dirPath('resources', plugins)
     this.dirPath('temp/html', plugins)
-    this.loggger = (await import('./logger')).default
+    this.logger = (await import('./logger')).default
   }
 
   getPlugins () {
@@ -223,7 +223,7 @@ export const config = new (class Cfg {
     /** 监听文件变化 */
     watcher.on('change', () => {
       this.change.delete(key)
-      this.loggger.mark(`[修改配置文件][${type}][${name}]`)
+      this.logger.mark(`[修改配置文件][${type}][${name}]`)
       /** 文件修改后调用对应的方法 */
       switch (`change_${name}`) {
         case 'change_App':
@@ -248,7 +248,7 @@ export const config = new (class Cfg {
 
   async change_config () {
     /** 修改日志等级 */
-    this.loggger.level = this.Config.log4jsCfg.level
+    this.logger.level = this.Config.log4jsCfg.level
     await this.#review()
     if (this.Server.HotUpdate) {
       const { Bot } = await import('..')

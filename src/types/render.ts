@@ -51,7 +51,7 @@ export interface KarinRenderType {
     /**
      * - 设备像素比
      */
-    deviceScaleFactor?: string
+    deviceScaleFactor?: number
   }
   /**
    * - 分页截图 传递数字则视为视窗高度 返回数组

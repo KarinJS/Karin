@@ -1,3 +1,10 @@
+/// <reference types="./utils/kritor-proto.d.ts" />
+/// <reference types="@types/express" />
+/// <reference types="@types/lodash" />
+/// <reference types="@types/node" />
+/// <reference types="@types/node-schedule" />
+/// <reference types="@types/ws" />
+
 // 基本模块
 export * from 'kritor-proto'
 export * from 'karin/core'
