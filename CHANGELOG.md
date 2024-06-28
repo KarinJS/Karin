@@ -24,6 +24,13 @@
 ### 其他提交
 - Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
 
+## [0.3.1](https://github.com/KarinJS/Karin/compare/v0.3.0...v0.3.1) (2024-06-28)
+
+
+### Bug Fixes
+
+* YamlEditor 命名导出 ([f3a3f17](https://github.com/KarinJS/Karin/commit/f3a3f17c00f4c157a36c90e405bf2f25ae96a528))
+
 ## [0.3.0](https://github.com/KarinJS/Karin/compare/v0.2.2...v0.3.0) (2024-06-28)
 
 
