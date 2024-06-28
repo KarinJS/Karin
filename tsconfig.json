@@ -23,7 +23,8 @@
     "resolveFullExtension": ".js"
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "modules.ts"
   ],
   "exclude": [
     "node_modules",

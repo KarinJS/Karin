@@ -26,6 +26,8 @@
     "/lib/**/*.d.ts",
     "/config/defSet/*.yaml",
     "/config/view/*.yaml",
+    "modules.js",
+    "modules.d.ts",
     "LICENSE",
     "package.json",
     "README.md"
@@ -35,7 +37,8 @@
   ],
   "scripts": {
     "app": "node .",
-    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix && npm run cp",
+    "cp": "cp ./lib/modules.d.ts ./modules.d.ts && cp ./lib/modules.js ./modules.js",
     "delete": "pm2 delete ./config/config/pm2.yaml",
     "fix": "eslint lib/**/*.js --fix",
     "fix:all": "eslint lib/**/*.js --fix && eslint src/**/*.ts --fix",

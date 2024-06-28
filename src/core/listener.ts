@@ -160,7 +160,10 @@ export const listener = new (class Listeners extends EventEmitter {
    * @param options.recallMsg - 发送成功后撤回消息时间
    * @param options.retry_count - 重试次数
    */
-  async sendMsg (uid: string, contact: contact, elements: KarinElement, options = { recallMsg: 0, retry_count: 1 }): Promise<{ message_id: string }> {
+  async sendMsg (uid: string, contact: contact, elements: KarinElement, options: {
+    recallMsg?: number
+    retry_count?: number
+  } = { recallMsg: 0, retry_count: 1 }): Promise<{ message_id: string }> {
     const bot = this.getBot(uid)
     if (!bot) throw new Error('发送消息失败: 未找到对应Bot实例')
     const { recallMsg, retry_count } = options
@@ -189,7 +192,7 @@ export const listener = new (class Listeners extends EventEmitter {
     }
 
     /** 快速撤回 */
-    if (bot.RecallMessage && recallMsg > 0 && result?.message_id) {
+    if (recallMsg && bot.RecallMessage && recallMsg > 0 && result?.message_id) {
       setTimeout(() => bot.RecallMessage(contact, result.message_id), recallMsg * 1000)
     }
     return result

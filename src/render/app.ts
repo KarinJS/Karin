@@ -72,7 +72,7 @@ class Renderer {
   /**
    * 调用标准渲染器
    */
-  async render (options: KarinRenderType, id: string) {
+  async render (options: KarinRenderType, id?: string) {
     const res = this.App(id)
     return res.render(options)
   }
