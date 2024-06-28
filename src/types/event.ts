@@ -1,5 +1,5 @@
 import { KarinElement } from './element'
-import { KarinMessage, KarinNotice, KarinRequest } from 'karin/event/index'
+import { KarinMessage, KarinNotice, KarinRequest } from 'karin/event'
 
 /**
  * - 事件类型
@@ -908,7 +908,18 @@ export interface GroupHonorInfo {
   description: string
 }
 
+export interface EMap {
+  message: KarinMessage
+  notice: KarinNotice
+  request: KarinRequest
+  message_sent: KarinMessage
+  // 元事件不进入插件 不需要定义
+  meta_event: any
+}
+
+export type E<T extends keyof EMap> = EMap[T]
+export type EType = KarinMessage | KarinNotice | KarinRequest
 /**
- * - e
+ * 根据accept函数是否存在来决定e的类型
  */
-export type E = KarinMessage | KarinNotice | KarinRequest
+export type EventType<T> = T extends { accept: (e: any) => Promise<void> } ? KarinNotice | KarinRequest : KarinMessage

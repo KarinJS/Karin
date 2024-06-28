@@ -32,7 +32,7 @@ export default class LevelDB extends Level {
    * @param {string} key 键
    * @param {object|string} value 值
    */
-  async set (key: string, value: string) {
-    return await super.put(key, value)
+  async set (key: string, value: string | object) {
+    return await super.put(key, value as string)
   }
 }

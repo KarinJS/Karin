@@ -3,8 +3,8 @@ import WebSocket from 'ws'
 import { render } from './app'
 import { RenderBase } from './base'
 import { randomUUID } from 'crypto'
-import { listener } from 'karin/core/index'
-import { common, logger } from 'karin/utils/index'
+import { listener } from 'karin/core'
+import { common, logger } from 'karin/utils'
 import { KarinRenderType } from 'karin/types/render'
 
 export class RenderClient extends RenderBase {

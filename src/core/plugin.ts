@@ -1,12 +1,13 @@
-import { PluginType as PluginType, KarinElement, KarinNodeElement, E } from 'karin/types/index'
+import { PluginType, KarinElement, KarinNodeElement, EventType } from 'karin/types'
 
 /**
  * 插件基类
  */
 export class Plugin implements PluginType {
-  e!: PluginType['e']
+  // 类型 需要根据e中的event类型来确定
+  e!: EventType<this>
   init?: () => void
-  accept?: (e: E) => Promise<void>
+  accept?: (e: EventType<this>) => Promise<void>
   replyCallback!: PluginType['replyCallback']
 
   /**
@@ -27,7 +28,7 @@ export class Plugin implements PluginType {
    */
   event: PluginType['event']
   /**
-   * @param priority - 优先级 默认5000
+   * @param priority - 优先级 默认10000
    */
   priority: PluginType['priority']
   /**
@@ -60,7 +61,7 @@ export class Plugin implements PluginType {
     dsc = name,
     desc = name,
     event = 'message',
-    priority = 5000,
+    priority = 10000,
     task = [],
     rule = [],
     handler = [],
@@ -83,7 +84,7 @@ export class Plugin implements PluginType {
      */
     event?: PluginType['event']
     /**
-     * - 优先级 默认为5000
+     * - 优先级 默认为10000
      */
     priority?: PluginType['priority']
     /**

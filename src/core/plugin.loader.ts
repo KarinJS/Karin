@@ -6,39 +6,45 @@ import schedule from 'node-schedule'
 import { Plugin } from './plugin'
 import { listener } from './listener'
 import PluginApp from './plugin.app'
-import { render } from 'karin/renderer/index'
-import { button, common, handler, logger } from 'karin/utils/index'
-import { PluginType as PluginType, PluginApps, PluginTask, dirName, fileName, AppInfo } from 'karin/types/index'
+import { render } from 'karin/render'
+import { common, handler, logger } from 'karin/utils'
+import { PluginApps, PluginTask, dirName, fileName, AppInfo } from 'karin/types'
 
 /**
  * 加载插件
  */
-export const PluginLoader = new (class PluginLoader {
+export const pluginLoader = new (class PluginLoader {
   dir: './plugins'
   dirPath: string
   /**
+   * - 插件索引ID
+   */
+  index: number
+  /**
+   * - 命令插件索引列表
+   */
+  ruleIds: Array<number>
+  buttonIds: Array<number>
+  /**
+   * - handler
+   */
+  handlerIds: { [key: string]: Array<{ index: string, fnc: string | Function, priority: number }> }
+  /**
    * - 插件列表
    */
-  Apps: Array<PluginApps>
+  FileList: Array<AppInfo>
+  /**
+   * - 是否ts环境
+   */
+  isTs: boolean
+  /**
+   * - 最终缓存的插件列表 通过index索引
+   */
+  PluginList: { [key: string]: PluginApps }
   /**
    * - 定时任务
    */
-  task: Array<
-    PluginTask & {
-      App: new () => Plugin
-      /**
-       * - 定时任务
-       */
-      schedule?: schedule.Job
-      /**
-       * - 文件信息
-       */
-      file: {
-        dir: dirName
-        name: fileName
-      }
-    }
-  >
+  task: Array<PluginTask & { App: new () => Plugin, schedule?: schedule.Job, file: { dir: dirName, name: fileName } }>
 
   /**
    * - 监听器
@@ -47,76 +53,46 @@ export const PluginLoader = new (class PluginLoader {
   /**
    * - 热更新列表
    */
-  watchList: Array<{
-    dir: dirName
-    name?: fileName
-  }>
-
-  /**
-   * - 插件索引ID
-   */
-  index: number
-
-  /**
-   * - 命令插件索引列表
-   */
-  rule: Array<number>
-
-  PluginList: {
-    [key: string]: PluginApps
-  }
+  watchList: Array<{ dir: dirName, name?: fileName }>
 
   constructor () {
+    this.index = 0
     this.dir = './plugins'
     this.dirPath = common.urlToPath(import.meta.url)
-    this.Apps = []
-    this.task = []
+    this.isTs = process.env.karin_app_lang === 'ts'
     this.watcher = new Map()
-    /** 热更新收集 */
     this.watchList = []
-
-    this.rule = []
-    this.index = 0
+    this.FileList = []
     this.PluginList = {}
+    this.task = []
+    this.ruleIds = []
+    this.buttonIds = []
+    this.handlerIds = {}
   }
 
   /**
    * 插件初始化
    */
   async load () {
-    const files = this.getPlugins()
-
-    listener.once('plugin.loader', () => {
-      for (const v of this.watchList) {
-        v.name ? this.watch(v.dir, v.name) : this.watchDir(v.dir)
-      }
+    this.getPlugins()
+    listener.once('plugin.watch', () => {
+      for (const v of this.watchList) v.name ? this.watch(v.dir, v.name) : this.watchDir(v.dir)
     })
 
     logger.info(logger.green('-----------'))
     logger.info('加载插件中..')
 
     /** 载入插件 */
-    const promises = files.map(async ({ dir, name }) => await this.createdApp(dir, name, false))
+    const promises = this.FileList.map(async ({ dir, name }) => await this.createdApp(dir, name, false))
 
     /** 等待所有插件加载完成 */
     await Promise.all(promises)
+    /** 释放缓存 */
+    this.FileList = []
 
-    const handlerKeys = Object.keys(handler.events)
-    let handlerCount = 0
-    handlerKeys.forEach((key) => {
-      handlerCount += handler.events[key].length
-    })
-
-    logger.info(`[按钮][${button.Apps.length}个] 加载完成`)
-    logger.info(`[插件][${this.Apps.length}个] 加载完成`)
-    logger.info(`[渲染器][${render.Apps.length}个] 加载完成`)
-    logger.info(`[定时任务][${this.task.length}个] 加载完成`)
-    logger.info(`[Handler][Key:${handlerKeys.length}个][fnc:${handlerCount}个] 加载完成`)
-    logger.info(logger.green('-----------'))
-    logger.info(`Karin启动完成：耗时 ${logger.green(process.uptime().toFixed(2))} 秒...`)
-    /** 优先级排序 */
-    this.orderBy()
-    listener.emit('plugin.loader')
+    /** 优先级排序并打印插件信息 */
+    this.orderBy(true)
+    listener.emit('plugin.watch')
     return this
   }
 
@@ -124,11 +100,8 @@ export const PluginLoader = new (class PluginLoader {
    * 获取所有插件
    */
   getPlugins () {
-    const Apps: Array<AppInfo> = []
     /** 获取所有插件包 */
     const plugins = common.getPlugins()
-
-    const isTs = process.env.karin_app_lang === 'ts'
 
     for (const dir of plugins) {
       /**
@@ -137,46 +110,66 @@ export const PluginLoader = new (class PluginLoader {
        */
       const PluginPath = `${this.dir}/${dir}`
 
-      // 非插件包
+      /**
+       * 一共3种模式
+       * 1. npm run dev 开发模式  直接加载ts，js文件，对于同时存在编译产物、源代码的情况，优先加载编译产物而不加载源代码
+       * 2. node . 生产模式  只加载js文件
+       * 3. npm run debug 调试模式 在2的基础上，对apps进行热更新
+       */
+
+      /** 非插件包 加载该文件夹下全部js 视语言环境加载ts */
       if (!common.isPlugin(PluginPath)) {
-        const list = fs.readdirSync(`${this.dir}/${dir}`, {
-          withFileTypes: true,
-        })
+        this.watchList.push({ dir })
+        const list = fs.readdirSync(`${this.dir}/${dir}`, { withFileTypes: true })
         for (const file of list) {
           /** 忽略不符合规则的文件 */
-          const ext = isTs ? ['.js', '.ts'] : ['.js']
+          const ext = this.isTs ? ['.js', '.ts'] : ['.js']
           if (!ext.includes(path.extname(file.name))) continue
-          Apps.push({ dir, name: file.name as fileName })
+          this.FileList.push({ dir, name: file.name as fileName })
+        }
+        continue
+      }
+
+      /** 入口文件 */
+      const index = this.getIndex(PluginPath, process.env.karin_app_lang as 'js' | 'ts')
+      if (index) {
+        this.watchList.push({ dir, name: index as fileName })
+        this.FileList.push({ dir, name: index as fileName })
+      }
+
+      /** ts环境 全部加载  如果存在编译产物 则不加载ts */
+      if (this.isTs) {
+        /** 编译产物 存在不加载ts */
+        if (common.exists(`${PluginPath}/dist/apps`)) {
+          this.getApps((`${dir}/dist/apps`), false)
+          continue
+        }
+
+        /** ts */
+        if (common.exists(`${PluginPath}/src/apps`)) {
+          this.getApps((`${dir}/src/apps`), true)
+          continue
         }
       }
 
       /** js环境 */
-      if (common.exists(`${PluginPath}/index.js`)) {
-        Apps.push({ dir, name: 'index.js' as fileName })
-      }
-
-      const appList = ['apps', 'dist/apps']
-      appList.forEach(app => {
-        if (common.isDir(`${PluginPath}/${app}`)) {
-          const result = this.getApps((`${dir}/${app}`))
-          Apps.push(...result)
-        }
-      })
-
-      /** ts环境 */
-      if (isTs) {
-        if (common.exists(`${PluginPath}/index.ts`)) {
-          Apps.push({ dir, name: 'index.ts' as fileName })
-        }
-
-        if (common.isDir(`${PluginPath}/src/apps`)) {
-          const result = this.getApps((`${dir}/src/apps`), true)
-          Apps.push(...result)
-        }
-      }
+      if (common.isDir(`${PluginPath}/apps`)) this.getApps(`${dir}/apps`, false)
+      /** 这里需要判断下 不然ts环境下会重复加载 */
+      if (!this.isTs && common.isDir(`${PluginPath}/dist/apps`)) this.getApps(`${dir}/dist/apps`, false)
     }
+  }
 
-    return Apps
+  /**
+   * 传入路径 语言环境 返回加载index.ts 还是 index.js
+   * @param path - 插件路径
+   * @param lang - 语言环境
+   */
+  getIndex (path: string, lang: 'js' | 'ts'): string | boolean {
+    const isJS = common.exists(`${path}/index.js`)
+    if (isJS && lang === 'js') return 'index.js'
+    const isTS = common.exists(`${path}/index.ts`)
+    if (isTS && lang === 'ts') return 'index.ts'
+    return false
   }
 
   /**
@@ -184,89 +177,55 @@ export const PluginLoader = new (class PluginLoader {
    * @param dir - 插件包名称
    * @param isTs - 是否获取ts插件
    */
-  getApps (dir: dirName, isTs = false) {
-    const info: Array<AppInfo> = []
+  getApps (dir: dirName, isTs: boolean) {
+    this.watchList.push({ dir })
     const ext = isTs ? ['.js', '.ts'] : ['.js']
-
     const list = fs.readdirSync(`${this.dir}/${dir}`, { withFileTypes: true })
 
     for (const file of list) {
-      // 获取后缀
       const extname = path.extname(file.name)
       if (!ext.includes(extname)) continue
-      info.push({ dir, name: file.name as fileName })
+      this.FileList.push({ dir, name: file.name as fileName })
     }
-
-    return info
   }
 
   /**
-   * 构建插件信息
+   * 排序并打印插件加兹安信息
+   * @param isPrint - 是否打印
    */
-  App (
-    /**
-     * - 插件Class 未实例化
-     */
-    App: new () => Plugin,
-    /**
-     * - 插件实例化后的Class
-     */
-    Class: PluginType,
-    /**
-     * - 插件文件信息
-     */
-    file: {
-      /**
-       * - 插件根目录名称
-       * - 例如: karin-plugin-example
-       * - 例如: karin-plugin-example/apps
-       */
-      dir: string
-      /**
-       * - 插件名称
-       * - 例如: index.js
-       */
-      name: string
-      /**
-       * - 插件相对路径
-       * - 从插件根目录开始
-       */
-      path: string
-    }
-  ) {
-    const info = {
-      App,
-      /** 插件文件信息 */
-      file,
-      name: Class.name,
-      desc: Class.dsc || Class.desc || Class.name,
-      event: Class.event || 'message',
-      priority: Class.priority ?? 5000,
-      accept: typeof Class.accept === 'function',
-      rule: Class.rule || [],
-      type: typeof App === 'function' ? 'function' : ('class' as 'function' | 'class'),
-      task: Class.task || [],
-      handler: Class.handler || [],
-      button: Class.button || [],
-    }
+  orderBy (isPrint = false) {
+    let taskCount = 0
+    let handlerCount = 0
 
-    /** 进一步处理rule */
-    info.rule.forEach((val, index) => {
-      info.rule[index].reg = new RegExp(val.reg)
-      info.rule[index].log = val.log === false ? (id: string, log: string) => logger.debug('mark', id, log) : (id: string, log: string) => logger.bot('mark', id, log)
-    })
-
-    return info
-  }
-
-  /** 排序 */
-  orderBy () {
-    const list: { key: string, val: number }[] = []
+    const rule: { key: string, val: number }[] = []
+    const button: { key: string, val: number }[] = []
     Object.keys(this.PluginList).forEach(key => {
-      list.push({ key, val: this.PluginList[key].priority })
+      taskCount += this.PluginList[key].task.length
+      if (this.PluginList[key].rule.length) rule.push({ key, val: this.PluginList[key].priority })
+      if (this.PluginList[key].button.length) button.push({ key, val: this.PluginList[key].priority })
     })
-    this.rule = lodash.orderBy(list, ['val'], ['asc']).map((v) => Number(v.key))
+
+    this.ruleIds = lodash.orderBy(rule, ['val'], ['asc']).map((v) => Number(v.key))
     logger.debug('rule排序完成...')
+    this.buttonIds = lodash.orderBy(button, ['val'], ['asc']).map((v) => Number(v.key))
+    logger.debug('button排序完成...')
+
+    if (!isPrint) return
+    const PluginListKeys = Object.keys(this.PluginList)
+    const handlerKeys = Object.keys(this.handlerIds)
+
+    handlerKeys.forEach((key) => {
+      handlerCount += this.handlerIds[key].length
+    })
+
+    logger.info(`[插件][${PluginListKeys.length}个] 加载完成`)
+    logger.info(`[渲染器][${render.Apps.length}个] 加载完成`)
+    logger.info(`[rule][${this.ruleIds.length}个] 加载完成`)
+    logger.info(`[button][${this.buttonIds.length}个] 加载完成`)
+    logger.info(`[定时任务][${taskCount}个] 加载完成`)
+    logger.info(`[Handler][Key:${handlerKeys.length}个][fnc:${handlerCount}个] 加载完成`)
+    logger.info(logger.green('-----------'))
+    logger.info(`Karin启动完成：耗时 ${logger.green(process.uptime().toFixed(2))} 秒...`)
   }
 
   /**
@@ -311,7 +270,7 @@ export const PluginLoader = new (class PluginLoader {
         })
 
         /** 定时任务 */
-        lodash.forEach(Class.task, (val) => {
+        lodash.forEach(Class.task, val => {
           if (!val.name) return logger.error(`[${dir}][${name}] 定时任务name错误`)
           if (!val.cron) return logger.error(`[${dir}][${name}] 定时任务cron错误：${Class.name}`)
           info.task.push({
@@ -338,7 +297,7 @@ export const PluginLoader = new (class PluginLoader {
         })
 
         /** rule */
-        lodash.forEach(Class.rule, (val) => {
+        lodash.forEach(Class.rule, val => {
           if (!val.fnc) return logger.error(`[${dir}][${name}] rule.fnc错误：${Class.name}`)
           info.rule.push({
             reg: val.reg instanceof RegExp ? val.reg : new RegExp(val.reg),
@@ -348,6 +307,18 @@ export const PluginLoader = new (class PluginLoader {
             log: val.log === false ? (id: string, log: string) => logger.debug('mark', id, log) : (id: string, log: string) => logger.bot('mark', id, log),
           })
         })
+
+        /** button */
+        lodash.forEach(Class.button, val => {
+          if (!val.fnc) return logger.error(`[${dir}][${name}] rule.fnc错误：${Class.name}`)
+          info.button.push({
+            reg: val.reg instanceof RegExp ? val.reg : new RegExp(val.reg),
+            fnc: val.fnc,
+          })
+        })
+
+        /** handler */
+        handler.add(index + '', Class)
 
         /** 执行初始化 */
         Class.init && Class.init()
@@ -360,10 +331,6 @@ export const PluginLoader = new (class PluginLoader {
 
         /** 注册按钮 */
         // if (!lodash.isEmpty(Class.button)) button.add({ name, dir, App, Class })
-
-        /** 收集插件 */
-        // const res = this.App(App, Class, { name, dir, path: `${dir}/${name}` })
-        // this.Apps.push(res)
         return true
       })
 
@@ -392,45 +359,15 @@ export const PluginLoader = new (class PluginLoader {
    * 卸载插件
    */
   uninstallApp (dir: dirName, name: fileName) {
-    this.Apps = this.Apps.filter((v) => !(v.file.dir === dir && v.file.name === name))
-    this.uninstallTask(dir, name)
-    button.del(dir, name)
-    handler.del({ dir, name, key: '' })
-  }
-
-  /** 创建定时任务 */
-  async creatTask () {
-    this.task.forEach((val, index) => {
-      if (val.schedule) return
-      val.log = val.log === false ? (log: string) => logger.debug(log) : (log: string) => logger.mark(log)
-      val.schedule = schedule.scheduleJob(val.cron, async () => {
-        try {
-          typeof val.log === 'function' && val.log(`[定时任务][${val.file.dir}][${val.name}] 开始执行`)
-          const App = new val.App()
-          await (App[val.fnc as keyof typeof App] as Function)()
-          typeof val.log === 'function' && val.log(`[定时任务][${val.file.dir}][${val.name}] 执行完毕`)
-        } catch (error) {
-          logger.error(`[定时任务][${val.file.dir}][${val.name}] 执行报错`)
-          logger.error(error)
-        }
-      })
-      this.task[index] = val
-    })
-  }
-
-  /**
-   * 卸载定时任务
-   */
-  uninstallTask (dir: dirName, name: fileName) {
-    this.task = this.task.filter((task) => {
-      if (task.file.dir === dir && task.file.name === name) {
-        /** 停止定时任务 */
-        task.schedule && task.schedule.cancel()
-        /** 移除定时任务 */
-        return false
-      }
-      /** 保留定时任务 */
-      return true
+    // this.Apps = this.Apps.filter((v) => !(v.file.dir === dir && v.file.name === name))
+    // this.uninstallTask(dir, name)
+    // button.del(dir, name)
+    // handler.del({ dir, name, key: '' })
+    Object.keys(this.PluginList).forEach(key => {
+      const info = this.PluginList[key]
+      /** 停止定时任务 */
+      info.task.forEach(val => val.schedule?.cancel())
+      info.file.dir === dir && info.file.name === name && delete this.PluginList[key]
     })
   }
 
@@ -438,99 +375,99 @@ export const PluginLoader = new (class PluginLoader {
    * 监听单个文件热更新
    */
   watch (dir: dirName, name: fileName) {
-    // if (this.watcher.get(`${dir}.${name}`)) return
-    // const file = `./plugins/${dir}/${name}`
-    // const watcher = chokidar.watch(file)
-    // /** 监听修改 */
-    // watcher.on('change', async () => {
-    //   /** 卸载 */
-    //   this.uninstallApp(dir, name)
-    //   /** 载入插件 */
-    //   const res = await this.createdApp(dir, name, true)
-    //   if (!res) return
-    //   logger.mark(`[修改插件][${dir}][${name}]`)
-    // })
+    if (this.watcher.get(`${dir}.${name}`)) return
+    const file = `./plugins/${dir}/${name}`
+    const watcher = chokidar.watch(file)
+    /** 监听修改 */
+    watcher.on('change', async () => {
+      /** 卸载 */
+      this.uninstallApp(dir, name)
+      /** 载入插件 */
+      const res = await this.createdApp(dir, name, true)
+      if (!res) return
+      logger.mark(`[修改插件][${dir}][${name}]`)
+    })
     /** 监听删除 */
-    // watcher.on('unlink', async () => {
-    //   /** 卸载 */
-    //   this.uninstallApp(dir, name)
-    //   this.watcher.delete(`${dir}.${name}`)
-    //   logger.mark(`[卸载插件][${dir}][${name}]`)
-    // })
-    // this.watcher.set(`${dir}.${name}`, watcher)
+    watcher.on('unlink', async () => {
+      /** 卸载 */
+      this.uninstallApp(dir, name)
+      this.watcher.delete(`${dir}.${name}`)
+      logger.mark(`[卸载插件][${dir}][${name}]`)
+    })
+    this.watcher.set(`${dir}.${name}`, watcher)
   }
 
   /**
    * 监听文件夹更新
    */
-  watchDir (dir: dirName) {
-    // if (dir) return
-    //   if (this.watcher.get(dir)) return
-    //   const file = `${this.dir}/${dir}/`
-    //   const watcher = chokidar.watch(file)
-    //   /** 热更新 */
-    //   setTimeout(() => {
-    //     /** 新增文件 */
-    //     watcher.on('add', async filePath => {
-    //       logger.debug(`[热更新][新增插件] ${filePath}`)
-    //       const name = path.basename(filePath) as fileName
-    //       if (!name.endsWith('')) return
-    //       if (!fs.existsSync(`${file}/${name}`)) return
-    //       /** 载入插件 */
-    //       const res = await this.createdApp(dir, name, true)
-    //       if (!res) return
-    //       /** 延迟1秒 等待卸载完成 */
-    //       Common.sleep(1000)
-    //         .then(() => {
-    //           /** 停止整个文件夹监听 */
-    //           watcher.close()
-    //           /** 新增插件之后重新监听文件夹 */
-    //           this.watcher.delete(dir)
-    //           this.watchDir(dir)
-    //           logger.mark(`[新增插件][${dir}][${name}]`)
-    //           return true
-    //         })
-    //         .catch(error => logger.error(error))
-    //     })
-    //     /** 监听修改 */
-    //     watcher.on('change', async PluPath => {
-    //       const name = path.basename(PluPath) as fileName
-    //       if (!name.endsWith('')) return
-    //       if (!fs.existsSync(`${this.dir}/${dir}/${name}`)) return
-    //       /** 卸载 */
-    //       this.uninstallApp(dir, name)
-    //       /** 载入插件 */
-    //       const res = await this.createdApp(dir, name, true)
-    //       if (!res) return
-    //       logger.mark(`[修改插件][${dir}][${name}]`)
-    //     })
-    //     /** 监听删除 */
-    //     watcher.on('unlink', async PluPath => {
-    //       const name = path.basename(PluPath) as fileName
-    //       if (!name.endsWith('')) return
-    //       /** 卸载 */
-    //       this.uninstallApp(dir, name)
-    //       /** 停止监听 */
-    //       watcher.close()
-    //       /** 重新监听文件夹 */
-    //       this.watcher.delete(dir)
-    //       this.watchDir(dir)
-    //       logger.mark(`[卸载插件][${dir}][${name}]`)
-    //     })
-    //   }, 500)
-    //   /** 生成随机数0.5-2秒 */
-    //   const random = Math.floor(Math.random() * 1000) + 500
-    //   Common.sleep(random)
-    //     .then(() => {
-    //       const isExist = this.watcher.get(dir)
-    //       /** 这里需要检查一下是否已经存在，已经存在就关掉之前的监听 */
-    //       if (isExist) {
-    //         isExist.close()
-    //         this.watcher.delete(dir)
-    //       }
-    //       this.watcher.set(dir, watcher)
-    //       return true
-    //     })
-    //     .catch(() => {})
+  async watchDir (dir: dirName) {
+    if (this.watcher.get(dir)) return
+    const file = `${this.dir}/${dir}/`
+    const watcher = chokidar.watch(file)
+    /** 热更新 */
+    setTimeout(() => {
+      /** 新增文件 */
+      watcher.on('add', async filePath => {
+        logger.debug(`[热更新][新增插件] ${filePath}`)
+        const name = path.basename(filePath) as fileName
+
+        /** js环境仅接受js ts接受两者 */
+        if (!this.isTs && !name.endsWith('.js')) return
+        if (this.isTs && !name.endsWith('.ts') && !name.endsWith('.js')) return
+
+        if (!fs.existsSync(`${file}/${name}`)) return
+        /** 载入插件 */
+        const res = await this.createdApp(dir, name, true)
+        if (!res) return
+        /** 延迟1秒 等待卸载完成 */
+        await common.sleep(1000)
+        /** 停止整个文件夹监听 */
+        watcher.close()
+        /** 新增插件之后重新监听文件夹 */
+        this.watcher.delete(dir)
+        this.watchDir(dir)
+        logger.mark(`[新增插件][${dir}][${name}]`)
+        return true
+      })
+
+      /** 监听修改 */
+      watcher.on('change', async PluPath => {
+        const name = path.basename(PluPath) as fileName
+        if (!name.endsWith('')) return
+        if (!fs.existsSync(`${this.dir}/${dir}/${name}`)) return
+        /** 卸载 */
+        this.uninstallApp(dir, name)
+        /** 载入插件 */
+        const res = await this.createdApp(dir, name, true)
+        if (!res) return
+        logger.mark(`[修改插件][${dir}][${name}]`)
+      })
+
+      /** 监听删除 */
+      watcher.on('unlink', async PluPath => {
+        const name = path.basename(PluPath) as fileName
+        if (!name.endsWith('')) return
+        /** 卸载 */
+        this.uninstallApp(dir, name)
+        /** 停止监听 */
+        watcher.close()
+        /** 重新监听文件夹 */
+        this.watcher.delete(dir)
+        this.watchDir(dir)
+        logger.mark(`[卸载插件][${dir}][${name}]`)
+      })
+    }, 500)
+
+    /** 生成随机数0.5-2秒 */
+    const random = Math.floor(Math.random() * 1000) + 500
+    await common.sleep(random)
+    const isExist = this.watcher.get(dir)
+    /** 这里需要检查一下是否已经存在，已经存在就关掉之前的监听 */
+    if (isExist) {
+      isExist.close()
+      this.watcher.delete(dir)
+    }
+    this.watcher.set(dir, watcher)
+    return true
   }
 })()

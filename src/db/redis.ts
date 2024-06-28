@@ -1,6 +1,6 @@
 import { exec } from 'child_process'
 import RedisLevel from './redis_level'
-import { logger, config } from 'karin/utils/index'
+import { logger, config } from 'karin/utils'
 import redis, { createClient, createCluster, RedisClientType } from 'redis'
 
 export default class Redis {

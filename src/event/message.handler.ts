@@ -2,8 +2,8 @@ import lodash from 'lodash'
 import { review } from './review.handler'
 import { KarinMessage } from './message'
 import EventHandler from './event.handler'
-import { logger, config } from 'karin/utils/index'
-import { listener, Plugin, stateArr, PluginLoader } from 'karin/core/index'
+import { logger, config } from 'karin/utils'
+import { listener, Plugin, stateArr, pluginLoader } from 'karin/core'
 
 /**
  * 消息事件
@@ -43,8 +43,8 @@ export class MessageHandler extends EventHandler {
     if (await this.context()) return
 
     /* eslint-disable no-labels */
-    a: for (const index of PluginLoader.rule) {
-      const app = PluginLoader.PluginList[index]
+    a: for (const index of pluginLoader.ruleIds) {
+      const app = pluginLoader.PluginList[index]
       /** 判断事件 */
       if (app.event && !this.filtEvent(app.event)) continue
 

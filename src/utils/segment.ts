@@ -28,7 +28,7 @@ import {
   ContentElement,
   KarinNodeElement,
   KarinElement,
-} from 'karin/types/index'
+} from 'karin/types'
 
 export const segment = new (class Segment {
   /**

@@ -2,9 +2,9 @@ import { promisify } from 'util'
 import { fileURLToPath } from 'url'
 import { AxiosRequestConfig } from 'axios'
 import { pipeline, Readable } from 'stream'
-import { logger, segment } from 'karin/utils/index'
+import { logger, segment } from 'karin/utils'
 import { fs, path, axios, lodash } from 'karin/modules'
-import { dirName, KarinElement, KarinNodeElement } from 'karin/types/index'
+import { dirName, KarinElement, KarinNodeElement } from 'karin/types'
 
 /**
  * 常用方法

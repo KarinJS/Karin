@@ -1,5 +1,5 @@
 import { listener } from './listener'
-import { logger, common, config } from 'karin/utils/index'
+import { logger, common, config } from 'karin/utils'
 
 /**
  * 处理基本事件
@@ -91,7 +91,7 @@ export default class Process {
    */
   static async exit (code: any = 0) {
     try {
-      const { redis } = await import('karin/db/index')
+      const { redis } = await import('karin/db')
       if (redis && redis.save) await redis.save()
       logger.mark(`Karin 已停止运行 运行时间：${common.uptime()} 退出码：${code || '未知'}`)
     } finally {

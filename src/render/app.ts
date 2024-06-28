@@ -1,5 +1,5 @@
-import { logger } from 'karin/utils/index'
-import { KarinRender, KarinRenderApp, KarinRenderType } from 'karin/types/index'
+import { logger } from 'karin/utils'
+import { KarinRender, KarinRenderApp, KarinRenderType } from 'karin/types'
 
 class Renderer {
   index: number

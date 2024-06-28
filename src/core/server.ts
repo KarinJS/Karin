@@ -4,8 +4,8 @@ import { listener } from './listener'
 import { WebSocketServer } from 'ws'
 import { createServer } from 'http'
 import express, { Express } from 'express'
-import { exec, config, logger, common } from 'karin/utils/index'
-import { render, HttpRenderer, Wormhole } from 'karin/renderer/index'
+import { exec, config, logger, common } from 'karin/utils'
+import { render, HttpRenderer, Wormhole } from 'karin/render'
 import { Server as ServerType, ServerResponse, IncomingMessage } from 'http'
 
 export const server = new (class Server {

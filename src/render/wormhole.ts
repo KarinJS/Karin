@@ -2,9 +2,9 @@ import fs from 'fs'
 import path from 'path'
 import { URL } from 'url'
 import WebSocket from 'ws'
-import { render } from './index'
+import { render } from '.'
 import { HttpRenderer } from './http'
-import { config } from 'karin/utils/index'
+import { config } from 'karin/utils'
 
 let ws: WebSocket
 let reConnect: NodeJS.Timeout | undefined

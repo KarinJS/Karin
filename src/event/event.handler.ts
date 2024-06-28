@@ -2,9 +2,9 @@ import { review } from './review.handler'
 import { KarinMessage } from './message'
 import { KarinNotice } from './notice'
 import { KarinRequest } from './request'
-import { listener } from 'karin/core/index'
-import { segment, common, logger, config } from 'karin/utils/index'
-import { Event, Permission, SubEvent, GroupCfg } from 'karin/types/index'
+import { listener } from 'karin/core'
+import { segment, common, logger, config } from 'karin/utils'
+import { Event, Permission, SubEvent, GroupCfg } from 'karin/types'
 
 export default class EventHandler {
   e: KarinMessage | KarinNotice | KarinRequest

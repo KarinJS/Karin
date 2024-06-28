@@ -3,9 +3,9 @@ import { render } from './app'
 import { RenderBase } from './base'
 import { randomUUID } from 'crypto'
 import { IncomingMessage } from 'http'
-import { logger } from 'karin/utils/index'
+import { logger } from 'karin/utils'
 import { listener } from 'karin/core/listener'
-import { KarinRenderType } from 'karin/types/index'
+import { KarinRenderType } from 'karin/types'
 
 class Puppeteer extends RenderBase {
   socket!: WebSocket

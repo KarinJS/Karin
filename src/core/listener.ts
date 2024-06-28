@@ -1,8 +1,8 @@
 import { EventEmitter } from 'events'
-import { PluginLoader } from './plugin.loader'
-import { common, logger, config } from 'karin/utils/index'
+import { pluginLoader } from './plugin.loader'
+import { common, logger, config } from 'karin/utils'
 import { MessageHandler } from 'karin/event/message.handler'
-import { KarinAdapter, contact, KarinElement } from 'karin/types/index'
+import { KarinAdapter, contact, KarinElement } from 'karin/types'
 
 /**
  * 监听器管理
@@ -27,7 +27,7 @@ export const listener = new (class Listeners extends EventEmitter {
     this.list = []
     this.adapter = []
     this.on('error', data => logger.error(data))
-    this.on('plugin', () => PluginLoader.load())
+    this.on('load.plugin', () => pluginLoader.load())
     this.on('adapter', data => {
       let path = data.path || '无'
       if (path && data.type !== 'grpc') path = `ws://127.0.0.1:/${config.Server.http.port}${data.path}`
@@ -173,9 +173,9 @@ export const listener = new (class Listeners extends EventEmitter {
     const reply_log = common.makeMessageLog(NewElements)
     const self_id = bot.account.uid || bot.account.uin
     if (contact.scene === 'group') {
-      logger.bot('info', self_id, `Send Proactive Group ${contact.peer}: ${reply_log}`)
+      logger.bot('info', self_id, `${logger.green('Send Proactive Group')} ${contact.peer}: ${reply_log}`)
     } else {
-      logger.bot('info', self_id, `Send Proactive private ${contact.peer}: ${reply_log}`)
+      logger.bot('info', self_id, `${logger.green('Send Proactive private')} ${contact.peer}: ${reply_log}`)
     }
 
     try {

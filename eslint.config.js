@@ -10,14 +10,7 @@ const newData = []
 
 data.forEach(val => {
   // 驼峰命名规则关闭
-  if (val?.rules?.['camelcase']) {
-    val.rules['camelcase'] = ['off']
-  }
-
-  // 排除掉plugins dist
-  if (Array.isArray(val.ignores)) {
-    val.ignores = val.ignores.filter((v) => !v.includes('plugins') && !v.includes('dist'))
-  }
+  if (val?.rules?.['camelcase']) val.rules['camelcase'] = ['off']
 
   // ts
   if (val.name === 'neostandard/ts') {

@@ -1,113 +1,77 @@
-import util from 'util'
 import lodash from 'lodash'
 import logger from './logger'
-import { Plugin } from 'karin/core/index'
-import { dirName, fileName, E } from 'karin/types/index'
+import { EventType, PluginType } from 'karin/types'
+import { Plugin, pluginLoader as loader } from 'karin/core'
 
 /**
  * 事件处理器类
  */
 export const handler = new (class EventHandler {
-  events: {
-    [key: string]: Array<{
-      /**
-       * - 文件信息
-       */
-      file: {
-        /**
-         * - 插件包名称
-         */
-        dir: dirName
-        /**
-         * - 文件名称
-         */
-        name: fileName
-      }
-      /**
-       * - 事件class
-       */
-      App: new () => Plugin
-      /**
-       * - 事件键
-       */
-      key: string
-      /**
-       * - 事件处理函数名称
-       */
-      fnc: string
-      /**
-       * - 优先级
-       */
-      priority: number
-    }>
-  }
-
-  constructor () {
-    this.events = {}
-  }
-
   /**
    * 添加事件处理器
-   * @param {Object} config 配置对象
-   * @param {string} config.name 处理器名称
-   * @param {string} config.dir 处理器所在目录
-   * @param {Function} config.App 应用构造函数
-   * @param {Object} config.Class 类配置
+   * @param index 插件索引
+   * @param Class 插件类
    */
-  add ({ name, dir, App, Class }: { dir: dirName; name: fileName; App: new () => Plugin; Class: Plugin }) {
-    for (const cfg of Class.handler) {
-      const { key = '', fnc = '', priority = 2000 } = cfg
-      if (!key) {
-        return logger.error(`[Handler][Add]: [${name}] 缺少 key`)
-      }
-      if (!fnc) {
-        return logger.error(`[Handler][Add]: [${name}] 缺少 fnc`)
-      }
-      logger.debug(`[Handler][Reg]: [${name}][${key}]`)
-      if (!Array.isArray(this.events[key])) this.events[key] = []
-      this.events[key].push({ file: { name, dir }, App, key, fnc, priority })
-      this.events[key] = lodash.orderBy(this.events[key], ['priority'], ['asc'])
-    }
+  add (index: string, Class: PluginType) {
+    lodash.forEach(Class.handler, val => {
+      if (!val.key) logger.error(`[Handler][Add]: [${Class.name}] 缺少 key`)
+      if (!val.fnc) logger.error(`[Handler][Add]: [${Class.name}] 缺少 fnc`)
+      logger.debug(`[Handler][Reg]: [${Class.name}][${val.key}]`)
+      if (!Array.isArray(loader.handlerIds[val.key])) loader.handlerIds[val.key] = []
+      loader.handlerIds[val.key].push({ index, fnc: val.fnc, priority: val.priority || Class.priority })
+      loader.handlerIds[val.key] = lodash.orderBy(loader.handlerIds[val.key], ['priority'], ['asc'])
+    })
   }
 
   /**
    * 删除事件处理器
+   * 如果不传参数则删除所有处理器
    */
-  del ({
-    dir = '',
-    name = '',
-    key = '',
-  }: {
-    dir: dirName | ''
-    name: fileName | ''
+  del ({ index = '', key = '' }: {
     /**
-     * 事件键 未传入则删除所有处理器
+     * 插件索引
+     */
+    index: string | ''
+    /**
+     * 事件键
      */
     key: string | ''
   }) {
-    /** 这里是删除所有 全部重新初始化 */
-    if (!key && !dir && !name) {
-      this.events = {}
+    /** 无参 */
+    if (!key && !index) {
+      loader.handlerIds = {}
       return true
     }
 
-    /** 热重载 删除指定目录 */
+    /** 删除指定索引插件 */
     if (!key) {
-      for (const v of Object.keys(this.events)) {
-        this.events[v] = this.events[v].filter(v => v.file.dir !== dir || v.file.name !== name)
+      for (const v of Object.keys(loader.handlerIds)) {
+        loader.handlerIds[v] = loader.handlerIds[v].filter(v => v.index !== index)
         // 如果处理器为空则删除键
-        if (!this.events[v].length) {
-          delete this.events[v]
+        if (!loader.handlerIds[v].length) {
+          delete loader.handlerIds[v]
         } else {
-          this.events[v] = lodash.orderBy(this.events[v], ['priority'], ['asc'])
+          loader.handlerIds[v] = lodash.orderBy(loader.handlerIds[v], ['priority'], ['asc'])
         }
       }
       return true
     }
 
-    if (!this.events[key]) return false
-    this.events[key] = this.events[key].filter(v => v.file.dir !== dir || v.file.name !== name)
-    this.events[key] = lodash.orderBy(this.events[key], ['priority'], ['asc'])
+    /** 删除指定key */
+    if (!index) {
+      loader.handlerIds[key] && delete loader.handlerIds[key]
+      return true
+    }
+
+    /** 删除指定key的index */
+    if (!loader.handlerIds[key]) return false
+    loader.handlerIds[key] = loader.handlerIds[key].filter(v => v.index !== index)
+    if (!loader.handlerIds[key].length) {
+      delete loader.handlerIds[key]
+      return true
+    }
+    loader.handlerIds[key] = lodash.orderBy(loader.handlerIds[key], ['priority'], ['asc'])
+
     return true
   }
 
@@ -116,36 +80,46 @@ export const handler = new (class EventHandler {
    * @param key 事件键
    * @param args 自定义参数 一般用来传递e之类的
    */
-  async call (key: string, args = {}) {
-    let ret
-    for (const v of this.events[key] || []) {
-      const App = new v.App()
-      if ('e' in args && args.e) App.e = args.e as E
-      let done = true
-      // 标记函数，用于标记处理器是否执行成功，由处理器自行调用，如果未调用则认为处理器未执行成功
-      const reject = (msg = '') => {
-        if (msg) logger.mark(`[Handler][Reject]: [${v.file.dir}][${v.file.name}][${key}] ${msg}`)
-        done = false
-      }
+  async call (key: string, args: { e?: EventType<unknown> } = {}) {
+    let res
+    for (const v of loader.handlerIds[key] || []) {
+      const info = loader.PluginList[v.index]
+
       try {
-        ret = await (App[v.fnc as keyof typeof App] as Function)(args, reject)
-        if (util.types.isPromise(ret)) ret = await ret
+        let done = true
+        /**
+         * 拒绝处理器 调用后则不再继续执行下一个处理器
+         * @param msg 错误信息
+         */
+        const reject = (msg = '') => {
+          if (msg) logger.mark(`[Handler][Reject]: [${info.file.dir}][${info.file.name}][${key}] ${msg}`)
+          done = false
+        }
+
+        if (info.file.type === 'function' && typeof v.fnc === 'function') {
+          res = await v.fnc(args, reject)
+        } else {
+          const cla = new (info.file.Fnc as new () => Plugin)()
+          cla.e = args.e as EventType<typeof args.e>
+          res = await (cla[v.fnc as keyof typeof cla] as Function)(args, reject)
+        }
+
         if (done) {
-          logger.mark(`[Handler][Done]: [${v.file.dir}][${v.file.name}][${key}]`)
-          return ret
+          logger.mark(`[Handler][Done]: [${info.file.dir}][${info.file.name}][${key}]`)
+          return res
         }
       } catch (e) {
         // 产生错误继续下一个处理器
-        logger.error(`[Handler][Error]: [${v.file.dir}][${v.file.name}][${key}] ${e}`)
+        logger.error(`[Handler][Error]: [${info.file.dir}][${info.file.name}][${key}] ${e}`)
       }
     }
-    return ret
+    return res
   }
 
   /**
    * 检查是否存在指定键的事件处理器
    */
   has (key: string): boolean {
-    return !!this.events[key]
+    return !!loader.handlerIds[key]
   }
 })()

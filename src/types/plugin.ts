@@ -1,7 +1,7 @@
 import schedule from 'node-schedule'
 import { KarinNodeElement } from './element'
 import { Reply, replyCallback } from './reply'
-import { E, Event, Permission, SubEvent } from './event'
+import { EventType, Event, Permission, SubEvent } from './event'
 
 /**
  * - 插件根目录名称
@@ -74,15 +74,11 @@ export interface PluginButton {
   /**
    * - 按钮命令正则
    */
-  reg: string
+  reg: string | RegExp
   /**
    * - 执行方法名称
    */
-  fnc: string
-  /**
-   * - 优先级 不填默认为主优先度
-   */
-  priority: number
+  fnc: string | Function
 }
 
 /**
@@ -143,7 +139,7 @@ export interface PluginType {
    */
   event: Event | `${Event}.${SubEvent}`
   /**
-   * - 优先级 默认为5000
+   * - 优先级 默认为10000
    */
   priority: number
   /**
@@ -175,8 +171,9 @@ export interface PluginType {
 
   /**
    * - 上报事件
+   * - 根据上报中的event字段来获取e的事件类型
    */
-  e: E
+  e: EventType<this>
   /**
    * - 快速回复
    */
@@ -230,7 +227,7 @@ export interface PluginType {
   /**
    * - accept标准方法 给通知、请求事件使用
    */
-  accept?(e: E): Promise<void>
+  accept?(e: EventType<this>): Promise<void>
 }
 
 /**

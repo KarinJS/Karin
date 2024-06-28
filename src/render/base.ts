@@ -1,7 +1,7 @@
 import fs from 'fs'
 import chokidar from 'chokidar'
 import template from 'art-template'
-import { common, logger } from 'karin/utils/index'
+import { common, logger } from 'karin/utils'
 import { KarinRender, KarinRenderType } from 'karin/types/render'
 
 /**

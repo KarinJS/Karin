@@ -1,7 +1,7 @@
 import { Logger } from 'log4js'
 import { karinDir } from 'karin/core/dir'
 import { fs, yaml as Yaml, chokidar } from 'karin/modules'
-import { Redis, App, Config, Server, Package, GroupCfg } from 'karin/types/index'
+import { Redis, App, Config, Server, Package, GroupCfg } from 'karin/types'
 
 /**
  * 配置文件
@@ -250,11 +250,11 @@ export const config = new (class Cfg {
     /** 修改日志等级 */
     this.loggger.level = this.Config.log4jsCfg.level
     await this.#review()
-    // if (this.Server.HotUpdate) {
-    //   const { Bot } = await import('../index')
-    //   Bot.emit('restart_http', {})
-    //   Bot.emit('restart_grpc', {})
-    // }
+    if (this.Server.HotUpdate) {
+      const { Bot } = await import('..')
+      Bot.emit('restart_http', {})
+      Bot.emit('restart_grpc', {})
+    }
   }
 
   async change_group () {
@@ -262,10 +262,10 @@ export const config = new (class Cfg {
   }
 
   async #review () {
-    // if (this.review) return
-    // this.review = true
-    // const review = await import('../event/review')
-    // review.default.main()
-    // this.review = false
+    if (this.review) return
+    this.review = true
+    const { review } = await import('karin/event')
+    review.main()
+    this.review = false
   }
 })()

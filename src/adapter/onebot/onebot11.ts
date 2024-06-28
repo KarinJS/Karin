@@ -3,8 +3,8 @@ import { randomUUID } from 'crypto'
 import { IncomingMessage } from 'http'
 import { listener } from 'karin/core/listener'
 import { KarinAdapter } from 'karin/types/adapter'
-import { common, config, logger, segment } from 'karin/utils/index'
-import { KarinMessage, KarinNotice, KarinRequest } from 'karin/event/index'
+import { common, config, logger, segment } from 'karin/utils'
+import { KarinMessage, KarinNotice, KarinRequest } from 'karin/event'
 import {
   Role,
   Scene,
@@ -16,7 +16,7 @@ import {
   OneBot11Segment,
   CustomNodeSegment,
   OneBot11ApiParamsType,
-} from 'karin/types/index'
+} from 'karin/types'
 
 /**
  * @class OneBot11

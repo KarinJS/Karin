@@ -1,8 +1,8 @@
 /* eslint-disable no-dupe-class-members */
 import PluginApp from './plugin.app'
-import { common } from 'karin/utils/index'
+import { common } from 'karin/utils'
 import { KarinMessage } from 'karin/event/message'
-import { Permission, PluginApps, KarinElement } from 'karin/types/index'
+import { Permission, PluginApps, KarinElement } from 'karin/types'
 
 type FncFunction = (e: KarinMessage) => Promise<boolean>
 type FncElement = string | KarinElement | Array<KarinElement>

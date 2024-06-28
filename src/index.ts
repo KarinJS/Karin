@@ -1,21 +1,21 @@
 // 基本模块
 export * from 'kritor-proto'
-export * from 'karin/core/index'
-export * from 'karin/event/index'
-export * from 'karin/db/index'
-export * from 'karin/renderer/index'
-export * from 'karin/utils/index'
-export * from 'karin/types/index'
+export * from 'karin/core'
+export * from 'karin/event'
+export * from 'karin/db'
+export * from 'karin/render'
+export * from 'karin/utils'
+export * from 'karin/types'
 
-import { config, update } from 'karin/utils/index'
-import { render } from 'karin/renderer/index'
-import { RenderServer } from 'karin/renderer/index'
+import { config, update } from 'karin/utils'
+import { render } from 'karin/render'
+import { RenderServer } from 'karin/render'
 import OneBot11 from 'karin/adapter/onebot/onebot11'
-import { server, Karin, PluginLoader, listener, Plugin } from 'karin/core/index'
+import { server, Karin, listener, Plugin } from 'karin/core'
 
 // 初始化
 server.init()
-PluginLoader.load()
+listener.emit('load.plugin')
 listener.emit('adapter', RenderServer)
 listener.emit('adapter', OneBot11)
 
