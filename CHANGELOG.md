@@ -24,6 +24,13 @@
 ### 其他提交
 - Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
 
+## [0.3.5](https://github.com/KarinJS/Karin/compare/v0.3.4...v0.3.5) (2024-06-28)
+
+
+### Bug Fixes
+
+* 将modules修改到根目录 ([97e1f14](https://github.com/KarinJS/Karin/commit/97e1f146be70071110641a46747525ed4c0f0fe3))
+
 ## [0.3.4](https://github.com/KarinJS/Karin/compare/v0.3.3...v0.3.4) (2024-06-28)
 
 
