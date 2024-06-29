@@ -54,8 +54,7 @@
     "sort:pack": "npx sort-package-json",
     "start": "pm2 start ./config/config/pm2.yaml && pm2 monit",
     "stop": "pm2 delete ./config/config/pm2.yaml",
-    "uninstall": "node lib/tools/uninstall.js",
-    "ver": "node lib/tools/updateVersion.js"
+    "uninstall": "node lib/tools/uninstall.js"
   },
   "dependencies": {
     "@grpc/grpc-js": "1.10.10",
@@ -65,7 +64,7 @@
     "chalk": "5.3.0",
     "chokidar": "3.6.0",
     "express": "4.19.2",
-    "kritor-proto": "^0.0.6",
+    "kritor-proto": "^1.0.1",
     "level": "8.0.1",
     "lodash": "4.17.21",
     "log4js": "6.9.1",
@@ -76,17 +75,17 @@
     "yaml": "2.4.1"
   },
   "devDependencies": {
-    "@types/express": "^4.17.21",
-    "@types/lodash": "^4.17.5",
-    "@types/node": "^20.14.8",
-    "@types/node-schedule": "^2.1.7",
-    "@types/ws": "8.5.10",
-    "eslint": "9.5.0",
-    "neostandard": "^0.9.0",
-    "sort-package-json": "^2.10.0",
-    "tsc-alias": "^1.8.10",
-    "tsx": "^4.15.7",
-    "typescript": "^4.9.5"
+    "@types/express": "latest",
+    "@types/lodash": "latest",
+    "@types/node": "latest",
+    "@types/node-schedule": "latest",
+    "@types/ws": "latest",
+    "eslint": "latest",
+    "neostandard": "latest",
+    "sort-package-json": "latest",
+    "tsc-alias": "latest",
+    "tsx": "latest",
+    "typescript": "latest"
   },
   "bundledDependencies": [
     "@types/express",

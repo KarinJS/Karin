@@ -35,7 +35,6 @@ export const plugin = Plugin
 export const Renderer = render
 
 export const Cfg = config
-export const Bot = listener
 export const Update = update
 
 export const karin = new Karin()

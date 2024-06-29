@@ -16,14 +16,7 @@
     "rootDir": "./src",
     "declaration": true,
     "noImplicitAny": true,
-    "strict": true,
-    "types": [
-      "@types/ws",
-      "@types/express",
-      "@types/lodash",
-      "@types/node",
-      "@types/node-schedule"
-    ]
+    "strict": true
   },
   "tsc-alias": {
     "resolveFullPaths": true,

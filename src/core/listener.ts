@@ -200,3 +200,4 @@ class Listeners extends EventEmitter {
 }
 
 export const listener = new Listeners()
+export const Bot = listener
