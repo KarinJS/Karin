@@ -24,6 +24,13 @@
 ### 其他提交
 - Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
 
+## [0.3.9](https://github.com/KarinJS/Karin/compare/v0.3.8...v0.3.9) (2024-06-29)
+
+
+### Bug Fixes
+
+* 推进`kritor-proto`版本 ([5fbd7ad](https://github.com/KarinJS/Karin/commit/5fbd7ad302af4a3b39a26e19e1eb0aa1387acd3b))
+
 ## [0.3.8](https://github.com/KarinJS/Karin/compare/v0.3.7...v0.3.8) (2024-06-29)
 
 
