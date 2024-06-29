@@ -7,7 +7,7 @@ import { KarinAdapter, contact, KarinElement } from 'karin/types'
 /**
  * 监听器管理
  */
-export const listener = new (class Listeners extends EventEmitter {
+class Listeners extends EventEmitter {
   /**
    * Bot索引
    * @type - Bot索引
@@ -197,4 +197,6 @@ export const listener = new (class Listeners extends EventEmitter {
     }
     return result
   }
-})()
+}
+
+export const listener = new Listeners()
