@@ -24,6 +24,13 @@
 ### 其他提交
 - Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
 
+## [0.5.1](https://github.com/KarinJS/Karin/compare/v0.5.0...v0.5.1) (2024-06-30)
+
+
+### Bug Fixes
+
+* self_id  === input 不打印日志 ([f1d5fbd](https://github.com/KarinJS/Karin/commit/f1d5fbddcbcd0fbea579f510ac087b189e0a9540))
+
 ## [0.5.0](https://github.com/KarinJS/Karin/compare/v0.4.1...v0.5.0) (2024-06-30)
 
 
