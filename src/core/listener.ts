@@ -3,6 +3,8 @@ import { pluginLoader } from './plugin.loader'
 import { common, logger, config } from 'karin/utils'
 import { MessageHandler } from 'karin/event/message.handler'
 import { KarinAdapter, contact, KarinElement } from 'karin/types'
+import NoticeHandler from 'karin/event/notice.handler'
+import RequestHandler from 'karin/event/request.handler'
 
 /**
  * 监听器管理
@@ -36,11 +38,13 @@ class Listeners extends EventEmitter {
       this.addAdapter(data)
     })
     this.on('bot', data => {
-      this.addBot(data)
+      if (!this.addBot(data)) return
       logger.info(`[机器人][注册][${data.type}] ` + logger.green(`[account:${data.bot.account.uid || data.bot.account.uin}(${data.bot.account.name})]`))
       this.emit('karin:online', data.bot.account.uid || data.bot.account.uin)
     })
     this.on('message', data => new MessageHandler(data))
+    this.on('notice', data => new NoticeHandler(data))
+    this.on('request', data => new RequestHandler(data))
   }
 
   /**
@@ -50,7 +54,7 @@ class Listeners extends EventEmitter {
     this.index++
     const index = this.index
     if (!data.bot) {
-      logger.error('[Bot管理][注册] 注册失败: Bot实例不能为空')
+      logger.error('[Bot管理][注册] 注册失败: Bot实例不能为空', JSON.stringify(data))
       return false
     }
 

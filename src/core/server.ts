@@ -82,6 +82,33 @@ export const server = new (class Server {
         }
       })
 
+      /** 控制台适配器 */
+      this.app.get('/api/input', (req, res) => {
+        const name = req.query.name as string
+        const token = req.query.token as string
+        if (!name || !token) {
+          logger.error('[HTTP][input] 缺少参数', req.query)
+          return res.status(403).json({ error: '禁止访问', message: '缺少参数' })
+        }
+        // 禁止键入向上级目录
+        if (name.includes('/')) {
+          logger.error('[HTTP][input] 无效的文件名', name)
+          return res.status(403).json({ error: '禁止访问', message: '无效的文件名' })
+        }
+        const CfgToken = config.Config.AdapterInput.token
+        if (CfgToken === 'AdapterInput' || CfgToken !== token) {
+          logger.error('[HTTP][input] 无效的令牌', token)
+          return res.status(403).json({ error: '禁止访问', message: '无效的令牌' })
+        }
+        const file = process.cwd() + `/temp/input/${name}`
+        if (!fs.existsSync(file)) {
+          logger.error('[HTTP][input] 文件不存在', file)
+          return res.status(404).json({ error: '文件不存在', message: '找不到指定文件' })
+        }
+        logger.info(`${logger.yellow('[HTTP][input]')} ${logger.green(token)} file:${file}`)
+        res.sendFile(file)
+      })
+
       /** 监听端口 */
       const { host, port } = config.Server.http
       this.server.listen(port, host, () => {

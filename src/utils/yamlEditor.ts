@@ -45,7 +45,7 @@ export class YamlEditor {
    * @param path - 路径，用点号分隔，例如：'a.b.c'
    * @param value - 要设置的值
    */
-  set (path: string | string[], value: string) {
+  set (path: string | string[], value: string | boolean) {
     try {
       path = typeof path === 'string' ? path.split('.') : path
       this.document.setIn(path, value)

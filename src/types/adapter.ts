@@ -53,7 +53,7 @@ export interface KarinAdapter {
     /**
      * - 适配器名称
      */
-    name: 'ICQQ' | 'OneBot11' | 'OntBot12' | 'Kritor' | string
+    name: 'ICQQ' | 'OneBot11' | 'OntBot12' | 'Kritor' | 'input' | string
     /**
      * - 适配器类型
      */

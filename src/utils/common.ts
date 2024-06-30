@@ -186,7 +186,7 @@ export const common = new (class Common {
    * @param - 为true时，http地址会直接返回，否则会下载文件并转换为base64字符串
    * @returns 返回base64字符串
    */
-  async base64 (file: string | Buffer | Readable, options = { http: false }): Promise<string> {
+  async base64 (file: any, options = { http: false }): Promise<string> {
     /** 先判断是否非字符串情况 */
     if (typeof file !== 'string') {
       /** buffer */
@@ -249,12 +249,11 @@ export const common = new (class Common {
 
   /**
    * 将文件转换为Buffer对象
-   * @param {string|Buffer|http|stream.Readable} file - 文件路径或Buffer对象、可读流对象、http地址、base64://字符串
-   * @param {object} options - 附加数据
-   * @param {boolean} options.http - 为true时，http地址会直接返回，否则会下载文件并转换为Buffer对象
-   * @returns {Promise<Buffer>} - 返回Buffer对象
+   * @param file - 文件路径或Buffer对象、可读流对象、http地址、base64://字符串
+   * @param options - 选项
+   * @returns - 返回Buffer对象
    */
-  async buffer (file: string | Buffer | Readable, options = { http: false }): Promise<Buffer | Error | string> {
+  async buffer (file: any, options = { http: false }): Promise<Buffer | Error | string> {
     if (typeof file !== 'string') {
       if (Buffer.isBuffer(file)) return file
       if (file instanceof Readable) return this.stream(file)

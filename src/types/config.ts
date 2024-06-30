@@ -133,6 +133,27 @@ export interface Config {
    */
   admin: string[]
   /**
+   *
+   */
+  AdapterInput: {
+    /**
+     * - 是否开启input适配器
+     */
+    enable: boolean
+    /**
+     * - 是否将语音、图片、视频消息转为文件 转为文件后可通过url访问
+     */
+    msgToFile: boolean
+    /**
+     * - url访问token 如果为 AdapterInput 每次启动后会重新生成
+     */
+    token: string
+    /**
+     * - ip地址
+     */
+    ip: string
+  }
+  /**
    * 黑名单相关
    */
   BlackList: {

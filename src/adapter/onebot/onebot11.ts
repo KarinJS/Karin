@@ -17,6 +17,9 @@ import {
   OneBot11Segment,
   CustomNodeSegment,
   OneBot11ApiParamsType,
+  GroupInfo,
+  KarinNodeElement,
+  CustomMusicElemen,
 } from 'karin/types'
 
 /**
@@ -29,10 +32,6 @@ export class OneBot11 implements KarinAdapter {
    */
   #init = false
   /**
-   * 机器人QQ号
-   */
-  self_id: string
-  /**
    * - 重连次数 仅正向ws使用
    */
   index: number
@@ -42,7 +41,6 @@ export class OneBot11 implements KarinAdapter {
   version: KarinAdapter['version']
 
   constructor () {
-    this.self_id = ''
     this.index = 0
     this.account = { uid: '', uin: '', name: '' }
     this.adapter = { id: 'QQ', name: 'OneBot11', type: 'ws', sub_type: 'internal', start_time: Date.now(), connect: '' }
@@ -134,6 +132,10 @@ export class OneBot11 implements KarinAdapter {
     })
     await this.getSelf()
     this.#init = true
+  }
+
+  get self_id () {
+    return this.account.uid || this.account.uin
   }
 
   /**
@@ -584,10 +586,9 @@ export class OneBot11 implements KarinAdapter {
 
   /**
    * onebot11转karin
-   * @param {Array<{type: string, data: any}>} data onebot11格式消息
    * @return karin格式消息
    * */
-  AdapterConvertKarin (data: Array<OneBot11Segment>) {
+  AdapterConvertKarin (data: Array<OneBot11Segment>): Array<KarinElement> {
     const elements = []
     for (const i of data) {
       switch (i.type) {
@@ -641,12 +642,9 @@ export class OneBot11 implements KarinAdapter {
   /**
    * karin转onebot11
    * @param data karin格式消息
-   * @return {Array<{type: string, data: any}>} onebot11格式消息
    * */
-  KarinConvertAdapter (data: Array<KarinElement>) {
+  KarinConvertAdapter (data: Array<KarinElement>): Array<OneBot11Segment> {
     const elements = []
-    // const selfUin = this.account.uin
-    // const selfNick = this.account.name
 
     for (const i of data) {
       switch (i.type) {
@@ -668,37 +666,34 @@ export class OneBot11 implements KarinAdapter {
           elements.push({ type: i.type, data: { file: i.file } })
           break
         }
-        case 'xml':
-        case 'json': {
-          elements.push({ type: i.type, data: { data: i.data } })
+        case 'xml': {
+          elements.push({ type: 'xml', data: { data: i.data } })
           break
         }
-        // case 'node': {
-        //   let { type, user_id = selfUin, nickname = selfNick, content } = i
-        //   content = this.KarinConvertAdapter(content)
-        //   elements.push({ type, data: { uin: user_id, name: nickname, content } })
-        //   break
-        // }
+        case 'json': {
+          elements.push({ type: 'json' as 'json', data: { data: i.data } })
+          break
+        }
         case 'forward': {
           elements.push({ type: 'forward', data: { id: i.res_id } })
           break
         }
+        case 'record':
         case 'voice': {
           elements.push({ type: 'record', data: { file: i.file, magic: i.magic || false } })
           break
         }
         case 'music': {
-          // if (i.platform) {
-          //   elements.push({ type: 'music', data: { type: i.platform, id: i.id } })
-          // } else {
-          //   const { url, audio, title, content, image } = i
-          //   elements.push({ type: 'music', data: { type: 'custom', url, audio, title, content, image } })
-          // }
+          if (i.id) {
+            elements.push({ type: 'music', data: { type: i.platform, id: i.id } })
+          } else {
+            const { url, audio, title, author, pic } = i as unknown as CustomMusicElemen
+            elements.push({ type: 'music', data: { type: 'custom', url, audio, title, content: author, image: pic } })
+          }
           break
         }
         case 'button': {
-          // todo
-          // elements.push({ type: 'button', data: { buttons: i.buttons } })
+          elements.push({ type: 'button', data: i.data })
           break
         }
         case 'markdown': {
@@ -706,23 +701,55 @@ export class OneBot11 implements KarinAdapter {
           elements.push({ type, data: { ...data } })
           break
         }
-        // case 'rows': {
-        //   for (const val of i.rows) {
-        //     elements.push({ type: 'button', data: { buttons: val.buttons } })
-        //   }
-        //   break
-        // }
+        case 'rows': {
+          for (const val of i.rows) {
+            elements.push({ type: 'button', data: val.data })
+          }
+          break
+        }
         case 'poke': {
           elements.push({ type: 'poke', data: { type: i.poke_type, id: i.id } })
           break
         }
+        case 'bubble_face': {
+          elements.push({ type: 'bubble_face', data: { id: i.id, count: i.count } })
+          break
+        }
+        case 'contact': {
+          elements.push({ type: 'contact', data: { type: i.scene, id: i.peer } })
+          break
+        }
+        case 'location': {
+          elements.push({ type: 'location', data: { lat: i.lat, lon: i.lon, title: i.title, content: i.address } })
+          break
+        }
+        case 'long_msg':
+        case 'basketball':
+        case 'dice':
+        case 'market_face':
+        case 'rps': {
+          elements.push({ type: i.type, data: { id: i.id } })
+          break
+        }
+        case 'gift': {
+          elements.push({ type: 'gift', data: { qq: i.qq, id: i.id } })
+          break
+        }
+        case 'share': {
+          elements.push({ type: 'share', data: { url: i.url, title: i.title, content: i.content, image: i.image } })
+          break
+        }
+        case 'weather': {
+          elements.push({ type: 'weather', data: { city: i.city, type: i.type } })
+          break
+        }
         default: {
           elements.push(i)
-          logger.info(i)
+          break
         }
       }
     }
-    return elements
+    return elements as Array<OneBot11Segment>
   }
 
   /**
@@ -798,14 +825,22 @@ export class OneBot11 implements KarinAdapter {
    * @param elements - nodes
    * @returns - 资源id
    * */
-  async UploadForwardMessage (contact: { scene: Scene; peer: string }, elements: any[]) {
+  async UploadForwardMessage (contact: contact, elements: KarinNodeElement[]) {
     if (!Array.isArray(elements)) elements = [elements]
     if (elements.some((element: { type: string }) => element.type !== 'node')) {
       throw new Error('elements should be all node type')
     }
     const { scene, peer } = contact
     const message_type = scene === 'group' ? 'group_id' : 'user_id'
-    const messages = this.KarinConvertAdapter(elements)
+    const messages = []
+    const selfUin = this.account.uin
+    const selfNick = this.account.name
+
+    for (const i of elements) {
+      const { type, user_id, nickname, content: contents } = i
+      const content = this.KarinConvertAdapter(contents as KarinElement[])
+      messages.push({ type, data: { uin: user_id || selfUin, name: nickname || selfNick, content } })
+    }
 
     const params = { [message_type]: String(peer), messages }
     return await this.SendApi('send_forward_msg', params)
@@ -816,7 +851,7 @@ export class OneBot11 implements KarinAdapter {
    * @param contact - 联系人信息
    * @param id - 资源id
    * */
-  async SendMessageByResId (contact: { scene: Scene; peer: string }, id: any) {
+  async SendMessageByResId (contact: contact, id: string) {
     const { scene, peer } = contact
     const message_type = scene === 'group' ? 'group' : 'private'
     const key = scene === 'group' ? 'group_id' : 'user_id'
@@ -828,7 +863,7 @@ export class OneBot11 implements KarinAdapter {
 
   /**
    * 撤回消息
-   * @param {null} [_contact] - ob11无需提供contact参数
+   * @param _contact - ob11无需提供contact参数
    * @param message_id - 消息ID
    * @returns {Promise<null>}
    */
@@ -839,12 +874,12 @@ export class OneBot11 implements KarinAdapter {
 
   /**
    * 获取消息
-   * @param {null} [_contact] - ob11无需提供contact参数
+   * @param _contact - ob11无需提供contact参数
    * @param message_id - 消息ID
    * @returns {Promise<object>} - 消息内容
    */
 
-  async GetMessage (_contact: any, message_id: any) {
+  async GetMessage (_contact: contact, message_id: string) {
     let res = await this.SendApi('get_msg', { message_id })
     res = {
       time: res.time,
@@ -1074,22 +1109,8 @@ export class OneBot11 implements KarinAdapter {
    * 获取群信息
    * @param group_id - 群号
    * @param no_cache - 是否不使用缓存
-   * @returns {Promise<IGroupInfo>} - 群信息
    */
-  async GetGroupInfo (group_id: string, no_cache = false) {
-    /**
-     * @type {{
-     *   group_id: number,
-     *   group_name: string,
-     *   group_memo: string,
-     *   group_remark: string,
-     *   group_create_time: number,
-     *   group_level: number,
-     *   member_count: number,
-     *   max_member_count: number,
-     *   admins: number[]
-     * }}
-     */
+  async GetGroupInfo (group_id: string, no_cache = false): Promise<GroupInfo> {
     const groupInfo = await this.SendApi('get_group_info', { group_id, no_cache })
     return {
       group_id: groupInfo.group_id,

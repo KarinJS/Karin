@@ -151,7 +151,7 @@ export class KarinEvent {
   }) {
     this.self_id = self_id
     this.user_id = user_id
-    this.group_id = group_id
+    this.group_id = contact.scene === 'group' ? (contact.peer || group_id) : group_id
     this.time = time
     this.event = event
     this.event_id = event_id

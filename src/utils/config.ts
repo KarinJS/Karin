@@ -9,7 +9,7 @@ import { Redis, App, Config, Server, Package, GroupCfg } from 'karin/types'
 export const config = new (class Cfg {
   dir: string
   _path: string
-  _pathDef: string
+  npmCfgDir: string
   change: Map<string, any>
   watcher: Map<string, any>
   review: boolean
@@ -17,7 +17,7 @@ export const config = new (class Cfg {
   constructor () {
     this.dir = karinDir
     this._path = process.cwd() + '/config'
-    this._pathDef = this.dir + '/config/defSet'
+    this.npmCfgDir = this.dir + '/config/defSet'
 
     /** 缓存 */
     this.change = new Map()
@@ -30,19 +30,25 @@ export const config = new (class Cfg {
 
   /** 初始化配置 */
   async initCfg () {
-    if (!fs.existsSync(this._path)) fs.mkdirSync(this._path)
-    this._path = process.cwd() + '/config/config'
-    if (!fs.existsSync(this._path)) fs.mkdirSync(this._path)
-    const files = fs.readdirSync(this._pathDef).filter(file => file.endsWith('.yaml'))
-    for (const file of files) {
-      const path = `${this._path}/${file}`
-      const pathDef = `${this._pathDef}/${file}`
-      if (!fs.existsSync(path)) fs.copyFileSync(pathDef, path)
+    const list = [
+      this._path,
+      this._path + '/config',
+      process.cwd() + '/temp/input',
+      './plugins',
+      './plugins/karin-plugin-example',
+    ]
+
+    list.forEach(path => this.checkPath(path))
+    if (this.npmCfgDir !== (this._path + '/defSet').replace(/\\/g, '/')) {
+      const files = fs.readdirSync(this.npmCfgDir).filter(file => file.endsWith('.yaml'))
+      files.forEach(file => {
+        const path = `${this._path}/config/${file}`
+        const pathDef = `${this.npmCfgDir}/${file}`
+        if (!fs.existsSync(path)) fs.copyFileSync(pathDef, path)
+      })
     }
 
     // 创建插件文件夹文件夹
-    if (!fs.existsSync('./plugins')) fs.mkdirSync('./plugins')
-    if (!fs.existsSync('./plugins/karin-plugin-example')) fs.mkdirSync('./plugins/karin-plugin-example')
     const plugins = this.getPlugins()
     this.dirPath('data', plugins)
     this.dirPath('temp', plugins)
@@ -58,14 +64,21 @@ export const config = new (class Cfg {
   }
 
   /**
+   * 检查路径是否存在 不存在则创建
+   */
+  checkPath (path: string) {
+    if (!fs.existsSync(path)) fs.mkdirSync(path)
+  }
+
+  /**
    * 为每一个插件建立对应的文件夹
    */
   async dirPath (name: string, plugins: string[]) {
     name = `./${name}`
-    if (!fs.existsSync(name)) fs.mkdirSync(name)
+    this.checkPath(name)
     for (const plugin of plugins) {
       const path = `${name}/${plugin}`
-      if (!fs.existsSync(path)) fs.mkdirSync(path)
+      this.checkPath(path)
     }
   }
 
