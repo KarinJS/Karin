@@ -1,4 +1,3 @@
-/* eslint-disable no-dupe-class-members */
 import PluginApp from './plugin.app'
 import { common } from 'karin/utils'
 import { KarinMessage } from 'karin/event/message'
@@ -12,10 +11,6 @@ export interface OptionsCommand {
    * - 插件名称 不传则使用 插件名称:函数名
    */
   name?: string
-  /**
-   * - 插件描述
-   */
-  desc?: string
   /**
    * - 插件优先级 数字越小优先级越高
    * @default 10000
@@ -72,6 +67,7 @@ export class Karin {
    * @param element - 字符串或者KarinElement、KarinElement数组
    * @param options - 选项
    */
+  // eslint-disable-next-line no-dupe-class-members
   command (reg: string | RegExp, element: FncElement, options?: OptionsElement): PluginApps
   /**
    * - 快速构建命令
@@ -80,6 +76,7 @@ export class Karin {
    * @param options - 选项
    * @returns - 返回插件对象
    */
+  // eslint-disable-next-line no-dupe-class-members
   command (reg: string | RegExp, second: FncFunction | FncElement, options: OptionsCommand | OptionsElement = {}): PluginApps {
     const Reg = typeof reg === 'string' ? new RegExp(reg) : reg
 
@@ -103,7 +100,7 @@ export class Karin {
       case 'string':
       case 'number':
       case 'object': {
-        const element = common.makeMessage(typeof second === 'function' ? second : String(second))
+        const element = common.makeMessage(typeof second === 'number' ? String(second) : second)
         const fnc = async (e: KarinMessage) => {
           if ('delay' in options && options.delay) await common.sleep(options.delay)
 
@@ -122,5 +119,91 @@ export class Karin {
         throw new Error('command: second argument must be a function or string')
       }
     }
+  }
+
+  /**
+   * - 构建定时任务
+   * @param name - 任务名称
+   * @param cron - cron表达式
+   * @param fnc - 执行函数
+   * @param options - 选项
+   */
+  task (name: string, cron: string, fnc: Function, options?: {
+    /**
+     * - 任务插件名称
+     */
+    name?: string
+    /**
+     * - 任务优先级
+     */
+    priority?: number
+    /**
+     * - 是否打印日志 传递布尔值
+     */
+    log?: boolean | Function
+  }) {
+    if (!name) throw new Error('[task]: 缺少参数[name]')
+    if (!cron) throw new Error('[task]: 缺少参数[cron]')
+    if (!fnc) throw new Error('[task]: 缺少参数[fnc]')
+
+    const data = {
+      name: options?.name || 'task',
+      priority: options?.priority,
+      task: [
+        {
+          name,
+          cron,
+          fnc,
+          log: options?.log ?? true,
+        },
+      ],
+    }
+
+    return PluginApp(data)
+  }
+
+  /**
+   * - 构建handler
+   * @param key - 事件key
+   * @param fnc - 函数实现
+   * @param options - 选项
+   */
+  handler (key: string, fnc: (
+    /**
+     * - 自定义参数 由调用方传递
+     */
+    args: any,
+    /**
+     * - 拒绝处理器 调用后则不再继续执行下一个处理器
+     */
+    reject: (msg?: string) => void
+  ) => Promise<any>, options?: {
+    /**
+     * - 插件名称
+     */
+    name?: string
+    /**
+     * - handler优先级
+     */
+    priority?: number
+  }) {
+    if (!key) throw new Error('[handler]: 缺少参数[key]')
+    if (!fnc) throw new Error('[handler]: 缺少参数[fnc]')
+
+    const priority = options?.priority || 10000
+
+    const data = {
+      name: options?.name || 'handler',
+      priority,
+      handler: [
+        {
+          key,
+          fnc,
+          priority,
+        },
+      ],
+    }
+
+    return PluginApp(data)
   }
 }

@@ -1,8 +1,8 @@
 import logger from './logger'
-import { KarinMessage } from 'karin/event/message'
+import { KarinMessageEvent } from 'karin/types'
 import { pluginLoader as loader, Plugin } from 'karin/core'
 
-export const button = async (e: KarinMessage) => {
+export const button = async (e: KarinMessageEvent) => {
   const button = []
   for (const v of loader.buttonIds) {
     const info = loader.PluginList[v]

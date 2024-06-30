@@ -1,4 +1,4 @@
-import { KarinAdapter, Reply, replyCallback, Event, contact, Sender, SubEventForEvent } from 'karin/types'
+import { KarinAdapter, Reply, replyCallback, Event, contact, Sender, EventToSubEvent } from 'karin/types'
 
 /**
  * - 事件基类 所有事件都继承自此类并且需要实现此类的所有属性
@@ -25,7 +25,7 @@ export class KarinEvent {
   /**
    * - 事件子类型
    */
-  sub_event: SubEventForEvent<Event>
+  sub_event: EventToSubEvent[Event]
   /**
    * - 事件ID
    */
@@ -85,6 +85,10 @@ export class KarinEvent {
    */
   store: Map<string, any>
   /**
+   * - 原始消息
+   */
+  raw_message: string
+  /**
    * - 回复函数
    */
   reply!: Reply
@@ -139,7 +143,7 @@ export class KarinEvent {
     /**
      * - 事件子类型
      */
-    sub_event: SubEventForEvent<Event>
+    sub_event: EventToSubEvent[Event]
     /**
      * - 事件ID
      */
@@ -163,6 +167,7 @@ export class KarinEvent {
     this.logFnc = ''
     this.logText = ''
     this.store = new Map()
+    this.raw_message = ''
     this.reply = (elements, options) => Promise.resolve({ message_id: '' })
     this.replyCallback = (elements, options) => Promise.resolve({ message_id: '' })
     this.bot = {} as KarinAdapter

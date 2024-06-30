@@ -5,6 +5,7 @@ import { listener } from 'karin/core/listener'
 import { KarinAdapter } from 'karin/types/adapter'
 import { common, config, logger, segment } from 'karin/utils'
 import { KarinMessage, KarinNotice, KarinRequest } from 'karin/event'
+
 import {
   Role,
   Scene,
@@ -175,7 +176,10 @@ export class OneBot11 implements KarinAdapter {
     })
   }
 
-  /** 处理事件 */
+  /**
+   * 处理事件
+   * - @param data ob11相关标准数据
+   */
   #event (data: OneBot11Event) {
     switch (data.post_type) {
       case 'meta_event': {

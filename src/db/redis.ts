@@ -1,9 +1,9 @@
 import { exec } from 'child_process'
 import RedisLevel from './redis_level'
 import { logger, config } from 'karin/utils'
-import redis, { createClient, createCluster, RedisClientType } from 'redis'
+import NodeRedis, { createClient, createCluster, RedisClientType } from 'redis'
 
-export default class Redis {
+class Redis {
   id: 'redis'
   RunCmd: string
   constructor () {
@@ -14,7 +14,7 @@ export default class Redis {
   /**
    * redis实例化
    */
-  async start (): Promise<(redis.RedisClientType | string) | RedisLevel | false> {
+  async start (): Promise<(NodeRedis.RedisClientType | string) | RedisLevel | false> {
     const { host, port, username, password, db: database, cluster } = config.redis
     /** 集群模式 */
     if (cluster && cluster.enable) {
@@ -85,14 +85,12 @@ export default class Redis {
 
   /**
    * 连接 Redis 单例
-   * @param {import("redis").RedisClientOptions} options
-   * @return {Promise<{status: 'ok', data: import("redis").RedisClientType} | {status: 'error', data: Error}>}
    */
-  async connect (options: redis.RedisClientOptions): Promise<{ status: 'ok'; data: redis.RedisClientType } | { status: 'error'; data: string }> {
+  async connect (options: NodeRedis.RedisClientOptions): Promise<{ status: 'ok'; data: NodeRedis.RedisClientType } | { status: 'error'; data: string }> {
     const client = createClient(options)
     try {
       await client.connect()
-      return { status: 'ok', data: client as redis.RedisClientType }
+      return { status: 'ok', data: client as NodeRedis.RedisClientType }
     } catch (error) {
       return { status: 'error', data: error as string }
     }
@@ -143,3 +141,5 @@ export default class Redis {
     })
   }
 }
+
+export const redis: RedisClientType = await new Redis().start() as RedisClientType

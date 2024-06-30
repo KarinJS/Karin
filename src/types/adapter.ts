@@ -1,7 +1,8 @@
 import { WebSocket } from 'ws'
 import { IncomingMessage } from 'http'
+import { contact } from './event'
 import { KarinElement, KarinNodeElement } from './element'
-import { contact, PushMessageBody, EssenceMessageBody, FriendInfo, GroupInfo, GroupMemberInfo, GroupHonorInfo } from './event'
+import { PushMessageBody, EssenceMessageBody, FriendInfo, GroupInfo, GroupMemberInfo, GroupHonorInfo } from './api'
 
 export interface KarinAdapter {
   /**

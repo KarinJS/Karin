@@ -1,4 +1,4 @@
-import { PluginType, KarinElement, KarinNodeElement, EventType } from 'karin/types'
+import { PluginType, KarinElement, KarinNodeElement, EventType, KarinNoticeEvent, KarinRequestEvent } from 'karin/types'
 
 /**
  * 插件基类
@@ -7,7 +7,7 @@ export class Plugin implements PluginType {
   // 类型 需要根据e中的event类型来确定
   e!: EventType<this>
   init?: () => void
-  accept?: (e: EventType<this>) => Promise<void>
+  accept?: (e: any) => Promise<void>
   replyCallback!: PluginType['replyCallback']
 
   /**
@@ -235,3 +235,10 @@ export const stateArr: {
     fnc: string
   }
 } = {}
+
+/**
+ * 通知事件 插件类型
+ */
+export interface ExtendedPlugin extends Plugin {
+  accept: (e: KarinNoticeEvent | KarinRequestEvent) => Promise<void>
+}

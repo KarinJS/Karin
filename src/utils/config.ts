@@ -95,7 +95,6 @@ export const config = new (class Cfg {
 
   /**
    * 主人列表
-   * @returns {string[]}
    */
   get master () {
     return this.Config.master || []
@@ -137,9 +136,24 @@ export const config = new (class Cfg {
     const config = this.getYaml('config', 'config', true)
     const defSet = this.getYaml('defSet', 'config', false)
     const data = { ...defSet, ...config }
+    const Config = {
+      ...data,
+      WhiteList: {
+        users: data.WhiteList.users.map((i: string | number) => String(i)),
+        groups: data.WhiteList.groups.map((i: string | number) => String(i)),
+        GroupMsgLog: data.WhiteList.GroupMsgLog.map((i: string | number) => String(i)),
+      },
+      BlackList: {
+        users: data.BlackList.users.map((i: string | number) => String(i)),
+        groups: data.BlackList.groups.map((i: string | number) => String(i)),
+        GroupMsgLog: data.BlackList.GroupMsgLog.map((i: string | number) => String(i)),
+      },
+      master: data.master.map((i: string | number) => String(i)),
+      admin: data.admin.map((i: string | number) => String(i)),
+    }
     /** 缓存 */
-    this.change.set(key, data)
-    return data
+    this.change.set(key, Config)
+    return Config
   }
 
   /**

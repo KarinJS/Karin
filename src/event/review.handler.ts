@@ -67,14 +67,12 @@ export const review = new (class Handler {
       this.GroupEnable = e => {
         /** 白名单不为空 */
         if (Array.isArray(this.Config.WhiteList.groups) && this.Config.WhiteList.groups.length) {
-          const group_id = (Number(e.group_id) || String(e.group_id)) as string
-          return this.Config.WhiteList.groups.includes(group_id)
+          return this.Config.WhiteList.groups.includes(String(e.group_id))
         }
 
         /** 白名单为空 检查黑名单是否为空 */
         if (Array.isArray(this.Config.BlackList.groups) && this.Config.BlackList.groups.length) {
-          const group_id = (Number(e.group_id) || String(e.group_id)) as string
-          return !this.Config.BlackList.groups.includes(group_id)
+          return !this.Config.BlackList.groups.includes(String(e.group_id))
         }
 
         /** 黑白名单都为空 */
@@ -87,8 +85,7 @@ export const review = new (class Handler {
     if (this.App.WhiteList.groups) {
       this.GroupEnable = e => {
         if (Array.isArray(this.Config.WhiteList.groups) && this.Config.WhiteList.groups.length) {
-          const group_id = (Number(e.group_id) || String(e.group_id)) as string
-          return this.Config.WhiteList.groups.includes(group_id)
+          return this.Config.WhiteList.groups.includes(String(e.group_id))
         }
         return true
       }
@@ -99,8 +96,7 @@ export const review = new (class Handler {
     if (this.App.BlackList.groups) {
       this.GroupEnable = e => {
         if (Array.isArray(this.Config.BlackList.groups) && this.Config.BlackList.groups.length) {
-          const group_id = (Number(e.group_id) || String(e.group_id)) as string
-          return !this.Config.BlackList.groups.includes(group_id)
+          return !this.Config.BlackList.groups.includes(String(e.group_id))
         }
         return true
       }
@@ -120,14 +116,12 @@ export const review = new (class Handler {
       this.UserEnable = e => {
         /** 白名单不为空 */
         if (Array.isArray(this.Config.WhiteList.users) && this.Config.WhiteList.users.length) {
-          const user_id = (Number(e.user_id) || String(e.user_id)) as string
-          return this.Config.WhiteList.users.includes(user_id)
+          return this.Config.WhiteList.users.includes(String(e.user_id))
         }
 
         /** 白名单为空 检查黑名单是否为空 */
         if (Array.isArray(this.Config.BlackList.users) && this.Config.BlackList.users.length) {
-          const user_id = (Number(e.user_id) || String(e.user_id)) as string
-          return !this.Config.BlackList.users.includes(user_id)
+          return !this.Config.BlackList.users.includes(String(e.user_id))
         }
 
         /** 黑白名单都为空 */
@@ -140,8 +134,7 @@ export const review = new (class Handler {
     if (this.App.WhiteList.users) {
       this.UserEnable = e => {
         if (Array.isArray(this.Config.WhiteList.users) && this.Config.WhiteList.users.length) {
-          const user_id = (Number(e.user_id) || String(e.user_id)) as string
-          return this.Config.WhiteList.users.includes(user_id)
+          return this.Config.WhiteList.users.includes(String(e.user_id))
         }
         return true
       }
@@ -152,8 +145,7 @@ export const review = new (class Handler {
     if (this.App.BlackList.users) {
       this.UserEnable = e => {
         if (Array.isArray(this.Config.BlackList.users) && this.Config.BlackList.users.length) {
-          const user_id = (Number(e.user_id) || String(e.user_id)) as string
-          return !this.Config.BlackList.users.includes(user_id)
+          return !this.Config.BlackList.users.includes(String(e.user_id))
         }
         return true
       }
@@ -173,14 +165,12 @@ export const review = new (class Handler {
       this.GroupMsgPrint = e => {
         /** 白名单不为空 */
         if (Array.isArray(this.Config.WhiteList.GroupMsgLog) && this.Config.WhiteList.GroupMsgLog.length) {
-          const group_id = (Number(e.group_id) || String(e.group_id)) as string
-          return this.Config.WhiteList.GroupMsgLog.includes(group_id)
+          return this.Config.WhiteList.GroupMsgLog.includes(String(e.group_id))
         }
 
         /** 白名单为空 检查黑名单是否为空 */
         if (Array.isArray(this.Config.BlackList.GroupMsgLog) && this.Config.BlackList.GroupMsgLog.length) {
-          const group_id = (Number(e.group_id) || String(e.group_id)) as string
-          return !this.Config.BlackList.GroupMsgLog.includes(group_id)
+          return !this.Config.BlackList.GroupMsgLog.includes(String(e.group_id))
         }
 
         /** 黑白名单都为空 */
@@ -193,8 +183,7 @@ export const review = new (class Handler {
     if (this.App.WhiteList.GroupMsgLog) {
       this.GroupMsgPrint = e => {
         if (Array.isArray(this.Config.WhiteList.GroupMsgLog) && this.Config.WhiteList.GroupMsgLog.length) {
-          const group_id = (Number(e.group_id) || String(e.group_id)) as string
-          return this.Config.WhiteList.GroupMsgLog.includes(group_id)
+          return this.Config.WhiteList.GroupMsgLog.includes(String(e.group_id))
         }
         return true
       }
@@ -205,8 +194,7 @@ export const review = new (class Handler {
     if (this.App.BlackList.GroupMsgLog) {
       this.GroupMsgPrint = e => {
         if (Array.isArray(this.Config.BlackList.GroupMsgLog) && this.Config.BlackList.GroupMsgLog.length) {
-          const group_id = (Number(e.group_id) || String(e.group_id)) as string
-          return !this.Config.BlackList.GroupMsgLog.includes(group_id)
+          return !this.Config.BlackList.GroupMsgLog.includes(String(e.group_id))
         }
         return true
       }

@@ -1,20 +1,20 @@
 import lodash from 'lodash'
 import { review } from './review.handler'
-import { KarinMessage } from './message'
 import EventHandler from './event.handler'
 import { logger, config } from 'karin/utils'
+import { KarinMessageEvent } from 'karin/types'
 import { listener, Plugin, stateArr, pluginLoader } from 'karin/core'
 
 /**
  * 消息事件
  */
 export class MessageHandler extends EventHandler {
-  e: KarinMessage
+  e: KarinMessageEvent
   /**
    * - 是否打印群消息日志
    */
   GroupMsgPrint: boolean = false
-  constructor (e: KarinMessage) {
+  constructor (e: KarinMessageEvent) {
     super(e)
     this.e = e
     listener.emit('karin:count:recv', 1)
@@ -65,20 +65,20 @@ export class MessageHandler extends EventHandler {
           /** 判断权限 */
           if (!this.filterPermission(v.permission)) break a
 
+          /** 计算插件处理时间 */
+          const start = Date.now()
+          listener.emit('karin:count:fnc', this.e.logFnc)
+
           try {
             let res
             if (app.file.type === 'function' && typeof v.fnc === 'function') {
-              res = v.fnc(this.e)
+              res = await v.fnc(this.e)
             } else {
               const cla = new (app.file.Fnc as new () => Plugin)()
               cla.e = this.e
-              res = (cla[v.fnc as keyof typeof cla] as Function)(this.e) as Promise<boolean>
+              res = await (cla[v.fnc as keyof typeof cla] as Function)(this.e) as Promise<boolean>
             }
 
-            /** 计算插件处理时间 */
-            const start = Date.now()
-            listener.emit('karin:count:fnc', this.e.logFnc)
-            res = await res
             this.GroupMsgPrint && typeof v.log === 'function' && v.log(this.e.self_id, `${logFnc} ${lodash.truncate(this.e.msg, { length: 80 })} 处理完成 ${logger.green(Date.now() - start + 'ms')}`)
             if (res !== false) break a
           } catch (error: any) {
@@ -203,17 +203,15 @@ export class MessageHandler extends EventHandler {
     /** 前缀处理 */
     this.e.group_id && 'GroupCD' in this.config && review.alias(this.e, this.config)
 
-    /** 主人 这里强制是因为yaml在自动保存QQ号的时候会强制化为数字 */
-    const masterId = (Number(this.e.user_id) || String(this.e.user_id)) as string
-    if (config.master.includes(masterId)) {
+    /** 主人 */
+    if (config.master.includes(String(this.e.user_id))) {
       this.e.isMaster = true
       this.e.isAdmin = true
-    } else if (config.admin.includes(masterId)) {
+    } else if (config.admin.includes(String(this.e.user_id))) {
       /** 管理员 */
       this.e.isAdmin = true
     }
 
-    this.GroupMsgPrint = false
     if (this.e.contact.scene === 'private') {
       this.e.isPrivate = true
       this.e.logText = `[Private:${this.e.sender.nick || ''}(${this.e.user_id})]`

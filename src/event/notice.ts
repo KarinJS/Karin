@@ -1,5 +1,5 @@
 import { KarinEvent } from './event'
-import { contact, Sender, SubEventForEvent, NoticeEvent } from 'karin/types'
+import { contact, Sender, NoticeType, EventToSubEvent } from 'karin/types'
 
 /**
  * - 通知事件基类
@@ -43,11 +43,11 @@ export class KarinNotice extends KarinEvent {
     /**
      * 事件子类型
      */
-    sub_event: SubEventForEvent<'notice'>
+    sub_event: EventToSubEvent['notice']
     /**
      * 事件对应的内容参数
      */
-    content: NoticeEvent<SubEventForEvent<'notice'>>
+    content: NoticeType[EventToSubEvent['notice']]
     /**
      * 群ID
      */
@@ -60,5 +60,5 @@ export class KarinNotice extends KarinEvent {
   /**
    * - 事件对应的内容参数
    */
-  content: NoticeEvent<SubEventForEvent<'notice'>>
+  content: NoticeType[EventToSubEvent['notice']]
 }

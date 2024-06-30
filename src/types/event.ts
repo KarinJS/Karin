@@ -1,5 +1,6 @@
+import { KarinAdapter } from './adapter'
 import { KarinElement } from './element'
-import { KarinMessage, KarinNotice, KarinRequest } from 'karin/event'
+import { Reply, replyCallback } from './reply'
 
 /**
  * - 事件类型
@@ -12,24 +13,20 @@ export type Event = 'message' | 'notice' | 'request' | 'meta_event' | 'message_s
 export type Scene = 'group' | 'private' | 'guild' | 'nearby' | 'stranger' | 'stranger_from_group'
 
 /**
- * - 事件子类型
- */
-export type SubEvent = 'group_message' | 'friend_message' | 'guild_message' | 'nearby' | 'stranger' | 'stranger_from_group' | 'friend_poke' | 'friend_recall' | 'friend_file_uploaded' | 'group_poke' | 'group_card_changed' | 'group_member_unique_title_changed' | 'group_essence_changed' | 'group_recall' | 'group_member_increase' | 'group_member_decrease' | 'group_admin_changed' | 'group_member_ban' | 'group_sign' | 'group_whole_ban' | 'group_file_uploaded' | 'friend_apply' | 'group_apply' | 'invited_group'
-
-/**
  * - 类型映射
  */
 export type EventToSubEvent = {
   message: 'group_message' | 'friend_message' | 'guild_message' | 'nearby' | 'stranger' | 'stranger_from_group'
   notice: 'friend_poke' | 'friend_recall' | 'friend_file_uploaded' | 'group_poke' | 'group_card_changed' | 'group_member_unique_title_changed' | 'group_essence_changed' | 'group_recall' | 'group_member_increase' | 'group_member_decrease' | 'group_admin_changed' | 'group_member_ban' | 'group_sign' | 'group_whole_ban' | 'group_file_uploaded' | 'group_message_reaction'
   request: 'friend_apply' | 'group_apply' | 'invited_group'
-  meta_event: 'group_message' | 'friend_message' | 'guild_message'
+  meta_event: 'group_message' | 'friend_message' | 'guild_message' | 'nearby' | 'stranger' | 'stranger_from_group'
+  message_sent: 'group_message' | 'friend_message' | 'guild_message' | 'nearby' | 'stranger' | 'stranger_from_group'
 }
 
 /**
- * - 事件子类型泛型
+ * - 事件子类型
  */
-export type SubEventForEvent<E extends Event> = E extends keyof EventToSubEvent ? EventToSubEvent[E] : never
+export type SubEvent = EventToSubEvent['message'] | EventToSubEvent['notice'] | EventToSubEvent['request']
 
 /**
  * - 权限类型
@@ -84,7 +81,7 @@ export interface Sender {
 /**
  * - 通知事件类型
  */
-export interface NoticeTytpe {
+export interface NoticeType {
   /**
    * - 私聊戳一戳
    */
@@ -530,10 +527,6 @@ export interface NoticeTytpe {
     is_set: boolean
   }
 }
-/**
- * - 通知事件泛型
- */
-export type NoticeEvent<E extends keyof NoticeTytpe> = E extends keyof NoticeTytpe ? NoticeTytpe[E] : never
 
 /**
  * - 请求事件类型
@@ -603,323 +596,235 @@ export interface RequestType {
     inviter_uin: string
   }
 }
-/**
- * - 请求事件泛型
- */
-export type RequestEvent<E extends keyof RequestType> = E extends keyof RequestType ? RequestType[E] : never
 
 /**
- * - 转发、历史消息返回的结构
+ * - 事件基类
  */
-export interface PushMessageBody {
+export interface KarinEventType {
   /**
-   * - 消息发送时间
+    * - 机器人ID 请尽量使用UID
+    */
+  self_id: string
+  /**
+   * - 用户ID
+   */
+  user_id: string
+  /**
+   * - 群ID 仅在群聊中存在
+   * @default ''
+   */
+  group_id: string
+  /**
+   * - 事件类型
+   */
+  event: Event
+  /**
+   * - 事件子类型
+   */
+  sub_event: EventToSubEvent[Event]
+  /**
+   * - 事件ID
+   */
+  event_id: string
+  /**
+   * - 事件触发时间戳
    */
   time: number
   /**
-   * - 消息ID
-   */
-  message_id: string
-  /**
-   * - 消息序列号
-   */
-  message_seq: number
-  /**
-   * - 消息来源
+   * - 事件联系人信息
    */
   contact: contact
   /**
-   * - 消息发送者
+   * - 事件发送者信息
    */
   sender: Sender
   /**
-   * - 消息元素
+   * - 是否为主人
+   * @default false
    */
-  elements: Array<KarinElement>
+  isMaster: boolean
+  /**
+   * - 是否为管理员
+   * @default false
+   */
+  isAdmin: boolean
+  /**
+   * - 是否为私聊
+   * @default false
+   */
+  isPrivate: boolean
+  /**
+   * - 是否为群聊
+   * @default false
+   */
+  isGroup: boolean
+  /**
+   * - 是否为频道
+   * @default false
+   */
+  isGuild: boolean
+  /**
+   * - 是否为群临时会话
+   * @default false
+   */
+  isGroupTemp: boolean
+  /**
+   * - 日志函数字符串
+   */
+  logFnc: string
+  /**
+   * - 日志用户字符串
+   */
+  logText: string
+  /**
+   * - 存储器 由开发者自行调用
+   */
+  store: Map<string, any>
+  /**
+   * - 标准含义是代表原始事件文本，在karin是指经过karin处理后的事件文本
+   */
+  raw_message: string
+  /**
+   * - 回复函数
+   */
+  reply: Reply
+  /**
+   * - 回复函数 由适配器实现，开发者不应该直接调用
+   */
+  replyCallback: replyCallback
+  /**
+   * - bot实现
+   */
+  bot: KarinAdapter
+
 }
 
 /**
- * - 精华消息返回的结构
+ * - 消息事件基类
  */
-export interface EssenceMessageBody {
+export interface KarinMessageEvent extends KarinEventType {
   /**
-   * - 群ID
+   * - 消息体
    */
-  group_id: string
+  event: 'message' | 'message_sent'
   /**
-   * - 发送者uid
-   */
-  sender_uid: string
-  /**
-   * - 发送者uin
-   */
-  sender_uin: string
-  /**
-   * - 发送者昵称
-   */
-  sender_nick: string
-  /**
-   * - 操作者uid
-   */
-  operator_uid: string
-  /**
-   * - 操作者uin
-   */
-  operator_uin: string
-  /**
-   * - 操作者昵称
-   */
-  operator_nick: string
-  /**
-   * - 操作时间
-   */
-  operation_time: number
-  /**
-   * - 消息时间
-   */
-  message_time: number
-  /**
-   * - 消息ID
-   */
+     * - 消息ID
+     */
   message_id: string
   /**
    * - 消息序列号
    */
-  message_seq: string
+  message_seq?: string
   /**
-   * - 被设置的精华消息元素文本
+   * - 原始消息文本
    */
-  json_elements: string
+  raw_message: string
+  /**
+   * - 消息体元素
+   */
+  elements: Array<KarinElement>
+  /**
+   * - 框架处理后的文本
+   */
+  msg: string
+  /**
+   * - 图片数组
+   */
+  image: Array<string>
+  /**
+   * - AT数组
+   */
+  at: Array<string>
+  /**
+   * - 是否AT机器人
+   */
+  atBot: boolean
+  /**
+   * - 是否AT全体
+   */
+  atAll: boolean
+  /**
+   * - 文件元素
+   */
+  file: object
+  /**
+   * - 引用消息ID
+   */
+  reply_id: string
+  /**
+   * - 消息别名
+   */
+  alias: string
 }
 
 /**
- * - QQ好友信息
+ * - 基础通知事件接口，包含所有共同属性
  */
-export interface FriendInfo {
-  /**
-   * - 用户UID
-   */
-  uid: string
-  /**
-   * - 用户UIN
-   */
-  uin: string
-  /**
-   * - qid
-   */
-  qid: string
-  /**
-   * - 名称
-   */
-  nick: string
-  /**
-   * - 备注
-   */
-  remark?: string
-  /**
-   * - 用户等级
-   */
-  level?: number
-  /**
-   * - 生日
-   */
-  birthday?: string
-  /**
-   * - 登录天数
-   */
-  login_day?: number
-  /**
-   * - 点赞数
-   */
-  vote_cnt?: number
-  /**
-   * - 学校是否已核实
-   */
-  is_school_verified?: boolean
-  /**
-   * - 年龄
-   * - 拓展字段
-   */
-  age?: number
-  /**
-   * - 性别
-   * - 拓展字段
-   */
-  sex?: 'male' | 'female' | 'unknown'
-  ext?: {
-    /**
-     * 大会员
-     */
-    big_vip?: boolean
-    /**
-     * 好莱坞/腾讯视频会员
-     */
-    hollywood_vip?: boolean
-    /**
-     * QQ会员
-     */
-    qq_vip?: boolean
-    /**
-     * QQ超级会员
-     */
-    super_vip?: boolean
-    /**
-     * 是否已经赞过
-     */
-    voted?: boolean
-  }
+export interface KarinNoticeEventBase extends KarinEventType {
+  event: 'notice'
 }
 
 /**
- * - QQ群信息
+ * - 辅助类型，用于生成 KarinNoticeEvent 的联合类型
  */
-export interface GroupInfo {
-  /**
-   * - 群ID
-   */
-  group_id: string
-  /**
-   * - 群名称
-   */
-  group_name: string
-  /**
-   * - 群备注
-   */
-  group_remark?: string
-  /**
-   * - 群主UID
-   */
-  owner: string
-  /**
-   * - 群管理员UID列表
-   */
-  admins: Array<string>
-  /**
-   * - 最大成员数
-   */
-  max_member_count: number
-  /**
-   * - 当前成员数
-   */
-  member_count: number
-  /**
-   * - 群UIN
-   */
-  group_uin?: string
+export type NoticeEvent<T extends keyof NoticeType> = KarinNoticeEventBase & {
+  sub_event: T
+  content: NoticeType[T]
 }
 
 /**
- * - 群成员信息
+ * - 通知事件基类
  */
-export interface GroupMemberInfo {
-  /**
-   * - 用户UID
-   */
-  uid: string
-  /**
-   * - 用户UIN
-   */
-  uin: string
-  /**
-   * - 用户昵称
-   */
-  nick: string
-  /**
-   * - 年龄
-   */
-  age: number
-  /**
-   * - 群内头衔
-   */
-  unique_title: string
-  /**
-   * - 群内头衔过期时间
-   */
-  unique_title_expire_time: number
-  /**
-   * - 群名片
-   */
-  card?: string
-  /**
-   * - 加群时间
-   */
-  join_time?: number
-  /**
-   * - 最后活跃时间
-   */
-  last_active_time?: number
-  /**
-   * - 用户等级
-   */
-  level: number
-  /**
-   * - 禁言时间
-   */
-  shut_up_time: number
-  /**
-   * - 距离
-   */
-  distance?: number
-  /**
-   * - 荣誉列表
-   */
-  honors?: Array<number>
-  /**
-   * - 是否好友
-   */
-  unfriendly?: boolean
-  /**
-   * - 是否可修改群名片
-   */
-  card_changeable?: boolean
+export type KarinNoticeEvent = NoticeEvent<'friend_poke'>
+  | NoticeEvent<'friend_recall'>
+  | NoticeEvent<'friend_file_uploaded'>
+  | NoticeEvent<'group_poke'>
+  | NoticeEvent<'group_card_changed'>
+  | NoticeEvent<'group_member_unique_title_changed'>
+  | NoticeEvent<'group_essence_changed'>
+  | NoticeEvent<'group_recall'>
+  | NoticeEvent<'group_member_increase'>
+  | NoticeEvent<'group_member_decrease'>
+  | NoticeEvent<'group_admin_changed'>
+  | NoticeEvent<'group_member_ban'>
+  | NoticeEvent<'group_sign'>
+  | NoticeEvent<'group_whole_ban'>
+  | NoticeEvent<'group_file_uploaded'>
+  | NoticeEvent<'group_message_reaction'>
+
+/**
+ * - 请求事件基类
+ */
+export interface KarinRequestEventBase extends KarinEventType {
+  event: 'request'
 }
 
 /**
- * 群荣誉信息
+ * - 辅助类型，用于生成 KarinRequestEvent 的联合类型
  */
-export interface GroupHonorInfo {
-  /**
-   * - 荣誉成员uid
-   */
-  uid: string
-  /**
-   * - 荣誉成员uin
-   */
-  uin: string
-  /**
-   * - 荣誉成员昵称
-   */
-  nick: string
-  /**
-   * - 荣誉名称
-   */
-  honor_name: string
-  /**
-   * - 荣誉图标url
-   */
-  avatar: string
-  /**
-   * - 荣誉id
-   */
-  id: number
-  /**
-   * - 荣誉描述
-   */
-  description: string
+export type RequestEvent<T extends keyof RequestType> = KarinRequestEventBase & {
+  sub_event: T
+  content: RequestType[T]
 }
+
+/**
+ * - 请求事件基类
+ */
+export type KarinRequestEvent = RequestEvent<'friend_apply'>
+  | RequestEvent<'group_apply'>
+  | RequestEvent<'invited_group'>
 
 export interface EMap {
-  message: KarinMessage
-  notice: KarinNotice
-  request: KarinRequest
-  message_sent: KarinMessage
+  message: KarinMessageEvent
+  notice: KarinNoticeEvent
+  request: KarinRequestEvent
+  message_sent: KarinMessageEvent
   // 元事件不进入插件 不需要定义
   meta_event: any
 }
 
-export type E<T extends keyof EMap> = EMap[T]
-export type EType = KarinMessage | KarinNotice | KarinRequest
+export type EType = KarinMessageEvent | KarinNoticeEvent | KarinRequestEvent
 /**
  * 根据accept函数是否存在来决定e的类型
  */
-export type EventType<T> = T extends { accept: (e: any) => Promise<void> } ? KarinNotice | KarinRequest : KarinMessage
+export type EventType<T> = T extends { accept: (e: KarinNoticeEvent | KarinRequestEvent) => Promise<void> } ? KarinNoticeEvent | KarinRequestEvent : KarinMessageEvent

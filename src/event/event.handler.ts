@@ -1,20 +1,22 @@
 import { review } from './review.handler'
-import { KarinMessage } from './message'
-import { KarinNotice } from './notice'
-import { KarinRequest } from './request'
 import { listener } from 'karin/core'
 import { segment, common, logger, config } from 'karin/utils'
-import { Event, Permission, SubEvent, GroupCfg } from 'karin/types'
+import { Event, Permission, SubEvent, GroupCfg, KarinMessageEvent, KarinNoticeEvent, KarinRequestEvent } from 'karin/types'
 
 export default class EventHandler {
-  e: KarinMessage | KarinNotice | KarinRequest
+  e: KarinMessageEvent | KarinNoticeEvent | KarinRequestEvent
   config: GroupCfg | {}
+  /**
+   * - 是否打印群消息日志
+   */
+  GroupMsgPrint: boolean
   /**
    * 处理事件，加入自定义字段
    */
-  constructor (e: KarinMessage | KarinNotice | KarinRequest) {
+  constructor (e: KarinMessageEvent | KarinNoticeEvent | KarinRequestEvent) {
     this.e = e
     this.config = {}
+    this.GroupMsgPrint = false
     /** 加入e.bot */
     Object.defineProperty(this.e, 'bot', { value: listener.getBot(this.e.self_id) })
     if (this.e.group_id) this.config = config.group(this.e.group_id)

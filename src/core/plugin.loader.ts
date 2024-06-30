@@ -24,7 +24,14 @@ export const pluginLoader = new (class PluginLoader {
    * - 命令插件索引列表
    */
   ruleIds: Array<number>
+  /**
+   * - 按钮插件索引列表
+   */
   buttonIds: Array<number>
+  /**
+   * - accept插件索引列表
+   */
+  acceptIds: Array<number>
   /**
    * - handler
    */
@@ -66,6 +73,7 @@ export const pluginLoader = new (class PluginLoader {
     this.PluginList = {}
     this.task = []
     this.ruleIds = []
+    this.acceptIds = []
     this.buttonIds = []
     this.handlerIds = {}
   }
@@ -199,16 +207,19 @@ export const pluginLoader = new (class PluginLoader {
 
     const rule: { key: string, val: number }[] = []
     const button: { key: string, val: number }[] = []
+    const accept: { key: string, val: number }[] = []
     Object.keys(this.PluginList).forEach(key => {
       taskCount += this.PluginList[key].task.length
       if (this.PluginList[key].rule.length) rule.push({ key, val: this.PluginList[key].priority })
       if (this.PluginList[key].button.length) button.push({ key, val: this.PluginList[key].priority })
+      if (this.PluginList[key].accept) accept.push({ key, val: this.PluginList[key].priority })
     })
 
     this.ruleIds = lodash.orderBy(rule, ['val'], ['asc']).map((v) => Number(v.key))
     logger.debug('rule排序完成...')
     this.buttonIds = lodash.orderBy(button, ['val'], ['asc']).map((v) => Number(v.key))
     logger.debug('button排序完成...')
+    this.acceptIds = lodash.orderBy(accept, ['val'], ['asc']).map((v) => Number(v.key))
 
     if (!isPrint) return
     const PluginListKeys = Object.keys(this.PluginList)
@@ -222,6 +233,7 @@ export const pluginLoader = new (class PluginLoader {
     logger.info(`[渲染器][${render.Apps.length}个] 加载完成`)
     logger.info(`[rule][${this.ruleIds.length}个] 加载完成`)
     logger.info(`[button][${this.buttonIds.length}个] 加载完成`)
+    logger.info(`[accept][${this.acceptIds.length}个] 加载完成`)
     logger.info(`[定时任务][${taskCount}个] 加载完成`)
     logger.info(`[Handler][Key:${handlerKeys.length}个][fnc:${handlerCount}个] 加载完成`)
     logger.info(logger.green('-----------'))
@@ -242,12 +254,40 @@ export const pluginLoader = new (class PluginLoader {
       lodash.forEach(tmp, (App) => {
         const index = this.index
         this.index++
-        if (typeof App === 'object') {
-          if (App?.file?.type !== 'function') return
+        if (typeof App === 'object' && App?.file?.type === 'function') {
           if (!App?.name) return logger.error(`[${dir}][${name}] 插件名称错误`)
           App.file.dir = dir
           App.file.name = name
+
+          /** handler */
+          handler.add(index + '', App)
+
+          const task: PluginTask[] = []
+
+          /** 定时任务 */
+          lodash.forEach(App.task, val => {
+            task.push({
+              name: val.name,
+              cron: val.cron,
+              fnc: val.fnc,
+              log: val.log === false ? (log: string) => logger.debug(log) : (log: string) => logger.mark(log),
+              schedule: schedule.scheduleJob(val.cron, async () => {
+                try {
+                  typeof val.log === 'function' && val.log(`[定时任务][${dir}][${val.name}] 开始执行`)
+                  if (typeof val.fnc === 'function') await val.fnc()
+                  typeof val.log === 'function' && val.log(`[定时任务][${dir}][${val.name}] 执行完毕`)
+                } catch (error) {
+                  logger.error(`[定时任务][${dir}][${val.name}] 执行报错`)
+                  logger.error(error)
+                }
+              }),
+            })
+          })
+
+          App.task = task
           this.PluginList[index] = App
+          if (App.accept) this.acceptIds.push(index)
+          return true
         }
 
         if (typeof App !== 'function' || !App?.prototype?.constructor) return
@@ -317,20 +357,15 @@ export const pluginLoader = new (class PluginLoader {
           })
         })
 
+        /** accept */
+        if (Class.accept && typeof Class.accept === 'function') this.acceptIds.push(index)
+
         /** handler */
         handler.add(index + '', Class)
 
         /** 执行初始化 */
         Class.init && Class.init()
         this.PluginList[index] = info
-
-        // const Class = new App()
-
-        /** 注册Handler */
-        // if (!lodash.isEmpty(Class.handler)) handler.add({ name, dir, App, Class })
-
-        /** 注册按钮 */
-        // if (!lodash.isEmpty(Class.button)) button.add({ name, dir, App, Class })
         return true
       })
 
@@ -359,16 +394,22 @@ export const pluginLoader = new (class PluginLoader {
    * 卸载插件
    */
   uninstallApp (dir: dirName, name: fileName) {
-    // this.Apps = this.Apps.filter((v) => !(v.file.dir === dir && v.file.name === name))
-    // this.uninstallTask(dir, name)
-    // button.del(dir, name)
-    // handler.del({ dir, name, key: '' })
+    const index: string[] = []
     Object.keys(this.PluginList).forEach(key => {
       const info = this.PluginList[key]
       /** 停止定时任务 */
       info.task.forEach(val => val.schedule?.cancel())
-      info.file.dir === dir && info.file.name === name && delete this.PluginList[key]
+      if (info.file.dir === dir && info.file.name === name) {
+        index.push(key)
+        delete this.PluginList[key]
+      }
     })
+
+    /** 删除handler */
+    index.forEach(key => handler.del(key))
+
+    /** 重新排序 */
+    this.orderBy()
   }
 
   /**

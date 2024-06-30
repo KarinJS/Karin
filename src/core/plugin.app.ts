@@ -10,8 +10,11 @@ export interface PluginAppType {
   name?: string
   event?: PluginApps['event']
   priority?: number
-  accept?: boolean
+  accept?: boolean | Function
   rule?: PluginApps['rule']
+  task?: PluginApps['task']
+  handler?: PluginApps['handler']
+  button?: PluginApps['button']
 }
 
 export default function PluginApp (options: PluginAppType): PluginApps {
@@ -27,8 +30,8 @@ export default function PluginApp (options: PluginAppType): PluginApps {
     priority: options.priority || 10000,
     accept: options.accept ?? false,
     rule: options.rule || [],
-    task: [],
-    handler: [],
-    button: [],
+    task: options.task || [],
+    handler: options.handler || [],
+    button: options.button || [],
   }
 }

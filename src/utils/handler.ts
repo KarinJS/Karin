@@ -1,6 +1,6 @@
 import lodash from 'lodash'
 import logger from './logger'
-import { EventType, PluginType } from 'karin/types'
+import { EventType, PluginType, PluginApps } from 'karin/types'
 import { Plugin, pluginLoader as loader } from 'karin/core'
 
 /**
@@ -12,7 +12,7 @@ export const handler = new (class EventHandler {
    * @param index 插件索引
    * @param Class 插件类
    */
-  add (index: string, Class: PluginType) {
+  add (index: string, Class: PluginType | PluginApps) {
     lodash.forEach(Class.handler, val => {
       if (!val.key) logger.error(`[Handler][Add]: [${Class.name}] 缺少 key`)
       if (!val.fnc) logger.error(`[Handler][Add]: [${Class.name}] 缺少 fnc`)
@@ -26,17 +26,10 @@ export const handler = new (class EventHandler {
   /**
    * 删除事件处理器
    * 如果不传参数则删除所有处理器
+   * @param index 插件索引
+   * @param key 事件键
    */
-  del ({ index = '', key = '' }: {
-    /**
-     * 插件索引
-     */
-    index: string | ''
-    /**
-     * 事件键
-     */
-    key: string | ''
-  }) {
+  del (index = '', key = '') {
     /** 无参 */
     if (!key && !index) {
       loader.handlerIds = {}

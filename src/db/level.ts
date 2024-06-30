@@ -36,3 +36,5 @@ export default class LevelDB extends Level {
     return await super.put(key, value as string)
   }
 }
+
+export const level = new LevelDB()
