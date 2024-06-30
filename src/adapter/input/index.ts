@@ -148,7 +148,7 @@ export class AdapterInput implements KarinAdapter {
           text.push(`[未知消息类型:${JSON.stringify(v)}]`)
       }
     }
-    this.logger('info', text.join(''))
+    this.logger('info', `${logger.green('Send private input: ')}${text.join('')}`)
     return { message_id: 'input' }
   }
 

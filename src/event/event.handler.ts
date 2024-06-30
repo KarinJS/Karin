@@ -135,7 +135,7 @@ export default class EventHandler {
       if (this.e.isGroup) {
         review.GroupMsgPrint(this.e) && logger.bot('info', this.e.self_id, `${logger.green(`Send Group ${this.e.group_id}: `)}${ReplyLog}`)
       } else {
-        this.e.self_id === 'input' && logger.bot('info', this.e.self_id, `${logger.green(`Send private ${this.e.user_id}: `)}${ReplyLog}`)
+        this.e.self_id !== 'input' && logger.bot('info', this.e.self_id, `${logger.green(`Send private ${this.e.user_id}: `)}${ReplyLog}`)
       }
 
       let message_id = ''
