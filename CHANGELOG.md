@@ -24,6 +24,13 @@
 ### 其他提交
 - Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
 
+## [0.4.0](https://github.com/KarinJS/Karin/compare/v0.3.9...v0.4.0) (2024-06-30)
+
+
+### Features
+
+* 新增karin.task karin.handler ([63a0576](https://github.com/KarinJS/Karin/commit/63a0576a8dd69b85fdb35c31f1ad5d682aa31d3e))
+
 ## [0.3.9](https://github.com/KarinJS/Karin/compare/v0.3.8...v0.3.9) (2024-06-29)
 
 
