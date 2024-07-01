@@ -135,6 +135,18 @@ export const common = new (class Common {
   }
 
   /**
+   * - 解析json文件
+   */
+  readJson (file: string): any {
+    try {
+      return JSON.parse(fs.readFileSync(file, 'utf8'))
+    } catch (error) {
+      logger.error('读取json文件错误：' + error)
+      return null
+    }
+  }
+
+  /**
    * 根据文件后缀名从指定路径下读取符合要求的文件
    * @param path - 路径
    * @param ext - 后缀名、或后缀名列表

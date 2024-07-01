@@ -42,6 +42,7 @@
     "cp": "cp ./lib/modules.d.ts ./modules.d.ts && cp ./lib/modules.js ./modules.js",
     "delete": "pm2 delete ./config/config/pm2.yaml",
     "dev": "tsx ./lib/index.js --dev",
+    "debug": "tsx watch ./lib/index.js --dev",
     "fix": "eslint lib/**/*.js --fix",
     "fix:all": "eslint lib/**/*.js --fix && eslint lib/**/*.ts --fix",
     "init": "node lib/tools/install.js",

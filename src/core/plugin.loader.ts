@@ -122,7 +122,7 @@ export const pluginLoader = new (class PluginLoader {
        * 一共3种模式
        * 1. npm run dev 开发模式  直接加载ts，js文件，对于同时存在编译产物、源代码的情况，优先加载编译产物而不加载源代码
        * 2. node . 生产模式  只加载js文件
-       * 3. npm run debug 调试模式 在2的基础上，对apps进行热更新
+       * 3. npm run debug 调试模式 利用tsx自身的热更新机制，重启karin
        */
 
       /** 非插件包 加载该文件夹下全部js 视语言环境加载ts */
@@ -143,6 +143,15 @@ export const pluginLoader = new (class PluginLoader {
       if (index) {
         this.watchList.push({ dir, name: index as fileName })
         this.FileList.push({ dir, name: index as fileName })
+      }
+
+      /** 检查是否存在karin.apps */
+      const pack = common.readJson(`${PluginPath}/package.json`)
+      if (pack && pack?.karin?.apps) {
+        const cfg = pack.karin.apps
+        if (Array.isArray(cfg)) {
+          cfg.forEach((apps: string) => this.getApps((`${dir}/${apps}`), this.isTs))
+        }
       }
 
       /** ts环境 全部加载  如果存在编译产物 则不加载ts */
