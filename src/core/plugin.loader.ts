@@ -150,7 +150,11 @@ export const pluginLoader = new (class PluginLoader {
       if (pack && pack?.karin?.apps) {
         const cfg = pack.karin.apps
         if (Array.isArray(cfg)) {
-          cfg.forEach((apps: string) => this.getApps((`${dir}/${apps}`), this.isTs))
+          cfg.forEach((apps: string) => {
+            /** 路径不存在跳过 */
+            if (!common.isDir(`${PluginPath}/${apps}`)) return
+            this.getApps((`${dir}/${apps}`), this.isTs)
+          })
         }
       }
 
