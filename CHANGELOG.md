@@ -24,6 +24,13 @@
 ### 其他提交
 - Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
 
+## [0.6.3](https://github.com/KarinJS/Karin/compare/v0.6.2...v0.6.3) (2024-07-02)
+
+
+### Bug Fixes
+
+* 修正Scene为friend ([9695e75](https://github.com/KarinJS/Karin/commit/9695e75ca0838c28444ceb3500d52b21ea7998cf))
+
 ## [0.6.2](https://github.com/KarinJS/Karin/compare/v0.6.1...v0.6.2) (2024-07-02)
 
 
