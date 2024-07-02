@@ -1,6 +1,6 @@
 {
   "name": "karin",
-  "version": "0.6.4",
+  "version": "0.6.6",
   "private": false,
   "author": "Karin",
   "type": "module",
@@ -25,7 +25,7 @@
     "ver": "node lib/tools/updateVersion.js"
   },
   "dependencies": {
-    "node-karin": "^0.6.5",
+    "node-karin": "^0.6.6",
     "@grpc/grpc-js": "1.10.5",
     "@grpc/proto-loader": "0.7.12",
     "art-template": "4.13.2",
