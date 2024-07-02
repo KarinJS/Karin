@@ -1,39 +1,66 @@
 {
-  "name": "karin",
+  "name": "node-karin",
   "version": "0.6.6",
   "private": false,
+  "description": "基于 Kritor 进行开发的nodejs机器人框架",
+  "homepage": "https://github.com/KarinJS/Karin",
+  "bugs": {
+    "url": "https://github.com/KarinJS/Karin/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarinJS/Karin.git"
+  },
+  "license": "GPL-3.0-only",
   "author": "Karin",
   "type": "module",
   "main": "./node_modules/node-karin/lib/index.js",
+  "files": [
+    "/lib/**/*.js",
+    "/lib/**/*.d.ts",
+    "/config/defSet/*.yaml",
+    "/config/view/*.yaml",
+    "modules.js",
+    "modules.d.ts",
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "pnpm-workspace.yaml"
+  ],
   "workspaces": [
     "plugins/**"
   ],
   "scripts": {
     "app": "node .",
-    "debug": "node . --dev",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix && npm run cp",
+    "cp": "cp ./lib/modules.d.ts ./modules.d.ts && cp ./lib/modules.js ./modules.js",
     "delete": "pm2 delete ./config/config/pm2.yaml",
+    "dev": "tsx ./lib/index.js --dev",
+    "debug": "tsx watch ./lib/index.js --dev",
+    "fix": "eslint lib/**/*.js --fix",
+    "fix:all": "eslint lib/**/*.js --fix && eslint lib/**/*.ts --fix",
     "init": "node lib/tools/install.js",
     "init:dev": "node lib/tools/install.js",
     "init:pack": "node lib/tools/install.js",
     "log": "node lib/tools/pm2Log.js",
     "monit": "pm2 monit",
+    "pub": "npm publish --access public",
     "restart": "pm2 restart ./config/config/pm2.yaml",
     "sort:pack": "npx sort-package-json",
     "start": "pm2 start ./config/config/pm2.yaml && pm2 monit",
     "stop": "pm2 delete ./config/config/pm2.yaml",
-    "uninstall": "node lib/tools/uninstall.js",
-    "ver": "node lib/tools/updateVersion.js"
+    "uninstall": "node lib/tools/uninstall.js"
   },
   "dependencies": {
-    "node-karin": "^0.6.6",
-    "@grpc/grpc-js": "1.10.5",
-    "@grpc/proto-loader": "0.7.12",
+    "@grpc/grpc-js": "1.10.10",
+    "@grpc/proto-loader": "0.7.13",
+    "@inquirer/prompts": "^5.0.7",
     "art-template": "4.13.2",
-    "axios": "1.6.8",
+    "axios": "1.7.2",
     "chalk": "5.3.0",
     "chokidar": "3.6.0",
     "express": "4.19.2",
-    "kritor-proto": "^0.0.6",
+    "kritor-proto": "^1.0.2",
     "level": "8.0.1",
     "lodash": "4.17.21",
     "log4js": "6.9.1",
@@ -41,7 +68,8 @@
     "node-schedule": "2.1.1",
     "redis": "4.6.14",
     "ws": "8.16.0",
-    "yaml": "2.4.1"
+    "yaml": "2.4.1",
+    "node-karin": "latest"
   },
   "devDependencies": {
     "@types/express": "latest",
@@ -56,7 +84,18 @@
     "tsx": "latest",
     "typescript": "latest"
   },
+  "bundledDependencies": [
+    "@types/express",
+    "@types/lodash",
+    "@types/node",
+    "@types/node-schedule",
+    "@types/ws"
+  ],
   "engines": {
     "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   }
 }

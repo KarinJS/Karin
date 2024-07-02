@@ -29,8 +29,8 @@ AdapterInput:
   ip: 127.0.0.1
 
 # ffmpeg配置 用于音视频处理
-ffmpeg_path: ""
-ffprobe_path: ""
+ffmpeg_path:
+ffprobe_path:
 
 # 主人列表 主权限
 master: []
