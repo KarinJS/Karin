@@ -1,8 +1,8 @@
 import WebSocket from 'ws'
 import { randomUUID } from 'crypto'
 import { IncomingMessage } from 'http'
+import { KarinAdapter } from 'karin/types'
 import { listener } from 'karin/core/listener'
-import { KarinAdapter } from 'karin/types/adapter'
 import { common, config, logger, segment } from 'karin/utils'
 import { KarinMessage, KarinNotice, KarinRequest } from 'karin/event'
 
@@ -26,7 +26,7 @@ import {
  * @class OneBot11
  * @extends KarinAdapter
  */
-export class OneBot11 implements KarinAdapter {
+export class AdapterOneBot11 implements KarinAdapter {
   /**
    * 是否初始化
    */
@@ -207,6 +207,7 @@ export class OneBot11 implements KarinAdapter {
       case 'message_sent': {
         const message = {
           event: (data.post_type + '') as 'message' | 'message_sent',
+          event_id: data.message_id + '',
           self_id: data.self_id + '',
           user_id: data.sender.user_id + '',
           time: data.time,
@@ -225,7 +226,7 @@ export class OneBot11 implements KarinAdapter {
             peer: data.message_type === 'private' ? data.sender.user_id : data.group_id,
             sub_peer: '',
           },
-          group_id: 'group_id' in data ? data.group_id : '',
+          group_id: data.message_type === 'group' ? data.group_id : '',
           raw_message: '',
         }
 
@@ -247,10 +248,10 @@ export class OneBot11 implements KarinAdapter {
       }
       case 'notice':
         this.#notice_event(data)
-        break
+        return
       case 'request':
         this.#request_event(data)
-        break
+        return
       default:
         this.logger('info', `未知事件：${JSON.stringify(data)}`)
     }
@@ -287,12 +288,11 @@ export class OneBot11 implements KarinAdapter {
           operator_uid: data.user_id + '',
           operator_uin: data.user_id + '',
           file_id: data.file.id,
-          file_sub_id: '',
+          file_sub_id: 0,
           file_name: data.file.name,
           file_size: data.file.size,
-          bus_id: 0,
           expire_time: 0,
-          url: '',
+          file_url: '',
         }
 
         const options = {
@@ -447,7 +447,7 @@ export class OneBot11 implements KarinAdapter {
           sender,
           contact,
           content,
-          sub_event: 'group_recall' as 'group_recall',
+          sub_event: 'private_recall' as 'private_recall',
         }
         notice = new KarinNotice(options)
         break
@@ -474,7 +474,7 @@ export class OneBot11 implements KarinAdapter {
               sender,
               contact,
               content,
-              sub_event: 'group_poke' as 'group_poke',
+              sub_event: data.group_id ? 'group_poke' : 'private_poke' as 'group_poke' | 'group_poke',
             }
             notice = new KarinNotice(options)
             break
@@ -538,7 +538,7 @@ export class OneBot11 implements KarinAdapter {
             nick: '',
             role: '' as Role,
           },
-          sub_event: 'friend_apply' as 'friend_apply',
+          sub_event: 'private_apply' as 'private_apply',
           content: {
             applier_uid: data.user_id + '',
             applier_uin: data.user_id + '',
@@ -865,7 +865,6 @@ export class OneBot11 implements KarinAdapter {
    * 撤回消息
    * @param _contact - ob11无需提供contact参数
    * @param message_id - 消息ID
-   * @returns {Promise<null>}
    */
 
   async RecallMessage (_contact: contact, message_id: string) {
@@ -958,10 +957,10 @@ export class OneBot11 implements KarinAdapter {
   /**
    * 群组全员禁言
    * @param group_id - 群号
-   * @param enable - 是否全员禁言
+   * @param is_ban - 是否全员禁言
    */
-  async SetGroupWholeBan (group_id: string, enable = true) {
-    await this.SendApi('set_group_whole_ban', { group_id, enable })
+  async SetGroupWholeBan (group_id: string, is_ban = true) {
+    await this.SendApi('set_group_whole_ban', { group_id, enable: is_ban })
   }
 
   /**
@@ -1083,7 +1082,6 @@ export class OneBot11 implements KarinAdapter {
 
   /**
    * 获取好友列表
-   * @returns {Promise<Array<IFriendInfo>>} - 好友列表
    */
   async GetFriendList () {
     /** @type {{
@@ -1308,7 +1306,7 @@ export class OneBot11 implements KarinAdapter {
   //  * @param message_id - 消息ID
   //  * @param face_id - 表情ID
   //  */
-  // async ReactMessageWithEmojiRequest(Contact: any, message_id: any, face_id: any, is_set = true) {
+  // async ReactMessageWithEmoji(Contact: any, message_id: any, face_id: any, is_set = true) {
   //   return await this.SendApi('set_msg_emoji_like', { message_id, emoji_id: face_id, is_set })
   // }
 
@@ -1330,9 +1328,9 @@ export class OneBot11 implements KarinAdapter {
   async SetEssenceMessage () { }
   async DeleteEssenceMessage () { }
   async SetFriendApplyResult () { }
-  async SetGroupApplyResultRequest () { }
+  async SetGroupApplyResult () { }
   async SetInvitedJoinGroupResult () { }
-  async ReactMessageWithEmojiRequest () { }
+  async ReactMessageWithEmoji () { }
   async UploadPrivateFile () { }
   async UploadGroupFile () { }
   async sendForwardMessage () {
@@ -1350,9 +1348,17 @@ export class OneBot11 implements KarinAdapter {
     const echo = randomUUID()
     const request = JSON.stringify({ echo, action, params })
     logger.debug(`[API请求] ${action}: ${request}`)
+
     return new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => {
+        reject(new Error('API请求超时'))
+      }, time * 1000)
+
       this.socket.send(request)
       this.socket.once(echo, data => {
+        /** 停止监听器 */
+        clearTimeout(timeoutId)
+
         if (data.status === 'ok') {
           resolve(data.data)
         } else {
@@ -1360,10 +1366,6 @@ export class OneBot11 implements KarinAdapter {
           reject(data)
         }
       })
-      /** 设置一个超时计时器 */
-      setTimeout(() => {
-        reject(new Error('API请求超时'))
-      }, time * 1000)
     })
   }
 }
@@ -1371,5 +1373,5 @@ export class OneBot11 implements KarinAdapter {
 export default {
   type: 'websocket',
   path: '/onebot/v11/ws',
-  adapter: OneBot11,
+  adapter: AdapterOneBot11,
 }

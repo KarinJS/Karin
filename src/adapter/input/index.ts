@@ -70,6 +70,7 @@ export class AdapterInput implements KarinAdapter {
   async #input (elements: string) {
     const message = {
       event: 'message' as 'message' | 'message_sent',
+      event_id: `input.${Date.now()}`,
       self_id: 'input',
       user_id: 'input',
       time: Date.now(),
@@ -169,9 +170,9 @@ export class AdapterInput implements KarinAdapter {
   async SetEssenceMessage (): Promise<any> { throw new Error('Method not implemented.') }
   async DeleteEssenceMessage (): Promise<any> { throw new Error('Method not implemented.') }
   async SetFriendApplyResult (): Promise<any> { throw new Error('Method not implemented.') }
-  async SetGroupApplyResultRequest (): Promise<any> { throw new Error('Method not implemented.') }
+  async SetGroupApplyResult (): Promise<any> { throw new Error('Method not implemented.') }
   async SetInvitedJoinGroupResult (): Promise<any> { throw new Error('Method not implemented.') }
-  async ReactMessageWithEmojiRequest (): Promise<any> { throw new Error('Method not implemented.') }
+  async ReactMessageWithEmoji (): Promise<any> { throw new Error('Method not implemented.') }
   async UploadPrivateFile (): Promise<any> { throw new Error('Method not implemented.') }
   async UploadGroupFile (): Promise<any> { throw new Error('Method not implemented.') }
   async UploadForwardMessage (): Promise<any> { throw new Error('Method not implemented.') }

@@ -363,7 +363,7 @@ export interface KarinAdapter {
     /**
      * - 是否开启全员禁言
      */
-    enable: boolean,
+    is_ban: boolean,
   ): Promise<void>
 
   /**
@@ -588,7 +588,7 @@ export interface KarinAdapter {
   /**
    * - 设置申请加入群请求结果
    */
-  SetGroupApplyResultRequest (
+  SetGroupApplyResult (
     /**
      * - 请求ID
      */
@@ -618,7 +618,6 @@ export interface KarinAdapter {
    * 发送合并转发消息
    * @param contact 联系人信息
    * @param elements 消息元素
-   * @return {Promise<{message_id?}>}
    */
   sendForwardMessage (contact: contact, elements: Array<KarinNodeElement>): Promise<{ message_id?: string }>
 
@@ -628,7 +627,7 @@ export interface KarinAdapter {
    * @param message_id - 消息ID
    * @param face_id - 表情ID
    */
-  ReactMessageWithEmojiRequest (contact: contact, message_id: string, face_id: number, is_set: boolean): Promise<void>
+  ReactMessageWithEmoji (contact: contact, message_id: string, face_id: number, is_set: boolean): Promise<void>
 
   /**
    * 上传群文件

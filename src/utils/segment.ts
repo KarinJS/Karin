@@ -123,7 +123,7 @@ export const segment = new (class Segment {
       /**
        * - 图片子类型
        */
-      sub_type?: number
+      sub_type?: string
       /**
        * - 图片宽度
        */
@@ -137,7 +137,7 @@ export const segment = new (class Segment {
     const file_type = options.file_type || 'original'
     const name = options.name || ''
     const md5 = options.md5 || ''
-    const sub_type = options.sub_type || 0
+    const sub_type = options.sub_type || ''
     const width = options.width || 0
     const height = options.height || 0
     return {
@@ -178,6 +178,7 @@ export const segment = new (class Segment {
    * @param md5 - 语音md5
    * @param name - 语音名称
    * @returns {VoiceElement} 语音元素
+   * @deprecated 即将废弃 请使用segment.record
    */
   voice (file: string, magic = false, md5 = '', name = ''): VoiceElement {
     return {
@@ -266,7 +267,7 @@ export const segment = new (class Segment {
    * @param pic - 封面
    * @returns {CustomMusicElemen} 自定义音乐元素
    */
-  customMusic (url: string, audio: string, title: string, author: string, pic: string): CustomMusicElemen {
+  customMusic (url: string, audio: string, title: string, author: string, pic: string, id: string): CustomMusicElemen {
     return {
       type: 'music',
       platform: 'custom',
@@ -275,6 +276,7 @@ export const segment = new (class Segment {
       title,
       author,
       pic,
+      id,
     }
   }
 

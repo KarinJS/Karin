@@ -7,7 +7,7 @@ import express, { Express } from 'express'
 import { exec, config, logger, common } from 'karin/utils'
 import { render, HttpRenderer, Wormhole, RenderClient } from 'karin/render'
 import { Server as ServerType, ServerResponse, IncomingMessage } from 'http'
-import { OneBot11 } from 'karin/adapter/onebot/onebot11'
+import { AdapterOneBot11 } from 'karin/adapter/onebot/onebot11'
 
 export const server = new (class Server {
   reg: RegExp
@@ -130,7 +130,7 @@ export const server = new (class Server {
       const Onebot11 = config.Server.websocket.OneBot11Host
       if (Array.isArray(Onebot11) && Onebot11.length) {
         for (const connect of Onebot11) {
-          new OneBot11().client(connect)
+          new AdapterOneBot11().client(connect)
         }
       }
 

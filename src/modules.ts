@@ -11,6 +11,7 @@ import { Level as level } from 'level'
 import schedule from 'node-schedule'
 import yaml from 'yaml'
 import log4js from 'log4js'
+import art_template from 'art-template'
 
 export {
   fs,
@@ -26,4 +27,5 @@ export {
   schedule,
   yaml,
   log4js,
+  art_template,
 }

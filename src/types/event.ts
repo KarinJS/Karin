@@ -16,11 +16,11 @@ export type Scene = 'group' | 'private' | 'guild' | 'nearby' | 'stranger' | 'str
  * - 类型映射
  */
 export type EventToSubEvent = {
-  message: 'group_message' | 'friend_message' | 'guild_message' | 'nearby' | 'stranger' | 'stranger_from_group'
-  notice: 'friend_poke' | 'friend_recall' | 'friend_file_uploaded' | 'group_poke' | 'group_card_changed' | 'group_member_unique_title_changed' | 'group_essence_changed' | 'group_recall' | 'group_member_increase' | 'group_member_decrease' | 'group_admin_changed' | 'group_member_ban' | 'group_sign' | 'group_whole_ban' | 'group_file_uploaded' | 'group_message_reaction'
-  request: 'friend_apply' | 'group_apply' | 'invited_group'
-  meta_event: 'group_message' | 'friend_message' | 'guild_message' | 'nearby' | 'stranger' | 'stranger_from_group'
-  message_sent: 'group_message' | 'friend_message' | 'guild_message' | 'nearby' | 'stranger' | 'stranger_from_group'
+  message: 'group_message' | 'private_message' | 'guild_message' | 'nearby' | 'stranger' | 'stranger_from_group'
+  notice: 'private_poke' | 'private_recall' | 'private_file_uploaded' | 'group_poke' | 'group_card_changed' | 'group_member_unique_title_changed' | 'group_essence_changed' | 'group_recall' | 'group_member_increase' | 'group_member_decrease' | 'group_admin_changed' | 'group_member_ban' | 'group_sign_in' | 'group_whole_ban' | 'group_file_uploaded' | 'group_message_reaction'
+  request: 'private_apply' | 'group_apply' | 'invited_group'
+  meta_event: 'group_message' | 'private_message' | 'guild_message' | 'nearby' | 'stranger' | 'stranger_from_group'
+  message_sent: 'group_message' | 'private_message' | 'guild_message' | 'nearby' | 'stranger' | 'stranger_from_group'
 }
 
 /**
@@ -85,7 +85,7 @@ export interface NoticeType {
   /**
    * - 私聊戳一戳
    */
-  friend_poke: {
+  private_poke: {
     /**
      * - 操作者uid
      */
@@ -110,7 +110,7 @@ export interface NoticeType {
   /**
    * - 私聊撤回消息
    */
-  friend_recall: {
+  private_recall: {
     /**
      * - 操作者uid
      */
@@ -132,7 +132,7 @@ export interface NoticeType {
    * - 私聊文件上传
    * - 文件信息最少需要提供一个url
    */
-  friend_file_uploaded: {
+  private_file_uploaded: {
     /**
      * - 操作者uid
      */
@@ -148,7 +148,7 @@ export interface NoticeType {
     /**
      * - 文件子ID 此项没有则为空字符串
      */
-    file_sub_id: string
+    file_sub_id: number
     /**
      * - 文件名 此项没有则为空字符串
      */
@@ -164,7 +164,7 @@ export interface NoticeType {
     /**
      * - 文件URL
      */
-    url: string
+    file_url: string
   }
   /**
    * - 群聊戳一戳
@@ -248,9 +248,9 @@ export interface NoticeType {
      */
     file_id: string
     /**
-     * - 文件子ID 此项没有则为空字符串
+     * - 文件子ID 此项没有则为0
      */
-    file_sub_id: string
+    file_sub_id: number
     /**
      * - 文件名 此项没有则为空字符串
      */
@@ -260,17 +260,13 @@ export interface NoticeType {
      */
     file_size: number
     /**
-     * - 目前未知
-     */
-    bus_id: number
-    /**
      * - 过期时间 此项没有则为0
      */
     expire_time: number
     /**
      * - 文件URL
      */
-    url: string
+    file_url: string
   }
   /**
    * - 群名片变动
@@ -429,7 +425,7 @@ export interface NoticeType {
   /**
    * - 群打卡
    */
-  group_sign: {
+  group_sign_in: {
     /**
      * - 群ID
      */
@@ -535,7 +531,7 @@ export interface RequestType {
   /**
    * - 好友申请
    */
-  friend_apply: {
+  private_apply: {
     /**
      * - 申请者uid
      */
@@ -775,9 +771,9 @@ export type NoticeEvent<T extends keyof NoticeType> = KarinNoticeEventBase & {
 /**
  * - 通知事件基类
  */
-export type KarinNoticeEvent = NoticeEvent<'friend_poke'>
-  | NoticeEvent<'friend_recall'>
-  | NoticeEvent<'friend_file_uploaded'>
+export type KarinNoticeEvent = NoticeEvent<'private_poke'>
+  | NoticeEvent<'private_recall'>
+  | NoticeEvent<'private_file_uploaded'>
   | NoticeEvent<'group_poke'>
   | NoticeEvent<'group_card_changed'>
   | NoticeEvent<'group_member_unique_title_changed'>
@@ -787,7 +783,7 @@ export type KarinNoticeEvent = NoticeEvent<'friend_poke'>
   | NoticeEvent<'group_member_decrease'>
   | NoticeEvent<'group_admin_changed'>
   | NoticeEvent<'group_member_ban'>
-  | NoticeEvent<'group_sign'>
+  | NoticeEvent<'group_sign_in'>
   | NoticeEvent<'group_whole_ban'>
   | NoticeEvent<'group_file_uploaded'>
   | NoticeEvent<'group_message_reaction'>
@@ -810,7 +806,7 @@ export type RequestEvent<T extends keyof RequestType> = KarinRequestEventBase & 
 /**
  * - 请求事件基类
  */
-export type KarinRequestEvent = RequestEvent<'friend_apply'>
+export type KarinRequestEvent = RequestEvent<'private_apply'>
   | RequestEvent<'group_apply'>
   | RequestEvent<'invited_group'>
 

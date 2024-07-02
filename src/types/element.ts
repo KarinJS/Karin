@@ -96,7 +96,7 @@ export interface ImageElement extends Element {
    */
   md5?: string
   /** 图片子类型 */
-  sub_type?: number
+  sub_type?: string
   /**
    * - 图片宽度
    */
@@ -115,6 +115,7 @@ export interface ImageElement extends Element {
 
 /**
  * - 语音元素
+ * @deprecated 即将废弃 请使用segment.record
  */
 export interface VoiceElement extends Element {
   type: 'voice'
@@ -258,7 +259,8 @@ export interface CustomMusicElemen {
   /**
    * - 封面
    */
-  pic: string
+  pic: string,
+  id: string
 }
 
 export interface MusicElement extends Element {

@@ -7,6 +7,7 @@ import { contact, Sender, KarinElement } from 'karin/types'
 export class KarinMessage extends KarinEvent {
   constructor ({
     event = 'message',
+    event_id,
     self_id,
     user_id,
     time,
@@ -22,6 +23,10 @@ export class KarinMessage extends KarinEvent {
      * - 事件类型
      */
     event: 'message' | 'message_sent'
+    /**
+     * - 事件ID
+     */
+    event_id: string
     /**
      * - 机器人ID 请尽量使用UID
      */
@@ -63,7 +68,7 @@ export class KarinMessage extends KarinEvent {
      */
     group_id: string
   }) {
-    super({ event, event_id: message_id, self_id, user_id, group_id, time, contact, sender, sub_event: contact.scene === 'group' ? 'group_message' : 'friend_message' })
+    super({ event, event_id: event_id || message_id, self_id, user_id, group_id, time, contact, sender, sub_event: contact.scene === 'group' ? 'group_message' : 'private_message' })
     this.message_id = message_id
     this.message_seq = message_seq
     this.raw_message = raw_message

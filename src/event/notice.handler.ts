@@ -95,20 +95,20 @@ export default class NoticeHandler extends EventHandler {
   raw_message () {
     switch (this.e.sub_event) {
       /** 好友头像戳一戳 */
-      case 'friend_poke': {
+      case 'private_poke': {
         this.e.raw_message = '[好友戳一戳]: 戳了你一下'
         break
       }
       /** 好友消息撤回 */
-      case 'friend_recall': {
+      case 'private_recall': {
         this.e.raw_message = `[好友消息撤回]: ${this.e.content.message_id}`
         break
       }
       /** 私聊文件上传 */
-      case 'friend_file_uploaded': {
+      case 'private_file_uploaded': {
         const content = this.e.content
-        const { url } = content
-        this.e.raw_message = `[私聊文件上传]: ${url}`
+        const { file_url } = content
+        this.e.raw_message = `[私聊文件上传]: ${file_url}`
         break
       }
       /** 群头像戳一戳 */
@@ -125,8 +125,8 @@ export default class NoticeHandler extends EventHandler {
       }
       /** 群文件上传 */
       case 'group_file_uploaded': {
-        const { url, operator_uid, operator_uin } = this.e.content
-        this.e.raw_message = `[群文件上传]: ${operator_uid || operator_uin} 上传了 ${url}`
+        const { file_url, operator_uid, operator_uin } = this.e.content
+        this.e.raw_message = `[群文件上传]: ${operator_uid || operator_uin} 上传了 ${file_url}`
         break
       }
       /** 群成员增加 */
@@ -171,7 +171,7 @@ export default class NoticeHandler extends EventHandler {
         break
       }
       /** 群签到 */
-      case 'group_sign': {
+      case 'group_sign_in': {
         const { target_uid, target_uin } = this.e.content
         this.e.raw_message = `[群签到]: ${target_uid || target_uin}`
         break

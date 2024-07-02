@@ -12,6 +12,7 @@ export * from 'karin/db'
 export * from 'karin/render'
 export * from 'karin/utils'
 export * from 'karin/types'
+export * from 'karin/adapter'
 
 import { config, update } from 'karin/utils'
 import { render } from 'karin/render'

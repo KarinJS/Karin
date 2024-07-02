@@ -95,7 +95,7 @@ export default class RequestHandler extends EventHandler {
   raw_message () {
     switch (this.e.sub_event) {
       /** 好友申请 */
-      case 'friend_apply': {
+      case 'private_apply': {
         const { applier_uid, applier_uin, message } = this.e.content
         this.e.raw_message = `[好友申请]: ${applier_uid || applier_uin} 申请理由: ${message}`
         break
