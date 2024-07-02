@@ -28,7 +28,8 @@
     "modules.d.ts",
     "LICENSE",
     "package.json",
-    "README.md"
+    "README.md",
+    "pnpm-workspace.yaml"
   ],
   "workspaces": [
     "plugins/**"
