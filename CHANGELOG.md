@@ -24,6 +24,19 @@
 ### 其他提交
 - Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
 
+## [0.6.0](https://github.com/KarinJS/Karin/compare/v0.5.1...v0.6.0) (2024-07-02)
+
+
+### Features
+
+* kritor adapter ([6b1aa4c](https://github.com/KarinJS/Karin/commit/6b1aa4cc269923b887e62eb7ea7b9e0cdc602383))
+
+
+### Bug Fixes
+
+* apps路径不存在跳过 ([5af527c](https://github.com/KarinJS/Karin/commit/5af527cc539e9075502a77f2b5743d3bce41ac40))
+* 可自定义传参apps ([4c57454](https://github.com/KarinJS/Karin/commit/4c57454463ab406ec2ba42ac520dcf8a00953b5a))
+
 ## [0.5.1](https://github.com/KarinJS/Karin/compare/v0.5.0...v0.5.1) (2024-06-30)
 
 
