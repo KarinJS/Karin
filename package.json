@@ -14,9 +14,6 @@
   "license": "GPL-3.0-only",
   "author": "Karin",
   "type": "module",
-  "imports": {
-    "#Karin": "./lib/index.js"
-  },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "bin": {

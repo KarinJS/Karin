@@ -1,3 +1,4 @@
+import path from 'path'
 import { Logger } from 'log4js'
 import { karinDir } from 'karin/core/dir'
 import { fs, yaml as Yaml, chokidar } from 'karin/modules'
@@ -38,7 +39,7 @@ export const config = new (class Cfg {
       './plugins/karin-plugin-example',
     ]
 
-    list.forEach(path => this.checkPath(path))
+    list.forEach(path => this.mkdir(path))
     if (this.npmCfgDir !== (this._path + '/defSet').replace(/\\/g, '/')) {
       const files = fs.readdirSync(this.npmCfgDir).filter(file => file.endsWith('.yaml'))
       files.forEach(file => {
@@ -64,10 +65,14 @@ export const config = new (class Cfg {
   }
 
   /**
-   * 检查路径是否存在 不存在则创建
+   * 递归创建目录
+   * @param dirname - 要创建的文件夹路径
    */
-  checkPath (path: string) {
-    if (!fs.existsSync(path)) fs.mkdirSync(path)
+  mkdir (dirname: string): boolean {
+    if (fs.existsSync(dirname)) return true
+    /** 递归自调用 */
+    if (this.mkdir(path.dirname(dirname))) fs.mkdirSync(dirname)
+    return true
   }
 
   /**
@@ -75,10 +80,10 @@ export const config = new (class Cfg {
    */
   async dirPath (name: string, plugins: string[]) {
     name = `./${name}`
-    this.checkPath(name)
+    this.mkdir(name)
     for (const plugin of plugins) {
       const path = `${name}/${plugin}`
-      this.checkPath(path)
+      this.mkdir(path)
     }
   }
 
