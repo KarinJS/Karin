@@ -227,7 +227,7 @@ export class KritorGrpc {
                       file_name: data.file_name,
                       file_size: Number(data.file_size),
                       expire_time: Number(data.expire_time),
-                      file_url: data.url,
+                      file_url: data.file_url,
                     }
 
                     const options = {
@@ -734,7 +734,7 @@ export class KritorGrpc {
                       file_id: data.file_id,
                       file_name: data.file_name,
                       file_size: Number(data.file_size),
-                      file_sub_id: data.bus_id,
+                      file_sub_id: Number(data.file_sub_id),
                       expire_time: Number(data.expire_time),
                       file_url: data.file_url,
                     }
