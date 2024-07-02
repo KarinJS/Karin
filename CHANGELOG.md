@@ -24,6 +24,13 @@
 ### 其他提交
 - Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
 
+## [0.6.5](https://github.com/KarinJS/Karin/compare/v0.6.4...v0.6.5) (2024-07-02)
+
+
+### Bug Fixes
+
+* 优化初始化脚本 兼容git仓库版本 ([6fb374c](https://github.com/KarinJS/Karin/commit/6fb374c71f4f026d4d6730a834216845d54d4357))
+
 ## [0.6.4](https://github.com/KarinJS/Karin/compare/v0.6.3...v0.6.4) (2024-07-02)
 
 
