@@ -24,6 +24,13 @@
 ### 其他提交
 - Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
 
+## [0.6.4](https://github.com/KarinJS/Karin/compare/v0.6.3...v0.6.4) (2024-07-02)
+
+
+### Bug Fixes
+
+* 同步main ([e9a3143](https://github.com/KarinJS/Karin/commit/e9a31433b30a68dacd29da48397146282340f238))
+
 ## [0.6.3](https://github.com/KarinJS/Karin/compare/v0.6.2...v0.6.3) (2024-07-02)
 
 
