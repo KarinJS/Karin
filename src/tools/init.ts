@@ -39,7 +39,7 @@ const npmPack = JSON.parse(fs.readFileSync(path.join(karinDir, 'package.json'), 
 npmPack.main = './node_modules/node-karin/lib/index.js'
 delete npmPack.bin
 delete npmPack.types
-npmPack.dependencies = pack.dependencies
+npmPack.dependencies['node-karin'] = pack.dependencies['node-karin']
 fs.writeFileSync('./package.json', JSON.stringify(npmPack, null, 2))
 
 // 复制 pnpm-workspace.yaml 到根目录
