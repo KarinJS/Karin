@@ -11,17 +11,32 @@ view:
           path: 'default.global_cd'
           type: 'number'
           suffix: 秒
+          associated:
+            -
+              file: App
+              path: 'GroupConfig.GroupCD'
+              requirement: true
         -
           key: 个人消息冷却时间
           comment: 群聊中 每个人的消息冷却时间，0则无限制。注意，开启后所有消息，无论是否触发插件。
           path: 'default.personal_cd'
           type: 'number'
           suffix: 秒
+          associated:
+            -
+              file: App
+              path: 'GroupConfig.GroupUserCD'
+              requirement: true
         -
           key: 机器人响应模式
           comment: 机器人响应模式，0-所有 1-仅@机器人 2-仅回应主人 3-仅回应前缀 4-前缀或@机器人 5-主人无前缀，群员前缀或@机器人
           path: 'default.mode'
           type: 'select'
+          associated:
+            -
+              file: App
+              path: 'GroupConfig.mode'
+              requirement: true
           multiple: false
           item:
             -
@@ -48,15 +63,30 @@ view:
           path: 'default.ailas'
           type: 'array'
           arrayType: 'text'
+          associated:
+            -
+              file: App
+              path: 'GroupConfig.alias'
+              requirement: true
         -
           key: 白名单插件
           comment: 白名单插件、功能，只有在白名单中的插件、功能才会响应
           path: 'default.enable'
           type: 'array'
           arrayType: 'text'
+          associated:
+            -
+              file: App
+              path: 'GroupConfig.enable'
+              requirement: true
         -
           key: 黑名单插件
           comment: 黑名单插件、功能，黑名单中的插件、功能不会响应
           path: 'default.disable'
           type: 'array'
           arrayType: 'text'
+          associated:
+            -
+              file: App
+              path: 'GroupConfig.disable'
+              requirement: true
