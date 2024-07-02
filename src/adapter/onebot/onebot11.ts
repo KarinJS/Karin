@@ -222,7 +222,7 @@ export class AdapterOneBot11 implements KarinAdapter {
           },
           elements: this.AdapterConvertKarin(data.message),
           contact: {
-            scene: (data.message_type === 'private' ? 'private' : 'group') as 'private' | 'group',
+            scene: (data.message_type === 'private' ? 'friend' : 'group') as 'friend' | 'group',
             peer: data.message_type === 'private' ? data.sender.user_id : data.group_id,
             sub_peer: '',
           },
@@ -275,7 +275,7 @@ export class AdapterOneBot11 implements KarinAdapter {
     }
 
     const contact = {
-      scene: ('group_id' in data ? 'group' : 'private') as Scene,
+      scene: ('group_id' in data ? 'group' : 'friend') as Scene,
       peer: 'group_id' in data ? data.group_id : data.user_id,
       sub_peer: '',
     }
@@ -528,7 +528,7 @@ export class AdapterOneBot11 implements KarinAdapter {
           user_id: data.user_id + '',
           time: data.time,
           contact: {
-            scene: 'private',
+            scene: 'friend',
             peer: data.user_id + '',
             sub_peer: '',
           },
@@ -875,7 +875,6 @@ export class AdapterOneBot11 implements KarinAdapter {
    * 获取消息
    * @param _contact - ob11无需提供contact参数
    * @param message_id - 消息ID
-   * @returns {Promise<object>} - 消息内容
    */
 
   async GetMessage (_contact: contact, message_id: string) {
@@ -885,7 +884,7 @@ export class AdapterOneBot11 implements KarinAdapter {
       message_id: res.message_id,
       message_seq: res.message_id,
       contact: {
-        scene: res.message_type === 'group' ? 'group' : 'private',
+        scene: res.message_type === 'group' ? 'group' : 'friend',
         peer: res.sender.user_id, // 拿不到group_id...
       },
       sender: {

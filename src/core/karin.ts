@@ -1,7 +1,8 @@
 import PluginApp from './plugin.app'
 import { common } from 'karin/utils'
 import { KarinMessage } from 'karin/event/message'
-import { Permission, PluginApps, KarinElement } from 'karin/types'
+import { Permission, PluginApps, KarinElement, contact, KarinRenderType } from 'karin/types'
+import { render } from 'karin/render'
 
 type FncFunction = (e: KarinMessage) => Promise<boolean>
 type FncElement = string | KarinElement | Array<KarinElement>
@@ -205,5 +206,35 @@ export class Karin {
     }
 
     return PluginApp(data)
+  }
+
+  /**
+   * 构建contact
+   * @param peer - 群号或者id
+   * @param isGroup - 是否是群聊
+   * @param sub_peer - 子id
+   */
+  contact (peer: string, isGroup: boolean = true, sub_peer?: string): contact {
+    if (isGroup) {
+      return {
+        scene: 'group',
+        peer,
+        sub_peer: sub_peer || '',
+      }
+    }
+
+    return {
+      scene: 'friend',
+      peer,
+      sub_peer: sub_peer || '',
+    }
+  }
+
+  /**
+   * - 渲染
+   * @param options - 渲染参数
+   */
+  render (options: KarinRenderType) {
+    return render.render(options)
   }
 }

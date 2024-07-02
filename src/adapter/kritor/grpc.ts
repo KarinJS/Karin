@@ -98,7 +98,7 @@ export class KritorGrpc {
                   },
                   elements: this.AdapterConvertKarin(kritorData.elements as Array<kritor.common.Element>),
                   contact: {
-                    scene: scene as 'private' | 'group',
+                    scene: scene as 'friend' | 'group',
                     peer: contact.peer + '',
                     sub_peer: contact.sub_peer + '',
                   },
@@ -135,7 +135,7 @@ export class KritorGrpc {
                     const uin = data.operator_uin
 
                     const contact = {
-                      scene: 'private' as 'private',
+                      scene: 'friend' as 'friend',
                       peer: uid,
                       sub_peer: '',
                     }
@@ -176,7 +176,7 @@ export class KritorGrpc {
                     const uin = data.operator_uin
 
                     const contact = {
-                      scene: 'private' as 'private',
+                      scene: 'friend' as 'friend',
                       peer: uid,
                       sub_peer: '',
                     }
@@ -213,7 +213,7 @@ export class KritorGrpc {
                     const uin = data.operator_uin
 
                     const contact = {
-                      scene: 'private' as 'private',
+                      scene: 'friend' as 'friend',
                       peer: uid,
                       sub_peer: '',
                     }
@@ -838,7 +838,7 @@ export class KritorGrpc {
     /** scene映射表 */
     const sceneMap = {
       [kritor.common.Scene.GROUP]: 'group',
-      [kritor.common.Scene.FRIEND]: 'private',
+      [kritor.common.Scene.FRIEND]: 'friend',
       [kritor.common.Scene.GUILD]: 'guild',
       [kritor.common.Scene.NEARBY]: 'nearby',
       [kritor.common.Scene.STRANGER]: 'stranger',
@@ -854,7 +854,7 @@ export class KritorGrpc {
 
     /*
     0=群聊 1=私聊 2=频道 5=附近的人 6=陌生人 10=群临时会话
-    0=group 1=private 2=guild 5=nearby 6=stranger 10=stranger_from_group
+    0=group 1=friend 2=guild 5=nearby 6=stranger 10=stranger_from_group
     */
     const scene = sceneMap[contact.scene as kritor.common.Scene]
     const role = roleMap[sender.role as kritor.common.Role]

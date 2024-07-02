@@ -35,7 +35,7 @@ export default class RequestHandler extends EventHandler {
       this.e.isAdmin = true
     }
 
-    if (this.e.contact.scene === 'private') {
+    if (this.e.contact.scene === 'friend') {
       this.e.isPrivate = true
       this.e.logText = `[Private:${this.e.sender.nick || ''}(${this.e.user_id})]`
       logger.bot('info', this.e.self_id, `${logger.green('私聊请求: ')}[${this.e.user_id}(${this.e.sender.nick || ''})] ${this.e.raw_message}`)

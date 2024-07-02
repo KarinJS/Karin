@@ -10,7 +10,7 @@ export type Event = 'message' | 'notice' | 'request' | 'meta_event' | 'message_s
 /**
  * - 事件来源
  */
-export type Scene = 'group' | 'private' | 'guild' | 'nearby' | 'stranger' | 'stranger_from_group'
+export type Scene = 'group' | 'friend' | 'guild' | 'nearby' | 'stranger' | 'stranger_from_group'
 
 /**
  * - 类型映射

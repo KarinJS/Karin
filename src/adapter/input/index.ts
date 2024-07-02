@@ -84,7 +84,7 @@ export class AdapterInput implements KarinAdapter {
       },
       elements: [{ type: 'text', text: elements }] as KarinElement[],
       contact: {
-        scene: 'private' as 'private' | 'group',
+        scene: 'friend' as 'friend',
         peer: 'input',
         sub_peer: '',
       },
