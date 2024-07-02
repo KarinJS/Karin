@@ -2,10 +2,23 @@
   "editor.detectIndentation": false,
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
-  "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
-  "javascript.format.insertSpaceAfterConstructor": true,
+  "editor.formatOnType": false,
+  "editor.formatOnPaste": true,
+  "editor.formatOnSaveMode": "file",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  "files.autoSave": "onFocusChange",
   // 单引号
   "javascript.preferences.quoteStyle": "single",
-  // 分号
-  "javascript.format.semicolons": "remove"
+  "typescript.preferences.quoteStyle": "single",
+  // 去掉分号
+  "javascript.format.semicolons": "remove",
+  "typescript.format.semicolons": "remove",
+  // 函数括号前面加空格
+  "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+  "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
+  // 构造函数后面加空格
+  "typescript.format.insertSpaceAfterConstructor": true,
+  "javascript.format.insertSpaceAfterConstructor": true,
 }

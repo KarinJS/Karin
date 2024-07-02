@@ -1,13 +1,10 @@
 {
   "name": "karin",
-  "version": "0.0.3",
-  "private": true,
+  "version": "0.6.4",
+  "private": false,
   "author": "Karin",
   "type": "module",
-  "imports": {
-    "#Karin": "./lib/index.js"
-  },
-  "main": "./lib/index.js",
+  "main": "./node_modules/node-karin/lib/index.js",
   "workspaces": [
     "plugins/**"
   ],
@@ -28,6 +25,7 @@
     "ver": "node lib/tools/updateVersion.js"
   },
   "dependencies": {
+    "node-karin": "^0.6.5",
     "@grpc/grpc-js": "1.10.5",
     "@grpc/proto-loader": "0.7.12",
     "art-template": "4.13.2",
@@ -46,9 +44,17 @@
     "yaml": "2.4.1"
   },
   "devDependencies": {
-    "eslint": "9.4.0",
-    "neostandard": "^0.7.0",
-    "sort-package-json": "^2.10.0"
+    "@types/express": "latest",
+    "@types/lodash": "latest",
+    "@types/node": "latest",
+    "@types/node-schedule": "latest",
+    "@types/ws": "latest",
+    "eslint": "latest",
+    "neostandard": "latest",
+    "sort-package-json": "latest",
+    "tsc-alias": "latest",
+    "tsx": "latest",
+    "typescript": "latest"
   },
   "engines": {
     "node": ">=18"
