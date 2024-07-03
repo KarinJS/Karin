@@ -1299,15 +1299,15 @@ export class AdapterOneBot11 implements KarinAdapter {
     return result
   }
 
-  // /**
-  //  * 对消息进行表情回应
-  //  * @param Contact - 联系人信息
-  //  * @param message_id - 消息ID
-  //  * @param face_id - 表情ID
-  //  */
-  // async ReactMessageWithEmoji(Contact: any, message_id: any, face_id: any, is_set = true) {
-  //   return await this.SendApi('set_msg_emoji_like', { message_id, emoji_id: face_id, is_set })
-  // }
+  /**
+   * 对消息进行表情回应
+   * @param contact - 联系人信息
+   * @param message_id - 消息ID
+   * @param face_id - 表情ID
+   */
+  async ReactMessageWithEmoji (contact: contact, message_id: string, face_id: number, is_set = true) {
+    return await this.SendApi('set_msg_emoji_like', { message_id, emoji_id: face_id, is_set })
+  }
 
   /**
    * 获取版本信息
@@ -1329,7 +1329,6 @@ export class AdapterOneBot11 implements KarinAdapter {
   async SetFriendApplyResult () { }
   async SetGroupApplyResult () { }
   async SetInvitedJoinGroupResult () { }
-  async ReactMessageWithEmoji () { }
   async UploadPrivateFile () { }
   async UploadGroupFile () { }
   async sendForwardMessage () {
