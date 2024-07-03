@@ -13,7 +13,7 @@ export interface KarinRenderType {
    */
   vue?: boolean
   // 暂时先any处理 兼容旧版本
-  props: any
+  props?: any
   /**
    * - 模板名称
    */
