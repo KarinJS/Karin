@@ -24,6 +24,13 @@
 ### 其他提交
 - Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
 
+## [0.6.7](https://github.com/KarinJS/Karin/compare/v0.6.6...v0.6.7) (2024-07-03)
+
+
+### Bug Fixes
+
+* 修正 ReactMessageWithEmoji  Api错误 ([8b29230](https://github.com/KarinJS/Karin/commit/8b2923092bddfdc46a9f2acd15a18c6ce7475fa2))
+
 ## [0.6.6](https://github.com/KarinJS/Karin/compare/v0.6.5...v0.6.6) (2024-07-02)
 
 
