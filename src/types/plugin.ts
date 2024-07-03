@@ -1,6 +1,5 @@
 import schedule from 'node-schedule'
-import { KarinNodeElement } from './element'
-import { Reply, replyCallback } from './reply'
+import { Reply, replyCallback, replyForward } from './reply'
 import { EventType, Event, Permission, SubEvent, KarinMessageEvent, KarinNoticeEvent, KarinRequestEvent } from './event'
 
 /**
@@ -185,8 +184,7 @@ export interface PluginType {
   /**
    * - 快速回复合并转发
    */
-  replyForward: (msg: KarinNodeElement[]) => Promise<{ message_id?: string }>
-
+  replyForward: replyForward
   /**
    * - 构建上下文键
    */

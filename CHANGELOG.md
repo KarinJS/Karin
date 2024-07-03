@@ -1,28 +1,4 @@
-## 0.0.3 (2024-6-19)
-
-### 新增功能
-- feat: vue渲染兼容 ([4470d02](https://github.com/KarinJS/Karin/commit/4470d02b3521e6e91e7abb7c20c02a855728b1d7))
-- feat: ReactMessageWithEmojiRequest ([b92770b](https://github.com/KarinJS/Karin/commit/b92770bcaeb0d2b0966d125e7ad984f3dbe90263))
-- feat: 优化结构 降低对redis的依赖 目前在未安装redis时时候level进行降级代替 (#13) ([9e1c615](https://github.com/KarinJS/Karin/commit/9e1c61529b7c109bd77e82b5aeb3fe52a69a7e87))
-- feat: 新增上线通知 ([b7bee73](https://github.com/KarinJS/Karin/commit/b7bee7399dd3450d53e567f74ef4ad4e44643f03))
-- feat: redis 集群 触发fnc加上颜色使其更明确指令 ([d53560f](https://github.com/KarinJS/Karin/commit/d53560f3e4f852338693e2fddcd3f9c8761e3909))
-- feat: add updateVersion ([10c6446](https://github.com/KarinJS/Karin/commit/10c6446ee48ee4598b1fae336a9baf0b0a9415ca))
-
-### Bug修复
-- fix: 修正正向ws重连错误 修正getBot 失败 ([1cba613](https://github.com/KarinJS/Karin/commit/1cba6136fff9726a3cd2e2189f5c83357fd17de7))
-- fix: ob11的uid暂时全部默认为uin ([8fc3ccd](https://github.com/KarinJS/Karin/commit/8fc3ccd894d1bfd806f3882435a5e9cdd2a3f022))
-- fix: forward uin ([c7b03af](https://github.com/KarinJS/Karin/commit/c7b03af45c303624bcdf794b1a28d823f2c8eaee))
-- fix: 修正好友判断错误 类型描述错误 ([54fca4b](https://github.com/KarinJS/Karin/commit/54fca4b85b8aba8e7e1f0753dfe3cb25f8ee0da4))
-- fix: 修正pm2相关问题 ([5b1b913](https://github.com/KarinJS/Karin/commit/5b1b913ed9e1ecdaa0180f24609631799da86962))
-- fix: 修正上线通知 ([f39dd21](https://github.com/KarinJS/Karin/commit/f39dd2164558716ec7aa6df6a01215c647ca98b5))
-- fix: 修正反向ws渲染错误 ([6206c5c](https://github.com/KarinJS/Karin/commit/6206c5c5d1f6af0788efaa0c91b9a9cfea310261))
-- fix: log ([30531d9](https://github.com/KarinJS/Karin/commit/30531d97db8ff61bed01b425cf23926c95208d80))
-- fix: APP未热更 保证每一条消息的打印 无论是否拦截 ([796e03c](https://github.com/KarinJS/Karin/commit/796e03c1ba025a278402a1785f1a5e3a7f7ddd88))
-- fix: cfg.Config.log_color undefined ([84519d3](https://github.com/KarinJS/Karin/commit/84519d36b509ada43dc54b8cb3d7e0ec2db35d7d))
-- fix: updateVersion路径错误 ([330ac99](https://github.com/KarinJS/Karin/commit/330ac99312061ce78d29101d43a690336fe3b6ab))
-
-### 其他提交
-- Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
+# 更新日志
 
 ## [0.6.7](https://github.com/KarinJS/Karin/compare/v0.6.6...v0.6.7) (2024-07-03)
 
@@ -249,6 +225,36 @@
 * 修复已知问题 详情查看描述 ([17a1b4f](https://github.com/KarinJS/Karin/commit/17a1b4f1e5e13c93c999e803e2232b925d908d0a))
 * 啊啊啊啊啊 ([a7ad104](https://github.com/KarinJS/Karin/commit/a7ad1044f5d479d3443267704dcfc08a25703333))
 * 更正token ([d200974](https://github.com/KarinJS/Karin/commit/d200974d66566b988b5b2381f03cf9d47d6eaf7c))
+
+## 0.0.3 (2024-6-19)
+
+### 新增功能
+
+- feat: vue渲染兼容 ([4470d02](https://github.com/KarinJS/Karin/commit/4470d02b3521e6e91e7abb7c20c02a855728b1d7))
+- feat: ReactMessageWithEmojiRequest ([b92770b](https://github.com/KarinJS/Karin/commit/b92770bcaeb0d2b0966d125e7ad984f3dbe90263))
+- feat: 优化结构 降低对redis的依赖 目前在未安装redis时时候level进行降级代替 (#13) ([9e1c615](https://github.com/KarinJS/Karin/commit/9e1c61529b7c109bd77e82b5aeb3fe52a69a7e87))
+- feat: 新增上线通知 ([b7bee73](https://github.com/KarinJS/Karin/commit/b7bee7399dd3450d53e567f74ef4ad4e44643f03))
+- feat: redis 集群 触发fnc加上颜色使其更明确指令 ([d53560f](https://github.com/KarinJS/Karin/commit/d53560f3e4f852338693e2fddcd3f9c8761e3909))
+- feat: add updateVersion ([10c6446](https://github.com/KarinJS/Karin/commit/10c6446ee48ee4598b1fae336a9baf0b0a9415ca))
+
+### Bug修复
+
+- fix: 修正正向ws重连错误 修正getBot 失败 ([1cba613](https://github.com/KarinJS/Karin/commit/1cba6136fff9726a3cd2e2189f5c83357fd17de7))
+- fix: ob11的uid暂时全部默认为uin ([8fc3ccd](https://github.com/KarinJS/Karin/commit/8fc3ccd894d1bfd806f3882435a5e9cdd2a3f022))
+- fix: forward uin ([c7b03af](https://github.com/KarinJS/Karin/commit/c7b03af45c303624bcdf794b1a28d823f2c8eaee))
+- fix: 修正好友判断错误 类型描述错误 ([54fca4b](https://github.com/KarinJS/Karin/commit/54fca4b85b8aba8e7e1f0753dfe3cb25f8ee0da4))
+- fix: 修正pm2相关问题 ([5b1b913](https://github.com/KarinJS/Karin/commit/5b1b913ed9e1ecdaa0180f24609631799da86962))
+- fix: 修正上线通知 ([f39dd21](https://github.com/KarinJS/Karin/commit/f39dd2164558716ec7aa6df6a01215c647ca98b5))
+- fix: 修正反向ws渲染错误 ([6206c5c](https://github.com/KarinJS/Karin/commit/6206c5c5d1f6af0788efaa0c91b9a9cfea310261))
+- fix: log ([30531d9](https://github.com/KarinJS/Karin/commit/30531d97db8ff61bed01b425cf23926c95208d80))
+- fix: APP未热更 保证每一条消息的打印 无论是否拦截 ([796e03c](https://github.com/KarinJS/Karin/commit/796e03c1ba025a278402a1785f1a5e3a7f7ddd88))
+- fix: cfg.Config.log_color undefined ([84519d3](https://github.com/KarinJS/Karin/commit/84519d36b509ada43dc54b8cb3d7e0ec2db35d7d))
+- fix: updateVersion路径错误 ([330ac99](https://github.com/KarinJS/Karin/commit/330ac99312061ce78d29101d43a690336fe3b6ab))
+
+### 其他提交
+
+- Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
+
 
 ## 0.0.2 (2024-6-4)
 

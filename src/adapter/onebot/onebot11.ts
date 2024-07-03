@@ -1331,8 +1331,13 @@ export class AdapterOneBot11 implements KarinAdapter {
   async SetInvitedJoinGroupResult () { }
   async UploadPrivateFile () { }
   async UploadGroupFile () { }
-  async sendForwardMessage () {
-    return {}
+
+  async sendForwardMessage (contact: contact, elements: KarinNodeElement[]) {
+    let message_id = await this.UploadForwardMessage(contact, elements)
+    if (this.version.name === 'Lagrange.OneBot') {
+      message_id = await this.SendMessage(contact, [segment.forward(message_id)])
+    }
+    return { message_id }
   }
 
   /**

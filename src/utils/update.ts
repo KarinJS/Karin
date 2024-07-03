@@ -8,23 +8,6 @@ export const update = new (class Update {
   }
 
   /**
-   * 获取插件列表 拥有packageon才会被识别
-   * @returns {string[]}
-   */
-  getPlugins () {
-    const list: string[] = []
-    const files = fs.readdirSync(this.dir, { withFileTypes: true })
-    /** 忽略非文件夹、非karin-plugin-开头的文件夹或/karin-adapter-开头的文件夹 */
-    files.forEach(file => {
-      if (!file.isDirectory()) return
-      if (!file.name.startsWith('karin-plugin-') && !file.name.startsWith('karin-adapter-')) return
-      if (!fs.existsSync(`${this.dir}/${file.name}/packageon`)) return
-      list.push(file.name)
-    })
-    return list
-  }
-
-  /**
    * 更新框架或插件
    * @param path - 插件相对路径
    * @param cmd - 更新命令 默认git pull

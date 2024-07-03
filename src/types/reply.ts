@@ -1,4 +1,4 @@
-import { KarinElement } from './element'
+import { KarinElement, KarinNodeElement } from './element'
 
 export type Reply = (
   /**
@@ -38,3 +38,5 @@ export type replyCallback = (
    */
   retry_count?: number,
 ) => Promise<{ message_id?: string }>
+
+export type replyForward = (msg: KarinNodeElement[]) => Promise<{ message_id?: string }>
