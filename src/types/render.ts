@@ -11,7 +11,9 @@ export interface KarinRenderType {
   /**
    * - vue文件路径 与file二选一
    */
-  vue?: string
+  vue?: boolean
+  // 暂时先any处理 兼容旧版本
+  props: any
   /**
    * - 模板名称
    */
