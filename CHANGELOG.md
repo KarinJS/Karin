@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.6.12](https://github.com/KarinJS/Karin/compare/v0.6.11...v0.6.12) (2024-07-04)
+
+
+### Bug Fixes
+
+* [#49](https://github.com/KarinJS/Karin/issues/49) ([5b5ded9](https://github.com/KarinJS/Karin/commit/5b5ded992f9d307a5ca6e2bab6d478067faac488))
+
 ## [0.6.11](https://github.com/KarinJS/Karin/compare/v0.6.10...v0.6.11) (2024-07-04)
 
 
