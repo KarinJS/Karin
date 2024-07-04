@@ -1,5 +1,14 @@
 # 更新日志
 
+## [0.6.10](https://github.com/KarinJS/Karin/compare/v0.6.9...v0.6.10) (2024-07-04)
+
+
+### Bug Fixes
+
+* [#52](https://github.com/KarinJS/Karin/issues/52) ([573d5d8](https://github.com/KarinJS/Karin/commit/573d5d8139919a1454f861e25fa68dbb8814817f))
+* command 参数归一化处理 ([e1fcce9](https://github.com/KarinJS/Karin/commit/e1fcce9b66cce169a102dde8c899fc21e786a627))
+* 修复加载错误问题 ([1ffd68a](https://github.com/KarinJS/Karin/commit/1ffd68a7b61215e14ae7ea22d133c6028503b04a))
+
 ## [0.6.9](https://github.com/KarinJS/Karin/compare/v0.6.8...v0.6.9) (2024-07-03)
 
 
