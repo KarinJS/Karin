@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.6.11](https://github.com/KarinJS/Karin/compare/v0.6.10...v0.6.11) (2024-07-04)
+
+
+### Bug Fixes
+
+* 错误的push ([9c1684e](https://github.com/KarinJS/Karin/commit/9c1684ed0c77480582e6f8e0400c3f5e4b47a38c))
+
 ## [0.6.10](https://github.com/KarinJS/Karin/compare/v0.6.9...v0.6.10) (2024-07-04)
 
 
