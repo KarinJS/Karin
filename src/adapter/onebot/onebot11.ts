@@ -43,7 +43,7 @@ export class AdapterOneBot11 implements KarinAdapter {
   constructor () {
     this.index = 0
     this.account = { uid: '', uin: '', name: '' }
-    this.adapter = { id: 'QQ', name: 'OneBot11', type: 'ws', sub_type: 'internal', start_time: Date.now(), connect: '' }
+    this.adapter = { id: 'QQ', name: 'OneBot11', type: 'ws', sub_type: 'internal', start_time: Date.now(), connect: '', index: 0 }
     this.version = { name: '', app_name: '', version: '' }
   }
 
@@ -80,16 +80,6 @@ export class AdapterOneBot11 implements KarinAdapter {
       this.index = 0
       this.#initListener(connect)
     })
-
-    /** 监听断开 */
-    this.socket.on('close', async () => {
-      this.index++
-      logger.warn(`[正向WS][重连次数:${this.index}] 连接断开，将在5秒后重连：${connect}`)
-      /** 停止全部监听 */
-      this.socket.removeAllListeners()
-      await common.sleep(5000)
-      this.client(connect)
-    })
   }
 
   /**
@@ -121,6 +111,9 @@ export class AdapterOneBot11 implements KarinAdapter {
       this.logger('warn', `[${type}] 连接断开：${connect}`)
       /** 停止全部监听 */
       this.socket.removeAllListeners()
+
+      /** 注销bot */
+      this.adapter.index && listener.delBot(this.adapter.index)
 
       /** 正向ws需要重连 */
       if (this.adapter.sub_type === 'client') {
@@ -161,21 +154,8 @@ export class AdapterOneBot11 implements KarinAdapter {
     this.account.name = data.account_name
     this.logger('info', `[加载完成][app_name:${this.version.name}][version:${this.version.version}] ` + logger.green(this.adapter.connect as string))
     /** 注册bot */
-    listener.emit('bot', { type: 'websocket', bot: this })
-  }
-
-  /** 是否初始化 */
-  get isInit () {
-    return new Promise(resolve => {
-      const timer = setInterval(() => {
-        if (this.account.name) {
-          const { name, version } = this.version
-          this.logger('info', `建立连接成功：[${name}(${version})] ${this.adapter.connect}`)
-          clearInterval(timer)
-          resolve(true)
-        }
-      }, 100)
-    })
+    const index = listener.addBot({ type: this.adapter.type, bot: this })
+    if (index) this.adapter.index = index
   }
 
   /**
@@ -185,21 +165,18 @@ export class AdapterOneBot11 implements KarinAdapter {
   #event (data: OneBot11Event) {
     switch (data.post_type) {
       case 'meta_event': {
-        switch (data.meta_event_type) {
-          case 'heartbeat':
-            this.logger('trace', `[心跳]：${JSON.stringify(data.status)}`)
-            break
-          case 'lifecycle': {
-            const typeMap = {
-              enable: 'OneBot启用',
-              disable: 'OneBot停用',
-              connect: 'WebSocket连接成功',
-            }
-            const sub_type = data.sub_type
-            this.logger('debug', `[生命周期]：${typeMap[sub_type]}`)
-            break
+        if (data.meta_event_type === 'heartbeat') {
+          this.logger('trace', `[心跳]：${JSON.stringify(data.status)}`)
+        } else {
+          const typeMap = {
+            enable: 'OneBot启用',
+            disable: 'OneBot停用',
+            connect: 'WebSocket连接成功',
           }
+          const sub_type = data.sub_type
+          this.logger('debug', `[生命周期]：${typeMap[sub_type]}`)
         }
+
         listener.emit('meta_event', data)
         return
       }

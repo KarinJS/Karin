@@ -27,7 +27,7 @@ export default class AdapterKritor implements KarinAdapter {
     uin: string
   ) {
     this.account = { uid, uin, name: '' }
-    this.adapter = { id: 'QQ', name: 'Kritor', type: 'grpc', sub_type: 'server', start_time: Date.now(), connect: '' }
+    this.adapter = { id: 'QQ', name: 'Kritor', type: 'grpc', sub_type: 'server', start_time: Date.now(), connect: '', index: 0 }
     this.version = { name: '', app_name: '', version: '' }
     this.grpc = grpc
     /** 自增 */
@@ -36,7 +36,10 @@ export default class AdapterKritor implements KarinAdapter {
     /** 监听响应事件 */
     this.grpc.on('data', data => this.grpc.emit(data.seq, data))
     /** 监听关闭事件 */
-    this.grpc.on('end', () => this.logger('warn', '连接已断开'))
+    this.grpc.once('end', () => {
+      this.logger('warn', '[反向gRPC] 连接已断开')
+      this.grpc.removeAllListeners()
+    })
     this.#init()
   }
 

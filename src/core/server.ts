@@ -8,6 +8,7 @@ import { exec, config, logger, common } from 'karin/utils'
 import { render, HttpRenderer, Wormhole, RenderClient } from 'karin/render'
 import { Server as ServerType, ServerResponse, IncomingMessage } from 'http'
 import { AdapterOneBot11 } from 'karin/adapter/onebot/onebot11'
+import { KritorGrpc } from 'karin/adapter'
 
 export const server = new (class Server {
   reg: RegExp
@@ -30,8 +31,11 @@ export const server = new (class Server {
    */
   async init () {
     try {
-      // 防止多进程端口冲突 启动失败
+      /** 防止多进程端口冲突 启动失败 */
       await Process.check()
+      /** 初始化gRPC服务器 */
+      new KritorGrpc().init()
+
       this.WebSocketServer.on('connection', (socket, request) => {
         const path = request.url
         const headers = request.headers

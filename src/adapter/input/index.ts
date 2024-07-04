@@ -48,7 +48,7 @@ export class AdapterInput implements KarinAdapter {
   constructor () {
     this.#stdin = false
     this.account = { uid: 'input', uin: 'input', name: 'input' }
-    this.adapter = { id: 'shell', name: 'input', type: 'internal', sub_type: 'internal', start_time: Date.now(), connect: '' }
+    this.adapter = { id: 'shell', name: 'input', type: 'internal', sub_type: 'internal', start_time: Date.now(), connect: '', index: 0 }
     this.version = { name: 'input', app_name: 'input', version: '1.0.0' }
   }
 
@@ -203,5 +203,6 @@ if (enable) {
   const bot = new AdapterInput()
   bot.stdin()
   /** 注册bot */
-  listener.emit('bot', { type: 'internal', bot })
+  const index = listener.addBot({ bot, type: bot.adapter.type })
+  if (index) bot.adapter.index = index
 }

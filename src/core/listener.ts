@@ -37,11 +37,7 @@ class Listeners extends EventEmitter {
       logger.info(`[适配器][注册][${data.type}] ` + path)
       this.addAdapter(data)
     })
-    this.on('bot', data => {
-      if (!this.addBot(data)) return
-      logger.info(`[机器人][注册][${data.type}] ` + logger.green(`[account:${data.bot.account.uid || data.bot.account.uin}(${data.bot.account.name})]`))
-      this.emit('karin:online', data.bot.account.uid || data.bot.account.uin)
-    })
+
     this.on('message', data => new MessageHandler(data))
     this.on('notice', data => new NoticeHandler(data))
     this.on('request', data => new RequestHandler(data))
@@ -59,6 +55,9 @@ class Listeners extends EventEmitter {
     }
 
     this.list.push({ index, type: data.type, bot: data.bot })
+    logger.info(`[机器人][注册][${data.type}] ` + logger.green(`[account:${data.bot.account.uid || data.bot.account.uin}(${data.bot.account.name})]`))
+    this.emit('karin:online', data.bot.account.uid || data.bot.account.uin)
+    logger.debug('注册', this.list)
     return index
   }
 
@@ -68,6 +67,7 @@ class Listeners extends EventEmitter {
    */
   delBot (index: number) {
     this.list = this.list.filter(item => item.index !== index)
+    logger.debug('[机器人][卸载] ', this.list)
   }
 
   /**

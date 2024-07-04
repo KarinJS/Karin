@@ -47,6 +47,10 @@ export interface KarinAdapter {
    */
   adapter: {
     /**
+     * - 适配器注册之后的索引
+     */
+    index: number,
+    /**
      * - 适配器ID
      */
     id: 'QQ' | 'WeChat' | 'Telegram' | 'QQBot' | string

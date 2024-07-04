@@ -783,7 +783,8 @@ export class KritorGrpc {
           const bot = new AdapterKritor(grpc, uid as string, uin + '')
           this.BotMap.set(uid as string, bot)
           /** 注册bot */
-          listener.emit('bot', { type: 'grpc', bot })
+          const index = listener.addBot({ type: bot.adapter.type, bot })
+          if (index) bot.adapter.index = index
         },
       }
 
@@ -1048,6 +1049,3 @@ export class KritorGrpc {
     return elements
   }
 }
-
-export const grpcServer = new KritorGrpc()
-grpcServer.init()
