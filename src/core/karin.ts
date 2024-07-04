@@ -79,47 +79,32 @@ export class Karin {
    */
   // eslint-disable-next-line no-dupe-class-members
   command (reg: string | RegExp, second: FncFunction | FncElement, options: OptionsCommand | OptionsElement = {}): PluginApps {
-    const Reg = typeof reg === 'string' ? new RegExp(reg) : reg
-
+    reg = typeof reg === 'string' ? new RegExp(reg) : reg
+    const fnc = typeof second === 'function'
+      ? second
+      : async (e) => {
+        const element = typeof second === 'number' ? String(second) : second
+        if ('delay' in options && options.delay) await common.sleep(options.delay)
+        await e.reply(element, {
+          at: ('at' in options && options.at) || false,
+          reply: ('reply' in options && options.reply) || false,
+          recallMsg: ('recallMsg' in options && Number(options.recallMsg)) || 0,
+        })
+        return !('stop' in options && !options.stop)
+      }
     const data = {
       name: options.name || 'function',
       priority: options.priority,
       rule: [
         {
-          reg: Reg,
-          fnc: second as FncFunction,
+          reg,
+          fnc,
           permission: options.permission || 'all',
           log: options.log ?? true,
         },
       ],
     }
-
-    switch (typeof second) {
-      case 'function': {
-        return PluginApp(data)
-      }
-      case 'string':
-      case 'number':
-      case 'object': {
-        const element = common.makeMessage(typeof second === 'number' ? String(second) : second)
-        const fnc = async (e: KarinMessage) => {
-          if ('delay' in options && options.delay) await common.sleep(options.delay)
-
-          await e.reply(element, {
-            at: ('at' in options && options.at) || false,
-            reply: ('reply' in options && options.reply) || false,
-            recallMsg: ('recallMsg' in options && Number(options.recallMsg)) || 0,
-          })
-          if ('stop' in options && !options.stop) return false
-          return true
-        }
-        data.rule[0].fnc = fnc
-        return PluginApp(data)
-      }
-      default: {
-        throw new Error('command: second argument must be a function or string')
-      }
-    }
+    return PluginApp(data)
   }
 
   /**
@@ -177,7 +162,7 @@ export class Karin {
     /**
      * - 拒绝处理器 调用后则不再继续执行下一个处理器
      */
-    reject: (msg?: string) => void
+    reject: (msg?: string) => void,
   ) => Promise<any>, options?: {
     /**
      * - 插件名称
