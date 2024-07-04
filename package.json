@@ -69,7 +69,6 @@
     "lodash": "4.17.21",
     "log4js": "6.9.1",
     "moment": "2.30.1",
-    "node-karin": "^0.6.9",
     "node-schedule": "2.1.1",
     "redis": "4.6.14",
     "ws": "8.16.0",
