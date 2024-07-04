@@ -12,7 +12,7 @@ export const handler = new (class EventHandler {
    * @param index 插件索引
    * @param Class 插件类
    */
-  add (index: string, Class: PluginType | PluginApps) {
+  async add (index: string, Class: PluginType | PluginApps) {
     lodash.forEach(Class.handler, val => {
       if (!val.key) logger.error(`[Handler][Add]: [${Class.name}] 缺少 key`)
       if (!val.fnc) logger.error(`[Handler][Add]: [${Class.name}] 缺少 fnc`)

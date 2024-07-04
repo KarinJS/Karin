@@ -10,10 +10,7 @@ import { render } from 'karin/render'
 import { common, handler, logger } from 'karin/utils'
 import { PluginApps, PluginTask, dirName, fileName, AppInfo } from 'karin/types'
 
-/**
- * 加载插件
- */
-export const pluginLoader = new (class PluginLoader {
+class PluginLoader {
   dir: './plugins'
   dirPath: string
   /**
@@ -45,6 +42,10 @@ export const pluginLoader = new (class PluginLoader {
    */
   isTs: boolean
   /**
+   * - 是否开发环境
+   */
+  isDev: boolean
+  /**
    * - 最终缓存的插件列表 通过index索引
    */
   PluginList: { [key: string]: PluginApps }
@@ -67,6 +68,7 @@ export const pluginLoader = new (class PluginLoader {
     this.dir = './plugins'
     this.dirPath = common.urlToPath(import.meta.url)
     this.isTs = process.env.karin_app_lang === 'ts'
+    this.isDev = process.env.karin_app_mode === 'dev'
     this.watcher = new Map()
     this.watchList = []
     this.FileList = []
@@ -84,7 +86,10 @@ export const pluginLoader = new (class PluginLoader {
   async load () {
     this.getPlugins()
     listener.once('plugin.watch', () => {
-      for (const v of this.watchList) v.name ? this.watch(v.dir, v.name) : this.watchDir(v.dir)
+      for (const v of this.watchList) {
+        v.name ? this.watch(v.dir, v.name) : this.watchDir(v.dir)
+        logger.debug(`[热更新][${v.dir}]${v.name ? `[${v.name}]` : ''} 监听中...`)
+      }
     })
 
     logger.info(logger.green('-----------'))
@@ -92,7 +97,6 @@ export const pluginLoader = new (class PluginLoader {
 
     /** 载入插件 */
     const promises = this.FileList.map(async ({ dir, name }) => await this.createdApp(dir, name, false))
-
     /** 等待所有插件加载完成 */
     await Promise.all(promises)
     /** 释放缓存 */
@@ -127,22 +131,15 @@ export const pluginLoader = new (class PluginLoader {
 
       /** 非插件包 加载该文件夹下全部js 视语言环境加载ts */
       if (!common.isPlugin(PluginPath)) {
-        this.watchList.push({ dir })
-        const list = fs.readdirSync(`${this.dir}/${dir}`, { withFileTypes: true })
-        for (const file of list) {
-          /** 忽略不符合规则的文件 */
-          const ext = this.isTs ? ['.js', '.ts'] : ['.js']
-          if (!ext.includes(path.extname(file.name))) continue
-          this.FileList.push({ dir, name: file.name as fileName })
-        }
+        this.getApps(dir, this.isTs, true)
         continue
       }
 
       /** 入口文件 */
       const index = this.getIndex(PluginPath, process.env.karin_app_lang as 'js' | 'ts')
       if (index) {
-        this.watchList.push({ dir, name: index as fileName })
         this.FileList.push({ dir, name: index as fileName })
+        this.isDev && this.watchList.push({ dir, name: index as fileName })
       }
 
       /** 检查是否存在karin.apps */
@@ -198,8 +195,8 @@ export const pluginLoader = new (class PluginLoader {
    * @param dir - 插件包名称
    * @param isTs - 是否获取ts插件
    */
-  getApps (dir: dirName, isTs: boolean) {
-    this.watchList.push({ dir })
+  getApps (dir: dirName, isTs: boolean, isWatch = false) {
+    isWatch && this.watchList.push({ dir })
     const ext = isTs ? ['.js', '.ts'] : ['.js']
     const list = fs.readdirSync(`${this.dir}/${dir}`, { withFileTypes: true })
 
@@ -257,13 +254,16 @@ export const pluginLoader = new (class PluginLoader {
    * 新增插件
    * @param dir - 插件包路径
    * @param name - 插件名称
-   * @param isOrderBy - 是否重新导入
+   * @param isOrderBy - 是否为动态导入 默认为静态导入
    */
   async createdApp (dir: dirName, name: fileName, isOrderBy = false) {
     try {
+      const list: Promise<any>[] = []
       let path = `${this.dirPath}plugins/${dir}/${name}`
       if (isOrderBy) path = path + `?${Date.now()}`
+
       const tmp: Array<(new () => Plugin) | PluginApps> = await import(path)
+
       lodash.forEach(tmp, (App) => {
         const index = this.index
         this.index++
@@ -273,32 +273,9 @@ export const pluginLoader = new (class PluginLoader {
           App.file.name = name
 
           /** handler */
-          handler.add(index + '', App)
-
-          const task: PluginTask[] = []
-
-          /** 定时任务 */
-          lodash.forEach(App.task, val => {
-            task.push({
-              name: val.name,
-              cron: val.cron,
-              fnc: val.fnc,
-              log: val.log === false ? (log: string) => logger.debug(log) : (log: string) => logger.mark(log),
-              schedule: schedule.scheduleJob(val.cron, async () => {
-                try {
-                  typeof val.log === 'function' && val.log(`[定时任务][${dir}][${val.name}] 开始执行`)
-                  if (typeof val.fnc === 'function') await val.fnc()
-                  typeof val.log === 'function' && val.log(`[定时任务][${dir}][${val.name}] 执行完毕`)
-                } catch (error) {
-                  logger.error(`[定时任务][${dir}][${val.name}] 执行报错`)
-                  logger.error(error)
-                }
-              }),
-            })
-          })
-
-          App.task = task
+          App.task = this.addTaskFnc(dir, App)
           this.PluginList[index] = App
+          handler.add(index + '', App)
           if (App.accept) this.acceptIds.push(index)
           return true
         }
@@ -309,79 +286,24 @@ export const pluginLoader = new (class PluginLoader {
         if (!Class.name) return logger.error(`[${dir}][${name}] 插件名称错误`)
         logger.debug(`载入插件 [${name}][${Class.name}]`)
 
-        const info = PluginApp({
-          file: {
-            dir,
-            name,
-            type: 'class',
-            fnc: App,
-          },
+        this.PluginList[index] = PluginApp({
+          file: { dir, name, type: 'class', fnc: App },
           name: Class.name,
           event: Class.event,
           priority: Class.priority,
-          accept: Class.accept && typeof Class.accept === 'function',
+          accept: false,
         })
 
-        /** 定时任务 */
-        lodash.forEach(Class.task, val => {
-          if (!val.name) return logger.error(`[${dir}][${name}] 定时任务name错误`)
-          if (!val.cron) return logger.error(`[${dir}][${name}] 定时任务cron错误：${Class.name}`)
-          info.task.push({
-            name: val.name,
-            cron: val.cron,
-            fnc: val.fnc,
-            log: val.log === false ? (log: string) => logger.debug(log) : (log: string) => logger.mark(log),
-            schedule: schedule.scheduleJob(val.cron, async () => {
-              try {
-                typeof val.log === 'function' && val.log(`[定时任务][${dir}][${val.name}] 开始执行`)
-                if (typeof val.fnc === 'function') {
-                  await val.fnc()
-                } else {
-                  const cla = new App()
-                  await (cla[val.fnc as keyof typeof cla] as Function)()
-                }
-                typeof val.log === 'function' && val.log(`[定时任务][${dir}][${val.name}] 执行完毕`)
-              } catch (error) {
-                logger.error(`[定时任务][${dir}][${val.name}] 执行报错`)
-                logger.error(error)
-              }
-            }),
-          })
-        })
-
-        /** rule */
-        lodash.forEach(Class.rule, val => {
-          if (!val.fnc) return logger.error(`[${dir}][${name}] rule.fnc错误：${Class.name}`)
-          info.rule.push({
-            reg: val.reg instanceof RegExp ? val.reg : new RegExp(val.reg),
-            fnc: val.fnc,
-            event: val.event,
-            permission: val.permission || 'all',
-            log: val.log === false ? (id: string, log: string) => logger.debug('mark', id, log) : (id: string, log: string) => logger.bot('mark', id, log),
-          })
-        })
-
-        /** button */
-        lodash.forEach(Class.button, val => {
-          if (!val.fnc) return logger.error(`[${dir}][${name}] rule.fnc错误：${Class.name}`)
-          info.button.push({
-            reg: val.reg instanceof RegExp ? val.reg : new RegExp(val.reg),
-            fnc: val.fnc,
-          })
-        })
-
-        /** accept */
-        if (Class.accept && typeof Class.accept === 'function') this.acceptIds.push(index)
-
-        /** handler */
-        handler.add(index + '', Class)
-
-        /** 执行初始化 */
-        Class.init && Class.init()
-        this.PluginList[index] = info
+        /** 异步收集 加载速度 */
+        list.push(this.addRule(dir, name, index, Class))
+        list.push(this.addTask(dir, name, index, Class, App))
+        list.push(this.addAccept(index, Class))
+        list.push(this.addButton(dir, name, index, Class))
+        list.push(this.addInit(Class))
         return true
       })
 
+      await Promise.all(list)
       // rule收集并排序
       if (isOrderBy) this.orderBy()
       return true
@@ -401,6 +323,112 @@ export const pluginLoader = new (class PluginLoader {
       }
       return false
     }
+  }
+
+  /**
+   * 新增rule
+   */
+  async addRule (dir: dirName, name: fileName, index: number, Class: Plugin) {
+    lodash.forEach(Class.rule, val => {
+      if (!val.fnc) return logger.error(`[${dir}][${name}] rule.fnc错误：${Class.name}`)
+      this.PluginList[index].rule.push({
+        reg: val.reg instanceof RegExp ? val.reg : new RegExp(val.reg),
+        fnc: val.fnc,
+        event: val.event,
+        permission: val.permission || 'all',
+        log: val.log === false ? (id: string, log: string) => logger.debug('mark', id, log) : (id: string, log: string) => logger.bot('mark', id, log),
+      })
+    })
+  }
+
+  /**
+   * 新增task fnc模式
+   */
+  addTaskFnc (dir: dirName, App: PluginApps) {
+    const task: PluginTask[] = []
+    lodash.forEach(App.task, val => {
+      task.push({
+        name: val.name,
+        cron: val.cron,
+        fnc: val.fnc,
+        log: val.log === false ? (log: string) => logger.debug(log) : (log: string) => logger.mark(log),
+        schedule: schedule.scheduleJob(val.cron, async () => {
+          try {
+            typeof val.log === 'function' && val.log(`[定时任务][${dir}][${val.name}] 开始执行`)
+            if (typeof val.fnc === 'function') await val.fnc()
+            typeof val.log === 'function' && val.log(`[定时任务][${dir}][${val.name}] 执行完毕`)
+          } catch (error) {
+            logger.error(`[定时任务][${dir}][${val.name}] 执行报错`)
+            logger.error(error)
+          }
+        }),
+      })
+      return true
+    })
+    return task
+  }
+
+  /**
+   * 新增task
+   */
+  async addTask (dir: dirName, name: fileName, index: number, Class: Plugin, App: new () => Plugin) {
+    /** 定时任务 */
+    lodash.forEach(Class.task, val => {
+      if (!val.name) return logger.error(`[${dir}][${name}] 定时任务name错误`)
+      if (!val.cron) return logger.error(`[${dir}][${name}] 定时任务cron错误：${Class.name}`)
+      this.PluginList[index].task.push({
+        name: val.name,
+        cron: val.cron,
+        fnc: val.fnc,
+        log: val.log === false ? (log: string) => logger.debug(log) : (log: string) => logger.mark(log),
+        schedule: schedule.scheduleJob(val.cron, async () => {
+          try {
+            typeof val.log === 'function' && val.log(`[定时任务][${dir}][${val.name}] 开始执行`)
+            if (typeof val.fnc === 'function') {
+              await val.fnc()
+            } else {
+              const cla = new App()
+              await (cla[val.fnc as keyof typeof cla] as Function)()
+            }
+            typeof val.log === 'function' && val.log(`[定时任务][${dir}][${val.name}] 执行完毕`)
+          } catch (error) {
+            logger.error(`[定时任务][${dir}][${val.name}] 执行报错`)
+            logger.error(error)
+          }
+        }),
+      })
+    })
+  }
+
+  /**
+   * 新增accept、handler
+   */
+  async addAccept (index: number, Class: Plugin) {
+    if (Class.accept && typeof Class.accept === 'function') {
+      this.PluginList[index].accept = true
+      this.acceptIds.push(index)
+    }
+    await handler.add(index + '', Class)
+  }
+
+  /**
+   * 新增button
+   */
+  async addButton (dir: dirName, name: fileName, index: number, Class: Plugin) {
+    lodash.forEach(Class.button, val => {
+      if (!val.fnc) return logger.error(`[${dir}][${name}] button.fnc错误：${Class.name}`)
+      this.PluginList[index].button.push({
+        reg: val.reg instanceof RegExp ? val.reg : new RegExp(val.reg),
+        fnc: val.fnc,
+      })
+    })
+  }
+
+  /**
+   * 执行初始化
+   */
+  async addInit (Class: Plugin) {
+    Class.init && await Class.init()
   }
 
   /**
@@ -524,4 +552,45 @@ export const pluginLoader = new (class PluginLoader {
     this.watcher.set(dir, watcher)
     return true
   }
-})()
+
+  async watcAdd (dir: dirName, name: fileName) {
+    const file = `${this.dir}/${dir}/`
+    const filePath = `${file}/${name}`
+    logger.debug(`[热更新][新增插件] ${filePath}`)
+
+    if (!this.isApp(name)) {
+      logger.debug(`[热更新][新增插件] ${filePath} 文件类型错误 不符合当前环境规则 已忽略`)
+      return false
+    }
+
+    /** 载入插件 */
+    const res = await this.createdApp(dir, name, true)
+    if (!res) return
+    /** 延迟1秒 等待卸载完成 */
+    await common.sleep(1000)
+
+    /** 新增插件之后重新监听文件夹 */
+    this.watcher.delete(dir)
+    this.watchDir(dir)
+    logger.mark(`[新增插件][${dir}][${name}]`)
+    return true
+  }
+
+  /**
+   * 传入文件名称 返回是否符合当前环境规则
+   * @param name - 文件名称
+   */
+  isApp (name: fileName): boolean {
+    /** 任何环境都支持js */
+    if (name.endsWith('.js')) return true
+    /** ts环境支持ts */
+    if (name.endsWith('.ts') && this.isTs) return true
+    /** 其他情况返回false */
+    return false
+  }
+}
+
+/**
+ * 加载插件
+ */
+export const pluginLoader = new PluginLoader()

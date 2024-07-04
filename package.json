@@ -36,7 +36,7 @@
   ],
   "scripts": {
     "app": "node .",
-    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix && npm run cp",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run cp && npm run fix",
     "cp": "cp ./lib/modules.d.ts ./modules.d.ts && cp ./lib/modules.js ./modules.js",
     "delete": "pm2 delete ./config/config/pm2.yaml",
     "dev": "tsx ./lib/index.js --dev",
@@ -69,6 +69,7 @@
     "lodash": "4.17.21",
     "log4js": "6.9.1",
     "moment": "2.30.1",
+    "node-karin": "^0.6.9",
     "node-schedule": "2.1.1",
     "redis": "4.6.14",
     "ws": "8.16.0",

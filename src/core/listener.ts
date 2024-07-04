@@ -34,7 +34,7 @@ class Listeners extends EventEmitter {
       let path = data.path || '无'
       if (path && data.type !== 'grpc') path = `ws://127.0.0.1:/${config.Server.http.port}${data.path}`
       path = logger.green(path)
-      logger.info(`[适配器][注册][${data.type}] ` + path)
+      logger.info(`[适配器][注册][${data.type}]: ` + path)
       this.addAdapter(data)
     })
 

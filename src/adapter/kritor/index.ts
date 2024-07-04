@@ -2,6 +2,7 @@ import grpc from '@grpc/grpc-js'
 import { kritor } from 'kritor-proto'
 import { logger, config, segment } from 'karin/utils'
 import { contact, KarinAdapter, KarinElement } from 'karin/types'
+import { listener } from 'karin/core'
 
 /**
  * @extends KarinAdapter
@@ -39,6 +40,7 @@ export default class AdapterKritor implements KarinAdapter {
     this.grpc.once('end', () => {
       this.logger('warn', '[反向gRPC] 连接已断开')
       this.grpc.removeAllListeners()
+      this.adapter.index && listener.delBot(this.adapter.index)
     })
     this.#init()
   }

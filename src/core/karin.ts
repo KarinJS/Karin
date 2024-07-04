@@ -82,7 +82,7 @@ export class Karin {
     reg = typeof reg === 'string' ? new RegExp(reg) : reg
     const fnc = typeof second === 'function'
       ? second
-      : async (e) => {
+      : async (e: KarinMessage) => {
         const element = typeof second === 'number' ? String(second) : second
         if ('delay' in options && options.delay) await common.sleep(options.delay)
         await e.reply(element, {

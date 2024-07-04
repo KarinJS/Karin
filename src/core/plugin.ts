@@ -6,8 +6,8 @@ import { PluginType, KarinElement, KarinNodeElement, EventType, KarinNoticeEvent
 export class Plugin implements PluginType {
   // 类型 需要根据e中的event类型来确定
   e!: EventType<this>
-  init?: () => void
-  accept?: (e: any) => Promise<void>
+  init?: () => Promise<any>
+  accept?: (e: any) => Promise<any>
   replyCallback!: PluginType['replyCallback']
 
   /**

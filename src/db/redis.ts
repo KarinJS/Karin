@@ -43,7 +43,7 @@ class Redis {
 
     /** 第一次连接失败尝试拉起 windows直接降级 */
     if (process.platform === 'win32') {
-      logger.error(`Redis 建立连接失败：${logger.red(data as string)}`)
+      // logger.info(`Redis 建立连接失败：${data}`)
       return await this.LevelDB()
     }
 
@@ -59,10 +59,10 @@ class Redis {
         return data as RedisClientType
       }
 
-      logger.error(`Redis 二次建立连接失败：${logger.red(data as string)}`)
+      logger.warn(`Redis 二次建立连接失败：${logger.red(data as string)}`)
       return false
     } catch (error) {
-      logger.error(`Redis 启动失败：${logger.red(data as string)}`)
+      logger.warn(`Redis 启动失败：${logger.red(data as string)}`)
       return await this.LevelDB()
     }
   }
@@ -72,9 +72,8 @@ class Redis {
    */
   async LevelDB () {
     try {
-      logger.mark(logger.red('正在降级为 LevelDB 代替 Redis 只能使用基础功能'))
+      logger.info('使用LevelDB代替Redis实现基础Api')
       const redis = new RedisLevel()
-      logger.info('LevelDB 降级成功')
       return redis
     } catch (error) {
       logger.error('降级为 LevelDB 失败')

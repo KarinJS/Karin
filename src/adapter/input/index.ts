@@ -8,38 +8,11 @@ import { config, common, YamlEditor } from 'karin/utils'
 
 const { enable, msgToFile, token: oldToken, ip } = config.Config.AdapterInput
 
-let token = oldToken
-
-if (oldToken === 'AdapterInput') {
-  try {
-    token = randomUUID()
-    const yaml = new YamlEditor('./config/config/config.yaml')
-    const data = yaml.get('AdapterInput')
-    if (!data) {
-      const yaml1 = new YamlEditor('./config/defSet/config.yaml')
-      const data1 = yaml1.get('AdapterInput')
-      data1.token = token
-      yaml.set('AdapterInput', data1)
-    } else {
-      data.token = token
-      yaml.set('AdapterInput', data)
-    }
-
-    yaml.save()
-  } catch (e) {
-    logger.error('AdapterInput token更换失败，请手动更换token')
-  }
-}
-
-// 清空文件夹
-fs.readdirSync('./temp/input').forEach((file) => {
-  fs.unlinkSync(`./temp/input/${file}`)
-})
-
 /**
  * - 标准输入输出适配器
  */
 export class AdapterInput implements KarinAdapter {
+  token: string
   #stdin: boolean
   socket!: WebSocket
   account: KarinAdapter['account']
@@ -47,6 +20,7 @@ export class AdapterInput implements KarinAdapter {
   version: KarinAdapter['version']
   constructor () {
     this.#stdin = false
+    this.token = oldToken
     this.account = { uid: 'input', uin: 'input', name: 'input' }
     this.adapter = { id: 'shell', name: 'input', type: 'internal', sub_type: 'internal', start_time: Date.now(), connect: '', index: 0 }
     this.version = { name: 'input', app_name: 'input', version: '1.0.0' }
@@ -59,6 +33,37 @@ export class AdapterInput implements KarinAdapter {
   stdin () {
     if (this.#stdin) return
     this.#stdin = true
+
+    if (oldToken === 'AdapterInput') {
+      try {
+        this.token = randomUUID()
+        const yaml = new YamlEditor('./config/config/config.yaml')
+        const data = yaml.get('AdapterInput')
+        if (!data) {
+          const yaml1 = new YamlEditor('./config/defSet/config.yaml')
+          const data1 = yaml1.get('AdapterInput')
+          data1.token = this.token
+          yaml.set('AdapterInput', data1)
+        } else {
+          data.token = this.token
+          yaml.set('AdapterInput', data)
+        }
+
+        yaml.save()
+      } catch (e) {
+        logger.error('AdapterInput token更换失败，请手动更换token')
+      }
+    }
+
+    // 清空文件夹
+    fs.readdirSync('./temp/input').forEach((file) => {
+      fs.unlinkSync(`./temp/input/${file}`)
+    })
+
+    /** 注册bot */
+    const index = listener.addBot({ bot: this, type: this.adapter.type })
+    if (index) this.adapter.index = index
+
     process.stdin.on('data', data => this.#input(data.toString()))
     process.once('stdin.close', () => process.stdin.removeAllListeners('data'))
   }
@@ -119,7 +124,7 @@ export class AdapterInput implements KarinAdapter {
     const name = `${Date.now()}.${type === 'image' ? 'jpg' : type === 'voice' ? 'mp3' : 'file'}`
     // 写入文件
     fs.writeFileSync(`./temp/input/${name}`, buffer)
-    return `[${type === 'image' ? '图片' : '语音'}: http://${ip}:${config.Server.http.port}/api/input?name=${name}&token=${token} ]`
+    return `[${type === 'image' ? '图片' : '语音'}: http://${ip}:${config.Server.http.port}/api/input?name=${name}&token=${this.token} ]`
   }
 
   async GetVersion () {
@@ -199,10 +204,4 @@ export class AdapterInput implements KarinAdapter {
   async GetGroupHonor (): Promise<any> { throw new Error('Method not implemented.') }
 }
 
-if (enable) {
-  const bot = new AdapterInput()
-  bot.stdin()
-  /** 注册bot */
-  const index = listener.addBot({ bot, type: bot.adapter.type })
-  if (index) bot.adapter.index = index
-}
+if (enable) new AdapterInput().stdin()
