@@ -1,4 +1,4 @@
-import { PluginType, KarinElement, KarinNodeElement, EventType, KarinNoticeEvent, KarinRequestEvent } from 'karin/types'
+import { PluginType, KarinElement, KarinNodeElement, EventType, KarinNoticeEvent, KarinRequestEvent, stateArrType } from 'karin/types'
 
 /**
  * 插件基类
@@ -178,7 +178,7 @@ export class Plugin implements PluginType {
     /**
      * @param fnc - 执行方法
      */
-    fnc: string,
+    fnc: string | Function,
     /**
      * @param reply - 超时后是否回复
      */
@@ -189,7 +189,13 @@ export class Plugin implements PluginType {
     time = 120
   ) {
     const key = this.conKey()
-    stateArr[key] = { plugin: this, fnc }
+
+    if (typeof fnc === 'string') {
+      stateArr[key] = { type: 'class', fnc: this, name: fnc }
+    } else {
+      stateArr[key] = { type: 'fnc', fnc }
+    }
+
     /** 操作时间 */
     this.timeout = setTimeout(() => {
       if (stateArr[key]) {
@@ -202,7 +208,7 @@ export class Plugin implements PluginType {
   /**
    * 获取上下文状态
    */
-  getContext (): { plugin: Plugin, fnc: string } {
+  getContext (): stateArrType[string] {
     const key = this.conKey()
     return stateArr[key]
   }
@@ -223,18 +229,7 @@ export class Plugin implements PluginType {
 /**
  * 上下文状态
  */
-export const stateArr: {
-  [key: string]: {
-    /**
-     * @param plugin - 插件实例
-     */
-    plugin: Plugin
-    /**
-     * @param fnc - 执行方法名称
-     */
-    fnc: string
-  }
-} = {}
+export const stateArr: stateArrType = {}
 
 /**
  * 通知事件 插件类型

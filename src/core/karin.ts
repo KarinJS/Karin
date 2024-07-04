@@ -1,8 +1,10 @@
 import PluginApp from './plugin.app'
 import { common } from 'karin/utils'
+import { render } from 'karin/render'
+import { stateArr } from './plugin'
+import { listener } from './listener'
 import { KarinMessage } from 'karin/event/message'
 import { Permission, PluginApps, KarinElement, contact, KarinRenderType } from 'karin/types'
-import { render } from 'karin/render'
 
 type FncFunction = (e: KarinMessage) => Promise<boolean>
 type FncElement = string | KarinElement | Array<KarinElement>
@@ -221,5 +223,46 @@ export class Karin {
    */
   render (options: KarinRenderType) {
     return render.render(options)
+  }
+
+  /**
+   * - 上下文
+   * @param e - 消息事件
+   */
+  async ctx (e: KarinMessage, options?: {
+    /**
+     * - 指定用户id触发下文 不指定则使用默认e.user_id
+     */
+    userId?: string
+    /**
+     * - 超时时间 默认120秒
+     */
+    time?: number
+    /**
+     * - 超时后是否回复
+     */
+    reply?: boolean
+    /**
+     * - 超时回复文本 默认为'操作超时已取消'
+     */
+    replyMsg?: string
+  }): Promise<KarinMessage> {
+    const time = options?.time || 120
+    const userId = options?.userId || e.user_id
+    const key = e.group_id ? `${e.group_id}.${userId}` : userId
+    stateArr[key] = { type: 'ctx' }
+    // 返回promise 设置超时时间
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (stateArr[key]) {
+          delete stateArr[key]
+          if (options?.reply) e.reply(options.replyMsg || '操作超时已取消')
+          reject(new Error('操作超时已取消'))
+          return true
+        }
+      }, time * 1000)
+
+      listener.once(`ctx:${key}`, (e: KarinMessage) => resolve(e))
+    })
   }
 }

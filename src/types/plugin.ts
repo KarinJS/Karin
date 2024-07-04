@@ -1,6 +1,7 @@
 import schedule from 'node-schedule'
 import { Reply, replyCallback, replyForward } from './reply'
 import { EventType, Event, Permission, SubEvent, KarinMessageEvent, KarinNoticeEvent, KarinRequestEvent } from './event'
+import { Plugin } from 'karin/core'
 
 /**
  * - 插件根目录名称
@@ -13,6 +14,16 @@ export type dirName = `karin-plugin-${string}`
  * - 例如: index.js index.ts
  */
 export type fileName = `${string}.js` | `${string}.ts`
+
+/**
+ * 上下文状态
+ */
+export interface stateArrType {
+  [key: string]:
+  | { type: 'fnc', fnc: Function }
+  | { type: 'class', fnc: Plugin, name: string }
+  | { type: 'ctx' }
+}
 
 /**
  * - 插件规则
@@ -211,31 +222,12 @@ export interface PluginType {
   /**
    * - 获取上下文状态
    */
-  getContext: () => {
-    /**
-     * - 插件实例
-     */
-    plugin: PluginType
-    /**
-     * - 执行方法名称
-     */
-    fnc: string
-  }
+  getContext: () => stateArrType[string]
 
   /**
    * - accept标准方法 给通知、请求事件使用
    */
   accept?(e: EventType<this>): Promise<void>
-}
-
-/**
- * 上下文状态
- */
-export interface stateArrType {
-  [key: string]: {
-    plugin: PluginType
-    fnc: string
-  }
 }
 
 /**

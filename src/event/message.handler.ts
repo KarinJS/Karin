@@ -233,14 +233,33 @@ export class MessageHandler extends EventHandler {
     const key = this.e.isGroup ? `${this.e.group_id}.${this.e.user_id}` : this.e.user_id
     const App = stateArr[key]
     if (App) {
-      const { plugin, fnc } = App
-      this.e.logFnc = `[${plugin.name}][${fnc}]`
-      /** 计算插件处理时间 */
-      const start = Date.now()
-      plugin.e = this.e
-      await (plugin[fnc as keyof typeof plugin] as Function)()
-      logger.bot('mark', this.e.self_id, `${this.e.logFnc} 上下文处理完成 ${Date.now() - start}ms`)
-      return true
+      switch (App.type) {
+        case 'ctx': {
+          listener.emit(`ctx:${key}`, this.e)
+          delete stateArr[key]
+          return true
+        }
+        case 'class': {
+          const { fnc, name } = App
+          this.e.logFnc = `[${fnc.name}][${name}]`
+          /** 计算插件处理时间 */
+          const start = Date.now()
+          fnc.e = this.e
+          await (fnc[name as keyof typeof fnc] as Function)()
+          logger.bot('mark', this.e.self_id, `${this.e.logFnc} 上下文处理完成 ${Date.now() - start}ms`)
+          return true
+        }
+        case 'fnc': {
+          const { fnc } = App
+          this.e.logFnc = `[${fnc.name}]`
+          /** 计算插件处理时间 */
+          const start = Date.now()
+          await fnc(this.e)
+          logger.bot('mark', this.e.self_id, `${this.e.logFnc} 上下文处理完成 ${Date.now() - start}ms`)
+          delete stateArr[key]
+          return true
+        }
+      }
     }
     return false
   }
