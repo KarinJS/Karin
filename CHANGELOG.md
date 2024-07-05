@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.6.13](https://github.com/KarinJS/Karin/compare/v0.6.12...v0.6.13) (2024-07-05)
+
+
+### Bug Fixes
+
+* 修正 [#62](https://github.com/KarinJS/Karin/issues/62)  修正触发方法不打印日志 修正部分类型错误 ([86bd5e1](https://github.com/KarinJS/Karin/commit/86bd5e1c9c45656b6ccd3723282031d06a9d81c8))
+
 ## [0.6.12](https://github.com/KarinJS/Karin/compare/v0.6.11...v0.6.12) (2024-07-04)
 
 
