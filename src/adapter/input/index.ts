@@ -4,7 +4,7 @@ import { listener } from 'karin/core'
 import { KarinMessage } from 'karin/event'
 import { KarinAdapter } from 'karin/types/adapter'
 import { contact, KarinElement } from 'karin/types'
-import { config, common, YamlEditor } from 'karin/utils'
+import { config, common, YamlEditor, logger } from 'karin/utils'
 
 const { enable, msgToFile, token: oldToken, ip } = config.Config.AdapterInput
 

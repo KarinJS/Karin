@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url'
 import { AxiosRequestConfig } from 'axios'
 import { pipeline, Readable } from 'stream'
 import { logger, segment } from 'karin/utils'
-import { fs, path, axios, lodash } from 'karin/modules'
+import { fs, path, axios, lodash, yaml as Yaml } from 'karin/modules'
 import { dirName, KarinElement, KarinNodeElement } from 'karin/types'
 
 /**
@@ -141,8 +141,46 @@ export const common = new (class Common {
     try {
       return JSON.parse(fs.readFileSync(file, 'utf8'))
     } catch (error) {
-      logger.error('读取json文件错误：' + error)
+      logger.error('[common] 读取json文件错误：' + error)
       return null
+    }
+  }
+
+  /**
+   * - 写入json文件
+   */
+  writeJson (file: string, data: any): boolean {
+    try {
+      fs.writeFileSync(file, JSON.stringify(data, null, 2))
+      return true
+    } catch (error) {
+      logger.error('[common] 写入json文件错误：' + error)
+      return false
+    }
+  }
+
+  /**
+   * - 解析yaml文件
+   */
+  readYaml (file: string): any {
+    try {
+      return Yaml.parse(fs.readFileSync(file, 'utf8'))
+    } catch (error) {
+      logger.error('[common] 读取yaml文件错误：' + error)
+      return null
+    }
+  }
+
+  /**
+   * - 写入yaml文件
+   */
+  writeYaml (file: string, data: any): boolean {
+    try {
+      fs.writeFileSync(file, Yaml.stringify(data))
+      return true
+    } catch (error) {
+      logger.error('[common] 写入yaml文件错误：' + error)
+      return false
     }
   }
 
@@ -167,28 +205,38 @@ export const common = new (class Common {
   }
 
   /**
-   * 传入 import.meta.url 自动构建../
+   * 根据传入的 import.meta.url 计算相对于项目根目录的路径，返回需要的 '../' 层级。
    * @param url - import.meta.url
+   * @returns 相对路径的层级数量，用 '../' 表示
+   * @example
+   * // 在 plugins/karin-plugin-example/index.ts 中使用
+   * common.urlToPath(import.meta.url) // 返回 '../../'
    */
   urlToPath (url: string): string {
-    // 获取当前文件的绝对路径
+    /** 当前文件的绝对路径 */
     const filePath = fileURLToPath(url)
-
-    // 获取当前文件所在目录的绝对路径
+    /** 当前文件所在目录的绝对路径 */
     const dirPath = path.dirname(filePath)
-
-    // 获取项目根目录
+    /** 项目根目录 */
     const rootPath = process.cwd()
-
-    // 计算当前文件到项目根目录的相对路径
+    /** 当前文件到项目根目录的相对路径 */
     const relativePath = path.relative(dirPath, rootPath)
-
-    // 计算返回上一级目录的数量
+    /** 相对路径的层级数量 */
     const upLevelsCount = relativePath.split(path.sep).length
-
-    // 生成相应数量的 '../'
+    /** 返回构建的路径 */
     const upPath = lodash.repeat('../', upLevelsCount)
     return upPath
+  }
+
+  /**
+   * 传入相对路径 分割为两部分 1为文件夹路径 2为文件名 文件夹路径无前缀开头
+   * @param _path - 路径
+   */
+  splitPath (_path: string): { dir: string; pop: string } {
+    const list = _path.replace(/\\/g, '/').split('/')
+    const pop = list.pop() || ''
+    const dir = path.join(...list)
+    return { dir, pop }
   }
 
   /**
@@ -319,10 +367,9 @@ export const common = new (class Common {
 
   /**
    * 制作简单转发，返回segment.node[]。仅简单包装node，也可以自己组装
-   * @param {Array<{object}> | object} elements
+   * @param elements
    * @param fakeUin 用户id
    * @param fakeNick 用户昵称
-   * @return {Array<KarinNodeElement>}
    */
   makeForward (elements: KarinElement | KarinElement[], fakeUin: string, fakeNick: string): Array<KarinNodeElement> {
     if (!Array.isArray(elements)) elements = [elements]
@@ -430,15 +477,17 @@ export const common = new (class Common {
           logs.push(`[json:${val.data}]`)
           break
         case 'markdown': {
-          if (val.content) {
-            logs.push(`[markdown:${val.content}]`)
-          } else {
-            const content: {
-              [key: string]: string
-            } = { id: val.custom_template_id }
-            for (const v of val.params) content[v.key] = v.values[0]
-            logs.push(`[markdown:${JSON.stringify(content)}]`)
-          }
+          logs.push(`[markdown:${val.content}]`)
+          break
+        }
+        case 'markdown_tpl': {
+          const params = val.params
+          if (!params) break
+          const content: {
+            [key: string]: string
+          } = { id: val.custom_template_id }
+          for (const v of params) content[v.key] = v.values[0]
+          logs.push(`[markdown_tpl:${JSON.stringify(content)}]`)
           break
         }
         case 'rows': {

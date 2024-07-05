@@ -28,7 +28,6 @@ export class MessageHandler extends EventHandler {
       logger.debug('[消息拦截] 响应模式不匹配')
       return
     }
-    this.GroupMsgPrint = false
     /** 处理回复 */
     this.reply()
     /** 处理消息 */
@@ -58,8 +57,9 @@ export class MessageHandler extends EventHandler {
           /** 判断子事件 */
           if (v.event && !this.filtEvent(v.event)) continue
 
-          this.e.logFnc = `[${app.file.dir}][${app.name}][${v.fnc}]`
-          const logFnc = logger.fnc(`[${app.name}][${v.fnc}]`)
+          const fncName = app.file.type === 'function' ? 'default' : v.fnc
+          this.e.logFnc = `[${app.file.dir}][${app.name}][${fncName}]`
+          const logFnc = logger.fnc(`[${app.name}][${fncName}]`)
           this.GroupMsgPrint && typeof v.log === 'function' && v.log(this.e.self_id, `${logFnc}${this.e.logText} ${lodash.truncate(this.e.msg, { length: 80 })}`)
 
           /** 判断权限 */
@@ -176,13 +176,17 @@ export class MessageHandler extends EventHandler {
           logs.push(`[json:${JSON.stringify(val.data)}]`)
           break
         case 'markdown': {
-          if (val.content) {
-            logs.push(`[markdown:${val.content}]`)
-          } else {
-            const content: { [key: string]: string } = { id: val.custom_template_id }
-            for (const v of val.params) content[v.key] = v.values[0]
-            logs.push(`[markdown:${JSON.stringify(content)}]`)
-          }
+          logs.push(`[markdown:${val.content}]`)
+          break
+        }
+        case 'markdown_tpl': {
+          const params = val.params
+          if (!params) break
+          const content: {
+            [key: string]: string
+          } = { id: val.custom_template_id }
+          for (const v of params) content[v.key] = v.values[0]
+          logs.push(`[markdown_tpl:${JSON.stringify(content)}]`)
           break
         }
         case 'rows': {

@@ -248,7 +248,7 @@ export class AdapterOneBot11 implements KarinAdapter {
       uid: data.user_id + '',
       uin: data.user_id + '',
       nick: '',
-      role: '' as Role,
+      role: 'unknown' as Role,
     }
 
     const contact = {
@@ -260,8 +260,9 @@ export class AdapterOneBot11 implements KarinAdapter {
     switch (data.notice_type) {
       // 群文件上传
       case 'group_upload': {
+        const group_id = data.group_id + ''
         const content = {
-          group_id: data.group_id + '',
+          group_id,
           operator_uid: data.user_id + '',
           operator_uin: data.user_id + '',
           file_id: data.file.id,
@@ -280,6 +281,7 @@ export class AdapterOneBot11 implements KarinAdapter {
           content,
           sender,
           contact,
+          group_id,
           sub_event: 'group_file_uploaded' as 'group_file_uploaded',
         }
         notice = new KarinNotice(options)
@@ -287,8 +289,9 @@ export class AdapterOneBot11 implements KarinAdapter {
       }
       // 群管理员变动
       case 'group_admin': {
+        const group_id = data.group_id + ''
         const content = {
-          group_id: data.group_id + '',
+          group_id,
           target_uid: data.user_id + '',
           target_uin: data.user_id + '',
           is_admin: data.sub_type === 'set',
@@ -302,6 +305,7 @@ export class AdapterOneBot11 implements KarinAdapter {
           sender,
           contact,
           content,
+          group_id,
           sub_event: 'group_admin_changed' as 'group_admin_changed',
         }
         notice = new KarinNotice(options)
@@ -309,10 +313,11 @@ export class AdapterOneBot11 implements KarinAdapter {
       }
       // 群成员减少
       case 'group_decrease': {
+        const group_id = data.group_id + ''
         const content = {
-          group_id: data.group_id + '',
-          operator_uid: data.operator_id || '',
-          operator_uin: data.operator_id || '',
+          group_id,
+          operator_uid: (data.operator_id + '') || '',
+          operator_uin: (data.operator_id + '') || '',
           target_uid: data.user_id || '',
           target_uin: data.user_id || '',
           type: data.sub_type,
@@ -326,6 +331,7 @@ export class AdapterOneBot11 implements KarinAdapter {
           sender,
           contact,
           content,
+          group_id,
           sub_event: 'group_member_decrease' as 'group_member_decrease',
         }
         notice = new KarinNotice(options)
@@ -333,8 +339,9 @@ export class AdapterOneBot11 implements KarinAdapter {
       }
       // 群成员增加
       case 'group_increase': {
+        const group_id = data.group_id + ''
         const content = {
-          group_id: data.group_id + '',
+          group_id,
           operator_uid: (data.operator_id || '') + '',
           operator_uin: (data.operator_id || '') + '',
           target_uid: (data.user_id || '') + '',
@@ -350,6 +357,7 @@ export class AdapterOneBot11 implements KarinAdapter {
           sender,
           contact,
           content,
+          group_id,
           sub_event: 'group_member_increase' as 'group_member_increase',
         }
         notice = new KarinNotice(options)
@@ -357,10 +365,11 @@ export class AdapterOneBot11 implements KarinAdapter {
       }
       // 群禁言事件
       case 'group_ban': {
+        const group_id = data.group_id + ''
         const content = {
-          group_id: data.group_id,
-          operator_uid: data.operator_id || '',
-          operator_uin: data.operator_id || '',
+          group_id,
+          operator_uid: (data.operator_id + '') || '',
+          operator_uin: (data.operator_id + '') || '',
           target_uid: data.user_id || '',
           target_uin: data.user_id || '',
           duration: data.duration,
@@ -375,6 +384,7 @@ export class AdapterOneBot11 implements KarinAdapter {
           sender,
           contact,
           content,
+          group_id,
           sub_event: 'group_member_ban' as 'group_member_ban',
         }
         notice = new KarinNotice(options)
@@ -385,10 +395,11 @@ export class AdapterOneBot11 implements KarinAdapter {
         this.logger('info', `[好友添加]：${JSON.stringify(data)}`)
         break
       case 'group_recall': {
+        const group_id = data.group_id + ''
         const content = {
-          group_id: data.group_id,
-          operator_uid: data.operator_id || '',
-          operator_uin: data.operator_id || '',
+          group_id,
+          operator_uid: (data.operator_id + '') || '',
+          operator_uin: (data.operator_id + '') || '',
           target_uid: data.user_id || '',
           target_uin: data.user_id || '',
           message_id: data.message_id,
@@ -403,6 +414,7 @@ export class AdapterOneBot11 implements KarinAdapter {
           sender,
           contact,
           content,
+          group_id,
           sub_event: 'group_recall' as 'group_recall',
         }
         notice = new KarinNotice(options)
@@ -432,8 +444,9 @@ export class AdapterOneBot11 implements KarinAdapter {
       case 'notify':
         switch (data.sub_type) {
           case 'poke': {
+            const group_id = 'group_id' in data ? data.group_id + '' : ''
             const content = {
-              group_id: data.group_id + '',
+              group_id,
               operator_uid: data.user_id + '',
               operator_uin: data.user_id + '',
               target_uid: data.target_id + '',
@@ -451,6 +464,7 @@ export class AdapterOneBot11 implements KarinAdapter {
               sender,
               contact,
               content,
+              group_id,
               sub_event: data.group_id ? 'group_poke' : 'private_poke' as 'group_poke' | 'group_poke',
             }
             notice = new KarinNotice(options)
@@ -467,8 +481,9 @@ export class AdapterOneBot11 implements KarinAdapter {
         }
         break
       case 'group_msg_emoji_like': {
+        const group_id = data.group_id + ''
         const content = {
-          group_id: data.group_id + '',
+          group_id,
           message_id: data.message_id,
           face_id: data.likes[0].emoji_id,
           is_set: true,
@@ -482,6 +497,7 @@ export class AdapterOneBot11 implements KarinAdapter {
           sender,
           contact,
           content,
+          group_id,
           sub_event: 'group_message_reaction' as 'group_message_reaction',
         }
         notice = new KarinNotice(options)
@@ -513,7 +529,7 @@ export class AdapterOneBot11 implements KarinAdapter {
             uid: data.user_id + '',
             uin: data.user_id + '',
             nick: '',
-            role: '' as Role,
+            role: 'unknown' as Role,
           },
           sub_event: 'private_apply' as 'private_apply',
           content: {
@@ -540,7 +556,7 @@ export class AdapterOneBot11 implements KarinAdapter {
             uid: data.user_id + '',
             uin: data.user_id + '',
             nick: '',
-            role: '' as Role,
+            role: 'unknown' as Role,
           },
           sub_event: data.sub_type === 'add' ? 'group_apply' : 'invited_group',
           content: {
@@ -941,17 +957,9 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 设置群管理员
-   * @param {{
-   *  group_id:string,
-   *  target_uid?:string,
-   *  target_uin?:string,
-   *  is_admin:boolean
-   * }} options - 设置管理员选项
-   * @param options.group_id - 群组ID
-   * @param options.target_uid - 要设置为管理员的用户uid
-   * @param options.target_uin - 要设置为管理员的用户uin
-   * @param options.is_admin - 是否设置为管理员
-   * @returns {Promise<SetGroupAdminResponse>} - 设置群管理员操作的响应
+   * @param group_id - 群号
+   * @param target_uid_or_uin - 目标用户ID
+   * @param is_admin - 是否设置为管理员
    */
   async SetGroupAdmin (group_id: string, target_uid_or_uin: string, is_admin: boolean) {
     const user_id = Number(target_uid_or_uin)

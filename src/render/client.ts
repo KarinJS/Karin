@@ -14,7 +14,7 @@ export class RenderClient extends RenderBase {
   index: number
   retry: number
   reg: RegExp
-  ws: WebSocket
+  ws!: WebSocket
   constructor (url: string) {
     super()
     this.url = url
@@ -23,14 +23,14 @@ export class RenderClient extends RenderBase {
     this.index = 0
     this.retry = 0
     this.reg = new RegExp(`(${process.cwd().replace(/\\/g, '\\\\')}|${process.cwd().replace(/\\/g, '/')})`, 'g')
-    /** 连接ws */
-    this.ws = new WebSocket(this.url)
   }
 
   /**
    * 初始化
    */
   async start () {
+    /** 连接ws */
+    this.ws = new WebSocket(this.url)
     /** 建立连接 */
     this.ws.on('open', () => {
       logger.mark(`[渲染器:${this.id}][WebSocket] 建立连接：${logger.green(this.url)}`)

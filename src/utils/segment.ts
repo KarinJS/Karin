@@ -28,6 +28,7 @@ import {
   ContentElement,
   KarinNodeElement,
   KarinElement,
+  LongMsgElement,
 } from 'karin/types'
 
 export const segment = new (class Segment {
@@ -172,7 +173,7 @@ export const segment = new (class Segment {
   }
 
   /**
-   * 语音
+   * 语音 即将废弃 请使用segment.record
    * @param file - 语音URL或路径、Base64
    * @param magic - 是否魔法语音，默认为 false
    * @param md5 - 语音md5
@@ -478,39 +479,50 @@ export const segment = new (class Segment {
   }
 
   /**
+   * 长消息
+   * @param id - ID
+   */
+  long_msg (id: string): LongMsgElement {
+    return {
+      type: 'long_msg',
+      id,
+    }
+  }
+
+  /**
    * Markdown
    * @param content - 原生markdown内容
-   * @returns {ContentElement} Markdown元素
+   * @param config - 未知的参数
    */
   markdown (
-    /**
-     * - 原生markdown内容 或 模板ID
-     */
-    content: string,
-    /**
-     * - 模板markdown参数 原生markdown内容时无效
-     */
-    params: Array<{
-      /**
-       * - 模板参数键名称
-       */
-      key: string
-      /**
-       * - 模板参数值
-       */
-      values: Array<string>
-    }> = []
-  ): ContentElement | TemplateElement {
-    if (typeof content === 'string') {
-      return {
-        type: 'markdown',
-        content,
-      }
-    }
-
+    content: ContentElement['content'],
+    config?: ContentElement['config']
+  ): ContentElement {
     return {
       type: 'markdown',
-      custom_template_id: content,
+      content,
+      config,
+    }
+  }
+
+  /**
+   * 构建模板Markdown
+   * @param custom_template_id - 模板ID
+   * @param params - 模板markdown参数
+   */
+  markdown_tpl (
+    /**
+     * - 模板ID
+     */
+    custom_template_id: TemplateElement['custom_template_id'],
+    /**
+     * - 模板markdown参数
+     */
+    params: TemplateElement['params']
+  ): TemplateElement {
+    return {
+      type: 'markdown_tpl',
+      custom_template_id,
       params,
     }
   }

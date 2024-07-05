@@ -1,5 +1,5 @@
 import { KarinEvent } from './event'
-import { contact, Sender, EventToSubEvent, RequestType, KarinRequestEvent } from 'karin/types'
+import { contact, Sender, EventToSubEvent, RequestType } from 'karin/types'
 
 /**
  * - 请求事件基类
@@ -54,12 +54,11 @@ export class KarinRequest extends KarinEvent {
     group_id?: string
   }) {
     super({ event: 'request', event_id, self_id, user_id, group_id, time, contact, sender, sub_event })
-    // ...
-    this.content = content as unknown as KarinRequestEvent
+    this.content = content
   }
 
   /**
    * - 事件对应的内容参数
    */
-  content: KarinRequestEvent
+  content: RequestType[EventToSubEvent['request']]
 }

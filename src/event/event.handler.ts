@@ -18,7 +18,7 @@ export default class EventHandler {
     this.config = {}
     this.GroupMsgPrint = false
     /** 加入e.bot */
-    Object.defineProperty(this.e, 'bot', { value: listener.getBot(this.e.self_id) })
+    !this.e.bot && Object.defineProperty(this.e, 'bot', { value: listener.getBot(this.e.self_id) })
     if (this.e.group_id) this.config = config.group(this.e.group_id)
   }
 

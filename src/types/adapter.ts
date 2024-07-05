@@ -113,11 +113,12 @@ export interface KarinAdapter {
     /**
      * - 头像大小，默认需要为`0`，请开发者注意
      */
-    size?: number,
+    size?: 0 | 40 | 100 | 140,
   ): string
 
   /**
-   * - 获取群头像
+   * 获取群头像url
+   * @returns 头像的url地址
    */
   getGroupAvatar (
     /**
@@ -127,7 +128,7 @@ export interface KarinAdapter {
     /**
      * - 头像大小，默认`0`
      */
-    size?: number,
+    size?: 0 | 40 | 100 | 140,
     /**
      * - 历史头像记录，默认`0`，若要获取历史群头像则填写1,2,3...
      */
@@ -154,7 +155,8 @@ export interface KarinAdapter {
     /**
      * - 消息ID
      */
-    message_id: string
+    message_id?: string
+    [key: string]: any
   }>
 
   /**
@@ -212,7 +214,7 @@ export interface KarinAdapter {
      * - 消息ID
      */
     message_id: string,
-  ): Promise<void>
+  ): Promise<void | boolean>
 
   /**
    * - 获取消息
@@ -314,7 +316,7 @@ export interface KarinAdapter {
      * - 赞的次数，默认为10
      */
     vote_count: number,
-  ): Promise<void>
+  ): Promise<void | boolean>
 
   /**
    * - 群踢人
@@ -626,7 +628,7 @@ export interface KarinAdapter {
   sendForwardMessage (contact: contact, elements: Array<KarinNodeElement>): Promise<{ message_id?: string }>
 
   /**
-   * 对消息进行表情回应
+   * 对消息进行表情回应 icqq需要传递seq
    * @param Contact - 联系人信息
    * @param message_id - 消息ID
    * @param face_id - 表情ID

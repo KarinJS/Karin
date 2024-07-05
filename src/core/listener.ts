@@ -175,7 +175,7 @@ class Listeners extends EventEmitter {
     const NewElements = common.makeMessage(elements)
 
     /** 结果 */
-    let result = { message_id: '' }
+    let result: any = {}
 
     const reply_log = common.makeMessageLog(NewElements)
     const self_id = bot.account.uid || bot.account.uin

@@ -135,15 +135,26 @@ class PluginLoader {
         continue
       }
 
-      /** 入口文件 */
+      /** package */
+      const pack = common.readJson(`${PluginPath}/package.json`)
+
+      /** 旧版本入口文件 */
       const index = this.getIndex(PluginPath, process.env.karin_app_lang as 'js' | 'ts')
       if (index) {
         this.FileList.push({ dir, name: index as fileName })
         this.isDev && this.watchList.push({ dir, name: index as fileName })
       }
 
+      /** 新版本入口 */
+      if (pack.main) {
+        const { dir: dirName, pop } = common.splitPath(pack.main)
+        const dirPath = `${dir}/${dirName}` as dirName
+        this.FileList.push({ dir: dirPath, name: pop as fileName })
+        this.isDev && this.watchList.push({ dir: dirPath, name: pop as fileName })
+      }
+
       /** 检查是否存在karin.apps */
-      const pack = common.readJson(`${PluginPath}/package.json`)
+      const outDir = (pack?.karin?.outDir || 'dist') as string
       if (pack && pack?.karin?.apps) {
         const cfg = pack.karin.apps
         if (Array.isArray(cfg)) {
@@ -158,8 +169,8 @@ class PluginLoader {
       /** ts环境 全部加载  如果存在编译产物 则不加载ts */
       if (this.isTs) {
         /** 编译产物 存在不加载ts */
-        if (common.exists(`${PluginPath}/dist/apps`)) {
-          this.getApps((`${dir}/dist/apps`), false)
+        if (common.exists(`${PluginPath}/${outDir}/apps`)) {
+          this.getApps((`${dir}/${outDir}/apps`), false)
           continue
         }
 
@@ -173,7 +184,7 @@ class PluginLoader {
       /** js环境 */
       if (common.isDir(`${PluginPath}/apps`)) this.getApps(`${dir}/apps`, false)
       /** 这里需要判断下 不然ts环境下会重复加载 */
-      if (!this.isTs && common.isDir(`${PluginPath}/dist/apps`)) this.getApps(`${dir}/dist/apps`, false)
+      if (!this.isTs && common.isDir(`${PluginPath}/${outDir}/apps`)) this.getApps(`${dir}/${outDir}/apps`, false)
     }
   }
 
@@ -271,6 +282,10 @@ class PluginLoader {
           if (!App?.name) return logger.error(`[${dir}][${name}] 插件名称错误`)
           App.file.dir = dir
           App.file.name = name
+
+          App.rule.forEach((v, index) => {
+            App.rule[index].log = v.log === false ? (id: string, log: string) => logger.bot('debug', id, log) : (id: string, log: string) => logger.bot('mark', id, log)
+          })
 
           /** handler */
           App.task = this.addTaskFnc(dir, App)

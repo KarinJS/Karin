@@ -1,4 +1,4 @@
-export type ElementType = 'text' | 'at' | 'face' | 'bubble_face' | 'reply' | 'image' | 'voice' | 'video' | 'basketball' | 'dice' | 'rps' | 'poke' | 'music' | 'weather' | 'location' | 'share' | 'gift' | 'market_face' | 'forward' | 'contact' | 'json' | 'xml' | 'file' | 'markdown' | 'keyboard' | 'node' | 'rows' | 'record' | 'long_msg'
+export type ElementType = 'text' | 'at' | 'face' | 'bubble_face' | 'reply' | 'image' | 'voice' | 'video' | 'basketball' | 'dice' | 'rps' | 'poke' | 'music' | 'weather' | 'location' | 'share' | 'gift' | 'market_face' | 'forward' | 'contact' | 'json' | 'xml' | 'file' | 'markdown' | 'markdown_tpl' | 'keyboard' | 'node' | 'rows' | 'record' | 'long_msg'
 
 export interface Element {
   /**
@@ -471,38 +471,19 @@ export interface ContentElement extends Element {
    * - 原生markdown内容
    */
   content: string
+  config?: {
+    /** 未知的参数 */
+    unknown?: number
+    time: number
+    token: string
+  }
 }
 
 /**
  * - 模板 Markdown 元素
  */
 export interface TemplateElement extends Element {
-  type: 'markdown'
-  /**
-   * - 模板ID
-   */
-  custom_template_id: string
-  /**
-   * - 模板参数
-   */
-  params: Array<{
-    /**
-     * - 模板参数键名称
-     */
-    key: string
-    /**
-     * - 模板参数值
-     */
-    values: Array<string>
-  }>
-}
-
-/**
- * - Markdown元素
- */
-export interface MarkdownElement extends Element {
-  type: 'markdown'
-  content: string
+  type: 'markdown_tpl'
   /**
    * - 模板ID
    */
@@ -599,7 +580,7 @@ export interface LongMsgElement extends Element {
   id: string
 }
 
-export type KarinElement = TextElement | AtElement | FaceElement | BubbleFaceElement | ReplyElement | ImageElement | VoiceElement | VideoElement | BasketballElement | DiceElement | RpsElement | PokeElement | MusicElement | WeatherElement | LocationElement | ShareElement | GiftElement | MarketFaceElement | ForwardElement | ContactElement | JsonElement | XmlElement | FileElement | MarkdownElement | ButtonElement | RowElement | RecordElement | LongMsgElement
+export type KarinElement = TextElement | AtElement | FaceElement | BubbleFaceElement | ReplyElement | ImageElement | VoiceElement | VideoElement | BasketballElement | DiceElement | RpsElement | PokeElement | MusicElement | WeatherElement | LocationElement | ShareElement | GiftElement | MarketFaceElement | ForwardElement | ContactElement | JsonElement | XmlElement | FileElement | ButtonElement | RowElement | RecordElement | LongMsgElement | TemplateElement | ContentElement
 
 /**
  * - 构建自定义转发节点 此元素仅可通过专用接口发送 不支持混合发送
