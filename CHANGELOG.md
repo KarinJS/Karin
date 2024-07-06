@@ -1,5 +1,13 @@
 # 更新日志
 
+## [0.6.14](https://github.com/KarinJS/Karin/compare/v0.6.13...v0.6.14) (2024-07-06)
+
+
+### Bug Fixes
+
+* 上传文件 ([6f557f4](https://github.com/KarinJS/Karin/commit/6f557f4c3fbce844b56b34e0354acfd09a4fbea2))
+* 修复部分已知问题 新增自定义package.json.static ([60c6d7a](https://github.com/KarinJS/Karin/commit/60c6d7a9da663481dee431432827e6378c891fd3))
+
 ## [0.6.13](https://github.com/KarinJS/Karin/compare/v0.6.12...v0.6.13) (2024-07-05)
 
 
