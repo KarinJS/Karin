@@ -13,13 +13,11 @@ const { enable, msgToFile, token: oldToken, ip } = config.Config.AdapterInput
  */
 export class AdapterInput implements KarinAdapter {
   token: string
-  #stdin: boolean
   socket!: WebSocket
   account: KarinAdapter['account']
   adapter: KarinAdapter['adapter']
   version: KarinAdapter['version']
   constructor () {
-    this.#stdin = false
     this.token = oldToken
     this.account = { uid: 'input', uin: 'input', name: 'input' }
     this.adapter = { id: 'shell', name: 'input', type: 'internal', sub_type: 'internal', start_time: Date.now(), connect: '', index: 0 }
@@ -31,9 +29,6 @@ export class AdapterInput implements KarinAdapter {
   }
 
   stdin () {
-    if (this.#stdin) return
-    this.#stdin = true
-
     if (oldToken === 'AdapterInput') {
       try {
         this.token = randomUUID()
@@ -63,9 +58,15 @@ export class AdapterInput implements KarinAdapter {
     /** 注册bot */
     const index = listener.addBot({ bot: this, type: this.adapter.type })
     if (index) this.adapter.index = index
+    return this
+  }
 
+  init () {
     process.stdin.on('data', data => this.#input(data.toString()))
-    process.once('stdin.close', () => process.stdin.removeAllListeners('data'))
+    process.once('stdin.close', () => {
+      process.stdin.removeAllListeners('data')
+      process.stdin.once('stdin.open', () => this.init())
+    })
   }
 
   logger (level: 'info' | 'error' | 'trace' | 'debug' | 'mark' | 'warn' | 'fatal', ...args: any[]) {
@@ -99,9 +100,6 @@ export class AdapterInput implements KarinAdapter {
 
     const e = new KarinMessage(message)
     e.bot = this
-    /**
-     * 快速回复 开发者不应该使用这个方法，应该使用由karin封装过后的reply方法
-     */
     e.replyCallback = async elements => {
       this.SendMessage(e.contact, elements)
       return { message_id: e.message_id }
@@ -122,7 +120,6 @@ export class AdapterInput implements KarinAdapter {
     const buffer = await common.buffer(file) as Uint8Array
     // 生成文件名 根据type生成不同的文件后缀
     const name = `${Date.now()}.${type === 'image' ? 'jpg' : type === 'voice' ? 'mp3' : 'file'}`
-    // 写入文件
     fs.writeFileSync(`./temp/input/${name}`, buffer)
     return `[${type === 'image' ? '图片' : '语音'}: http://${ip}:${config.Server.http.port}/api/input?name=${name}&token=${this.token} ]`
   }
@@ -204,4 +201,4 @@ export class AdapterInput implements KarinAdapter {
   async GetGroupHonor (): Promise<any> { throw new Error('Method not implemented.') }
 }
 
-if (enable) new AdapterInput().stdin()
+if (enable) new AdapterInput().stdin().init()

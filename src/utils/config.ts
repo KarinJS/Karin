@@ -8,17 +8,31 @@ import { Redis, App, Config, Server, Package, GroupCfg } from 'karin/types'
  * 配置文件
  */
 export const config = new (class Cfg {
-  dir: string
-  _path: string
-  npmCfgDir: string
+  /**
+   * 根项目绝对路径
+   */
+  projPath: string
+  /**
+   * 根项目配置文件夹路径
+   */
+  projConfigPath: string
+  /**
+   * npm包路径
+   */
+  pkgPath: string
+  /**
+   * karin包配置文件夹路径
+   */
+  pkgConfigPath: string
   change: Map<string, any>
   watcher: Map<string, any>
   review: boolean
   logger!: Logger
   constructor () {
-    this.dir = karinDir
-    this._path = process.cwd() + '/config'
-    this.npmCfgDir = this.dir + '/config/defSet'
+    this.projPath = process.cwd()
+    this.pkgPath = karinDir
+    this.projConfigPath = this.projPath + '/config'
+    this.pkgConfigPath = this.pkgPath + '/config/defSet'
 
     /** 缓存 */
     this.change = new Map()
@@ -32,35 +46,39 @@ export const config = new (class Cfg {
   /** 初始化配置 */
   async initCfg () {
     const list = [
-      this._path,
-      this._path + '/config',
-      process.cwd() + '/temp/input',
-      './plugins',
-      './plugins/karin-plugin-example',
+      this.projPath + '/temp/input',
+      this.projPath + '/plugins/karin-plugin-example',
+      this.projConfigPath + '/config',
+      this.projConfigPath + '/plugin',
+
     ]
 
     list.forEach(path => this.mkdir(path))
-    if (this.npmCfgDir !== (this._path + '/defSet').replace(/\\/g, '/')) {
-      const files = fs.readdirSync(this.npmCfgDir).filter(file => file.endsWith('.yaml'))
+    if (this.pkgConfigPath !== (this.projConfigPath + '/defSet').replace(/\\/g, '/')) {
+      const files = fs.readdirSync(this.pkgConfigPath).filter(file => file.endsWith('.yaml'))
       files.forEach(file => {
-        const path = `${this._path}/config/${file}`
-        const pathDef = `${this.npmCfgDir}/${file}`
+        const path = `${this.projConfigPath}/config/${file}`
+        const pathDef = `${this.pkgConfigPath}/${file}`
         if (!fs.existsSync(path)) fs.copyFileSync(pathDef, path)
       })
     }
 
-    // 创建插件文件夹文件夹
+    /** 为每个插件包创建统一存储的文件夹 */
     const plugins = this.getPlugins()
-    this.dirPath('data', plugins)
-    this.dirPath('temp', plugins)
-    this.dirPath('resources', plugins)
-    this.dirPath('temp/html', plugins)
+    const DataList = [
+      'data',
+      'temp',
+      'resources',
+      'temp/html',
+      this.projConfigPath + '/plugin',
+    ]
+    DataList.forEach(path => this.dirPath(path, plugins))
     this.logger = (await import('./logger')).default
   }
 
   getPlugins () {
     const files = fs.readdirSync('./plugins', { withFileTypes: true })
-    // 过滤掉非karin-plugin-开头或karin-adapter-开头的文件夹
+    // 过滤掉非karin-plugin-开头的文件夹
     return files.filter(file => file.isDirectory() && (file.name.startsWith('karin-plugin-'))).map(dir => dir.name)
   }
 
@@ -78,11 +96,10 @@ export const config = new (class Cfg {
   /**
    * 为每一个插件建立对应的文件夹
    */
-  async dirPath (name: string, plugins: string[]) {
-    name = `./${name}`
-    this.mkdir(name)
+  async dirPath (_path: string, plugins: string[]) {
+    this.mkdir(_path)
     for (const plugin of plugins) {
-      const path = `${name}/${plugin}`
+      const path = `${_path}/${plugin}`
       this.mkdir(path)
     }
   }

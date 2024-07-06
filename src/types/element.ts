@@ -31,6 +31,10 @@ export interface AtElement extends Element {
    * - At的uin
    */
   uin?: string
+  /**
+   * - At的名称
+   */
+  name?: string
 }
 
 /**

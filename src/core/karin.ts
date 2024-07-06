@@ -1,3 +1,4 @@
+/* eslint-disable no-dupe-class-members */
 import PluginApp from './plugin.app'
 import { common } from 'karin/utils'
 import { render } from 'karin/render'
@@ -60,17 +61,16 @@ export interface OptionsElement extends OptionsCommand {
 
 export class Karin {
   /**
-   * @param reg - 正则表达式
-   * @param fnc - 函数
-   * @param options - 选项
-   */
+  * @param reg - 正则表达式
+  * @param fnc - 函数
+  * @param options - 选项
+  */
   command (reg: string | RegExp, fnc: FncFunction, options?: OptionsCommand): PluginApps
   /**
    * @param reg - 正则表达式
    * @param element - 字符串或者KarinElement、KarinElement数组
    * @param options - 选项
    */
-  // eslint-disable-next-line no-dupe-class-members
   command (reg: string | RegExp, element: FncElement, options?: OptionsElement): PluginApps
   /**
    * - 快速构建命令
@@ -79,7 +79,6 @@ export class Karin {
    * @param options - 选项
    * @returns - 返回插件对象
    */
-  // eslint-disable-next-line no-dupe-class-members
   command (reg: string | RegExp, second: FncFunction | FncElement, options: OptionsCommand | OptionsElement = {}): PluginApps {
     reg = typeof reg === 'string' ? new RegExp(reg) : reg
     const fnc = typeof second === 'function'

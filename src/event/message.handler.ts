@@ -99,10 +99,7 @@ export class MessageHandler extends EventHandler {
     for (const val of this.e.elements) {
       switch (val.type) {
         case 'text': {
-          const msg = (val.text || '')
-            .replace(/^\s*[＃井#]+\s*/, '#')
-            .replace(/^\s*[\\*※＊]+\s*/, '*')
-            .trim()
+          const msg = (val.text || '').replace(/^\s*[＃井#]+\s*/, '#').replace(/^\s*[\\*※＊]+\s*/, '*').trim()
           this.e.msg += msg
           /** 美观一点... */
           logs.push(msg)
@@ -125,11 +122,9 @@ export class MessageHandler extends EventHandler {
           break
         case 'at':
           /** atBot不计入e.at */
-          // eslint-disable-next-line eqeqeq
-          if (val.uid && val.uid == this.e.bot.account.uid) {
+          if (val.uid && val.uid === this.e.bot.account.uid) {
             this.e.atBot = true
-            // eslint-disable-next-line eqeqeq
-          } else if (val.uin == this.e.bot.account.uin) {
+          } else if (val.uin === this.e.bot.account.uin) {
             this.e.atBot = true
           } else if (val.uid && val.uid === 'all') {
             this.e.atAll = true
@@ -197,6 +192,9 @@ export class MessageHandler extends EventHandler {
         }
         case 'button':
           logs.push(`[button:${JSON.stringify(val.data)}]`)
+          break
+        case 'long_msg':
+          logs.push(`[long_msg:${val.id}]`)
           break
         default:
           logs.push(`[未知:${JSON.stringify(val)}]`)

@@ -220,7 +220,7 @@ export const server = new (class Server {
   /**
    * 构建静态资源路径
    */
-  staticPath () {
+  async staticPath () {
     this.list = []
     /** 读取./resources文件夹 */
     const resDir = './resources'
@@ -238,17 +238,34 @@ export const server = new (class Server {
       if (common.isDir(file)) this.list.push(file.replace('.', ''))
     }
 
-    /** 读取./plugins/html下所有文件夹 */
-    const pluginsDir = './plugins'
+    /** 读取./plugins/xxx/resources下所有文件夹 */
+    const pluginsDir = './plugins' as './plugins'
     const plugins = fs.readdirSync(pluginsDir)
     for (const dir of plugins) {
-      const file = `${pluginsDir}/${dir}`
+      /** 忽略不是karin-plugin-开头 */
+      if (!dir.startsWith('karin-plugin-')) continue
+      const file = `${pluginsDir}/${dir}` as `./plugins/karin-plugin-${string}`
       const resFile = `${file}/resources`
       /** 包含resources文件夹 */
       if (common.isDir(file) && common.isDir(resFile)) this.list.push(resFile.replace('.', ''))
-      const componentsFile = `${file}/components`
-      /** 包含components文件夹 兼容mys */
+      const componentsFile = `${file}/lib/components`
+      /** 包含lib/components文件夹 兼容mys */
       if (common.isDir(file) && common.isDir(componentsFile)) this.list.push(componentsFile.replace('.', ''))
+
+      /** 读取package.json 查找是否存在自定义资源文件入口 */
+      const pkgFile = `${file}/package.json`
+      if (!common.exists(pkgFile)) continue
+
+      const pkg = common.readJson(pkgFile)
+      if (!pkg?.karin?.static || !Array.isArray(pkg.karin.static)) continue
+      /** 标准格式为 lib/test/xxxx */
+      for (let staticFile of pkg.karin.static) {
+        /** 不允许向上级目录 ../开头等 */
+        if (staticFile.startsWith('../')) continue
+        /** ./开头去掉./ */
+        if (staticFile.startsWith('./')) staticFile = staticFile.slice(2)
+        this.list.push(`${file}/${staticFile}`)
+      }
     }
     this.reg = new RegExp(`(${this.list.join('|')})`, 'g')
   }

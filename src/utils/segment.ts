@@ -49,13 +49,15 @@ export const segment = new (class Segment {
    * 提供一个uid即可
    * @param uid - uid
    * @param uin - uin
+   * @param name - 名称
    * @returns {AtElement} 提及元素
    */
-  at (uid: string, uin?: string): AtElement {
+  at (uid: string, uin?: string, name?: string): AtElement {
     return {
       type: 'at',
       uid: uid + '',
       uin: (uin || '') + '',
+      name,
     }
   }
 

@@ -22,7 +22,7 @@ lerna-debug.log*
 # 配置
 /plugins/
 /data/
-/config/config
+/config/
 /resources
 
 # 依赖
