@@ -1309,13 +1309,32 @@ export class AdapterOneBot11 implements KarinAdapter {
     throw new Error('Method not implemented.')
   }
 
+  /**
+   * 上传群文件
+   * @param group_id - 群号
+   * @param file - 本地文件绝对路径
+   * @param name - 文件名称 必须提供
+   * @param folder - 父目录ID 不提供则上传到根目录
+   */
+  async UploadPrivateFile (group_id: string, file: string, name: string, folder?: string) {
+    return await this.SendApi('upload_group_file', { group_id, file, name, folder })
+  }
+
+  /**
+   * 上传私聊文件
+   * @param user_id - 用户ID
+   * @param file - 本地文件绝对路径
+   * @param name - 文件名称 必须提供
+   */
+  async UploadGroupFile (user_id: string, file: string, name: string) {
+    return await this.SendApi('upload_private_file', { user_id, file, name })
+  }
+
   async SetEssenceMessage () { }
   async DeleteEssenceMessage () { }
   async SetFriendApplyResult () { }
   async SetGroupApplyResult () { }
   async SetInvitedJoinGroupResult () { }
-  async UploadPrivateFile () { }
-  async UploadGroupFile () { }
 
   async sendForwardMessage (contact: contact, elements: KarinNodeElement[]) {
     let message_id = await this.UploadForwardMessage(contact, elements)
