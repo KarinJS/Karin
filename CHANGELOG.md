@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.6.15](https://github.com/KarinJS/Karin/compare/v0.6.14...v0.6.15) (2024-07-07)
+
+
+### Bug Fixes
+
+* 修正部分已知问题 ([de72619](https://github.com/KarinJS/Karin/commit/de72619bddd790076b9ee4b6c4de0fbd520d68f7))
+
 ## [0.6.14](https://github.com/KarinJS/Karin/compare/v0.6.13...v0.6.14) (2024-07-06)
 
 
