@@ -1,7 +1,7 @@
 import WebSocket from 'ws'
 import { randomUUID } from 'crypto'
 import { IncomingMessage } from 'http'
-import { KarinAdapter } from 'karin/types'
+import { KarinAdapter, LoggerLevel } from 'karin/types'
 import { listener } from 'karin/core/listener'
 import { common, config, logger, segment } from 'karin/utils'
 import { KarinMessage, KarinNotice, KarinRequest } from 'karin/event'
@@ -189,7 +189,7 @@ export class AdapterOneBot11 implements KarinAdapter {
           user_id: data.sender.user_id + '',
           time: data.time,
           message_id: data.message_id + '',
-          message_seq: data.message_id + '',
+          message_seq: data.message_id as unknown as number,
           sender: {
             ...data.sender,
             uid: data.sender.user_id + '',
@@ -748,7 +748,7 @@ export class AdapterOneBot11 implements KarinAdapter {
   /**
    * 专属当前Bot的日志打印方法
    */
-  logger (level: 'info' | 'error' | 'trace' | 'debug' | 'mark' | 'warn' | 'fatal', ...args: any[]) {
+  logger (level: LoggerLevel, ...args: any[]) {
     logger.bot(level, this.account.uid || this.account.uin, ...args)
   }
 
@@ -1316,7 +1316,7 @@ export class AdapterOneBot11 implements KarinAdapter {
    * @param name - 文件名称 必须提供
    * @param folder - 父目录ID 不提供则上传到根目录
    */
-  async UploadPrivateFile (group_id: string, file: string, name: string, folder?: string) {
+  async UploadGroupFile (group_id: string, file: string, name: string, folder?: string) {
     return await this.SendApi('upload_group_file', { group_id, file, name, folder })
   }
 
@@ -1326,7 +1326,7 @@ export class AdapterOneBot11 implements KarinAdapter {
    * @param file - 本地文件绝对路径
    * @param name - 文件名称 必须提供
    */
-  async UploadGroupFile (user_id: string, file: string, name: string) {
+  async UploadPrivateFile (user_id: string, file: string, name: string) {
     return await this.SendApi('upload_private_file', { user_id, file, name })
   }
 

@@ -1,5 +1,7 @@
 import chalk from 'chalk'
 
+export type LoggerLevel = 'trace' | 'debug' | 'mark' | 'info' | 'mark' | 'warn' | 'error' | 'fatal'
+
 export interface Logger {
   /**
    * 颜色模块
@@ -51,7 +53,7 @@ export interface Logger {
    * @param id 机器人ID
    * @param args 参数
    */
-  bot: (level: 'trace' | 'debug' | 'mark' | 'info' | 'mark' | 'warn' | 'error' | 'fatal', id: string, ...args: string[]) => void
+  bot: (level: LoggerLevel, id: string, ...args: string[]) => void
 }
 
 declare module 'log4js' {
@@ -106,6 +108,6 @@ declare module 'log4js' {
      * @param id 机器人ID
      * @param args 参数
      */
-    bot: (level: 'trace' | 'debug' | 'mark' | 'info' | 'mark' | 'warn' | 'error' | 'fatal', id: string, ...args: string[]) => void
+    bot: (level: LoggerLevel, id: string, ...args: string[]) => void
   }
 }

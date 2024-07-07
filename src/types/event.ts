@@ -710,7 +710,7 @@ export interface KarinMessageEvent extends KarinEventType {
   /**
    * - 消息序列号
    */
-  message_seq?: string
+  message_seq?: number
   /**
    * - 原始消息文本
    */

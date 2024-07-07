@@ -5,7 +5,7 @@ import { config } from './config'
 /**
  * 执行 ffmpeg 命令
  */
-export default async function ffmpeg () {
+export async function ffmpeg () {
   let ffmpeg = 'ffmpeg'
   const { status } = await exec('ffmpeg -version', false)
   if (status !== 'ok') {

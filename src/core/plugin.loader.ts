@@ -139,10 +139,10 @@ class PluginLoader {
       const pack = common.readJson(`${PluginPath}/package.json`)
 
       /** 旧版本入口文件 */
-      const index = this.getIndex(PluginPath, process.env.karin_app_lang as 'js' | 'ts')
+      const index = this.getIndex(PluginPath, dir, process.env.karin_app_lang as 'js' | 'ts')
       if (index) {
-        this.FileList.push({ dir, name: index as fileName })
-        this.isDev && this.watchList.push({ dir, name: index as fileName })
+        this.FileList.push({ dir: index.dir, name: index.name })
+        this.isDev && this.watchList.push({ dir: index.dir, name: index.name })
       }
 
       /** 新版本入口 */
@@ -193,11 +193,15 @@ class PluginLoader {
    * @param path - 插件路径
    * @param lang - 语言环境
    */
-  getIndex (path: string, lang: 'js' | 'ts'): string | boolean {
+  getIndex (path: string, dir: dirName, lang: 'js' | 'ts'): { dir: dirName, name: fileName } | false {
     const isJS = common.exists(`${path}/index.js`)
-    if (isJS && lang === 'js') return 'index.js'
-    const isTS = common.exists(`${path}/index.ts`)
-    if (isTS && lang === 'ts') return 'index.ts'
+    if (isJS && lang === 'js') {
+      return { dir, name: 'index.js' }
+    }
+    const isTS = common.exists(`${path}/src/index.ts`)
+    if (isTS && lang === 'ts') {
+      return { dir: `${dir}/src`, name: 'index.ts' }
+    }
     return false
   }
 
@@ -419,7 +423,7 @@ class PluginLoader {
    * 新增accept、handler
    */
   async addAccept (index: number, Class: Plugin) {
-    if (Class.accept && typeof Class.accept === 'function') {
+    if ('accept' in Class && typeof Class.accept === 'function') {
       this.PluginList[index].accept = true
       this.acceptIds.push(index)
     }
@@ -443,7 +447,7 @@ class PluginLoader {
    * 执行初始化
    */
   async addInit (Class: Plugin) {
-    Class.init && await Class.init()
+    'init' in Class && typeof Class.init === 'function' && await Class.init()
   }
 
   /**

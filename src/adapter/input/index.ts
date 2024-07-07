@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto'
 import { listener } from 'karin/core'
 import { KarinMessage } from 'karin/event'
 import { KarinAdapter } from 'karin/types/adapter'
-import { contact, KarinElement } from 'karin/types'
+import { contact, KarinElement, LoggerLevel } from 'karin/types'
 import { config, common, YamlEditor, logger } from 'karin/utils'
 
 const { enable, msgToFile, token: oldToken, ip } = config.Config.AdapterInput
@@ -69,7 +69,7 @@ export class AdapterInput implements KarinAdapter {
     })
   }
 
-  logger (level: 'info' | 'error' | 'trace' | 'debug' | 'mark' | 'warn' | 'fatal', ...args: any[]) {
+  logger (level: LoggerLevel, ...args: any[]) {
     logger.bot(level, this.account.uid || this.account.uin, ...args)
   }
 
@@ -81,7 +81,7 @@ export class AdapterInput implements KarinAdapter {
       user_id: 'input',
       time: Date.now(),
       message_id: `input.${Date.now()}`,
-      message_seq: '',
+      message_seq: 0,
       sender: {
         uid: 'input',
         uin: 'input',

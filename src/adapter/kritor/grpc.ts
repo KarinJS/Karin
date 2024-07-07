@@ -88,7 +88,7 @@ export class KritorGrpc {
                   user_id: sender.uid + '',
                   time: kritorData.time as number,
                   message_id: kritorData.message_id + '',
-                  message_seq: kritorData.message_seq + '',
+                  message_seq: Number(kritorData.message_seq),
                   sender: {
                     ...sender,
                     uid: sender.uid + '',

@@ -4,12 +4,6 @@ import { PluginType, KarinElement, KarinNodeElement, EventType, KarinNoticeEvent
  * 插件基类
  */
 export class Plugin implements PluginType {
-  // 类型 需要根据e中的event类型来确定
-  e!: EventType<this>
-  init?: () => Promise<any>
-  accept?: (e: any) => Promise<any>
-  replyCallback!: PluginType['replyCallback']
-
   /**
    * @param name - 插件名称
    */
@@ -224,6 +218,9 @@ export class Plugin implements PluginType {
       delete stateArr[key]
     }
   }
+
+  e!: EventType<this>
+  replyCallback!: PluginType['replyCallback']
 }
 
 /**

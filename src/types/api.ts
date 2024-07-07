@@ -77,7 +77,7 @@ export interface EssenceMessageBody {
   /**
    * - 消息序列号
    */
-  message_seq: string
+  message_seq: number
   /**
    * - 被设置的精华消息元素文本
    */

@@ -12,7 +12,7 @@ export class KarinMessage extends KarinEvent {
     user_id,
     time,
     message_id,
-    message_seq = '',
+    message_seq = 0,
     raw_message = '',
     contact,
     sender,
@@ -46,7 +46,7 @@ export class KarinMessage extends KarinEvent {
     /**
      * - 消息序列号
      */
-    message_seq?: string
+    message_seq?: number
     /**
      * - 原始消息文本
      */
@@ -90,7 +90,7 @@ export class KarinMessage extends KarinEvent {
   /**
    * - 消息序列号
    */
-  message_seq?: string
+  message_seq?: number
   /**
    * - 原始消息文本
    */

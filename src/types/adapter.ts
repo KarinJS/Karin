@@ -3,6 +3,7 @@ import { IncomingMessage } from 'http'
 import { contact } from './event'
 import { KarinElement, KarinNodeElement } from './element'
 import { PushMessageBody, EssenceMessageBody, FriendInfo, GroupInfo, GroupMemberInfo, GroupHonorInfo } from './api'
+import { LoggerLevel } from './logger'
 
 export interface KarinAdapter {
   /**
@@ -87,7 +88,7 @@ export interface KarinAdapter {
    * @param level - 日志等级
    * @param args - 日志内容
    */
-  logger (level: 'info' | 'error' | 'trace' | 'debug' | 'mark' | 'warn' | 'fatal', ...args: any[]): void
+  logger (level: LoggerLevel, ...args: any[]): void
 
   /**
    * - 可选方法 仅ws有效 在注册适配器后 如果有符合的path则会调用此方法

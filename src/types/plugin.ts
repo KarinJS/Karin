@@ -184,6 +184,7 @@ export interface PluginType {
    * - 根据上报中的event字段来获取e的事件类型
    */
   e: KarinMessageEvent | KarinNoticeEvent | KarinRequestEvent
+  init?: () => Promise<any>
   /**
    * - 快速回复
    */
