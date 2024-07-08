@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.6.16](https://github.com/KarinJS/Karin/compare/v0.6.15...v0.6.16) (2024-07-08)
+
+
+### Bug Fixes
+
+* 更新npx脚本 ([b78219e](https://github.com/KarinJS/Karin/commit/b78219e1c69149a06e3f2d110657334e82ec43ac))
+
 ## [0.6.15](https://github.com/KarinJS/Karin/compare/v0.6.14...v0.6.15) (2024-07-07)
 
 
