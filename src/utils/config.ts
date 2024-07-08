@@ -50,7 +50,6 @@ export const config = new (class Cfg {
       this.projPath + '/plugins/karin-plugin-example',
       this.projConfigPath + '/config',
       this.projConfigPath + '/plugin',
-
     ]
 
     list.forEach(path => this.mkdir(path))
