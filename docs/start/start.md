@@ -32,9 +32,11 @@
 
 [git官网](https://git-scm.com/)
 
-- `git`是一个分布式版本控制软件，`Karin`的所有文件默认均使用`git`进行管理、安装、更新。  
+- `git`是一个分布式版本控制软件，~~`Karin`的所有文件默认均使用`git`进行管理、安装、更新。  ~~
 - `windows`用户如下载缓慢，可使用[腾讯软件管家][腾讯软件管家]进行加速下载。
 - 还是一样，`git`也是一个可选项，所有插件包括`Karin`本身都可以直接下载压缩包进行安装。
+
+- 目前`Karin`正在向纯`npm`包管理迁移，插件还在使用`git`，请继续安装。
 
 ## 部署karin
 
@@ -84,64 +86,13 @@ npm config set registry https://registry.npmjs.org
 
 :::
 
-### 克隆项目
+### 安装
 
-::: warning 温馨提示  
-`KarinJS`组织的所有项目，均可通过将域名中的`github`更换为`gitee`进行加速下载~
-:::
-
-::: code-group
-
-```bash [Github]
-git clone --depth=1 https://github.com/KarinJS/Karin.git
-```
-
-```bash [Gitee]
-git clone --depth=1 https://gitee.com/KarinJS/Karin.git
-```
-
-:::
-
-### 安装依赖
-
-::: warning 温馨提示
-开发依赖较为臃肿庞大，普通用户请安装生产依赖即可
-:::
+先新建一个空白文件夹，以下命令在文件夹里面执行。
 
 ```bash
-cd Karin
+pnpm i node-karin && npx init && node .
 ```
-
-::: code-group
-
-```bash [安装生产依赖]
-pnpm install -P
-```
-
-```bash [安装开发依赖]
-pnpm install
-```
-
-:::
-
-### 启动项目
-
-::: warning 温馨提示
-开发模式支持`plugins/apps`文件夹热更新、插件包的`index.js`热更新  
-正常启动下，仅支持热更新非插件包例如自带的`karin-plugin-example`
-:::
-
-::: code-group
-
-```bash [正常启动]
-node .
-```
-
-```bash [开发模式]
-node . --dev
-```
-
-:::
 
 ## 安装渲染器
 
