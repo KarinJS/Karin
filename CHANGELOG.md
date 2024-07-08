@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.6.18](https://github.com/KarinJS/Karin/compare/v0.6.17...v0.6.18) (2024-07-08)
+
+
+### Bug Fixes
+
+* 插件实例化的时候传递事件 ([f9e9c61](https://github.com/KarinJS/Karin/commit/f9e9c61e084c791b7d9cc0d6bd63a1f97d8b8bba))
+
 ## [0.6.17](https://github.com/KarinJS/Karin/compare/v0.6.16...v0.6.17) (2024-07-08)
 
 
