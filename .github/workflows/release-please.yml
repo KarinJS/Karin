@@ -23,13 +23,13 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 20
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: "https://registry.npmjs.org"
         if: ${{ steps.release.outputs.release_created }}
       # Install pnpm
       - run: npm install -g pnpm
         if: ${{ steps.release.outputs.release_created }}
       # Install dependencies
-      - run: pnpm install
+      - run: pnpm install --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.RELEASE }}
         if: ${{ steps.release.outputs.release_created }}
