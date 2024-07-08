@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.6.17](https://github.com/KarinJS/Karin/compare/v0.6.16...v0.6.17) (2024-07-08)
+
+
+### Bug Fixes
+
+* 编译时候禁用钩子 ([2607ae3](https://github.com/KarinJS/Karin/commit/2607ae34685dd478c08c290b35973eaddc56a5fc))
+
 ## [0.6.16](https://github.com/KarinJS/Karin/compare/v0.6.15...v0.6.16) (2024-07-08)
 
 
