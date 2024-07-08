@@ -357,7 +357,10 @@ export default class AdapterKritor implements KarinAdapter {
      * 响应解码
      */
     const response = kritor[type][`${cmd}Response`].decode(res.buf)
-    return response
+    return {
+      message_id: response.message_id,
+      message_time: Number(response.message_time),
+    }
   }
 
   /**

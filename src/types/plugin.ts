@@ -1,7 +1,8 @@
 import schedule from 'node-schedule'
+import { Plugin } from 'karin/core'
 import { Reply, replyCallback, replyForward } from './reply'
 import { EventType, Event, Permission, SubEvent, KarinMessageEvent, KarinNoticeEvent, KarinRequestEvent } from './event'
-import { Plugin } from 'karin/core'
+import { KarinMessage } from 'karin/event'
 
 /**
  * - 插件根目录名称
@@ -282,3 +283,8 @@ export interface PluginApps {
    */
   handler: Array<PluginHandler>
 }
+
+/**
+ * 未实例化的插件
+ */
+export type NewPlugin = new (e?: KarinMessage) => Plugin

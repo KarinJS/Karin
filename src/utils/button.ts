@@ -1,6 +1,6 @@
 import logger from './logger'
-import { KarinMessageEvent } from 'karin/types'
-import { pluginLoader as loader, Plugin } from 'karin/core'
+import { KarinMessageEvent, NewPlugin } from 'karin/types'
+import { pluginLoader as loader } from 'karin/core'
 
 export const button = async (e: KarinMessageEvent) => {
   const button = []
@@ -19,7 +19,7 @@ export const button = async (e: KarinMessageEvent) => {
           if (typeof v.fnc === 'function') {
             res = await v.fnc(e, reject)
           } else {
-            const cla = new (info.file.Fnc as new () => Plugin)()
+            const cla = new (info.file.Fnc as NewPlugin)()
             cla.e = e
             res = await (cla[v.fnc as keyof typeof cla] as Function)(e, reject)
           }

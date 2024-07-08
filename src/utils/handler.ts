@@ -1,7 +1,7 @@
 import lodash from 'lodash'
 import logger from './logger'
-import { EventType, PluginType, PluginApps } from 'karin/types'
-import { Plugin, pluginLoader as loader } from 'karin/core'
+import { pluginLoader as loader } from 'karin/core'
+import { EventType, PluginType, PluginApps, NewPlugin } from 'karin/types'
 
 /**
  * 事件处理器类
@@ -92,7 +92,7 @@ export const handler = new (class EventHandler {
         if (info.file.type === 'function' && typeof v.fnc === 'function') {
           res = await v.fnc(args, reject)
         } else {
-          const cla = new (info.file.Fnc as new () => Plugin)()
+          const cla = new (info.file.Fnc as NewPlugin)()
           cla.e = args.e as EventType<typeof args.e>
           res = await (cla[v.fnc as keyof typeof cla] as Function)(args, reject)
         }

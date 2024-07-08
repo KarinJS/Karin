@@ -2,8 +2,8 @@ import lodash from 'lodash'
 import { review } from './review.handler'
 import EventHandler from './event.handler'
 import { logger, config } from 'karin/utils'
-import { KarinMessageEvent } from 'karin/types'
-import { listener, Plugin, stateArr, pluginLoader } from 'karin/core'
+import { KarinMessageEvent, NewPlugin } from 'karin/types'
+import { listener, stateArr, pluginLoader } from 'karin/core'
 
 /**
  * 消息事件
@@ -74,7 +74,7 @@ export class MessageHandler extends EventHandler {
             if (app.file.type === 'function' && typeof v.fnc === 'function') {
               res = await v.fnc(this.e)
             } else {
-              const cla = new (app.file.Fnc as new () => Plugin)()
+              const cla = new (app.file.Fnc as NewPlugin)()
               cla.e = this.e
               res = await (cla[v.fnc as keyof typeof cla] as Function)(this.e) as Promise<boolean>
             }
