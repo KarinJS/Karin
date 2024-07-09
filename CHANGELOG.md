@@ -1,5 +1,14 @@
 # 更新日志
 
+## [0.6.19](https://github.com/KarinJS/Karin/compare/v0.6.18...v0.6.19) (2024-07-09)
+
+
+### Bug Fixes
+
+* [#67](https://github.com/KarinJS/Karin/issues/67)  修正部分已知问题 为所有api新增返回值的类型定义 ([a3b8060](https://github.com/KarinJS/Karin/commit/a3b80600246e6e0d6b6a591ec650b9315d6cae4e))
+* fix [#14](https://github.com/KarinJS/Karin/issues/14) ([71732ec](https://github.com/KarinJS/Karin/commit/71732ece4e4e8eea5c4ea079a9bdf9d8cba165f7))
+* fix [#66](https://github.com/KarinJS/Karin/issues/66) ([ff20163](https://github.com/KarinJS/Karin/commit/ff20163ad986354de4ef94a848affb1683bee0c9))
+
 ## [0.6.18](https://github.com/KarinJS/Karin/compare/v0.6.17...v0.6.18) (2024-07-08)
 
 
