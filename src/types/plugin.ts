@@ -1,7 +1,7 @@
 import schedule from 'node-schedule'
 import { Plugin } from 'karin/core'
 import { Reply, replyCallback, replyForward } from './event/reply'
-import { KarinNoticeType, KarinRequestType, AllListenEvent, KarinEventTypes, KarinMessageType } from './event'
+import { KarinNoticeType, KarinRequestType, AllListenEvent, KarinEventTypes, KarinMessageType, PermissionType } from './event'
 
 /**
  * - 插件根目录名称
@@ -44,7 +44,7 @@ export interface PluginRule {
   /**
    * 权限
    */
-  permission?: 'all' | 'master' | 'admin' | 'group.owner' | 'group.admin'
+  permission?: PermissionType
   /**
    * - 打印日志 默认为true
    */

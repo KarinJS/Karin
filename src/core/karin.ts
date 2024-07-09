@@ -4,7 +4,7 @@ import { common } from 'karin/utils'
 import { render } from 'karin/render'
 import { stateArr } from './plugin'
 import { listener } from './listener'
-import { KarinMessage, Permission, PluginApps, KarinElement, Contact, KarinRenderType, Scene } from 'karin/types'
+import { KarinMessage, Permission, PluginApps, KarinElement, Contact, KarinRenderType, Scene, PermissionType } from 'karin/types'
 
 type FncFunction = (e: KarinMessage) => Promise<boolean>
 type FncElement = string | KarinElement | Array<KarinElement>
@@ -23,7 +23,7 @@ export interface OptionsCommand {
    * - 权限
    * @default 'all'
    */
-  permission?: Permission
+  permission?: PermissionType
   /**
    * - 打印日志
    * @default false

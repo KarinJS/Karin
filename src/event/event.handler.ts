@@ -100,10 +100,12 @@ export default class EventHandler {
       }
 
       const role = list[permission]
-      if (role && this.e.sender?.role !== role.role) {
-        this.e.reply(`暂无权限，只有${role.name}才能操作`)
-        return false
-      }
+      if (!role) return true
+      if (role.role === 'owner' && this.e.sender?.role === 'owner') return true
+      if (role.role === 'admin' && (this.e.sender?.role === 'owner' || this.e.sender?.role === 'admin')) return true
+
+      this.e.reply(`暂无权限，只有${role.name}才能操作`)
+      return false
     }
 
     return true

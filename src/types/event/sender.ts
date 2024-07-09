@@ -21,6 +21,11 @@ export enum Permission {
 }
 
 /**
+ * - 权限类型 纯文本
+ */
+export type PermissionType = 'all' | 'master' | 'admin' | 'group.owner' | 'group.admin'
+
+/**
  * - 事件发送者信息
  */
 export interface Sender {
