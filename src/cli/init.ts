@@ -1,8 +1,15 @@
 #!/usr/bin/env node
 
 import { select } from '@inquirer/prompts'
-import { common } from 'karin/utils'
 import { KarinInit } from 'karin/utils/init'
+
+/**
+ * 休眠函数
+ * @param ms 毫秒
+ */
+function sleep (ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
 
 async function main () {
   /** 捕获错误 打印日志 */
@@ -12,7 +19,7 @@ async function main () {
   const init = new KarinInit()
   init.init()
 
-  await common.sleep(1000)
+  await sleep(1000)
 
   const prompt = await select({
     message: '请选择npm源 中国大陆服务器一定要更换!!!',
@@ -23,12 +30,12 @@ async function main () {
   })
 
   console.log('正在更换npm源...请稍等~')
-  await common.sleep(1000)
+  await sleep(1000)
 
   /** 结果 */
   await init.changeRegistry(prompt)
 
-  await common.sleep(1000)
+  await sleep(1000)
 
   const pkg = await select({
     message: '请选择包管理器 如果不知道怎么选 请选pnpm',
