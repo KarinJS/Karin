@@ -1,8 +1,7 @@
 import schedule from 'node-schedule'
 import { Plugin } from 'karin/core'
-import { Reply, replyCallback, replyForward } from './reply'
-import { EventType, Event, Permission, SubEvent, KarinMessageEvent, KarinNoticeEvent, KarinRequestEvent } from './event'
-import { KarinMessage } from 'karin/event'
+import { Reply, replyCallback, replyForward } from './event/reply'
+import { KarinNoticeType, KarinRequestType, AllListenEvent, KarinEventTypes, KarinMessageType } from './event'
 
 /**
  * - 插件根目录名称
@@ -39,13 +38,13 @@ export interface PluginRule {
    */
   fnc: string | Function
   /**
-   * - 子事件
+   * - 监听子事件
    */
-  event?: Event | `${Event}.${SubEvent}`
+  event?: AllListenEvent
   /**
    * 权限
    */
-  permission?: Permission
+  permission?: 'all' | 'master' | 'admin' | 'group.owner' | 'group.admin'
   /**
    * - 打印日志 默认为true
    */
@@ -148,7 +147,7 @@ export interface PluginType {
   /**
    * - 监听事件 默认为message
    */
-  event: Event | `${Event}.${SubEvent}`
+  event: AllListenEvent
   /**
    * - 优先级 默认为10000
    */
@@ -184,7 +183,7 @@ export interface PluginType {
    * - 上报事件
    * - 根据上报中的event字段来获取e的事件类型
    */
-  e: KarinMessageEvent | KarinNoticeEvent | KarinRequestEvent
+  e: KarinEventTypes
   init?: () => Promise<any>
   /**
    * - 快速回复
@@ -229,7 +228,7 @@ export interface PluginType {
   /**
    * - accept标准方法 给通知、请求事件使用
    */
-  accept?(e: EventType<this>): Promise<void>
+  accept?(e: KarinNoticeType | KarinRequestType): Promise<void>
 }
 
 /**
@@ -256,7 +255,7 @@ export interface PluginApps {
   /**
    * - 插件事件
    */
-  event: Event | `${Event}.${SubEvent}`
+  event: AllListenEvent
   /**
    * - 插件优先级
    * @default 10000
@@ -287,4 +286,4 @@ export interface PluginApps {
 /**
  * 未实例化的插件
  */
-export type NewPlugin = new (e?: KarinMessage) => Plugin
+export type NewMessagePlugin = new (e?: KarinMessageType) => Plugin

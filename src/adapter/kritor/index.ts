@@ -1,8 +1,8 @@
 import grpc from '@grpc/grpc-js'
 import { kritor } from 'kritor-proto'
-import { logger, config, segment } from 'karin/utils'
-import { contact, KarinAdapter, KarinElement } from 'karin/types'
 import { listener } from 'karin/core'
+import { logger, config, segment } from 'karin/utils'
+import { Contact, KarinAdapter, KarinElement, Sender } from 'karin/types'
 
 /**
  * @extends KarinAdapter
@@ -323,7 +323,7 @@ export default class AdapterKritor implements KarinAdapter {
    * @param elements - 消息元素
    * @param retry_count - 重试次数
    */
-  async SendMessage (contact: contact, elements: KarinElement[], retry_count = 1) {
+  async SendMessage (contact: Contact, elements: KarinElement[], retry_count = 1) {
     /**
      * - 请求服务名
      */
@@ -368,7 +368,7 @@ export default class AdapterKritor implements KarinAdapter {
    * @param contact - 联系人
    * @param message_id - 消息ID
    */
-  async RecallMessage (contact: contact, message_id: string) {
+  async RecallMessage (contact: Contact, message_id: string) {
     const service = 'MessageService'
     const cmd = 'RecallMessage'
     const type = 'message'
@@ -388,7 +388,7 @@ export default class AdapterKritor implements KarinAdapter {
    * @param face_id - 表情ID
    * @param is_set - 是否设置
    */
-  async ReactMessageWithEmoji (contact: contact, message_id: string, face_id: number, is_set: boolean) {
+  async ReactMessageWithEmoji (contact: Contact, message_id: string, face_id: number, is_set: boolean) {
     const service = 'MessageService'
     const cmd = 'ReactMessageWithEmoji'
     const type = 'message'
@@ -406,7 +406,7 @@ export default class AdapterKritor implements KarinAdapter {
    * @param contact - 联系人
    * @param message_id - 消息ID
    */
-  async GetMessage (contact: contact, message_id: string) {
+  async GetMessage (contact: Contact, message_id: string) {
     const service = 'MessageService'
     const cmd = 'GetMessage'
     const type = 'message'
@@ -416,7 +416,15 @@ export default class AdapterKritor implements KarinAdapter {
     const command = `${service}.${cmd}`
     const res = await this.SendApi(command, data)
     const response = kritor[type][`${cmd}Response`].decode(res.buf)
-    return response
+    const message = response.message as kritor.common.IPushMessageBody
+    return {
+      time: Number(message.time),
+      message_id: String(message.message_id),
+      message_seq: Number(message.message_seq),
+      contact: message.contact as unknown as Contact,
+      sender: message.sender as unknown as Sender,
+      elements: this.AdapterConvertKarin(message.elements as kritor.common.Element[]),
+    }
   }
 
   /**
@@ -424,7 +432,7 @@ export default class AdapterKritor implements KarinAdapter {
    * @param contact - 联系人
    * @param message_seq - 消息seq
    */
-  async GetMessageBySeq (contact: contact, message_seq: number) {
+  async GetMessageBySeq (contact: Contact, message_seq: number) {
     const service = 'MessageService'
     const cmd = 'GetMessageBySeq'
     const type = 'message'
@@ -443,7 +451,7 @@ export default class AdapterKritor implements KarinAdapter {
    * @param start_message_id - 开始消息ID
    * @param count - 数量
    */
-  async GetHistoryMessage (contact: contact, start_message_id: string, count: number) {
+  async GetHistoryMessage (contact: Contact, start_message_id: string, count: number) {
     const service = 'MessageService'
     const cmd = 'GetHistoryMessage'
     const type = 'message'
@@ -462,7 +470,7 @@ export default class AdapterKritor implements KarinAdapter {
    * @param start_message_seq - 开始消息seq
    * @param count - 数量
    */
-  async GetHistoryMessageBySeq (contact: contact, start_message_seq: number, count: number) {
+  async GetHistoryMessageBySeq (contact: Contact, start_message_seq: number, count: number) {
     const service = 'MessageService'
     const cmd = 'GetHistoryMessageBySeq'
     const type = 'message'
@@ -479,7 +487,7 @@ export default class AdapterKritor implements KarinAdapter {
    * 清空本地聊天记录
    * @param contact - 联系人
    */
-  async SetMessageReaded (contact: contact) {
+  async SetMessageReaded (contact: Contact) {
     const service = 'MessageService'
     const cmd = 'SetMessageRead'
     const type = 'message'
@@ -488,8 +496,8 @@ export default class AdapterKritor implements KarinAdapter {
     const data = kritor[type][`${cmd}Request`].encode(buf).finish()
     const command = `${service}.${cmd}`
     const res = await this.SendApi(command, data)
-    const response = kritor[type][`${cmd}Response`].decode(res.buf)
-    return response
+    kritor[type][`${cmd}Response`].decode(res.buf)
+    return true
   }
 
   /**
@@ -498,7 +506,7 @@ export default class AdapterKritor implements KarinAdapter {
    * @param elements - 消息
    * @param retry_count - 重试次数
    */
-  async UploadForwardMessage (contact: contact, elements: any[], retry_count = 1) {
+  async UploadForwardMessage (contact: Contact, elements: any[], retry_count = 1) {
     const service = 'MessageService'
     const cmd = 'UploadForwardMessage'
     const type = 'message'
@@ -633,7 +641,10 @@ export default class AdapterKritor implements KarinAdapter {
    * @param headers - 请求头
    * @returns - 下载文件的响应
    */
-  async DownloadFile (file: string, file_type: 'url' | 'base64', root_path?: string, file_name?: string, thread_cnt?: number, headers?: string) {
+  async DownloadFile (options: {
+    file: string, file_type: 'url' | 'base64', root_path?: string, file_name?: string, thread_cnt?: number, headers?: string
+  }) {
+    const { file, file_type, root_path = '', file_name = '', thread_cnt = 1, headers = '' } = options
     const service = 'CoreService'
     const cmd = 'DownloadFile'
     const type = 'core'
@@ -873,19 +884,15 @@ export default class AdapterKritor implements KarinAdapter {
    * 戳一戳用户头像
    * @param options - 戳一戳选项
    */
-  async PokeMember (options: {
-    group_id: string,
-    target_uid?: string,
-    target_uin?: string
-  }) {
+  async PokeMember (group_id: string, target_uid_or_uin: string) {
     const service = 'GroupService'
     const cmd = 'PokeMember'
     const type = 'group'
     let buf = {}
-    if (Number(options.target_uin)) {
-      buf = { group_id: options.group_id, target_uin: Number(options.target_uin) }
+    if (Number(target_uid_or_uin)) {
+      buf = { group_id, target_uin: Number(target_uid_or_uin) }
     } else {
-      buf = { group_id: options.group_id, target_uid: options.target_uid }
+      buf = { group_id, target_uid: target_uid_or_uin }
     }
 
     const command = `${service}.${cmd}`
@@ -1267,12 +1274,20 @@ export default class AdapterKritor implements KarinAdapter {
     return response as any
   }
 
-  async SendMessageByResId (contact: contact, id: string) {
+  CreateFolder (): Promise<any> { throw new Error('Method not implemented.') }
+  RenameFolder (): Promise<any> { throw new Error('Method not implemented.') }
+  DeleteFolder (): Promise<any> { throw new Error('Method not implemented.') }
+  UploadFile (): Promise<any> { throw new Error('Method not implemented.') }
+  DeleteFile (): Promise<any> { throw new Error('Method not implemented.') }
+  GetFileSystemInfo (): Promise<any> { throw new Error('Method not implemented.') }
+  GetFileList (): Promise<any> { throw new Error('Method not implemented.') }
+
+  async SendMessageByResId (contact: Contact, id: string) {
     if (contact) throw new Error('不支持的操作')
     return '未实现' as any
   }
 
-  async sendForwardMessage (contact: contact, elements: Array<any>) {
+  async sendForwardMessage (contact: Contact, elements: Array<any>) {
     if (contact) throw new Error('未实现')
     return '未实现' as any
   }
@@ -1308,7 +1323,7 @@ export default class AdapterKritor implements KarinAdapter {
       this.grpc.write(params)
 
       this.grpc.once(seq + '', data => {
-        /** 停止监听器 */
+        /** 停止计时器 */
         clearTimeout(timeoutId)
         data.code === 'SUCCESS' ? resolve(data) : resolve(data)
       })

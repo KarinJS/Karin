@@ -1,10 +1,10 @@
 import { EventEmitter } from 'events'
 import { pluginLoader } from './plugin.loader'
 import { common, logger, config } from 'karin/utils'
-import { MessageHandler } from 'karin/event/message.handler'
-import { KarinAdapter, contact, KarinElement } from 'karin/types'
 import NoticeHandler from 'karin/event/notice.handler'
 import RequestHandler from 'karin/event/request.handler'
+import { MessageHandler } from 'karin/event/message.handler'
+import { KarinAdapter, Contact, KarinElement } from 'karin/types'
 
 /**
  * 监听器管理
@@ -32,7 +32,7 @@ class Listeners extends EventEmitter {
     this.on('load.plugin', () => pluginLoader.load())
     this.on('adapter', data => {
       let path = data.path || '无'
-      if (path && data.type !== 'grpc') path = `ws://127.0.0.1:/${config.Server.http.port}${data.path}`
+      if (path && data.type !== 'grpc') path = `ws://127.0.0.1:${config.Server.http.port}${data.path}`
       path = logger.green(path)
       logger.info(`[适配器][注册][${data.type}]: ` + path)
       this.addAdapter(data)
@@ -164,7 +164,7 @@ class Listeners extends EventEmitter {
    * @param options.recallMsg - 发送成功后撤回消息时间
    * @param options.retry_count - 重试次数
    */
-  async sendMsg (uid: string, contact: contact, elements: KarinElement, options: {
+  async sendMsg (uid: string, contact: Contact, elements: KarinElement, options: {
     recallMsg?: number
     retry_count?: number
   } = { recallMsg: 0, retry_count: 1 }): Promise<{ message_id: string }> {

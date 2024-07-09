@@ -589,9 +589,10 @@ export type KarinElement = TextElement | AtElement | FaceElement | BubbleFaceEle
 /**
  * - 构建自定义转发节点 此元素仅可通过专用接口发送 不支持混合发送
  */
-export interface KarinNodeElement extends Element {
+export interface NodeElement extends Element {
   type: 'node'
-  user_id: string
-  nickname: string
-  content: KarinElement | Array<KarinElement>
+  id?: string,
+  user_id?: string
+  nickname?: string
+  content?: KarinElement | Array<KarinElement>
 }

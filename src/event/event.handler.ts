@@ -1,10 +1,10 @@
-import { review } from './review.handler'
 import { listener } from 'karin/core'
+import { review } from './review.handler'
 import { segment, common, logger, config } from 'karin/utils'
-import { Event, Permission, SubEvent, GroupCfg, KarinMessageEvent, KarinNoticeEvent, KarinRequestEvent } from 'karin/types'
+import { GroupCfg, KarinEventTypes, AllListenEvent, PluginRule } from 'karin/types'
 
 export default class EventHandler {
-  e: KarinMessageEvent | KarinNoticeEvent | KarinRequestEvent
+  e: KarinEventTypes
   config: GroupCfg | {}
   /**
    * - 是否打印群消息日志
@@ -13,7 +13,7 @@ export default class EventHandler {
   /**
    * 处理事件，加入自定义字段
    */
-  constructor (e: KarinMessageEvent | KarinNoticeEvent | KarinRequestEvent) {
+  constructor (e: KarinEventTypes) {
     this.e = e
     this.config = {}
     this.GroupMsgPrint = false
@@ -51,7 +51,7 @@ export default class EventHandler {
   /**
    * 根据事件类型过滤事件
    */
-  filtEvent (event: Event | `${Event}.${SubEvent}`): boolean {
+  filtEvent (event: AllListenEvent): boolean {
     /** 事件映射表 */
     const eventMap = {
       message: () => `message.${this.e.sub_event}`,
@@ -68,7 +68,7 @@ export default class EventHandler {
   /**
    * 判断权限
    */
-  filterPermission (permission: Permission | undefined): boolean {
+  filterPermission (permission?: PluginRule['permission']): boolean {
     if (!permission || permission === 'all') return true
 
     if (permission === 'master') {

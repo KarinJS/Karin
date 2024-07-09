@@ -61,7 +61,7 @@ export class KarinInit {
   /**
    * 从npm包内复制默认配置出来
    */
-  async copyFile () {
+  copyFile () {
     /** 配置 */
     const list = ['config/defSet', 'config/view']
     list.forEach(dir => {
@@ -69,6 +69,7 @@ export class KarinInit {
       const projDir = path.join(process.cwd(), dir)
       /** 清空projDir目录下的文件 保留目录 */
       if (fs.existsSync(projDir)) fs.rmdirSync(projDir, { recursive: true })
+      this.mkdir(projDir)
       /** 读取pkgDir目录下的所有文件 复制到projDir下 */
       const files = fs.readdirSync(pkgDir).filter(file => file.endsWith('.yaml'))
       files.forEach(file => {

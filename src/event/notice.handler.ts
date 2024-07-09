@@ -1,15 +1,15 @@
 import { review } from './review.handler'
 import EventHandler from './event.handler'
 import { logger, config } from 'karin/utils'
-import { KarinNoticeEvent } from 'karin/types'
+import { KarinNoticeType, NoticeSubType } from 'karin/types'
 import { ExtendedPlugin, pluginLoader } from 'karin/core'
 
 /**
  * 通知事件
  */
 export default class NoticeHandler extends EventHandler {
-  e: KarinNoticeEvent
-  constructor (e: KarinNoticeEvent) {
+  e: KarinNoticeType
+  constructor (e: KarinNoticeType) {
     super(e)
     this.e = e
     /** 事件处理 */
@@ -95,48 +95,48 @@ export default class NoticeHandler extends EventHandler {
   raw_message () {
     switch (this.e.sub_event) {
       /** 好友头像戳一戳 */
-      case 'private_poke': {
+      case NoticeSubType.PrivatePoke: {
         this.e.raw_message = '[好友戳一戳]: 戳了你一下'
         break
       }
       /** 好友消息撤回 */
-      case 'private_recall': {
+      case NoticeSubType.PrivateRecall: {
         this.e.raw_message = `[好友消息撤回]: ${this.e.content.message_id}`
         break
       }
       /** 私聊文件上传 */
-      case 'private_file_uploaded': {
+      case NoticeSubType.PrivateFileUploaded: {
         const content = this.e.content
         const { file_url } = content
         this.e.raw_message = `[私聊文件上传]: ${file_url}`
         break
       }
       /** 群头像戳一戳 */
-      case 'group_poke': {
+      case NoticeSubType.GroupPoke: {
         const { operator_uid, operator_uin, target_uid, target_uin } = this.e.content
         this.e.raw_message = `[群戳一戳]: ${operator_uid || operator_uin} 戳了戳 ${target_uid || target_uin}`
         break
       }
       /** 群消息撤回 */
-      case 'group_recall': {
+      case NoticeSubType.GroupRecall: {
         const { operator_uid, operator_uin, message_id } = this.e.content
         this.e.raw_message = `[群消息撤回]: ${operator_uid || operator_uin} 撤回了一条消息 ${message_id}`
         break
       }
       /** 群文件上传 */
-      case 'group_file_uploaded': {
+      case NoticeSubType.GroupFileUploaded: {
         const { file_url, operator_uid, operator_uin } = this.e.content
         this.e.raw_message = `[群文件上传]: ${operator_uid || operator_uin} 上传了 ${file_url}`
         break
       }
       /** 群成员增加 */
-      case 'group_member_increase': {
+      case NoticeSubType.GroupMemberIncrease: {
         const { operator_uid, operator_uin, target_uid, target_uin, type } = this.e.content
         this.e.raw_message = `[群成员新增]: ${operator_uid || operator_uin} ${type === 'invite' ? '邀请' : '同意'}  ${target_uid || target_uin} 加入群聊`
         break
       }
       /** 群成员减少 */
-      case 'group_member_decrease': {
+      case NoticeSubType.GroupMemberDecrease: {
         switch (this.e.content.type) {
           case 'leave': {
             const { target_uid, target_uin } = this.e.content
@@ -159,49 +159,49 @@ export default class NoticeHandler extends EventHandler {
         break
       }
       /** 群管理员变动 */
-      case 'group_admin_changed': {
+      case NoticeSubType.GroupAdminChanged: {
         const { target_uid, target_uin, is_admin } = this.e.content
         this.e.raw_message = `[群管理员变动]: ${target_uid || target_uin} 被${is_admin ? '设置' : '取消'}群管理员`
         break
       }
       /** 群成员被禁言 */
-      case 'group_member_ban': {
+      case NoticeSubType.GroupMemberBan: {
         const { operator_uid, operator_uin, target_uid, target_uin, type } = this.e.content
         this.e.raw_message = `[群成员禁言]: ${operator_uid || operator_uin} ${type === 'ban' ? '禁言' : '解禁'}了 ${target_uid || target_uin}`
         break
       }
       /** 群签到 */
-      case 'group_sign_in': {
+      case NoticeSubType.GroupSignIn: {
         const { target_uid, target_uin } = this.e.content
         this.e.raw_message = `[群签到]: ${target_uid || target_uin}`
         break
       }
       /** 群全员禁言 */
-      case 'group_whole_ban': {
+      case NoticeSubType.GroupWholeBan: {
         const { operator_uid, operator_uin, is_ban } = this.e.content
         this.e.raw_message = `[群全员禁言]: ${operator_uid || operator_uin} ${is_ban ? '开启全员禁言' : '解除全员禁言'}`
         break
       }
       /** 群名片改变 */
-      case 'group_card_changed': {
+      case NoticeSubType.GroupCardChanged: {
         const { operator_uid, operator_uin, target_uid, target_uin, new_card } = this.e.content
         this.e.raw_message = `[群名片改变]: ${operator_uid || operator_uin} 修改了 ${target_uid || target_uin} 的名片为 ${new_card}`
         break
       }
       /** 群成员专属头衔改变 */
-      case 'group_member_unique_title_changed': {
+      case NoticeSubType.GroupMemberUniqueTitleChanged: {
         const { target_uid, target_uin, title } = this.e.content
         this.e.raw_message = `[群头衔更改]: ${target_uid || target_uin} 的专属头衔改变为 ${title}`
         break
       }
       /** 群精华消息改变 */
-      case 'group_essence_changed': {
+      case NoticeSubType.GroupEssenceChanged: {
         const { operator_uid, operator_uin, target_uid, target_uin, message_id, is_set } = this.e.content
         this.e.raw_message = `[群精华消息]: ${operator_uid || operator_uin} ${is_set ? `将${target_uid || target_uin}的消息${message_id}设置为精华消息` : `取消了${target_uid || target_uin}精华消息 ${message_id}`}`
         break
       }
       /** 群表情回应 */
-      case 'group_message_reaction': {
+      case NoticeSubType.GroupMessageReaction: {
         const { message_id, face_id } = this.e.content
         this.e.raw_message = `[群表情回应]: ${this.e.user_id} 给消息 ${message_id} 回应了一个${face_id}的表情`
         break

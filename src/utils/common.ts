@@ -4,7 +4,7 @@ import { AxiosRequestConfig } from 'axios'
 import { pipeline, Readable } from 'stream'
 import { logger, segment } from 'karin/utils'
 import { fs, path, axios, lodash, yaml as Yaml } from 'karin/modules'
-import { dirName, KarinElement, KarinNodeElement } from 'karin/types'
+import { dirName, KarinElement, NodeElement } from 'karin/types'
 
 /**
  * 常用方法
@@ -371,7 +371,7 @@ export const common = new (class Common {
    * @param fakeUin 用户id
    * @param fakeNick 用户昵称
    */
-  makeForward (elements: KarinElement | KarinElement[], fakeUin: string, fakeNick: string): Array<KarinNodeElement> {
+  makeForward (elements: KarinElement | KarinElement[], fakeUin: string, fakeNick: string): Array<NodeElement> {
     if (!Array.isArray(elements)) elements = [elements]
     return elements.map(element => {
       const NodeElement = this.makeMessage(element)

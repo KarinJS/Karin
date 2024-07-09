@@ -1,6 +1,5 @@
-import { KarinMessage } from 'karin/event'
 import { logger, config } from 'karin/utils'
-import { EType, PluginApps, GroupCfg } from 'karin/types'
+import { KarinMessageType, PluginApps, GroupCfg, KarinEventTypes } from 'karin/types'
 
 /**
  * 事件拦截器
@@ -12,12 +11,12 @@ export const review = new (class Handler {
   GroupUserCD: { [key: string]: boolean }
   App = config['App']
   Config = config['Config']
-  CD: (e: EType, config: GroupCfg) => boolean
-  mode: (e: KarinMessage, config: GroupCfg) => boolean
-  alias: (e: KarinMessage, config: GroupCfg) => boolean
-  GroupEnable: (e: EType) => boolean
-  UserEnable: (e: EType) => boolean
-  GroupMsgPrint: (e: EType) => boolean
+  CD: (e: KarinEventTypes, config: GroupCfg) => boolean
+  mode: (e: KarinMessageType, config: GroupCfg) => boolean
+  alias: (e: KarinMessageType, config: GroupCfg) => boolean
+  GroupEnable: (e: KarinEventTypes) => boolean
+  UserEnable: (e: KarinEventTypes) => boolean
+  GroupMsgPrint: (e: KarinEventTypes) => boolean
   PluginEnable: (app: PluginApps, config: GroupCfg) => boolean
   constructor () {
     /** 群聊所有消息cd */

@@ -1,15 +1,15 @@
 import { review } from './review.handler'
 import EventHandler from './event.handler'
 import { logger, config } from 'karin/utils'
-import { KarinRequestEvent } from 'karin/types'
+import { KarinRequestType, RequestSubType } from 'karin/types'
 import { ExtendedPlugin, pluginLoader } from 'karin/core'
 
 /**
  * 请求事件
  */
 export default class RequestHandler extends EventHandler {
-  e: KarinRequestEvent
-  constructor (e: KarinRequestEvent) {
+  e: KarinRequestType
+  constructor (e: KarinRequestType) {
     super(e)
     this.e = e
     /** 事件处理 */
@@ -95,19 +95,19 @@ export default class RequestHandler extends EventHandler {
   raw_message () {
     switch (this.e.sub_event) {
       /** 好友申请 */
-      case 'private_apply': {
+      case RequestSubType.PrivateApply: {
         const { applier_uid, applier_uin, message } = this.e.content
         this.e.raw_message = `[好友申请]: ${applier_uid || applier_uin} 申请理由: ${message}`
         break
       }
       /** 群申请 */
-      case 'group_apply': {
+      case RequestSubType.GroupApply: {
         const { group_id, applier_uid, applier_uin, inviter_uid, inviter_uin, reason } = this.e.content
         this.e.raw_message = `[群申请]: ${group_id} 申请人: ${applier_uid || applier_uin} 邀请人: ${inviter_uid || inviter_uin} 理由: ${reason}`
         break
       }
       /** 邀请入群 */
-      case 'invited_group': {
+      case RequestSubType.InvitedGroup: {
         const { group_id, inviter_uid, inviter_uin } = this.e.content
         this.e.raw_message = `[邀请入群]: ${group_id} 邀请人: ${inviter_uid || inviter_uin}`
         break

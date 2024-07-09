@@ -1,4 +1,4 @@
-import { PluginType, KarinElement, KarinNodeElement, EventType, KarinNoticeEvent, KarinRequestEvent, stateArrType } from 'karin/types'
+import { PluginType, KarinElement, NodeElement, EventType, stateArrType, KarinNoticeType, KarinRequestType, KarinEventTypes } from 'karin/types'
 
 /**
  * 插件基类
@@ -54,7 +54,7 @@ export class Plugin implements PluginType {
     name,
     dsc = name,
     desc = name,
-    event = 'message',
+    event = EventType.Message,
     priority = 10000,
     task = [],
     rule = [],
@@ -153,7 +153,7 @@ export class Plugin implements PluginType {
   /**
    * - 快速回复合并转发
    */
-  async replyForward (msg: KarinNodeElement[]): Promise<{ message_id?: string }> {
+  async replyForward (msg: NodeElement[]): Promise<{ message_id?: string }> {
     const result = await this.e.bot.sendForwardMessage(this.e.contact, msg)
     return result
   }
@@ -219,7 +219,7 @@ export class Plugin implements PluginType {
     }
   }
 
-  e!: EventType<this>
+  e!: KarinEventTypes
   replyCallback!: PluginType['replyCallback']
 }
 
@@ -232,5 +232,5 @@ export const stateArr: stateArrType = {}
  * 通知事件 插件类型
  */
 export interface ExtendedPlugin extends Plugin {
-  accept: (e: KarinNoticeEvent | KarinRequestEvent) => Promise<void>
+  accept: (e: KarinNoticeType | KarinRequestType) => Promise<void>
 }

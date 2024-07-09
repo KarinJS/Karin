@@ -1,7 +1,7 @@
-import { contact, Sender, KarinElement } from './index'
+import { Contact, KarinElement, Sender } from '../index'
 
 /**
- * - 转发、历史消息返回的结构
+ * - 基本消息结构
  */
 export interface PushMessageBody {
   /**
@@ -19,7 +19,7 @@ export interface PushMessageBody {
   /**
    * - 消息来源
    */
-  contact: contact
+  contact: Contact
   /**
    * - 消息发送者
    */
@@ -198,6 +198,10 @@ export interface GroupInfo {
    * - 群UIN
    */
   group_uin?: string
+  /**
+   * - 群描述
+   */
+  group_desc?: string
 }
 
 /**
@@ -298,4 +302,103 @@ export interface GroupHonorInfo {
    * - 荣誉描述
    */
   description: string
+}
+
+/**
+ * - 群文件信息
+ */
+export interface GroupFileInfo {
+  /**
+   * - 文件ID
+   */
+  file_id: string
+  /**
+   * - 文件名
+   */
+  file_name: string
+  /**
+   * - 文件大小
+   */
+  file_size: number
+  /**
+   * - 上传时间
+   */
+  upload_time: number
+  /**
+   * - 过期时间
+   */
+  expire_time: number
+  /**
+   * - 修改时间
+   */
+  modify_time: number
+  /**
+   * - 下载次数
+   */
+  download_times: number
+  /**
+   * - 上传者UID
+   */
+  uploader: string
+  /**
+   * - 上传者昵称
+   */
+  uploader_name: string
+  /**
+   * - SHA1
+   */
+  sha: string
+  /**
+   * - SHA3
+   */
+  sha3: string
+  /**
+   * - MD5
+   */
+  md5: string
+}
+
+/**
+ * - 群文件夹信息
+ */
+export interface GroupFolderInfo {
+  /**
+   * - 文件夹ID
+   */
+  folder_id: string
+  /**
+   * - 文件夹名
+   */
+  folder_name: string
+  /**
+   * - 文件数量
+   */
+  total_file_count: number
+  /**
+   * - 创建时间
+   */
+  create_time: number
+  /**
+   * - 创建者UID
+   */
+  creator: string
+  /**
+   * - 创建者昵称
+   */
+  creator_name: string
+}
+
+export interface GetRemainCountAtAllResponse {
+  /**
+   * - 是否允许at全体成员
+   */
+  access_at_all: boolean
+  /**
+   * - 全群剩余次数
+   */
+  remain_count_for_group: number
+  /**
+   * - 个人剩余次数
+   */
+  remain_count_for_self: number
 }

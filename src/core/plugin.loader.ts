@@ -8,7 +8,7 @@ import { listener } from './listener'
 import PluginApp from './plugin.app'
 import { render } from 'karin/render'
 import { common, handler, logger } from 'karin/utils'
-import { PluginApps, PluginTask, dirName, fileName, AppInfo, NewPlugin } from 'karin/types'
+import { PluginApps, PluginTask, dirName, fileName, AppInfo, NewMessagePlugin, Permission } from 'karin/types'
 
 class PluginLoader {
   dir: './plugins'
@@ -52,7 +52,7 @@ class PluginLoader {
   /**
    * - 定时任务
    */
-  task: Array<PluginTask & { App: NewPlugin, schedule?: schedule.Job, file: { dir: dirName, name: fileName } }>
+  task: Array<PluginTask & { App: NewMessagePlugin, schedule?: schedule.Job, file: { dir: dirName, name: fileName } }>
 
   /**
    * - 监听器
@@ -277,7 +277,7 @@ class PluginLoader {
       let path = `${this.dirPath}plugins/${dir}/${name}`
       if (isOrderBy) path = path + `?${Date.now()}`
 
-      const tmp: Array<(NewPlugin) | PluginApps> = await import(path)
+      const tmp: Array<(NewMessagePlugin) | PluginApps> = await import(path)
 
       lodash.forEach(tmp, (App) => {
         const index = this.index
@@ -301,7 +301,7 @@ class PluginLoader {
 
         if (typeof App !== 'function' || !App?.prototype?.constructor) return
 
-        const Class = new (App as NewPlugin)()
+        const Class = new (App as NewMessagePlugin)()
         if (!Class.name) return logger.error(`[${dir}][${name}] 插件名称错误`)
         logger.debug(`载入插件 [${name}][${Class.name}]`)
 
@@ -354,7 +354,7 @@ class PluginLoader {
         reg: val.reg instanceof RegExp ? val.reg : new RegExp(val.reg),
         fnc: val.fnc,
         event: val.event,
-        permission: val.permission || 'all',
+        permission: val.permission || Permission.All,
         log: val.log === false ? (id: string, log: string) => logger.debug('mark', id, log) : (id: string, log: string) => logger.bot('mark', id, log),
       })
     })
@@ -390,7 +390,7 @@ class PluginLoader {
   /**
    * 新增task
    */
-  async addTask (dir: dirName, name: fileName, index: number, Class: Plugin, App: NewPlugin) {
+  async addTask (dir: dirName, name: fileName, index: number, Class: Plugin, App: NewMessagePlugin) {
     /** 定时任务 */
     lodash.forEach(Class.task, val => {
       if (!val.name) return logger.error(`[${dir}][${name}] 定时任务name错误`)

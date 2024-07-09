@@ -2,19 +2,19 @@ import lodash from 'lodash'
 import { review } from './review.handler'
 import EventHandler from './event.handler'
 import { logger, config } from 'karin/utils'
-import { KarinMessageEvent, NewPlugin } from 'karin/types'
+import { KarinMessageType, NewMessagePlugin } from 'karin/types'
 import { listener, stateArr, pluginLoader } from 'karin/core'
 
 /**
  * 消息事件
  */
 export class MessageHandler extends EventHandler {
-  e: KarinMessageEvent
+  e: KarinMessageType
   /**
    * - 是否打印群消息日志
    */
   GroupMsgPrint: boolean = false
-  constructor (e: KarinMessageEvent) {
+  constructor (e: KarinMessageType) {
     super(e)
     this.e = e
     listener.emit('karin:count:recv', 1)
@@ -74,7 +74,7 @@ export class MessageHandler extends EventHandler {
             if (app.file.type === 'function' && typeof v.fnc === 'function') {
               res = await v.fnc(this.e)
             } else {
-              const cla = new (app.file.Fnc as NewPlugin)()
+              const cla = new (app.file.Fnc as NewMessagePlugin)()
               cla.e = this.e
               res = await (cla[v.fnc as keyof typeof cla] as Function)(this.e) as Promise<boolean>
             }

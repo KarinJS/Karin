@@ -1,7 +1,7 @@
 import lodash from 'lodash'
 import logger from './logger'
 import { pluginLoader as loader } from 'karin/core'
-import { EventType, PluginType, PluginApps, NewPlugin } from 'karin/types'
+import { PluginType, PluginApps, NewMessagePlugin, KarinEventTypes } from 'karin/types'
 
 /**
  * 事件处理器类
@@ -73,7 +73,7 @@ export const handler = new (class EventHandler {
    * @param key 事件键
    * @param args 自定义参数 一般用来传递e之类的
    */
-  async call (key: string, args: { [key: string]: any, e?: EventType<unknown> }) {
+  async call (key: string, args: { [key: string]: any, e?: KarinEventTypes }) {
     let res
     for (const v of loader.handlerIds[key] || []) {
       const info = loader.PluginList[v.index]
@@ -92,8 +92,8 @@ export const handler = new (class EventHandler {
         if (info.file.type === 'function' && typeof v.fnc === 'function') {
           res = await v.fnc(args, reject)
         } else {
-          const cla = new (info.file.Fnc as NewPlugin)()
-          cla.e = args.e as EventType<typeof args.e>
+          const cla = new (info.file.Fnc as NewMessagePlugin)()
+          if (args.e) cla.e = args.e
           res = await (cla[v.fnc as keyof typeof cla] as Function)(args, reject)
         }
 

@@ -1,10 +1,8 @@
 import fs from 'fs'
 import { randomUUID } from 'crypto'
 import { listener } from 'karin/core'
-import { KarinMessage } from 'karin/event'
-import { KarinAdapter } from 'karin/types/adapter'
-import { contact, KarinElement, LoggerLevel } from 'karin/types'
 import { config, common, YamlEditor, logger } from 'karin/utils'
+import { KarinAdapter, KarinMessage, Contact, KarinElement, LoggerLevel, MessageSubType, EventType, Scene, Role } from 'karin/types'
 
 const { enable, msgToFile, token: oldToken, ip } = config.Config.AdapterInput
 
@@ -75,7 +73,8 @@ export class AdapterInput implements KarinAdapter {
 
   async #input (elements: string) {
     const message = {
-      event: 'message' as 'message' | 'message_sent',
+      event: EventType.Message as EventType.Message,
+      sub_event: MessageSubType.PrivateMessage as MessageSubType.PrivateMessage,
       event_id: `input.${Date.now()}`,
       self_id: 'input',
       user_id: 'input',
@@ -86,16 +85,15 @@ export class AdapterInput implements KarinAdapter {
         uid: 'input',
         uin: 'input',
         nick: 'input',
-        role: 'member' as 'member',
+        role: Role.Unknown as Role.Unknown,
       },
       elements: [{ type: 'text', text: elements }] as KarinElement[],
       contact: {
-        scene: 'friend' as 'friend',
+        scene: Scene.Private as Scene.Private,
         peer: 'input',
         sub_peer: '',
       },
-      group_id: '',
-      raw_message: elements,
+      raw_event: { data: elements },
     }
 
     const e = new KarinMessage(message)
@@ -130,7 +128,7 @@ export class AdapterInput implements KarinAdapter {
     return data
   }
 
-  async SendMessage (_contact: contact, elements: Array<KarinElement>) {
+  async SendMessage (_contact: Contact, elements: Array<KarinElement>) {
     const text = []
     for (const v of elements) {
       switch (v.type) {
@@ -167,38 +165,52 @@ export class AdapterInput implements KarinAdapter {
     return { account_uid: 'input', account_uin: 'input', account_name: 'input' }
   }
 
-  async GetEssenceMessageList (): Promise<any> { throw new Error('Method not implemented.') }
-  async DownloadForwardMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  async SetEssenceMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  async DeleteEssenceMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  async SetFriendApplyResult (): Promise<any> { throw new Error('Method not implemented.') }
-  async SetGroupApplyResult (): Promise<any> { throw new Error('Method not implemented.') }
-  async SetInvitedJoinGroupResult (): Promise<any> { throw new Error('Method not implemented.') }
-  async ReactMessageWithEmoji (): Promise<any> { throw new Error('Method not implemented.') }
-  async UploadPrivateFile (): Promise<any> { throw new Error('Method not implemented.') }
-  async UploadGroupFile (): Promise<any> { throw new Error('Method not implemented.') }
-  async UploadForwardMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  async sendForwardMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  async SendMessageByResId (): Promise<any> { throw new Error('Method not implemented.') }
-  async RecallMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetHistoryMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  async VoteUser (): Promise<any> { throw new Error('Method not implemented.') }
-  async KickMember (): Promise<any> { throw new Error('Method not implemented.') }
-  async BanMember (): Promise<any> { throw new Error('Method not implemented.') }
-  async SetGroupWholeBan (): Promise<any> { throw new Error('Method not implemented.') }
-  async SetGroupAdmin (): Promise<any> { throw new Error('Method not implemented.') }
-  async ModifyMemberCard (): Promise<any> { throw new Error('Method not implemented.') }
-  async ModifyGroupName (): Promise<any> { throw new Error('Method not implemented.') }
-  async LeaveGroup (): Promise<any> { throw new Error('Method not implemented.') }
-  async SetGroupUniqueTitle (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetStrangerProfileCard (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetFriendList (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetGroupInfo (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetGroupList (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetGroupMemberInfo (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetGroupMemberList (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetGroupHonor (): Promise<any> { throw new Error('Method not implemented.') }
+  GetEssenceMessageList (): Promise<any> { throw new Error('Method not implemented.') }
+  DownloadForwardMessage (): Promise<any> { throw new Error('Method not implemented.') }
+  SetEssenceMessage (): Promise<any> { throw new Error('Method not implemented.') }
+  DeleteEssenceMessage (): Promise<any> { throw new Error('Method not implemented.') }
+  SetFriendApplyResult (): Promise<any> { throw new Error('Method not implemented.') }
+  SetGroupApplyResult (): Promise<any> { throw new Error('Method not implemented.') }
+  SetInvitedJoinGroupResult (): Promise<any> { throw new Error('Method not implemented.') }
+  ReactMessageWithEmoji (): Promise<any> { throw new Error('Method not implemented.') }
+  UploadPrivateFile (): Promise<any> { throw new Error('Method not implemented.') }
+  UploadGroupFile (): Promise<any> { throw new Error('Method not implemented.') }
+  UploadForwardMessage (): Promise<any> { throw new Error('Method not implemented.') }
+  sendForwardMessage (): Promise<any> { throw new Error('Method not implemented.') }
+  SendMessageByResId (): Promise<any> { throw new Error('Method not implemented.') }
+  RecallMessage (): Promise<any> { throw new Error('Method not implemented.') }
+  GetMessage (): Promise<any> { throw new Error('Method not implemented.') }
+  GetHistoryMessage (): Promise<any> { throw new Error('Method not implemented.') }
+  VoteUser (): Promise<any> { throw new Error('Method not implemented.') }
+  KickMember (): Promise<any> { throw new Error('Method not implemented.') }
+  BanMember (): Promise<any> { throw new Error('Method not implemented.') }
+  SetGroupWholeBan (): Promise<any> { throw new Error('Method not implemented.') }
+  SetGroupAdmin (): Promise<any> { throw new Error('Method not implemented.') }
+  ModifyMemberCard (): Promise<any> { throw new Error('Method not implemented.') }
+  ModifyGroupName (): Promise<any> { throw new Error('Method not implemented.') }
+  LeaveGroup (): Promise<any> { throw new Error('Method not implemented.') }
+  SetGroupUniqueTitle (): Promise<any> { throw new Error('Method not implemented.') }
+  GetStrangerProfileCard (): Promise<any> { throw new Error('Method not implemented.') }
+  GetFriendList (): Promise<any> { throw new Error('Method not implemented.') }
+  GetGroupInfo (): Promise<any> { throw new Error('Method not implemented.') }
+  GetGroupList (): Promise<any> { throw new Error('Method not implemented.') }
+  GetGroupMemberInfo (): Promise<any> { throw new Error('Method not implemented.') }
+  GetGroupMemberList (): Promise<any> { throw new Error('Method not implemented.') }
+  GetGroupHonor (): Promise<any> { throw new Error('Method not implemented.') }
+  DownloadFile (): Promise<any> { throw new Error('Method not implemented.') }
+  CreateFolder (): Promise<any> { throw new Error('Method not implemented.') }
+  RenameFolder (): Promise<any> { throw new Error('Method not implemented.') }
+  DeleteFolde (): Promise<any> { throw new Error('Method not implemented.') }
+  DeleteFolder (): Promise<any> { throw new Error('Method not implemented.') }
+  UploadFile (): Promise<any> { throw new Error('Method not implemented.') }
+  DeleteFile (): Promise<any> { throw new Error('Method not implemented.') }
+  GetFileSystemInfo (): Promise<any> { throw new Error('Method not implemented.') }
+  GetFileList (): Promise<any> { throw new Error('Method not implemented.') }
+  ModifyGroupRemark (): Promise<any> { throw new Error('Method not implemented.') }
+  GetRemainCountAtAll (): Promise<any> { throw new Error('Method not implemented.') }
+  GetProhibitedUserList (): Promise<any> { throw new Error('Method not implemented.') }
+  PokeMember (): Promise<any> { throw new Error('Method not implemented.') }
+  SetMessageReaded (): Promise<any> { throw new Error('Method not implemented.') }
 }
 
 if (enable) new AdapterInput().stdin().init()

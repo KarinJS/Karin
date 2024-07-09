@@ -1,4 +1,4 @@
-import { dirName, fileName, PluginApps } from 'karin/types'
+import { dirName, EventType, fileName, PluginApps } from 'karin/types'
 
 export interface PluginAppType {
   file?: {
@@ -26,7 +26,7 @@ export default function PluginApp (options: PluginAppType): PluginApps {
       Fnc: options?.file?.fnc || '',
     },
     name: options.name || '',
-    event: options.event || 'message',
+    event: options.event || EventType.Message,
     priority: options.priority || 10000,
     accept: options.accept ?? false,
     rule: options.rule || [],

@@ -17,7 +17,7 @@ export * from 'karin/adapter'
 import { config, update } from 'karin/utils'
 import { render } from 'karin/render'
 import { RenderServer } from 'karin/render'
-import OneBot11 from 'karin/adapter/onebot/onebot11'
+import OneBot11 from 'karin/adapter/onebot/11/index'
 import { server, Karin, listener, Plugin } from 'karin/core'
 
 // 初始化

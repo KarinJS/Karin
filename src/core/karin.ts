@@ -4,8 +4,7 @@ import { common } from 'karin/utils'
 import { render } from 'karin/render'
 import { stateArr } from './plugin'
 import { listener } from './listener'
-import { KarinMessage } from 'karin/event/message'
-import { Permission, PluginApps, KarinElement, contact, KarinRenderType } from 'karin/types'
+import { KarinMessage, Permission, PluginApps, KarinElement, Contact, KarinRenderType, Scene } from 'karin/types'
 
 type FncFunction = (e: KarinMessage) => Promise<boolean>
 type FncElement = string | KarinElement | Array<KarinElement>
@@ -100,7 +99,7 @@ export class Karin {
         {
           reg,
           fnc,
-          permission: options.permission || 'all',
+          permission: options.permission || 'all' as Permission,
           log: options.log ?? true,
         },
       ],
@@ -200,17 +199,17 @@ export class Karin {
    * @param isGroup - 是否是群聊
    * @param sub_peer - 子id
    */
-  contact (peer: string, isGroup: boolean = true, sub_peer?: string): contact {
+  contact (peer: string, isGroup: boolean = true, sub_peer?: string): Contact {
     if (isGroup) {
       return {
-        scene: 'group',
+        scene: Scene.Group,
         peer,
         sub_peer: sub_peer || '',
       }
     }
 
     return {
-      scene: 'friend',
+      scene: Scene.Private,
       peer,
       sub_peer: sub_peer || '',
     }

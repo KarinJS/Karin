@@ -1,11 +1,11 @@
-import * as grpc from '@grpc/grpc-js'
-import * as protoLoader from '@grpc/proto-loader'
-import { listener } from 'karin/core'
-import { KarinMessage, KarinNotice } from 'karin/event'
-import { KarinElement, Role } from 'karin/types'
-import { common, config, logger, segment } from 'karin/utils'
-import { kritor, proto } from 'kritor-proto'
 import AdapterKritor from './index'
+import * as grpc from '@grpc/grpc-js'
+import { listener } from 'karin/core'
+import { KarinElement } from 'karin/types'
+import { kritor, proto } from 'kritor-proto'
+import { common, config, logger, segment } from 'karin/utils'
+import * as protoLoader from '@grpc/proto-loader'
+import { EventType, KarinMessage, KarinNotice, MessageSubType, NoticeSubType, Role, Scene } from 'karin/types'
 
 export class KritorGrpc {
   /**
@@ -82,11 +82,13 @@ export class KritorGrpc {
                 const { role, scene } = this.KarinSceneContact(contact, sender)
 
                 const e = new KarinMessage({
-                  event: 'message' as 'message',
+                  event: EventType.Message,
+                  raw_event: data,
                   event_id: kritorData.message_id + '',
                   self_id,
                   user_id: sender.uid + '',
                   time: kritorData.time as number,
+                  sub_event: scene === Scene.Group ? MessageSubType.GroupMessage : MessageSubType.PrivateMessage,
                   message_id: kritorData.message_id + '',
                   message_seq: Number(kritorData.message_seq),
                   sender: {
@@ -94,16 +96,15 @@ export class KritorGrpc {
                     uid: sender.uid + '',
                     uin: sender.uin + '',
                     nick: sender.nick || '',
-                    role: role as Role,
+                    role,
                   },
                   elements: this.AdapterConvertKarin(kritorData.elements as Array<kritor.common.Element>),
                   contact: {
-                    scene: scene as 'friend' | 'group',
+                    scene,
                     peer: contact.peer + '',
                     sub_peer: contact.sub_peer + '',
                   },
                   group_id: scene === 'group' ? contact.peer + '' : '',
-                  raw_message: '',
                 })
 
                 e.bot = bot
@@ -135,7 +136,7 @@ export class KritorGrpc {
                     const uin = data.operator_uin
 
                     const contact = {
-                      scene: 'friend' as 'friend',
+                      scene: Scene.Private,
                       peer: uid,
                       sub_peer: '',
                     }
@@ -152,6 +153,7 @@ export class KritorGrpc {
                     }
 
                     const options = {
+                      raw_event: data,
                       self_id,
                       time,
                       user_id: uid,
@@ -162,9 +164,9 @@ export class KritorGrpc {
                         uid: uid + '',
                         uin: uin + '',
                         nick: '',
-                        role: 'unknown' as Role,
+                        role: Role.Unknown,
                       },
-                      sub_event: 'private_poke' as 'private_poke',
+                      sub_event: NoticeSubType.PrivatePoke,
                     }
                     e = new KarinNotice(options)
                     break
@@ -176,7 +178,7 @@ export class KritorGrpc {
                     const uin = data.operator_uin
 
                     const contact = {
-                      scene: 'friend' as 'friend',
+                      scene: Scene.Private,
                       peer: uid,
                       sub_peer: '',
                     }
@@ -189,6 +191,7 @@ export class KritorGrpc {
                     }
 
                     const options = {
+                      raw_event: data,
                       self_id,
                       time,
                       user_id: uid,
@@ -199,9 +202,9 @@ export class KritorGrpc {
                         uid: uid + '',
                         uin: uin + '',
                         nick: '',
-                        role: 'unknown' as Role,
+                        role: Role.Unknown,
                       },
-                      sub_event: 'private_recall' as 'private_recall',
+                      sub_event: NoticeSubType.PrivateRecall,
                     }
                     e = new KarinNotice(options)
                     break
@@ -213,7 +216,7 @@ export class KritorGrpc {
                     const uin = data.operator_uin
 
                     const contact = {
-                      scene: 'friend' as 'friend',
+                      scene: Scene.Private,
                       peer: uid,
                       sub_peer: '',
                     }
@@ -231,6 +234,7 @@ export class KritorGrpc {
                     }
 
                     const options = {
+                      raw_event: data,
                       self_id,
                       time,
                       user_id: uid,
@@ -241,9 +245,9 @@ export class KritorGrpc {
                         uid: uid + '',
                         uin: uin + '',
                         nick: '',
-                        role: 'unknown' as Role,
+                        role: Role.Unknown,
                       },
-                      sub_event: 'private_file_uploaded' as 'private_file_uploaded',
+                      sub_event: NoticeSubType.PrivateFileUploaded,
                     }
                     e = new KarinNotice(options)
                     break
@@ -256,7 +260,7 @@ export class KritorGrpc {
                     const group_id = data.group_id + ''
 
                     const contact = {
-                      scene: 'group' as 'group',
+                      scene: Scene.Group,
                       peer: group_id,
                       sub_peer: '',
                     }
@@ -273,6 +277,7 @@ export class KritorGrpc {
                     }
 
                     const options = {
+                      raw_event: data,
                       self_id,
                       time,
                       user_id: uid,
@@ -283,10 +288,10 @@ export class KritorGrpc {
                         uid: uid + '',
                         uin: uin + '',
                         nick: '',
-                        role: 'unknown' as Role,
+                        role: Role.Unknown,
                       },
                       group_id: data.group_id + '',
-                      sub_event: 'group_poke' as 'group_poke',
+                      sub_event: NoticeSubType.GroupPoke,
                     }
                     e = new KarinNotice(options)
                     break
@@ -299,7 +304,7 @@ export class KritorGrpc {
                     const group_id = data.group_id + ''
 
                     const contact = {
-                      scene: 'group' as 'group',
+                      scene: Scene.Group,
                       peer: group_id,
                       sub_peer: '',
                     }
@@ -314,6 +319,7 @@ export class KritorGrpc {
                     }
 
                     const options = {
+                      raw_event: data,
                       self_id,
                       time,
                       user_id: uid,
@@ -324,10 +330,10 @@ export class KritorGrpc {
                         uid: uid + '',
                         uin: uin + '',
                         nick: '',
-                        role: 'unknown' as Role,
+                        role: Role.Unknown,
                       },
                       group_id,
-                      sub_event: 'group_card_changed' as 'group_card_changed',
+                      sub_event: NoticeSubType.GroupCardChanged,
                     }
                     e = new KarinNotice(options)
                     break
@@ -341,7 +347,7 @@ export class KritorGrpc {
                     const group_id = data.group_id + ''
 
                     const contact = {
-                      scene: 'group' as 'group',
+                      scene: Scene.Group,
                       peer: group_id,
                       sub_peer: '',
                     }
@@ -354,6 +360,7 @@ export class KritorGrpc {
                     }
 
                     const options = {
+                      raw_event: data,
                       self_id,
                       time,
                       user_id: uid,
@@ -364,10 +371,10 @@ export class KritorGrpc {
                         uid: uid + '',
                         uin: uin + '',
                         nick: '',
-                        role: 'unknown' as Role,
+                        role: Role.Unknown,
                       },
                       group_id,
-                      sub_event: 'group_member_unique_title_changed' as 'group_member_unique_title_changed',
+                      sub_event: NoticeSubType.GroupMemberUniqueTitleChanged,
                     }
                     e = new KarinNotice(options)
                     break
@@ -380,7 +387,7 @@ export class KritorGrpc {
                     const group_id = data.group_id + ''
 
                     const contact = {
-                      scene: 'group' as 'group',
+                      scene: Scene.Group,
                       peer: group_id,
                       sub_peer: '',
                     }
@@ -396,6 +403,7 @@ export class KritorGrpc {
                     }
 
                     const options = {
+                      raw_event: data,
                       self_id,
                       time,
                       user_id: uid,
@@ -406,10 +414,10 @@ export class KritorGrpc {
                         uid: uid + '',
                         uin: uin + '',
                         nick: '',
-                        role: 'unknown' as Role,
+                        role: Role.Unknown,
                       },
                       group_id,
-                      sub_event: 'group_essence_changed' as 'group_essence_changed',
+                      sub_event: NoticeSubType.GroupEssenceChanged,
                     }
                     e = new KarinNotice(options)
                     break
@@ -422,7 +430,7 @@ export class KritorGrpc {
                     const group_id = data.group_id + ''
 
                     const contact = {
-                      scene: 'group' as 'group',
+                      scene: Scene.Group,
                       peer: group_id,
                       sub_peer: '',
                     }
@@ -438,6 +446,7 @@ export class KritorGrpc {
                     }
 
                     const options = {
+                      raw_event: data,
                       self_id,
                       time,
                       user_id: uid,
@@ -448,10 +457,10 @@ export class KritorGrpc {
                         uid: uid + '',
                         uin: uin + '',
                         nick: '',
-                        role: 'unknown' as Role,
+                        role: Role.Unknown,
                       },
                       group_id,
-                      sub_event: 'group_recall' as 'group_recall',
+                      sub_event: NoticeSubType.GroupRecall,
                     }
                     e = new KarinNotice(options)
                     break
@@ -464,7 +473,7 @@ export class KritorGrpc {
                     const group_id = data.group_id + ''
 
                     const contact = {
-                      scene: 'group' as 'group',
+                      scene: Scene.Group,
                       peer: group_id,
                       sub_peer: '',
                     }
@@ -484,6 +493,7 @@ export class KritorGrpc {
                     }
 
                     const options = {
+                      raw_event: data,
                       self_id,
                       time,
                       user_id: uid,
@@ -494,10 +504,10 @@ export class KritorGrpc {
                         uid: uid + '',
                         uin: uin + '',
                         nick: '',
-                        role: 'unknown' as Role,
+                        role: Role.Unknown,
                       },
                       group_id,
-                      sub_event: 'group_member_increase' as 'group_member_increase',
+                      sub_event: NoticeSubType.GroupMemberIncrease,
                     }
                     e = new KarinNotice(options)
                     break
@@ -510,7 +520,7 @@ export class KritorGrpc {
                     const group_id = data.group_id + ''
 
                     const contact = {
-                      scene: 'group' as 'group',
+                      scene: Scene.Group,
                       peer: group_id,
                       sub_peer: '',
                     }
@@ -531,6 +541,7 @@ export class KritorGrpc {
                     }
 
                     const options = {
+                      raw_event: data,
                       self_id,
                       time,
                       user_id: uid,
@@ -541,10 +552,10 @@ export class KritorGrpc {
                         uid: uid + '',
                         uin: uin + '',
                         nick: '',
-                        role: 'unknown' as Role,
+                        role: Role.Unknown,
                       },
                       group_id,
-                      sub_event: 'group_member_decrease' as 'group_member_decrease',
+                      sub_event: NoticeSubType.GroupMemberDecrease,
                     }
                     e = new KarinNotice(options)
                     break
@@ -557,7 +568,7 @@ export class KritorGrpc {
                     const group_id = data.group_id + ''
 
                     const contact = {
-                      scene: 'group' as 'group',
+                      scene: Scene.Group,
                       peer: group_id,
                       sub_peer: '',
                     }
@@ -570,6 +581,7 @@ export class KritorGrpc {
                     }
 
                     const options = {
+                      raw_event: data,
                       self_id,
                       time,
                       user_id: uid,
@@ -580,10 +592,10 @@ export class KritorGrpc {
                         uid: uid + '',
                         uin: uin + '',
                         nick: '',
-                        role: 'unknown' as Role,
+                        role: Role.Unknown,
                       },
                       group_id,
-                      sub_event: 'group_admin_changed' as 'group_admin_changed',
+                      sub_event: NoticeSubType.GroupAdminChanged,
                     }
                     e = new KarinNotice(options)
                     break
@@ -596,7 +608,7 @@ export class KritorGrpc {
                     const group_id = data.group_id + ''
 
                     const contact = {
-                      scene: 'group' as 'group',
+                      scene: Scene.Group,
                       peer: group_id,
                       sub_peer: '',
                     }
@@ -617,6 +629,7 @@ export class KritorGrpc {
                     }
 
                     const options = {
+                      raw_event: data,
                       self_id,
                       time,
                       user_id: uid,
@@ -627,10 +640,10 @@ export class KritorGrpc {
                         uid: uid + '',
                         uin: uin + '',
                         nick: '',
-                        role: 'unknown' as Role,
+                        role: Role.Unknown,
                       },
                       group_id,
-                      sub_event: 'group_member_ban' as 'group_member_ban',
+                      sub_event: NoticeSubType.GroupMemberBan,
                     }
                     e = new KarinNotice(options)
                     break
@@ -643,7 +656,7 @@ export class KritorGrpc {
                     const group_id = data.group_id + ''
 
                     const contact = {
-                      scene: 'group' as 'group',
+                      scene: Scene.Group,
                       peer: group_id,
                       sub_peer: '',
                     }
@@ -657,6 +670,7 @@ export class KritorGrpc {
                     }
 
                     const options = {
+                      raw_event: data,
                       self_id,
                       time,
                       user_id: uid,
@@ -667,10 +681,10 @@ export class KritorGrpc {
                         uid: uid + '',
                         uin: uin + '',
                         nick: '',
-                        role: 'unknown' as Role,
+                        role: Role.Unknown,
                       },
                       group_id,
-                      sub_event: 'group_sign_in' as 'group_sign_in',
+                      sub_event: NoticeSubType.GroupSignIn,
                     }
                     e = new KarinNotice(options)
                     break
@@ -683,7 +697,7 @@ export class KritorGrpc {
                     const group_id = data.group_id + ''
 
                     const contact = {
-                      scene: 'group' as 'group',
+                      scene: Scene.Group,
                       peer: group_id,
                       sub_peer: '',
                     }
@@ -696,6 +710,7 @@ export class KritorGrpc {
                     }
 
                     const options = {
+                      raw_event: data,
                       self_id,
                       time,
                       user_id: uid,
@@ -706,10 +721,10 @@ export class KritorGrpc {
                         uid: uid + '',
                         uin: uin + '',
                         nick: '',
-                        role: 'unknown' as Role,
+                        role: Role.Unknown,
                       },
                       group_id,
-                      sub_event: 'group_whole_ban' as 'group_whole_ban',
+                      sub_event: NoticeSubType.GroupWholeBan,
                     }
                     e = new KarinNotice(options)
                     break
@@ -722,7 +737,7 @@ export class KritorGrpc {
                     const group_id = data.group_id + ''
 
                     const contact = {
-                      scene: 'group' as 'group',
+                      scene: Scene.Group,
                       peer: group_id,
                       sub_peer: '',
                     }
@@ -740,6 +755,7 @@ export class KritorGrpc {
                     }
 
                     const options = {
+                      raw_event: data,
                       self_id,
                       time,
                       user_id: uid,
@@ -750,10 +766,10 @@ export class KritorGrpc {
                         uid: uid + '',
                         uin: uin + '',
                         nick: '',
-                        role: 'unknown' as Role,
+                        role: Role.Unknown,
                       },
                       group_id,
-                      sub_event: 'group_file_uploaded' as 'group_file_uploaded',
+                      sub_event: NoticeSubType.GroupFileUploaded,
                     }
                     e = new KarinNotice(options)
                     break
@@ -838,19 +854,19 @@ export class KritorGrpc {
   KarinSceneContact (contact: kritor.common.IContact, sender: kritor.common.ISender) {
     /** scene映射表 */
     const sceneMap = {
-      [kritor.common.Scene.GROUP]: 'group',
-      [kritor.common.Scene.FRIEND]: 'friend',
-      [kritor.common.Scene.GUILD]: 'guild',
-      [kritor.common.Scene.NEARBY]: 'nearby',
-      [kritor.common.Scene.STRANGER]: 'stranger',
-      [kritor.common.Scene.STRANGER_FROM_GROUP]: 'stranger_from_group',
+      [kritor.common.Scene.GROUP]: Scene.Group,
+      [kritor.common.Scene.FRIEND]: Scene.Private,
+      [kritor.common.Scene.GUILD]: Scene.Guild,
+      [kritor.common.Scene.NEARBY]: Scene.Nearby,
+      [kritor.common.Scene.STRANGER]: Scene.Stranger,
+      [kritor.common.Scene.STRANGER_FROM_GROUP]: Scene.StrangerFromGroup,
     }
 
     const roleMap = {
-      [kritor.common.Role.OWNER]: 'owner',
-      [kritor.common.Role.ADMIN]: 'admin',
-      [kritor.common.Role.MEMBER]: 'member',
-      [kritor.common.Role.UNKNOWN]: 'unknown',
+      [kritor.common.Role.OWNER]: Role.Owner,
+      [kritor.common.Role.ADMIN]: Role.Admin,
+      [kritor.common.Role.MEMBER]: Role.Member,
+      [kritor.common.Role.UNKNOWN]: Role.Unknown,
     }
 
     /*
@@ -858,7 +874,7 @@ export class KritorGrpc {
     0=group 1=friend 2=guild 5=nearby 6=stranger 10=stranger_from_group
     */
     const scene = sceneMap[contact.scene as kritor.common.Scene]
-    const role = roleMap[sender.role as kritor.common.Role]
+    const role = roleMap?.[sender.role as kritor.common.Role] || Role.Unknown
 
     return { scene, role }
   }

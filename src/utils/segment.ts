@@ -26,7 +26,7 @@ import {
   CustomMusicElemen,
   TemplateElement,
   ContentElement,
-  KarinNodeElement,
+  NodeElement,
   KarinElement,
   LongMsgElement,
 } from 'karin/types'
@@ -560,7 +560,7 @@ export const segment = new (class Segment {
    * @param nickname - 用户昵称
    * @param content - 节点内容
    */
-  node (user_id: string, nickname: string, content: KarinElement | Array<KarinElement>): KarinNodeElement {
+  node (user_id: string, nickname: string, content: KarinElement | Array<KarinElement>): NodeElement {
     return {
       type: 'node',
       user_id,
