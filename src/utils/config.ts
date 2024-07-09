@@ -231,8 +231,8 @@ export const config = new (class Cfg {
     }
 
     /** 取配置 */
-    const Config = this.getYaml('config', 'group')
-    const defCfg = this.getYaml('defSet', 'group')
+    const Config = this.getYaml('config', 'group', true)
+    const defCfg = this.getYaml('defSet', 'group', false)
     const data = { Config, defCfg }
     /** 缓存 */
     res = this.change.set(key, data)
@@ -264,7 +264,7 @@ export const config = new (class Cfg {
   async watch (type: 'defSet' | 'config', name: string, file: string) {
     const key = `change.${name}`
     /** 已经监听过了 */
-    const res = this.change.get(key)
+    const res = this.watcher.get(key)
     if (res) return true
     /** 监听文件 */
     const watcher = chokidar.watch(file)
