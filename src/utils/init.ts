@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import fs from 'fs'
 import path from 'path'
 import { exec } from 'child_process'

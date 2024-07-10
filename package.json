@@ -17,8 +17,8 @@
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "bin": {
-    "init": "./lib/cli/init.js",
-    "log": "./lib/cli/log.js"
+    "init": "lib/cli/init.js",
+    "log": "lib/cli/log.js"
   },
   "files": [
     "/lib/**/*.js",
@@ -44,9 +44,6 @@
     "dev": "tsx ./lib/index.js --dev",
     "fix": "eslint lib/**/*.js --fix",
     "fix:all": "eslint lib/**/*.js --fix && eslint lib/**/*.ts --fix",
-    "hook": "node lib/cli/hook.js",
-    "init": "node lib/cli/install.js",
-    "postinstall": "node lib/cli/postinstall.js",
     "log": "node lib/cli/log.js",
     "monit": "pm2 monit",
     "pub": "npm publish --access public",
