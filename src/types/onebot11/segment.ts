@@ -2,7 +2,7 @@
 /**
  * - OneBot11消息类型枚举
  */
-export enum OB11SegmentType {
+export const enum OB11SegmentType {
   Text = 'text',
   Face = 'face',
   Image = 'image',

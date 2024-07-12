@@ -2,7 +2,7 @@
 /**
  * - 群身份枚举 值不存在时为unknown
  */
-export enum Role {
+export const enum Role {
   Owner = 'owner',
   Admin = 'admin',
   Member = 'member',
@@ -12,7 +12,7 @@ export enum Role {
 /**
  * - 权限类型枚举
  */
-export enum Permission {
+export const enum Permission {
   All = 'all',
   Master = 'master',
   Admin = 'admin',

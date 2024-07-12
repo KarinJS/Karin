@@ -78,7 +78,7 @@ export class KarinInit {
     })
 
     /** 创建pnpm工作区配置 */
-    fs.copyFileSync(path.join(karinDir, 'pnpm-workspace.yaml'), './pnpm-workspace.yaml')
+    fs.writeFileSync('./pnpm-workspace.yaml', `packages:\n  - 'plugins/**'\n`)
 
     /** 为每个插件包创建统一存储的文件夹 */
     const plugins = this.getPlugins()
@@ -103,13 +103,28 @@ export class KarinInit {
     const pkg = this.readJson(path.join(karinDir, 'package.json'))
     const projPkg = this.readJson('./package.json')
 
+    const main = 'node_modules/node-karin/lib/index.js'
+
     delete pkg.bin
-    pkg.main = './node_modules/node-karin/lib/index.js'
-    pkg.dependencies['node-karin'] = 'latest'
-    pkg.dependencies['kritor-proto'] = 'latest'
+    pkg.main = `./${main}`
+    pkg.types = `./${main.replace('.js', '.d.ts')}`
     pkg.dependencies = { ...projPkg.dependencies, ...pkg.dependencies }
     pkg.devDependencies = { ...projPkg.devDependencies, ...pkg.devDependencies }
-    fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2))
+
+    projPkg.type = 'module'
+    projPkg.private = true
+    projPkg.main = `./${main}`
+    projPkg.dependencies = { ...projPkg.dependencies, ...pkg.dependencies }
+    projPkg.dependencies['node-karin'] = 'latest'
+    projPkg.dependencies['kritor-proto'] = 'latest'
+
+    if (!projPkg.scripts) projPkg.scripts = {}
+    if (!projPkg.devDependencies) projPkg.devDependencies = {}
+
+    projPkg.scripts.debug = `node --watch ${main}`
+    projPkg.scripts.dev = `tsx --watch ${main}`
+
+    fs.writeFileSync('./package.json', JSON.stringify(projPkg, null, 2))
   }
 
   /**
@@ -138,7 +153,7 @@ export class KarinInit {
    */
   async install (type: 'pnpm' | 'yarn' | 'cnpm' | 'npm') {
     /** 检查是否已经安装对应的包管理器 */
-    if (!this.shell(`${type} -v`)) {
+    if (!(await this.shell(`${type} -v`))) {
       console.log(`检测到未安装${type}，开始安装...`)
       if (!await this.shell(`npm install -g ${type}`)) {
         console.log(`${type}安装失败，请手动安装${type}！`)
@@ -152,7 +167,7 @@ export class KarinInit {
     }
 
     /** 安装依赖 */
-    if (!this.shell(`${type} install -P`)) {
+    if (!(await this.shell(`${type} -P --force`))) {
       console.log('安装依赖失败，请手动安装依赖！')
       console.log(`可尝试手动执行 【 ${type} install -P 】 安装依赖~`)
       console.log('如中国大陆用户安装失败，请尝试执行换源 【 npm config set registry https://registry.npmmirror.com 】后再安装依赖~')
@@ -161,9 +176,9 @@ export class KarinInit {
     }
 
     /** 检查安装pm2 */
-    if (!this.shell('pm2 -v')) {
+    if (!(await this.shell('pm2 -v'))) {
       console.log('检测到未安装pm2，开始安装pm2...')
-      if (!this.shell(`${type} install -g pm2`)) {
+      if (!(await this.shell(`${type} install -g pm2`))) {
         console.log('安装pm2失败，请手动安装pm2！')
         console.log('可尝试手动执行 【 npm install -g pm2 】 安装pm2~')
       } else {
@@ -197,19 +212,13 @@ export class KarinInit {
   }
 
   /**
-   * 获取当前的包管理器
+   * 获取当前的包管理器 根据锁文件判断
    */
   getRegistry (): 'pnpm' | 'cnpm' | 'yarn' | 'npm' {
-    const { npm_config_user_agent: agent, npm_config_userconfig: userconfig } = process.env
-
-    if (agent && agent.includes('pnpm')) {
-      return 'pnpm'
-    } else if (userconfig && userconfig.includes('cnpm')) {
-      return 'cnpm'
-    } else if (agent && agent.includes('yarn')) {
-      return 'yarn'
-    } else {
-      return 'npm'
-    }
+    if (fs.existsSync('./pnpm-lock')) return 'pnpm'
+    if (fs.existsSync('./yarn.lock')) return 'yarn'
+    if (fs.existsSync('./package-lock.json')) return 'npm'
+    // cnpm 没有锁文件
+    return 'cnpm'
   }
 }

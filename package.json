@@ -17,8 +17,14 @@
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "bin": {
+    "app": "lib/index.js",
+    "debug": "lib/index.js",
+    "dev": "lib/index.js",
     "init": "lib/cli/init.js",
-    "log": "lib/cli/log.js"
+    "log": "lib/cli/log.js",
+    "rs": "lib/cli/restart.js",
+    "start": "lib/cli/start.js",
+    "stop": "lib/cli/stop.js"
   },
   "files": [
     "/lib/**/*.js",
@@ -29,28 +35,18 @@
     "modules.d.ts",
     "LICENSE",
     "package.json",
-    "README.md",
-    "pnpm-workspace.yaml"
+    "README.md"
   ],
   "workspaces": [
     "plugins/**"
   ],
   "scripts": {
-    "app": "node .",
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run cp && npm run fix",
     "cp": "cp ./lib/modules.d.ts ./modules.d.ts && cp ./lib/modules.js ./modules.js",
-    "debug": "node . --dev",
-    "delete": "pm2 delete ./config/config/pm2.yaml",
-    "dev": "tsx ./lib/index.js --dev",
     "fix": "eslint lib/**/*.js --fix",
-    "fix:all": "eslint lib/**/*.js --fix && eslint lib/**/*.ts --fix",
-    "log": "node lib/cli/log.js",
-    "monit": "pm2 monit",
+    "fix:all": "eslint lib/**/*.js --fix && eslint lib/**/*.d.ts --fix",
     "pub": "npm publish --access public",
-    "restart": "pm2 restart ./config/config/pm2.yaml",
-    "sort:pack": "npx sort-package-json",
-    "start": "pm2 start ./config/config/pm2.yaml && pm2 monit",
-    "stop": "pm2 delete ./config/config/pm2.yaml"
+    "sort": "npx sort-package-json"
   },
   "dependencies": {
     "@grpc/grpc-js": "1.10.10",
@@ -84,13 +80,6 @@
     "tsx": "latest",
     "typescript": "latest"
   },
-  "bundledDependencies": [
-    "@types/express",
-    "@types/lodash",
-    "@types/node",
-    "@types/node-schedule",
-    "@types/ws"
-  ],
   "engines": {
     "node": ">=18"
   },

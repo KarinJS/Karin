@@ -7,7 +7,7 @@ import { Reply, replyCallback } from './reply'
 /**
  * 事件类型枚举
  */
-export enum EventType {
+export const enum EventType {
   /**
    * - 消息事件
    */
@@ -25,7 +25,7 @@ export enum EventType {
 /**
  * 消息事件子类型枚举
  */
-export enum MessageSubType {
+export const enum MessageSubType {
   /**
    * - 群消息
    */
@@ -51,7 +51,7 @@ export enum MessageSubType {
 /**
  * 通知事件子类型枚举
  */
-export enum NoticeSubType {
+export const enum NoticeSubType {
   /**
    * - 私聊戳一戳
    */
@@ -121,7 +121,7 @@ export enum NoticeSubType {
 /**
  * 请求事件子类型枚举
  */
-export enum RequestSubType {
+export const enum RequestSubType {
   /**
    * - 好友申请
    */
@@ -148,7 +148,7 @@ export type EventToSubEvent = {
 /**
  * 组合事件类型枚举
  */
-export enum CombinedEventType {
+export const enum CombinedEventType {
   /**
    * - 消息事件: 群消息
    */

@@ -1,7 +1,7 @@
 /**
  * - OneBot11公开Api
  */
-export enum OB11Api {
+export const enum OB11Api {
   'send_private_msg' = 'send_private_msg',
   'send_group_msg' = 'send_group_msg',
   'send_msg' = 'send_msg',

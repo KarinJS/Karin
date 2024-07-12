@@ -57,14 +57,11 @@ export const server = new (class Server {
       })
 
       /** GET接口 - 获取当前启动信息 */
-      this.app.get('/api/info', (req, res) => {
+      this.app.get('/api/pm2', (req, res) => {
         /** 只允许本机ip访问 */
         if (req.hostname === 'localhost' || req.hostname === '127.0.0.1') {
           const data = {
-            start: process.env.pm_id ? 'pm2' : 'node',
-            start_time: process.uptime().toFixed(2),
-            memory: (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2),
-            time: Date.now(),
+            pm2_id: process.env.pm_id || '',
           }
 
           res.json(data)

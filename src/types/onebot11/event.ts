@@ -6,7 +6,7 @@ import { GroupSender, PrivateSender, ob11Sender } from './sender'
 /**
  * OneBot11消息类型枚举
  */
-export enum OB11PostType {
+export const enum OB11PostType {
   Message = 'message',
   Notice = 'notice',
   Request = 'request',
@@ -17,7 +17,7 @@ export enum OB11PostType {
 /**
  * 消息事件类型
  */
-export enum OB11MessageType {
+export const enum OB11MessageType {
   Private = 'private',
   Group = 'group'
 }
@@ -25,7 +25,7 @@ export enum OB11MessageType {
 /**
  * 消息子类型
  */
-export enum OB11MessageSubType {
+export const enum OB11MessageSubType {
   Friend = 'friend',
   Group = 'group',
   Other = 'other',
@@ -164,7 +164,7 @@ export interface OB11GroupMessage extends OB11Message {
 /**
  * 通知事件类型
  */
-export enum OB11NoticeType {
+export const enum OB11NoticeType {
   GroupUpload = 'group_upload',
   GroupAdmin = 'group_admin',
   GroupDecrease = 'group_decrease',
@@ -505,7 +505,7 @@ export interface OneBot11GroupMessageReaction extends OneBot11Notice {
 /**
  * 请求事件类型
  */
-export enum OB11RequestType {
+export const enum OB11RequestType {
   Friend = 'friend',
   Group = 'group'
 }

@@ -2,7 +2,7 @@
 /**
  * - 事件来源枚举
  */
-export enum Scene {
+export const enum Scene {
   Group = 'group',
   Private = 'friend',
   Guild = 'guild',

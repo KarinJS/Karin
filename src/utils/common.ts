@@ -234,6 +234,7 @@ export const common = new (class Common {
    */
   splitPath (_path: string): { dir: string; pop: string } {
     const list = _path.replace(/\\/g, '/').split('/')
+    if (list[0] === '.') list.shift()
     const pop = list.pop() || ''
     const dir = path.join(...list)
     return { dir, pop }
@@ -381,15 +382,14 @@ export const common = new (class Common {
 
   /**
    * 获取所有插件列表
-   * @param isDir - 返回绝对路径
-   * @param isPack - 屏蔽不带packageon的插件
+   * @param isPack - 是否屏蔽不带package.json的插件，默认为false
    */
-  getPlugins (isDir = false, isPack = false): Array<dirName> {
-    const dir = this.absPath('./plugins', isDir)
+  getPlugins (isPack = false): Array<dirName> {
+    const dir = this.absPath('./plugins', false)
     let list = fs.readdirSync(dir, { withFileTypes: true })
-    // 忽略非文件夹、非 karin-plugin-、karin-adapter- 开头的文件夹
+    /** 忽略非文件夹、非 karin-plugin-开头的文件夹 */
     list = list.filter(v => v.isDirectory() && v.name.startsWith('karin-plugin-'))
-    if (isPack) list = list.filter(v => fs.existsSync(`${dir}/${v.name}/packageon`))
+    if (isPack) list = list.filter(v => fs.existsSync(`${dir}/${v.name}/package.json`))
     const arr: dirName[] = []
     list.map(v => arr.push(v.name as dirName))
     return arr

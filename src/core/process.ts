@@ -52,11 +52,11 @@ export default class Process {
    * 检查后台进程
    */
   static async check (): Promise<Process> {
-    const host = `http://localhost:${config.Server.http.port}/api`
+    const host = `http://127.0.0.1:${config.Server.http.port}/api`
     /**
      * 使用api来检查后台
      */
-    const res = await common.axios(host + '/info', 'get', { timeout: 100 })
+    const res = await common.axios(host + '/pm2', 'get', { timeout: 100 })
     if (!res) return this
 
     logger.mark(logger.red('检测到后台进程 正在关闭'))
@@ -64,7 +64,7 @@ export default class Process {
     await common.axios(host + '/exit', 'get', { timeout: 10 })
 
     for (let i = 0; i < 50; i++) {
-      const res = await common.axios(host + '/info', 'get', { timeout: 100 })
+      const res = await common.axios(host + '/pm2', 'get', { timeout: 100 })
       /** 请求成功继续循环 */
       if (res) continue
       /** 请求异常即代表后台进程已关闭 */

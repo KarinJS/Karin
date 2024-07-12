@@ -97,7 +97,7 @@ export function KarinConvertAdapter (data: Array<KarinElement>): Array<OB11Segme
         break
       }
       case OB11SegmentType.Record: {
-        elements.push({ type: OB11SegmentType.Record, data: { file: i.file, magic: i.magic || false } })
+        elements.push({ type, data: { file: i.file, magic: i.magic || false } })
         break
       }
       case OB11SegmentType.Music: {

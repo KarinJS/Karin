@@ -2,7 +2,7 @@
 import { OB11Api } from './api'
 import { CustomNodeSegment, OB11Segment } from './segment'
 
-export enum MessageType {
+export const enum MessageType {
   Private = 'private',
   Group = 'group'
 }

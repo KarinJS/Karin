@@ -63,6 +63,11 @@ class PluginLoader {
    */
   watchList: Array<{ dir: dirName, name?: fileName }>
 
+  /**
+   * - 所有插件包package.json
+   */
+  pkgJson: { [key: string]: any }
+
   constructor () {
     this.index = 0
     this.dir = './plugins'
@@ -78,6 +83,7 @@ class PluginLoader {
     this.acceptIds = []
     this.buttonIds = []
     this.handlerIds = {}
+    this.pkgJson = {}
   }
 
   /**
@@ -136,73 +142,71 @@ class PluginLoader {
       }
 
       /** package */
-      const pack = common.readJson(`${PluginPath}/package.json`)
+      const pkg = common.readJson(`${PluginPath}/package.json`)
 
-      /** 旧版本入口文件 */
-      const index = this.getIndex(PluginPath, dir, process.env.karin_app_lang as 'js' | 'ts')
-      if (index) {
-        this.FileList.push({ dir: index.dir, name: index.name })
-        this.isDev && this.watchList.push({ dir: index.dir, name: index.name })
-      }
+      /** 缓存package.json */
+      this.pkgJson[dir] = pkg
 
-      /** 新版本入口 */
-      if (pack.main) {
-        const { dir: dirName, pop } = common.splitPath(pack.main)
+      /** 入口文件 */
+      if (pkg.main) {
+        const { dir: dirName, pop } = common.splitPath(pkg.main)
         const dirPath = `${dir}/${dirName}` as dirName
-        this.FileList.push({ dir: dirPath, name: pop as fileName })
-        this.isDev && this.watchList.push({ dir: dirPath, name: pop as fileName })
-      }
-
-      /** 检查是否存在karin.apps */
-      const outDir = (pack?.karin?.outDir || 'dist') as string
-      if (pack && pack?.karin?.apps) {
-        const cfg = pack.karin.apps
-        if (Array.isArray(cfg)) {
-          cfg.forEach((apps: string) => {
-            /** 路径不存在跳过 */
-            if (!common.isDir(`${PluginPath}/${apps}`)) return
-            this.getApps((`${dir}/${apps}`), this.isTs)
-          })
+        if (common.exists(`${this.dir}/${dirPath}/${pop}`)) {
+          this.FileList.push({ dir: dirPath, name: pop as fileName })
+          this.isDev && this.watchList.push({ dir: dirPath, name: pop as fileName })
+        } else {
+          logger.debug(`[插件收集][${pkg.main}] 入口文件不存在，已忽略`)
+        }
+      } else {
+        /** 没有配置入口默认为index.js */
+        if (common.exists(`${PluginPath}/index.js`)) {
+          this.FileList.push({ dir, name: 'index.js' })
+          this.isDev && this.watchList.push({ dir, name: 'index.js' })
         }
       }
 
-      /** ts环境 全部加载  如果存在编译产物 则不加载ts */
-      if (this.isTs) {
-        /** 编译产物 存在不加载ts */
-        if (common.exists(`${PluginPath}/${outDir}/apps`)) {
-          this.getApps((`${dir}/${outDir}/apps`), false)
+      /** 全部apps路径 */
+      const apps = ['apps']
+      if (pkg?.karin?.apps && Array.isArray(pkg.karin.apps)) apps.push(...pkg.karin.apps)
+
+      /** js环境 或 ts环境、js插件 */
+      if (!this.isTs || !common.exists(`${PluginPath}/tsconfig.json`)) {
+        apps.forEach((apps: string) => {
+          /** 路径存在才加载 */
+          if (common.isDir(`${PluginPath}/${apps}`)) {
+            this.getApps((`${dir}/${apps}`), false, this.isDev)
+          } else {
+            logger.debug(`[插件收集][${dir}/${apps}] 路径不存在，已忽略`)
+          }
+        })
+        continue
+      }
+
+      /** ts环境 ts插件 */
+      const outDir = pkg?.karin?.outDir || 'lib'
+      const rootDir = pkg?.karin?.rootDir || 'src'
+
+      /** 编译产物存在 */
+      if (common.exists(`${PluginPath}/${outDir}/apps`)) {
+        this.getApps((`${dir}/${outDir}/apps`), true, this.isDev)
+        continue
+      } else {
+        /** 入口文件 */
+        if (common.exists(`${PluginPath}/${rootDir}/index.ts`)) {
+          this.FileList.push({ dir, name: 'index.ts' })
+          this.isDev && this.watchList.push({ dir, name: 'index.ts' })
           continue
         }
 
-        /** ts */
-        if (common.exists(`${PluginPath}/src/apps`)) {
-          this.getApps((`${dir}/src/apps`), true)
+        /** ts源码 */
+        if (common.exists(`${PluginPath}/${rootDir}/apps`)) {
+          this.getApps((`${dir}/${rootDir}/apps`), true, this.isDev)
           continue
         }
       }
+    }
 
-      /** js环境 */
-      if (common.isDir(`${PluginPath}/apps`)) this.getApps(`${dir}/apps`, false)
-      /** 这里需要判断下 不然ts环境下会重复加载 */
-      if (!this.isTs && common.isDir(`${PluginPath}/${outDir}/apps`)) this.getApps(`${dir}/${outDir}/apps`, false)
-    }
-  }
-
-  /**
-   * 传入路径 语言环境 返回加载index.ts 还是 index.js
-   * @param path - 插件路径
-   * @param lang - 语言环境
-   */
-  getIndex (path: string, dir: dirName, lang: 'js' | 'ts'): { dir: dirName, name: fileName } | false {
-    const isJS = common.exists(`${path}/index.js`)
-    if (isJS && lang === 'js') {
-      return { dir, name: 'index.js' }
-    }
-    const isTS = common.exists(`${path}/src/index.ts`)
-    if (isTS && lang === 'ts') {
-      return { dir: `${dir}/src`, name: 'index.ts' }
-    }
-    return false
+    return plugins
   }
 
   /**
@@ -283,7 +287,11 @@ class PluginLoader {
         const index = this.index
         this.index++
         if (typeof App === 'object' && App?.file?.type === 'function') {
-          if (!App?.name) return logger.error(`[${dir}][${name}] 插件名称错误`)
+          if (!App?.name) {
+            logger.error(`[${dir}][${name}] 插件名称错误`)
+            return false
+          }
+
           App.file.dir = dir
           App.file.name = name
 
@@ -299,10 +307,14 @@ class PluginLoader {
           return true
         }
 
-        if (typeof App !== 'function' || !App?.prototype?.constructor) return
+        if (typeof App !== 'function' || !App?.prototype?.constructor) return false
 
         const Class = new (App as NewMessagePlugin)()
-        if (!Class.name) return logger.error(`[${dir}][${name}] 插件名称错误`)
+        if (!Class.name) {
+          logger.error(`[${dir}][${name}] 插件名称错误`)
+          return false
+        }
+
         logger.debug(`载入插件 [${name}][${Class.name}]`)
 
         this.PluginList[index] = PluginApp({
@@ -323,7 +335,7 @@ class PluginLoader {
       })
 
       await Promise.all(list)
-      // rule收集并排序
+      /** 建立对应的规则索引并排序 */
       if (isOrderBy) this.orderBy()
       return true
     } catch (error: any) {
@@ -479,13 +491,13 @@ class PluginLoader {
     if (this.watcher.get(`${dir}.${name}`)) return
     const file = `./plugins/${dir}/${name}`
     const watcher = chokidar.watch(file)
+
     /** 监听修改 */
     watcher.on('change', async () => {
       /** 卸载 */
       this.uninstallApp(dir, name)
       /** 载入插件 */
-      const res = await this.createdApp(dir, name, true)
-      if (!res) return
+      await this.createdApp(dir, name, true)
       logger.mark(`[修改插件][${dir}][${name}]`)
     })
     /** 监听删除 */
@@ -494,6 +506,8 @@ class PluginLoader {
       this.uninstallApp(dir, name)
       this.watcher.delete(`${dir}.${name}`)
       logger.mark(`[卸载插件][${dir}][${name}]`)
+      /** 卸载之后停止监听 */
+      watcher.close()
     })
     this.watcher.set(`${dir}.${name}`, watcher)
   }
@@ -505,107 +519,51 @@ class PluginLoader {
     if (this.watcher.get(dir)) return
     const file = `${this.dir}/${dir}/`
     const watcher = chokidar.watch(file)
-    /** 热更新 */
-    setTimeout(() => {
-      /** 新增文件 */
-      watcher.on('add', async filePath => {
-        logger.debug(`[热更新][新增插件] ${filePath}`)
-        const name = path.basename(filePath) as fileName
 
-        /** js环境仅接受js ts接受两者 */
-        if (!this.isTs && !name.endsWith('.js')) return
-        if (this.isTs && !name.endsWith('.ts') && !name.endsWith('.js')) return
+    await common.sleep(1000)
 
-        if (!fs.existsSync(`${file}/${name}`)) return
-        /** 载入插件 */
-        const res = await this.createdApp(dir, name, true)
-        if (!res) return
-        /** 延迟1秒 等待卸载完成 */
-        await common.sleep(1000)
-        /** 停止整个文件夹监听 */
-        watcher.close()
-        /** 新增插件之后重新监听文件夹 */
-        this.watcher.delete(dir)
-        this.watchDir(dir)
-        logger.mark(`[新增插件][${dir}][${name}]`)
-        return true
-      })
+    watcher.on('add', async _path => {
+      /** 排除掉不符合规则文件新增 */
+      const ext = this.isTs ? ['.js', '.ts'] : ['.js']
+      if (!ext.some(ext => _path.endsWith(ext))) return
+      const name = path.basename(_path) as fileName
+      await this.createdApp(dir, name, true)
+      logger.mark(`[新增插件][${dir}][${name}]`)
+      return true
+    })
 
-      /** 监听修改 */
-      watcher.on('change', async PluPath => {
-        const name = path.basename(PluPath) as fileName
-        if (!name.endsWith('')) return
-        if (!fs.existsSync(`${this.dir}/${dir}/${name}`)) return
-        /** 卸载 */
-        this.uninstallApp(dir, name)
-        /** 载入插件 */
-        const res = await this.createdApp(dir, name, true)
-        if (!res) return
-        logger.mark(`[修改插件][${dir}][${name}]`)
-      })
+    watcher.on('change', async _path => {
+      /** 排除掉不符合规则文件新增 */
+      const ext = this.isTs ? ['.js', '.ts'] : ['.js']
+      if (!ext.some(ext => _path.endsWith(ext))) return
+      const name = path.basename(_path) as fileName
+      /** 卸载 */
+      this.uninstallApp(dir, name)
+      /** 载入插件 */
+      await this.createdApp(dir, name, true)
+      logger.mark(`[修改插件][${dir}][${name}]`)
+      return true
+    })
 
-      /** 监听删除 */
-      watcher.on('unlink', async PluPath => {
-        const name = path.basename(PluPath) as fileName
-        if (!name.endsWith('')) return
-        /** 卸载 */
-        this.uninstallApp(dir, name)
-        /** 停止监听 */
-        watcher.close()
-        /** 重新监听文件夹 */
-        this.watcher.delete(dir)
-        this.watchDir(dir)
-        logger.mark(`[卸载插件][${dir}][${name}]`)
-      })
-    }, 500)
+    watcher.on('unlink', async _path => {
+      /** 排除掉不符合规则文件新增 */
+      const ext = this.isTs ? ['.js', '.ts'] : ['.js']
+      if (!ext.some(ext => _path.endsWith(ext))) return
+      const name = path.basename(_path) as fileName
+      /** 卸载 */
+      this.uninstallApp(dir, name)
+      logger.mark(`[卸载插件][${dir}][${name}]`)
+      return true
+    })
 
-    /** 生成随机数0.5-2秒 */
-    const random = Math.floor(Math.random() * 1000) + 500
-    await common.sleep(random)
-    const isExist = this.watcher.get(dir)
     /** 这里需要检查一下是否已经存在，已经存在就关掉之前的监听 */
+    const isExist = this.watcher.get(dir)
     if (isExist) {
       isExist.close()
       this.watcher.delete(dir)
     }
     this.watcher.set(dir, watcher)
     return true
-  }
-
-  async watcAdd (dir: dirName, name: fileName) {
-    const file = `${this.dir}/${dir}/`
-    const filePath = `${file}/${name}`
-    logger.debug(`[热更新][新增插件] ${filePath}`)
-
-    if (!this.isApp(name)) {
-      logger.debug(`[热更新][新增插件] ${filePath} 文件类型错误 不符合当前环境规则 已忽略`)
-      return false
-    }
-
-    /** 载入插件 */
-    const res = await this.createdApp(dir, name, true)
-    if (!res) return
-    /** 延迟1秒 等待卸载完成 */
-    await common.sleep(1000)
-
-    /** 新增插件之后重新监听文件夹 */
-    this.watcher.delete(dir)
-    this.watchDir(dir)
-    logger.mark(`[新增插件][${dir}][${name}]`)
-    return true
-  }
-
-  /**
-   * 传入文件名称 返回是否符合当前环境规则
-   * @param name - 文件名称
-   */
-  isApp (name: fileName): boolean {
-    /** 任何环境都支持js */
-    if (name.endsWith('.js')) return true
-    /** ts环境支持ts */
-    if (name.endsWith('.ts') && this.isTs) return true
-    /** 其他情况返回false */
-    return false
   }
 }
 
