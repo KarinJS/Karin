@@ -5,7 +5,6 @@ import {
   FaceElement,
   BubbleFaceElement,
   ReplyElement,
-  VoiceElement,
   VideoElement,
   BasketballElement,
   DiceElement,
@@ -29,6 +28,7 @@ import {
   NodeElement,
   KarinElement,
   LongMsgElement,
+  RecordElement,
 } from 'karin/types'
 
 export const segment = new (class Segment {
@@ -164,9 +164,9 @@ export const segment = new (class Segment {
    * @param name - 语音名称
    * @returns {VoiceElement} 语音元素
    */
-  record (file: string, magic = false, md5 = '', name = ''): VoiceElement {
+  record (file: string, magic = false, md5 = '', name = ''): RecordElement {
     return {
-      type: 'voice',
+      type: 'record',
       file,
       magic,
       md5,
@@ -183,9 +183,9 @@ export const segment = new (class Segment {
    * @returns {VoiceElement} 语音元素
    * @deprecated 即将废弃 请使用segment.record
    */
-  voice (file: string, magic = false, md5 = '', name = ''): VoiceElement {
+  voice (file: string, magic = false, md5 = '', name = ''): RecordElement {
     return {
-      type: 'voice',
+      type: 'record',
       file,
       magic,
       md5,

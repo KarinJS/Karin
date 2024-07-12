@@ -19,7 +19,7 @@ export function AdapterConvertKarin (data: Array<OB11Segment>): Array<KarinEleme
         elements.push(segment.image(i.data.url || i.data.file, { file_type: i.data.type }))
         break
       case 'record':
-        elements.push(segment.voice(i.data.url || i.data.file, i.data.magic === 1))
+        elements.push(segment.record(i.data.url || i.data.file, i.data.magic === 1))
         break
       case 'video':
         elements.push(segment.video(i.data.url || i.data.file))
