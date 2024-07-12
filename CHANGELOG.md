@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.6.22](https://github.com/KarinJS/Karin/compare/v0.6.21...v0.6.22) (2024-07-12)
+
+
+### Bug Fixes
+
+* 修复枚举编译后为var 统一npx脚本 fix [#76](https://github.com/KarinJS/Karin/issues/76) ([570aa49](https://github.com/KarinJS/Karin/commit/570aa493e84c3eeed9945bda9bb3bbcea299718f))
+
 ## [0.6.21](https://github.com/KarinJS/Karin/compare/v0.6.20...v0.6.21) (2024-07-10)
 
 
