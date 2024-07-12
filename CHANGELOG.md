@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.6.23](https://github.com/KarinJS/Karin/compare/v0.6.22...v0.6.23) (2024-07-12)
+
+
+### Bug Fixes
+
+* pnpm锁文件判断错误，修正onebot11语音类型错误 ([6ad9312](https://github.com/KarinJS/Karin/commit/6ad9312d1564a150d7960ea17f09ce73cf15147b))
+
 ## [0.6.22](https://github.com/KarinJS/Karin/compare/v0.6.21...v0.6.22) (2024-07-12)
 
 
