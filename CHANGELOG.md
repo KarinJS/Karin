@@ -1,5 +1,14 @@
 # 更新日志
 
+## [0.6.24](https://github.com/KarinJS/Karin/compare/v0.6.23...v0.6.24) (2024-07-13)
+
+
+### Bug Fixes
+
+* replyCallback ([8aa25cd](https://github.com/KarinJS/Karin/commit/8aa25cd50aaf87ee65b80304eb435959ff2d515b))
+* 修改构建转发描述 ([fbed1a7](https://github.com/KarinJS/Karin/commit/fbed1a7635bc3fe0b85e4aafbdd9e167770742c6))
+* 文档换行 ([0ebe227](https://github.com/KarinJS/Karin/commit/0ebe2270c515e3959be52a59a56730dbacf6cf5c))
+
 ## [0.6.23](https://github.com/KarinJS/Karin/compare/v0.6.22...v0.6.23) (2024-07-12)
 
 
