@@ -96,7 +96,7 @@ export class OB11Event {
   noticeEvent (data: OB11NoticeEvent) {
     const time = data.time
     const self_id = data.self_id + ''
-    let notice = {}
+    let notice = {} as KarinNotice
 
     const user_id = data.user_id + ''
     const event_id = `notice.${time}`
@@ -373,6 +373,12 @@ export class OB11Event {
       }
     }
 
+    notice.bot = this.adapter
+    /**
+     * 快速回复 开发者不应该使用这个方法，应该使用由karin封装过后的reply方法
+     */
+    notice.replyCallback = async elements => await this.adapter.SendMessage(notice.contact, elements)
+
     listener.emit('notice', notice)
   }
 
@@ -404,6 +410,13 @@ export class OB11Event {
             message: data.comment,
           },
         })
+
+        request.bot = this.adapter
+        /**
+         * 快速回复 开发者不应该使用这个方法，应该使用由karin封装过后的reply方法
+         */
+        request.replyCallback = async elements => await this.adapter.SendMessage(request.contact, elements)
+
         listener.emit('request', request)
         return
       }
@@ -435,6 +448,13 @@ export class OB11Event {
             message: data.comment,
           },
         })
+
+        request.bot = this.adapter
+        /**
+         * 快速回复 开发者不应该使用这个方法，应该使用由karin封装过后的reply方法
+         */
+        request.replyCallback = async elements => await this.adapter.SendMessage(request.contact, elements)
+
         listener.emit('request', request)
         return
       }
