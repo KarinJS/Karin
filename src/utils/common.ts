@@ -369,8 +369,8 @@ export const common = new (class Common {
   /**
    * 制作简单转发，返回segment.node[]。仅简单包装node，也可以自己组装
    * @param elements
-   * @param fakeUin 用户id
-   * @param fakeNick 用户昵称
+   * @param fakeUin 转发用户的QQ号 必填
+   * @param fakeNick 转发用户显示的昵称 必填
    */
   makeForward (elements: KarinElement | KarinElement[], fakeUin: string, fakeNick: string): Array<NodeElement> {
     if (!Array.isArray(elements)) elements = [elements]
