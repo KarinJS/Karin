@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.6.27](https://github.com/KarinJS/Karin/compare/v0.6.26...v0.6.27) (2024-07-14)
+
+
+### Bug Fixes
+
+* 初步适配npm插件 ([264afac](https://github.com/KarinJS/Karin/commit/264afacdaefab166cc6c950782515027d1396388))
+
 ## [0.6.26](https://github.com/KarinJS/Karin/compare/v0.6.25...v0.6.26) (2024-07-14)
 
 
