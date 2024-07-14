@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.6.25](https://github.com/KarinJS/Karin/compare/v0.6.24...v0.6.25) (2024-07-14)
+
+
+### Bug Fixes
+
+* 修正未知的通知事件没有return ([0f20b8c](https://github.com/KarinJS/Karin/commit/0f20b8cb7537321b593d068c3cf7f01dfeb407b7))
+
 ## [0.6.24](https://github.com/KarinJS/Karin/compare/v0.6.23...v0.6.24) (2024-07-13)
 
 
