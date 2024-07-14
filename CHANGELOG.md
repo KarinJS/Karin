@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.6.26](https://github.com/KarinJS/Karin/compare/v0.6.25...v0.6.26) (2024-07-14)
+
+
+### Bug Fixes
+
+* node_modules ([ef7dbd7](https://github.com/KarinJS/Karin/commit/ef7dbd7f331d4e409b9a5540f61874daf31f8cc3))
+
 ## [0.6.25](https://github.com/KarinJS/Karin/compare/v0.6.24...v0.6.25) (2024-07-14)
 
 
