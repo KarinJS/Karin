@@ -3,6 +3,7 @@ import { Logger } from 'log4js'
 import { karinDir } from 'karin/core/dir'
 import { fs, yaml as Yaml, chokidar } from 'karin/modules'
 import { Redis, App, Config, Server, Package, GroupCfg } from 'karin/types'
+import { common } from './common'
 
 /**
  * 配置文件
@@ -63,7 +64,7 @@ export const config = new (class Cfg {
     }
 
     /** 为每个插件包创建统一存储的文件夹 */
-    const plugins = this.getPlugins()
+    const plugins = await this.getPlugins()
     const DataList = [
       'data',
       'temp',
@@ -75,10 +76,15 @@ export const config = new (class Cfg {
     this.logger = (await import('./logger')).default
   }
 
-  getPlugins () {
+  async getPlugins () {
+    const list: string[] = []
     const files = fs.readdirSync('./plugins', { withFileTypes: true })
     // 过滤掉非karin-plugin-开头的文件夹
-    return files.filter(file => file.isDirectory() && (file.name.startsWith('karin-plugin-'))).map(dir => dir.name)
+    list.push(...files.filter(file => file.isDirectory() && (file.name.startsWith('karin-plugin-'))).map(dir => dir.name))
+
+    // 获取npm插件
+    list.push(...(await common.getNpmPlugins(false)))
+    return list
   }
 
   /**

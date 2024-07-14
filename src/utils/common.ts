@@ -424,7 +424,18 @@ export const common = new (class Common {
     const dependencies = Object.keys(pkg.dependencies).filter((name) => !pkgdependencies.includes(name))
 
     if (!showDetails) {
-      return dependencies as T extends true ? { dir: dirName; name: fileName }[] : string[]
+      const list: string[] = []
+      // 检查pkg是否存在karin字段
+      const readPackageJson = async (name: string) => {
+        try {
+          const pkgPath = path.join(process.cwd(), 'node_modules', name, 'package.json')
+          const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
+          if (pkg?.karin) list.push(name)
+        } catch { }
+      }
+
+      await Promise.all(dependencies.map(readPackageJson))
+      return list as T extends true ? { dir: dirName; name: fileName }[] : string[]
     } else {
       const list: { dir: dirName; name: string }[] = []
 
