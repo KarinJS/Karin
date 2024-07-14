@@ -108,7 +108,7 @@ export class OB11Event {
     }
 
     const contact = {
-      scene: ('group_id' in data ? 'group' : 'friend') as Scene,
+      scene: 'group_id' in data ? Scene.Group : Scene.Private,
       peer: 'group_id' in data ? data.group_id : data.user_id,
       sub_peer: '',
     }
@@ -342,6 +342,8 @@ export class OB11Event {
             // todo kritor没有这个事件
             this.adapter.logger('info', `[群荣誉变更]：${JSON.stringify(data)}`)
             break
+          default:
+            return this.adapter.logger('error', '未知通知事件：', JSON.stringify(data))
         }
         break
       case 'group_msg_emoji_like': {

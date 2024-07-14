@@ -7,8 +7,10 @@ import { KarinNoticeType, KarinRequestType, AllListenEvent, KarinEventTypes, Kar
  * - 插件根目录名称
  * - 例如: karin-plugin-example
  * - 例如: karin-plugin-example/apps
+ * - ### npm包类型: `string`
+ * - ### git插件类型: `karin-plugin-${string}`
  */
-export type dirName = `karin-plugin-${string}`
+export type dirName = `karin-plugin-${string}` | string
 /**
  * - 插件名称
  * - 例如: index.js index.ts

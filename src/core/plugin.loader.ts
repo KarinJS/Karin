@@ -90,7 +90,7 @@ class PluginLoader {
    * 插件初始化
    */
   async load () {
-    this.getPlugins()
+    await this.getPlugins()
     listener.once('plugin.watch', () => {
       for (const v of this.watchList) {
         v.name ? this.watch(v.dir, v.name) : this.watchDir(v.dir)
@@ -103,6 +103,11 @@ class PluginLoader {
 
     /** 载入插件 */
     const promises = this.FileList.map(async ({ dir, name }) => await this.createdApp(dir, name, false))
+    /** 获取npm插件 */
+    const npm = await common.getNpmPlugins(true)
+    /** 载入npm插件 */
+    promises.push(...npm.map(async ({ dir, name }) => await this.createdApp(dir, name, false, true)))
+
     /** 等待所有插件加载完成 */
     await Promise.all(promises)
     /** 释放缓存 */
@@ -117,7 +122,7 @@ class PluginLoader {
   /**
    * 获取所有插件
    */
-  getPlugins () {
+  async getPlugins () {
     /** 获取所有插件包 */
     const plugins = common.getPlugins()
 
@@ -274,11 +279,12 @@ class PluginLoader {
    * @param dir - 插件包路径
    * @param name - 插件名称
    * @param isOrderBy - 是否为动态导入 默认为静态导入
+   * @param isNpm - 是否为npm包
    */
-  async createdApp (dir: dirName, name: fileName, isOrderBy = false) {
+  async createdApp (dir: dirName, name: fileName, isOrderBy = false, isNpm = false) {
     try {
       const list: Promise<any>[] = []
-      let path = `${this.dirPath}plugins/${dir}/${name}`
+      let path = `${this.dirPath}${isNpm ? 'node_modules ' : 'plugins'}/${dir}/${name}`
       if (isOrderBy) path = path + `?${Date.now()}`
 
       const tmp: Array<(NewMessagePlugin) | PluginApps> = await import(path)

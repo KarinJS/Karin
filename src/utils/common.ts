@@ -4,7 +4,7 @@ import { AxiosRequestConfig } from 'axios'
 import { pipeline, Readable } from 'stream'
 import { logger, segment } from 'karin/utils'
 import { fs, path, axios, lodash, yaml as Yaml } from 'karin/modules'
-import { dirName, KarinElement, NodeElement } from 'karin/types'
+import { dirName, fileName, KarinElement, NodeElement } from 'karin/types'
 
 /**
  * 常用方法
@@ -381,7 +381,7 @@ export const common = new (class Common {
   }
 
   /**
-   * 获取所有插件列表
+   * 获取git插件列表
    * @param isPack - 是否屏蔽不带package.json的插件，默认为false
    */
   getPlugins (isPack = false): Array<dirName> {
@@ -393,6 +393,60 @@ export const common = new (class Common {
     const arr: dirName[] = []
     list.map(v => arr.push(v.name as dirName))
     return arr
+  }
+
+  /**
+   * 获取npm插件列表
+   * @param showDetails - 是否返回详细信息，默认为false
+   * 默认只返回插件npm包名，为true时返回详细的{dir, name}[]
+   */
+  async getNpmPlugins<T extends boolean> (showDetails: T): Promise<T extends true ? { dir: string; name: fileName }[] : string[]> {
+    /** 屏蔽的依赖包列表 */
+    const pkgdependencies = [
+      '@grpc/grpc-js',
+      '@grpc/proto-loader',
+      'art-template',
+      'axios',
+      'chalk',
+      'chokidar',
+      'express',
+      'kritor-proto',
+      'level',
+      'lodash',
+      'log4js',
+      'moment',
+      'node-schedule',
+      'redis',
+      'ws',
+      'yaml',
+    ]
+    const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'))
+    const dependencies = Object.keys(pkg.dependencies).filter((name) => !pkgdependencies.includes(name))
+
+    if (!showDetails) {
+      return dependencies as T extends true ? { dir: string; name: fileName }[] : string[]
+    } else {
+      const list: { dir: string; name: string }[] = []
+
+      const readPackageJson = async (name: string) => {
+        try {
+          const pkgPath = path.join(process.cwd(), 'node_modules', name, 'package.json')
+          const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
+          if (pkg?.karin && pkg?.karin?.apps?.length) {
+            pkg.karin.apps.forEach((app: string) => {
+              fs.readdirSync(`./node_modules/${name}/${app}`).forEach((dir: string) => {
+                /** 忽略非js */
+                if (!dir.endsWith('.js')) return
+                list.push({ dir, name })
+              })
+            })
+          }
+        } catch { }
+      }
+
+      await Promise.all(dependencies.map(readPackageJson))
+      return list as T extends true ? { dir: string; name: fileName }[] : string[]
+    }
   }
 
   /**
