@@ -284,7 +284,7 @@ class PluginLoader {
   async createdApp (dir: dirName, name: fileName, isOrderBy = false, isNpm = false) {
     try {
       const list: Promise<any>[] = []
-      let path = `${this.dirPath}${isNpm ? 'node_modules ' : 'plugins'}/${dir}/${name}`
+      let path = `${this.dirPath}${isNpm ? 'node_modules' : 'plugins'}/${dir}/${name}`
       if (isOrderBy) path = path + `?${Date.now()}`
 
       const tmp: Array<(NewMessagePlugin) | PluginApps> = await import(path)

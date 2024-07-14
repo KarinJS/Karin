@@ -424,28 +424,36 @@ export const common = new (class Common {
     const dependencies = Object.keys(pkg.dependencies).filter((name) => !pkgdependencies.includes(name))
 
     if (!showDetails) {
-      return dependencies as T extends true ? { dir: string; name: fileName }[] : string[]
+      return dependencies as T extends true ? { dir: dirName; name: fileName }[] : string[]
     } else {
-      const list: { dir: string; name: string }[] = []
+      const list: { dir: dirName; name: string }[] = []
 
       const readPackageJson = async (name: string) => {
         try {
           const pkgPath = path.join(process.cwd(), 'node_modules', name, 'package.json')
           const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
-          if (pkg?.karin && pkg?.karin?.apps?.length) {
-            pkg.karin.apps.forEach((app: string) => {
-              fs.readdirSync(`./node_modules/${name}/${app}`).forEach((dir: string) => {
-                /** 忽略非js */
-                if (!dir.endsWith('.js')) return
-                list.push({ dir, name })
+          if (pkg?.karin) {
+            if (pkg?.main) {
+              const dir = `${name}/${path.dirname(pkg.main).replace(/\.\//, '')}`
+              list.push({ dir, name: path.basename(pkg.main) })
+            }
+
+            if (pkg?.karin?.apps?.length) {
+              pkg.karin.apps.forEach((app: string) => {
+                fs.readdirSync(`./node_modules/${name}/${app}`).forEach((name: string) => {
+                  /** 忽略非js */
+                  if (!name.endsWith('.js')) return
+                  const dir = `${name}/${app}`
+                  list.push({ dir, name })
+                })
               })
-            })
+            }
           }
         } catch { }
       }
 
       await Promise.all(dependencies.map(readPackageJson))
-      return list as T extends true ? { dir: string; name: fileName }[] : string[]
+      return list as T extends true ? { dir: dirName; name: fileName }[] : string[]
     }
   }
 
