@@ -1,5 +1,13 @@
 # 更新日志
 
+## [0.6.28](https://github.com/KarinJS/Karin/compare/v0.6.27...v0.6.28) (2024-07-16)
+
+
+### Bug Fixes
+
+* npm包的入口文件不作为app载入 ([54cdd02](https://github.com/KarinJS/Karin/commit/54cdd02a4ba206ee9e91bdb4c60e2bdfbbd03e79))
+* YamlEditor 新增写入注释 ([8dec58e](https://github.com/KarinJS/Karin/commit/8dec58e8dfbe81a4c927c659850a9bb83041dc1b))
+
 ## [0.6.27](https://github.com/KarinJS/Karin/compare/v0.6.26...v0.6.27) (2024-07-14)
 
 
