@@ -106,7 +106,7 @@ class PluginLoader {
     /** 获取npm插件 */
     const npm = await common.getNpmPlugins(true)
     /** 载入npm插件 */
-    promises.push(...npm.map(async ({ dir, name }) => await this.createdApp(dir, name, false, true)))
+    promises.push(...npm.map(async ({ dir, name, isMain }) => await this.createdApp(dir, name, false, true, isMain)))
 
     /** 等待所有插件加载完成 */
     await Promise.all(promises)
@@ -280,14 +280,18 @@ class PluginLoader {
    * @param name - 插件名称
    * @param isOrderBy - 是否为动态导入 默认为静态导入
    * @param isNpm - 是否为npm包
+   * @param isMain - 是否为主入口文件
    */
-  async createdApp (dir: dirName, name: fileName, isOrderBy = false, isNpm = false) {
+  async createdApp (dir: dirName, name: fileName, isOrderBy = false, isNpm = false, isMain = false) {
     try {
       const list: Promise<any>[] = []
       let path = `${this.dirPath}${isNpm ? 'node_modules' : 'plugins'}/${dir}/${name}`
       if (isOrderBy) path = path + `?${Date.now()}`
 
       const tmp: Array<(NewMessagePlugin) | PluginApps> = await import(path)
+
+      /** npm包的入口文件不作为app载入 只加载 */
+      if (isMain) return true
 
       lodash.forEach(tmp, (App) => {
         const index = this.index

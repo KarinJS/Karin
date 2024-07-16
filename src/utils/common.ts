@@ -400,7 +400,7 @@ export const common = new (class Common {
    * @param showDetails - 是否返回详细信息，默认为false
    * 默认只返回插件npm包名，为true时返回详细的{dir, name}[]
    */
-  async getNpmPlugins<T extends boolean> (showDetails: T): Promise<T extends true ? { dir: string; name: fileName }[] : string[]> {
+  async getNpmPlugins<T extends boolean> (showDetails: T): Promise<T extends true ? { dir: string; name: fileName, isMain: boolean }[] : string[]> {
     /** 屏蔽的依赖包列表 */
     const pkgdependencies = [
       '@grpc/grpc-js',
@@ -435,9 +435,9 @@ export const common = new (class Common {
       }
 
       await Promise.all(dependencies.map(readPackageJson))
-      return list as T extends true ? { dir: dirName; name: fileName }[] : string[]
+      return list as T extends true ? { dir: dirName; name: fileName, isMain: boolean }[] : string[]
     } else {
-      const list: { dir: dirName; name: string }[] = []
+      const list: { dir: dirName; name: string, isMain: boolean }[] = []
 
       const readPackageJson = async (name: string) => {
         try {
@@ -446,7 +446,7 @@ export const common = new (class Common {
           if (pkg?.karin) {
             if (pkg?.main) {
               const dir = `${name}/${path.dirname(pkg.main).replace(/\.\//, '')}`
-              list.push({ dir, name: path.basename(pkg.main) })
+              list.push({ dir, name: path.basename(pkg.main), isMain: true })
             }
 
             if (pkg?.karin?.apps?.length) {
@@ -455,7 +455,7 @@ export const common = new (class Common {
                   /** 忽略非js */
                   if (!name.endsWith('.js')) return
                   const dir = `${name}/${app}`
-                  list.push({ dir, name })
+                  list.push({ dir, name, isMain: false })
                 })
               })
             }
@@ -464,7 +464,7 @@ export const common = new (class Common {
       }
 
       await Promise.all(dependencies.map(readPackageJson))
-      return list as T extends true ? { dir: dirName; name: fileName }[] : string[]
+      return list as T extends true ? { dir: dirName; name: fileName, isMain: boolean }[] : string[]
     }
   }
 
