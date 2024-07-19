@@ -94,11 +94,9 @@ export default class RedisLevel {
 
   /**
    * set 设置数据
-   * @param {string} key 键
-   * @param {string} value 值
-   * @param {object} [options] 选项
-   * @param [options.EX] 过期时间 单位秒
-   * @returns {Promise<void>|Error}
+   * @param key 键
+   * @param value 值
+   * @param options 选项
    */
   async set (key: string, value: string, options?: { EX: number } | undefined) {
     if (options && options.EX) {
@@ -110,8 +108,7 @@ export default class RedisLevel {
 
   /**
    * del 删除数据
-   * @param {string} key 键
-   * @returns {Promise<void>|Error}
+   * @param key 键
    */
   async del (key: string) {
     this.#expireMap.delete(key)
@@ -120,22 +117,28 @@ export default class RedisLevel {
 
   /**
    * keys 获取所有键
-   * @param {string} [prefix] 前缀
-   * @returns {Promise<string[]>|Error} 键列表
+   * @param prefix 前缀
    */
   async keys (prefix = ''): Promise<string[]> {
-    const keys = []
-    for await (const key of this.#level.keys({ gte: prefix, lt: prefix + '\xFF' })) {
-      // Check if the key has expired
+    /** 去掉末尾的* */
+    prefix = prefix.replace(/\*$/, '')
+    const list = await this.#level.keys({ gte: prefix, lt: `${prefix}\xFF` }).all()
+    this.#checkKeys(list)
+    return list
+  }
+
+  /**
+   * 给一个kyes 检查是否过期
+   * @param keys 键数组
+   */
+  async #checkKeys (keys: string[]) {
+    for (const key of keys) {
       const expire = this.#expireMap.get(key)
       if (expire && expire < Date.now()) {
         await this.#level.del(key)
         this.#expireMap.delete(key)
-      } else {
-        keys.push(key)
       }
     }
-    return keys
   }
 
   /**
