@@ -10,30 +10,30 @@ import { common } from './common'
  */
 export const config = new (class Cfg {
   /**
-   * 根项目绝对路径
+   * 运行目录绝对路径
    */
-  projPath: string
+  dir: string
   /**
-   * 根项目配置文件夹路径
+   * 运行目录配置文件夹路径
    */
-  projConfigPath: string
+  cfgDir: string
   /**
-   * npm包路径
+   * node-karin npm包路径
    */
-  pkgPath: string
+  pkgDir: string
   /**
-   * karin包配置文件夹路径
+   * node-karin 包配置文件夹路径
    */
-  pkgConfigPath: string
+  pkgCfgDir: string
   change: Map<string, any>
   watcher: Map<string, any>
   review: boolean
   logger!: Logger
   constructor () {
-    this.projPath = process.cwd()
-    this.pkgPath = karinDir
-    this.projConfigPath = this.projPath + '/config'
-    this.pkgConfigPath = this.pkgPath + '/config/defSet'
+    this.dir = process.cwd()
+    this.pkgDir = karinDir
+    this.cfgDir = this.dir + '/config'
+    this.pkgCfgDir = this.pkgDir + '/config/defSet'
 
     /** 缓存 */
     this.change = new Map()
@@ -47,18 +47,18 @@ export const config = new (class Cfg {
   /** 初始化配置 */
   async initCfg () {
     const list = [
-      this.projPath + '/temp/input',
-      this.projPath + '/plugins/karin-plugin-example',
-      this.projConfigPath + '/config',
-      this.projConfigPath + '/plugin',
+      this.dir + '/temp/input',
+      this.dir + '/plugins/karin-plugin-example',
+      this.cfgDir + '/config',
+      this.cfgDir + '/plugin',
     ]
 
     list.forEach(path => this.mkdir(path))
-    if (this.pkgConfigPath !== (this.projConfigPath + '/defSet').replace(/\\/g, '/')) {
-      const files = fs.readdirSync(this.pkgConfigPath).filter(file => file.endsWith('.yaml'))
+    if (this.pkgCfgDir !== (this.cfgDir + '/defSet').replace(/\\/g, '/')) {
+      const files = fs.readdirSync(this.pkgCfgDir).filter(file => file.endsWith('.yaml'))
       files.forEach(file => {
-        const path = `${this.projConfigPath}/config/${file}`
-        const pathDef = `${this.pkgConfigPath}/${file}`
+        const path = `${this.cfgDir}/config/${file}`
+        const pathDef = `${this.pkgCfgDir}/${file}`
         if (!fs.existsSync(path)) fs.copyFileSync(pathDef, path)
       })
     }
@@ -70,7 +70,7 @@ export const config = new (class Cfg {
       'temp',
       'resources',
       'temp/html',
-      this.projConfigPath + '/plugin',
+      this.cfgDir + '/plugin',
     ]
     DataList.forEach(path => this.dirPath(path, plugins))
     this.logger = (await import('./logger')).default

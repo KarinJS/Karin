@@ -12,10 +12,13 @@ export type YamlValue = string | boolean | number | object | any[]
 
 export class YamlEditor {
   filePath: string
+  doc: Yaml.Document
   document: Yaml.Document
   constructor (file: string) {
     this.filePath = file
-    this.document = Yaml.parseDocument(fs.readFileSync(file, 'utf8'))
+    const data = Yaml.parseDocument(fs.readFileSync(file, 'utf8'))
+    this.doc = data
+    this.document = data
   }
 
   /**
@@ -221,10 +224,11 @@ export class YamlEditor {
    * @param comment - 要设置的注释
    * @param prepend - 如果为 true，则添加到注释的开头，否则添加到同一行的末尾
    */
-  comment (path: string, comment: string, prepend = false) {
+  comment (path: string, comment: string, prepend: boolean) {
     if (!path) throw new Error('[YamlEditor] path 不能为空')
     const pair = this.getpair(path)
     if (!pair) throw new Error(`[YamlEditor] 未找到节点 ${path}`)
+    comment = ` ${comment}`
     if (prepend) {
       pair.key.commentBefore = comment
     } else {
@@ -253,10 +257,33 @@ export class YamlEditor {
   }
 
   /**
+   * 检查注释是否存在
+   * @param path - 路径，多个路径使用`.`连接，例如：`a.b.c`
+   * @param type - 要检查的注释类型，`before` 为注释前，`after` 为注释后
+   */
+  hascomment (path: string, type: 'before' | 'after') {
+    if (!path) throw new Error('[YamlEditor] path 不能为空')
+    const pair = this.getpair(path)
+    if (!pair) throw new Error(`[YamlEditor] 未找到节点 ${path}`)
+
+    if (type === 'before') {
+      return !!pair.key.commentBefore
+    } else if (type === 'after') {
+      return !!pair.key.comment
+    }
+    return false
+  }
+
+  /**
    * 保存文件
    */
   save () {
     try {
+      if (this.doc.toString() === this.document.toString()) {
+        logger.info('[YamlEditor] 文件未更改，无需保存')
+        return
+      }
+
       fs.writeFileSync(this.filePath, this.document.toString())
       logger.info('[YamlEditor] 文件已保存')
     } catch (error) {

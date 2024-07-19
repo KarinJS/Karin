@@ -2,14 +2,14 @@ import { promisify } from 'util'
 import { fileURLToPath } from 'url'
 import { AxiosRequestConfig } from 'axios'
 import { pipeline, Readable } from 'stream'
-import { logger, segment } from 'karin/utils'
+import { logger, segment, YamlEditor } from 'karin/utils'
 import { fs, path, axios, lodash, yaml as Yaml } from 'karin/modules'
 import { dirName, fileName, KarinElement, NodeElement } from 'karin/types'
 
 /**
  * 常用方法
  */
-export const common = new (class Common {
+class Common {
   streamPipeline: (stream1: Readable, stream2: fs.WriteStream) => Promise<void>
   constructor () {
     this.streamPipeline = promisify(pipeline)
@@ -415,6 +415,7 @@ export const common = new (class Common {
       'lodash',
       'log4js',
       'moment',
+      'node-karin',
       'node-schedule',
       'redis',
       'ws',
@@ -581,4 +582,43 @@ export const common = new (class Common {
     }
     return logs.join('')
   }
-})()
+
+  /**
+   * 更新yaml文件
+   * @param filePath - 文件路径
+   * @param settings - 设置项
+   */
+  updateYaml (filePath: string, settings: {
+    /** 键路径 */
+    key: string,
+    /** 要写入的 */
+    val: any,
+    /** 需要写入的注释 */
+    comment: string
+  }[]) {
+    let yaml = new YamlEditor(filePath)
+
+    /** 先添加内容 */
+    settings.forEach(({ key, val }) => {
+      try {
+        if (!yaml.has(key)) yaml.set(key, val)
+      } catch { }
+    })
+    /** 先保存 */
+    yaml.save()
+
+    /** 重新解析 再次写入注释 直接写入注释会报错 写入的不是node节点模式 */
+    yaml = new YamlEditor(filePath)
+    settings.forEach(({ key, comment }) => {
+      try {
+        yaml.comment(key, comment, true)
+      } catch { }
+    })
+    yaml.save()
+  }
+}
+
+/**
+ * 常用方法
+ */
+export const common = new Common()

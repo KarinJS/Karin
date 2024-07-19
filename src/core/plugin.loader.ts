@@ -213,8 +213,9 @@ class PluginLoader {
       } else {
         /** 入口文件 */
         if (common.exists(`${PluginPath}/${rootDir}/index.ts`)) {
-          this.FileList.push({ dir, name: 'index.ts' })
-          this.isDev && this.watchList.push({ dir, name: 'index.ts' })
+          const dirPath = `${dir}/${rootDir}` as dirName
+          this.FileList.push({ dir: dirPath, name: 'index.ts' })
+          this.isDev && this.watchList.push({ dir: dirPath, name: 'index.ts' })
           continue
         }
 
