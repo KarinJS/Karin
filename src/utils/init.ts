@@ -66,7 +66,7 @@ export class KarinInit {
       const pkgDir = path.join(karinDir, dir)
       const projDir = path.join(process.cwd(), dir)
       /** 清空projDir目录下的文件 保留目录 */
-      if (fs.existsSync(projDir)) fs.rmdirSync(projDir, { recursive: true })
+      if (fs.existsSync(projDir)) fs.rmSync(projDir, { recursive: true })
       this.mkdir(projDir)
       /** 读取pkgDir目录下的所有文件 复制到projDir下 */
       const files = fs.readdirSync(pkgDir).filter(file => file.endsWith('.yaml'))

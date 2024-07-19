@@ -7,6 +7,7 @@ import axios from 'axios'
 import { fileURLToPath } from 'url'
 import { program } from 'commander'
 import { exec as execCmd, spawn, ChildProcess } from 'child_process'
+import { KarinInit } from 'karin/utils/init'
 
 const enum Runner {
   Node = 'node',
@@ -37,7 +38,7 @@ class KarinCli {
     /** karin目录 */
     this.karinDir = path.join(path.dirname(this.filename), '../..')
     /** 入口文件(注意后缀) */
-    this.file = path.join(path.dirname(this.filename), '../index')
+    this.file = path.join(path.dirname(this.filename), '../index.js')
     this.child = null as unknown as ChildProcess
   }
 
@@ -85,10 +86,10 @@ class KarinCli {
 
     switch (runner) {
       case Runner.Node:
-        cmd = [this.file + '.js']
+        cmd = [this.file]
         break
       case Runner.Tsx:
-        cmd = [this.file + '.ts']
+        cmd = [this.file]
         break
       case Runner.Pm2: {
         this.pm2()
@@ -97,7 +98,7 @@ class KarinCli {
     }
 
     /** 启动 */
-    this.child = spawn(runner, cmd, { stdio: ['inherit', 'inherit', 'inherit', 'ipc'], cwd: process.cwd(), env: process.env })
+    this.child = spawn(runner, cmd, { stdio: ['inherit', 'inherit', 'inherit', 'ipc'], cwd: process.cwd(), env: process.env, shell: true })
     /** 监听退出 */
     this.child.once('exit', (code) => process.exit(code))
     /** 监听子进程消息 */
@@ -201,10 +202,78 @@ class KarinCli {
   }
 
   /**
+   * 更新依赖
+   */
+  async update () {
+    /** 屏蔽的依赖包列表 */
+    const pkgdependencies = [
+      '@grpc/grpc-js',
+      '@grpc/proto-loader',
+      'art-template',
+      'axios',
+      'chalk',
+      'chokidar',
+      'express',
+      'kritor-proto',
+      'level',
+      'lodash',
+      'log4js',
+      'moment',
+      'node-schedule',
+      'redis',
+      'ws',
+      'yaml',
+    ]
+
+    let cmd = ''
+    const list = Object.keys(this.pkg.dependencies).filter(key => !pkgdependencies.includes(key))
+
+    /** 获取包管理器 */
+    const pkg = new KarinInit().getRegistry()
+    switch (pkg) {
+      case 'pnpm': {
+        cmd = 'pnpm update'
+        break
+      }
+      case 'yarn': {
+        cmd = 'yarn upgrade'
+        break
+      }
+      case 'npm': {
+        cmd = 'npm update'
+        break
+      }
+      case 'cnpm': {
+        cmd = 'cnpm update'
+        break
+      }
+    }
+
+    /** 异步并发更新依赖 */
+    await Promise.all(list.map(async item => {
+      try {
+        const res = await this.exec(`${cmd} ${item}@latest`)
+        /** 已经是最新 */
+        if (res.includes('is up to date')) {
+          console.log(`[依赖更新] ${item} 已经是最新~`)
+        } else {
+          console.log(`[依赖更新] ${item} 更新完成~`)
+        }
+      } catch (error: any) {
+        console.error(`[依赖更新] ${item} 更新失败:`)
+        console.error(`error.stack: ${error.stack}`)
+        console.error(`error.message: ${error.message}`)
+      }
+    }))
+
+    console.log('所有依赖已更新完成~')
+  }
+
+  /**
    * 封装exec
    * @param cmd - 命令
    */
-  exec (cmd: string) {
+  exec (cmd: string): Promise<string> {
     return new Promise((resolve, reject) => {
       execCmd(cmd, (error, stdout, stderr) => {
         if (stdout) return resolve(stdout)
@@ -241,4 +310,5 @@ program.command('rs').description('重启pm2服务').action(() => cli.restart())
 program.command('dev').description('TypeScript开发模式').action(() => cli.start(Mode.Dev, Lang.Ts, Runner.Tsx))
 program.command('debug').description('JavaScript调试模式').action(() => cli.start(Mode.Dev, Lang.Js, Runner.Node))
 program.command('log').description('查看日志').action(() => cli.log())
+program.command('up').description('更新依赖').action(() => cli.update())
 program.parse(process.argv)
