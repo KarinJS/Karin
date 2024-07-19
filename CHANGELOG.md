@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.8.1](https://github.com/KarinJS/Karin/compare/v0.8.0...v0.8.1) (2024-07-19)
+
+
+### Bug Fixes
+
+* 修正ts dev启动错误 新增`npx karin up` ([e85bb2d](https://github.com/KarinJS/Karin/commit/e85bb2d51458727d51c1fceabec684b88cdb78b3))
+
 ## [0.8.0](https://github.com/KarinJS/Karin/compare/v0.7.2...v0.8.0) (2024-07-19)
 
 
