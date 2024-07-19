@@ -140,3 +140,5 @@ export const update = new (class Update {
     return { status: 'ok', data, count }
   }
 })()
+
+export const Update = update

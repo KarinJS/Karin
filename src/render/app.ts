@@ -1,7 +1,7 @@
 import { logger } from 'karin/utils'
 import { KarinRender, KarinRenderApp, KarinRenderType } from 'karin/types'
 
-class Renderer {
+class Renderers {
   index: number
   Apps: Array<KarinRenderApp>
   constructor () {
@@ -97,4 +97,9 @@ class Renderer {
 /**
  * 渲染器管理器
  */
-export const render = new Renderer()
+export const render = new Renderers()
+
+/**
+ * @description 即将废弃，请使用 `render`
+*/
+export const Renderer = render

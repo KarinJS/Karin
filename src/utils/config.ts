@@ -323,3 +323,5 @@ export const config = new (class Cfg {
     this.review = false
   }
 })()
+
+export const Cfg = config

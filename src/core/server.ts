@@ -57,14 +57,21 @@ export const server = new (class Server {
       })
 
       /** GET接口 - 获取当前启动信息 */
-      this.app.get('/api/pm2', (req, res) => {
+      this.app.get('/api/ping', (req, res) => {
         /** 只允许本机ip访问 */
         if (req.hostname === 'localhost' || req.hostname === '127.0.0.1') {
           const data = {
             pm2_id: process.env.pm_id || '',
+            uptime: process.uptime(),
+            karin_app_mode: process.env.karin_app_mode,
+            karin_app_lang: process.env.karin_app_lang,
+            karin_app_runner: process.env.karin_app_runner,
+            karin_app_start_count: process.env.karin_app_start_count,
           }
 
           res.json(data)
+        } else {
+          res.status(403).json({ error: '禁止访问', message: '无效的请求' })
         }
       })
 

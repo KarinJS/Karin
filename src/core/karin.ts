@@ -1,9 +1,10 @@
-/* eslint-disable no-dupe-class-members */
+import { server } from './server'
+import { stateArr } from './plugin'
 import PluginApp from './plugin.app'
 import { common } from 'karin/utils'
-import { render } from 'karin/render'
-import { stateArr } from './plugin'
 import { listener } from './listener'
+import onebot11 from 'karin/adapter/onebot/11'
+import { render, RenderServer } from 'karin/render'
 import { KarinMessage, Permission, PluginApps, KarinElement, Contact, KarinRenderType, Scene, PermissionType } from 'karin/types'
 
 type FncFunction = (e: KarinMessage) => Promise<boolean>
@@ -59,6 +60,12 @@ export interface OptionsElement extends OptionsCommand {
 }
 
 export class Karin {
+  start: boolean
+  constructor () {
+    this.start = false
+    this.run()
+  }
+
   /**
   * @param reg - 正则表达式
   * @param fnc - 函数
@@ -263,4 +270,16 @@ export class Karin {
       listener.once(`ctx:${key}`, (e: KarinMessage) => resolve(e))
     })
   }
+
+  run () {
+    if (this.start) return
+    this.start = true
+    server.init()
+    listener.emit('load.plugin')
+    listener.emit('adapter', RenderServer)
+    listener.emit('adapter', onebot11)
+  }
 }
+
+export const karin = new Karin()
+export default karin

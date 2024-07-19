@@ -68,6 +68,17 @@ class PluginLoader {
    */
   pkgJson: { [key: string]: any }
 
+  /**
+   * - 依赖缺失收集
+   */
+  dependErr: {
+    [key: string]: {
+      dir: dirName,
+      name: fileName,
+      depend: string
+    }
+  }
+
   constructor () {
     this.index = 0
     this.dir = './plugins'
@@ -84,6 +95,7 @@ class PluginLoader {
     this.buttonIds = []
     this.handlerIds = {}
     this.pkgJson = {}
+    this.dependErr = {}
   }
 
   /**
@@ -110,6 +122,9 @@ class PluginLoader {
 
     /** 等待所有插件加载完成 */
     await Promise.all(promises)
+    /** 打印依赖缺失 */
+    this.printDependErr()
+
     /** 释放缓存 */
     this.FileList = []
 
@@ -350,19 +365,43 @@ class PluginLoader {
       return true
     } catch (error: any) {
       if (/Cannot find package '(.+?)'/.exec(error)?.[1]) {
-        const pack = /Cannot find package '(.+?)'/.exec(error)?.[1] || ''
-        logger.error(logger.red('--------插件载入错误--------'))
-        logger.mark(`错误: [${dir}][${name}] 缺少必要的依赖项: ${logger.red(pack)}`)
-        logger.mark(`操作：请尝试在命令终端中执行 ${logger.red('pnpm i -P')} 命令安装依赖项`)
-        logger.mark('提示：如安装后仍未解决，可选择以下方案')
-        logger.mark(`      1.手工安装依赖: ${logger.red('pnpm i ' + pack)}`)
-        logger.mark(`      2.联系插件作者：联系插件作者将 ${logger.red(pack)} 依赖项添加至插件的packageon文件中的dependencies字段中`)
-        logger.error(logger.red('-----------------------------'))
+        const key = `${dir}.${name}`
+        if (this.dependErr[key]) return false
+        this.dependErr[key] = {
+          dir,
+          name,
+          depend: /Cannot find package '(.+?)'/.exec(error)?.[1] || '',
+        }
       } else {
         logger.error(`载入插件错误：${logger.red(`${dir}/${name}`)}`)
         logger.error(error)
       }
       return false
+    }
+  }
+
+  /**
+   * 打印依赖缺失
+   */
+  printDependErr () {
+    try {
+      const keys = Object.keys(this.dependErr)
+      if (!keys.length) return
+
+      const msg = [
+        '-----依赖缺失----',
+      ]
+
+      keys.forEach(key => {
+        const { dir, name, depend } = this.dependErr[key]
+        msg.push(`[${dir}][${name}] 缺少依赖：${logger.red(depend)}`)
+      })
+
+      msg.push('-------------------')
+      logger.error(msg.join('\n'))
+    } finally {
+      /** 回收缓存 */
+      this.dependErr = {}
     }
   }
 

@@ -4,7 +4,7 @@ lines: 1000
 apps:
   - name: "Karin"
     # 入口
-    script: "./lib/index.js"
+    script: "./node_modules/node-karin/lib/index.js"
     # 进程守护
     autorestart: true
     # 每分钟最大重启数量

@@ -234,3 +234,8 @@ export const stateArr: stateArrType = {}
 export interface ExtendedPlugin extends Plugin {
   accept: (e: KarinNoticeType | KarinRequestType) => Promise<void>
 }
+
+/**
+ * @description 即将废弃，请使用 `Plugin`
+*/
+export const plugin = Plugin
