@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.7.1](https://github.com/KarinJS/Karin/compare/v0.7.0...v0.7.1) (2024-07-19)
+
+
+### Bug Fixes
+
+* 修正redis降级level时 keys读取错误 ([214df21](https://github.com/KarinJS/Karin/commit/214df21f8004137db603e65c484ebaa4567faf07))
+
 ## [0.7.0](https://github.com/KarinJS/Karin/compare/v0.6.28...v0.7.0) (2024-07-19)
 
 
