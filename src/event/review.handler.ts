@@ -18,6 +18,7 @@ export const review = new (class Handler {
   UserEnable: (e: KarinEventTypes) => boolean
   GroupMsgPrint: (e: KarinEventTypes) => boolean
   PluginEnable: (app: PluginApps, config: GroupCfg) => boolean
+  Private: () => boolean
   constructor () {
     /** 群聊所有消息cd */
     this.GroupCD = {}
@@ -39,6 +40,9 @@ export const review = new (class Handler {
     /** 插件黑白名单 哪个插件可以被触发 */
     this.PluginEnable = (app, config) => true
 
+    /** 私聊功能 */
+    this.Private = () => false
+
     // 延迟1秒执行
     setTimeout(() => {
       this.main()
@@ -55,6 +59,7 @@ export const review = new (class Handler {
     this.#UserEnable()
     this.#GroupMsgPrint()
     this.#PluginEnable()
+    this.#Private()
   }
 
   /**
@@ -396,5 +401,19 @@ export const review = new (class Handler {
 
     /** 未启用 */
     this.alias = () => true
+  }
+
+  /**
+   * 私聊功能
+   */
+  #Private () {
+    /** 启用 */
+    if (this.App.PrivateConfig?.enable) {
+      this.Private = () => true
+      return true
+    }
+
+    /** 未启用 */
+    this.Private = () => false
   }
 })()

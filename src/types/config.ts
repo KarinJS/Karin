@@ -98,6 +98,13 @@ export interface App {
      */
     disable: boolean
   }
+  /**
+   * 私聊
+   */
+  PrivateConfig: {
+    /** 是否开启私聊 */
+    enable: boolean
+  }
 }
 
 export interface Config {
@@ -211,6 +218,15 @@ export interface Config {
      * 碎片化每个日志文件最大大小 MB
      */
     maxLogSize: number
+  }
+
+  private: {
+    /** 是否开启私聊 */
+    enable: boolean
+    /** 关闭私聊后回复的提示词 为空则不回复 */
+    tips: string
+    /** 关闭私聊后的用户白名单 */
+    white_list: string[]
   }
 }
 

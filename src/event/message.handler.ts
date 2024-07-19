@@ -30,6 +30,8 @@ export class MessageHandler extends EventHandler {
     }
     /** 处理回复 */
     this.reply()
+    /** 处理私聊 */
+    if (!this.private()) return
     /** 处理消息 */
     this.deal()
   }

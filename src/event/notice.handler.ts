@@ -39,6 +39,7 @@ export default class NoticeHandler extends EventHandler {
       this.e.isPrivate = true
       this.e.logText = `[Private:${this.e.sender.nick || ''}(${this.e.user_id})]`
       logger.bot('info', this.e.self_id, `${logger.green('私聊通知: ')}[${this.e.user_id}(${this.e.sender.nick || ''})] ${this.e.raw_message}`)
+      if (!this.private()) return
     } else if (this.e.contact.scene === 'group') {
       this.e.isGroup = true
       this.e.logText = `[Group:${this.e.group_id}-${this.e.user_id}(${this.e.sender.nick || ''})]`

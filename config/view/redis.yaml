@@ -1,25 +1,20 @@
 name: 数据库配置
 view:
-  -
-    key: redis地址
-    path: 'host'
-    type: 'text'
-  -
-    key: redis端口
-    path: 'port'
-    type: 'number'
-  -
-    key: redis用户名
+  - key: redis地址
+    path: "host"
+    type: "text"
+  - key: redis端口
+    path: "port"
+    type: "number"
+  - key: redis用户名
     comment: redis用户名，可以为空
-    path: 'username'
-    type: 'text'
-  -
-    key: redis密码
+    path: "username"
+    type: "text"
+  - key: redis密码
     comment: redis密码，没有密码可以为空
-    path: 'password'
-    type: 'password'
-  -
-    key: 数据库
+    path: "password"
+    type: "password"
+  - key: 数据库
     comment: 运行中第几个redis数据库
-    path: 'db'
-    type: 'number'
+    path: "db"
+    type: "number"

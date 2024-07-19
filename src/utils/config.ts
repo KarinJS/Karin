@@ -190,6 +190,10 @@ export const config = new (class Cfg {
       },
       master: data.master.map((i: string | number) => String(i)),
       admin: data.admin.map((i: string | number) => String(i)),
+      private: {
+        white_list: data.private.white_list.map((i: string | number) => String(i)),
+        tips: data.private.tips,
+      },
     }
     /** 缓存 */
     this.change.set(key, Config)

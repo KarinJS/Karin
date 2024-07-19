@@ -17,6 +17,13 @@ multi_progress: false
 # 控制台触发插件日志颜色 十六进制 默认#FFFF00 不支持热更新
 log_color: "#E1D919"
 
+# 私聊设置
+private:
+  # 关闭私聊后回复的提示词 为空则不回复
+  tips: ""
+  # 关闭私聊后的用户白名单
+  white_list: []
+
 # input适配器配置 以下所有配置均不支持热更新
 AdapterInput:
   # 是否启用

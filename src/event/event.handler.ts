@@ -49,6 +49,22 @@ export default class EventHandler {
   }
 
   /**
+   * 处理私聊功能 功能开启返回true
+   */
+  private () {
+    /** 检查私聊是否开启 */
+    if (this.e.user_id !== 'input' && this.e.isPrivate && !review.Private()) {
+      /** 用户处于白名单 */
+      if (config.Config?.private?.white_list?.includes(String(this.e.user_id))) return true
+      /** 不处于白名单 检查是否存在提示词 */
+      if (config.Config?.private?.tips) this.e.reply(config.Config.private.tips)
+      logger.debug('[消息拦截] 私聊功能未开启')
+      return false
+    }
+    return true
+  }
+
+  /**
    * 根据事件类型过滤事件
    */
   filtEvent (event: AllListenEvent): boolean {

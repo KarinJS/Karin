@@ -35,3 +35,8 @@ GroupConfig:
 
   # 黑名单插件、功能，黑名单中的插件、功能不会响应
   disable: false
+
+# 私聊
+PrivateConfig:
+  # 是否开启私聊
+  enable: false
