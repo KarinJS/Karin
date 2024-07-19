@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.8.0](https://github.com/KarinJS/Karin/compare/v0.7.2...v0.8.0) (2024-07-19)
+
+
+### Features
+
+* 私聊功能开关 ([5252649](https://github.com/KarinJS/Karin/commit/5252649accc8431d82117f7d1c917d0d77c1f92e))
+
 ## [0.7.2](https://github.com/KarinJS/Karin/compare/v0.7.1...v0.7.2) (2024-07-19)
 
 
