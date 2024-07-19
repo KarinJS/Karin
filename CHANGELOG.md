@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.7.2](https://github.com/KarinJS/Karin/compare/v0.7.1...v0.7.2) (2024-07-19)
+
+
+### Bug Fixes
+
+* 修正node节点发送message_id失败 ([656e1f5](https://github.com/KarinJS/Karin/commit/656e1f54f10b6887f4c7f10758408cf677bf51d4))
+
 ## [0.7.1](https://github.com/KarinJS/Karin/compare/v0.7.0...v0.7.1) (2024-07-19)
 
 
