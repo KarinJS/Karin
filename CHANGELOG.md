@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.8.2](https://github.com/KarinJS/Karin/compare/v0.8.1...v0.8.2) (2024-07-19)
+
+
+### Bug Fixes
+
+* 将dev模式默认为`JavaScript开发模式` ([f690500](https://github.com/KarinJS/Karin/commit/f690500fe4abc259f598a53fb8439830e1ce8623))
+
 ## [0.8.1](https://github.com/KarinJS/Karin/compare/v0.8.0...v0.8.1) (2024-07-19)
 
 
