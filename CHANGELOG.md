@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.7.0](https://github.com/KarinJS/Karin/compare/v0.6.28...v0.7.0) (2024-07-19)
+
+
+### Features
+
+* 将所有指令集成为`npx karin` ([c79cfee](https://github.com/KarinJS/Karin/commit/c79cfeee512f62978764dd42ee1c85f9c1fabdae))
+
 ## [0.6.28](https://github.com/KarinJS/Karin/compare/v0.6.27...v0.6.28) (2024-07-16)
 
 
