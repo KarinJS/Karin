@@ -242,11 +242,11 @@ export class AdapterOneBot11 implements KarinAdapter {
     const selfNick = this.account.name
 
     for (const i of elements) {
-      const content = this.KarinConvertAdapter(i.content as KarinElement[])
       const type = 'node'
       if (i.id) {
         messages.push({ type, data: { id: i.id } })
       } else {
+        const content = this.KarinConvertAdapter(i.content as KarinElement[])
         const user_id = String(i.user_id || selfUin)
         const nickname = String(i.nickname || selfNick)
         messages.push({ type, data: { user_id, nickname, content } })
