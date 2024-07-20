@@ -53,33 +53,38 @@ npm --registry=https://registry.npmmirror.com install pnpm -g
 先新建一个空白文件夹，以下命令在文件夹里面执行，执行完成不出意外已经启动完毕了~
 
 ```bash
-pnpm i node-karin && npx npx init && node .
+pnpm i node-karin && npx npx init && npx karin .
 ```
 
 ### 基本指令
 
+> [!IMPORTANT]
+> 文档可能更新不及时，可`npx karin`查看全部指令
+
 ::: code-group
 
 ```bash [前台启动]
-node .
+npx karin .
 ```
 
 ```bash [前台启动]
-# 这是备用指令
-node node_modules/node-karin/lib/index.js
+npx karin start
 ```
 
 ```bash [后台启动]
-# 使用pm2托管
-pnpm pm2
+npx karin pm2
 ```
 
 ```bash [后台停止]
-pnpm stop
+npx karin stop
 ```
 
-```bash
+```bash [重启pm2]
+npx karin rs
+```
 
+```bash [查看pm2日志]
+npx karin log
 ```
 
 :::
