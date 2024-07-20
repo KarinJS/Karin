@@ -17,3 +17,8 @@
 ### 完善此文档
 
 [点击此处跳转到文档贡献页面](https://github.com/KarinJS/Karin/tree/docs)
+
+<!-- - <Badge type="info" text="default" />
+- <Badge type="tip" text="^1.9.0" />
+- <Badge type="warning" text="beta" />
+- <Badge type="danger" text="caution" /> -->

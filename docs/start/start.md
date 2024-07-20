@@ -9,7 +9,7 @@
 以下，除了`NodeJs`，其他均为可选项，根据实际情况进行安装。
 :::
 
-### NodeJs
+### NodeJs <Badge type="danger" text="必装 " /> 
 
 [NodeJs官网][NodeJs]
 
@@ -20,25 +20,19 @@
 - `Karin`大部分插件开发者的开发环境均在`v20+`版本，推荐使用`v20+`版本。
 - 如果无需使用相关插件或功能，可自行选择是否安装`NodeJs`的版本。
 
-### Redis
-
-[redis官网](https://redis.io/)
-
-- 对于`redis`，如果你不使用到相关的插件和功能，可以选择跳过这里。
-- `windows`用户推荐使用[redis-windows][redis-windows]，非官方版本，请注意查看仓库说明。
-- 如果无需使用相关插件或功能，可自行选择是否安装`redis`。
-
-### Git
+### Git <Badge type="danger" text="必装 " /> 
 
 [git官网](https://git-scm.com/)
 
-- `git`是一个分布式版本控制软件，~~`Karin`的所有文件默认均使用`git`进行管理、安装、更新。  ~~
 - `windows`用户如下载缓慢，可使用[腾讯软件管家][腾讯软件管家]进行加速下载。
 - 还是一样，`git`也是一个可选项，所有插件包括`Karin`本身都可以直接下载压缩包进行安装。
 
 - 目前`Karin`正在向纯`npm`包管理迁移，插件还在使用`git`，请继续安装。
 
 ## 部署karin
+
+> [!TIP] 注意！
+> 如果你无法访问`npm`官网，请先看最下方的更换 [更换npm源](#更换npm源)
 
 ### 安装`pnpm`
 
@@ -54,7 +48,54 @@ npm --registry=https://registry.npmmirror.com install pnpm -g
 
 :::
 
+### 安装
+
+先新建一个空白文件夹，以下命令在文件夹里面执行，执行完成不出意外已经启动完毕了~
+
+```bash
+pnpm i node-karin && npx npx init && node .
+```
+
+### 基本指令
+
+::: code-group
+
+```bash [前台启动]
+node .
+```
+
+```bash [前台启动]
+# 这是备用指令
+node node_modules/node-karin/lib/index.js
+```
+
+```bash [后台启动]
+# 使用pm2托管
+pnpm pm2
+```
+
+```bash [后台停止]
+pnpm stop
+```
+
+```bash
+
+```
+
+:::
+
+#### 后台启动
+
+### 安装渲染器
+
+- [karin-puppeteer](./render.md)
+
+## 其他
+
 ### 更换npm源
+
+<details>
+  <summary>点我展开</summary>
 
 ::: warning 注意
 如果你是中国大陆服务器，并且无法访问`npm`官方源，这里请务必更换为镜像源。
@@ -86,17 +127,8 @@ npm config set registry https://registry.npmjs.org
 
 :::
 
-### 安装
+</details>
 
-先新建一个空白文件夹，以下命令在文件夹里面执行。
-
-```bash
-pnpm i node-karin && npx init && node .
-```
-
-## 安装渲染器
-
-- [karin-puppeteer](./render.md)
 
 [NodeJs]: https://nodejs.org/en
 [腾讯软件管家]: https://sw.pcmgr.qq.com/1e05804bd17b358a8c88284df8331fcd/65fcde89/spcmgr/download/Git-2.44.0-64-bit.exe

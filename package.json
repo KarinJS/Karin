@@ -2,8 +2,9 @@
   "name": "karin-docs",
   "author": "Lain",
   "version": "0.0.3",
+  "type": "module",
   "devDependencies": {
-    "vitepress": "^1.2.3"
+    "vitepress": "^1.3.0"
   },
   "scripts": {
     "dev": "vitepress dev docs",

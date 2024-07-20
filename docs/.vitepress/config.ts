@@ -3,10 +3,14 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   lang: 'zh-CN',
   base: '/Karin',
-  title: 'Karin',
-  description: '基于 Kritor 和 noebots 进行开发的nodejs机器人框架',
+  title: 'karin',
+  description: '基于 Kritor 进行开发的nodejs机器人框架',
   themeConfig: {
     siteTitle: 'Karin主页',
+    outline: {
+      level: [2, 4],
+      label: '页面导航'
+    },
     nav: [
       {
         text: '快速开始',
@@ -122,9 +126,6 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: 'https://github.com/KarinJS/Karin' }
     ],
-    outline: {
-      label: '页面导航'
-    },
     search: {
       provider: 'algolia',
       options: {
