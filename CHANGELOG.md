@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.8.3](https://github.com/KarinJS/Karin/compare/v0.8.2...v0.8.3) (2024-07-20)
+
+
+### Bug Fixes
+
+* YamlEditor保存失败抛出异常 ([b9d0d55](https://github.com/KarinJS/Karin/commit/b9d0d55de28278fca05cdf32e0413026d8b79077))
+
 ## [0.8.2](https://github.com/KarinJS/Karin/compare/v0.8.1...v0.8.2) (2024-07-19)
 
 
