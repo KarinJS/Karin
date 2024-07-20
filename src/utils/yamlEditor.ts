@@ -276,18 +276,10 @@ export class YamlEditor {
 
   /**
    * 保存文件
+   * 保存失败会抛出异常
    */
   save () {
-    try {
-      if (this.doc.toString() === this.document.toString()) {
-        logger.info('[YamlEditor] 文件未更改，无需保存')
-        return
-      }
-
-      fs.writeFileSync(this.filePath, this.document.toString())
-      logger.info('[YamlEditor] 文件已保存')
-    } catch (error) {
-      logger.error(`[YamlEditor] 保存文件时出错：${error}`)
-    }
+    fs.writeFileSync(this.filePath, this.document.toString())
+    logger.debug('[YamlEditor] 文件已保存')
   }
 }

@@ -602,7 +602,9 @@ class Common {
     settings.forEach(({ key, val }) => {
       try {
         if (!yaml.has(key)) yaml.set(key, val)
-      } catch { }
+      } catch (error: any) {
+        logger.error(`[common] 更新yaml文件时出错：${error.stack || error.message || error}`)
+      }
     })
     /** 先保存 */
     yaml.save()
@@ -612,7 +614,9 @@ class Common {
     settings.forEach(({ key, comment }) => {
       try {
         yaml.comment(key, comment, true)
-      } catch { }
+      } catch (error: any) {
+        logger.error(`[common] 更新yaml文件时出错：${error.stack || error.message || error}`)
+      }
     })
     yaml.save()
   }

@@ -19,7 +19,7 @@ class Redis {
     /** 集群模式 */
     if (cluster && cluster.enable) {
       const rootNodes = cluster.rootNodes.map((node: string) => ({ url: node }))
-      logger.info('正在连接 Redis 集群...')
+      logger.debug('正在连接 Redis 集群...')
       const { status, data } = await this.connectCluster(rootNodes)
       if (status === 'ok') {
         logger.info('Redis 集群连接成功')
@@ -29,7 +29,7 @@ class Redis {
       return false
     }
 
-    logger.info(`正在连接 ${logger.green(`Redis://${host}:${port}/${database}`)}`)
+    logger.debug(`正在连接 ${logger.green(`Redis://${host}:${port}/${database}`)}`)
 
     const options = { socket: { host, port }, username, password, database }
 
@@ -59,10 +59,10 @@ class Redis {
         return data as RedisClientType
       }
 
-      logger.warn(`Redis 二次建立连接失败：${logger.red(data as string)}`)
+      logger.debug(`Redis 二次建立连接失败：${logger.red(data as string)}`)
       return false
     } catch (error) {
-      logger.warn(`Redis 启动失败：${logger.red(data as string)}`)
+      logger.debug(`Redis 启动失败：${logger.red(data as string)}`)
       return await this.LevelDB()
     }
   }
@@ -72,7 +72,7 @@ class Redis {
    */
   async LevelDB () {
     try {
-      logger.info('使用LevelDB代替Redis实现基础Api')
+      logger.debug('使用LevelDB代替Redis实现基础Api')
       const redis = new RedisLevel()
       return redis
     } catch (error) {
