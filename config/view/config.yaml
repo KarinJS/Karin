@@ -9,7 +9,7 @@ view:
       - name: Trace
         value: trace
       - name: Debug
-        value: ebug
+        value: debug
       - name: Info
         value: info
       - name: Warn
