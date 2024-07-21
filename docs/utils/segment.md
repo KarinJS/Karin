@@ -2,7 +2,7 @@
 
 本文档介绍了 Krita 的消息元素结构和 `segment` 模块的使用方法。
 
-::: tip tips
+::: tip 温馨提示
 目前尚在开发阶段，可能有部分内容未完善或错误，敬请谅解。
 :::
 
@@ -13,7 +13,7 @@
 :::
 
 ```js
-import { segment } from '#karin'
+import { segment } from 'node-karin'
 ```
 
 ## 多媒体资源标准
@@ -51,7 +51,7 @@ console.log(text)
 ## 表情 face
 
 ::: tip 温馨提示
-键入的ID必须为数字
+键入的 ID 必须为数字
 :::
 
 ```js
@@ -71,7 +71,7 @@ console.log(face)
 ## 图片 image
 
 ::: tip 温馨提示
-遵循 [多媒体资源标准](#多媒体资源标准)
+遵循 [**多媒体资源标准**](#多媒体资源标准)
 :::
 
 ```js
@@ -106,7 +106,7 @@ console.log(image)
 ## 语音 record
 
 ::: tip 温馨提示
-遵循 [多媒体资源标准](#多媒体资源标准)
+遵循 [**多媒体资源标准**](#多媒体资源标准)
 :::
 
 ```js
@@ -126,7 +126,7 @@ console.log(record)
 ## 视频 video
 
 ::: tip 温馨提示
-遵循 [多媒体资源标准](#多媒体资源标准)
+遵循 [**多媒体资源标准**](#多媒体资源标准)
 :::
 
 ```js
@@ -160,7 +160,7 @@ console.log(at)
 {
     type: 'at',
     uid: 'abc1234567890',
-    uin: '1234567890' // 二选一 推荐使用uid
+    uin: '1234567890' // 二选一 推荐使用 uid
 }
 ```
 
@@ -404,7 +404,7 @@ console.log(markdown)
 ## rows按钮 QQBot官方格式
 
 ::: tip 温馨提示
-rows和button的键入值一致，且比较复杂，请查看最下方的构建方法，这里只展示输出
+rows和button的键入值一致，且比较复杂，请查看最下方的 [**构建方法**](#rows按钮button按钮构建方法)，这里只展示输出
 :::
 
 ::: details 点我查看输出示例
@@ -497,7 +497,7 @@ rows和button的键入值一致，且比较复杂，请查看最下方的构建�
 ## button按钮
 
 ::: tip 温馨提示
-rows和button的键入值一致，且比较复杂，请查看最下方的构建方法，这里只展示输出
+rows和button的键入值一致，且比较复杂，请查看最下方的 [**构建方法**](#rows按钮button按钮构建方法)，这里只展示输出
 :::
 
 ::: details 点我查看输出示例
@@ -559,7 +559,7 @@ rows和button的键入值一致，且比较复杂，请查看最下方的构建�
 ## rows按钮、button按钮构建方法
 
 ::: tip 温馨提示
-以下所有代码，`segment.rows`和`segment.button`均可使用  
+以下所有代码，`segment.rows` 和 `segment.button` 均可使用  
 所有未出现在快速构建方法中的参数，均为可选参数，可以根据需要选择是否传入
 :::
 
@@ -585,7 +585,7 @@ segment.rows({
 
 ### 回调按钮
 
-```js:line-numbers {1}
+```js:line-numbers
 // 快速构建
 segment.rows({ type: 1, text: '回调按钮'})
 
@@ -606,7 +606,7 @@ segment.rows({
 
 ### 指令按钮
 
-```js:line-numbers {1}
+```js:line-numbers
 // 快速构建
 segment.rows({ text: '指令按钮' })
 

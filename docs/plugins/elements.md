@@ -13,7 +13,7 @@
 :::
 
 ```js
-import { segment } from '#karin'
+import { segment } from 'node-karin'
 ```
 
 ## 多媒体资源标准
@@ -22,14 +22,14 @@ karin对于多媒体资源的标准化处理，遵循以下规则：
 
 - 对于网络资源，要求传入的url必须为 `https://` 或 `http://` 开头
 - 对于base64格式，传入必须是 `base64://` 格式开头的字符串
-- 对于`file://`格式，传入的字符串必须是`绝对路径`，且资源必须存在
+- 对于 `file://` 格式，传入的字符串必须是`绝对路径`，且资源必须存在
 - 对于未知字段，请确认适配器可以正确处理
 
 ::: tip 注意
-对于`file://`格式，请开发者注意以下几点：
+对于 `file://` 格式，请开发者注意以下几点：
 
 - 请确保用户的协议端和karin运行环境一致，否则可能导致文件读取失败
-- 对于Linux系统，由于绝对路径前方有`/`，格式为`file:///root/...`，请注意区分`///`和`//`
+- 对于Linux系统，由于绝对路径前方有 `/` ，格式为 `file:///root/...` ，请注意区分 `///` 和 `//`
 :::
 
 ## 文本 text
@@ -51,7 +51,7 @@ console.log(text)
 ## 表情 face
 
 ::: tip 温馨提示
-键入的ID必须为数字
+键入的 ID 必须为数字
 :::
 
 ```js
@@ -71,7 +71,7 @@ console.log(face)
 ## 图片 image
 
 ::: tip 温馨提示
-遵循 [多媒体资源标准](#多媒体资源标准)
+遵循 [**多媒体资源标准**](#多媒体资源标准)
 :::
 
 ```js
@@ -106,7 +106,7 @@ console.log(image)
 ## 语音 record
 
 ::: tip 温馨提示
-遵循 [多媒体资源标准](#多媒体资源标准)
+遵循 [**多媒体资源标准**](#多媒体资源标准)
 :::
 
 ```js
@@ -126,7 +126,7 @@ console.log(record)
 ## 视频 video
 
 ::: tip 温馨提示
-遵循 [多媒体资源标准](#多媒体资源标准)
+遵循 [**多媒体资源标准**](#多媒体资源标准)
 :::
 
 ```js
@@ -146,7 +146,7 @@ console.log(video)
 ## @用户 at
 
 ::: tip 温馨提示
-开发者只需要关注uid字段即可
+开发者只需要关注 uid 字段即可
 :::
 
 ```js
@@ -166,7 +166,7 @@ console.log(at)
 
 ## 戳一戳 poke
 
-关于这部分，见[mirai](https://github.com/mamoe/mirai/blob/f5eefae7ecee84d18a66afce3f89b89fe1584b78/mirai-core/src/commonMain/kotlin/net.mamoe.mirai/message/data/HummerMessage.kt#L49)
+关于这部分，见 [**mirai**](https://github.com/mamoe/mirai/blob/f5eefae7ecee84d18a66afce3f89b89fe1584b78/mirai-core/src/commonMain/kotlin/net.mamoe.mirai/message/data/HummerMessage.kt#L49)
 
 ```js
 const poke = segment.poke(1, -1, 1)
@@ -404,7 +404,7 @@ console.log(markdown)
 ## rows按钮 QQBot官方格式
 
 ::: tip 温馨提示
-rows和button的键入值一致，且比较复杂，请查看最下方的构建方法，这里只展示输出
+rows 和 button 的键入值一致，且比较复杂，请查看最下方的 [**构建方法**](#rows按钮button按钮构建方法)，这里只展示输出
 :::
 
 ::: details 点我查看输出示例
@@ -497,7 +497,7 @@ rows和button的键入值一致，且比较复杂，请查看最下方的构建�
 ## button按钮
 
 ::: tip 温馨提示
-rows和button的键入值一致，且比较复杂，请查看最下方的构建方法，这里只展示输出
+rows和button的键入值一致，且比较复杂，请查看最下方的 [**构建方法**](#rows按钮button按钮构建方法)，这里只展示输出
 :::
 
 ::: details 点我查看输出示例
@@ -559,13 +559,13 @@ rows和button的键入值一致，且比较复杂，请查看最下方的构建�
 ## rows按钮、button按钮构建方法
 
 ::: tip 温馨提示
-以下所有代码，`segment.rows`和`segment.button`均可使用  
+以下所有代码，`segment.rows` 和 `segment.button` 均可使用  
 所有未出现在快速构建方法中的参数，均为可选参数，可以根据需要选择是否传入
 :::
 
 ### 跳转按钮
 
-```js:line-numbers {1}
+```js:line-numbers
 // 快速构建
 segment.rows({ link: 'https://example.com' })
 
@@ -585,7 +585,7 @@ segment.rows({
 
 ### 回调按钮
 
-```js:line-numbers {1}
+```js:line-numbers
 // 快速构建
 segment.rows({ type: 1, text: '回调按钮'})
 
@@ -606,7 +606,7 @@ segment.rows({
 
 ### 指令按钮
 
-```js:line-numbers {1}
+```js:line-numbers
 // 快速构建
 segment.rows({ text: '指令按钮' })
 

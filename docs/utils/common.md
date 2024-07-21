@@ -1,7 +1,7 @@
 # common
 
 ```js
-import { common } from '#Karin'
+import { common } from 'node-karin'
 
 /** 休眠函数 延迟5秒 */
 await common.sleep(5 * 1000)

@@ -6,19 +6,19 @@
 
 ::: warning 温馨提示
 
-以下，除了`NodeJs`，其他均为可选项，根据实际情况进行安装。
+以下，除了`Node.js`，其他均为可选项，根据实际情况进行安装。
 :::
 
 ### NodeJs <Badge type="danger" text="必装 " /> 
 
-[NodeJs官网][NodeJs]
+[Node.js官网][Node.js]
 
-`Karin`基于`NodeJs`开发，推荐使用官方稳定长期支持的`LTS`版本`v20+`。
+`Karin`基于`Node.js`开发，推荐使用官方稳定长期支持的`LTS`版本`v20+`。
 
 - 目前最低要求支持版本为`v18+`。
-- `Karin`本身并未使用较新的`NodeJs`特性，理论来说支持16+版本。
+- `Karin`本身并未使用较新的`Node.js`特性，理论来说支持16+版本。
 - `Karin`大部分插件开发者的开发环境均在`v20+`版本，推荐使用`v20+`版本。
-- 如果无需使用相关插件或功能，可自行选择是否安装`NodeJs`的版本。
+- 如果无需使用相关插件或功能，可自行选择是否安装`Node.js`的版本。
 
 ### Git <Badge type="danger" text="必装 " /> 
 
@@ -31,8 +31,8 @@
 
 ## 部署karin
 
-> [!TIP] 注意！
-> 如果你无法访问`npm`官网，请先看最下方的更换 [更换npm源](#更换npm源)
+> [!TIP] 提示
+> 如果你无法访问`npm`官网，请先看最下方的更换 [**更换npm源**](#更换npm源)
 
 ### 安装`pnpm`
 
@@ -58,7 +58,7 @@ pnpm i node-karin && npx npx init && npx karin .
 
 ### 基本指令
 
-> [!IMPORTANT]
+> [!IMPORTANT] 务必注意
 > 文档可能更新不及时，可`npx karin`查看全部指令
 
 ::: code-group
@@ -135,6 +135,6 @@ npm config set registry https://registry.npmjs.org
 </details>
 
 
-[NodeJs]: https://nodejs.org/en
+[Node.js]: https://nodejs.org/en
 [腾讯软件管家]: https://sw.pcmgr.qq.com/1e05804bd17b358a8c88284df8331fcd/65fcde89/spcmgr/download/Git-2.44.0-64-bit.exe
 [redis-windows]: https://github.com/redis-windows/redis-windows

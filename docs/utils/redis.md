@@ -1,7 +1,7 @@
 # redis
 
 ```js
-import { redis } from '#Karin'
+import { redis } from 'node-karin'
 
 /** 存储一个键值对 */
 await redis.set('key', 'value')

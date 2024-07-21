@@ -3,7 +3,7 @@
 > 文档存在一定的滞后性或者错误，如有问题请提交issue~
 
 ::: tip 提示
-如果你不知道如何使用API，请查看[调用方法](./index.md#调用方法)
+如果你不知道如何使用 API，请查看 [**调用方法**](./index.md#调用方法)
 :::
 
 [[toc]]
@@ -17,15 +17,15 @@ Api: `SendMessage`
 | `contact`  |  [点击跳转](./contact.md#contact)  |  是   | 发送目标 |
 | `elements` | [elements](../plugins/elements.md) |  是   | 消息内容 |
 
-::: warning 温馨提示
-请各位开发者尽量使用`array`，其他类型的值可能会在未来版本中被废弃
+::: warning 注意
+请各位开发者尽量使用 `array` ，其他类型的值可能会在未来版本中被废弃
 :::
 
 ::: code-group
 
 ```js [请求示例1]
 // 主动发送消息 直接调用Api
-import { segment } from '#Karin'
+import { segment } from 'node-karin'
 
 const contact = {
   scene: 'private',
@@ -43,7 +43,7 @@ await this.e.bot.SendMessage(contact, elements)
 
 ```js [请求示例2]
 // 主动发送消息 调用封装过的Api
-import { Bot } from '#Karin'
+import { Bot } from 'node-karin'
 
 const self_id = 123456789
 const contact = {
@@ -58,7 +58,7 @@ await Bot.sendMsg(self_id, contact, '这只一条主动消息')
 
 ```js [请求示例3]
 // 被动回复消息
-import { segment } from '#Karin'
+import { segment } from 'node-karin'
 
 const elements = [
   segment.at(123456789),
@@ -89,7 +89,7 @@ Api: `RecallMessage`
 ::: code-group
 
 ```js [请求示例]
-import { Bot } from '#Karin'
+import { Bot } from 'node-karin'
 
 const self_id = 123456789
 const contact = {
@@ -109,6 +109,8 @@ const res = await bot.RecallMessage(contact, message_id)
 // 此api标准是没有返回值的，如果撤回消息失败，karin会直接抛出一个错误
 res = {}
 ```
+:::
+
 
 ## 通过`message_id`获取消息
 
@@ -122,7 +124,7 @@ Api: `GetMessage`
 ::: code-group
 
 ```js [请求示例]
-import { Bot } from '#Karin'
+import { Bot } from 'node-karin'
 
 const self_id = 123456789
 const contact = {
@@ -165,10 +167,11 @@ res = {
 }
 
 ```
+:::
 
 ## 通过`message_seq`获取消息
 
 Api: `GetMessageBySeq`
 
-此Api是通过`message_seq`获取消息，与`GetMessage`基本相同，这里不再赘述
+此Api是通过 `message_seq` 获取消息，与 `GetMessage` 基本相同，这里不再赘述
 

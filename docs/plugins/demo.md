@@ -1,10 +1,10 @@
 # 示例
 
-> 一个简单的`demo`示例，直接代码展示了。
+> 一个简单的 `demo` 示例，直接代码展示了。
 
 ## 准备工作
 
-- 打开`plugins/karin-plugin-example`目录，在此新建一个`index-demo.js`文件。
+- 打开 `plugins/karin-plugin-example` 目录，在此新建一个 `index-demo.js` 文件。
 
 ## 函数式语法糖示例
 
@@ -125,8 +125,8 @@ export const face = karin.command(/^#表情$/, async (e) => {
 ## 类语法糖示例
 
 > 该示例为消息插件示例  
-> 将下面的代码复制到`index-demo.js`中，保存  
->对机器人发送`#你好`，机器人会回复`你好`、图片、语音、视频、@某人
+> 将下面的代码复制到 `index-demo.js` 中，保存  
+>对机器人发送 `#你好` ，机器人会回复 `你好` 、图片、语音、视频、@某人
 
 ```js
 import { Plugin, segment } from 'node-karin'

@@ -5,7 +5,7 @@
 `YamlEditor` 是一个用于编辑 YAML 文件的类。它提供了读取、修改、添加、删除和保存 YAML 文件的功能。这个类在应用中适用于对 YAML 配置文件进行操作的场景。
 
 ::: tip
-最最最重要的是，可以保留注释信息，并且不会影响 YAML 文件的结构。
+**_最最最重要的是，可以保留注释信息，并且不会影响 YAML 文件的结构。_**
 :::
 
 [[toc]]
@@ -15,7 +15,7 @@
 ### 导入和实例化
 
 ```js
-import { YamlEditor } from '#Karin'
+import { YamlEditor } from 'node-karin'
 
 // 创建一个 YamlEditor 实例，指定文件路径
 const yamlEditor = new YamlEditor('./path/to/your/file.yaml')
@@ -71,7 +71,7 @@ if (success) {
 }
 ```
 
-`del(path)` 方法用于删除 YAML 中指定路径的值。如果成功删除，将返回 `true`；否则返回 `false`。
+`del(path)` 方法用于删除 YAML 中指定路径的值。如果成功删除，将返回 `true` ；否则返回 `false` 。
 
 ### 向 YAML 中的数组添加新元素
 
@@ -92,7 +92,7 @@ yamlEditor.has('a.b.c') // true
 yamlEditor.has('x.y.z') // false
 ```
 
-使用 `has(path)` 方法，可以检查 YAML 中指定路径的键是否存在。如果存在，返回 `true`；否则返回 `false`。
+使用 `has(path)` 方法，可以检查 YAML 中指定路径的键是否存在。如果存在，返回 `true` ；否则返回 `false` 。
 
 ### 查询指定路径中是否包含指定的值
 
@@ -102,7 +102,7 @@ yamlEditor.hasVal('a.b.c', 'val') // true
 yamlEditor.hasVal('x.y.z', 'val') // false
 ```
 
-使用 `hasVal(path, value)` 方法，可以查询 YAML 中指定路径的值是否包含指定的值。如果包含，返回 `true`；否则返回 `false`。
+使用 `hasVal(path, value)` 方法，可以查询 YAML 中指定路径的值是否包含指定的值。如果包含，返回 `true` ；否则返回 `false` 。
 
 ### 保存文件
 
@@ -117,7 +117,7 @@ yamlEditor.save()
 
 - **日志记录**：`YamlEditor` 使用了日志记录功能，确保在操作过程中能够及时发现问题。
 - **错误处理**：所有方法都进行了错误处理，当发生异常时将记录错误。
-- **路径格式**：指定路径时使用点号分隔，例如 `'root.child.key'`。
+- **路径格式**：指定路径时使用点号分隔，例如 `'root.child.key'` 。
 - **保存文件**：使用 `save()` 方法确保所做的修改被写入文件。
 
 ## 示例

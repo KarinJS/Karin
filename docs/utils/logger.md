@@ -1,7 +1,7 @@
 # logger
 
 ```js
-import { logger } from '#Karin'
+import { logger } from 'node-karin'
 
 /** 打印trace日志 */
 logger.trace('这是一条trace日志')

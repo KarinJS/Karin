@@ -1,20 +1,20 @@
 # 渲染器安装
 
-使用`puppeteer`作为默认渲染器。
+使用 `puppeteer` 作为默认渲染器。
 
 问：渲染器的作用是什么？  
-答：`karin`大多数插件均使用`html`模板，渲染器的作用是将`html`转换为`图片`格式，以便于展示。
+答：`karin` 大多数插件均使用 `html` 模板，渲染器的作用是将 `html` 转换为 `图片` 格式，以便于展示。
 
-问：为什么使用`puppeteer`？  
-答：经过我们将近一周的测试，`puppeteer`无论在性能、渲染速度、兼容性等多方面均以碾压性优势领先于其他渲染器。
+问：为什么使用 `puppeteer` ？  
+答：经过我们将近一周的测试，`puppeteer` 无论在性能、渲染速度、兼容性等多方面均以碾压性优势领先于其他渲染器。
 
 问：可否不安装渲染器？  
 答：可以，只要不使用需要渲染的插件即可。
 
 ## 简介
 
-- 国外源： [Github-karin-puppeteer](https://github.com/KarinJS/karin-puppeteer)
-- 国内源： [Gitee-karin-puppeteer](https://gitee.com/KarinJS/karin-puppeteer)
+- 国外源 (GitHub)： [Github-karin-puppeteer](https://github.com/KarinJS/karin-puppeteer)
+- 国内源 (Gitee)： [Gitee-karin-puppeteer](https://gitee.com/KarinJS/karin-puppeteer)
 
 ::: warning 注意
 karin-puppeteer是一个单独的项目，需要单独安装运行。
@@ -23,7 +23,7 @@ karin-puppeteer是一个单独的项目，需要单独安装运行。
 - 反向WS:
   - 渲染方式：本地文件
   - 优点：稳定、快速
-  - 缺点：此方法仅在`karin-puppeteer`与`karin`在同一台服务器上时有效。
+  - 缺点：此方法仅在 `karin-puppeteer` 与 `karin` 在同一台服务器上时有效。
 - 正向WS:
   - 渲染方式：远程文件、本地文件
   - 优点：在拥有反向WS的基础上，支持远程文件渲染，支持无公网
@@ -31,22 +31,22 @@ karin-puppeteer是一个单独的项目，需要单独安装运行。
 - HTTP:
   - 渲染方式：本地文件、远程文件
   - 优点：同样支持远程文件渲染，速度较快
-  - 缺点：需要`karin-puppeteer`与`karin`在同一局域网、公网内
+  - 缺点：需要 `karin-puppeteer` 与 `karin` 在同一局域网、公网内
 
 总结：
 
-> 如果你只需要偶尔进行测试，可选择使用正向WS。  
+> 如果你只需要偶尔进行测试，可选择使用正向 WS。  
 > 如果需要长期文档使用，建议自建使用反向WS。  
 > HTTP的作用在本地使用环境下，几乎和正向、反向WS无异。  
 > 如果你的局域网内有高性能的渲染服务器，推荐使用HTTP。
 
 ## 克隆仓库
 
-::: warning 温馨提示
-请自行安装`Node.js`和`Git`。
+::: tip 温馨提示
+请自行安装 `Node.js` 和 `Git`。
 :::
 
-> 中国大陆服务器推荐使用`Gitee`源。
+> 中国大陆服务器推荐使用 [**Gitee 源**](https://gitee.com/KarinJS/karin-puppeteer)。
 
 ::: code-group
 
@@ -64,7 +64,7 @@ git clone https://gitee.com/KarinJS/karin-puppeteer.git
 
 ::: tip 温馨提示
 
-这一步对无法访问npm官方源的用户来说非常困难，建议直接使用`cnpm`即可。
+这一步对无法访问npm官方源的用户来说非常困难，建议直接使用 `cnpm` 即可。
 
 :::
 
@@ -118,10 +118,10 @@ pnpm run log
 
 ## 配置文件
 
-`karin-puppeteer`初次启动之后，会在`config`目录下生成`config`文件夹，里面均为配置文件。
+`karin-puppeteer` 初次启动之后，会在 `config` 目录下生成 `config` 文件夹，里面均为配置文件。
 
 > 若无特殊需求，不建议修改。  
-> 请不要修改`config/defSet`目录下的文件，这些文件是默认配置文件。
+> 请不要修改 `config/defSet` 目录下的文件，这些文件是默认配置文件。
 
 ::: code-group
 
@@ -152,7 +152,6 @@ karinUrl:
 ```
 
 ```yaml [mime.yaml]
-
 # html css
 '.css': 'text/css'
 '.html': 'text/html'
