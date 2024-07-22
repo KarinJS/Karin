@@ -53,7 +53,7 @@ npm --registry=https://registry.npmmirror.com install pnpm -g
 先新建一个空白文件夹，以下命令在文件夹里面执行，执行完成不出意外已经启动完毕了~
 
 ```bash
-pnpm i node-karin && npx npx init && npx karin .
+pnpm i node-karin && npx init && npx karin .
 ```
 
 ### 基本指令
