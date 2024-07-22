@@ -5,15 +5,16 @@ hero:
   name: Karin
   tagline: 基于 Kritor 标准进行开发的nodejs机器人框架
   actions:
-    - theme: alt
-      text: onebots
-      link: https://docs.onebots.org/
-    - theme: alt
-      text: 插件索引
-      link: /plugins/index
     - theme: brand
       text: 快速上手
       link: /start/start
+    - theme: alt
+      text: 插件索引
+      link: /plugins/index
+    - theme: alt
+      text: onebots
+      link: https://docs.onebots.org/
+
 
 features:
   - title: 轻量级

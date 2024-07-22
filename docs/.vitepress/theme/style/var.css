@@ -1,13 +1,9 @@
 /* var.css */
 /*  */
 :root {
-  /* 主题色，浅色模式，深紫色调 */
-  /* 鼠标滑过高亮色，代码块高亮色，加粗高亮色 */
   --vp-c-brand-1: #5224b6;
-  /* --vp-c-brand-1-2: #5224b6; */
   --vp-c-brand-2: #352984;
   --vp-c-brand-3: #6d68c1;
-  /* 主页logo大图底色 设置右图像渐变 */
   --vp-home-hero-image-background-image: linear-gradient(-45deg, #f6abe9 50%, #ebe0ba 50%);
   --vp-home-hero-image-filter: blur(150px);
 }

@@ -1,8 +1,26 @@
 import { defineConfig } from 'vitepress'
+// 时间线
 import timeline from 'vitepress-markdown-timeline'
+// 任务列表
 import taskLists from "markdown-it-task-lists"
+// mathjax3公式支持
 import mathjax3 from 'markdown-it-mathjax3'
+// 页脚
 import footnote_plugin from 'markdown-it-footnote'
+// 双向链接
+import { BiDirectionalLinks } from '@nolebase/markdown-it-bi-directional-links'
+// 行内链接预览
+import { InlineLinkPreviewElementTransform } from '@nolebase/vitepress-plugin-inline-link-preview/markdown-it'
+// 基于git的页面历史
+import {
+  GitChangelog,
+  GitChangelogMarkdownSection,
+} from '@nolebase/vitepress-plugin-git-changelog/vite'
+// 页面属性
+import {
+  PageProperties,
+  PagePropertiesMarkdownSection
+} from '@nolebase/vitepress-plugin-page-properties/vite'
 
 export default defineConfig({
   lang: 'zh-CN',
@@ -10,6 +28,7 @@ export default defineConfig({
   title: 'karin',
   description: '基于 Kritor 进行开发的nodejs机器人框架',
   markdown: {
+    math: true,
     // 全局代码块行号显示
     lineNumbers: true,
     image: {
@@ -25,7 +44,35 @@ export default defineConfig({
       md.use(mathjax3)
       // 脚注
       md.use(footnote_plugin)
+      // 双向链接
+      md.use(BiDirectionalLinks())
+      // 行内链接预览
+      md.use(InlineLinkPreviewElementTransform)
     },
+  },
+  vite: {
+    plugins: [
+      GitChangelog({
+        // 要获取git日志的仓库
+        repoURL: () => 'https://github.com/KarinJS/Karin',
+      }),
+      GitChangelogMarkdownSection({
+        sections: {
+          // 禁用页面历史
+          disableChangelog: false,
+          // 禁用贡献者
+          disableContributors: false,
+        },
+      }),
+      // 页面属性
+      PageProperties(),
+      PagePropertiesMarkdownSection({
+        excludes: [
+          'toc.md',
+          'index.md',
+        ],
+      }),
+    ],
   },
   vue: {
     template: {
