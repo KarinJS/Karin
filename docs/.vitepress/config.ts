@@ -21,6 +21,10 @@ import {
   PageProperties,
   PagePropertiesMarkdownSection
 } from '@nolebase/vitepress-plugin-page-properties/vite'
+// 缩略图模糊哈希生成
+import { ThumbnailHashImages } from '@nolebase/vitepress-plugin-thumbnail-hash/vite'
+// 代码块内的代码类型提示
+import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
 
 export default defineConfig({
   lang: 'zh-CN',
@@ -49,10 +53,15 @@ export default defineConfig({
       // 行内链接预览
       md.use(InlineLinkPreviewElementTransform)
     },
+    codeTransformers: [
+      transformerTwoslash()
+    ]
   },
   vite: {
     plugins: [
+      ThumbnailHashImages(),
       GitChangelog({
+        maxGitLogCount: 2000,
         // 要获取git日志的仓库
         repoURL: () => 'https://github.com/KarinJS/Karin',
       }),
@@ -69,7 +78,6 @@ export default defineConfig({
       PageProperties(),
       PagePropertiesMarkdownSection({
         excludes: [
-          'toc.md',
           'index.md',
         ],
       }),

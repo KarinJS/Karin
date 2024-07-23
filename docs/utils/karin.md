@@ -2,7 +2,7 @@
 
 通过使用别名，开发者可以更简洁地引入所需的模块，无需指定完整的路径。
 
-```js
+```js twoslash
 // 不建议这么做！
 import segment from 'node_modules/node-karin/lib/bot/segment.js'
 import plugin from 'node_modules/node-karin/lib/plugins/plugin.js'
@@ -23,28 +23,28 @@ import { segment, Plugin } from 'node-karin'
 
 - ## `APP`
 
-    ```js
+    ```js twoslash
     import { App } from 'node-karin'
     // ...
     ```
 
 - ## `Bot`
 
-    ```js
+    ```js twoslash
     import { Bot } from 'node-karin'
     // ...
     ```
 
 - ## `Cfg`
 
-    ```js
+    ```js twoslash
     import { Cfg } from 'node-karin'
     // ...
     ```
 
 - ## `plugin`
 
-    ```js
+    ```js twoslash
     import { Plugin } from 'node-karin'
     // ...
     ```

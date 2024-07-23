@@ -1,6 +1,6 @@
 # common
 
-```js
+```js twoslash
 import { common } from 'node-karin'
 
 /** 休眠函数 延迟5秒 */

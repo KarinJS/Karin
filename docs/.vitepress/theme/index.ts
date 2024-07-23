@@ -1,6 +1,6 @@
 import DefaultTheme from 'vitepress/theme'
 import mediumZoom from 'medium-zoom'
-import { onMounted, watch, nextTick, h } from 'vue'
+import { type Plugin, onMounted, watch, nextTick, h } from 'vue'
 import { useData, useRoute } from 'vitepress'
 import 'vitepress-markdown-timeline/dist/theme/index.css'
 import './style/index.css'
@@ -29,6 +29,7 @@ import {
 } from '@nolebase/vitepress-plugin-highlight-targeted-heading/client'
 // 快速复制当前页的url
 import Share from './components/Share.vue'
+// 卡片
 import Ncard from './components/Ncard.vue'
 // 页面属性
 import {
@@ -39,16 +40,20 @@ import '@nolebase/vitepress-plugin-page-properties/client/style.css'
 import '@nolebase/vitepress-plugin-enhanced-mark/client/style.css'
 // 页面底部评论
 import giscusTalk from 'vitepress-plugin-comment-with-giscus'
+// 代码块内的代码类型提示
+import TwoslashFloatingVue from '@shikijs/vitepress-twoslash/client'
+import '@shikijs/vitepress-twoslash/style.css'
 
 export default {
   extends: DefaultTheme,
   enhanceApp ({ app }) {
     app.component('NCard', Ncard)
-    app.use(NolebaseGitChangelogPlugin)
-    app.use(NolebaseInlineLinkPreviewPlugin)
+    app.use(TwoslashFloatingVue as Plugin)
+    app.use(NolebaseGitChangelogPlugin as Plugin)
+    app.use(NolebaseInlineLinkPreviewPlugin as Plugin)
     app.use(NolebasePagePropertiesPlugin<{
       progress: number
-    }>(), {
+    }>() as Plugin, {
       properties: {
         'zh-CN': [
           {

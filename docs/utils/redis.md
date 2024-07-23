@@ -1,6 +1,6 @@
 # redis
 
-```js
+```js twoslash
 import { redis } from 'node-karin'
 
 /** 存储一个键值对 */

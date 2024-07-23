@@ -1,6 +1,6 @@
 # logger
 
-```js
+```js twoslash
 import { logger } from 'node-karin'
 
 /** 打印trace日志 */

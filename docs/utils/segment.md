@@ -12,7 +12,7 @@
 以下所有的示例都假设你已经导入了 `segment` 模块。
 :::
 
-```js
+```js twoslash
 import { segment } from 'node-karin'
 ```
 
@@ -34,7 +34,7 @@ karin对于多媒体资源的标准化处理，遵循以下规则：
 
 ## 文本 text
 
-```js
+```js twoslash
 const text = segment.text('Hello, world!')
 console.log(text)
 ```
@@ -54,7 +54,7 @@ console.log(text)
 键入的 ID 必须为数字
 :::
 
-```js
+```js twoslash
 const face = segment.face(1)
 console.log(face)
 ```
@@ -109,7 +109,7 @@ console.log(image)
 遵循 [**多媒体资源标准**](#多媒体资源标准)
 :::
 
-```js
+```js twoslash
 const record = segment.record('https://example.com/record.mp3')
 console.log(record)
 ```
@@ -129,7 +129,7 @@ console.log(record)
 遵循 [**多媒体资源标准**](#多媒体资源标准)
 :::
 
-```js
+```js twoslash
 const video = segment.video('https://example.com/video.mp4')
 console.log(video)
 ```
@@ -149,7 +149,7 @@ console.log(video)
 开发者只需要关注uid字段即可
 :::
 
-```js
+```js twoslash
 const at = segment.at('abc1234567890', '1234567890')
 console.log(at)
 ```
@@ -168,7 +168,7 @@ console.log(at)
 
 关于这部分，见[mirai](https://github.com/mamoe/mirai/blob/f5eefae7ecee84d18a66afce3f89b89fe1584b78/mirai-core/src/commonMain/kotlin/net.mamoe.mirai/message/data/HummerMessage.kt#L49)
 
-```js
+```js twoslash
 const poke = segment.poke(1, -1, 1)
 console.log(poke)
 ```
@@ -186,7 +186,7 @@ console.log(poke)
 
 ## 链接分享 share
 
-```js
+```js twoslash
 const share = segment.share('https://example.com/share', '分享标题', '分享描述', '图片 URL')
 console.log(share)
 ```
@@ -205,7 +205,7 @@ console.log(share)
 
 ## 推荐好友或群 contact
 
-```js
+```js twoslash
 const contact = segment.contact('qq', '12345')
 console.log(contact)
 ```
@@ -222,7 +222,7 @@ console.log(contact)
 
 ## 位置 location
 
-```js
+```js twoslash
 const location = segment.location('121.527328', '31.21515', '上海市浦东新区', '内容描述')
 console.log(location)
 ```
@@ -241,7 +241,7 @@ console.log(location)
 
 ## 音乐分享 music
 
-```js
+```js twoslash
 const music = segment.music('qq', '12345')
 console.log(music)
 ```
@@ -258,7 +258,7 @@ console.log(music)
 
 ## 自定义音乐分享 customMusic
 
-```js
+```js twoslash
 const customMusic = segment.customMusic('https://example.com/music.mp3', 'https://example.com/music.mp3', '标题', '内容描述', 'https://example.com/image.jpg')
 console.log(customMusic)
 ```
@@ -278,7 +278,7 @@ console.log(customMusic)
 
 ## 回复 reply
 
-```js
+```js twoslash
 const reply = segment.reply('1234567890')
 console.log(reply)
 ```
@@ -294,7 +294,7 @@ console.log(reply)
 
 ## 发送res_id合并转发 forward
 
-```js
+```js twoslash
 const forward = segment.forward('abs1234567890')
 console.log(forward)
 ```
@@ -310,7 +310,7 @@ console.log(forward)
 
 ## 合并转发自定义节点 node
 
-```js
+```js twoslash
 const node = segment.node('1234567890', 'karin', [segment.text('Hello, world!')])
 console.log(node)
 ```
@@ -333,7 +333,7 @@ console.log(node)
 
 ## xml
 
-```js
+```js twoslash
 const xml = segment.xml('<xml>...</xml>', 'id')
 console.log(xml)
 ```
@@ -350,7 +350,7 @@ console.log(xml)
 
 ## JSON
 
-```js
+```js twoslash
 const json = segment.json('JSON 内容')
 console.log(json)
 ```
@@ -409,7 +409,7 @@ rows和button的键入值一致，且比较复杂，请查看最下方的 [**构
 
 ::: details 点我查看输出示例
 
-```js:line-numbers {1}
+```js :line-numbers {1}
  {
   type: 'rows',
   rows: [
@@ -502,7 +502,7 @@ rows和button的键入值一致，且比较复杂，请查看最下方的 [**构
 
 ::: details 点我查看输出示例
 
-```js:line-numbers {1}
+```js :line-numbers {1}
 {
   type: 'button',
   buttons: [
@@ -565,7 +565,7 @@ rows和button的键入值一致，且比较复杂，请查看最下方的 [**构
 
 ### 跳转按钮
 
-```js:line-numbers {1}
+```js  twoslash
 // 快速构建
 segment.rows({ link: 'https://example.com' })
 
@@ -580,12 +580,11 @@ segment.rows({
   role: ['用户ID1', '用户ID2'], // 设置后，只有这些用户可以点击，与admin互斥 （仅频道可用）
   tips: '指令提示' // 客户端不支持本 action 的时候，弹出的 toast 文案
 })
-
 ```
 
 ### 回调按钮
 
-```js:line-numbers
+```js twoslash
 // 快速构建
 segment.rows({ type: 1, text: '回调按钮'})
 
@@ -601,12 +600,11 @@ segment.rows({
   role: ['用户ID1', '用户ID2'], // 设置后，只有这些用户可以点击，与admin互斥 （仅频道可用）
   tips: '指令提示' // 客户端不支持本 action 的时候，弹出的 toast 文案
 })
-
 ```
 
 ### 指令按钮
 
-```js:line-numbers
+```js twoslash
 // 快速构建
 segment.rows({ text: '指令按钮' })
 
@@ -624,3 +622,4 @@ segment.rows({
   role: ['用户ID1', '用户ID2'], // 设置后，只有这些用户可以点击，与admin互斥 （仅频道可用）
   tips: '指令提示' // 客户端不支持本 action 的时候，弹出的 toast 文案
 })
+```
