@@ -29,18 +29,21 @@ import {
 } from '@nolebase/vitepress-plugin-highlight-targeted-heading/client'
 // 快速复制当前页的url
 import Share from './components/Share.vue'
+import Ncard from './components/Ncard.vue'
 // 页面属性
 import {
   NolebasePagePropertiesPlugin,
 } from '@nolebase/vitepress-plugin-page-properties/client'
 import '@nolebase/vitepress-plugin-page-properties/client/style.css'
+// <mark> 元素增强
+import '@nolebase/vitepress-plugin-enhanced-mark/client/style.css'
 
 export default {
   extends: DefaultTheme,
   enhanceApp ({ app }) {
+    app.component('NCard', Ncard)
     app.use(NolebaseGitChangelogPlugin)
     app.use(NolebaseInlineLinkPreviewPlugin)
-    // app.use(NuAsciinemaPlayer)
     app.use(NolebasePagePropertiesPlugin<{
       progress: number
     }>(), {
