@@ -7,7 +7,7 @@ hero:
   actions:
     - theme: brand
       text: 快速上手
-      link: /start/start
+      link: /start/index
     - theme: alt
       text: 插件索引
       link: /plugins/index
