@@ -73,6 +73,11 @@ export default defineConfig({
         ],
       }),
     ],
+    ssr: {
+      noExternal: [
+        '@nolebase/*',
+      ],
+    },
   },
   vue: {
     template: {
@@ -164,6 +169,7 @@ export default defineConfig({
     sidebar: [
       {
         text: '快速开始',
+        collapsed: true,
         items: [
           { text: '目录', link: '/start/index' },
           { text: '框架', link: '/start/start' },
@@ -177,6 +183,7 @@ export default defineConfig({
       },
       {
         text: '事件',
+        collapsed: true,
         items: [
           { text: '目录', link: '/event/index' },
           { text: '消息事件', link: '/event/message' }
@@ -184,6 +191,7 @@ export default defineConfig({
       },
       {
         text: '插件开发',
+        collapsed: true,
         items: [
           { text: '目录', link: '/plugins/index' },
           { text: '开发规范', link: '/plugins/standard' },
@@ -195,6 +203,7 @@ export default defineConfig({
       },
       {
         text: '开发工具',
+        collapsed: true,
         items: [
           { text: 'karin', link: '/utils/karin' },
           { text: 'segment', link: '/utils/segment' },
@@ -208,6 +217,7 @@ export default defineConfig({
       },
       {
         text: 'Api',
+        collapsed: true,
         items: [
           { text: '目录', link: '/api/index' },
           { text: '标准Api', link: '/api/standard' },
