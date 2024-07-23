@@ -9,7 +9,7 @@
 以下，除了`Node.js`，其他均为可选项，根据实际情况进行安装。
 :::
 
-### NodeJs <Badge type="danger" text="必装 " /> 
+### Node.js <Badge type="danger" text="必装 " /> 
 
 [Node.js官网][Node.js]
 

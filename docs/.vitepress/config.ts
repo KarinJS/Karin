@@ -57,6 +57,7 @@ export default defineConfig({
         repoURL: () => 'https://github.com/KarinJS/Karin',
       }),
       GitChangelogMarkdownSection({
+        exclude: (id) => id.endsWith('index.md'),
         sections: {
           // 禁用页面历史
           disableChangelog: false,

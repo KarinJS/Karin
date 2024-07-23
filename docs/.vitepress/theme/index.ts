@@ -37,6 +37,8 @@ import {
 import '@nolebase/vitepress-plugin-page-properties/client/style.css'
 // <mark> 元素增强
 import '@nolebase/vitepress-plugin-enhanced-mark/client/style.css'
+// 页面底部评论
+import giscusTalk from 'vitepress-plugin-comment-with-giscus'
 
 export default {
   extends: DefaultTheme,
@@ -96,9 +98,27 @@ export default {
 
   /** 响应式图片缩放 */
   setup () {
-    const route = useRoute()
     // 获取前言和路由
+    const route = useRoute()
     const { frontmatter } = useData()
+    // giscus配置
+    giscusTalk({
+      repo: 'KarinJS/Karin', //仓库
+      repoId: 'R_kgDOLcebnw', //仓库ID
+      category: 'Announcements', // 讨论分类
+      categoryId: 'DIC_kwDOLcebn84CeJZH', //讨论分类ID
+      mapping: 'pathname',
+      inputPosition: 'bottom',
+      lang: 'zh-CN',
+    },
+      {
+        frontmatter, route
+      },
+      //默认值为true，表示已启用，此参数可以忽略；
+      //如果为false，则表示未启用
+      //您可以使用“comment:true”序言在页面上单独启用它
+      true
+    )
     // 代码块添加折叠
     codeblocksFold({ route, frontmatter }, true, 400)
 
