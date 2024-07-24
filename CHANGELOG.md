@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.8.4](https://github.com/KarinJS/Karin/compare/v0.8.3...v0.8.4) (2024-07-24)
+
+
+### Bug Fixes
+
+* new class e ([4b61a52](https://github.com/KarinJS/Karin/commit/4b61a5207239dadd2c2240017fd120b89eb5ddf0))
+
 ## [0.8.3](https://github.com/KarinJS/Karin/compare/v0.8.2...v0.8.3) (2024-07-20)
 
 
