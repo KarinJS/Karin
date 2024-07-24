@@ -60,7 +60,7 @@ view:
         -
           key: 机器人前缀
           comment: 机器人前缀 设置后前缀+指令触发机器人
-          path: 'default.ailas'
+          path: 'default.alias'
           type: 'array'
           arrayType: 'text'
           associated:
