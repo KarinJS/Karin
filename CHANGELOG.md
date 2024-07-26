@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.8.6](https://github.com/KarinJS/Karin/compare/v0.8.5...v0.8.6) (2024-07-26)
+
+
+### Bug Fixes
+
+* config error ([581b01d](https://github.com/KarinJS/Karin/commit/581b01da3c14468ccdf318ae57fa23cd0441af4d))
+
 ## [0.8.5](https://github.com/KarinJS/Karin/compare/v0.8.4...v0.8.5) (2024-07-26)
 
 
