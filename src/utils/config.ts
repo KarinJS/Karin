@@ -255,7 +255,7 @@ export const config = new (class Cfg {
    */
   getYaml (type: 'defSet' | 'config', name: string, isWatch = false) {
     /** 文件路径 */
-    const file = type === 'defSet' ? `${this.pkgCfgDir}/${name}.yaml` : `${this.cfgDir}/${name}.yaml`
+    const file = type === 'defSet' ? `${this.pkgCfgDir}/${name}.yaml` : `${this.cfgDir}/config/${name}.yaml`
 
     /** 读取文件 */
     const data = Yaml.parse(fs.readFileSync(file, 'utf8'))
