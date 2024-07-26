@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.8.5](https://github.com/KarinJS/Karin/compare/v0.8.4...v0.8.5) (2024-07-26)
+
+
+### Bug Fixes
+
+* 修正pkg文件路径错误 def文件指向错误 ([72fbb6b](https://github.com/KarinJS/Karin/commit/72fbb6bf946281d04fe24dc61b0d2f78fe0a1623))
+
 ## [0.8.4](https://github.com/KarinJS/Karin/compare/v0.8.3...v0.8.4) (2024-07-24)
 
 
