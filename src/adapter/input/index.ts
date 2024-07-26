@@ -100,7 +100,7 @@ export class AdapterInput implements KarinAdapter {
     e.bot = this
     e.replyCallback = async elements => {
       this.SendMessage(e.contact, elements)
-      return { message_id: e.message_id }
+      return { message_id: e.message_id, message_time: Date.now(), raw_data: elements }
     }
 
     listener.emit('message', e)

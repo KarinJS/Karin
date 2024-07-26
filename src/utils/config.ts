@@ -223,7 +223,7 @@ export const config = new (class Cfg {
    * 实时获取packageon文件
    */
   get package (): Package {
-    const data = fs.readFileSync('./package.json', 'utf8')
+    const data = fs.readFileSync(this.pkgDir + '/package.json', 'utf8')
     const pack = JSON.parse(data) as Package
     return pack
   }
@@ -255,7 +255,7 @@ export const config = new (class Cfg {
    */
   getYaml (type: 'defSet' | 'config', name: string, isWatch = false) {
     /** 文件路径 */
-    const file = `./config/${type}/${name}.yaml`
+    const file = type === 'defSet' ? `${this.pkgCfgDir}/${name}.yaml` : `${this.cfgDir}/${name}.yaml`
 
     /** 读取文件 */
     const data = Yaml.parse(fs.readFileSync(file, 'utf8'))

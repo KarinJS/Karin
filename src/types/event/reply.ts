@@ -26,7 +26,21 @@ export type Reply = (
      */
     retry_count?: number
   },
-) => Promise<{ message_id?: string }>
+) => Promise<ReplyReturn>
+
+/**
+ * 发送消息后返回信息
+ */
+export interface ReplyReturn {
+  /**
+   * 消息ID
+   */
+  message_id: string
+  /** 消息发送时间戳 */
+  message_time?: number
+  /** 原始结果 QQBot适配器下为数组 */
+  raw_data?: any
+}
 
 export type replyCallback = (
   /**
@@ -37,6 +51,6 @@ export type replyCallback = (
    * 重试次数
    */
   retry_count?: number,
-) => Promise<{ message_id?: string }>
+) => Promise<ReplyReturn>
 
-export type replyForward = (msg: NodeElement[]) => Promise<{ message_id?: string }>
+export type replyForward = (msg: NodeElement[]) => Promise<ReplyReturn>

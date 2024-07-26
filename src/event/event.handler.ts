@@ -1,7 +1,7 @@
 import { listener } from 'karin/core'
 import { review } from './review.handler'
 import { segment, common, logger, config } from 'karin/utils'
-import { GroupCfg, KarinEventTypes, AllListenEvent, PluginRule } from 'karin/types'
+import { GroupCfg, KarinEventTypes, AllListenEvent, PluginRule, ReplyReturn } from 'karin/types'
 
 export default class EventHandler {
   e: KarinEventTypes
@@ -156,13 +156,20 @@ export default class EventHandler {
         this.e.self_id !== 'input' && logger.bot('info', this.e.self_id, `${logger.green(`Send private ${this.e.user_id}: `)}${ReplyLog}`)
       }
 
-      let message_id = ''
+      const request: ReplyReturn = {
+        message_id: '',
+        message_time: 0,
+        raw_data: undefined,
+      }
 
       try {
         listener.emit('karin:count:send', 1)
         /** 取结果 */
         const Res = await result
-        message_id = Res.message_id || ''
+        request.message_id = Res.message_id || ''
+        request.message_time = Res.message_time || Date.now()
+        request.raw_data = Res.raw_data || undefined
+
         logger.bot('debug', this.e.self_id, `回复消息结果:${JSON.stringify(result)}`)
       } catch (error: any) {
         logger.bot('error', this.e.self_id, `回复消息失败:${ReplyLog}`)
@@ -170,11 +177,11 @@ export default class EventHandler {
       }
 
       /** 快速撤回 */
-      if (recallMsg > 0 && message_id) {
-        setTimeout(() => this.e.bot.RecallMessage(this.e.contact, message_id), recallMsg * 1000)
+      if (recallMsg > 0 && request.message_id) {
+        setTimeout(() => this.e.bot.RecallMessage(this.e.contact, request.message_id), recallMsg * 1000)
       }
 
-      return result
+      return request
     }
     Object.freeze(this.e.reply)
   }

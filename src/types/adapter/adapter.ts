@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws'
 import { IncomingMessage } from 'http'
-import { Contact } from '../event'
+import { Contact, ReplyReturn } from '../event'
 import { KarinElement, NodeElement } from '../element'
 import { LoggerLevel } from '../logger'
 import { PushMessageBody, EssenceMessageBody, FriendInfo, GroupInfo, GroupMemberInfo, GroupHonorInfo, GroupFileInfo, GroupFolderInfo, GetRemainCountAtAllResponse } from './api'
@@ -127,7 +127,7 @@ export interface KarinAdapter {
    * @param retry_count - 重试次数 默认为1
    * @returns 此接口因各平台问题，允许返回更多自定义数据
    */
-  SendMessage (contact: Contact, elements: Array<KarinElement>, retry_count?: number): Promise<{ message_id?: string, message_time?: number, [key: string]: any }>
+  SendMessage (contact: Contact, elements: Array<KarinElement>, retry_count?: number): Promise<ReplyReturn>
 
   /**
    * 上传合并转发消息返回一个资源ID
@@ -382,7 +382,7 @@ export interface KarinAdapter {
    * @param contact 联系人信息
    * @param elements 消息元素
    */
-  sendForwardMessage (contact: Contact, elements: Array<NodeElement>): Promise<{ message_id?: string }>
+  sendForwardMessage (contact: Contact, elements: Array<NodeElement>): Promise<{ message_id: string }>
 
   /**
    * 对消息进行表情回应 icqq需要传递seq

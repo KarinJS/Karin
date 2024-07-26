@@ -1,4 +1,4 @@
-import { PluginType, KarinElement, NodeElement, EventType, stateArrType, KarinNoticeType, KarinRequestType, KarinEventTypes } from 'karin/types'
+import { PluginType, KarinElement, NodeElement, EventType, stateArrType, KarinNoticeType, KarinRequestType, KarinEventTypes, ReplyReturn } from 'karin/types'
 
 /**
  * 插件基类
@@ -141,19 +141,14 @@ export class Plugin implements PluginType {
        */
       retry_count?: number
     } = { reply: false, recallMsg: 0, at: false, button: false, retry_count: 1 }
-  ): Promise<{
-    /**
-     * @param message_id - 消息发送成功返回的消息ID
-     */
-    message_id?: string
-  }> {
+  ): Promise<ReplyReturn> {
     return this.e.reply(msg, options)
   }
 
   /**
    * - 快速回复合并转发
    */
-  async replyForward (msg: NodeElement[]): Promise<{ message_id?: string }> {
+  async replyForward (msg: NodeElement[]): Promise<{ message_id: string }> {
     const result = await this.e.bot.sendForwardMessage(this.e.contact, msg)
     return result
   }
