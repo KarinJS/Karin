@@ -11,6 +11,7 @@ import 'vitepress-plugin-codeblocks-fold/style/index.css'
 import {
   NolebaseGitChangelogPlugin
 } from '@nolebase/vitepress-plugin-git-changelog/client'
+import { InjectionKey } from '@nolebase/vitepress-plugin-git-changelog/client'
 import '@nolebase/vitepress-plugin-git-changelog/client/style.css'
 // 行内链接预览
 import {
@@ -50,6 +51,10 @@ export default {
     app.component('NCard', Ncard)
     app.use(TwoslashFloatingVue as Plugin)
     app.use(NolebaseGitChangelogPlugin as Plugin)
+    app.provide(InjectionKey, {
+      commitsRelativeTime: true,
+      displayAuthorsInsideCommitLine: true
+    })
     app.use(NolebaseInlineLinkPreviewPlugin as Plugin)
     app.use(NolebasePagePropertiesPlugin<{
       progress: number

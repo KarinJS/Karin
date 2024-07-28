@@ -71,7 +71,7 @@ export default defineConfig({
           // 禁用页面历史
           disableChangelog: false,
           // 禁用贡献者
-          disableContributors: false,
+          disableContributors: true,
         },
       }),
       // 页面属性
@@ -124,7 +124,7 @@ export default defineConfig({
           { text: '总目录', link: '/start/index' },
           { text: '快速开始', link: '/start/start' },
           { text: '渲染器', link: '/start/render' },
-          { text: '渲染器', link: '/start/problems' },
+          { text: '疑难杂症', link: '/start/problems' },
           {
             text: '疑难杂症', items: [{
               text: '常见问题解答', link: '/start/faq'
