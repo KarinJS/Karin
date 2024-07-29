@@ -128,7 +128,7 @@ export class RenderClient extends RenderBase {
    * 渲染标准方法
    * @param options 渲染参数
    */
-  async render (options: KarinRenderType): Promise<string | string[]> {
+  async<T extends KarinRenderType> (options: T) {
     /** 渲染模板 */
     let file = options.file
     let action = 'renderHtml'

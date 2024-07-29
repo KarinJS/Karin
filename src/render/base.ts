@@ -2,7 +2,7 @@ import fs from 'fs'
 import chokidar from 'chokidar'
 import template from 'art-template'
 import { common, logger } from 'karin/utils'
-import { KarinRender, KarinRenderType } from 'karin/types/render'
+import { KarinRender, KarinRenderType, RenderResult } from 'karin/types/render'
 
 /**
  * 渲染器基类 所有渲染器都应该继承这个类
@@ -81,8 +81,7 @@ export class RenderBase implements KarinRender {
   /**
    * 渲染标准方法
    */
-  async render (options: KarinRenderType): Promise<string | Array<string>> {
-    logger.error('未实现渲染方法')
-    return ''
+  async render<T extends KarinRenderType> (options: T): Promise<RenderResult<T>> {
+    throw new Error('未实现渲染方法')
   }
 }

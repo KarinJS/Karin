@@ -72,9 +72,15 @@ class Renderers {
   /**
    * 调用标准渲染器
    */
-  async render (options: KarinRenderType, id?: string) {
+  async render<T extends KarinRenderType> (options: T, id?: string) {
     const res = this.App(id)
-    return res.render(options)
+    if (typeof options.multiPage === 'number' || options.multiPage === true) {
+      const result = await res.render(options)
+      return result
+    } else {
+      const result = await res.render(options)
+      return result
+    }
   }
 
   /**
@@ -82,11 +88,26 @@ class Renderers {
    * @param data html路径、http地址
    * @returns 返回图片base64或数组
    */
-  async renderHtml (data: string) {
-    const app = this.App()
-    return app.render({
+  async renderHtml (data: string): Promise<string> {
+    return this.render({
       file: data,
       name: 'render',
+      pageGotoParams: {
+        waitUntil: 'networkidle2',
+      },
+    })
+  }
+
+  /**
+   * 快速分片渲染
+   * @param data html路径、http地址
+   * @param multiPage 分片高度 自动计算传true
+   */
+  async renderMultiHtml (data: string, multiPage: number | true): Promise<Array<string>> {
+    return await this.render({
+      file: data,
+      name: 'render',
+      multiPage,
       pageGotoParams: {
         waitUntil: 'networkidle2',
       },

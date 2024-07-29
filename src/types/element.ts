@@ -469,7 +469,7 @@ export interface FileElement extends Element {
 /**
  * - 原生 Markdown 元素
  */
-export interface ContentElement extends Element {
+export interface RawMarkdownElement extends Element {
   type: 'markdown'
   /**
    * - 原生markdown内容
@@ -486,7 +486,7 @@ export interface ContentElement extends Element {
 /**
  * - 模板 Markdown 元素
  */
-export interface TemplateElement extends Element {
+export interface TplMarkdownElement extends Element {
   type: 'markdown_tpl'
   /**
    * - 模板ID
@@ -505,6 +505,17 @@ export interface TemplateElement extends Element {
      */
     values: Array<string>
   }>
+}
+
+/**
+ * - Markdown 元素
+ */
+export interface MarkdownElement extends Element {
+  type: 'markdown'
+  /**
+   * - Markdown内容
+   */
+  content: string
 }
 
 /**
@@ -584,7 +595,7 @@ export interface LongMsgElement extends Element {
   id: string
 }
 
-export type KarinElement = TextElement | AtElement | FaceElement | BubbleFaceElement | ReplyElement | ImageElement | VoiceElement | VideoElement | BasketballElement | DiceElement | RpsElement | PokeElement | MusicElement | WeatherElement | LocationElement | ShareElement | GiftElement | MarketFaceElement | ForwardElement | ContactElement | JsonElement | XmlElement | FileElement | ButtonElement | RowElement | RecordElement | LongMsgElement | TemplateElement | ContentElement
+export type KarinElement = TextElement | AtElement | FaceElement | BubbleFaceElement | ReplyElement | ImageElement | VoiceElement | VideoElement | BasketballElement | DiceElement | RpsElement | PokeElement | MusicElement | WeatherElement | LocationElement | ShareElement | GiftElement | MarketFaceElement | ForwardElement | ContactElement | JsonElement | XmlElement | FileElement | ButtonElement | RowElement | RecordElement | LongMsgElement | TplMarkdownElement | RawMarkdownElement
 
 /**
  * - 构建自定义转发节点 此元素仅可通过专用接口发送 不支持混合发送

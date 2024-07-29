@@ -76,6 +76,11 @@ export interface KarinRenderType {
 }
 
 /**
+ * 渲染结果
+ */
+export type RenderResult<T> = T extends { multiPage: true | number } ? Array<string> : string
+
+/**
  * 渲染基类
  */
 export interface KarinRender {
@@ -102,7 +107,7 @@ export interface KarinRender {
    * 渲染
    * @param options - 标准渲染方法
    */
-  render: (options: KarinRenderType) => Promise<string | Array<string>>
+  render: <T extends KarinRenderType>(options: T, id?: string) => Promise<RenderResult<T>>
 }
 
 /**

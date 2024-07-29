@@ -25,7 +25,7 @@ export class HttpRenderer extends RenderBase {
   /**
    * 渲染
    */
-  async render (options: KarinRenderType): Promise<string | Array<string>> {
+  async render<T extends KarinRenderType> (options: T) {
     const name = options.name || 'render'
     let file = options.file
     /** 非http渲染模板并转为http静态资源 */

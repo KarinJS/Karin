@@ -23,8 +23,8 @@ import {
   FileElement,
   ButtonElement,
   CustomMusicElemen,
-  TemplateElement,
-  ContentElement,
+  TplMarkdownElement,
+  RawMarkdownElement,
   NodeElement,
   KarinElement,
   LongMsgElement,
@@ -497,9 +497,9 @@ export const segment = new (class Segment {
    * @param config - 未知的参数
    */
   markdown (
-    content: ContentElement['content'],
-    config?: ContentElement['config']
-  ): ContentElement {
+    content: RawMarkdownElement['content'],
+    config?: RawMarkdownElement['config']
+  ): RawMarkdownElement {
     return {
       type: 'markdown',
       content,
@@ -516,12 +516,12 @@ export const segment = new (class Segment {
     /**
      * - 模板ID
      */
-    custom_template_id: TemplateElement['custom_template_id'],
+    custom_template_id: TplMarkdownElement['custom_template_id'],
     /**
      * - 模板markdown参数
      */
-    params: TemplateElement['params']
-  ): TemplateElement {
+    params: TplMarkdownElement['params']
+  ): TplMarkdownElement {
     return {
       type: 'markdown_tpl',
       custom_template_id,

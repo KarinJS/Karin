@@ -13,7 +13,7 @@ export class MessageHandler extends EventHandler {
   /**
    * - 是否打印群消息日志
    */
-  GroupMsgPrint: boolean = false
+  GroupMsgPrint: boolean = true
   constructor (e: KarinMessageType) {
     super(e)
     this.e = e

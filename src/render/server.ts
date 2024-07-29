@@ -5,7 +5,7 @@ import { randomUUID } from 'crypto'
 import { IncomingMessage } from 'http'
 import { logger } from 'karin/utils'
 import { listener } from 'karin/core/listener'
-import { KarinRenderType } from 'karin/types'
+import { KarinRenderType, RenderResult } from 'karin/types'
 
 class Puppeteer extends RenderBase {
   socket!: WebSocket
@@ -72,25 +72,9 @@ class Puppeteer extends RenderBase {
 
   /**
    * 渲染模板
-   * @param {object} options 渲染参数
-   * @param {string} options.file http地址或本地文件路径
-   * @param {string} [options.name] 模板名称
-   * @param {string} [options.fileID] art-template后的文件名
-   * @param {object} [options.data] 传递给模板的数据 template.render(data)
-   * @param {'png'|'jpeg'|'webp'} [options.type] 截图类型 默认'webp'
-   * @param {number} [options.quality] 截图质量 默认90 1-100
-   * @param {boolean} options.omitBackground 是否隐藏背景 默认false
-   * @param {object} [options.setViewport] 设置视窗大小和设备像素比 默认1920*1080、1
-   * @param {number} [options.setViewport.width] 视窗宽度
-   * @param {number} [options.setViewport.height] 视窗高度
-   * @param {string} [options.setViewport.deviceScaleFactor] 设备像素比
-   * @param {number|boolean} [options.multiPage] 分页截图 传递数字则视为视窗高度 返回数组
-   * @param {object} [options.pageGotoParams] 页面goto时的参数
-   * @param {number} [options.pageGotoParams.timeout] 页面加载超时时间
-   * @param {'load'|'domcontentloaded'|'networkidle0'|'networkidle2'} [options.pageGotoParams.waitUntil] 页面加载状态
-   * @returns {Promise<string|string[]>} 返回图片base64或数组
+   * @param options 模板参数
    */
-  async render (options: KarinRenderType): Promise<string | string[]> {
+  async render<T extends KarinRenderType> (options: T): Promise<RenderResult<T>> {
     /** 渲染模板 */
     let file = ''
 
