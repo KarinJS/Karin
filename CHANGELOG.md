@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.8.7](https://github.com/KarinJS/Karin/compare/v0.8.6...v0.8.7) (2024-07-29)
+
+
+### Bug Fixes
+
+* 修正渲染结果不应该返回联合类型 ([1065300](https://github.com/KarinJS/Karin/commit/10653007c0e906b44ffb82312e85c4eb6d776735))
+
 ## [0.8.6](https://github.com/KarinJS/Karin/compare/v0.8.5...v0.8.6) (2024-07-26)
 
 
