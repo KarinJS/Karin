@@ -1,9 +1,13 @@
+import fs from 'fs'
+import path from 'path'
+import Yaml from 'yaml'
+import axios from 'axios'
+import lodash from 'lodash'
 import { promisify } from 'util'
 import { fileURLToPath } from 'url'
 import { AxiosRequestConfig } from 'axios'
 import { pipeline, Readable } from 'stream'
 import { logger, segment, YamlEditor } from 'karin/utils'
-import { fs, path, axios, lodash, yaml as Yaml } from 'karin/modules'
 import { dirName, fileName, KarinElement, NodeElement } from 'karin/types'
 
 /**

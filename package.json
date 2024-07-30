@@ -20,6 +20,11 @@
       "require": "./lib/index.js",
       "types": "./lib/index.d.ts"
     },
+    "./modules.js": {
+      "import": "./lib/modules.js",
+      "require": "./lib/modules.js",
+      "types": "./lib/modules.d.ts"
+    },
     "./art-template": {
       "import": "./lib/modules/art-template.js",
       "require": "./lib/modules/art-template.js",
@@ -127,8 +132,7 @@
     "plugins/**"
   ],
   "scripts": {
-    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run cp && npm run fix",
-    "cp": "cp ./lib/modules.d.ts ./modules.d.ts && cp ./lib/modules.js ./modules.js",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix",
     "fix": "eslint lib/**/*.js --fix",
     "fix:all": "eslint lib/**/*.js --fix && eslint lib/**/*.d.ts --fix",
     "pub": "npm publish --access public",

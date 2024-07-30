@@ -1,7 +1,9 @@
+import fs from 'fs'
+import Yaml from 'yaml'
 import path from 'path'
 import { Logger } from 'log4js'
+import chokidar from 'chokidar'
 import { karinDir } from 'karin/core/dir'
-import { fs, yaml as Yaml, chokidar } from 'karin/modules'
 import { Redis, App, Config, Server, Package, GroupCfg } from 'karin/types'
 import { common } from './common'
 
