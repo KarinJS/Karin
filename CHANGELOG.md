@@ -1,5 +1,13 @@
 # 更新日志
 
+## [0.8.11](https://github.com/KarinJS/Karin/compare/v0.8.10...v0.8.11) (2024-07-30)
+
+
+### Bug Fixes
+
+* 不再生成defSet lib ([e599f60](https://github.com/KarinJS/Karin/commit/e599f6025ea81b306083da5d8bc0ac55702245c3))
+* 修正导出 ([b63ccb7](https://github.com/KarinJS/Karin/commit/b63ccb7031382e9946702fdda16b0ab45a9d2a4d))
+
 ## [0.8.10](https://github.com/KarinJS/Karin/compare/v0.8.9...v0.8.10) (2024-07-30)
 
 
