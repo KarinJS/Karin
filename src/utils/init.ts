@@ -10,9 +10,7 @@ export class KarinInit {
   baseDir: string[]
   constructor () {
     this.baseDir = [
-      './lib',
       './config/config',
-      './config/defSet',
       './config/view',
       './config/plugin',
       './temp/input',
@@ -61,7 +59,7 @@ export class KarinInit {
    */
   copyFile () {
     /** 配置 */
-    const list = ['config/defSet', 'config/view']
+    const list = ['config/view']
     list.forEach(dir => {
       const pkgDir = path.join(karinDir, dir)
       const projDir = path.join(process.cwd(), dir)
