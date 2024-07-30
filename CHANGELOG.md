@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.8.9](https://github.com/KarinJS/Karin/compare/v0.8.8...v0.8.9) (2024-07-30)
+
+
+### Bug Fixes
+
+* build error ([502c090](https://github.com/KarinJS/Karin/commit/502c0907e7999a63e468690ca039b11a960f8add))
+
 ## [0.8.8](https://github.com/KarinJS/Karin/compare/v0.8.7...v0.8.8) (2024-07-30)
 
 
