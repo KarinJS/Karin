@@ -1,35 +1,36 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
-    "target": "ESNext",
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "outDir": "./lib",
-    "resolveJsonModule": true,
-    "sourceMap": false,
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
+    "declaration": true,
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "outDir": "./lib",
     "paths": {
       "karin/*": [
         "src/*"
-      ],
+      ]
     },
+    "resolveJsonModule": true,
     "rootDir": "./src",
-    "declaration": true,
-    "noImplicitAny": true,
-    "strict": true
+    "sourceMap": false,
+    "strict": true,
+    "target": "ESNext",
+    "types": [
+      "@types/node"
+    ]
   },
-  "tsc-alias": {
-    "resolveFullPaths": true,
-    "resolveFullExtension": ".js"
-  },
+  "exclude": [
+    "node_modules"
+  ],
   "include": [
     "src/**/*",
-    "src/utils/kritor-proto.d.ts",
     "modules.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ]
+  "tsc-alias": {
+    "resolveFullExtension": ".js",
+    "resolveFullPaths": true
+  }
 }

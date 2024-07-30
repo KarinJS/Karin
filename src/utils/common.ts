@@ -440,23 +440,23 @@ class Common {
     } else {
       const list: { dir: dirName; name: string, isMain: boolean }[] = []
 
-      const readPackageJson = async (name: string) => {
+      const readPackageJson = async (files: string) => {
         try {
-          const pkgPath = path.join(process.cwd(), 'node_modules', name, 'package.json')
+          const pkgPath = path.join(process.cwd(), 'node_modules', files, 'package.json')
           const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
           if (pkg?.karin) {
             if (pkg?.main) {
-              const dir = `${name}/${path.dirname(pkg.main).replace(/\.\//, '')}`
+              const dir = `${files}/${path.dirname(pkg.main).replace(/\.\//, '')}`
               list.push({ dir, name: path.basename(pkg.main), isMain: true })
             }
 
             if (pkg?.karin?.apps?.length) {
               pkg.karin.apps.forEach((app: string) => {
-                fs.readdirSync(`./node_modules/${name}/${app}`).forEach((name: string) => {
+                fs.readdirSync(`./node_modules/${files}/${app}`).forEach((filename: string) => {
                   /** 忽略非js */
-                  if (!name.endsWith('.js')) return
-                  const dir = `${name}/${app}`
-                  list.push({ dir, name, isMain: false })
+                  if (!filename.endsWith('.js')) return
+                  const dir = `${files}/${app}`
+                  list.push({ dir, name: filename, isMain: false })
                 })
               })
             }

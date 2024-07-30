@@ -14,6 +14,98 @@
   "license": "GPL-3.0-only",
   "author": "Karin",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./lib/index.js",
+      "require": "./lib/index.js",
+      "types": "./lib/index.d.ts"
+    },
+    "./art-template": {
+      "import": "./lib/modules/art-template.js",
+      "require": "./lib/modules/art-template.js",
+      "types": "./lib/modules/art-template.d.ts"
+    },
+    "./axios": {
+      "import": "./lib/modules/axios.js",
+      "require": "./lib/modules/axios.js",
+      "types": "./lib/modules/axios.d.ts"
+    },
+    "./chalk": {
+      "import": "./lib/modules/chalk.js",
+      "require": "./lib/modules/chalk.js",
+      "types": "./lib/modules/chalk.d.ts"
+    },
+    "./chokidar": {
+      "import": "./lib/modules/chokidar.js",
+      "require": "./lib/modules/chokidar.js",
+      "types": "./lib/modules/chokidar.d.ts"
+    },
+    "./commander": {
+      "import": "./lib/modules/commander.js",
+      "require": "./lib/modules/commander.js",
+      "types": "./lib/modules/commander.d.ts"
+    },
+    "./express": {
+      "import": "./lib/modules/express.js",
+      "require": "./lib/modules/express.js",
+      "types": "./lib/modules/express.d.ts"
+    },
+    "./grpc-js": {
+      "import": "./lib/modules/grpc-js.js",
+      "require": "./lib/modules/grpc-js.js",
+      "types": "./lib/modules/grpc-js.d.ts"
+    },
+    "./kritor-proto": {
+      "import": "./lib/modules/kritor-proto.js",
+      "require": "./lib/modules/kritor-proto.js",
+      "types": "./lib/modules/kritor-proto.d.ts"
+    },
+    "./level": {
+      "import": "./lib/modules/level.js",
+      "require": "./lib/modules/level.js",
+      "types": "./lib/modules/level.d.ts"
+    },
+    "./lodash": {
+      "import": "./lib/modules/lodash.js",
+      "require": "./lib/modules/lodash.js",
+      "types": "./lib/modules/lodash.d.ts"
+    },
+    "./log4js": {
+      "import": "./lib/modules/log4js.js",
+      "require": "./lib/modules/log4js.js",
+      "types": "./lib/modules/log4js.d.ts"
+    },
+    "./moment": {
+      "import": "./lib/modules/moment.js",
+      "require": "./lib/modules/moment.js",
+      "types": "./lib/modules/moment.d.ts"
+    },
+    "./node-schedule": {
+      "import": "./lib/modules/node-schedule.js",
+      "require": "./lib/modules/node-schedule.js",
+      "types": "./lib/modules/node-schedule.d.ts"
+    },
+    "./proto-loader": {
+      "import": "./lib/modules/proto-loader.js",
+      "require": "./lib/modules/proto-loader.js",
+      "types": "./lib/modules/proto-loader.d.ts"
+    },
+    "./redis": {
+      "import": "./lib/modules/redis.js",
+      "require": "./lib/modules/redis.js",
+      "types": "./lib/modules/redis.d.ts"
+    },
+    "./ws": {
+      "import": "./lib/modules/ws.js",
+      "require": "./lib/modules/ws.js",
+      "types": "./lib/modules/ws.d.ts"
+    },
+    "./yaml": {
+      "import": "./lib/modules/yaml.js",
+      "require": "./lib/modules/yaml.js",
+      "types": "./lib/modules/yaml.d.ts"
+    }
+  },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "bin": {
@@ -40,7 +132,7 @@
     "fix": "eslint lib/**/*.js --fix",
     "fix:all": "eslint lib/**/*.js --fix && eslint lib/**/*.d.ts --fix",
     "pub": "npm publish --access public",
-    "sort": "npx sort-package-json"
+    "sort": "npx sort-package-json && sort-json tsconfig.json"
   },
   "dependencies": {
     "@grpc/grpc-js": "1.11.1",
@@ -69,6 +161,7 @@
     "@types/ws": "^8.5.11",
     "eslint": "^9.7.0",
     "neostandard": "^0.11.1",
+    "sort-json": "^2.0.1",
     "sort-package-json": "^2.10.0",
     "tsc-alias": "^1.8.10",
     "tsx": "^4.16.2",
