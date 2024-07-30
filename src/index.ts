@@ -1,4 +1,3 @@
-export * from 'kritor-proto'
 export * from 'karin/core'
 export * from 'karin/event'
 export * from 'karin/db'

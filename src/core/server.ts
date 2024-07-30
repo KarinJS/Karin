@@ -4,7 +4,6 @@ import { WebSocketServer } from 'ws'
 import { createServer } from 'http'
 import { listener } from './listener'
 import express, { Express } from 'express'
-import { KritorGrpc } from 'karin/adapter'
 import { exec, config, logger, common } from 'karin/utils'
 import { AdapterOneBot11 } from 'karin/adapter/onebot/11/index'
 import { render, HttpRenderer, Wormhole, RenderClient } from 'karin/render'
@@ -33,8 +32,6 @@ export const server = new (class Server {
     try {
       /** 防止多进程端口冲突 启动失败 */
       await Process.check()
-      /** 初始化gRPC服务器 */
-      new KritorGrpc().init()
 
       this.WebSocketServer.on('connection', (socket, request) => {
         const path = request.url

@@ -139,15 +139,12 @@
     "sort": "npx sort-package-json && sort-json tsconfig.json"
   },
   "dependencies": {
-    "@grpc/grpc-js": "1.11.1",
-    "@grpc/proto-loader": "0.7.13",
     "art-template": "4.13.2",
     "axios": "1.7.2",
     "chalk": "5.3.0",
     "chokidar": "3.6.0",
     "commander": "^12.1.0",
     "express": "4.19.2",
-    "kritor-proto": "^1.0.3",
     "level": "8.0.1",
     "lodash": "4.17.21",
     "log4js": "6.9.1",
