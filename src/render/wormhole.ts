@@ -36,9 +36,9 @@ export function Wormhole () {
       case 'msg': {
         const { post, token, WormholeClient } = config.Server.HttpRender
         const parsedUrl = new URL(WormholeClient)
-        const { hostname, port } = parsedUrl
+        const { hostname, port, pathname } = parsedUrl
         const ishttps = WormholeClient.includes('wss://')
-        const host = `${ishttps ? 'https' : 'http'}://${hostname}${port ? `:${port}` : ''}/web/${data.date}`
+        const host = `${ishttps ? 'https' : 'http'}://${hostname}${port ? `:${port}` : ''}${pathname.replace(/ws\/(?=[^ws\/]*$)/, 'web/')}${data.date}`
         logger.mark(`web渲染器已连接，地址：${host}`)
         /** 注册渲染器 */
         const rd = new HttpRenderer(host, post, token)
