@@ -5,7 +5,7 @@
     "declaration": true,
     "esModuleInterop": true,
     "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "Node",
     "noImplicitAny": true,
     "outDir": "./lib",
     "paths": {
