@@ -44,9 +44,10 @@ class KarinCli {
 
   /**
    * 获取pkg
+   * @param isNpm - 是否是npm包
    */
-  get pkg () {
-    const filePath = path.join(this.karinDir, 'package.json')
+  pkg (isNpm: boolean) {
+    const filePath = isNpm ? path.join(this.karinDir, 'package.json') : path.join(process.cwd(), 'package.json')
     const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
     return data
   }
@@ -226,7 +227,7 @@ class KarinCli {
     ]
 
     let cmd = ''
-    const list = Object.keys(this.pkg.dependencies).filter(key => !pkgdependencies.includes(key))
+    const list = Object.keys(this.pkg(false).dependencies).filter(key => !pkgdependencies.includes(key))
 
     /** 获取包管理器 */
     const pkg = new KarinInit().getRegistry()
@@ -301,7 +302,7 @@ class KarinCli {
 
 const cli = new KarinCli()
 
-program.version(cli.pkg.version, '-v, --version', '显示版本号')
+program.version(cli.pkg(true).version, '-v, --version', '显示版本号')
 program.command('.').description('启动karin').action(() => cli.start(Mode.Prod, Lang.Js, Runner.Node))
 program.command('start').description('启动karin').action(() => cli.start(Mode.Prod, Lang.Js, Runner.Node))
 program.command('pm2').description('后台运行karin').action(() => cli.start(Mode.Prod, Lang.Js, Runner.Pm2))
