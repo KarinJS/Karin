@@ -1,5 +1,13 @@
 # 更新日志
 
+## [0.8.12](https://github.com/KarinJS/Karin/compare/v0.8.11...v0.8.12) (2024-07-30)
+
+
+### Bug Fixes
+
+* build error ([d004ddb](https://github.com/KarinJS/Karin/commit/d004ddb47128ab5b5749fe454835946e88ac11f6))
+* 暂时删除kritor适配器 ([00fd783](https://github.com/KarinJS/Karin/commit/00fd783adac0c2cab9bd861d7e7d0e3e9527d11e))
+
 ## [0.8.11](https://github.com/KarinJS/Karin/compare/v0.8.10...v0.8.11) (2024-07-30)
 
 
