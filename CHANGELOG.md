@@ -1,5 +1,13 @@
 # 更新日志
 
+## [0.8.8](https://github.com/KarinJS/Karin/compare/v0.8.7...v0.8.8) (2024-07-30)
+
+
+### Bug Fixes
+
+* 修复wormhole非常常规路径连接问题 ([111db95](https://github.com/KarinJS/Karin/commit/111db95aa1771a70953c4681b32499adb8e77c9f))
+* 修正导出 npm包路径构建错误 ([f22337a](https://github.com/KarinJS/Karin/commit/f22337a8230a8720195f397571883907d316aa80))
+
 ## [0.8.7](https://github.com/KarinJS/Karin/compare/v0.8.6...v0.8.7) (2024-07-29)
 
 
