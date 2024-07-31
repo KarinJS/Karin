@@ -1,5 +1,15 @@
 # 更新日志
 
+## [0.8.13](https://github.com/KarinJS/Karin/compare/v0.8.12...v0.8.13) (2024-07-31)
+
+
+### Bug Fixes
+
+* add karin.accept ([864a927](https://github.com/KarinJS/Karin/commit/864a9275cffd672d21d145c0d8e758f75e3884af))
+* error ([8b4f6e7](https://github.com/KarinJS/Karin/commit/8b4f6e7641675a705e39d682a9b3efab77b790f8))
+* ipc管道建立连接错误 ([2e171b4](https://github.com/KarinJS/Karin/commit/2e171b493bdd02eae5173e70586ed6d5fef4eddf))
+* 修复上线通知 ([531a025](https://github.com/KarinJS/Karin/commit/531a025a89e3a4887b59be9a20229319d90b2cdd))
+
 ## [0.8.12](https://github.com/KarinJS/Karin/compare/v0.8.11...v0.8.12) (2024-07-30)
 
 
