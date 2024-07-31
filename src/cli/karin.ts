@@ -99,7 +99,7 @@ class KarinCli {
     }
 
     /** 启动 */
-    this.child = spawn(runner, cmd, { stdio: ['inherit', 'inherit', 'inherit', 'ipc'], cwd: process.cwd(), env: process.env, shell: true })
+    this.child = spawn(runner, cmd, { stdio: ['inherit', 'inherit', 'inherit', 'ipc'], cwd: process.cwd(), env: process.env })
     /** 监听退出 */
     this.child.once('exit', (code) => process.exit(code))
     /** 监听子进程消息 */
