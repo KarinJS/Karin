@@ -5,7 +5,7 @@ import { RenderBase } from './base'
 import { randomUUID } from 'crypto'
 import { listener } from 'karin/core'
 import { common, logger } from 'karin/utils'
-import { KarinRenderType } from 'karin/types/render'
+import { KarinRenderType, RenderResult } from 'karin/types/render'
 
 export class RenderClient extends RenderBase {
   url: string
@@ -128,7 +128,7 @@ export class RenderClient extends RenderBase {
    * 渲染标准方法
    * @param options 渲染参数
    */
-  async<T extends KarinRenderType> (options: T) {
+  async render<T extends KarinRenderType> (options: T): Promise<RenderResult<T>> {
     /** 渲染模板 */
     let file = options.file
     let action = 'renderHtml'
@@ -147,7 +147,7 @@ export class RenderClient extends RenderBase {
 
     if (!file) {
       logger.error(`[渲染器:${this.id}:${this.index}] 渲染文件不存在：${options.file}`)
-      return ''
+      return '' as RenderResult<T>
     }
 
     /** 编码 */
@@ -165,7 +165,7 @@ export class RenderClient extends RenderBase {
 
     return new Promise((resolve, reject) => {
       listener.once(echo, (data: { ok: boolean; data: string | string[] }) => {
-        if (data.ok) return resolve(data.data)
+        if (data.ok) return resolve((data.data as RenderResult<T>))
         reject(new Error(JSON.stringify(data)))
       })
     })
