@@ -134,6 +134,7 @@ export class KarinRequest implements KarinRequestEventBase {
     sub_event,
     event_id,
     content,
+    raw_event,
   }: BaseEventDataType & {
     sub_event: KarinRequestType['sub_event']
     /**
@@ -141,6 +142,7 @@ export class KarinRequest implements KarinRequestEventBase {
      */
     content: KarinRequestType['content']
   }) {
+    this.raw_event = raw_event
     this.self_id = self_id
     this.user_id = user_id
     this.group_id = contact.scene === 'group' ? (contact.peer || group_id) : group_id

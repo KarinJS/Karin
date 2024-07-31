@@ -1,4 +1,4 @@
-import { PluginType, KarinElement, NodeElement, EventType, stateArrType, KarinNoticeType, KarinRequestType, KarinEventTypes, ReplyReturn } from 'karin/types'
+import { PluginType, KarinElement, NodeElement, EventType, stateArrType, KarinNoticeType, KarinRequestType, ReplyReturn, EType } from 'karin/types'
 
 /**
  * 插件基类
@@ -214,7 +214,7 @@ export class Plugin implements PluginType {
     }
   }
 
-  e!: KarinEventTypes
+  e!: EType<this>
   replyCallback!: PluginType['replyCallback']
 }
 

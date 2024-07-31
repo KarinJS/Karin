@@ -1,17 +1,11 @@
 import neostandard from 'neostandard'
 
-const data = neostandard({
+export default neostandard({
   ignores: ['node_modules', 'temp', 'logs', 'data'],
   globals: ['logger', 'NodeJS'],
   ts: true,
-})
-
-const newData = []
-
-data.forEach(val => {
-  // 驼峰命名规则关闭
+}).map(val => {
+  /** 关闭驼峰命名: 追随已有标准 更自由的命名风格 */
   if (val?.rules?.['camelcase']) val.rules['camelcase'] = ['off']
-  newData.push(val)
+  return val
 })
-
-export default newData

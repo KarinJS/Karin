@@ -552,10 +552,12 @@ export class KarinNotice implements KarinNoticeEventBase {
     sender,
     sub_event,
     content,
+    raw_event,
   }: BaseEventDataType & {
     sub_event: KarinNoticeType['sub_event']
     content: KarinNoticeType['content']
   }) {
+    this.raw_event = raw_event
     this.self_id = self_id
     this.user_id = user_id
     this.group_id = contact.scene === 'group' ? (contact.peer || group_id) : group_id

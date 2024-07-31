@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Sender } from './sender'
 import { Contact } from './contact'
 import { KarinAdapter } from 'karin/types'
@@ -248,16 +247,19 @@ export const enum CombinedEventType {
 }
 
 /**
- * 所有监听事件
+ * - 消息监听事件
  */
-export type AllListenEvent = 'message'
-  | 'notice'
-  | 'request'
+export type MessageListenEvent = 'message'
   | 'message.group_message'
   | 'message.private_message'
   | 'message.guild_message'
   | 'message.nearby'
   | 'message.stranger'
+
+/**
+ * - 通知监听事件
+ */
+export type NoticeListenEvent = 'notice'
   | 'notice.private_poke'
   | 'notice.private_recall'
   | 'notice.private_file_uploaded'
@@ -274,9 +276,19 @@ export type AllListenEvent = 'message'
   | 'notice.group_whole_ban'
   | 'notice.group_file_uploaded'
   | 'notice.group_message_reaction'
+
+/**
+ * - 请求监听事件
+ */
+export type RequestListenEvent = 'request'
   | 'request.private_apply'
   | 'request.group_apply'
   | 'request.invited_group'
+
+/**
+ * 所有监听事件
+ */
+export type AllListenEvent = MessageListenEvent | NoticeListenEvent | RequestListenEvent
 
 /**
  * 事件基类定义

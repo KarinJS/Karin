@@ -1,7 +1,7 @@
 import schedule from 'node-schedule'
 import { Plugin } from 'karin/core'
 import { Reply, replyCallback, replyForward } from './event/reply'
-import { KarinNoticeType, KarinRequestType, AllListenEvent, KarinEventTypes, KarinMessageType, PermissionType } from './event'
+import { KarinNoticeType, KarinRequestType, AllListenEvent, KarinMessageType, PermissionType } from './event'
 
 /**
  * - 插件根目录名称
@@ -130,6 +130,13 @@ export interface AppInfo {
 }
 
 /**
+ * - 定义一个条件类型，根据是否存在accept方法来决定类型
+ */
+export type EType<T> = T extends { accept: (e: KarinNoticeType | KarinRequestType) => Promise<void> }
+  ? KarinNoticeType | KarinRequestType
+  : KarinMessageType
+
+/**
  * - 插件基类
  */
 export interface PluginType {
@@ -183,9 +190,8 @@ export interface PluginType {
 
   /**
    * - 上报事件
-   * - 根据上报中的event字段来获取e的事件类型
    */
-  e: KarinEventTypes
+  e: EType<this>
   init?: () => Promise<any>
   /**
    * - 快速回复
@@ -264,9 +270,13 @@ export interface PluginApps {
    */
   priority: number
   /**
-   * - accept函数存在
+   * - accept函数
    */
   accept: boolean | Function
+  /**
+   * - accept函数触发是否打印日志
+   */
+  log: boolean
   /**
    * - 命令规则
    */

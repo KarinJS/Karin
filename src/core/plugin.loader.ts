@@ -389,9 +389,7 @@ class PluginLoader {
       const keys = Object.keys(this.dependErr)
       if (!keys.length) return
 
-      const msg = [
-        '-----依赖缺失----',
-      ]
+      const msg = ['-----依赖缺失----']
 
       keys.forEach(key => {
         const { dir, name, depend } = this.dependErr[key]

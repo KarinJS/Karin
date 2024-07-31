@@ -5,7 +5,21 @@ import { common } from 'karin/utils'
 import { listener } from './listener'
 import onebot11 from 'karin/adapter/onebot/11'
 import { render, RenderServer } from 'karin/render'
-import { KarinMessage, Permission, PluginApps, KarinElement, Contact, KarinRenderType, Scene, PermissionType } from 'karin/types'
+import {
+  Scene,
+  Contact,
+  Permission,
+  PluginApps,
+  KarinElement,
+  KarinMessage,
+  KarinRenderType,
+  PermissionType,
+  RenderResult,
+  NoticeListenEvent,
+  RequestListenEvent,
+  KarinNoticeType,
+  KarinRequestType,
+} from 'karin/types'
 
 type FncFunction = (e: KarinMessage) => Promise<boolean>
 type FncElement = string | KarinElement | Array<KarinElement>
@@ -223,16 +237,45 @@ export class Karin {
   }
 
   /**
-   * - 渲染
+   * 快速渲染
+   * @param file - 文件路径、http地址
+   */
+  render (file: string): Promise<string>
+  /**
+   * 分片渲染
    * @param options - 渲染参数
    */
-  render (options: KarinRenderType) {
-    return render.render(options)
+  render (file: string, multiPage: number | true): Promise<Array<string>>
+  /**
+   * 正常渲染
+   * @param options - 渲染参数
+   */
+  render<T extends KarinRenderType> (options: T): Promise<RenderResult<T>>
+  /**
+   * - 渲染
+   * @param data - 渲染参数
+   * @param multiPage - 分片高度
+   * @returns - 返回图片base64或数组
+   */
+  render<T extends KarinRenderType> (data: string | T, multiPage?: number | true): Promise<string | Array<string> | RenderResult<T>> {
+    if (typeof data === 'string') {
+      /** 分片 */
+      if (typeof multiPage === 'number' || multiPage === true) {
+        return render.renderMultiHtml(data, multiPage)
+      }
+
+      /** 快速渲染 */
+      return render.renderHtml(data)
+    }
+
+    /** 正常渲染 */
+    return render.render(data)
   }
 
   /**
-   * - 上下文
+   * 上下文
    * @param e - 消息事件
+   * @param options - 上下文选项
    */
   async ctx (e: KarinMessage, options?: {
     /**
@@ -271,6 +314,38 @@ export class Karin {
     })
   }
 
+  /**
+   * accept
+   * @param event - 监听事件
+   * @param fnc - 实现函数
+   */
+  accept (event: NoticeListenEvent | RequestListenEvent, fnc: (e: KarinNoticeType | KarinRequestType) => boolean, options?: {
+    /**
+     * - 插件名称
+     */
+    name?: string
+    /**
+     * - 优先级
+     */
+    priority?: number
+    /**
+     * - 触发函数是否打印日志
+     */
+    log?: boolean
+  }) {
+    const data = {
+      name: options?.name || 'accept',
+      priority: options?.priority,
+      event,
+      accept: fnc,
+      log: options?.log,
+    }
+    return PluginApp(data)
+  }
+
+  /**
+   * - 启动
+   */
   run () {
     if (this.start) return
     this.start = true
