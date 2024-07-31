@@ -1,10 +1,11 @@
 import { EventEmitter } from 'events'
 import { pluginLoader } from './plugin.loader'
-import { common, logger, config } from 'karin/utils'
+import { common, logger, config, segment } from 'karin/utils'
 import NoticeHandler from 'karin/event/notice.handler'
 import RequestHandler from 'karin/event/request.handler'
 import { MessageHandler } from 'karin/event/message.handler'
 import { KarinAdapter, Contact, KarinElement } from 'karin/types'
+import { level } from 'karin/db'
 
 /**
  * 监听器管理
@@ -56,9 +57,29 @@ class Listeners extends EventEmitter {
 
     this.list.push({ index, type: data.type, bot: data.bot })
     logger.info(`[机器人][注册][${data.type}] ` + logger.green(`[account:${data.bot.account.uid || data.bot.account.uin}(${data.bot.account.name})]`))
-    this.emit('karin:online', data.bot.account.uid || data.bot.account.uin)
+    this.#online(data.bot.account.uid || data.bot.account.uin)
     logger.debug('注册', this.list)
     return index
+  }
+
+  /**
+ * 发送上线通知
+ */
+  async #online (uid: string) {
+    /** 重启 */
+    const key = `karin:restart:${uid}`
+    const options = await level.get(key)
+    if (!options) return
+    const { id, contact, time, message_id } = options as any
+    /** 重启花费时间 保留2位小数 */
+    const restartTime = ((Date.now() - time) / 1000).toFixed(2)
+    const element = [
+      segment.reply(message_id),
+      segment.text(`Karin 重启成功：${restartTime}秒`),
+    ]
+    await this.sendMsg(id, contact, element)
+    await level.del(key)
+    return true
   }
 
   /**
@@ -164,7 +185,7 @@ class Listeners extends EventEmitter {
    * @param options.recallMsg - 发送成功后撤回消息时间
    * @param options.retry_count - 重试次数
    */
-  async sendMsg (uid: string, contact: Contact, elements: KarinElement, options: {
+  async sendMsg (uid: string, contact: Contact, elements: Array<KarinElement>, options: {
     recallMsg?: number
     retry_count?: number
   } = { recallMsg: 0, retry_count: 1 }): Promise<{ message_id: string }> {

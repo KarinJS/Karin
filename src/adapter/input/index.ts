@@ -53,9 +53,13 @@ export class AdapterInput implements KarinAdapter {
       fs.unlinkSync(`./temp/input/${file}`)
     })
 
-    /** 注册bot */
-    const index = listener.addBot({ bot: this, type: this.adapter.type })
-    if (index) this.adapter.index = index
+    // 等1秒
+    common.sleep(1000)
+      .then(() => {
+        /** 注册bot */
+        const index = listener.addBot({ bot: this, type: this.adapter.type })
+        if (index) this.adapter.index = index
+      })
     return this
   }
 

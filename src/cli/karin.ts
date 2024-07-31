@@ -312,4 +312,5 @@ program.command('dev').description('JavaScript开发模式').action(() => cli.st
 program.command('ts').description('TypeScript开发模式').action(() => cli.start(Mode.Dev, Lang.Ts, Runner.Tsx))
 program.command('log').description('查看日志').action(() => cli.log())
 program.command('up').description('更新依赖').action(() => cli.update())
+program.command('init').description('初始化karin').action(() => { import('./init') })
 program.parse(process.argv)
