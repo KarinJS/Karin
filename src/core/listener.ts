@@ -73,6 +73,11 @@ class Listeners extends EventEmitter {
     const { id, contact, time, message_id } = options as any
     /** 重启花费时间 保留2位小数 */
     const restartTime = ((Date.now() - time) / 1000).toFixed(2)
+    /** 超过2分钟不发 */
+    if (Number(restartTime) > 120) {
+      await level.del(key)
+      return false
+    }
     const element = [
       segment.reply(message_id),
       segment.text(`Karin 重启成功：${restartTime}秒`),
