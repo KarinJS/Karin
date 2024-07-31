@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.8.14](https://github.com/KarinJS/Karin/compare/v0.8.13...v0.8.14) (2024-07-31)
+
+
+### Bug Fixes
+
+* 不发送超过2分钟的重启记录 ([e07f481](https://github.com/KarinJS/Karin/commit/e07f481b227199613cf31c54cb841340e56c7655))
+
 ## [0.8.13](https://github.com/KarinJS/Karin/compare/v0.8.12...v0.8.13) (2024-07-31)
 
 
