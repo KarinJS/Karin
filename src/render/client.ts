@@ -2,7 +2,7 @@ import fs from 'fs'
 import WebSocket from 'ws'
 import { render } from './app'
 import { RenderBase } from './base'
-import { randomUUID } from 'crypto'
+import { createHash, randomUUID } from 'crypto'
 import { listener } from 'karin/core'
 import { common, logger } from 'karin/utils'
 import { KarinRenderType, RenderResult } from 'karin/types/render'
@@ -95,6 +95,7 @@ export class RenderClient extends RenderBase {
       echo: string
       action: string
       params: {
+        md5?: string[]
         file: string
       }
     } = JSON.parse(str)
@@ -104,7 +105,13 @@ export class RenderClient extends RenderBase {
         const filePath = decodeURIComponent(data.params.file)
         logger.debug(`[渲染器:${this.id}][正向WS] 访问静态文件：${filePath}`)
         const file = fs.readFileSync('.' + filePath)
-        const params = {
+        const md5 = createHash('md5').update(file).digest('hex')
+        const params = data.params.md5?.includes(md5) ? {
+          echo: data.echo,
+          action: 'static',
+          status: 'ok',
+          data: { verifiedMd5: md5 },
+        } : {
           echo: data.echo,
           action: 'static',
           status: 'ok',
