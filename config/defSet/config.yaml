@@ -40,7 +40,8 @@ ffmpeg_path:
 ffprobe_path:
 
 # 主人列表 主权限
-master: []
+master:
+  - input
 
 # 管理员列表 子权限
 admin: []
