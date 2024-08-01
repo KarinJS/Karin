@@ -36,12 +36,12 @@ class Common {
   async downFile (fileUrl: string, savePath: string, param: AxiosRequestConfig = {}) {
     try {
       this.mkdir(path.dirname(savePath))
-      logger && logger.info(`[下载文件] ${fileUrl}`)
+      logger.info(`[下载文件] ${fileUrl}`)
       const response = await axios.get(fileUrl, { ...param, responseType: 'stream' })
       await this.streamPipeline(response.data, fs.createWriteStream(savePath))
       return true
     } catch (err) {
-      logger && logger.error(`下载文件错误：${err}`)
+      logger.error(`下载文件错误：${err}`)
       return false
     }
   }
@@ -247,55 +247,69 @@ class Common {
   /**
    * 将文件转换为不带前缀的base64字符串
    * @param file - 文件路径或Buffer对象、可读流对象、http地址、base64://字符串
-   * @param - 附加数据
-   * @param - 为true时，http地址会直接返回，否则会下载文件并转换为base64字符串
+   * @param options - 选项 http为true时返回http地址
    * @returns 返回base64字符串
    */
-  async base64 (file: any, options = { http: false }): Promise<string> {
-    /** 先判断是否非字符串情况 */
+  async base64 (file: string | Buffer | Readable, options = { http: false }): Promise<string> {
+    /** 非字符串 */
     if (typeof file !== 'string') {
-      /** buffer */
-      if (Buffer.isBuffer(file)) {
-        return file.toString('base64')
-      }
-      /** 可读流 */
-      if (file instanceof Readable) {
-        const data_1 = await this.stream(file)
-        return data_1.toString('base64')
-      }
-      /** 未知类型 */
-      throw new Error('未知类型')
+      if (Buffer.isBuffer(file)) return file.toString('base64')
+      if (file instanceof Readable) return (await this.stream(file)).toString('base64')
+      return file
     }
 
     /** base64:// */
-    if (file.startsWith('base64://')) {
-      return file.replace('base64://', '')
-    }
+    if (file.startsWith('base64://')) return file.replace('base64://', '')
 
-    /** url */
-    if (file.startsWith('http://') || file.startsWith('https://')) {
+    /** http */
+    if (file.startsWith('http')) {
       if (options.http) return file
       const response = await axios.get(file, { responseType: 'arraybuffer' })
       return Buffer.from(response.data, 'binary').toString('base64')
     }
 
-    /** file:/// */
-    if (fs.existsSync(file.replace(/^file:\/\/\//, ''))) {
-      file = file.replace(/^file:\/\/\//, '')
-      return fs.readFileSync(file).toString('base64')
+    /** file:// */
+    const files = file.replace(/^file:\/\//, '')
+    if (fs.existsSync(files)) return fs.readFileSync(file).toString('base64')
+
+    /** 无前缀base64:// */
+    return Buffer.from(file, 'base64').toString('base64')
+  }
+
+  /**
+   * 将文件转换为Buffer对象 仅支持标准格式
+   * @param file - 文件路径或Buffer对象、可读流对象、http地址、base64://字符串
+   * @param options - 选项 http为true时返回http地址
+   * @returns - 返回Buffer对象
+   */
+  async buffer<T extends { http: boolean }> (file: string | Buffer | Readable, options?: T): Promise<T extends { http: true } ? string : Buffer> {
+    type ResultType = T extends { http: true } ? string : Buffer
+
+    /** 非字符串 */
+    if (typeof file !== 'string') {
+      if (Buffer.isBuffer(file)) return file as ResultType
+      if (file instanceof Readable) return await this.stream(file) as ResultType
+      return file
+    }
+
+    /** base64 */
+    if (file.startsWith('base64://')) {
+      return Buffer.from(file.replace('base64://', ''), 'base64') as ResultType
+    }
+
+    /** http */
+    if (file.startsWith('http')) {
+      if (options?.http) return file as ResultType
+      const response = await axios.get(file, { responseType: 'arraybuffer' })
+      return Buffer.from(response.data) as ResultType
     }
 
     /** file:// */
-    if (fs.existsSync(file.replace(/^file:\/\//, ''))) {
-      file = file.replace(/^file:\/\//, '')
-      return fs.readFileSync(file).toString('base64')
-    }
+    const files = file.replace(/^file:\/\//, '')
+    if (fs.existsSync(files)) return fs.readFileSync(files) as ResultType
 
     /** 无前缀base64:// */
-    const buffer = Buffer.from(file, 'base64').toString('base64') === file
-    if (buffer) return file
-
-    throw new Error('未知类型')
+    return Buffer.from(file, 'base64') as ResultType
   }
 
   /**
@@ -310,46 +324,6 @@ class Common {
       stream.on('end', () => resolve(Buffer.concat(chunks)))
       stream.on('error', error => reject(error))
     })
-  }
-
-  /**
-   * 将文件转换为Buffer对象
-   * @param file - 文件路径或Buffer对象、可读流对象、http地址、base64://字符串
-   * @param options - 选项
-   * @returns - 返回Buffer对象
-   */
-  async buffer (file: any, options = { http: false }): Promise<Buffer | Error | string> {
-    if (typeof file !== 'string') {
-      if (Buffer.isBuffer(file)) return file
-      if (file instanceof Readable) return this.stream(file)
-      throw new Error('未知文件类型：' + file)
-    }
-
-    if (file.startsWith('base64://')) return Buffer.from(file.replace('base64://', ''), 'base64')
-
-    if (file.startsWith('http://') || file.startsWith('https://')) {
-      if (options.http) return file
-      const response = await axios.get(file, { responseType: 'arraybuffer' })
-      return Buffer.from(response.data)
-    }
-
-    /** file:/// */
-    if (fs.existsSync(file.replace(/^file:\/\/\//, ''))) {
-      file = file.replace(/^file:\/\/\//, '')
-      return fs.readFileSync(file)
-    }
-
-    /** file:// */
-    if (fs.existsSync(file.replace(/^file:\/\//, ''))) {
-      file = file.replace(/^file:\/\//, '')
-      return fs.readFileSync(file)
-    }
-
-    /** 无前缀base64:// */
-    const buffer = Buffer.from(file, 'base64')
-    if (buffer.toString('base64') === file) return buffer
-
-    throw new Error('未知类型')
   }
 
   /**
