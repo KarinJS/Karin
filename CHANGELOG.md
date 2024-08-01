@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.9.0](https://github.com/KarinJS/Karin/compare/v0.8.14...v0.9.0) (2024-08-01)
+
+
+### Features
+
+* 新增标准输入为默认主人 ([13392b3](https://github.com/KarinJS/Karin/commit/13392b3cff5d248cac4b01183d2010acaf327a7f))
+
 ## [0.8.14](https://github.com/KarinJS/Karin/compare/v0.8.13...v0.8.14) (2024-07-31)
 
 
