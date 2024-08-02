@@ -29,11 +29,12 @@ import { segment, Plugin } from 'node-karin'
     ```
 
 - ## `Bot`
+`Bot` 类拥有 [**标准API**](../api/standard.md) 中的所有
 
-    ```js twoslash
-    import { Bot } from 'node-karin'
-    // ...
-    ```
+```js twoslash
+import { Bot } from 'node-karin'
+// ...
+```
 
 - ## `Cfg`
 

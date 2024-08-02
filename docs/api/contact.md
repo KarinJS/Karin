@@ -28,7 +28,7 @@
 
 ```js
 // 一个简单的例子，回复消息
-import { segment, Bot } from '#Karin'
+import { segment, Bot } from 'node-karin'
 
 const self_id = 123456789
 await Bot.sendMsg(

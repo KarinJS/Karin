@@ -25,7 +25,7 @@ console.log(res)
 ```
 
 ```js [主动调用]
-import { Bot } from '#Karin'
+import { Bot } from 'node-karin'
 
 const self_id = 123456789
 
