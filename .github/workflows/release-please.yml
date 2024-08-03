@@ -1,42 +1,52 @@
 name: Release and Publish
 on:
   push:
+    # 监听 dev 分支的 push 事件
     branches:
       - dev
+# 赋予 release-please-action 权限
 permissions:
   contents: write
   pull-requests: write
 jobs:
+  # 设置 release-please 任务
   release-please:
+    # 设置任务运行环境为 ubuntu-latest
     runs-on: ubuntu-latest
     steps:
+      # 使用 release-please-action 动作来自动创建发布 PR
       - uses: google-github-actions/release-please-action@v3
         id: release
         with:
+          # 设置发布类型为 node
           release-type: node
+          # 设置包名
           package-name: node-karin
+          # 设置发布PR分支
           default-branch: dev
-      # Checkout
+      # 检出代码
       - uses: actions/checkout@v4
         if: ${{ steps.release.outputs.release_created }}
-      # Setup node
+      # 设置 Node.js 环境
       - uses: actions/setup-node@v3
         with:
+          # 设置 Node.js 版本
           node-version: 20
+          # 设置 npm 源
           registry-url: "https://registry.npmjs.org"
         if: ${{ steps.release.outputs.release_created }}
-      # Install pnpm
+      # 安装 pnpm
       - run: npm install -g pnpm
         if: ${{ steps.release.outputs.release_created }}
-      # Install dependencies
+      # 安装依赖
       - run: pnpm install --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.RELEASE }}
         if: ${{ steps.release.outputs.release_created }}
-      # Build output
+      # 构建输出
       - run: pnpm run build
         if: ${{ steps.release.outputs.release_created }}
-      # Publish to npm
+      # 发布到 npm
       - run: pnpm run pub
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
