@@ -110,7 +110,7 @@ export class AdapterInput implements KarinAdapter {
     listener.emit('message', e)
   }
 
-  async #MsgToFile (type: 'image' | 'voice', file: Uint8Array | string): Promise<string> {
+  async #MsgToFile (type: 'image' | 'voice', file: Buffer | string): Promise<string> {
     if (!msgToFile) return ''
 
     // 判断是否为string 如果是则继续判断是否为url、path
@@ -119,7 +119,7 @@ export class AdapterInput implements KarinAdapter {
       if (common.exists(file)) return file
     }
 
-    const buffer = await common.buffer(file) as Uint8Array
+    const buffer = await common.buffer(file)
     // 生成文件名 根据type生成不同的文件后缀
     const name = `${Date.now()}.${type === 'image' ? 'jpg' : type === 'voice' ? 'mp3' : 'file'}`
     fs.writeFileSync(`./temp/input/${name}`, buffer)

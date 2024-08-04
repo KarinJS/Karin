@@ -1,4 +1,4 @@
-import { Contact, KarinElement, Sender } from '../index'
+import { Contact, KarinElement, Role, Sender } from '../index'
 
 /**
  * - 基本消息结构
@@ -216,6 +216,10 @@ export interface GroupMemberInfo {
    * - 用户UIN
    */
   uin: string
+  /**
+   * - 用户角色
+   */
+  role: Role
   /**
    * - 用户昵称
    */
