@@ -1,5 +1,20 @@
 # 更新日志
 
+## [0.10.0](https://github.com/KarinJS/Karin/compare/v0.9.0...v0.10.0) (2024-08-04)
+
+
+### Features
+
+* 新增ws渲染缓存验证 ([9fbf39c](https://github.com/KarinJS/Karin/commit/9fbf39c24384add89ef9c3e6edfb3282ce077bac))
+* 新增基于ws渲染的渲染时连接模式（未应用在当前渲染器中） ([163833f](https://github.com/KarinJS/Karin/commit/163833f066da233db36257dfee48d601f864e0bf))
+
+
+### Bug Fixes
+
+* review ([81997e6](https://github.com/KarinJS/Karin/commit/81997e68cc2a1a9db7d7fca99a1f7a8a8562676f))
+* 拓展GroupMemberInfo接口 补充确实的role字段 ([e449ae1](https://github.com/KarinJS/Karin/commit/e449ae1c9213e09219c749bd3b58462e5b0007a2))
+* 状态 ([71ed3be](https://github.com/KarinJS/Karin/commit/71ed3bee2aa493de86a68f51fb28c5b679d0704c))
+
 ## [0.9.0](https://github.com/KarinJS/Karin/compare/v0.8.14...v0.9.0) (2024-08-01)
 
 
