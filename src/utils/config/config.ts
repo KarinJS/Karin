@@ -247,7 +247,7 @@ export const config = new (class Cfg {
     if (res) {
       const cfg = { ...res.defCfg.default, ...res.Config.default }
       for (const k of keys) {
-        if (res[k]) return { ...cfg, ...res[k] }
+        if (res.config[k]) return { ...cfg, ...res.config[k] }
       }
       return cfg
     }

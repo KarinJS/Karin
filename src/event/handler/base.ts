@@ -170,7 +170,7 @@ export class EventBaseHandler {
         request.message_time = Res.message_time || Date.now()
         request.raw_data = Res.raw_data || undefined
 
-        logger.bot('debug', this.e.self_id, `回复消息结果:${JSON.stringify(result)}`)
+        logger.bot('debug', this.e.self_id, `回复消息结果:${JSON.stringify(request)}`)
       } catch (error: any) {
         logger.bot('error', this.e.self_id, `回复消息失败:${ReplyLog}`)
         logger.bot('error', this.e.self_id, error.stack || error.message || JSON.stringify(error))
