@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.10.2](https://github.com/KarinJS/Karin/compare/v0.10.1...v0.10.2) (2024-08-05)
+
+
+### Bug Fixes
+
+* 修正group配置缓存解构错误 ([b811050](https://github.com/KarinJS/Karin/commit/b811050e2d940bf09d69512efc27bd23be0488f7))
+
 ## [0.10.1](https://github.com/KarinJS/Karin/compare/v0.10.0...v0.10.1) (2024-08-05)
 
 
