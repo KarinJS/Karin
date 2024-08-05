@@ -3,9 +3,9 @@ import Yaml from 'yaml'
 import path from 'path'
 import { Logger } from 'log4js'
 import chokidar from 'chokidar'
-import { karinDir } from 'karin/core/dir'
-import { Redis, App, Config, Server, Package, GroupCfg } from 'karin/types'
-import { common } from './common'
+import { karinDir } from 'karin/core'
+import { common } from 'karin/utils/common/common'
+import { Redis, App, Config, Server, Package, GroupCfg, KarinEventTypes } from 'karin/types'
 
 /**
  * 配置文件
@@ -46,7 +46,9 @@ export const config = new (class Cfg {
     this.initCfg()
   }
 
-  /** 初始化配置 */
+  /**
+   * 初始化配置
+   */
   async initCfg () {
     const list = [
       this.dir + '/temp/input',
@@ -75,7 +77,7 @@ export const config = new (class Cfg {
       this.cfgDir + '/plugin',
     ]
     DataList.forEach(path => this.dirPath(path, plugins))
-    this.logger = (await import('./logger')).default
+    this.logger = (await import('../core/logger')).default
   }
 
   async getPlugins () {
@@ -149,7 +151,9 @@ export const config = new (class Cfg {
     return this.Config.admin || []
   }
 
-  /** App管理 */
+  /**
+   * App管理
+   */
   get App (): App {
     const key = 'change.App'
     const res = this.change.get(key)
@@ -232,14 +236,20 @@ export const config = new (class Cfg {
 
   /**
    * 获取群配置
+   * @param group_id - 群号
+   * @param e - 事件
    */
-  group (group_id: string = ''): GroupCfg {
+  group (group_id: string, e: KarinEventTypes): GroupCfg {
     const key = 'change.group'
     /** 取缓存 */
-    let res = this.change.get(key)
+    const res = this.change.get(key)
+    const keys = e?.self_id ? [`Bot.${e.self_id}.${group_id}`, `Bot.${e.self_id}`, group_id] : [group_id]
     if (res) {
-      res = { ...res.defCfg.default, ...res.Config.default, ...(res.Config[group_id] || {}) }
-      return res
+      const cfg = { ...res.defCfg.default, ...res.Config.default }
+      for (const k of keys) {
+        if (res[k]) return { ...cfg, ...res[k] }
+      }
+      return cfg
     }
 
     /** 取配置 */
@@ -247,13 +257,20 @@ export const config = new (class Cfg {
     const defCfg = this.getYaml('defSet', 'group', false)
     const data = { Config, defCfg }
     /** 缓存 */
-    res = this.change.set(key, data)
-    res = { ...defCfg.default, ...Config.default, ...(Config[group_id] || {}) }
-    return res
+    this.change.set(key, data)
+    const cfg = { ...defCfg.default, ...Config.default }
+    for (const k of keys) {
+      if (Config[k]) return { ...cfg, ...Config[k] }
+    }
+
+    return cfg
   }
 
   /**
    * 获取配置yaml
+   * @param type 类型
+   * @param name 文件名称
+   * @param isWatch 是否监听文件
    */
   getYaml (type: 'defSet' | 'config', name: string, isWatch = false) {
     /** 文件路径 */
@@ -269,9 +286,9 @@ export const config = new (class Cfg {
 
   /**
    * 监听配置文件
-   * @param {'defSet'|'config'} type 类型
-   * @param {string} name 文件名称 不带后缀
-   * @param {string} file 文件路径
+   * @param type 类型
+   * @param name 文件名称 不带后缀
+   * @param file 文件路径
    */
   async watch (type: 'defSet' | 'config', name: string, file: string) {
     const key = `change.${name}`
@@ -287,13 +304,13 @@ export const config = new (class Cfg {
       /** 文件修改后调用对应的方法 */
       switch (`change_${name}`) {
         case 'change_App':
-          this.change_App()
+          this.changeApp()
           break
         case 'change_config':
-          this.change_config()
+          this.changeCfg()
           break
         case 'change_group':
-          this.change_group()
+          this.changeGroup()
           break
       }
     })
@@ -302,26 +319,27 @@ export const config = new (class Cfg {
     this.watcher.set(key, watcher)
   }
 
-  async change_App () {
+  async changeApp () {
     await this.#review()
   }
 
-  async change_config () {
+  async changeCfg () {
     /** 修改日志等级 */
     this.logger.level = this.Config.log4jsCfg.level
     await this.#review()
     if (this.Server.HotUpdate) {
-      const { Bot } = await import('..')
+      const { Bot } = await import('../..')
       Bot.emit('restart_http', {})
       Bot.emit('restart_grpc', {})
     }
   }
 
-  async change_group () {
+  async changeGroup () {
     await this.#review()
   }
 
   async #review () {
+    // 应该改成事件监听
     if (this.review) return
     this.review = true
     const { review } = await import('karin/event')

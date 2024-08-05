@@ -1,11 +1,9 @@
-import { EventEmitter } from 'events'
-import { pluginLoader } from './plugin.loader'
-import { common, logger, config, segment } from 'karin/utils'
-import NoticeHandler from 'karin/event/notice.handler'
-import RequestHandler from 'karin/event/request.handler'
-import { MessageHandler } from 'karin/event/message.handler'
-import { KarinAdapter, Contact, KarinElement } from 'karin/types'
 import { level } from 'karin/db'
+import { EventEmitter } from 'events'
+import { pluginLoader } from '../plugin/loader'
+import { common, logger, config, segment } from 'karin/utils'
+import { KarinAdapter, Contact, KarinElement } from 'karin/types'
+import { MessageHandler, NoticeHandler, RequestHandler } from 'karin/event'
 
 /**
  * 监听器管理

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { KarinInit } from 'karin/utils/init'
+import { KarinInit } from 'karin/utils/core/init'
 
 /**
  * 休眠函数

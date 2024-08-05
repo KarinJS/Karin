@@ -6,7 +6,7 @@ import { RenderBase } from './base'
 import { createHash, randomUUID } from 'crypto'
 import { listener } from 'karin/core'
 import { logger } from 'karin/utils'
-import { KarinRenderType, RenderResult } from 'karin/types/render'
+import { KarinRenderType, RenderResult } from 'karin/types'
 
 export class RenderClientEven extends RenderBase {
   url: string
@@ -95,17 +95,9 @@ export class RenderClientEven extends RenderBase {
         logger.debug(`[渲染器:${this.id}][正向WS] 访问静态文件：${filePath}`)
         const file = fs.readFileSync('.' + filePath)
         const md5 = createHash('md5').update(file).digest('hex')
-        const params = data.params.md5?.includes(md5) ? {
-          echo: data.echo,
-          action: 'static',
-          status: 'ok',
-          data: { verifiedMd5: md5 },
-        } : {
-          echo: data.echo,
-          action: 'static',
-          status: 'ok',
-          data: { file },
-        }
+        const params = data.params.md5?.includes(md5)
+          ? { echo: data.echo, action: 'static', status: 'ok', data: { verifiedMd5: md5 } }
+          : { echo: data.echo, action: 'static', status: 'ok', data: { file } }
         return this.ws.send(JSON.stringify(params))
       }
       /** 渲染结果 */

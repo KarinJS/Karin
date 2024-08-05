@@ -3,9 +3,9 @@ import path from 'path'
 import lodash from 'lodash'
 import chokidar from 'chokidar'
 import schedule from 'node-schedule'
-import { Plugin } from './plugin'
-import { listener } from './listener'
-import PluginApp from './plugin.app'
+import { Plugin } from './base'
+import { listener } from '../listener/listener'
+import PluginApp from './app'
 import { render } from 'karin/render'
 import { common, handler, logger } from 'karin/utils'
 import { PluginApps, PluginTask, dirName, fileName, AppInfo, NewMessagePlugin, Permission } from 'karin/types'
@@ -248,7 +248,7 @@ class PluginLoader {
   }
 
   /**
-   * 排序并打印插件加兹安信息
+   * 排序并打印插件信息
    * @param isPrint - 是否打印
    */
   orderBy (isPrint = false) {

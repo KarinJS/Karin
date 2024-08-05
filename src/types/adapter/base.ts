@@ -1,8 +1,8 @@
 import { WebSocket } from 'ws'
 import { IncomingMessage } from 'http'
 import { Contact, ReplyReturn } from '../event'
-import { KarinElement, NodeElement } from '../element'
-import { LoggerLevel } from '../logger'
+import { KarinElement, NodeElement } from '../element/element'
+import { LoggerLevel } from '../logger/logger'
 import { PushMessageBody, EssenceMessageBody, FriendInfo, GroupInfo, GroupMemberInfo, GroupHonorInfo, GroupFileInfo, GroupFolderInfo, GetRemainCountAtAllResponse } from './api'
 
 export interface KarinAdapter {

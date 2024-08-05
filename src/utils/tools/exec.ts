@@ -1,4 +1,4 @@
-import logger from './logger'
+import logger from '../core/logger'
 import { exec as execCmd } from 'child_process'
 
 /**

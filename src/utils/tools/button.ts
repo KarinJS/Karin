@@ -1,4 +1,4 @@
-import logger from './logger'
+import logger from '../core/logger'
 import { KarinMessageType, NewMessagePlugin } from 'karin/types'
 import { pluginLoader as loader } from 'karin/core'
 

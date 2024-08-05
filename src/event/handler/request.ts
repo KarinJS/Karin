@@ -1,5 +1,5 @@
-import { review } from './review.handler'
-import EventHandler from './event.handler'
+import { review } from './review'
+import { EventBaseHandler } from './base'
 import { logger, config } from 'karin/utils'
 import { KarinRequestType, RequestSubType } from 'karin/types'
 import { ExtendedPlugin, pluginLoader } from 'karin/core'
@@ -7,7 +7,7 @@ import { ExtendedPlugin, pluginLoader } from 'karin/core'
 /**
  * 请求事件
  */
-export default class RequestHandler extends EventHandler {
+export class RequestHandler extends EventBaseHandler {
   e: KarinRequestType
   constructor (e: KarinRequestType) {
     super(e)

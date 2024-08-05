@@ -1,6 +1,6 @@
 import lodash from 'lodash'
-import { review } from './review.handler'
-import EventHandler from './event.handler'
+import { review } from './review'
+import { EventBaseHandler } from './base'
 import { logger, config } from 'karin/utils'
 import { KarinMessageType, NewMessagePlugin } from 'karin/types'
 import { listener, stateArr, pluginLoader } from 'karin/core'
@@ -8,7 +8,7 @@ import { listener, stateArr, pluginLoader } from 'karin/core'
 /**
  * 消息事件
  */
-export class MessageHandler extends EventHandler {
+export class MessageHandler extends EventBaseHandler {
   e: KarinMessageType
   /**
    * - 是否打印群消息日志

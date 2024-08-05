@@ -1,9 +1,9 @@
 import { listener } from 'karin/core'
-import { review } from './review.handler'
+import { review } from './review'
 import { segment, common, logger, config } from 'karin/utils'
 import { GroupCfg, KarinEventTypes, AllListenEvent, PluginRule, ReplyReturn } from 'karin/types'
 
-export default class EventHandler {
+export class EventBaseHandler {
   e: KarinEventTypes
   config: GroupCfg | {}
   /**
@@ -19,7 +19,7 @@ export default class EventHandler {
     this.GroupMsgPrint = false
     /** 加入e.bot */
     !this.e.bot && Object.defineProperty(this.e, 'bot', { value: listener.getBot(this.e.self_id) })
-    if (this.e.group_id) this.config = config.group(this.e.group_id)
+    if (this.e.group_id) this.config = config.group(this.e.group_id, this.e)
   }
 
   /**

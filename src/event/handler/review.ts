@@ -69,7 +69,7 @@ export const review = new (class Handler {
     /** 同时启用 */
     if (this.App.WhiteList.groups && this.App.BlackList.groups) {
       this.GroupEnable = e => {
-        if (!e.group_id) return false
+        if (!e.group_id) return true
         /** 白名单不为空 */
         if (Array.isArray(this.Config.WhiteList.groups) && this.Config.WhiteList.groups.length) {
           return this.Config.WhiteList.groups.includes(String(e.group_id))

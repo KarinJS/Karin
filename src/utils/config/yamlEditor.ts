@@ -5,7 +5,7 @@
  */
 import fs from 'fs'
 import lodash from 'lodash'
-import logger from './logger'
+import logger from '../core/logger'
 import Yaml, { isMap, isSeq, isPair } from 'yaml'
 
 export type YamlValue = string | boolean | number | object | any[]

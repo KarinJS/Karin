@@ -1,4 +1,4 @@
-import { listener } from './listener'
+import { listener } from '../listener/listener'
 import { logger, common, config } from 'karin/utils'
 
 /**

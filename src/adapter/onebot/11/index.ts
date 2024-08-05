@@ -1,7 +1,7 @@
 import WebSocket from 'ws'
 import { randomUUID } from 'crypto'
 import { IncomingMessage } from 'http'
-import { listener } from 'karin/core/listener'
+import { listener } from 'karin/core/listener/listener'
 import { common, config, logger, segment } from 'karin/utils'
 import { GroupHonorInfo, KarinAdapter, LoggerLevel, MessageType, OB11Api, OB11ApiParams, OB11ApiResponse, OB11Segment, OB11SegmentType, Role } from 'karin/types'
 

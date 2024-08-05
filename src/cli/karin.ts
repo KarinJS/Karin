@@ -7,7 +7,7 @@ import axios from 'axios'
 import { fileURLToPath } from 'url'
 import { program } from 'commander'
 import { exec as execCmd, spawn, ChildProcess } from 'child_process'
-import { KarinInit } from 'karin/utils/init'
+import { KarinInit } from 'karin/utils/core/init'
 
 const enum Runner {
   Node = 'node',

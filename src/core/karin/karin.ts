@@ -1,8 +1,8 @@
-import { server } from './server'
-import { stateArr } from './plugin'
-import PluginApp from './plugin.app'
+import { server } from '../server/server'
+import { stateArr } from '../plugin/base'
+import PluginApp from '../plugin/app'
 import { common } from 'karin/utils'
-import { listener } from './listener'
+import { listener } from '../listener/listener'
 import onebot11 from 'karin/adapter/onebot/11'
 import { render, RenderServer } from 'karin/render'
 import {

@@ -4,7 +4,7 @@ import { RenderBase } from './base'
 import { randomUUID } from 'crypto'
 import { IncomingMessage } from 'http'
 import { logger } from 'karin/utils'
-import { listener } from 'karin/core/listener'
+import { listener } from 'karin/core'
 import { KarinRenderType, RenderResult } from 'karin/types'
 
 class Puppeteer extends RenderBase {

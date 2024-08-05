@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { exec } from 'child_process'
-import { karinDir } from 'karin/core/dir'
+import { karinDir } from 'karin/core'
 
 export class KarinInit {
   /**

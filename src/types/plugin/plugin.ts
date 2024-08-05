@@ -1,7 +1,7 @@
 import schedule from 'node-schedule'
 import { Plugin } from 'karin/core'
-import { Reply, replyCallback, replyForward } from './event/reply'
-import { KarinNoticeType, KarinRequestType, AllListenEvent, KarinMessageType, PermissionType } from './event'
+import { Reply, replyCallback, replyForward } from '../event/reply'
+import { KarinNoticeType, KarinRequestType, AllListenEvent, KarinMessageType, PermissionType } from '../event'
 
 /**
  * - 插件根目录名称

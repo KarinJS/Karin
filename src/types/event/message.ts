@@ -1,4 +1,4 @@
-import { KarinElement } from '../element'
+import { KarinElement } from '../element/element'
 import { KarinEventType, BaseEventDataType, EventType, MessageSubType } from './event'
 
 /**

@@ -1,6 +1,6 @@
 import exec from './exec'
-import logger from './logger'
-import { config } from './config'
+import logger from '../core/logger'
+import { config } from '../config/config'
 
 /**
  * 执行 ffmpeg 命令

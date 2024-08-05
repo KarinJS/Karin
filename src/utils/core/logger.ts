@@ -1,7 +1,7 @@
 import fs from 'fs'
 import chalk from 'chalk'
 import log4js from 'log4js'
-import { config } from './config'
+import { config } from '../config/config'
 
 const logsDir = './logs'
 if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir)

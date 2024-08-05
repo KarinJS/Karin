@@ -1,5 +1,5 @@
-import { review } from './review.handler'
-import EventHandler from './event.handler'
+import { review } from './review'
+import { EventBaseHandler } from './base'
 import { logger, config } from 'karin/utils'
 import { KarinNoticeType, NoticeSubType } from 'karin/types'
 import { ExtendedPlugin, pluginLoader } from 'karin/core'
@@ -7,7 +7,7 @@ import { ExtendedPlugin, pluginLoader } from 'karin/core'
 /**
  * 通知事件
  */
-export default class NoticeHandler extends EventHandler {
+export class NoticeHandler extends EventBaseHandler {
   e: KarinNoticeType
   constructor (e: KarinNoticeType) {
     super(e)

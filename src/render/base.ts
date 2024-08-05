@@ -2,7 +2,7 @@ import fs from 'fs'
 import chokidar from 'chokidar'
 import template from 'art-template'
 import { common, logger } from 'karin/utils'
-import { KarinRender, KarinRenderType, RenderResult } from 'karin/types/render'
+import { KarinRender, KarinRenderType, RenderResult } from 'karin/types'
 
 /**
  * 渲染器基类 所有渲染器都应该继承这个类
