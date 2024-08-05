@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.10.4](https://github.com/KarinJS/Karin/compare/v0.10.3...v0.10.4) (2024-08-05)
+
+
+### Bug Fixes
+
+* 好嘛 我是笨比 ([ecd5e67](https://github.com/KarinJS/Karin/commit/ecd5e67593a785786f761fc1b2fbbd0301d443e8))
+
 ## [0.10.3](https://github.com/KarinJS/Karin/compare/v0.10.2...v0.10.3) (2024-08-05)
 
 
