@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.10.3](https://github.com/KarinJS/Karin/compare/v0.10.2...v0.10.3) (2024-08-05)
+
+
+### Bug Fixes
+
+* 修正混乱的导入 ([8756504](https://github.com/KarinJS/Karin/commit/8756504da2128c21a0ac870a731eae434c0f7825))
+
 ## [0.10.2](https://github.com/KarinJS/Karin/compare/v0.10.1...v0.10.2) (2024-08-05)
 
 
