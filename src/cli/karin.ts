@@ -7,7 +7,7 @@ import axios from 'axios'
 import { fileURLToPath } from 'url'
 import { program } from 'commander'
 import { exec as execCmd, spawn, ChildProcess } from 'child_process'
-import { KarinInit } from 'karin/utils/core/init'
+import { KarinCfgInit } from '../core/init/config'
 
 const enum Runner {
   Node = 'node',
@@ -230,7 +230,7 @@ class KarinCli {
     const list = Object.keys(this.pkg(false).dependencies).filter(key => !pkgdependencies.includes(key))
 
     /** 获取包管理器 */
-    const pkg = new KarinInit().getRegistry()
+    const pkg = new KarinCfgInit().getRegistry()
     switch (pkg) {
       case 'pnpm': {
         cmd = 'pnpm update'

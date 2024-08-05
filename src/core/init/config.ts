@@ -1,9 +1,10 @@
 import fs from 'fs'
 import path from 'path'
 import { exec } from 'child_process'
-import { karinDir } from 'karin/core'
+/** 必须详细指向根文件 否则会导致模块乱导入 */
+import { karinDir } from 'karin/core/init/dir'
 
-export class KarinInit {
+export class KarinCfgInit {
   /**
    * 基础目录
    */

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { KarinInit } from 'karin/utils/core/init'
+import { KarinCfgInit } from '../core/init/config'
 
 /**
  * 休眠函数
@@ -15,7 +15,7 @@ async function main () {
   process.on('uncaughtException', err => console.error(err))
   process.on('unhandledRejection', err => console.error(err))
 
-  const init = new KarinInit()
+  const init = new KarinCfgInit()
   init.init()
 
   await sleep(1000)
