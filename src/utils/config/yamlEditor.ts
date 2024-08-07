@@ -40,13 +40,14 @@ export class YamlEditor {
    * @param path - 路径，多个路径使用`.`连接，例如：`a.b.c`
    * @param value - 要设置的值 允许的类型：`string`, `boolean`, `number`, `object`, `array`
    */
-  set (path: string, value: YamlValue) {
+  set (path: string, value: YamlValue): boolean {
     try {
       const _path = typeof path === 'string' ? path.split('.') : path
       this.document.setIn(_path, value)
+      return true
     } catch (error) {
       logger.error(`[YamlEditor] 设置数据时出错：${error}`)
-      return null
+      return false
     }
   }
 
@@ -55,13 +56,15 @@ export class YamlEditor {
    * @param path - 路径，多个路径使用`.`连接，例如：`a.b.c`
    * @param value - 要添加的值
    */
-  add (path: string, value: YamlValue) {
+  add (path: string, value: YamlValue): boolean {
     try {
       const _path = typeof path === 'string' ? path.split('.') : path
       this.document.addIn(_path, value)
       logger.debug(`[YamlEditor] 已在 ${path} 添加新的值`)
+      return true
     } catch (error) {
       logger.error(`[YamlEditor] 添加数据时出错：${error}`)
+      return false
     }
   }
 
@@ -70,7 +73,7 @@ export class YamlEditor {
    * @param path - 路径，多个路径使用`.`连接，例如：`a.b.c`
    * @returns 是否删除成功
    */
-  del (path: string) {
+  del (path: string): boolean {
     try {
       const _path = typeof path === 'string' ? path.split('.') : path
       this.document.deleteIn(_path)
@@ -87,7 +90,7 @@ export class YamlEditor {
    * @param value - 要添加的值
    * @param prepend - 如果为 true，则添加到数组的开头，否则添加到末尾
    */
-  append (path: string, value: string, prepend = false) {
+  append (path: string, value: string, prepend = false): boolean {
     try {
       const _path = typeof path === 'string' ? path.split('.') : path || []
       let current = this.document.getIn(_path)
@@ -95,13 +98,47 @@ export class YamlEditor {
         current = new Yaml.YAMLSeq()
         this.document.setIn(_path, current)
       } else if (!(current instanceof Yaml.YAMLSeq)) {
-        throw new Error('[YamlEditor] 指定的路径不是数组')
+        logger.error('[YamlEditor] 指定的路径不是数组')
+        return false
       } else {
         prepend ? current.items.unshift(value) : current.add(value)
       }
       logger.debug(`[YamlEditor] 已向 ${path} 数组${prepend ? '开头' : '末尾'}添加新元素：${value}`)
+      return true
     } catch (error) {
       logger.error(`[YamlEditor] 向数组添加元素时出错：${error}`)
+      return false
+    }
+  }
+
+  /**
+   * 向指定路径的数组删除值
+   * @param path - 路径，多个路径使用`.`连接，例如：`a.b.c`
+   * @param value - 要删除的值
+   */
+  remove (path: string, value: YamlValue): boolean {
+    try {
+      const _path = typeof path === 'string' ? path.split('.') : path
+      const current = this.document.getIn(_path)
+      if (!current) {
+        logger.error('[YamlEditor] 指定的路径不存在')
+        return false
+      }
+      if (!(current instanceof Yaml.YAMLSeq)) {
+        logger.error('[YamlEditor] 指定的路径不是数组')
+        return false
+      }
+      const index = current.items.findIndex(item => lodash.isEqual(item.toJSON(), value))
+      if (index < 0) {
+        logger.error('[YamlEditor] 未找到要删除的值')
+        return false
+      }
+      current.items.splice(index, 1)
+      logger.debug(`[YamlEditor] 已从 ${path} 数组删除元素：${value}`)
+      return true
+    } catch (error) {
+      logger.error(`[YamlEditor] 从数组删除元素时出错：${error}`)
+      return false
     }
   }
 
@@ -109,7 +146,7 @@ export class YamlEditor {
    * 检查指定路径的键是否存在
    * @param path - 路径，用点号分隔
    */
-  has (path: string) {
+  has (path: string): boolean {
     try {
       const _path = typeof path === 'string' ? path.split('.') : path
       return this.document.hasIn(_path)
@@ -161,7 +198,7 @@ export class YamlEditor {
    * 向根节点新增元素，如果根节点不是数组，则将其转换为数组再新增元素
    * @param value - 要新增的元素
    */
-  pusharr (value: YamlValue) {
+  pusharr (value: YamlValue): boolean {
     try {
       if (!(this.document.contents instanceof Yaml.YAMLSeq)) {
         // 如果根节点不是数组，则将其转换为数组
@@ -170,6 +207,7 @@ export class YamlEditor {
       }
       this.document.contents.add(value)
       logger.debug('[YamlEditor] 已向根节点数组新增元素：', value)
+      return true
     } catch (error) {
       logger.error(`[YamlEditor] 向根节点数组新增元素时出错：${error}`)
       return false

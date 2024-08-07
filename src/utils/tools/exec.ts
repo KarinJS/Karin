@@ -54,4 +54,23 @@ export const exec = (
   })
 }
 
+/**
+ * 执行 shell 命令
+ * @param cmd 命令
+ * @param log 是否打印日志
+ * @param options 选项
+ */
+export const execs = (
+  cmd: string,
+  options = { cwd: process.cwd(), encoding: 'utf-8' }
+): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    execCmd(cmd, options, (error, stdout, stderr) => {
+      if (error) return reject(error)
+      if (stderr) console.error(stderr)
+      resolve(stdout.trim())
+    })
+  })
+}
+
 export default exec

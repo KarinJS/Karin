@@ -9,18 +9,18 @@ import { program } from 'commander'
 import { exec as execCmd, spawn, ChildProcess } from 'child_process'
 import { KarinCfgInit } from '../core/init/config'
 
-const enum Runner {
+export const enum Runner {
   Node = 'node',
   Tsx = 'tsx',
   Pm2 = 'pm2'
 }
 
-const enum Mode {
+export const enum Mode {
   Dev = 'dev',
   Prod = 'prod'
 }
 
-const enum Lang {
+export const enum Lang {
   Js = 'js',
   Ts = 'ts'
 }
@@ -33,6 +33,7 @@ class KarinCli {
 
   constructor () {
     process.env.karin_app_start_count = '0'
+    process.env.karin_app_watch = 'no'
     /** 当前文件绝对路径 */
     this.filename = fileURLToPath(import.meta.url)
     /** karin目录 */
@@ -99,7 +100,7 @@ class KarinCli {
     }
 
     /** 启动 */
-    this.child = spawn(runner, cmd, { stdio: ['inherit', 'inherit', 'inherit', 'ipc'], cwd: process.cwd(), env: process.env })
+    this.child = spawn(runner, cmd, { stdio: ['inherit', 'inherit', 'inherit', 'ipc'], cwd: process.cwd(), env: process.env, shell: runner === Runner.Tsx })
     /** 监听退出 */
     this.child.once('exit', (code) => process.exit(code))
     /** 监听子进程消息 */
