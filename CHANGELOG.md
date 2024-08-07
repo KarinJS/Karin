@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.10.5](https://github.com/KarinJS/Karin/compare/v0.10.4...v0.10.5) (2024-08-07)
+
+
+### Bug Fixes
+
+* add yamlEditor remove ([e12c05b](https://github.com/KarinJS/Karin/commit/e12c05b23139402308315255b4e31aa215db22e0))
+
 ## [0.10.4](https://github.com/KarinJS/Karin/compare/v0.10.3...v0.10.4) (2024-08-05)
 
 
