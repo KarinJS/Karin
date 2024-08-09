@@ -1,5 +1,13 @@
 # 更新日志
 
+## [0.10.6](https://github.com/KarinJS/Karin/compare/v0.10.5...v0.10.6) (2024-08-09)
+
+
+### Bug Fixes
+
+* fix [#105](https://github.com/KarinJS/Karin/issues/105) ([effbb45](https://github.com/KarinJS/Karin/commit/effbb455505082724ca6b586104ee39fd43c6c96))
+* fix [#110](https://github.com/KarinJS/Karin/issues/110) 适配qqbot ([8184e1e](https://github.com/KarinJS/Karin/commit/8184e1ebd6430862acb044d8d0384445af2324f3))
+
 ## [0.10.5](https://github.com/KarinJS/Karin/compare/v0.10.4...v0.10.5) (2024-08-07)
 
 
