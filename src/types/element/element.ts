@@ -1,4 +1,4 @@
-export type ElementType = 'text' | 'at' | 'face' | 'bubble_face' | 'reply' | 'image' | 'voice' | 'video' | 'basketball' | 'dice' | 'rps' | 'poke' | 'music' | 'weather' | 'location' | 'share' | 'gift' | 'market_face' | 'forward' | 'contact' | 'json' | 'xml' | 'file' | 'markdown' | 'markdown_tpl' | 'keyboard' | 'node' | 'rows' | 'record' | 'long_msg'
+export type ElementType = 'text' | 'at' | 'face' | 'bubble_face' | 'reply' | 'image' | 'video' | 'basketball' | 'dice' | 'rps' | 'poke' | 'music' | 'weather' | 'location' | 'share' | 'gift' | 'market_face' | 'forward' | 'contact' | 'json' | 'xml' | 'file' | 'markdown' | 'markdown_tpl' | 'keyboard' | 'node' | 'rows' | 'record' | 'long_msg'
 
 export interface Element {
   /**
@@ -115,30 +115,6 @@ export interface ImageElement extends Element {
    * - original: 原图
    */
   file_type: 'show' | 'flash' | 'original'
-}
-
-/**
- * - 语音元素
- * @deprecated 即将废弃 请使用segment.record
- */
-export interface VoiceElement extends Element {
-  type: 'voice'
-  /**
-   * - 语音文件url、路径或者base64
-   */
-  file: string
-  /**
-   * - 是否为魔法语音
-   */
-  magic: boolean
-  /**
-   * - 语音md5
-   */
-  md5?: string
-  /**
-   * - 语音名称
-   */
-  name?: string
 }
 
 /**
@@ -519,69 +495,83 @@ export interface MarkdownElement extends Element {
 }
 
 /**
- * - 按钮
+ * 单个按钮结构 这是karin的按钮结构 与qqbot的不同
  */
-export interface ButtonElement {
-  type: 'button'
-  data: {
-    /**
-     * - 按钮显示文本
-     */
-    text: string
-    /**
-     * - 是否为回调按钮
-     * @default false
-     */
-    callback?: boolean
-    /**
-     * - 跳转按钮
-     */
-    link?: string
-    /**
-     * - 操作相关的数据
-     */
-    data?: string
-    /**
-     * - 按钮点击后显示的文字，不传为text
-     */
-    show?: string
-    /**
-     * - 按钮样式：0 灰色线框，1 蓝色线框
-     */
-    style?: number
-    /**
-     * - 点击按钮后直接自动发送 data
-     */
-    enter?: boolean
-    /**
-     * - 指令是否带引用回复本消息
-     */
-    reply?: boolean
-    /**
-     * - 是否仅群管理员可操作
-     */
-    admin?: boolean
-    /**
-     * - 有权限点击的用户UID列表 群聊、私聊
-     */
-    list?: string[]
-    /**
-     * - 有权限点击的用户UID列表 频道
-     */
-    role?: string[]
-    /**
-     * - 客户端不支持本 action 的时候，弹出的 toast 文案
-     */
-    tips?: string
-  }
+export interface Button {
+  /**
+   * - 按钮显示文本
+   */
+  text: string
+  /**
+   * - 按钮类型 不建议使用 此为预留字段
+   */
+  type?: number
+  /**
+   * - 是否为回调按钮
+   * @default false
+   */
+  callback?: boolean
+  /**
+   * - 跳转按钮
+   */
+  link?: string
+  /**
+   * - 操作相关的数据
+   */
+  data?: string
+  /**
+   * - 按钮点击后显示的文字，不传为text
+   */
+  show?: string
+  /**
+   * 按钮样式
+   * - 0-灰色线框
+   * - 1-蓝色线框
+   * - 2-特殊样式按钮
+   * - 3-红色文字
+   * - 4-白色填充
+   */
+  style?: number
+  /**
+   * - 点击按钮后直接自动发送 data
+   */
+  enter?: boolean
+  /**
+   * - 指令是否带引用回复本消息
+   */
+  reply?: boolean
+  /**
+   * - 是否仅群管理员可操作
+   */
+  admin?: boolean
+  /**
+   * - 有权限点击的用户UID列表 群聊、私聊
+   */
+  list?: string[]
+  /**
+   * - 有权限点击的用户UID列表 频道
+   */
+  role?: string[]
+  /**
+   * - 客户端不支持本 action 的时候，弹出的 toast 文案
+   */
+  tips?: string
 }
 
 /**
- * - 按钮组
+ * - 按钮 构建单行多个按钮
  */
-export interface RowElement extends Element {
-  type: 'rows'
-  rows: Array<ButtonElement>
+export interface ButtonElement {
+  type: 'button'
+  data: Array<Button>
+}
+
+/**
+ * - 按钮组 构建多行多个按钮
+ */
+export interface KeyBoardElement extends Element {
+  type: 'keyboard'
+  rows: Array<Array<Button>>
 }
 
 /**
@@ -595,7 +585,7 @@ export interface LongMsgElement extends Element {
   id: string
 }
 
-export type KarinElement = TextElement | AtElement | FaceElement | BubbleFaceElement | ReplyElement | ImageElement | VoiceElement | VideoElement | BasketballElement | DiceElement | RpsElement | PokeElement | MusicElement | WeatherElement | LocationElement | ShareElement | GiftElement | MarketFaceElement | ForwardElement | ContactElement | JsonElement | XmlElement | FileElement | ButtonElement | RowElement | RecordElement | LongMsgElement | TplMarkdownElement | RawMarkdownElement
+export type KarinElement = TextElement | AtElement | FaceElement | BubbleFaceElement | ReplyElement | ImageElement | VideoElement | BasketballElement | DiceElement | RpsElement | PokeElement | MusicElement | WeatherElement | LocationElement | ShareElement | GiftElement | MarketFaceElement | ForwardElement | ContactElement | JsonElement | XmlElement | FileElement | ButtonElement | KeyBoardElement | RecordElement | LongMsgElement | TplMarkdownElement | RawMarkdownElement
 
 /**
  * - 构建自定义转发节点 此元素仅可通过专用接口发送 不支持混合发送

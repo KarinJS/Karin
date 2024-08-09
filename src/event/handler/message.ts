@@ -186,10 +186,8 @@ export class MessageHandler extends EventBaseHandler {
           logs.push(`[markdown_tpl:${JSON.stringify(content)}]`)
           break
         }
-        case 'rows': {
-          const rows = []
-          for (const v of val.rows) rows.push(JSON.stringify(v.data))
-          logs.push(`[rows:${JSON.stringify(rows)}]`)
+        case 'keyboard': {
+          logs.push(`[rows:${JSON.stringify(val.rows)}]`)
           break
         }
         case 'button':

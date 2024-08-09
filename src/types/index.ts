@@ -1,6 +1,7 @@
 export * from './adapter/base'
 export * from './config/config'
 export * from './element/element'
+export * from './element/qqbot'
 export * from './event'
 export * from './logger/logger'
 export * from './render/render'

@@ -1,3 +1,5 @@
+import fs from 'fs'
+import { AdapterOneBot11 } from '.'
 import { segment } from 'karin/utils'
 import { CustomMusicElemen, KarinElement, OB11Segment, OB11SegmentType } from 'karin/types'
 
@@ -57,10 +59,21 @@ export function AdapterConvertKarin (data: Array<OB11Segment>): Array<KarinEleme
 }
 
 /**
+ * 处理非本地ws的文件
+ * @param file 文件路径
+ */
+function fileToBase64 (file: string, bot: AdapterOneBot11): string {
+  if (!bot || !file.startsWith('file://') || !bot.adapter.connect) return file
+  const list = ['127.0.0.1', 'localhost']
+  const url = new URL(bot.adapter.connect)
+  return list.includes(url.hostname) ? `base64://${fs.readFileSync(file).toString('base64')}` : file
+}
+
+/**
    * karin转onebot11
    * @param data karin格式消息
    */
-export function KarinConvertAdapter (data: Array<KarinElement>): Array<OB11Segment> {
+export function KarinConvertAdapter (data: Array<KarinElement>, bot: AdapterOneBot11): Array<OB11Segment> {
   const elements = []
 
   for (const i of data) {
@@ -81,7 +94,7 @@ export function KarinConvertAdapter (data: Array<KarinElement>): Array<OB11Segme
       case OB11SegmentType.Image:
       case OB11SegmentType.Video:
       case OB11SegmentType.File: {
-        elements.push({ type, data: { file: i.file } })
+        elements.push({ type, data: { file: fileToBase64(i.file, bot) } })
         break
       }
       case OB11SegmentType.Xml: {
@@ -97,7 +110,7 @@ export function KarinConvertAdapter (data: Array<KarinElement>): Array<OB11Segme
         break
       }
       case OB11SegmentType.Record: {
-        elements.push({ type, data: { file: i.file, magic: i.magic || false } })
+        elements.push({ type, data: { file: fileToBase64(i.file, bot), magic: i.magic || false } })
         break
       }
       case OB11SegmentType.Music: {
@@ -106,21 +119,6 @@ export function KarinConvertAdapter (data: Array<KarinElement>): Array<OB11Segme
         } else {
           const { url, audio, title, author, pic } = i as unknown as CustomMusicElemen
           elements.push({ type: 'music', data: { type: 'custom', url, audio, title, content: author, image: pic } })
-        }
-        break
-      }
-      case 'button': {
-        elements.push({ type: 'button', data: i.data })
-        break
-      }
-      case 'markdown': {
-        const { type, ...data } = i
-        elements.push({ type, data: { ...data } })
-        break
-      }
-      case 'rows': {
-        for (const val of i.rows) {
-          elements.push({ type: 'button', data: val.data })
         }
         break
       }
@@ -160,6 +158,9 @@ export function KarinConvertAdapter (data: Array<KarinElement>): Array<OB11Segme
         elements.push({ type: 'weather', data: { city: i.city, type: i.type } })
         break
       }
+      case 'button':
+      case 'markdown':
+      case 'keyboard':
       default: {
         elements.push(i)
         break

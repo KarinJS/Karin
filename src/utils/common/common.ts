@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url'
 import { AxiosRequestConfig } from 'axios'
 import { pipeline, Readable } from 'stream'
 import { logger, segment, YamlEditor } from 'karin/utils'
-import { dirName, fileName, KarinElement, NodeElement } from 'karin/types'
+import { ButtonElement, ButtonType, dirName, fileName, KarinElement, NodeElement, KeyBoardElement } from 'karin/types'
 
 /**
  * 常用方法
@@ -331,16 +331,9 @@ class Common {
    * @param elements - 消息内容
    */
   makeMessage (elements: string | KarinElement | (string | KarinElement)[]): Array<KarinElement> {
-    /** 将msg格式化为数组 */
     if (!Array.isArray(elements)) elements = [elements]
     const message: Array<KarinElement> = []
-    elements.forEach(v => {
-      if (typeof v === 'string') {
-        message.push(segment.text(v))
-      } else {
-        message.push(v)
-      }
-    })
+    elements.forEach(v => { typeof v === 'string' ? message.push(segment.text(v)) : message.push(v) })
     return message
   }
 
@@ -478,7 +471,6 @@ class Common {
           break
         case 'video':
         case 'image':
-        case 'voice':
         case 'record':
         case 'file': {
           let file
@@ -542,10 +534,8 @@ class Common {
           logs.push(`[markdown_tpl:${JSON.stringify(content)}]`)
           break
         }
-        case 'rows': {
-          const rows = []
-          for (const v of val.rows) rows.push(JSON.stringify(v.data))
-          logs.push(`[rows:${JSON.stringify(rows)}]`)
+        case 'keyboard': {
+          logs.push(`[rows:${JSON.stringify(val.rows)}]`)
           break
         }
         case 'button':
@@ -597,6 +587,55 @@ class Common {
       }
     })
     yaml.save()
+  }
+
+  /**
+   * karin按钮转换为QQBot官方按钮 返回官方按钮结构
+   * @param button - 按钮
+   */
+  buttonToQQBot (button: ButtonElement | KeyBoardElement): Array<{ buttons: Array<ButtonType> }> {
+    let id = 0
+    const rows: Array<{ buttons: Array<ButtonType> }> = []
+    /** 格式化为多行 */
+    const list: KeyBoardElement['rows'] = []
+
+    button.type === 'button' ? list.push(button.data) : list.push(...button.rows)
+    for (const row of list) {
+      const buttons: Array<ButtonType> = []
+      for (const i of row) {
+        const type = i.link ? 0 : (i.callback ? 1 : i.type ?? 2)
+
+        const data: ButtonType = {
+          id: String(id),
+          render_data: {
+            label: i.text,
+            style: i.style ?? 0,
+            visited_label: i.show || i.text,
+          },
+          action: {
+            type,
+            data: i.data || i.link || i.text,
+            unsupport_tips: i.tips || '.',
+            permission: { type: 2 },
+          },
+        }
+
+        if (i.enter) data.action.enter = true
+        if (i.reply) data.action.reply = true
+        if (i.admin) data.action.permission.type = 1
+        if (i.list) {
+          data.action.permission.type = 0
+          data.action.permission.specify_user_ids = i.list
+        } else if (i.role) {
+          data.action.permission.type = 3
+          data.action.permission.specify_role_ids = i.role
+        }
+        buttons.push(data)
+        id++
+      }
+      rows.push({ buttons })
+    }
+    return rows
   }
 }
 

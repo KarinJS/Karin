@@ -166,7 +166,7 @@ export class AdapterOneBot11 implements KarinAdapter {
    * @param data karin格式消息
    */
   KarinConvertAdapter (data: Array<KarinElement>) {
-    return KarinConvertAdapter(data)
+    return KarinConvertAdapter(data, this)
   }
 
   /**
@@ -211,13 +211,13 @@ export class AdapterOneBot11 implements KarinAdapter {
       res = await this.SendApi(OB11Api['send_msg'], {
         message_type: MessageType.Group,
         group_id: Number(peer),
-        message: this.KarinConvertAdapter(elements),
+        message: this.KarinConvertAdapter(elements, this),
       })
     } else {
       res = await this.SendApi(OB11Api['send_msg'], {
         message_type: MessageType.Private,
         user_id: Number(peer),
-        message: this.KarinConvertAdapter(elements),
+        message: this.KarinConvertAdapter(elements, this),
       })
     }
 
@@ -246,7 +246,7 @@ export class AdapterOneBot11 implements KarinAdapter {
       if (i.id) {
         messages.push({ type, data: { id: i.id } })
       } else {
-        const content = this.KarinConvertAdapter(i.content as KarinElement[])
+        const content = this.KarinConvertAdapter(i.content as KarinElement[], this)
         const user_id = String(i.user_id || selfUin)
         const nickname = String(i.nickname || selfNick)
         messages.push({ type, data: { user_id, nickname, content } })

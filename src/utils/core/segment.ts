@@ -29,6 +29,8 @@ import {
   KarinElement,
   LongMsgElement,
   RecordElement,
+  KeyBoardElement,
+  Button,
 } from 'karin/types'
 
 export const segment = new (class Segment {
@@ -157,12 +159,10 @@ export const segment = new (class Segment {
 
   /**
    * 语音
-   * @description 即将废弃，请使用voice
    * @param file - 语音URL或路径、Base64
    * @param magic - 是否魔法语音，默认为 false
    * @param md5 - 语音md5
    * @param name - 语音名称
-   * @returns {VoiceElement} 语音元素
    */
   record (file: string, magic = false, md5 = '', name = ''): RecordElement {
     return {
@@ -180,8 +180,6 @@ export const segment = new (class Segment {
    * @param magic - 是否魔法语音，默认为 false
    * @param md5 - 语音md5
    * @param name - 语音名称
-   * @returns {VoiceElement} 语音元素
-   * @deprecated 即将废弃 请使用segment.record
    */
   voice (file: string, magic = false, md5 = '', name = ''): RecordElement {
     return {
@@ -530,28 +528,41 @@ export const segment = new (class Segment {
   }
 
   /**
-   * 按钮
+   * 按钮 构建单行单个(obj)、多个按钮(obj[])
    * @param data - 按钮数据
    * @returns {ButtonElement} 按钮元素
    */
-  button (data: ButtonElement['data']): ButtonElement {
+  button (data: Button | Array<Button>): {
+    type: ButtonElement['type'],
+    data: Array<Button>
+  } {
     return {
       type: 'button',
-      data,
+      data: Array.isArray(data) ? data : [data],
     }
   }
 
-  rows (data: Array<ButtonElement['data']>): {
-    type: 'rows'
-    rows: Array<ButtonElement>
-  } {
-    const rows = []
+  /**
+   * 多维按钮
+   * @param data - 按钮数据
+   */
+  keyboard (data: Array<Button> | Array<Array<Button>>): KeyBoardElement {
+    /** 每一个元素为一行按钮 每一行按钮存在多个 */
+    const rows: Array<Array<Button>> = []
     if (!Array.isArray(data)) data = [data]
+
     for (const i of data) {
-      rows.push(this.button(i))
-      continue
+      /** 如果还是数组 说明是单行多个按钮 */
+      if (Array.isArray(i)) {
+        const button: Array<Button> = []
+        for (const v of i) button.push(v)
+        rows.push(button)
+      } else {
+        /** 单行 单个按钮 */
+        rows.push([i])
+      }
     }
-    return { type: 'rows', rows }
+    return { type: 'keyboard', rows }
   }
 
   /**

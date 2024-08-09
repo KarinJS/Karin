@@ -110,7 +110,7 @@ export class AdapterInput implements KarinAdapter {
     listener.emit('message', e)
   }
 
-  async #MsgToFile (type: 'image' | 'voice', file: Buffer | string): Promise<string> {
+  async #MsgToFile (type: 'image' | 'record', file: Buffer | string): Promise<string> {
     if (!msgToFile) return ''
 
     // 判断是否为string 如果是则继续判断是否为url、path
@@ -121,7 +121,7 @@ export class AdapterInput implements KarinAdapter {
 
     const buffer = await common.buffer(file)
     // 生成文件名 根据type生成不同的文件后缀
-    const name = `${Date.now()}.${type === 'image' ? 'jpg' : type === 'voice' ? 'mp3' : 'file'}`
+    const name = `${Date.now()}.${type === 'image' ? 'jpg' : type === 'record' ? 'mp3' : 'file'}`
     fs.writeFileSync(`./temp/input/${name}`, buffer)
     return `[${type === 'image' ? '图片' : '语音'}: http://${ip}:${config.Server.http.port}/api/input?name=${name}&token=${this.token} ]`
   }
@@ -146,7 +146,7 @@ export class AdapterInput implements KarinAdapter {
           text.push(v.text)
           break
         case 'image':
-        case 'voice':
+        case 'record':
           text.push(await this.#MsgToFile(v.type, v.file))
           break
         default:

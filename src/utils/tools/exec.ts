@@ -65,9 +65,8 @@ export const execs = (
   options = { cwd: process.cwd(), encoding: 'utf-8' }
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
-    execCmd(cmd, options, (error, stdout, stderr) => {
+    execCmd(cmd, options, (error, stdout) => {
       if (error) return reject(error)
-      if (stderr) console.error(stderr)
       resolve(stdout.trim())
     })
   })
