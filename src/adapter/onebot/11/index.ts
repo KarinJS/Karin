@@ -211,13 +211,13 @@ export class AdapterOneBot11 implements KarinAdapter {
       res = await this.SendApi(OB11Api['send_msg'], {
         message_type: MessageType.Group,
         group_id: Number(peer),
-        message: this.KarinConvertAdapter(elements, this),
+        message: this.KarinConvertAdapter(elements),
       })
     } else {
       res = await this.SendApi(OB11Api['send_msg'], {
         message_type: MessageType.Private,
         user_id: Number(peer),
-        message: this.KarinConvertAdapter(elements, this),
+        message: this.KarinConvertAdapter(elements),
       })
     }
 
@@ -246,7 +246,7 @@ export class AdapterOneBot11 implements KarinAdapter {
       if (i.id) {
         messages.push({ type, data: { id: i.id } })
       } else {
-        const content = this.KarinConvertAdapter(i.content as KarinElement[], this)
+        const content = this.KarinConvertAdapter(i.content as KarinElement[])
         const user_id = String(i.user_id || selfUin)
         const nickname = String(i.nickname || selfNick)
         messages.push({ type, data: { user_id, nickname, content } })

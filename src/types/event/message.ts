@@ -35,6 +35,10 @@ export interface KarinMessageType extends KarinEventType {
    * - 消息图片
    */
   image: string[]
+  /**
+   * - 语音url
+   */
+  record: string
   file: any // 暂时先any 字段未确定
   /**
    * 是否atBot
@@ -90,6 +94,7 @@ export class KarinMessage implements KarinMessageType {
   replyCallback!: KarinMessageType['replyCallback']
   msg: KarinMessageType['msg']
   image: KarinMessageType['image']
+  record: KarinMessageType['record']
   file: KarinMessageType['file']
   atBot: KarinMessageType['atBot']
   atAll: KarinMessageType['atAll']
@@ -144,6 +149,7 @@ export class KarinMessage implements KarinMessageType {
     this.msg = ''
     this.image = []
     this.file = {}
+    this.record = ''
     this.atBot = false
     this.atAll = false
     this.at = []

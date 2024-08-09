@@ -111,8 +111,11 @@ export class MessageHandler extends EventBaseHandler {
           logs.push(`[face:${val.id}]`)
           break
         case 'video':
+          logs.push(`[video:${val.file}]`)
+          break
         case 'record':
-          logs.push(`[${val.type}:${val.file}]`)
+          this.e.record = val.file
+          logs.push(`[record:${val.file}]`)
           break
         case 'image':
           this.e.image.push(val.file)
