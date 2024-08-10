@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.10.7](https://github.com/KarinJS/Karin/compare/v0.10.6...v0.10.7) (2024-08-10)
+
+
+### Bug Fixes
+
+* export Listeners Class ([d3a7037](https://github.com/KarinJS/Karin/commit/d3a7037dadf5b970ecd1f0f4c52d13d102c60b3f))
+
 ## [0.10.6](https://github.com/KarinJS/Karin/compare/v0.10.5...v0.10.6) (2024-08-09)
 
 
