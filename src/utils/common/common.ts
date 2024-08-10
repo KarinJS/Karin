@@ -270,7 +270,7 @@ class Common {
 
     /** file:// */
     const files = file.replace(/^file:\/\//, '')
-    if (fs.existsSync(files)) return fs.readFileSync(file).toString('base64')
+    if (fs.existsSync(files)) return fs.readFileSync(files).toString('base64')
 
     /** 无前缀base64:// */
     return Buffer.from(file, 'base64').toString('base64')
