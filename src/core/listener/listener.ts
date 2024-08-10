@@ -8,7 +8,7 @@ import { MessageHandler, NoticeHandler, RequestHandler } from 'karin/event'
 /**
  * 监听器管理
  */
-class Listeners extends EventEmitter {
+export class Listeners extends EventEmitter {
   /**
    * Bot索引
    * @type - Bot索引
