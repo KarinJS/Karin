@@ -66,7 +66,7 @@ function fileToBase64 (file: string, bot: AdapterOneBot11): string {
   if (!bot || !file.startsWith('file://') || !bot.adapter.connect) return file
   const list = ['127.0.0.1', 'localhost']
   const url = new URL(bot.adapter.connect)
-  return list.includes(url.hostname) ? `base64://${fs.readFileSync(file).toString('base64')}` : file
+  return list.includes(url.hostname) ? `base64://${fs.readFileSync(file.replace(/^file:\/\//, '')).toString('base64')}` : file
 }
 
 /**
