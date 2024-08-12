@@ -1,5 +1,13 @@
 # 更新日志
 
+## [0.11.3](https://github.com/KarinJS/Karin/compare/v0.11.2...v0.11.3) (2024-08-12)
+
+
+### Bug Fixes
+
+* add at name ([921e648](https://github.com/KarinJS/Karin/commit/921e648937839ee86f8c8f86acb2b7e4c8521ff9))
+* Error loading npm entry ([3f3aad9](https://github.com/KarinJS/Karin/commit/3f3aad91a646e382754e7be16de3d89887ba6a28))
+
 ## [0.11.2](https://github.com/KarinJS/Karin/compare/v0.11.1...v0.11.2) (2024-08-12)
 
 
