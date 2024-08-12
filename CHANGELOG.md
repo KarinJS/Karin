@@ -1,5 +1,17 @@
 # 更新日志
 
+## [0.11.0](https://github.com/KarinJS/Karin/compare/v0.10.7...v0.11.0) (2024-08-12)
+
+
+### Features
+
+* 初步添加中间件函数 ([eacd965](https://github.com/KarinJS/Karin/commit/eacd96572a05619391af2db6bb1cedd825eaeaf7))
+
+
+### Bug Fixes
+
+* 补充调用 ([6086bbd](https://github.com/KarinJS/Karin/commit/6086bbd19ad3d75b843aa8e27c14c61c0d1c6039))
+
 ## [0.10.7](https://github.com/KarinJS/Karin/compare/v0.10.6...v0.10.7) (2024-08-10)
 
 
