@@ -27,6 +27,7 @@ export class NoticeHandler extends EventBaseHandler {
   }
 
   init () {
+    this.raw_message()
     /** 主人 */
     if (config.master.includes(String(this.e.user_id))) {
       this.e.isMaster = true
@@ -53,7 +54,6 @@ export class NoticeHandler extends EventBaseHandler {
       logger.bot('info', this.e.self_id, `未知来源通知事件：${JSON.stringify(this.e)}`)
     }
 
-    this.raw_message()
     this.reply()
   }
 

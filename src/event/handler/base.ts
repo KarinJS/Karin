@@ -10,13 +10,13 @@ export class EventBaseHandler {
   /**
    * - 是否打印群消息日志
    */
-  GroupMsgPrint: boolean = true
+  GroupMsgPrint: boolean
   /**
    * 处理事件，加入自定义字段
    */
   constructor (e: KarinEventTypes) {
     this.e = e
-    this.GroupMsgPrint = false
+    this.GroupMsgPrint = true
     /** 加入e.bot */
     !this.e.bot && Object.defineProperty(this.e, 'bot', { value: listener.getBot(this.e.self_id) })
     if (this.e.group_id) this.config = config.group(this.e.group_id, this.e)
