@@ -13,12 +13,11 @@ export class MessageHandler extends EventBaseHandler {
   constructor (e: KarinMessageType) {
     super(e)
     this.e = e
-    const cd = this.getCd()
     this.init()
-    if (!cd) return
     // todo: emit event
 
     if (this.e.group_id) {
+      if (!this.getCd()) return
       if (!this.getMode()) return
       if (!this.getGroupEnable()) return
       if (!this.getUserEnable()) return

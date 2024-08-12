@@ -12,11 +12,10 @@ export class RequestHandler extends EventBaseHandler {
   constructor (e: KarinRequestType) {
     super(e)
     this.e = e
-    const cd = this.getCd()
     this.init()
-    if (!cd) return
 
     if (this.e.group_id) {
+      if (!this.getCd()) return
       if (!this.getGroupEnable()) return
       if (!this.getUserEnable()) return
     } else {
