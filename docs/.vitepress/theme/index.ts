@@ -23,7 +23,13 @@ import {
   NolebaseEnhancedReadabilitiesMenu,
   NolebaseEnhancedReadabilitiesScreenMenu,
 } from '@nolebase/vitepress-plugin-enhanced-readabilities/client'
+
+import type { Options } from '@nolebase/vitepress-plugin-enhanced-readabilities/client'
+
 import '@nolebase/vitepress-plugin-enhanced-readabilities/client/style.css'
+
+import { NolebaseEnhancedReadabilitiesPlugin } from '@nolebase/vitepress-plugin-enhanced-readabilities/client'
+
 // 闪烁高亮当前目标标题
 import {
   NolebaseHighlightTargetedHeading,
@@ -32,6 +38,9 @@ import {
 import Share from './components/Share.vue'
 // 卡片
 import Ncard from './components/Ncard.vue'
+import HomeUnderline from './components/HomeUnderline.vue'
+import HomeFooter from './components/HomeFooter.vue'
+import Confetti from './components/Confetti.vue'
 // 页面属性
 import {
   NolebasePagePropertiesPlugin,
@@ -48,8 +57,17 @@ import '@shikijs/vitepress-twoslash/style.css'
 export default {
   extends: DefaultTheme,
   enhanceApp ({ app }) {
+    app.use(NolebaseEnhancedReadabilitiesPlugin, {
+      spotlight: {
+        disableHelp: true,
+        defaultToggle: true,
+      }
+    } as Options)
+    app.component('HomeUnderline', HomeUnderline)
     app.component('NCard', Ncard)
-    app.use(TwoslashFloatingVue as Plugin)
+    app.component('HomeFooter', HomeFooter)
+    app.component('Confetti', Confetti)
+    app.use(TwoslashFloatingVue as unknown as Plugin)
     app.use(NolebaseGitChangelogPlugin as Plugin)
     app.provide(InjectionKey, {
       commitsRelativeTime: true,

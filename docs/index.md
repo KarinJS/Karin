@@ -3,7 +3,8 @@ layout: home
 
 hero:
   name: Karin
-  tagline: 基于 Kritor 标准进行开发的nodejs机器人框架
+  # text: 高性能、轻量级、易扩展
+  tagline: 基于 Kritor 标准进行开发的 Node.js 机器人框架
   actions:
     - theme: brand
       text: 快速上手
@@ -24,3 +25,6 @@ features:
   - title: 详尽文档
     details: 提供全面的文档支持，帮助开发者轻松掌握框架的使用和插件开发。
 ---
+
+<HomeUnderline />
+<confetti />

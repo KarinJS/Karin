@@ -1,0 +1,12 @@
+@import '../font/HarmonyOS_Sans_SC_Medium/font.css';
+@import '../font/HarmonyOS_Sans_SC_Regular/font.css';
+@import '../font/HarmonyOS_Sans_SC_Black/font.css';
+@import '../font/HarmonyOS_Sans_SC_Bold/font.css';
+@import '../font/HarmonyOS_Sans_SC_Thin/font.css';
+@import '../font/HarmonyOS_Sans_SC_Light/font.css';
+
+/* 覆盖全局字体 */
+:root {
+  --vp-sidebar-width: 300px;
+  --vp-font-family-base: 'HarmonyOS Sans SC', sans-serif;
+}

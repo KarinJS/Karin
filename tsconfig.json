@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "baseUrl": ".",
+    "paths": {
+      "vue": [
+        "node_modules/vue/dist/vue"
+      ],
+      "vitepress": [
+        "node_modules/vitepress/types/index"
+      ]
+    }
+  },
+  "include": [
+    "**/.vitepress/**/*.ts",
+    "**/.vitepress/**/*.mts",
+    "**/.vitepress/**/*.vue"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+}
