@@ -1,5 +1,13 @@
 # 更新日志
 
+## [0.11.1](https://github.com/KarinJS/Karin/compare/v0.11.0...v0.11.1) (2024-08-12)
+
+
+### Bug Fixes
+
+* getCD ([1bcabb0](https://github.com/KarinJS/Karin/commit/1bcabb0af96763ed890683be8f9e604a1f7057b5))
+* 加载入口文件错误 ([d307148](https://github.com/KarinJS/Karin/commit/d3071484224c50fe6d046813b181d1d5ac2e94e9))
+
 ## [0.11.0](https://github.com/KarinJS/Karin/compare/v0.10.7...v0.11.0) (2024-08-12)
 
 
