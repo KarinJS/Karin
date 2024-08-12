@@ -280,12 +280,12 @@ class PluginLoader {
    * @param isNpm - 是否为npm插件
    */
   async loadMain (root: string, main: string, isNpm: boolean) {
-    const _path = 'file://' + path.resolve(root, main || '')
-    if (!common.exists(_path)) {
+    const _path = path.resolve(root, main || '')
+    if (!common.exists(_path) || !main) {
       if (isNpm) return false
-      const defRoot = 'file://' + path.resolve(root, 'index.js')
+      const defRoot = path.resolve(root, 'index.js')
       if (common.exists(defRoot)) {
-        await import(defRoot)
+        await import(`file://${defRoot}`)
         return true
       }
 
@@ -293,7 +293,7 @@ class PluginLoader {
       return false
     }
 
-    await import(_path)
+    await import(`file://${_path}`)
     return true
   }
 
