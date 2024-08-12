@@ -250,7 +250,7 @@ export class MessageHandler extends EventBaseHandler {
           }
 
           this.GroupMsgPrint && info.log(this.e.self_id, `${logFnc} ${lodash.truncate(this.e.msg, { length: 80 })} 处理完成 ${logger.green(Date.now() - start + 'ms')}`)
-          if (res !== false) continue
+          if (res === false) continue
           return
         } catch (error: any) {
           logger.error(`${this.e.logFnc}`)
