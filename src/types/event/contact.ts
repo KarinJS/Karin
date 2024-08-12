@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /**
  * - 事件来源枚举
  */
@@ -18,7 +17,7 @@ export interface Contact {
   /**
    * - 事件来源场景
    */
-  scene: Scene
+  scene: `${Scene}`
   /**
    * - 事件来源id 群号或者用户id
    */

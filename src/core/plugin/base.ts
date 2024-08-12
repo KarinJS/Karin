@@ -9,16 +9,11 @@ export class Plugin implements PluginType {
    */
   name: PluginType['name']
   /**
-   * @param dsc - 插件描述
-   * @deprecated 请使用desc
-   */
-  dsc: PluginType['dsc']
-  /**
    * @param desc - 插件描述
    */
   desc: PluginType['desc']
   /**
-   * @param event - 监听事件
+   * @param event - 监听事件 仅支持消息事件 其他事件请使用accept
    */
   event: PluginType['event']
   /**
@@ -26,7 +21,8 @@ export class Plugin implements PluginType {
    */
   priority: PluginType['priority']
   /**
-   * @param task - 定时任务
+   * @param task - 定时任务 即将废弃 请使用karin.task
+   * @deprecated
    */
   task: PluginType['task']
   /**
@@ -34,11 +30,8 @@ export class Plugin implements PluginType {
    */
   rule: PluginType['rule']
   /**
-   * @param button - 按钮
-   */
-  button: PluginType['button']
-  /**
-   * @param handler - handler
+   * @param handler - handler 已废弃 请使用karin.handler
+   * @deprecated
    */
   handler: PluginType['handler']
   /**
@@ -52,23 +45,17 @@ export class Plugin implements PluginType {
 
   constructor ({
     name,
-    dsc = name,
     desc = name,
     event = EventType.Message,
     priority = 10000,
     task = [],
     rule = [],
     handler = [],
-    button = [],
   }: {
     /**
      * - 插件名称
      */
     name: string
-    /**
-     * - 插件描述 没有则默认为名称
-     */
-    dsc: string
     /**
      * - 插件描述 没有则默认为插件名称
      */
@@ -82,7 +69,8 @@ export class Plugin implements PluginType {
      */
     priority?: PluginType['priority']
     /**
-     * - 定时任务
+     * - 定时任务 即将废弃 请使用karin.task
+     * @deprecated
      */
     task?: PluginType['task']
     /**
@@ -90,22 +78,17 @@ export class Plugin implements PluginType {
      */
     rule?: PluginType['rule']
     /**
-     * - handler
+     * - handler 已废弃 请使用karin.handler
+     * @deprecated
      */
     handler?: PluginType['handler']
-    /**
-     * - 按钮
-     */
-    button?: PluginType['button']
   }) {
     this.name = name
-    this.dsc = dsc
     this.desc = desc
     this.event = event
     this.priority = priority
     this.task = task
     this.rule = rule
-    this.button = button
     this.handler = handler
   }
 

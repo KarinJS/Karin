@@ -367,9 +367,19 @@ export interface GroupCfg {
   /**
    * 白名单插件、功能，只有在白名单中的插件、功能才会响应
    */
-  enable: string[]
+  enable: {
+    /** 插件包名称 */
+    plugin: string,
+    /** 插件文件名或插件名称 */
+    name: string
+  }[]
   /**
    * 黑名单插件、功能，黑名单中的插件、功能不会响应
    */
-  disable: string[]
+  disable: {
+    /** 插件包名称 */
+    plugin: string,
+    /** 插件文件名或插件名称 */
+    name: string
+  }[]
 }

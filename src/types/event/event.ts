@@ -145,150 +145,29 @@ export type EventToSubEvent = {
 }
 
 /**
- * 组合事件类型枚举
+ * 所有消息事件类型
  */
-export const enum CombinedEventType {
-  /**
-   * - 消息事件: 群消息
-   */
-  MessageGroupMessage = `${EventType.Message}.${MessageSubType.GroupMessage}`,
-  /**
-   * - 消息事件: 私聊消息
-   */
-  MessagePrivateMessage = `${EventType.Message}.${MessageSubType.PrivateMessage}`,
-  /**
-   * - 消息事件: 频道消息
-   */
-  MessageGuildMessage = `${EventType.Message}.${MessageSubType.GuildMessage}`,
-  /**
-   * - 消息事件: 附近消息
-   */
-  MessageNearby = `${EventType.Message}.${MessageSubType.Nearby}`,
-  /**
-   * - 消息事件: 陌生人消息
-   */
-  MessageStranger = `${EventType.Message}.${MessageSubType.Stranger}`,
-  /**
-   * - 通知事件: 私聊戳一戳
-   */
-  NoticePrivatePoke = `${EventType.Notice}.${NoticeSubType.PrivatePoke}`,
-  /**
-   * - 通知事件: 私聊撤回消息
-   */
-  NoticePrivateRecall = `${EventType.Notice}.${NoticeSubType.PrivateRecall}`,
-  /**
-   * - 通知事件: 私聊发送文件
-   */
-  NoticePrivateFileUploaded = `${EventType.Notice}.${NoticeSubType.PrivateFileUploaded}`,
-  /**
-   * - 通知事件: 群聊戳一戳
-   */
-  NoticeGroupPoke = `${EventType.Notice}.${NoticeSubType.GroupPoke}`,
-  /**
-   * - 通知事件: 群聊名片变动
-   */
-  NoticeGroupCardChanged = `${EventType.Notice}.${NoticeSubType.GroupCardChanged}`,
-  /**
-   * - 通知事件: 群聊成员头衔变动
-   */
-  NoticeGroupMemberUniqueTitleChanged = `${EventType.Notice}.${NoticeSubType.GroupMemberUniqueTitleChanged}`,
-  /**
-   * - 通知事件: 群聊精华消息变动
-   */
-  NoticeGroupEssenceChanged = `${EventType.Notice}.${NoticeSubType.GroupEssenceChanged}`,
-  /**
-   * - 通知事件: 群聊撤回消息
-   */
-  NoticeGroupRecall = `${EventType.Notice}.${NoticeSubType.GroupRecall}`,
-  /**
-   * - 通知事件: 群聊成员增加
-   */
-  NoticeGroupMemberIncrease = `${EventType.Notice}.${NoticeSubType.GroupMemberIncrease}`,
-  /**
-   * - 通知事件: 群聊成员减少
-   */
-  NoticeGroupMemberDecrease = `${EventType.Notice}.${NoticeSubType.GroupMemberDecrease}`,
-  /**
-   * - 通知事件: 群聊管理员变动
-   */
-  NoticeGroupAdminChanged = `${EventType.Notice}.${NoticeSubType.GroupAdminChanged}`,
-  /**
-   * - 通知事件: 群聊成员禁言
-   */
-  NoticeGroupMemberBan = `${EventType.Notice}.${NoticeSubType.GroupMemberBan}`,
-  /**
-   * - 通知事件: 群聊签到
-   */
-  NoticeGroupSignIn = `${EventType.Notice}.${NoticeSubType.GroupSignIn}`,
-  /**
-   * - 通知事件: 群聊全员禁言
-   */
-  NoticeGroupWholeBan = `${EventType.Notice}.${NoticeSubType.GroupWholeBan}`,
-  /**
-   * - 通知事件: 群聊发送文件
-   */
-  NoticeGroupFileUploaded = `${EventType.Notice}.${NoticeSubType.GroupFileUploaded}`,
-  /**
-   * - 通知事件: 群聊消息表情动态回应
-   */
-  NoticeGroupMessageReaction = `${EventType.Notice}.${NoticeSubType.GroupMessageReaction}`,
-  /**
-   * - 请求事件: 好友申请
-   */
-  RequestPrivateApply = `${EventType.Request}.${RequestSubType.PrivateApply}`,
-  /**
-   * - 请求事件: 群聊申请
-   */
-  RequestGroupApply = `${EventType.Request}.${RequestSubType.GroupApply}`,
-  /**
-   * - 请求事件: 邀请入群
-   */
-  RequestInvitedGroup = `${EventType.Request}.${RequestSubType.InvitedGroup}`
-}
+export type AllMessageSubType = `${EventType.Message}` | `${EventType.Message}.${MessageSubType}`
 
 /**
- * - 消息监听事件
+ * 所有通知事件类型
  */
-export type MessageListenEvent = 'message'
-  | 'message.group_message'
-  | 'message.private_message'
-  | 'message.guild_message'
-  | 'message.nearby'
-  | 'message.stranger'
+export type AllNoticeSubType = `${EventType.Notice}` | `${EventType.Notice}.${NoticeSubType}`
 
 /**
- * - 通知监听事件
+ * 所有请求事件类型
  */
-export type NoticeListenEvent = 'notice'
-  | 'notice.private_poke'
-  | 'notice.private_recall'
-  | 'notice.private_file_uploaded'
-  | 'notice.group_poke'
-  | 'notice.group_card_changed'
-  | 'notice.group_member_unique_title_changed'
-  | 'notice.group_essence_changed'
-  | 'notice.group_recall'
-  | 'notice.group_member_increase'
-  | 'notice.group_member_decrease'
-  | 'notice.group_admin_changed'
-  | 'notice.group_member_ban'
-  | 'notice.group_sign_in'
-  | 'notice.group_whole_ban'
-  | 'notice.group_file_uploaded'
-  | 'notice.group_message_reaction'
+export type AllRequestSubType = `${EventType.Request}` | `${EventType.Request}.${RequestSubType}`
 
 /**
- * - 请求监听事件
+ * 所有组合事件类型
  */
-export type RequestListenEvent = 'request'
-  | 'request.private_apply'
-  | 'request.group_apply'
-  | 'request.invited_group'
+export type CombinedEventType = AllMessageSubType | AllNoticeSubType | AllRequestSubType
 
 /**
  * 所有监听事件
  */
-export type AllListenEvent = MessageListenEvent | NoticeListenEvent | RequestListenEvent
+export type AllListenEvent = `${EventType}` | `${CombinedEventType}`
 
 /**
  * 事件基类定义

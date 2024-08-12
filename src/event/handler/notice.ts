@@ -1,8 +1,8 @@
 import { review } from './review'
 import { EventBaseHandler } from './base'
+import { pluginLoader } from 'karin/core'
 import { logger, config } from 'karin/utils'
 import { KarinNoticeType, NoticeSubType } from 'karin/types'
-import { ExtendedPlugin, pluginLoader } from 'karin/core'
 
 /**
  * 通知事件
@@ -12,20 +12,22 @@ export class NoticeHandler extends EventBaseHandler {
   constructor (e: KarinNoticeType) {
     super(e)
     this.e = e
-    /** 事件处理 */
-    if (this.review()) return
-    /** 处理回复 */
-    this.reply()
-    /** raw */
-    this.raw_message()
+    const cd = this.getCd()
+    this.init()
+    if (!cd) return
+
+    if (this.e.group_id) {
+      if (!this.getGroupEnable()) return
+      if (!this.getUserEnable()) return
+    } else {
+      if (!this.private()) return
+    }
+
     /** 处理消息 */
     this.deal()
   }
 
-  /**
-   * 处理事件
-   */
-  async deal () {
+  init () {
     /** 主人 */
     if (config.master.includes(String(this.e.user_id))) {
       this.e.isMaster = true
@@ -39,53 +41,49 @@ export class NoticeHandler extends EventBaseHandler {
       this.e.isPrivate = true
       this.e.logText = `[Private:${this.e.sender.nick || ''}(${this.e.user_id})]`
       logger.bot('info', this.e.self_id, `${logger.green('私聊通知: ')}[${this.e.user_id}(${this.e.sender.nick || ''})] ${this.e.raw_message}`)
-      if (!this.private()) return
     } else if (this.e.contact.scene === 'group') {
       this.e.isGroup = true
       this.e.logText = `[Group:${this.e.group_id}-${this.e.user_id}(${this.e.sender.nick || ''})]`
       this.GroupMsgPrint = review.GroupMsgPrint(this.e)
       this.GroupMsgPrint && logger.bot('info', this.e.self_id, `${logger.green('群通知: ')}[${this.e.group_id}-${this.e.user_id}(${this.e.sender.nick || ''})] ${this.e.raw_message}`)
+    } else if (this.e.contact.scene === 'guild') {
+      this.e.isGuild = true
+      this.e.logText = `[Guild:${this.e.contact.peer}-${this.e.contact.sub_peer}-${this.e.user_id}(${this.e.sender.nick || ''})]`
+      logger.bot('info', this.e.self_id, `${logger.green('频道通知: ')}[${this.e.contact.peer}-${this.e.contact.sub_peer}-${this.e.user_id}(${this.e.sender.nick || ''})] ${this.e.raw_message}`)
     } else {
       logger.bot('info', this.e.self_id, `未知来源通知事件：${JSON.stringify(this.e)}`)
     }
 
-    /* eslint-disable no-labels */
-    a:
-    for (const index of pluginLoader.acceptIds) {
-      const app = pluginLoader.PluginList[index]
+    this.raw_message()
+    this.reply()
+  }
+
+  /**
+   * 处理事件
+   */
+  async deal () {
+    for (const info of pluginLoader.accept) {
       /** 判断事件 */
-      if (!this.filtEvent(app.event)) continue
+      if (!this.filtEvent(info.event)) continue
 
       /** 检查黑白名单插件 */
-      if ('GroupCD' in this.config && !review.PluginEnable(app, this.config)) continue
+      if (!review.PluginEnable(info, this.config)) continue
 
       /** 日志方法字符串 */
-      this.e.logFnc = `[${app.file.dir}][${app.name}][accept]`
-      const logFnc = logger.fnc(`[${app.name}][accept]`)
+      this.e.logFnc = `[${info.name}][accept]`
+      const logFnc = logger.fnc(this.e.logFnc)
 
       /** 计算插件处理时间 */
       const start = Date.now()
-
-      let res
-
       try {
-        if (typeof app.accept === 'function') {
-          res = await app.accept(this.e)
-        } else {
-          const cla = new (app.file.Fnc as unknown as new () => ExtendedPlugin)()
-          if (!cla.accept || typeof cla.accept !== 'function') continue
-          (cla.e) = this.e
-          res = await cla.accept(this.e)
-        }
+        const res = await info.fn(this.e)
 
-        if (res !== false) {
-          this.GroupMsgPrint && logger.bot('info', this.e.self_id, `${logFnc} 处理完成 ${logger.green(Date.now() - start + 'ms')}`)
-          break a
-        }
+        this.GroupMsgPrint && logger.bot('info', this.e.self_id, `${logFnc} 处理完成 ${logger.green(Date.now() - start + 'ms')}`)
+        if (res !== false) break
       } catch (error: any) {
         logger.error(`${logFnc}`)
         logger.error(error.stack || error.message || JSON.stringify(error))
-        break a
+        break
       }
     }
   }

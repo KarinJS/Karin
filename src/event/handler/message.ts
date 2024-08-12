@@ -2,108 +2,45 @@ import lodash from 'lodash'
 import { review } from './review'
 import { EventBaseHandler } from './base'
 import { logger, config } from 'karin/utils'
-import { KarinMessageType, NewMessagePlugin } from 'karin/types'
 import { listener, stateArr, pluginLoader } from 'karin/core'
+import { KarinMessageType, PluginCommandInfoType } from 'karin/types'
 
 /**
  * 消息事件
  */
 export class MessageHandler extends EventBaseHandler {
   e: KarinMessageType
-  /**
-   * - 是否打印群消息日志
-   */
-  GroupMsgPrint: boolean = true
   constructor (e: KarinMessageType) {
     super(e)
     this.e = e
-    listener.emit('karin:count:recv', 1)
-    /** 处理消息 保证日志的打印 */
-    this.dealMsg()
-    /** 事件处理 */
-    if (this.review()) return
+    const cd = this.getCd()
+    this.init()
+    if (!cd) return
+    // todo: emit event
 
-    /** 响应模式 */
-    if (this.e.group_id && 'mode' in this.config && this.config.mode && !review.mode(this.e, this.config)) {
-      logger.debug('[消息拦截] 响应模式不匹配')
-      return
+    if (this.e.group_id) {
+      if (!this.getMode()) return
+      if (!this.getGroupEnable()) return
+      if (!this.getUserEnable()) return
+    } else {
+      if (!this.private()) return
     }
-    /** 处理回复 */
-    this.reply()
-    /** 处理私聊 */
-    if (!this.private()) return
+
     /** 处理消息 */
     this.deal()
   }
 
   /**
-   * 处理消息
+   * 先对消息事件进行初始化
    */
-  async deal () {
-    /** 上下文 */
-    if (await this.context()) return
-
-    /* eslint-disable no-labels */
-    a: for (const index of pluginLoader.ruleIds) {
-      const app = pluginLoader.PluginList[index]
-      /** 判断事件 */
-      if (app.event && !this.filtEvent(app.event)) continue
-
-      /** 正则匹配 */
-      for (const v of app.rule) {
-        const reg = v.reg as RegExp
-        if (reg.test(this.e.msg)) {
-          /** 检查黑白名单插件 */
-          if ('GroupCD' in this.config && !review.PluginEnable(app, this.config)) continue
-
-          /** 判断子事件 */
-          if (v.event && !this.filtEvent(v.event)) continue
-
-          const fncName = app.file.type === 'function' ? 'default' : v.fnc
-          this.e.logFnc = `[${app.file.dir}][${app.name}][${fncName}]`
-          const logFnc = logger.fnc(`[${app.name}][${fncName}]`)
-          this.GroupMsgPrint && typeof v.log === 'function' && v.log(this.e.self_id, `${logFnc}${this.e.logText} ${lodash.truncate(this.e.msg, { length: 80 })}`)
-
-          /** 判断权限 */
-          if (!this.filterPermission(v.permission)) break a
-
-          /** 计算插件处理时间 */
-          const start = Date.now()
-          listener.emit('karin:count:fnc', this.e.logFnc)
-
-          try {
-            let res
-            if (app.file.type === 'function' && typeof v.fnc === 'function') {
-              res = await v.fnc(this.e)
-            } else {
-              const cla = new (app.file.Fnc as NewMessagePlugin)(this.e)
-              cla.e = this.e
-              res = await (cla[v.fnc as keyof typeof cla] as Function)(this.e) as Promise<boolean>
-            }
-
-            this.GroupMsgPrint && typeof v.log === 'function' && v.log(this.e.self_id, `${logFnc} ${lodash.truncate(this.e.msg, { length: 80 })} 处理完成 ${logger.green(Date.now() - start + 'ms')}`)
-            if (res !== false) break a
-          } catch (error: any) {
-            logger.error(`${this.e.logFnc}`)
-            logger.error(error.stack || error.message || JSON.stringify(error))
-            break a
-          }
-        }
-      }
-    }
-  }
-
-  /**
-   * 处理消息体
-   */
-  dealMsg () {
+  init () {
+    listener.emit('karin:count:recv', 1)
     const logs = []
     for (const val of this.e.elements) {
       switch (val.type) {
         case 'text': {
-          const msg = (val.text || '').replace(/^\s*[＃井#]+\s*/, '#').replace(/^\s*[\\*※＊]+\s*/, '*').trim()
+          const msg = (val.text || '').replace(/^\s*[＃井#]+\s*/, '#').trim()
           this.e.msg += msg
-          /** 美观一点... */
           logs.push(msg)
           break
         }
@@ -203,10 +140,8 @@ export class MessageHandler extends EventBaseHandler {
           logs.push(`[未知:${JSON.stringify(val)}]`)
       }
     }
-    this.e.raw_message = logs.join('')
 
-    /** 前缀处理 */
-    this.e.group_id && 'GroupCD' in this.config && review.alias(this.e, this.config)
+    this.e.raw_message = logs.join('')
 
     /** 主人 */
     if (config.master.includes(String(this.e.user_id))) {
@@ -225,9 +160,92 @@ export class MessageHandler extends EventBaseHandler {
       this.e.isGroup = true
       this.e.logText = `[Group:${this.e.group_id}-${this.e.user_id}(${this.e.sender.nick || ''})]`
       this.GroupMsgPrint = review.GroupMsgPrint(this.e)
+      /** 前缀处理 */
+      this.e.group_id && review.alias(this.e, this.config)
+
       this.GroupMsgPrint && logger.bot('info', this.e.self_id, `群消息：[${this.e.group_id}-${this.e.user_id}(${this.e.sender.nick || ''})] ${this.e.raw_message}`)
+    } else if (this.e.contact.scene === 'guild') {
+      this.e.isGuild = true
+      this.e.logText = `[Guild:${this.e.contact.peer}-${this.e.contact.sub_peer}-${this.e.user_id}(${this.e.sender.nick || ''})]`
+      logger.bot('info', this.e.self_id, `频道消息：[${this.e.contact.peer}-${this.e.contact.sub_peer}-${this.e.user_id}(${this.e.sender.nick || ''})] ${this.e.raw_message}`)
     } else {
       logger.bot('info', this.e.self_id, `未知消息：${JSON.stringify(this.e)}`)
+    }
+
+    logs.length = 0
+    this.reply()
+  }
+
+  /**
+   * 响应模式检查 返回false表示未通过
+   */
+  getMode () {
+    if (review.mode(this.e, this.config)) return true
+    logger.debug(`[消息拦截][${this.e.group_id}][${this.e.user_id}] 响应模式不匹配`)
+    return false
+  }
+
+  /**
+   * 打印
+   */
+  print () {
+
+  }
+
+  /**
+   * 处理消息
+   */
+  async deal () {
+    /** 上下文 */
+    if (await this.context()) return
+
+    const app = this.e.group_id
+      ? (info: PluginCommandInfoType) => review.PluginEnable(info, this.config)
+      : () => true
+
+    for (const info of pluginLoader.command) {
+      /** 判断事件 */
+      if (!this.filtEvent(info.event)) continue
+
+      const reg = info.reg
+      if (reg.test(this.e.msg)) {
+        /** 检查黑白名单插件 */
+        if (!app(info)) continue
+
+        /** 判断子事件 */
+        if (!this.filtEvent(info.event)) continue
+
+        this.e.logFnc = `[${info.name}][${info.fnname}]`
+        const logFnc = logger.fnc(this.e.logFnc)
+        this.GroupMsgPrint && info.log(this.e.self_id, `${logFnc}${this.e.logText} ${lodash.truncate(this.e.msg, { length: 80 })}`)
+
+        /** 判断权限 */
+        if (!this.filterPermission(info.perm)) continue
+
+        /** 计算插件处理时间 */
+        const start = Date.now()
+        listener.emit('karin:count:fnc', this.e.logFnc)
+
+        try {
+          let res
+          if (info.type === 'function') {
+            res = await info.fn(this.e)
+          } else {
+            const Fnc = info.data as any
+            const app = new Fnc()
+            app.e = this.e
+            res = await info.fn.call(app, this.e)
+          }
+
+          this.GroupMsgPrint && info.log(this.e.self_id, `${logFnc} ${lodash.truncate(this.e.msg, { length: 80 })} 处理完成 ${logger.green(Date.now() - start + 'ms')}`)
+          if (res !== false) continue
+          return
+        } catch (error: any) {
+          logger.error(`${this.e.logFnc}`)
+          logger.error(error.stack || error.message || JSON.stringify(error))
+          return
+        }
+      }
     }
   }
 

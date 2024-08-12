@@ -8,7 +8,14 @@ import { fileURLToPath } from 'url'
 import { AxiosRequestConfig } from 'axios'
 import { pipeline, Readable } from 'stream'
 import { logger, segment, YamlEditor } from 'karin/utils'
-import { ButtonElement, ButtonType, dirName, fileName, KarinElement, NodeElement, KeyBoardElement } from 'karin/types'
+import { ButtonElement, ButtonType, dirName, KarinElement, NodeElement, KeyBoardElement } from 'karin/types'
+
+export interface NpmInfo {
+  plugin: string,
+  path: string,
+  file: string,
+  isMain: boolean
+}
 
 /**
  * 常用方法
@@ -123,6 +130,14 @@ class Common {
    */
   isPlugin (path: string): boolean {
     return this.exists(`${path}/package.json`)
+  }
+
+  /**
+   * 去掉相对路径的前缀和后缀
+   * @param root - 相对路径路径
+   */
+  getRelPath (root: string): string {
+    return root.replace(/\\+/g, '/').replace(/\.+\/+|\/+$/g, '')
   }
 
   /**
@@ -270,7 +285,7 @@ class Common {
 
     /** file:// */
     const files = file.replace(/^file:\/\//, '')
-    if (fs.existsSync(files)) return fs.readFileSync(file).toString('base64')
+    if (fs.existsSync(files)) return fs.readFileSync(files).toString('base64')
 
     /** 无前缀base64:// */
     return Buffer.from(file, 'base64').toString('base64')
@@ -367,77 +382,75 @@ class Common {
   }
 
   /**
+   * 获取git插件列表
+   * @param isPack - 是否屏蔽不带package.json的插件，默认为false
+   */
+  getGitPlugins (isPack = false): Array<dirName> {
+    return this.getPlugins(isPack)
+  }
+
+  /**
    * 获取npm插件列表
-   * @param showDetails - 是否返回详细信息，默认为false
+   * @param showDetails - 是否返回详细信息
    * 默认只返回插件npm包名，为true时返回详细的{dir, name}[]
    */
-  async getNpmPlugins<T extends boolean> (showDetails: T): Promise<T extends true ? { dir: string; name: fileName, isMain: boolean }[] : string[]> {
+  async getNpmPlugins<T extends boolean> (showDetails: T): Promise<T extends true ? NpmInfo[] : string[]> {
     /** 屏蔽的依赖包列表 */
-    const pkgdependencies = [
-      '@grpc/grpc-js',
-      '@grpc/proto-loader',
-      'art-template',
-      'axios',
-      'chalk',
-      'chokidar',
-      'express',
-      'kritor-proto',
-      'level',
-      'lodash',
-      'log4js',
-      'moment',
-      'node-karin',
-      'node-schedule',
-      'redis',
-      'ws',
-      'yaml',
-    ]
-    const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'))
-    const dependencies = Object.keys(pkg.dependencies).filter((name) => !pkgdependencies.includes(name))
+    const exclude = ['art-template', 'axios', 'chalk', 'chokidar', 'express', 'level', 'lodash', 'log4js', 'moment', 'node-karin', 'node-schedule', 'redis', 'ws', 'yaml']
+
+    const pkg = this.readJson('./package.json')
+    const dependencies = Object.keys(pkg.dependencies).filter((name) => !exclude.includes(name))
 
     if (!showDetails) {
       const list: string[] = []
-      // 检查pkg是否存在karin字段
       const readPackageJson = async (name: string) => {
         try {
           const pkgPath = path.join(process.cwd(), 'node_modules', name, 'package.json')
-          const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
+          const pkg = this.readJson(pkgPath)
           if (pkg?.karin) list.push(name)
-        } catch { }
+        } catch (error: any) {
+          logger.error(`[common] 解析 package.json 时出错：${error.stack || error.message || JSON.stringify(error)}`)
+        }
       }
 
       await Promise.all(dependencies.map(readPackageJson))
-      return list as T extends true ? { dir: dirName; name: fileName, isMain: boolean }[] : string[]
-    } else {
-      const list: { dir: dirName; name: string, isMain: boolean }[] = []
-
-      const readPackageJson = async (files: string) => {
-        try {
-          const pkgPath = path.join(process.cwd(), 'node_modules', files, 'package.json')
-          const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
-          if (pkg?.karin) {
-            if (pkg?.main) {
-              const dir = `${files}/${path.dirname(pkg.main).replace(/\.\//, '')}`
-              list.push({ dir, name: path.basename(pkg.main), isMain: true })
-            }
-
-            if (pkg?.karin?.apps?.length) {
-              pkg.karin.apps.forEach((app: string) => {
-                fs.readdirSync(`./node_modules/${files}/${app}`).forEach((filename: string) => {
-                  /** 忽略非js */
-                  if (!filename.endsWith('.js')) return
-                  const dir = `${files}/${app}`
-                  list.push({ dir, name: filename, isMain: false })
-                })
-              })
-            }
-          }
-        } catch { }
-      }
-
-      await Promise.all(dependencies.map(readPackageJson))
-      return list as T extends true ? { dir: dirName; name: fileName, isMain: boolean }[] : string[]
+      return list as T extends true ? NpmInfo[] : string[]
     }
+
+    const list: NpmInfo[] = []
+    /** 获取详细的npm信息 */
+    const readPackageJson = async (files: string) => {
+      try {
+        const root = path.join(process.cwd(), 'node_modules', files)
+        const pkgPath = path.join(root, 'package.json')
+        const pkg = this.readJson(pkgPath)
+        if (!pkg?.karin) return
+
+        if (pkg?.main) {
+          list.push({ plugin: files, path: path.dirname(pkg.main), file: path.basename(pkg.main), isMain: true })
+        }
+
+        if (pkg?.karin?.apps?.length) {
+          pkg.karin.apps.forEach((app: string) => {
+            if (!fs.existsSync(path.join(root, app))) {
+              logger.error(`[common] npm插件${files}的app目录${app}不存在 已跳过`)
+              return
+            }
+
+            fs.readdirSync(path.join(root, app)).forEach((filename: string) => {
+              /** 忽略非js文件 npm包不考虑ts */
+              if (!filename.endsWith('.js')) return
+              list.push({ plugin: files, path: app, file: filename, isMain: false })
+            })
+          })
+        }
+      } catch (error: any) {
+        logger.error(`[common] 获取npm插件列表时出错：${error.stack || error.message || JSON.stringify(error)}`)
+      }
+    }
+
+    await Promise.all(dependencies.map(readPackageJson))
+    return list as T extends true ? NpmInfo[] : string[]
   }
 
   /**
@@ -467,7 +480,7 @@ class Common {
           logs.push(val.text)
           break
         case 'face':
-          logs.push(`[face:${val.id}]`)
+          logs.push(`[face: ${val.id}]`)
           break
         case 'video':
         case 'image':
@@ -481,47 +494,47 @@ class Common {
           } else {
             file = 'base64://...'
           }
-          logs.push(`[${val.type}:${file}]`)
+          logs.push(`[${val.type}: ${file}]`)
           break
         }
         case 'at':
-          logs.push(`[at:${val.uid}]`)
+          logs.push(`[at: ${val.uid}]`)
           break
         case 'rps':
-          logs.push(`[rps:${val.id}]`)
+          logs.push(`[rps: ${val.id}]`)
           break
         case 'dice':
-          logs.push(`[dice:${val.id}]`)
+          logs.push(`[dice: ${val.id}]`)
           break
         case 'poke':
-          logs.push(`[poke:${val.id}]`)
+          logs.push(`[poke: ${val.id}]`)
           break
         case 'share':
-          logs.push(`[share:${JSON.stringify(val)}]`)
+          logs.push(`[share: ${JSON.stringify(val)}]`)
           break
         case 'contact':
-          logs.push(`[contact:${JSON.stringify(val)}]`)
+          logs.push(`[contact: ${JSON.stringify(val)}]`)
           break
         case 'location':
-          logs.push(`[location:${JSON.stringify(val)}]`)
+          logs.push(`[location: ${JSON.stringify(val)}]`)
           break
         case 'music':
-          logs.push(`[music:${JSON.stringify(val)}]`)
+          logs.push(`[music: ${JSON.stringify(val)}]`)
           break
         case 'reply':
-          logs.push(`[reply:${val.message_id}]`)
+          logs.push(`[reply: ${val.message_id}]`)
           break
         case 'forward':
-          logs.push(`[forward:${val.res_id}]`)
+          logs.push(`[forward: ${val.res_id}]`)
           break
         case 'xml':
-          logs.push(`[xml:${val.data}]`)
+          logs.push(`[xml: ${val.data}]`)
           break
         case 'json':
-          logs.push(`[json:${val.data}]`)
+          logs.push(`[json: ${val.data}]`)
           break
         case 'markdown': {
-          logs.push(`[markdown:${val.content}]`)
+          logs.push(`[markdown: ${val.content}]`)
           break
         }
         case 'markdown_tpl': {
@@ -531,21 +544,21 @@ class Common {
             [key: string]: string
           } = { id: val.custom_template_id }
           for (const v of params) content[v.key] = v.values[0]
-          logs.push(`[markdown_tpl:${JSON.stringify(content)}]`)
+          logs.push(`[markdown_tpl: ${JSON.stringify(content)}]`)
           break
         }
         case 'keyboard': {
-          logs.push(`[rows:${JSON.stringify(val.rows)}]`)
+          logs.push(`[rows: ${JSON.stringify(val.rows)}]`)
           break
         }
         case 'button':
-          logs.push(`[button:${JSON.stringify(val.data)}]`)
+          logs.push(`[button: ${JSON.stringify(val.data)}]`)
           break
         case 'long_msg':
-          logs.push(`[long_msg:${val.id}]`)
+          logs.push(`[long_msg: ${val.id}]`)
           break
         default:
-          logs.push(`[未知:${JSON.stringify(val)}]`)
+          logs.push(`[未知: ${JSON.stringify(val)}]`)
       }
     }
     return logs.join('')

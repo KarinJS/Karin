@@ -1,7 +1,8 @@
 import schedule from 'node-schedule'
 import { Plugin } from 'karin/core'
 import { Reply, replyCallback, replyForward } from '../event/reply'
-import { KarinNoticeType, KarinRequestType, AllListenEvent, KarinMessageType, PermissionType } from '../event'
+import { KarinNoticeType, KarinRequestType, AllListenEvent, KarinMessageType, PermissionType, AllMessageSubType, Contact, AllNoticeSubType, AllRequestSubType } from '../event'
+import { KarinElement } from '../element/element'
 
 /**
  * - 插件根目录名称
@@ -16,6 +17,202 @@ export type dirName = `karin-plugin-${string}` | string
  * - 例如: index.js index.ts
  */
 export type fileName = `${string}.js` | `${string}.ts`
+
+/**
+ * 插件类型枚举
+ */
+export const enum AppsType {
+  /** git插件 */
+  Git = 'git',
+  /** npm插件 */
+  Npm = 'npm',
+  /** 单个app插件 */
+  Js = 'js'
+}
+
+/**
+ * 插件实现方法类型
+ */
+export const enum MethodType {
+  /** 函数 */
+  Function = 'function',
+  /** 类 */
+  Class = 'class'
+}
+
+/**
+ * plugin基本信息
+ */
+export interface PluginInfoType {
+  [key: string]: {
+    /** 插件包类型 */
+    type: `${AppsType}`,
+    /** 插件包名称 例: `karin-plugin-example` `@karinjs/adapter-qqbot` */
+    plugin: string,
+    /** 插件路径 在type为js下，path为空 */
+    path: string,
+    /** 插件文件名称 index.js index.ts */
+    file: string,
+  }
+}
+
+/**
+ * Command规则集信息
+ */
+export interface PluginCommandInfoType {
+  /** 插件基本信息的映射key */
+  key: string,
+  /** 插件包名称 */
+  name: string,
+  /** 插件正则 */
+  reg: RegExp,
+  /** 插件执行方法 */
+  fn: (e: KarinMessageType) => Promise<boolean>,
+  /** 插件执行方法名称 */
+  fnname: string,
+  /** 插件类型 */
+  type: `${MethodType}`,
+  /** 在type为class的时候 data为class 否则为空字符串 */
+  data: (() => PluginType) | undefined,
+  /** 插件执行权限 */
+  perm: `${PermissionType}`,
+  /** 执行打印日志方法 */
+  log: Function,
+  /** 监听的子事件 高于父事件 */
+  event: AllMessageSubType,
+  /** 优先级 */
+  rank: number
+}
+
+/**
+ * accept规则集信息
+ */
+export interface PluginAcceptInfoType {
+  /** 插件基本信息的映射key */
+  key: string,
+  /** 插件包名称 */
+  name: string,
+  /** 插件执行方法 */
+  fn: (e: KarinNoticeType | KarinRequestType) => Promise<boolean>,
+  /** 优先级 */
+  rank: number
+  /** 监听事件 */
+  event: AllNoticeSubType | AllRequestSubType
+  /** 执行打印日志方法 */
+  log: Function
+}
+
+/**
+ * task规则集信息
+ */
+export interface PluginTaskInfoType {
+  /** 插件基本信息的映射key */
+  key: string,
+  /** 插件包名称 */
+  name: string,
+  /** 任务名称 */
+  taskname: string,
+  /** cron表达式 */
+  cron: string,
+  /** 任务执行方法 */
+  fn: Function,
+  /** 在type为class的时候 data为class 否则为空字符串 */
+  data: (() => PluginType) | undefined,
+  /** 执行打印日志方法 */
+  log: Function,
+  /** 停止函数 */
+  schedule: schedule.Job
+}
+
+/**
+ * button规则集信息
+ */
+export interface PluginButtonInfoType {
+  /** 插件基本信息的映射key */
+  key: string,
+  /** 插件包名称 */
+  name: string,
+  /** 插件正则 */
+  reg: RegExp,
+  /** 插件执行方法 */
+  fn: (reject: Function, e?: KarinMessageType) => Promise<any>,
+  /** 优先级 */
+  rank: number
+}
+
+/**
+ * handler规则集信息
+ */
+export interface PluginHandlerInfoType {
+  /** 插件基本信息的映射key */
+  key: string,
+  /** 插件包名称 */
+  name: string,
+  /** handler的处理方法 */
+  fn: (args: any, reject: (msg?: string) => void) => Promise<any>,
+  /** 优先级 */
+  rank: number
+}
+
+/**
+ * 中间件规则集信息
+ */
+export interface PluginMiddlewareInfoType {
+  /** 初始化消息前 */
+  recvMsg: Array<{
+    /** 插件基本信息的映射key */
+    key: string,
+    /** 插件包名称 */
+    name: string,
+    /** 插件执行方法 */
+    fn: (
+      /** 消息事件方法 */
+      e: KarinMessageType,
+      /** 是否继续执行插件 */
+      next: Function
+    ) => Promise<boolean>,
+    /** 优先级 */
+    rank: number
+  }>,
+  /** 回复消息前 */
+  replyMsg: Array<{
+    /** 插件基本信息的映射key */
+    key: string,
+    /** 插件包名称 */
+    name: string,
+    /** 插件执行方法 */
+    fn: (
+      /** 消息事件方法 */
+      e: KarinMessageType,
+      /** 回复的消息体 */
+      element: KarinElement[],
+      /** 是否继续执行插件 */
+      next: Function
+    ) => Promise<boolean>,
+    /** 优先级 */
+    rank: number
+  }>,
+  /** 发送主动消息前 */
+  sendMsg: Array<{
+    /** 插件基本信息的映射key */
+    key: string,
+    /** 插件包名称 */
+    name: string,
+    /** 插件执行方法 */
+    fn: (
+      /** 发送的bot */
+      uid: string,
+      /** 发送目标 */
+      contact: Contact,
+      /** 发送的消息体 */
+      element: KarinElement[],
+      /** 是否继续执行插件 */
+      next: Function
+    ) => Promise<boolean>,
+    /** 优先级 */
+    rank: number
+  }>
+}
 
 /**
  * 上下文状态
@@ -42,7 +239,11 @@ export interface PluginRule {
   /**
    * - 监听子事件
    */
-  event?: AllListenEvent
+  event?: AllMessageSubType
+  /**
+   * - 优先级 默认为10000
+   */
+  priority?: number
   /**
    * 权限
    */
@@ -146,17 +347,12 @@ export interface PluginType {
   name: string
   /**
    * - 插件描述
-   * @deprecated 请使用desc
-   */
-  dsc: string
-  /**
-   * - 插件描述
    */
   desc: string
   /**
    * - 监听事件 默认为message
    */
-  event: AllListenEvent
+  event: AllMessageSubType
   /**
    * - 优先级 默认为10000
    */
@@ -169,10 +365,6 @@ export interface PluginType {
    * - 命令规则
    */
   rule: Array<PluginRule>
-  /**
-   * - 按钮
-   */
-  button: Array<PluginButton>
   /**
    * - handler
    */

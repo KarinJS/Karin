@@ -5,17 +5,17 @@ import { GroupCfg, KarinEventTypes, AllListenEvent, PluginRule, ReplyReturn } fr
 
 export class EventBaseHandler {
   e: KarinEventTypes
-  config: GroupCfg | {}
+  /** 仅在群聊下存在 */
+  config!: GroupCfg
   /**
    * - 是否打印群消息日志
    */
-  GroupMsgPrint: boolean
+  GroupMsgPrint: boolean = true
   /**
    * 处理事件，加入自定义字段
    */
   constructor (e: KarinEventTypes) {
     this.e = e
-    this.config = {}
     this.GroupMsgPrint = false
     /** 加入e.bot */
     !this.e.bot && Object.defineProperty(this.e, 'bot', { value: listener.getBot(this.e.self_id) })
@@ -23,28 +23,29 @@ export class EventBaseHandler {
   }
 
   /**
-   * 事件处理
+   * cd检查 返回false表示在cd中
    */
-  review () {
-    /** 检查CD */
-    if (!review.CD(this.e, this.config as GroupCfg)) {
-      logger.debug('[消息拦截] 正在冷却中')
-      return true
-    }
+  getCd () {
+    if (review.CD(this.e, this.config)) return true
+    logger.debug(`[消息拦截][${this.e.group_id}][${this.e.user_id}] 正在冷却中`)
+    return false
+  }
 
-    /** 检查群聊黑白名单 */
-    if (!review.GroupEnable(this.e)) {
-      logger.debug('[消息拦截] 未通过群聊黑白名单检查')
-      return true
-    }
+  /**
+   * 群聊黑白名单检查 返回false表示未通过
+   */
+  getGroupEnable () {
+    if (review.GroupEnable(this.e)) return true
+    logger.debug(`[消息拦截][${this.e.group_id}][${this.e.user_id}] 未通过群聊黑白名单检查`)
+    return false
+  }
 
-    /** 检查用户黑白名单 */
-    if (!review.UserEnable(this.e)) {
-      logger.debug('[消息拦截] 未通过用户黑白名单检查')
-      return true
-    }
-
-    /** 都通过了 */
+  /**
+   * 用户黑白名单检查 返回false表示未通过
+   */
+  getUserEnable () {
+    if (review.UserEnable(this.e)) return true
+    logger.debug(`[消息拦截][${this.e.group_id}][${this.e.user_id}] 未通过用户黑白名单检查`)
     return false
   }
 
@@ -58,14 +59,14 @@ export class EventBaseHandler {
       if (config.Config?.private?.white_list?.includes(String(this.e.user_id))) return true
       /** 不处于白名单 检查是否存在提示词 */
       if (config.Config?.private?.tips) this.e.reply(config.Config.private.tips)
-      logger.debug('[消息拦截] 私聊功能未开启')
+      logger.debug(`[消息拦截][${this.e.user_id}] 私聊功能未开启`)
       return false
     }
     return true
   }
 
   /**
-   * 根据事件类型过滤事件
+   * 根据事件类型过滤事件 返回false表示未通过
    */
   filtEvent (event: AllListenEvent): boolean {
     /** 事件映射表 */

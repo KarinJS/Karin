@@ -1,6 +1,5 @@
 import { server } from '../server/server'
 import { stateArr } from '../plugin/base'
-import PluginApp from '../plugin/app'
 import { common } from 'karin/utils'
 import { listener } from '../listener/listener'
 import onebot11 from 'karin/adapter/onebot/11'
@@ -8,23 +7,40 @@ import { render, RenderServer } from 'karin/render'
 import {
   Scene,
   Contact,
-  Permission,
-  PluginApps,
   KarinElement,
   KarinMessage,
   KarinRenderType,
   PermissionType,
   RenderResult,
-  NoticeListenEvent,
-  RequestListenEvent,
   KarinNoticeType,
   KarinRequestType,
+  KarinMessageType,
+  AllMessageSubType,
+  CommandInfo,
+  TaskInfo,
+  HandlerInfo,
+  AcceptInfo,
+  UseInfo,
+  AllNoticeSubType,
+  AllRequestSubType,
 } from 'karin/types'
 
 type FncFunction = (e: KarinMessage) => Promise<boolean>
 type FncElement = string | KarinElement | Array<KarinElement>
 
-export interface OptionsCommand {
+/**
+ * 中间件类型
+ */
+export const enum MiddlewareType {
+  /** 收到消息后 */
+  ReceiveMsg = 'recvMsg',
+  /** 回复消息前 */
+  ReplyMsg = 'replyMsg',
+  /** 发送主动消息前 */
+  SendMsg = 'sendMsg'
+}
+
+export interface Options {
   /**
    * - 插件名称 不传则使用 插件名称:函数名
    */
@@ -35,15 +51,22 @@ export interface OptionsCommand {
    */
   priority?: number
   /**
-   * - 权限
-   * @default 'all'
-   */
-  permission?: PermissionType
-  /**
    * - 打印日志
    * @default false
    */
   log?: boolean | Function
+}
+
+export interface OptionsCommand extends Options {
+  /**
+   * - 监听事件
+   */
+  event?: `${AllMessageSubType}`
+  /**
+   * - 权限
+   * @default 'all'
+   */
+  permission?: PermissionType
 }
 
 export interface OptionsElement extends OptionsCommand {
@@ -82,16 +105,16 @@ export class Karin {
 
   /**
   * @param reg - 正则表达式
-  * @param fnc - 函数
+  * @param fn - 函数
   * @param options - 选项
   */
-  command (reg: string | RegExp, fnc: FncFunction, options?: OptionsCommand): PluginApps
+  command (reg: string | RegExp, fn: FncFunction, options?: OptionsCommand): CommandInfo
   /**
    * @param reg - 正则表达式
    * @param element - 字符串或者KarinElement、KarinElement数组
    * @param options - 选项
    */
-  command (reg: string | RegExp, element: FncElement, options?: OptionsElement): PluginApps
+  command (reg: string | RegExp, element: FncElement, options?: OptionsElement): CommandInfo
   /**
    * - 快速构建命令
    * @param reg - 正则表达式
@@ -99,9 +122,9 @@ export class Karin {
    * @param options - 选项
    * @returns - 返回插件对象
    */
-  command (reg: string | RegExp, second: FncFunction | FncElement, options: OptionsCommand | OptionsElement = {}): PluginApps {
+  command (reg: string | RegExp, second: FncFunction | FncElement, options: OptionsCommand | OptionsElement = {}): CommandInfo {
     reg = typeof reg === 'string' ? new RegExp(reg) : reg
-    const fnc = typeof second === 'function'
+    const fn = typeof second === 'function'
       ? second
       : async (e: KarinMessage) => {
         const element = typeof second === 'number' ? String(second) : second
@@ -113,105 +136,74 @@ export class Karin {
         })
         return !('stop' in options && !options.stop)
       }
-    const data = {
-      name: options.name || 'function',
-      priority: options.priority,
-      rule: [
-        {
-          reg,
-          fnc,
-          permission: options.permission || 'all' as Permission,
-          log: options.log ?? true,
-        },
-      ],
+
+    const log = options.log === false
+      ? (id: string, text: string) => logger.bot('debug', id, text)
+      : (id: string, text: string) => logger.bot('info', id, text)
+
+    return {
+      data: '',
+      event: options.event || 'message',
+      fn,
+      fnname: 'fnc',
+      log,
+      name: options.name || 'command',
+      perm: options.permission || 'all',
+      rank: options.priority || 10000,
+      reg,
+      type: 'command',
     }
-    return PluginApp(data)
   }
 
   /**
    * - 构建定时任务
    * @param name - 任务名称
    * @param cron - cron表达式
-   * @param fnc - 执行函数
+   * @param fn - 执行函数
    * @param options - 选项
    */
-  task (name: string, cron: string, fnc: Function, options?: {
-    /**
-     * - 任务插件名称
-     */
-    name?: string
-    /**
-     * - 任务优先级
-     */
-    priority?: number
-    /**
-     * - 是否打印日志 传递布尔值
-     */
-    log?: boolean | Function
-  }) {
+  task (name: string, cron: string, fn: Function, options?: Omit<Options, 'priority'>): TaskInfo {
     if (!name) throw new Error('[task]: 缺少参数[name]')
     if (!cron) throw new Error('[task]: 缺少参数[cron]')
-    if (!fnc) throw new Error('[task]: 缺少参数[fnc]')
+    if (!fn) throw new Error('[task]: 缺少参数[fnc]')
 
-    const data = {
+    const log = options?.log === false ? (text: string) => logger.debug(text) : (text: string) => logger.info(text)
+    return {
+      cron,
+      fn,
+      log,
       name: options?.name || 'task',
-      priority: options?.priority,
-      task: [
-        {
-          name,
-          cron,
-          fnc,
-          log: options?.log ?? true,
-        },
-      ],
+      fnname: name,
+      type: 'task',
     }
-
-    return PluginApp(data)
   }
 
   /**
    * - 构建handler
    * @param key - 事件key
-   * @param fnc - 函数实现
+   * @param fn - 函数实现
    * @param options - 选项
    */
-  handler (key: string, fnc: (
+  handler (key: string, fn: (
     /**
      * - 自定义参数 由调用方传递
      */
-    args: any,
+    args: { [key: string]: any },
     /**
-     * - 拒绝处理器 调用后则不再继续执行下一个处理器
+     * - 停止循环函数 调用后则不再继续执行下一个处理器
      */
     reject: (msg?: string) => void,
-  ) => Promise<any>, options?: {
-    /**
-     * - 插件名称
-     */
-    name?: string
-    /**
-     * - handler优先级
-     */
-    priority?: number
-  }) {
+  ) => Promise<any>, options?: Omit<Options, 'log'>): HandlerInfo {
     if (!key) throw new Error('[handler]: 缺少参数[key]')
-    if (!fnc) throw new Error('[handler]: 缺少参数[fnc]')
+    if (!fn) throw new Error('[handler]: 缺少参数[fnc]')
 
-    const priority = options?.priority || 10000
-
-    const data = {
+    return {
+      fn,
+      key,
       name: options?.name || 'handler',
-      priority,
-      handler: [
-        {
-          key,
-          fnc,
-          priority,
-        },
-      ],
+      rank: options?.priority || 10000,
+      type: 'handler',
     }
-
-    return PluginApp(data)
   }
 
   /**
@@ -223,15 +215,15 @@ export class Karin {
   contact (peer: string, isGroup: boolean = true, sub_peer?: string): Contact {
     if (isGroup) {
       return {
-        scene: Scene.Group,
         peer,
+        scene: Scene.Group,
         sub_peer: sub_peer || '',
       }
     }
 
     return {
-      scene: Scene.Private,
       peer,
+      scene: Scene.Private,
       sub_peer: sub_peer || '',
     }
   }
@@ -260,10 +252,7 @@ export class Karin {
   render<T extends KarinRenderType> (data: string | T, multiPage?: number | true): Promise<string | Array<string> | RenderResult<T>> {
     if (typeof data === 'string') {
       /** 分片 */
-      if (typeof multiPage === 'number' || multiPage === true) {
-        return render.renderMultiHtml(data, multiPage)
-      }
-
+      if (typeof multiPage === 'number' || multiPage === true) return render.renderMultiHtml(data, multiPage)
       /** 快速渲染 */
       return render.renderHtml(data)
     }
@@ -317,30 +306,39 @@ export class Karin {
   /**
    * accept
    * @param event - 监听事件
-   * @param fnc - 实现函数
+   * @param fn - 实现函数
    */
-  accept (event: NoticeListenEvent | RequestListenEvent, fnc: (e: KarinNoticeType | KarinRequestType) => boolean, options?: {
-    /**
-     * - 插件名称
-     */
-    name?: string
-    /**
-     * - 优先级
-     */
-    priority?: number
-    /**
-     * - 触发函数是否打印日志
-     */
-    log?: boolean
-  }) {
-    const data = {
-      name: options?.name || 'accept',
-      priority: options?.priority,
+  accept (event: AllNoticeSubType | AllRequestSubType, fn: (e: KarinNoticeType | KarinRequestType) => Promise<boolean>, options?: Options): AcceptInfo {
+    const log = options?.log === false
+      ? (id: string, text: string) => logger.bot('debug', id, text)
+      : (id: string, text: string) => logger.bot('info', id, text)
+
+    return {
       event,
-      accept: fnc,
-      log: options?.log,
+      fn,
+      log,
+      name: options?.name || 'accept',
+      rank: options?.priority || 10000,
+      type: 'accept',
     }
-    return PluginApp(data)
+  }
+
+  use (type: `${MiddlewareType.ReceiveMsg}`, fn: (e: KarinMessageType, next: Function) => Promise<void>, options: Omit<Options, 'log'>): UseInfo
+  use (type: `${MiddlewareType.ReplyMsg}`, fn: (e: KarinMessageType, element: KarinElement[], next: Function) => Promise<void>, options: Omit<Options, 'log'>): UseInfo
+  use (type: `${MiddlewareType.SendMsg}`, fn: (uid: string, contact: Contact, elements: KarinElement[]) => Promise<void>, options: Omit<Options, 'log'>): UseInfo
+  /**
+   * 中间件
+   * @param type 中间件类型
+   * @param fn 中间件函数
+   */
+  use (type: `${MiddlewareType}`, fn: Function, options: Options): UseInfo {
+    return {
+      fn,
+      key: type,
+      name: options?.name || 'use',
+      rank: options?.priority || 10000,
+      type: 'use',
+    }
   }
 
   /**

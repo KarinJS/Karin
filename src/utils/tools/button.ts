@@ -1,34 +1,24 @@
 import logger from '../core/logger'
-import { KarinMessageType, NewMessagePlugin } from 'karin/types'
+import { KarinMessageType } from 'karin/types'
 import { pluginLoader as loader } from 'karin/core'
 
-export const button = async (e: KarinMessageType) => {
+export const button = async (msg: string, e?: KarinMessageType) => {
   const button = []
-  for (const v of loader.buttonIds) {
-    const info = loader.PluginList[v]
-    for (const v of info.button) {
-      const reg = v.reg as RegExp
-      if (reg.test(e.msg)) {
-        try {
-          let res
-          let done = true
-          /**
-           * 标记函数 如果调用则继续执行 循环下一个按钮插件处理
-           */
-          const reject = () => { done = false }
-          if (typeof v.fnc === 'function') {
-            res = await v.fnc(e, reject)
-          } else {
-            const cla = new (info.file.Fnc as NewMessagePlugin)()
-            cla.e = e
-            res = await (cla[v.fnc as keyof typeof cla] as Function)(e, reject)
-          }
+  for (const info of loader.button) {
+    const reg = info.reg
+    if (reg.test(msg)) {
+      try {
+        let done = true
+        /**
+         * 标记函数 如果调用则继续执行 循环下一个按钮插件处理
+         */
+        const reject = () => { done = false }
+        const res = await info.fn(reject, e)
 
-          if (res) button.push(res)
-          if (done) return res
-        } catch (error) {
-          logger.error(error)
-        }
+        if (res) button.push(res)
+        if (done) return res
+      } catch (error) {
+        logger.error(error)
       }
     }
   }

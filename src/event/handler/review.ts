@@ -1,5 +1,6 @@
 import { logger, config } from 'karin/utils'
-import { KarinMessageType, PluginApps, GroupCfg, KarinEventTypes } from 'karin/types'
+import { KarinMessageType, GroupCfg, KarinEventTypes, PluginCommandInfoType, PluginAcceptInfoType } from 'karin/types'
+import { pluginLoader } from 'karin/core'
 
 /**
  * 事件拦截器
@@ -17,7 +18,7 @@ export const review = new (class Handler {
   GroupEnable: (e: KarinEventTypes) => boolean
   UserEnable: (e: KarinEventTypes) => boolean
   GroupMsgPrint: (e: KarinEventTypes) => boolean
-  PluginEnable: (app: PluginApps, config: GroupCfg) => boolean
+  PluginEnable: (app: PluginCommandInfoType | PluginAcceptInfoType, config: GroupCfg) => boolean
   Private: () => boolean
   constructor () {
     /** 群聊所有消息cd */
@@ -217,35 +218,32 @@ export const review = new (class Handler {
     /** 同时启用 */
     if (this.App.GroupConfig.enable && this.App.GroupConfig.disable) {
       this.PluginEnable = (app, config) => {
+        const plugin = pluginLoader.plugin[app.key]
         /** 白名单不为空 */
         if (Array.isArray(config.enable) && config.enable.length) {
           /** 插件包是否处于功能白名单 */
-          if (config.enable.includes(app.file.dir)) return true
-          /** 插件是否处于功能白名单 */
-          if (config.enable.includes(`${app.file.dir}/${app.file.name}`)) return true
-          /** 插件名称是否处于功能白名单 */
-          if (config.enable.includes(app.name)) return true
+          for (const key of config.enable) {
+            if (key.plugin === plugin.plugin) return true
+            if (key.name === plugin.file || key.name === app.name) return true
+          }
+
           logger.debug(logger.green(`[功能白名单] 插件名称 [${app.name}] 不存在功能白名单中`))
           return false
         }
 
         /** 白名单为空 检查黑名单是否为空 */
         if (Array.isArray(config.disable) && config.disable.length) {
-          /** 插件包是否处于功能黑名单 */
-          if (config.disable.includes(app.file.dir)) {
-            logger.debug(logger.red(`[功能黑名单] 插件包 [${app.file.dir}] 处于功能黑名单`))
-            return false
+          for (const key of config.disable) {
+            if (key.plugin === plugin.plugin) {
+              logger.debug(logger.red(`[功能黑名单] 插件包 [${app.name}] 处于功能黑名单`))
+              return false
+            }
+            if (key.name === plugin.file || key.name === app.name) {
+              logger.debug(logger.red(`[功能黑名单] 插件 [${app.name}] 处于功能黑名单`))
+              return false
+            }
           }
-          /** 插件是否处于功能黑名单 */
-          if (config.disable.includes(`${app.file.dir}/${app.file.name}`)) {
-            logger.debug(logger.red(`[功能黑名单] 插件 [${app.file.dir}/${app.file.name}] 处于功能黑名单`))
-            return false
-          }
-          /** 插件名称是否处于功能黑名单 */
-          if (config.disable.includes(app.name)) {
-            logger.debug(logger.red(`[功能黑名单] 插件名称 [${app.name}] 处于功能黑名单`))
-            return false
-          }
+
           return true
         }
 
@@ -258,10 +256,14 @@ export const review = new (class Handler {
     /** 白名单启用 */
     if (this.App.GroupConfig.enable) {
       this.PluginEnable = (app, config) => {
+        const plugin = pluginLoader.plugin[app.key]
+
         if (Array.isArray(config.enable) && config.enable.length) {
-          if (config.enable.includes(app.file.dir)) return true
-          if (config.enable.includes(`${app.file.dir}/${app.file.name}`)) return true
-          if (config.enable.includes(app.name)) return true
+          for (const key of config.enable) {
+            if (key.plugin === plugin.plugin) return true
+            if (key.name === plugin.file || key.name === app.name) return true
+          }
+
           logger.debug(logger.green(`[功能白名单] 插件名称 [${app.name}] 不存在功能白名单中`))
           return false
         }
@@ -273,19 +275,20 @@ export const review = new (class Handler {
     /** 黑名单启用 */
     if (this.App.GroupConfig.disable) {
       this.PluginEnable = (app, config) => {
+        const plugin = pluginLoader.plugin[app.key]
+
         if (Array.isArray(config.disable) && config.disable.length) {
-          if (config.disable.includes(app.file.dir)) {
-            logger.debug(logger.red(`[功能黑名单] 插件包 [${app.file.dir}] 处于功能黑名单`))
-            return false
+          for (const key of config.disable) {
+            if (key.plugin === plugin.plugin) {
+              logger.debug(logger.red(`[功能黑名单] 插件包 [${app.name}] 处于功能黑名单`))
+              return false
+            }
+            if (key.name === plugin.file || key.name === app.name) {
+              logger.debug(logger.red(`[功能黑名单] 插件 [${app.name}] 处于功能黑名单`))
+              return false
+            }
           }
-          if (config.disable.includes(`${app.file.dir}/${app.file.name}`)) {
-            logger.debug(logger.red(`[功能黑名单] 插件 [${app.file.dir}/${app.file.name}] 处于功能黑名单`))
-            return false
-          }
-          if (config.disable.includes(app.name)) {
-            logger.debug(logger.red(`[功能黑名单] 插件名称 [${app.name}] 处于功能黑名单`))
-            return false
-          }
+
           return true
         }
         return true
