@@ -27,7 +27,7 @@ export function AdapterConvertKarin (data: Array<OB11Segment>): Array<KarinEleme
         elements.push(segment.video(i.data.url || i.data.file))
         break
       case 'at':
-        elements.push(segment.at(i.data.qq, i.data.qq))
+        elements.push(segment.at(i.data.qq, i.data.qq, i.data.name))
         break
       case 'poke':
         elements.push(segment.poke(Number(i.data.id), Number(i.data.type)))
@@ -86,7 +86,7 @@ export function KarinConvertAdapter (data: Array<KarinElement>, bot: AdapterOneB
         elements.push({ type, data: { id: i.id } })
         break
       case OB11SegmentType.At:
-        elements.push({ type, data: { qq: String(i.uid || i.uin) } })
+        elements.push({ type, data: { qq: String(i.uid || i.uin), name: i.name } })
         break
       case OB11SegmentType.Reply:
         elements.push({ type, data: { id: i.message_id } })

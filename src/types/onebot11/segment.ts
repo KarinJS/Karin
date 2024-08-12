@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /**
  * - OneBot11消息类型枚举
  */
@@ -102,7 +101,8 @@ export interface VideoSegment extends Segment {
 export interface AtSegment extends Segment {
   type: OB11SegmentType.At
   data: {
-    qq: string | 'all'
+    qq: string | 'all',
+    name?: string
   }
 }
 
