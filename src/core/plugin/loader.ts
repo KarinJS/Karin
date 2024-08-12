@@ -425,7 +425,7 @@ class PluginLoader {
 
         if (Class.rule.length) {
           for (const val of Class.rule) {
-            list.push(() => {
+            const fnc = async () => {
               const log = val.log === false
                 ? (id: string, log: string) => logger.debug('mark', id, log)
                 : (id: string, log: string) => logger.bot('mark', id, log)
@@ -450,13 +450,14 @@ class PluginLoader {
                 },
                 Fn
               )
-            })
+            }
+            list.push(fnc())
           }
         }
 
         if (Class.task.length) {
           for (const val of Class.task) {
-            list.push(() => {
+            const fnc = async () => {
               if (!val.name) throw TypeError(`[${plugin}][${file}] 定时任务name错误`)
               if (!val.cron) throw TypeError(`[${plugin}][${file}] 定时任务cron错误：${Class.name}`)
               const log = val.log === false ? (log: string) => logger.debug(log) : (log: string) => logger.mark(log)
@@ -475,15 +476,13 @@ class PluginLoader {
                 },
                 Fn
               )
-            })
+            }
+            list.push(fnc())
           }
         }
 
         /** init */
-        list.push(async () => {
-          'init' in Class && typeof Class.init === 'function' && await Class.init()
-        })
-
+        list.push('init' in Class && typeof Class.init === 'function' ? Class.init() : Promise.resolve())
         return true
       })
 
@@ -563,7 +562,7 @@ class PluginLoader {
           perm: info.perm,
           rank: info.rank,
           reg: info.reg,
-          type: 'function',
+          type: App ? 'class' : 'function',
         })
         return true
       }
