@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.11.2](https://github.com/KarinJS/Karin/compare/v0.11.1...v0.11.2) (2024-08-12)
+
+
+### Bug Fixes
+
+* 修正class 类型错误 ([edc4a78](https://github.com/KarinJS/Karin/commit/edc4a78a174f32530a2ff89227de896b01ef6ed6))
+
 ## [0.11.1](https://github.com/KarinJS/Karin/compare/v0.11.0...v0.11.1) (2024-08-12)
 
 
