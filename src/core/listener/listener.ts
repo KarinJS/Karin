@@ -192,6 +192,19 @@ export class Listeners extends EventEmitter {
     recallMsg?: number
     retry_count?: number
   } = { recallMsg: 0, retry_count: 1 }): Promise<{ message_id: string }> {
+    /** 先调用中间件 */
+    for (const info of pluginLoader.use.sendMsg) {
+      try {
+        let next = false
+        const nextFn = () => { next = true }
+        await info.fn(uid, contact, elements, nextFn)
+        if (!next) break
+      } catch (e) {
+        logger.error('[消息中间件] 调用失败，已跳过')
+        logger.error(e)
+      }
+    }
+
     const bot = this.getBot(uid)
     if (!bot) throw new Error('发送消息失败: 未找到对应Bot实例')
     const { recallMsg, retry_count } = options

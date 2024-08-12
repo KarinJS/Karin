@@ -196,6 +196,19 @@ export class MessageHandler extends EventBaseHandler {
    * 处理消息
    */
   async deal () {
+    /** 先调用中间件 */
+    for (const info of pluginLoader.use.recvMsg) {
+      try {
+        let next = false
+        const nextFn = () => { next = true }
+        await info.fn(this.e, nextFn)
+        if (!next) break
+      } catch (e) {
+        logger.error('[消息中间件] 调用失败，已跳过')
+        logger.error(e)
+      }
+    }
+
     /** 上下文 */
     if (await this.context()) return
 

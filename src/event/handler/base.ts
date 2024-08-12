@@ -1,7 +1,7 @@
-import { listener } from 'karin/core'
+import { listener, pluginLoader } from 'karin/core'
 import { review } from './review'
 import { segment, common, logger, config } from 'karin/utils'
-import { GroupCfg, KarinEventTypes, AllListenEvent, PluginRule, ReplyReturn } from 'karin/types'
+import { GroupCfg, KarinEventTypes, AllListenEvent, PluginRule, ReplyReturn, KarinMessageType } from 'karin/types'
 
 export class EventBaseHandler {
   e: KarinEventTypes
@@ -139,6 +139,18 @@ export class EventBaseHandler {
      */
     this.e.reply = async (elements = '', options = { reply: false, recallMsg: 0, at: false, retry_count: 1 }) => {
       const message = common.makeMessage(elements)
+      /** 先调用中间件 */
+      for (const info of pluginLoader.use.replyMsg) {
+        try {
+          let next = false
+          const nextFn = () => { next = true }
+          await info.fn(this.e as KarinMessageType, message, nextFn)
+          if (!next) break
+        } catch (e) {
+          logger.error('[消息中间件] 调用失败，已跳过')
+        }
+      }
+
       const { reply = false, recallMsg = 0, at, retry_count = 1 } = options
 
       /** 加入at */
