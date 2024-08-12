@@ -262,7 +262,7 @@ class PluginLoader {
     const list: Promise<boolean>[] = []
     const info = await common.getNpmPlugins(true)
     for (const { plugin, path: _path, file, isMain } of info) {
-      if (!isMain) {
+      if (isMain) {
         const root = path.join(process.cwd(), 'node_modules', plugin, _path)
         this.loadMain(root, file, true)
         continue
