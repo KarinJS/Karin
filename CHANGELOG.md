@@ -1,5 +1,14 @@
 # 更新日志
 
+## [0.11.5](https://github.com/KarinJS/Karin/compare/v0.11.4...v0.11.5) (2024-08-13)
+
+
+### Bug Fixes
+
+* close [#123](https://github.com/KarinJS/Karin/issues/123) ([707c3c0](https://github.com/KarinJS/Karin/commit/707c3c0081ac1df04dc22c88c72c6f210e76a224))
+* 修正中间件 修正`npx init` ([e6395f7](https://github.com/KarinJS/Karin/commit/e6395f75559c3a98d685b81b589f957542562676))
+* 更新axios依赖 ([d26da74](https://github.com/KarinJS/Karin/commit/d26da74e82f04dfeb32c192bddc8cd6afac69b76))
+
 ## [0.11.4](https://github.com/KarinJS/Karin/compare/v0.11.3...v0.11.4) (2024-08-12)
 
 
