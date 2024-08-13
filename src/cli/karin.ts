@@ -209,14 +209,12 @@ class KarinCli {
   async update () {
     /** 屏蔽的依赖包列表 */
     const pkgdependencies = [
-      '@grpc/grpc-js',
-      '@grpc/proto-loader',
       'art-template',
       'axios',
       'chalk',
       'chokidar',
+      'commander',
       'express',
-      'kritor-proto',
       'level',
       'lodash',
       'log4js',
@@ -227,40 +225,27 @@ class KarinCli {
       'yaml',
     ]
 
-    let cmd = ''
     const list = Object.keys(this.pkg(false).dependencies).filter(key => !pkgdependencies.includes(key))
 
     /** 获取包管理器 */
     const pkg = new KarinCfgInit().getRegistry()
-    switch (pkg) {
-      case 'pnpm': {
-        cmd = 'pnpm update'
-        break
-      }
-      case 'yarn': {
-        cmd = 'yarn upgrade'
-        break
-      }
-      case 'npm': {
-        cmd = 'npm update'
-        break
-      }
-      case 'cnpm': {
-        cmd = 'cnpm update'
-        break
-      }
-    }
+    const cmd = pkg === 'yarn' ? 'yarn upgrade' : `${pkg} update`
 
     /** 异步并发更新依赖 */
     await Promise.all(list.map(async item => {
       try {
-        const res = await this.exec(`${cmd} ${item}@latest`)
-        /** 已经是最新 */
-        if (res.includes('is up to date')) {
+        /** 检查是否已经是最新版本 */
+        const local = await this.getLocalVersion(item, pkg)
+        const remote = await this.getRemoteVersion(item, pkg)
+        if (local === remote) {
           console.log(`[依赖更新] ${item} 已经是最新~`)
-        } else {
-          console.log(`[依赖更新] ${item} 更新完成~`)
+          return
         }
+
+        console.log(`[依赖更新] ${item} 当前版本: ${local} 最新版本: ${remote}`)
+
+        await this.exec(`${cmd} ${item}@latest`)
+        console.log(`[依赖更新] ${item} 更新完成~`)
       } catch (error: any) {
         console.error(`[依赖更新] ${item} 更新失败:`)
         console.error(`error.stack: ${error.stack}`)
@@ -272,13 +257,53 @@ class KarinCli {
   }
 
   /**
+   * 获取指定包的本地版本
+   * @param name - 包名
+   * @param pkg - 包管理器
+   * @returns - 版本号
+   */
+  async getLocalVersion (name: string, pkg: 'pnpm' | 'cnpm' | 'yarn' | 'npm') {
+    const cmd = pkg === 'yarn' ? `yarn list --pattern ${name}` : `${pkg} list ${name} --depth=0`
+    const text = await this.exec(cmd)
+
+    /** pnpm特殊处理 */
+    if (pkg === 'pnpm') {
+      const reg = new RegExp(`${name}\\s+([\\d.]+)`, 'gm')
+      const res = reg.exec(text)
+      return res?.[1] || '0.0.0'
+    }
+
+    const reg = new RegExp(`${name}@(\\d+\\.\\d+\\.\\d+)`, 'gm')
+    const res = reg.exec(text)
+    return res?.[1] || '0.0.0'
+  }
+
+  /**
+   * 获取指定包的最新版本
+   * @param name - 包名
+   * @param pkg - 包管理器
+   */
+  async getRemoteVersion (name: string, pkg: 'pnpm' | 'cnpm' | 'yarn' | 'npm') {
+    const cmd = `${pkg} info ${name} version`
+    const text = await this.exec(cmd)
+    /** yarn特殊处理 */
+    if (pkg === 'yarn') {
+      const lines = text.split('\n').map(line => line.trim())
+      const ver = lines.find(line => /^\d+\.\d+\.\d+$/.test(line))
+      return ver || ''
+    }
+
+    return text.trim()
+  }
+
+  /**
    * 封装exec
    * @param cmd - 命令
    */
   exec (cmd: string): Promise<string> {
     return new Promise((resolve, reject) => {
       execCmd(cmd, (error, stdout, stderr) => {
-        if (stdout) return resolve(stdout)
+        if (stdout) return resolve(stdout.trim())
         if (error) return reject(error)
         return reject(stderr)
       })

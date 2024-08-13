@@ -423,7 +423,7 @@ class Common {
    */
   async getNpmPlugins<T extends boolean> (showDetails: T): Promise<T extends true ? NpmInfo[] : string[]> {
     /** 屏蔽的依赖包列表 */
-    const exclude = ['art-template', 'axios', 'chalk', 'chokidar', 'express', 'level', 'lodash', 'log4js', 'moment', 'node-karin', 'node-schedule', 'redis', 'ws', 'yaml']
+    const exclude = ['art-template', 'axios', 'chalk', 'chokidar', 'commander', 'express', 'level', 'lodash', 'log4js', 'moment', 'node-karin', 'node-schedule', 'redis', 'ws', 'yaml']
 
     const pkg = this.readJson('./package.json')
     const dependencies = Object.keys(pkg.dependencies).filter((name) => !exclude.includes(name))

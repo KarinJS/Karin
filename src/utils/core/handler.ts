@@ -13,7 +13,7 @@ export const handler = new (class EventHandler {
   async call (key: string, args: { [key: string]: any, e?: any }) {
     let res
     for (const info of loader.handler[key] || []) {
-      const plugin = loader.plugin[info.key]
+      const plugin = loader.plugin.get(info.key)!
       try {
         let done = true
         /**

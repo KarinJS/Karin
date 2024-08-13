@@ -27,6 +27,12 @@ import {
 
 type FncFunction = (e: KarinMessage) => Promise<boolean>
 type FncElement = string | KarinElement | Array<KarinElement>
+type UseReceive = (e: KarinMessageType, next: Function, exit: Function) => Promise<void>
+type UseReply = (e: KarinMessageType, element: KarinElement[], next: Function, exit: Function) => Promise<void>
+type UseRecord = (uid: string, contact: Contact, elements: KarinElement[], next: Function, exit: Function) => Promise<void>
+type MiddlewareFn<T extends MiddlewareType> = T extends `${MiddlewareType.ReceiveMsg}`
+  ? UseReceive
+  : T extends `${MiddlewareType.ReplyMsg}` ? UseReply : T extends `${MiddlewareType.SendMsg}` ? UseRecord : never
 
 /**
  * 中间件类型
@@ -323,15 +329,19 @@ export class Karin {
     }
   }
 
-  use (type: `${MiddlewareType.ReceiveMsg}`, fn: (e: KarinMessageType, next: Function) => Promise<void>, options: Omit<Options, 'log'>): UseInfo
-  use (type: `${MiddlewareType.ReplyMsg}`, fn: (e: KarinMessageType, element: KarinElement[], next: Function) => Promise<void>, options: Omit<Options, 'log'>): UseInfo
-  use (type: `${MiddlewareType.SendMsg}`, fn: (uid: string, contact: Contact, elements: KarinElement[]) => Promise<void>, options: Omit<Options, 'log'>): UseInfo
+  use (type: `${MiddlewareType.ReceiveMsg}`, fn: UseReceive, options?: Omit<Options, 'log'>): UseInfo
+  use (type: `${MiddlewareType.ReplyMsg}`, fn: UseReply, options?: Omit<Options, 'log'>): UseInfo
+  use (type: `${MiddlewareType.SendMsg}`, fn: UseRecord, options?: Omit<Options, 'log'>): UseInfo
   /**
    * 中间件
    * @param type 中间件类型
    * @param fn 中间件函数
    */
-  use (type: `${MiddlewareType}`, fn: Function, options: Options): UseInfo {
+  use<T extends MiddlewareType> (
+    type: `${T}`,
+    fn: MiddlewareFn<T>,
+    options?: Omit<Options, 'log'>
+  ): UseInfo {
     return {
       fn,
       key: type,

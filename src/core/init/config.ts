@@ -166,7 +166,7 @@ export class KarinCfgInit {
     }
 
     /** 安装依赖 */
-    if (!(await this.shell(`${type} -P --force`))) {
+    if (!(await this.shell(`${type} install -P --force`))) {
       console.log('安装依赖失败，请手动安装依赖！')
       console.log(`可尝试手动执行 【 ${type} install -P 】 安装依赖~`)
       console.log('如中国大陆用户安装失败，请尝试执行换源 【 npm config set registry https://registry.npmmirror.com 】后再安装依赖~')
