@@ -218,7 +218,7 @@ export const review = new (class Handler {
     /** 同时启用 */
     if (this.App.GroupConfig.enable && this.App.GroupConfig.disable) {
       this.PluginEnable = (app, config) => {
-        const plugin = pluginLoader.plugin[app.key]
+        const plugin = pluginLoader.plugin.get(app.key)!
         /** 白名单不为空 */
         if (Array.isArray(config.enable) && config.enable.length) {
           /** 插件包是否处于功能白名单 */
@@ -256,7 +256,7 @@ export const review = new (class Handler {
     /** 白名单启用 */
     if (this.App.GroupConfig.enable) {
       this.PluginEnable = (app, config) => {
-        const plugin = pluginLoader.plugin[app.key]
+        const plugin = pluginLoader.plugin.get(app.key)!
 
         if (Array.isArray(config.enable) && config.enable.length) {
           for (const key of config.enable) {
@@ -275,7 +275,7 @@ export const review = new (class Handler {
     /** 黑名单启用 */
     if (this.App.GroupConfig.disable) {
       this.PluginEnable = (app, config) => {
-        const plugin = pluginLoader.plugin[app.key]
+        const plugin = pluginLoader.plugin.get(app.key)!
 
         if (Array.isArray(config.disable) && config.disable.length) {
           for (const key of config.disable) {

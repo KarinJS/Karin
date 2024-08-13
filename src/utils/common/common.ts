@@ -5,6 +5,7 @@ import axios from 'axios'
 import lodash from 'lodash'
 import { promisify } from 'util'
 import { fileURLToPath } from 'url'
+import { createRequire } from 'module'
 import { AxiosRequestConfig } from 'axios'
 import { pipeline, Readable } from 'stream'
 import { logger, segment, YamlEditor } from 'karin/utils'
@@ -204,6 +205,33 @@ class Common {
   }
 
   /**
+   * 输入包名 返回包根目录的绝对路径 仅简单查找
+   * @param name - 包名
+   * @param _path - 导入包的路径 此项适用于在插件中读取插件的依赖包
+   * @returns - 包根目录的绝对路径
+   * @example
+   * common.pkgroot('axios')
+   * common.pkgroot('axios', import.meta.url)
+   */
+  pkgroot (name: string, _path?: string): string {
+    const require = createRequire(_path || import.meta.url)
+    let dir = require.resolve(name)
+    if (fs.existsSync(path.join(dir, 'package.json'))) return path.resolve(dir)
+
+    /** 递归查找 如果跳过了node_modules 则返回null */
+    while (true) {
+      /** 向上 */
+      dir = path.dirname(dir)
+
+      if (fs.existsSync(path.join(dir, 'package.json'))) return path.resolve(dir)
+      /** 加个处理 防止无线递归 */
+      if (dir === path.dirname(dir)) {
+        throw new Error(`[common] 未找到包${name}的根目录`)
+      }
+    }
+  }
+
+  /**
    * 根据文件后缀名从指定路径下读取符合要求的文件
    * @param path - 路径
    * @param ext - 后缀名、或后缀名列表
@@ -215,7 +243,6 @@ class Common {
     const files = fs.readdirSync(_path, { withFileTypes: true })
     const list: string[] = []
     if (!Array.isArray(ext)) ext = [ext]
-    // 排除文件夹 和不符合后缀名的文件
     files.forEach(v => {
       if (v.isDirectory()) return
       if (ext.includes(path.extname(v.name))) list.push(v.name)

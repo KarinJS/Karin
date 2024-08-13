@@ -192,12 +192,25 @@ export class Listeners extends EventEmitter {
     recallMsg?: number
     retry_count?: number
   } = { recallMsg: 0, retry_count: 1 }): Promise<{ message_id: string }> {
+    /** 结果 */
+    let result: any = {}
+
     /** 先调用中间件 */
     for (const info of pluginLoader.use.sendMsg) {
       try {
         let next = false
+        let exit = false
         const nextFn = () => { next = true }
-        await info.fn(uid, contact, elements, nextFn)
+        const exitFn = () => { exit = true }
+
+        await info.fn(uid, contact, elements, nextFn, exitFn)
+
+        if (exit) {
+          const plugin = pluginLoader.plugin.get(info.key)!
+          logger.debug(`[消息中间件][${plugin.plugin}][${plugin.file}] 主动操作退出`)
+          return result
+        }
+
         if (!next) break
       } catch (e) {
         logger.error('[消息中间件] 调用失败，已跳过')
@@ -210,9 +223,6 @@ export class Listeners extends EventEmitter {
     const { recallMsg, retry_count } = options
     /** 标准化 */
     const NewElements = common.makeMessage(elements)
-
-    /** 结果 */
-    let result: any = {}
 
     const reply_log = common.makeMessageLog(NewElements)
     const self_id = bot.account.uid || bot.account.uin

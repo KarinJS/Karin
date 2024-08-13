@@ -138,13 +138,31 @@ export class EventBaseHandler {
      * @param options 回复选项
      */
     this.e.reply = async (elements = '', options = { reply: false, recallMsg: 0, at: false, retry_count: 1 }) => {
+      const request: ReplyReturn = {
+        message_id: '',
+        message_time: 0,
+        raw_data: undefined,
+      }
+
       const message = common.makeMessage(elements)
+
       /** 先调用中间件 */
       for (const info of pluginLoader.use.replyMsg) {
         try {
           let next = false
+          let exit = false
           const nextFn = () => { next = true }
-          await info.fn(this.e as KarinMessageType, message, nextFn)
+          const exitFn = () => { exit = true }
+
+          await info.fn(this.e as KarinMessageType, message, nextFn, exitFn)
+
+          if (exit) {
+            const plugin = pluginLoader.plugin.get(info.key)!
+            logger.debug(`[消息中间件][${plugin.plugin}][${plugin.file}] 主动操作退出`)
+            return request
+          }
+
+          if (!next) break
           if (!next) break
         } catch (e) {
           logger.error('[消息中间件] 调用失败，已跳过')
@@ -167,12 +185,6 @@ export class EventBaseHandler {
         review.GroupMsgPrint(this.e) && logger.bot('info', this.e.self_id, `${logger.green(`Send Group ${this.e.group_id}: `)}${ReplyLog}`)
       } else {
         this.e.self_id !== 'input' && logger.bot('info', this.e.self_id, `${logger.green(`Send private ${this.e.user_id}: `)}${ReplyLog}`)
-      }
-
-      const request: ReplyReturn = {
-        message_id: '',
-        message_time: 0,
-        raw_data: undefined,
       }
 
       try {

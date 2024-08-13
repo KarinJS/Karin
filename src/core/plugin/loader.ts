@@ -81,7 +81,7 @@ class PluginLoader {
   handler: { [key: string]: PluginHandlerInfoType[] }
 
   /** plugin基本信息 */
-  plugin: PluginInfoType
+  plugin: Map<number, PluginInfoType>
   /** task定时任务信息 */
   task: PluginTaskInfoType[]
   /** 中间件 */
@@ -94,7 +94,7 @@ class PluginLoader {
     this.button = []
     this.command = []
     this.handler = {}
-    this.plugin = {}
+    this.plugin = new Map()
     this.task = []
     this.use = {
       recvMsg: [],
@@ -394,7 +394,7 @@ class PluginLoader {
     try {
       const index = ++this.index
       /** 缓存基本信息 */
-      this.plugin[index] = { type, plugin, path: _path, file }
+      this.plugin.set(index, { type, plugin, path: _path, file })
 
       const list: any[] = []
       let rootPath = 'file://' + path.join(process.cwd(), type === 'npm' ? 'node_modules' : 'plugins', plugin, _path, file)
@@ -524,7 +524,7 @@ class PluginLoader {
           name: info.name,
           event: info.event,
           fn: info.fn,
-          key: index + '',
+          key: index,
           log: info.log,
           rank: info.rank,
         })
@@ -535,7 +535,7 @@ class PluginLoader {
           name: info.name,
           reg: info.reg,
           fn: info.fn as any,
-          key: index + '',
+          key: index,
           rank: info.rank,
         })
         return true
@@ -545,7 +545,7 @@ class PluginLoader {
         this.handler[info.key].push({
           name: info.name,
           fn: info.fn as any,
-          key: index + '',
+          key: index,
           rank: info.rank,
         })
         return true
@@ -557,7 +557,7 @@ class PluginLoader {
           event: info.event,
           fn: info.fn,
           fnname: info.fnname,
-          key: index + '',
+          key: index,
           log: info.log,
           perm: info.perm,
           rank: info.rank,
@@ -571,7 +571,7 @@ class PluginLoader {
           name: info.name,
           cron: info.cron,
           fn: info.fn,
-          key: index + '',
+          key: index,
           taskname: info.fnname,
           data: App,
           log: info.log,
@@ -597,7 +597,7 @@ class PluginLoader {
         this.use[info.key].push({
           name: info.name,
           fn: info.fn as any,
-          key: index + '',
+          key: index,
           rank: info.rank,
         })
         return true
@@ -632,11 +632,10 @@ class PluginLoader {
    * 卸载插件
    */
   uninstallApp (plugin: string, _path: string, file: string) {
-    Object.keys(this.plugin).forEach(key => {
-      const info = this.plugin[key]
+    this.plugin.forEach((info, key) => {
       if (info.plugin === plugin && info.path === _path && info.file === file) {
         /** 删除缓存 */
-        delete this.plugin[key]
+        this.plugin.delete(key)
         this.accept = this.accept.filter(val => val.key !== key)
         this.button = this.button.filter(val => val.key !== key)
         this.command = this.command.filter(val => val.key !== key)

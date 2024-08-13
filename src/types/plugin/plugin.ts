@@ -44,16 +44,14 @@ export const enum MethodType {
  * plugin基本信息
  */
 export interface PluginInfoType {
-  [key: string]: {
-    /** 插件包类型 */
-    type: `${AppsType}`,
-    /** 插件包名称 例: `karin-plugin-example` `@karinjs/adapter-qqbot` */
-    plugin: string,
-    /** 插件路径 在type为js下，path为空 */
-    path: string,
-    /** 插件文件名称 index.js index.ts */
-    file: string,
-  }
+  /** 插件包类型 */
+  type: `${AppsType}`,
+  /** 插件包名称 例: `karin-plugin-example` `@karinjs/adapter-qqbot` */
+  plugin: string,
+  /** 插件路径 在type为js下，path为空 */
+  path: string,
+  /** 插件文件名称 index.js index.ts */
+  file: string,
 }
 
 /**
@@ -61,7 +59,7 @@ export interface PluginInfoType {
  */
 export interface PluginCommandInfoType {
   /** 插件基本信息的映射key */
-  key: string,
+  key: number,
   /** 插件包名称 */
   name: string,
   /** 插件正则 */
@@ -89,7 +87,7 @@ export interface PluginCommandInfoType {
  */
 export interface PluginAcceptInfoType {
   /** 插件基本信息的映射key */
-  key: string,
+  key: number,
   /** 插件包名称 */
   name: string,
   /** 插件执行方法 */
@@ -107,7 +105,7 @@ export interface PluginAcceptInfoType {
  */
 export interface PluginTaskInfoType {
   /** 插件基本信息的映射key */
-  key: string,
+  key: number,
   /** 插件包名称 */
   name: string,
   /** 任务名称 */
@@ -129,7 +127,7 @@ export interface PluginTaskInfoType {
  */
 export interface PluginButtonInfoType {
   /** 插件基本信息的映射key */
-  key: string,
+  key: number,
   /** 插件包名称 */
   name: string,
   /** 插件正则 */
@@ -145,7 +143,7 @@ export interface PluginButtonInfoType {
  */
 export interface PluginHandlerInfoType {
   /** 插件基本信息的映射key */
-  key: string,
+  key: number,
   /** 插件包名称 */
   name: string,
   /** handler的处理方法 */
@@ -161,15 +159,17 @@ export interface PluginMiddlewareInfoType {
   /** 初始化消息前 */
   recvMsg: Array<{
     /** 插件基本信息的映射key */
-    key: string,
+    key: number,
     /** 插件包名称 */
     name: string,
     /** 插件执行方法 */
     fn: (
       /** 消息事件方法 */
       e: KarinMessageType,
-      /** 是否继续执行插件 */
-      next: Function
+      /** 是否继续执行下一个中间件 */
+      next: Function,
+      /** 是否退出此条消息 不再执行匹配插件 */
+      exit: Function
     ) => Promise<boolean>,
     /** 优先级 */
     rank: number
@@ -177,7 +177,7 @@ export interface PluginMiddlewareInfoType {
   /** 回复消息前 */
   replyMsg: Array<{
     /** 插件基本信息的映射key */
-    key: string,
+    key: number,
     /** 插件包名称 */
     name: string,
     /** 插件执行方法 */
@@ -186,8 +186,10 @@ export interface PluginMiddlewareInfoType {
       e: KarinMessageType,
       /** 回复的消息体 */
       element: KarinElement[],
-      /** 是否继续执行插件 */
-      next: Function
+      /** 是否继续执行下一个中间件 */
+      next: Function,
+      /** 是否不发送此条消息 */
+      exit: Function
     ) => Promise<boolean>,
     /** 优先级 */
     rank: number
@@ -195,7 +197,7 @@ export interface PluginMiddlewareInfoType {
   /** 发送主动消息前 */
   sendMsg: Array<{
     /** 插件基本信息的映射key */
-    key: string,
+    key: number,
     /** 插件包名称 */
     name: string,
     /** 插件执行方法 */
@@ -206,8 +208,10 @@ export interface PluginMiddlewareInfoType {
       contact: Contact,
       /** 发送的消息体 */
       element: KarinElement[],
-      /** 是否继续执行插件 */
-      next: Function
+      /** 是否继续执行下一个中间件 */
+      next: Function,
+      /** 是否不发送此条消息 */
+      exit: Function
     ) => Promise<boolean>,
     /** 优先级 */
     rank: number

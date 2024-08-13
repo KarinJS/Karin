@@ -199,8 +199,18 @@ export class MessageHandler extends EventBaseHandler {
     for (const info of pluginLoader.use.recvMsg) {
       try {
         let next = false
+        let exit = false
         const nextFn = () => { next = true }
-        await info.fn(this.e, nextFn)
+        const exitFn = () => { exit = true }
+
+        await info.fn(this.e, nextFn, exitFn)
+
+        if (exit) {
+          const plugin = pluginLoader.plugin.get(info.key)!
+          logger.debug(`[消息中间件][${plugin.plugin}][${plugin.file}] 主动操作退出`)
+          return
+        }
+
         if (!next) break
       } catch (e) {
         logger.error('[消息中间件] 调用失败，已跳过')
