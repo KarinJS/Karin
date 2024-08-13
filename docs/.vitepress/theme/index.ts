@@ -53,7 +53,6 @@ import giscusTalk from 'vitepress-plugin-comment-with-giscus'
 // 代码块内的代码类型提示
 import TwoslashFloatingVue from '@shikijs/vitepress-twoslash/client'
 import '@shikijs/vitepress-twoslash/style.css'
-import './public/mouse.js'
 
 export default {
   extends: DefaultTheme,
