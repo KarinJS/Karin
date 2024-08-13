@@ -246,7 +246,8 @@ export default defineConfig({
           { text: '联系人相关', link: '/api/contact' },
           { text: '消息相关', link: '/api/message' }
         ]
-      }
+      },
+      { text: '更新日志', link: '/other/changelog' },
     ],
     socialLinks: [
       { icon: 'github', link: 'https://github.com/KarinJS/Karin' },
