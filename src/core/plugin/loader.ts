@@ -403,9 +403,6 @@ class PluginLoader {
       const tmp: Array<NewMessagePlugin | AppType> = await import(rootPath)
 
       lodash.forEach(tmp, (Fn) => {
-        const index = this.index
-        this.index++
-
         /** 函数语法糖 */
         if (typeof Fn === 'object' && Fn?.type) {
           logger.debug(`载入插件 [${plugin}]${_path ? `${common.getRelPath(_path)}` : ''}[${file}][${Fn.name}]`)
