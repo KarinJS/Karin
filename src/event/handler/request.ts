@@ -66,14 +66,16 @@ export class RequestHandler extends EventBaseHandler {
 
       /** 日志方法字符串 */
       this.e.logFnc = `[${info.name}][accept]`
-      const logFnc = logger.fnc(this.e.logFnc)
+      const logFnc = logger.fnc(this.e.logFnc + `[${this.e.event}.${this.e.sub_event}]`)
+
+      this.GroupMsgPrint && info.log(this.e.self_id, `${logFnc + this.e.logText} 开始处理`)
 
       /** 计算插件处理时间 */
       const start = Date.now()
 
       try {
         const res = await info.fn(this.e)
-        this.GroupMsgPrint && logger.bot('info', this.e.self_id, `${logFnc} 处理完成 ${logger.green(Date.now() - start + 'ms')}`)
+        this.GroupMsgPrint && info.log(this.e.self_id, `${logFnc} 处理完成 ${logger.green(Date.now() - start + 'ms')}`)
         if (res !== false) break
       } catch (error: any) {
         logger.error(`${logFnc}`)
