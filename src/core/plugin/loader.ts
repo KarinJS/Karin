@@ -405,6 +405,8 @@ class PluginLoader {
       lodash.forEach(tmp, (Fn) => {
         const index = this.index
         this.index++
+        /** 缓存基本信息 */
+        this.plugin.set(index, { type, plugin, path: _path, file })
 
         /** 函数语法糖 */
         if (typeof Fn === 'object' && Fn?.type) {
