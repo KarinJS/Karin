@@ -5,6 +5,8 @@ hero:
   name: Karin
   # text: 高性能、轻量级、易扩展
   tagline: 基于 Kritor 标准进行开发的 Node.js 机器人框架
+  image:
+    src: /logo-2.png
   actions:
     - theme: brand
       text: 快速上手

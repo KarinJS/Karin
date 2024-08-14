@@ -60,33 +60,20 @@
     }
   }
 
-  @media (min-width: 960px) {
-
-    .VPLocalNav.has-sidebar {
-      background-color: rgba(255, 255, 255, 0);
-      backdrop-filter: blur(10px);
-    }
-  }
-
-  /** 移动端 */
-  @media (max-width: 960px) {
-    .VPLocalNav {
-      position: sticky;
-      top: 0;
-      left: 0;
-      z-index: var(--vp-z-index-local-nav);
-      border-bottom: 1px solid var(--vp-c-gutter);
-      padding-top: var(--vp-layout-top-height, 0px);
-      width: 100%;
-      background-color: rgba(255, 255, 255, 0);
-      backdrop-filter: blur(10px);
-    }
-  }
-
   /* 搜索框 VPNavBarSearchButton.vue */
   .DocSearch-Button {
     background-color: rgba(255, 255, 255, 0);
     backdrop-filter: blur(10px);
+  }
+
+
+  /* 移动端大纲栏 */
+  .VPLocalNav {
+    background-color: rgba(255, 255, 255, 0);
+    backdrop-filter: blur(10px);
+    /* 隐藏分割线 */
+    /* border-bottom: 5px solid var(--vp-c-gutter); */
+    border-bottom: 0px;
   }
 
 }
