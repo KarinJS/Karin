@@ -136,7 +136,11 @@
     "fix": "eslint lib/**/*.js --fix",
     "fix:all": "eslint lib/**/*.js --fix && eslint lib/**/*.d.ts --fix",
     "pub": "npm publish --access public",
-    "sort": "npx sort-package-json && sort-json tsconfig.json"
+    "sort": "npx sort-package-json && sort-json tsconfig.json",
+    "dev": "node lib/cli/dev.js"
+  },
+  "peerDependencies": {
+    "node-karin": "link:./lib"
   },
   "dependencies": {
     "art-template": "4.13.2",

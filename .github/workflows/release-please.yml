@@ -38,8 +38,8 @@ jobs:
       # 安装 pnpm
       - run: npm install -g pnpm
         if: ${{ steps.release.outputs.release_created }}
-      # 安装依赖
-      - run: pnpm install --ignore-scripts
+      # 安装依赖 不安装对等依赖
+      - run: pnpm install --ignore-scripts --no-peer-deps
         env:
           NODE_AUTH_TOKEN: ${{ secrets.RELEASE }}
         if: ${{ steps.release.outputs.release_created }}

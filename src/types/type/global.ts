@@ -1,6 +1,6 @@
 import { Logger as LoggerType } from 'log4js'
 import { Logger } from 'karin/types'
-import { Lang, Mode, Runner } from 'karin/cli/karin'
+import { Lang, Mode, Runner } from 'karin/cli'
 
 declare global {
   namespace NodeJS {
