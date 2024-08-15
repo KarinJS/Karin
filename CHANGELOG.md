@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.11.7](https://github.com/KarinJS/Karin/compare/v0.11.6...v0.11.7) (2024-08-15)
+
+
+### Bug Fixes
+
+* 对等依赖 ([ed26b69](https://github.com/KarinJS/Karin/commit/ed26b69c943871d306d28664557b2ad6b915a2cb))
+
 ## [0.11.6](https://github.com/KarinJS/Karin/compare/v0.11.5...v0.11.6) (2024-08-14)
 
 
