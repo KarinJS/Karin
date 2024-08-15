@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.11.8](https://github.com/KarinJS/Karin/compare/v0.11.7...v0.11.8) (2024-08-15)
+
+
+### Bug Fixes
+
+* no-peer-deps ([7b14d41](https://github.com/KarinJS/Karin/commit/7b14d41b699bc4527aa47048bf0895a26fb8c6b5))
+
 ## [0.11.7](https://github.com/KarinJS/Karin/compare/v0.11.6...v0.11.7) (2024-08-15)
 
 
