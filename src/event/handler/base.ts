@@ -182,9 +182,9 @@ export class EventBaseHandler {
       const ReplyLog = common.makeMessageLog(message)
 
       if (this.e.isGroup) {
-        review.GroupMsgPrint(this.e) && logger.bot('info', this.e.self_id, `${logger.green(`Send Group ${this.e.group_id}: `)}${ReplyLog}`)
+        review.GroupMsgPrint(this.e) && logger.bot('info', this.e.self_id, `${logger.green(`Send Group ${this.e.group_id}: `)}${ReplyLog.replace(/\n/g, '\\n')}`)
       } else {
-        this.e.self_id !== 'input' && logger.bot('info', this.e.self_id, `${logger.green(`Send private ${this.e.user_id}: `)}${ReplyLog}`)
+        this.e.self_id !== 'input' && logger.bot('info', this.e.self_id, `${logger.green(`Send private ${this.e.user_id}: `)}${ReplyLog.replace(/\n/g, '\\n')}`)
       }
 
       try {
@@ -197,7 +197,7 @@ export class EventBaseHandler {
 
         logger.bot('debug', this.e.self_id, `回复消息结果:${JSON.stringify(request)}`)
       } catch (error: any) {
-        logger.bot('error', this.e.self_id, `回复消息失败:${ReplyLog}`)
+        logger.bot('error', this.e.self_id, `回复消息失败:${ReplyLog.replace(/\n/g, '\\n')}`)
         logger.bot('error', this.e.self_id, error.stack || error.message || JSON.stringify(error))
       }
 
