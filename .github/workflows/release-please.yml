@@ -35,6 +35,9 @@ jobs:
           # 设置 npm 源
           registry-url: "https://registry.npmjs.org"
         if: ${{ steps.release.outputs.release_created }}
+      # 安装jq工具 删除对等依赖 对等依赖是给karin自身使用的
+      - run: sudo apt-get install jq && jq 'del(.peerDependencies)' package.json > package.json.tmp && mv package.json.tmp package.json
+        if: ${{ steps.release.outputs.release_created }}
       # 安装 pnpm
       - run: npm install -g pnpm
         if: ${{ steps.release.outputs.release_created }}
@@ -45,6 +48,9 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
       # 构建输出
       - run: pnpm run build
+        if: ${{ steps.release.outputs.release_created }}
+      # 删除开发依赖 使用jq工具删除
+      - run: jq 'del(.devDependencies)' package.json > package.json.tmp && mv package.json.tmp package.json
         if: ${{ steps.release.outputs.release_created }}
       # 发布到 npm
       - run: pnpm run pub
