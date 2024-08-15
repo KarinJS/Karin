@@ -39,7 +39,7 @@ jobs:
       - run: npm install -g pnpm
         if: ${{ steps.release.outputs.release_created }}
       # 安装依赖 不安装对等依赖
-      - run: pnpm install --ignore-scripts --no-peer-deps
+      - run: pnpm install --ignore-scripts --config.auto-install-peers=false
         env:
           NODE_AUTH_TOKEN: ${{ secrets.RELEASE }}
         if: ${{ steps.release.outputs.release_created }}
