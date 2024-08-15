@@ -2,7 +2,8 @@
 
 [![neostandard javascript style](https://img.shields.io/badge/code_style-neostandard-brightgreen?style=flat)](https://github.com/neostandard/neostandard)
 
-[文档](https://karinjs.github.io/Karin/)
+[文档](https://karinjs.github.io/Karin/)  
+[文档`(瑜笙提供)`](https://karin.fun)
 
 基于 [Kritor](https://github.com/KarinJS/kritor-kotlin) 标准进行开发的 [nodejs](https://nodejs.org/en) 机器人框架  
 
@@ -14,11 +15,11 @@
 
 ### 目前计划
 
-- [x] [kritor标准](https://github.com/KarinJS/kritor)
+- [x] [kritor标准](https://github.com/KarinJS/kritor) **暂时去除**
 - [x] [onebot11](https://github.com/botuniverse/onebot-11)
 - [ ] [onebot12](https://onebot.dev/)
 - [ ] 支持主动[grpc](https://grpc.io/)
-- [x] 支持被动[grpc](https://grpc.io/)
+- [x] 支持被动[grpc](https://grpc.io/) **暂时去除**
 - [x] 支持主动ws 12暂未支持
 - [x] 支持被动ws
 - [ ] 支持onebot HTTP
@@ -26,8 +27,6 @@
 - [x] 外置[puppeteer](https://github.com/KarinJS/karin-plugin-puppeteer)
 - [x] 降低对`redis`的依赖，开始逐渐抛弃redis
 - [x] 支持 package.karin
-- [ ] ~~支持db通用接口~~
-- [ ] ~~支持动态加载插件~~
 - [x] 支持`redis`集群
 
 ### 感谢
@@ -44,7 +43,7 @@ Karin的开发离不开以下项目的帮助：
 
 ### 来加入我们吧~
 
-QQGroup: 967068507 
+QQGroup: 967068507
 
 Discord: [☘Karin的喵趴～](https://discord.com/channels/1251552521957408878/1251552521957408881)
 
