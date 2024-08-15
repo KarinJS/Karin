@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.11.9](https://github.com/KarinJS/Karin/compare/v0.11.8...v0.11.9) (2024-08-15)
+
+
+### Bug Fixes
+
+* 删除对等依赖 开发依赖(`pnpm的包管理器会自动安装对等依赖`) ([b600f15](https://github.com/KarinJS/Karin/commit/b600f15f0d9e32aa8bf1d104cdbb09673e63e50f))
+
 ## [0.11.8](https://github.com/KarinJS/Karin/compare/v0.11.7...v0.11.8) (2024-08-15)
 
 
