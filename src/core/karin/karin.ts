@@ -1,9 +1,8 @@
-import { server } from '../server/server'
 import { stateArr } from '../plugin/base'
-import { common } from 'karin/utils'
-import { listener } from '../listener/listener'
 import onebot11 from 'karin/adapter/onebot/11'
-import { render, RenderServer } from 'karin/render'
+import { render } from 'karin/render/app'
+import { RenderServer } from 'karin/render/server'
+
 import {
   Scene,
   Contact,
@@ -24,6 +23,11 @@ import {
   AllNoticeSubType,
   AllRequestSubType,
 } from 'karin/types'
+
+import { pluginLoader } from '../plugin/loader'
+import { common } from 'karin/utils/common/common'
+import { logger } from 'karin/utils/core/logger'
+import { Listeners } from '../listener/listener'
 
 type FncFunction = (e: KarinMessage) => Promise<boolean>
 type FncElement = string | KarinElement | Array<KarinElement>
@@ -102,10 +106,13 @@ export interface OptionsElement extends OptionsCommand {
   stop?: boolean
 }
 
-export class Karin {
-  start: boolean
+export class Karin extends Listeners {
+  /** 是否启动 */
+  #start: boolean
   constructor () {
-    this.start = false
+    super()
+
+    this.#start = false
     this.run()
   }
 
@@ -294,7 +301,7 @@ export class Karin {
     const userId = options?.userId || e.user_id
     const key = e.group_id ? `${e.group_id}.${userId}` : userId
     stateArr[key] = { type: 'ctx' }
-    // 返回promise 设置超时时间
+
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (stateArr[key]) {
@@ -305,7 +312,7 @@ export class Karin {
         }
       }, time * 1000)
 
-      listener.once(`ctx:${key}`, (e: KarinMessage) => resolve(e))
+      this.once(`ctx:${key}`, (e: KarinMessage) => resolve(e))
     })
   }
 
@@ -354,15 +361,26 @@ export class Karin {
   /**
    * - 启动
    */
-  run () {
-    if (this.start) return
-    this.start = true
+  async run () {
+    if (this.#start) return
+    this.#start = true
+    const { server } = await import('../server/server')
     server.init()
-    listener.emit('load.plugin')
-    listener.emit('adapter', RenderServer)
-    listener.emit('adapter', onebot11)
+    pluginLoader.load()
+    this.emit('adapter', RenderServer)
+    this.emit('adapter', onebot11)
   }
 }
 
 export const karin = new Karin()
+/**
+ * 即将废弃 请使用karin
+ * @deprecated
+ */
+export const listener = karin
+/**
+ * 即将废弃 请使用karin
+ * @deprecated
+ */
+export const Bot = karin
 export default karin

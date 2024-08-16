@@ -2,7 +2,7 @@ import fs from 'fs'
 import Process from '../process/process'
 import { WebSocketServer } from 'ws'
 import { createServer } from 'http'
-import { listener } from '../listener/listener'
+import { karin } from '../karin/karin'
 import express, { Express } from 'express'
 import { exec, config, logger, common } from 'karin/utils'
 import { AdapterOneBot11 } from 'karin/adapter/onebot/11/index'
@@ -38,7 +38,7 @@ export const server = new (class Server {
         const headers = request.headers
         logger.debug('[反向WS]', path, JSON.stringify(headers, null, 2))
         try {
-          const Adapter = listener.getAdapter(path)
+          const Adapter = karin.getAdapter(path)
           if (!Adapter) {
             logger.error(`[反向WS] 适配器不存在：${path}`)
             return socket.close()
@@ -78,7 +78,7 @@ export const server = new (class Server {
         if (req.hostname === 'localhost' || req.hostname === '127.0.0.1') {
           logger.mark('[服务器][HTTP] 收到退出请求，即将退出')
           /** 关闭服务器 */
-          listener.emit('exit.grpc')
+          karin.emit('exit.grpc')
           this.server.close()
           /** 如果是pm2 获取当前pm2ID 使用 */
           if (process.env.pm_id) await exec(`pm2 delete ${process.env.pm_id}`)
@@ -120,7 +120,7 @@ export const server = new (class Server {
         logger.mark('[服务器][启动成功][HTTP]: ' + logger.green(`http://${host}:${port}`))
       })
 
-      listener.once('restart.http', () => {
+      karin.once('restart.http', () => {
         logger.mark('[服务器][重启][HTTP] 正在重启HTTP服务器...')
         this.#restartServer()
       })

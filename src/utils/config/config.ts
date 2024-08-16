@@ -3,7 +3,7 @@ import Yaml from 'yaml'
 import path from 'path'
 import { Logger } from 'log4js'
 import chokidar from 'chokidar'
-import { karinDir } from 'karin/core'
+import { karinDir } from 'karin/core/init/dir'
 import { common } from 'karin/utils/common/common'
 import { Redis, App, Config, Server, Package, GroupCfg, KarinEventTypes } from 'karin/types'
 

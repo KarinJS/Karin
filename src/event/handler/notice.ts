@@ -1,7 +1,7 @@
 import { review } from './review'
 import { EventBaseHandler } from './base'
-import { pluginLoader } from 'karin/core'
 import { logger, config } from 'karin/utils'
+import { karin, pluginLoader } from 'karin/core'
 import { KarinNoticeType, NoticeSubType } from 'karin/types'
 
 /**
@@ -55,6 +55,7 @@ export class NoticeHandler extends EventBaseHandler {
     }
 
     this.reply()
+    karin.emit('notice', this.e)
   }
 
   /**
@@ -132,7 +133,7 @@ export class NoticeHandler extends EventBaseHandler {
       /** 群成员增加 */
       case NoticeSubType.GroupMemberIncrease: {
         const { operator_uid, operator_uin, target_uid, target_uin, type } = this.e.content
-        this.e.raw_message = `[群成员新增]: ${operator_uid || operator_uin} ${type === 'invite' ? '邀请' : '同意'}  ${target_uid || target_uin} 加入群聊`
+        this.e.raw_message = `[群成员新增]: ${operator_uid || operator_uin} ${type === 'invite' ? '邀请' : '同意'} ${target_uid || target_uin} 加入群聊`
         break
       }
       /** 群成员减少 */

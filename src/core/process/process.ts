@@ -1,4 +1,4 @@
-import { listener } from '../listener/listener'
+import { karin } from '../karin/karin'
 import { logger, common, config } from 'karin/utils'
 
 /**
@@ -36,15 +36,15 @@ export default class Process {
     /**
      * 捕获警告
      */
-    process.on('warning', warning => listener.emit('warn', warning))
+    process.on('warning', warning => karin.emit('warn', warning))
     /**
      * 捕获错误
      */
-    process.on('uncaughtException', error => listener.emit('error', error))
+    process.on('uncaughtException', error => karin.emit('error', error))
     /**
      * 捕获未处理的Promise错误
      */
-    process.on('unhandledRejection', error => listener.emit('error', error))
+    process.on('unhandledRejection', error => karin.emit('error', error))
     return this
   }
 

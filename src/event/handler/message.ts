@@ -2,7 +2,7 @@ import lodash from 'lodash'
 import { review } from './review'
 import { EventBaseHandler } from './base'
 import { logger, config } from 'karin/utils'
-import { listener, stateArr, pluginLoader } from 'karin/core'
+import { karin, stateArr, pluginLoader } from 'karin/core'
 import { KarinMessageType, PluginCommandInfoType } from 'karin/types'
 
 /**
@@ -14,7 +14,6 @@ export class MessageHandler extends EventBaseHandler {
     super(e)
     this.e = e
     this.init()
-    // todo: emit event
 
     if (this.e.group_id) {
       if (!this.getCd()) return
@@ -33,7 +32,7 @@ export class MessageHandler extends EventBaseHandler {
    * 先对消息事件进行初始化
    */
   init () {
-    listener.emit('karin:count:recv', 1)
+    karin.emit('karin:count:recv', 1)
     const logs = []
     for (const val of this.e.elements) {
       switch (val.type) {
@@ -173,6 +172,7 @@ export class MessageHandler extends EventBaseHandler {
 
     logs.length = 0
     this.reply()
+    karin.emit('message', this.e)
   }
 
   /**
@@ -246,7 +246,7 @@ export class MessageHandler extends EventBaseHandler {
 
         /** 计算插件处理时间 */
         const start = Date.now()
-        listener.emit('karin:count:fnc', this.e.logFnc)
+        karin.emit('karin:count:fnc', this.e.logFnc)
 
         try {
           let res
@@ -280,7 +280,7 @@ export class MessageHandler extends EventBaseHandler {
     if (App) {
       switch (App.type) {
         case 'ctx': {
-          listener.emit(`ctx:${key}`, this.e)
+          karin.emit(`ctx:${key}`, this.e)
           delete stateArr[key]
           return true
         }

@@ -205,6 +205,27 @@ class Common {
   }
 
   /**
+   * 传入插件名称 返回解析后的package.json的内容
+   * @param name - 插件名称
+   */
+  pkgJson (name: string): {
+    name: string,
+    version: string,
+    [key: string]: any
+  } | null {
+    try {
+      /** 先查git插件 */
+      const gitPath = `./plugins/${name}`
+      if (fs.existsSync(gitPath)) return this.readJson(`${gitPath}/package.json`)
+      /** 查npm插件 */
+      const require = createRequire(import.meta.url)
+      return require(`${name}/package.json`)
+    } catch {
+      return null
+    }
+  }
+
+  /**
    * 输入包名 返回包根目录的绝对路径 仅简单查找
    * @param name - 包名
    * @param _path - 导入包的路径 此项适用于在插件中读取插件的依赖包

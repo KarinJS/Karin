@@ -3,8 +3,8 @@ import path from 'path'
 import lodash from 'lodash'
 import chokidar from 'chokidar'
 import schedule from 'node-schedule'
-import { listener } from '../listener/listener'
 import { render } from 'karin/render'
+import { karin } from '../karin/karin'
 import { common, logger } from 'karin/utils'
 import {
   UseInfo,
@@ -115,7 +115,7 @@ class PluginLoader {
    * 插件初始化
    */
   async load () {
-    listener.once('plugin.watch', () => {
+    karin.once('plugin.watch', () => {
       this.watchList.forEach(async ({ plugin, path }) => {
         await this.watchDir(plugin, path)
         logger.debug(`[热更新][${plugin}][${path}] 监听中...`)
@@ -136,7 +136,7 @@ class PluginLoader {
 
     /** 优先级排序并打印插件信息 */
     this.orderBy(true)
-    listener.emit('plugin.watch')
+    karin.emit('plugin.watch')
     return this
   }
 
@@ -371,7 +371,7 @@ class PluginLoader {
 
     if (!isPrint) return
 
-    logger.info(`[插件][${Object.keys(this.plugin).length}个] 加载完成`)
+    logger.info(`[插件][${this.plugin.size}个] 加载完成`)
     logger.info(`[渲染器][${render.Apps.length}个] 加载完成`)
     logger.info(`[command][${this.command.length}个] 加载完成`)
     logger.info(`[button][${this.button.length}个] 加载完成`)

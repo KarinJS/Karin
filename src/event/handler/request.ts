@@ -1,6 +1,6 @@
 import { review } from './review'
 import { EventBaseHandler } from './base'
-import { pluginLoader } from 'karin/core'
+import { karin, pluginLoader } from 'karin/core'
 import { logger, config } from 'karin/utils'
 import { KarinRequestType, RequestSubType } from 'karin/types'
 
@@ -51,6 +51,7 @@ export class RequestHandler extends EventBaseHandler {
     }
 
     this.reply()
+    karin.emit('request', this.e)
   }
 
   /**

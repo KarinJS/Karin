@@ -87,7 +87,7 @@ export class OB11Event {
      */
     e.replyCallback = async elements => await this.adapter.SendMessage(e.contact, elements)
 
-    listener.emit('message', e)
+    listener.emit('adapter.message', e)
   }
 
   /**
@@ -381,7 +381,7 @@ export class OB11Event {
      */
     notice.replyCallback = async elements => await this.adapter.SendMessage(notice.contact, elements)
 
-    listener.emit('notice', notice)
+    listener.emit('adapter.notice', notice)
   }
 
   /** 请求事件 */
@@ -419,7 +419,7 @@ export class OB11Event {
          */
         request.replyCallback = async elements => await this.adapter.SendMessage(request.contact, elements)
 
-        listener.emit('request', request)
+        listener.emit('adapter.request', request)
         return
       }
       case 'group': {
@@ -457,7 +457,7 @@ export class OB11Event {
          */
         request.replyCallback = async elements => await this.adapter.SendMessage(request.contact, elements)
 
-        listener.emit('request', request)
+        listener.emit('adapter.request', request)
         return
       }
       default: {

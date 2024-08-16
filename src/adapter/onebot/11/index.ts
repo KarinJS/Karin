@@ -1,7 +1,7 @@
 import WebSocket from 'ws'
 import { randomUUID } from 'crypto'
 import { IncomingMessage } from 'http'
-import { listener } from 'karin/core/listener/listener'
+import { karin } from 'karin/core/karin/karin'
 import { common, config, logger, segment } from 'karin/utils'
 import { GroupHonorInfo, KarinAdapter, LoggerLevel, MessageType, OB11Api, OB11ApiParams, OB11ApiResponse, OB11Segment, OB11SegmentType, Role } from 'karin/types'
 
@@ -104,7 +104,7 @@ export class AdapterOneBot11 implements KarinAdapter {
       this.socket.removeAllListeners()
 
       /** 注销bot */
-      this.adapter.index && listener.delBot(this.adapter.index)
+      this.adapter.index && karin.delBot(this.adapter.index)
 
       /** 正向ws需要重连 */
       if (this.adapter.sub_type === 'client') {
@@ -149,7 +149,7 @@ export class AdapterOneBot11 implements KarinAdapter {
     this.account.name = data.account_name
     this.logger('info', `[加载完成][app_name:${this.version.name}][version:${this.version.version}] ` + logger.green(this.adapter.connect as string))
     /** 注册bot */
-    const index = listener.addBot({ type: this.adapter.type, bot: this })
+    const index = karin.addBot({ type: this.adapter.type, bot: this })
     if (index) this.adapter.index = index
   }
 

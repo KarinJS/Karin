@@ -2,52 +2,111 @@ import { level } from 'karin/db'
 import { EventEmitter } from 'events'
 import { pluginLoader } from '../plugin/loader'
 import { common, logger, config, segment } from 'karin/utils'
-import { KarinAdapter, Contact, KarinElement } from 'karin/types'
 import { MessageHandler, NoticeHandler, RequestHandler } from 'karin/event'
+import {
+  Contact,
+  KarinElement,
+  KarinAdapter,
+  KarinMessage,
+  KarinNoticeType,
+  KarinRequestType,
+  KarinMessageType,
+} from 'karin/types'
+
+type AdapterType = KarinAdapter['adapter']['type']
+type onAdapter = { type: AdapterType; adapter: new () => KarinAdapter; path?: string }
 
 /**
- * 监听器管理
+ * 产生事件映射
+ */
+export interface EmittEventMap {
+  'karin:count:send': number
+  'karin:count:fnc': string
+  error: any
+  adapter: onAdapter
+  'adapter.message': KarinMessageType
+  'adapter.notice': KarinNoticeType
+  'adapter.request': KarinRequestType
+  message: KarinMessageType
+  notice: KarinNoticeType
+  request: KarinRequestType
+  'plugin.watch': undefined
+  'restart.grpc': undefined
+  'restart.http': undefined
+}
+
+/** 上下文 */
+type ContextEvents = {
+  [K in `ctx:${string}`]: (e: KarinMessage) => void
+}
+
+/**
+ * 监听事件映射
+ */
+export interface OnEventMap extends ContextEvents {
+  'karin:count:send': (count: number) => void
+  'karin:count:fnc': (fnc: string) => void
+  error: (error: any) => void
+  adapter: (data: onAdapter) => void
+  'adapter.message': (data: KarinMessageType) => void
+  'adapter.notice': (data: KarinNoticeType) => void
+  'adapter.request': (data: KarinRequestType) => void
+  message: (data: KarinMessageType) => void
+  notice: (data: KarinNoticeType) => void
+  request: (data: KarinRequestType) => void
+  'plugin.watch': undefined
+  'restart.grpc': undefined
+  'restart.http': undefined
+}
+
+/**
+ * 监听器实例
  */
 export class Listeners extends EventEmitter {
-  /**
-   * Bot索引
-   * @type - Bot索引
-   */
-  index: number
-
-  /**
-   * 框架名称
-   */
+  /** 框架名称 */
   name: string
-  list: Array<{ index: number; type: KarinAdapter['adapter']['type']; bot: KarinAdapter }>
-  adapter: Array<{ type: KarinAdapter['adapter']['type']; adapter: new () => KarinAdapter; path: string }>
+  /** Bot列表 */
+  list: Array<{ index: number; type: AdapterType; bot: KarinAdapter }>
+  /** 适配器列表 */
+  adapter: Array<{ type: AdapterType; adapter: new () => KarinAdapter; path: string }>
+  /** Bot自增索引 */
+  #index: number
+  /** 是否启动 */
+  #start: boolean
+
   constructor () {
     super()
-    this.index = 0
+    this.#index = 0
     this.name = 'Karin'
     this.list = []
     this.adapter = []
     this.on('error', data => logger.error(data))
-    this.on('load.plugin', () => pluginLoader.load())
-    this.on('adapter', data => {
-      let path = data.path || '无'
-      if (path && data.type !== 'grpc') path = `ws://127.0.0.1:${config.Server.http.port}${data.path}`
-      path = logger.green(path)
-      logger.info(`[适配器][注册][${data.type}]: ` + path)
-      this.addAdapter(data)
-    })
+    this.on('adapter', data => this.addAdapter(data))
+    this.on('adapter.message', data => new MessageHandler(data))
+    this.on('adapter.notice', data => new NoticeHandler(data))
+    this.on('adapter.request', data => new RequestHandler(data))
 
-    this.on('message', data => new MessageHandler(data))
-    this.on('notice', data => new NoticeHandler(data))
-    this.on('request', data => new RequestHandler(data))
+    this.#start = false
+  }
+
+  on<K extends keyof OnEventMap> (event: K, listener: OnEventMap[K]): this
+  on (event: string, listener: (...args: any[]) => void): this
+  on (event: string | symbol, listener: (...args: any[]) => void): this {
+    return super.on(event, listener)
+  }
+
+  emit<K extends keyof EmittEventMap> (event: K, ...args: Parameters<EmittEventMap[K]>): boolean
+  emit (event: string | symbol, ...args: any[]): boolean
+  emit (event: string | symbol, ...args: any[]): boolean {
+    return super.emit(event, ...args)
   }
 
   /**
    * 注册Bot 返回索引id
    */
-  addBot (data: { bot: KarinAdapter; type: KarinAdapter['adapter']['type'] }): number | false {
-    this.index++
-    const index = this.index
+  addBot (data: { bot: KarinAdapter; type: AdapterType }): number | false {
+    this.#index++
+    const index = this.#index
     if (!data.bot) {
       logger.error('[Bot管理][注册] 注册失败: Bot实例不能为空', JSON.stringify(data))
       return false
@@ -61,8 +120,8 @@ export class Listeners extends EventEmitter {
   }
 
   /**
- * 发送上线通知
- */
+   * 发送上线通知
+   */
   async #online (uid: string) {
     /** 重启 */
     const key = `karin:restart:${uid}`
@@ -151,7 +210,12 @@ export class Listeners extends EventEmitter {
    * @param data.adapter - 适配器实例
    * @param data.path - 适配器路径
    */
-  addAdapter (data: { type: KarinAdapter['adapter']['type']; adapter: new () => KarinAdapter; path?: string }) {
+  addAdapter (data: onAdapter) {
+    let path = data.path || '无'
+    if (path && data.type !== 'grpc') path = `ws://127.0.0.1:${config.Server.http.port}${data.path}`
+    path = logger.green(path)
+    logger.info(`[适配器][注册][${data.type}]: ` + path)
+
     const adapter = { type: data.type, adapter: data.adapter, path: '' }
     if (data.path) adapter.path = data.path
     this.adapter.push(adapter)
@@ -249,6 +313,3 @@ export class Listeners extends EventEmitter {
     return result
   }
 }
-
-export const listener = new Listeners()
-export const Bot = listener

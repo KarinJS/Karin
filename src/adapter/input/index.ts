@@ -107,7 +107,7 @@ export class AdapterInput implements KarinAdapter {
       return { message_id: e.message_id, message_time: Date.now(), raw_data: elements }
     }
 
-    listener.emit('message', e)
+    listener.emit('adapter.message', e)
   }
 
   async #MsgToFile (type: 'image' | 'record', file: Buffer | string): Promise<string> {
