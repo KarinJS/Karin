@@ -29,7 +29,7 @@ import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
 
 export default defineConfig({
   lang: 'zh-CN',
-  base: '/Karin',
+  base: '/',
   title: 'karin',
   description: '基于 Kritor 进行开发的nodejs机器人框架',
   markdown: {
