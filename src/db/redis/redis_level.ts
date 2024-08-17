@@ -2,24 +2,16 @@ import { Level } from 'level'
 
 export default class RedisLevel {
   #level
+  /** 过期时间映射表 */
   #expireMap
+  /** 唯一标识符 用于区分不同的数据库 */
   id: string
   constructor () {
     const path = process.cwd() + '/data/db/RedisLevel'
     this.#level = new Level(path, { valueEncoding: 'json' })
-    /**
-     * @type {'RedisLevel'} 唯一标识符 用于区分不同的数据库
-     */
+    this.#level.open()
     this.id = 'RedisLevel'
-    /**
-     * 过期时间映射表
-     * @type {Map<string, number>} 键: 值 (过期时间)
-     */
     this.#expireMap = new Map()
-
-    /**
-     * 开启过期时间处理
-     */
     this.#expireHandle()
   }
 

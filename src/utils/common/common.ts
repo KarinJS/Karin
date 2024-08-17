@@ -21,7 +21,7 @@ export interface NpmInfo {
 /**
  * 常用方法
  */
-class Common {
+export class Common {
   streamPipeline: (stream1: Readable, stream2: fs.WriteStream) => Promise<void>
   constructor () {
     this.streamPipeline = promisify(pipeline)
@@ -513,6 +513,30 @@ class Common {
 
     const parts = [day ? `${day}天` : '', hour ? `${hour}小时` : '', min ? `${min}分钟` : '', !day && sec ? `${sec}秒` : '']
 
+    return parts.filter(Boolean).join('')
+  }
+
+  /**
+   * 传入一个时间戳
+   * 返回距今已过去的时间
+   * @param time - 时间戳
+   *
+   * @example
+   * common.formatTime(1620000000)
+   * // -> '18天'
+   */
+  formatTime (time: number): string {
+    /** 判断是几位时间戳 进行对应处理 */
+    time = time.toString().length === 10 ? time * 1000 : time
+    /** 减去当前时间 */
+    time = Math.floor((Date.now() - time) / 1000)
+
+    const day = Math.floor(time / 86400)
+    const hour = Math.floor((time % 86400) / 3600)
+    const min = Math.floor((time % 3600) / 60)
+    const sec = Math.floor(time % 60)
+
+    const parts = [day ? `${day}天` : '', hour ? `${hour}小时` : '', min ? `${min}分钟` : '', !day && sec ? `${sec}秒` : '']
     return parts.filter(Boolean).join('')
   }
 
