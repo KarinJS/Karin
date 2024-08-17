@@ -156,18 +156,23 @@ export class Common {
 
   /**
    * - 解析json文件
+   * @param file - 文件路径
+   * @param isThrow - 解析失败是否抛出错误
    */
-  readJson (file: string): any {
+  readJson (file: string, isThrow = false): any {
     try {
       return JSON.parse(fs.readFileSync(file, 'utf8'))
     } catch (error) {
-      logger.error('[common] 读取json文件错误：' + error)
+      logger.debug(`[common][error] 读取json文件错误: ${file} ` + error)
+      if (isThrow) throw error
       return null
     }
   }
 
   /**
    * - 写入json文件
+   * @param file - 文件路径
+   * @param data - 要写入的数据
    */
   writeJson (file: string, data: any): boolean {
     try {
@@ -181,6 +186,7 @@ export class Common {
 
   /**
    * - 解析yaml文件
+   * @param file - 文件路径
    */
   readYaml (file: string): any {
     try {
@@ -193,6 +199,8 @@ export class Common {
 
   /**
    * - 写入yaml文件
+   * @param file - 文件路径
+   * @param data - 要写入的数据
    */
   writeYaml (file: string, data: any): boolean {
     try {

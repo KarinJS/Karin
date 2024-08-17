@@ -150,105 +150,110 @@ class PluginLoader {
     const list: Promise<boolean>[] = []
 
     for (const dir of plugins) {
-      /** 插件包路径 例如: ./plugins/karin-plugin-example */
-      const root = `${this.dir}/${dir}`
+      try {
+        /** 插件包路径 例如: ./plugins/karin-plugin-example */
+        const root = `${this.dir}/${dir}`
 
-      /** 非插件包 加载该文件夹下全部js 视语言环境加载ts */
-      if (!common.isPlugin(root)) {
-        /** 热更新 */
-        this.watchList.push({ plugin: dir, path: '' })
-        list.push(...this.loadApps(dir, '', `${AppsType.Js}`))
-        continue
-      }
-
-      /** package */
-      const pkg = common.readJson(`${root}/package.json`)
-
-      this.loadMain(root, pkg.main, false)
-
-      /**
-       * 插件加载优先级:
-       * 1. ts环境: 按照 编译产物 > TS源代码 举例: 优先级高的不存在才会加载下一个。
-       * 2. js环境: 按照 pkg.apps 进行加载。 当前版本兼容apps，apps处于根目录并且没有在pkg.apps中填写会自动加载，后续废弃。
-       *
-       * 注: ts编译产物的路径也是根据pkg.apps进行加载的。
-       *
-       * 开发环境说明:
-       * 1. ts环境默认为开发模式
-       * 2. 在开发环境下 会对所有 `.js`，`.ts` 文件进行热更新 只需要点下保存即可。
-       * 3. 监察者模式当前暂未适配 待后续适配。
-       */
-
-      /** ts环境 */
-      if (process.env.karin_app_lang === 'ts') {
-        /** 加载ts入口 */
-        if (pkg?.karin?.main) this.loadMain(root, pkg.karin.main, false)
-
-        /** 获取apps */
-        const apps: string[] = pkg?.karin?.apps && Array.isArray(pkg.karin.apps) ? pkg.karin.apps : []
-        /** apps为空则跳过 */
-        if (!apps.length) continue
-        const { outDir, rootDir } = await this.getTsMain(root, pkg)
-
-        /** 先瞅瞅编译产物根目录是否存在 */
-        if (common.exists(path.join(root, outDir))) {
-          for (const file of apps) {
-            const rootApps = path.join(root, outDir, file)
-            if (!common.exists(rootApps)) {
-              logger.debug(`[插件收集][${rootApps}] 路径不存在，已忽略`)
-              continue
-            }
-
-            const _path = path.join(outDir, file)
-
-            /** 热更新 */
-            this.watchList.push({ plugin: dir, path: _path })
-            list.push(...this.loadApps(dir, _path, `${AppsType.Git}`))
-          }
-          continue
-        }
-
-        /** 源码根目录 */
-        if (common.exists(path.join(root, rootDir))) {
-          for (const file of apps) {
-            const rootApps = path.join(root, rootDir, file)
-            if (!common.exists(rootApps)) {
-              logger.debug(`[插件收集][${rootApps}] 路径不存在，已忽略`)
-              continue
-            }
-
-            const _path = path.join(rootDir, file)
-
-            /** 热更新 */
-            this.watchList.push({ plugin: dir, path: _path })
-            list.push(...this.loadApps(dir, _path, `${AppsType.Git}`))
-          }
-          continue
-        }
-
-        /** 走到这说明有问题 打印错误信息 */
-        logger.error(`[插件收集][${dir}] 加载错误，未检测到任何文件，请检查配置是否正确`)
-        continue
-      }
-
-      /** 全部apps路径 */
-      const apps: string[] = pkg?.karin?.apps && Array.isArray(pkg.karin.apps) ? pkg.karin.apps : []
-      /** 暂时兼容旧版本 加入apps 计划在正式版本发布之前废弃 */
-      if (!apps.includes('apps')) apps.push('apps')
-
-      for (const file of apps) {
-        const rootApps = path.join(root, file)
-        if (!common.exists(rootApps)) {
-          logger.debug(`[插件收集][${rootApps}] 路径不存在，已忽略`)
-          continue
-        }
-
-        const dev = process.env.karin_app_mode === 'dev'
-        if (dev) {
+        /** 非插件包 加载该文件夹下全部js 视语言环境加载ts */
+        if (!common.isPlugin(root)) {
           /** 热更新 */
-          this.watchList.push({ plugin: dir, path: file })
+          this.watchList.push({ plugin: dir, path: '' })
+          list.push(...this.loadApps(dir, '', `${AppsType.Js}`))
+          continue
         }
-        list.push(...this.loadApps(dir, file, `${AppsType.Git}`))
+
+        /** package */
+        const pkg = common.readJson(`${root}/package.json`, true)
+
+        this.loadMain(root, pkg.main, false)
+
+        /**
+         * 插件加载优先级:
+         * 1. ts环境: 按照 编译产物 > TS源代码 举例: 优先级高的不存在才会加载下一个。
+         * 2. js环境: 按照 pkg.apps 进行加载。 当前版本兼容apps，apps处于根目录并且没有在pkg.apps中填写会自动加载，后续废弃。
+         *
+         * 注: ts编译产物的路径也是根据pkg.apps进行加载的。
+         *
+         * 开发环境说明:
+         * 1. ts环境默认为开发模式
+         * 2. 在开发环境下 会对所有 `.js`，`.ts` 文件进行热更新 只需要点下保存即可。
+         * 3. 监察者模式当前暂未适配 待后续适配。
+         */
+
+        /** ts环境 */
+        if (process.env.karin_app_lang === 'ts') {
+          /** 加载ts入口 */
+          if (pkg?.karin?.main) this.loadMain(root, pkg.karin.main, false)
+
+          /** 获取apps */
+          const apps: string[] = pkg?.karin?.apps && Array.isArray(pkg.karin.apps) ? pkg.karin.apps : []
+          /** apps为空则跳过 */
+          if (!apps.length) continue
+          const { outDir, rootDir } = await this.getTsMain(root, pkg)
+
+          /** 先瞅瞅编译产物根目录是否存在 */
+          if (common.exists(path.join(root, outDir))) {
+            for (const file of apps) {
+              const rootApps = path.join(root, outDir, file)
+              if (!common.exists(rootApps)) {
+                logger.debug(`[插件收集][${rootApps}] 路径不存在，已忽略`)
+                continue
+              }
+
+              const _path = path.join(outDir, file)
+
+              /** 热更新 */
+              this.watchList.push({ plugin: dir, path: _path })
+              list.push(...this.loadApps(dir, _path, `${AppsType.Git}`))
+            }
+            continue
+          }
+
+          /** 源码根目录 */
+          if (common.exists(path.join(root, rootDir))) {
+            for (const file of apps) {
+              const rootApps = path.join(root, rootDir, file)
+              if (!common.exists(rootApps)) {
+                logger.debug(`[插件收集][${rootApps}] 路径不存在，已忽略`)
+                continue
+              }
+
+              const _path = path.join(rootDir, file)
+
+              /** 热更新 */
+              this.watchList.push({ plugin: dir, path: _path })
+              list.push(...this.loadApps(dir, _path, `${AppsType.Git}`))
+            }
+            continue
+          }
+
+          /** 走到这说明有问题 打印错误信息 */
+          logger.error(`[插件收集][${dir}] 加载错误，未检测到任何文件，请检查配置是否正确`)
+          continue
+        }
+
+        /** 全部apps路径 */
+        const apps: string[] = pkg?.karin?.apps && Array.isArray(pkg.karin.apps) ? pkg.karin.apps : []
+        /** 暂时兼容旧版本 加入apps 计划在正式版本发布之前废弃 */
+        if (!apps.includes('apps')) apps.push('apps')
+
+        for (const file of apps) {
+          const rootApps = path.join(root, file)
+          if (!common.exists(rootApps)) {
+            logger.debug(`[插件收集][${rootApps}] 路径不存在，已忽略`)
+            continue
+          }
+
+          const dev = process.env.karin_app_mode === 'dev'
+          if (dev) {
+            /** 热更新 */
+            this.watchList.push({ plugin: dir, path: file })
+          }
+          list.push(...this.loadApps(dir, file, `${AppsType.Git}`))
+        }
+      } catch (error: any) {
+        logger.error(`[插件收集][${dir}] 加载错误`)
+        logger.error(error)
       }
     }
 
