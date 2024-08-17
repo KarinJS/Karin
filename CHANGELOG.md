@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.11.13](https://github.com/KarinJS/Karin/compare/v0.11.12...v0.11.13) (2024-08-17)
+
+
+### Bug Fixes
+
+* 解析`package.json`失败加载错误 ([f539bf1](https://github.com/KarinJS/Karin/commit/f539bf1771bff3327d1523e707e37cb6f06a5495))
+
 ## [0.11.12](https://github.com/KarinJS/Karin/compare/v0.11.11...v0.11.12) (2024-08-17)
 
 
