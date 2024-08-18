@@ -1,8 +1,9 @@
 import fs from 'fs'
-import Process from '../process/process'
+import { level } from 'karin/db'
 import { WebSocketServer } from 'ws'
 import { createServer } from 'http'
 import { karin } from '../karin/karin'
+import Process from '../process/process'
 import express, { Express } from 'express'
 import { exec, config, logger, common } from 'karin/utils'
 import { AdapterOneBot11 } from 'karin/adapter/onebot/11/index'
@@ -32,7 +33,7 @@ export const server = new (class Server {
     try {
       /** 防止多进程端口冲突 启动失败 */
       await Process.check()
-
+      level.open()
       this.WebSocketServer.on('connection', (socket, request) => {
         const path = request.url
         const headers = request.headers
@@ -80,6 +81,14 @@ export const server = new (class Server {
           /** 关闭服务器 */
           karin.emit('exit.grpc')
           this.server.close()
+          try {
+            await level.close()
+            const redis = (await import('karin/db')).redis as any
+            if (redis && redis.id === 'RedisLevel') await redis.level.close()
+          } catch (error: any) {
+            logger.error('[服务器][HTTP] 关闭数据库失败')
+            logger.error(error)
+          }
           /** 如果是pm2 获取当前pm2ID 使用 */
           if (process.env.pm_id) await exec(`pm2 delete ${process.env.pm_id}`)
           /** 正常启动的进程 */

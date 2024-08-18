@@ -1,15 +1,14 @@
 import { Level } from 'level'
 
 export default class RedisLevel {
-  #level
+  level
   /** 过期时间映射表 */
   #expireMap
   /** 唯一标识符 用于区分不同的数据库 */
   id: string
   constructor () {
     const path = process.cwd() + '/data/db/RedisLevel'
-    this.#level = new Level(path, { valueEncoding: 'json' })
-    this.#level.open()
+    this.level = new Level(path, { valueEncoding: 'json' })
     this.id = 'RedisLevel'
     this.#expireMap = new Map()
     this.#expireHandle()
@@ -25,7 +24,7 @@ export default class RedisLevel {
       const entries = Array.from(this.#expireMap.entries())
       for (const [key, expire] of entries) {
         if (expire < now) {
-          await this.#level.del(key)
+          await this.level.del(key)
           this.#expireMap.delete(key) // 通过代理的方式删除键值对
         }
       }
@@ -60,6 +59,8 @@ export default class RedisLevel {
     }
 
     this.#expireMap = new Proxy(this.#expireMap, handler)
+    /** 延迟2秒执行 */
+    setTimeout(async () => this.level.open(), 2000)
   }
 
   /**
@@ -72,12 +73,12 @@ export default class RedisLevel {
       /** 先查过期时间 */
       const expire = this.#expireMap.get(key)
       if (expire && expire < Date.now()) {
-        await this.#level.del(key)
+        await this.level.del(key)
         this.#expireMap.delete(key)
         return null
       }
 
-      return await this.#level.get(key)
+      return await this.level.get(key)
     } catch (error: any) {
       if (error.notFound) return null
       throw error
@@ -95,7 +96,7 @@ export default class RedisLevel {
       this.#expireMap.set(key, Date.now() + options.EX * 1000)
     }
 
-    return await this.#level.put(key, value)
+    return await this.level.put(key, value)
   }
 
   /**
@@ -104,7 +105,7 @@ export default class RedisLevel {
    */
   async del (key: string) {
     this.#expireMap.delete(key)
-    return await this.#level.del(key)
+    return await this.level.del(key)
   }
 
   /**
@@ -114,7 +115,7 @@ export default class RedisLevel {
   async keys (prefix = ''): Promise<string[]> {
     /** 去掉末尾的* */
     prefix = prefix.replace(/\*$/, '')
-    const list = await this.#level.keys({ gte: prefix, lt: `${prefix}\xFF` }).all()
+    const list = await this.level.keys({ gte: prefix, lt: `${prefix}\xFF` }).all()
     this.#checkKeys(list)
     return list
   }
@@ -127,7 +128,7 @@ export default class RedisLevel {
     for (const key of keys) {
       const expire = this.#expireMap.get(key)
       if (expire && expire < Date.now()) {
-        await this.#level.del(key)
+        await this.level.del(key)
         this.#expireMap.delete(key)
       }
     }
@@ -202,7 +203,7 @@ export default class RedisLevel {
    */
   async setEx (key: string, seconds: number, value: string) {
     this.#expireMap.set(key, Date.now() + seconds * 1000)
-    return await this.#level.put(key, value)
+    return await this.level.put(key, value)
   }
 
   /**

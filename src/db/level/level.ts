@@ -38,4 +38,3 @@ export default class LevelDB extends Level {
 }
 
 export const level = new LevelDB()
-level.open()

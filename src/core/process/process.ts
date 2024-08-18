@@ -56,7 +56,7 @@ export default class Process {
     /**
      * 使用api来检查后台
      */
-    const res = await common.axios(host + '/ping', 'get', { timeout: 100 })
+    const res = await common.axios(host + '/ping', 'get', { timeout: 2000 })
     if (!res) return this
 
     logger.mark(logger.red('检测到后台进程 正在关闭'))
