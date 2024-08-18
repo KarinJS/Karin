@@ -1,5 +1,14 @@
 # 更新日志
 
+## [0.11.14](https://github.com/KarinJS/Karin/compare/v0.11.13...v0.11.14) (2024-08-18)
+
+
+### Bug Fixes
+
+* cfg ([4f9a56f](https://github.com/KarinJS/Karin/commit/4f9a56f06a8bcb6fcca9ddc763bbbc98438808ba))
+* start显示版本 ([c823f59](https://github.com/KarinJS/Karin/commit/c823f59307099029c9a228265060afc70a79d823))
+* 关闭、启动 过快 ([00c5fa7](https://github.com/KarinJS/Karin/commit/00c5fa7fd40e36f864685e968ec25a70c1adbf52))
+
 ## [0.11.13](https://github.com/KarinJS/Karin/compare/v0.11.12...v0.11.13) (2024-08-17)
 
 
