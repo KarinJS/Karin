@@ -103,13 +103,13 @@ view:
     comment: 主人列表 主权限
     path: master
     type: array
-    arrayType: number
+    arrayType: string
 
   - key: 管理员列表
     comment: 管理员列表 子权限
     path: admin
     type: array
-    arrayType: number
+    arrayType: string
 
   - key: 黑名单
     comment: 黑名单相关
@@ -119,7 +119,7 @@ view:
       - key: 黑名单用户
         path: BlackList.users
         type: array
-        arrayType: number
+        arrayType: string
         associated:
           - file: App
             path: BlackList.users
@@ -127,7 +127,7 @@ view:
       - key: 黑名单群聊
         path: BlackList.groups
         type: array
-        arrayType: number
+        arrayType: string
         associated:
           - file: App
             path: BlackList.groups
@@ -136,7 +136,7 @@ view:
         comment: 设置后不会打印该群的消息日志
         path: BlackList.GroupMsgLog
         type: array
-        arrayType: number
+        arrayType: string
         associated:
           - file: App
             path: BlackList.GroupMsgLog
