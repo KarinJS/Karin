@@ -38,6 +38,7 @@ export class KarinCli {
     /** 入口文件(注意后缀) */
     this.file = path.join(path.dirname(this.filename), '../index.js')
     this.child = null as unknown as ChildProcess
+    process.env.karin_app_version = this.pkg(true).version
   }
 
   /**

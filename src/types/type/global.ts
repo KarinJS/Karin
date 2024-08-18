@@ -15,6 +15,8 @@ declare global {
       karin_app_lang: `${Lang}`
       /** 运行器 "node" | "tsx" | "pm2" */
       karin_app_runner: `${Runner}`
+      /** 版本 */
+      karin_app_version: string
     }
   }
 }

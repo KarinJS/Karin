@@ -132,15 +132,15 @@
     "plugins/**"
   ],
   "scripts": {
-    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix",
+    ".": "node lib/cli/start.js .",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "build:npm": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "dev": "node lib/cli/start.js dev",
     "fix": "eslint lib/**/*.js --fix",
     "fix:all": "eslint lib/**/*.js --fix && eslint lib/**/*.d.ts --fix",
     "pub": "npm publish --access public",
     "sort": "npx sort-package-json && sort-json tsconfig.json",
-    "dev": "node lib/cli/dev.js"
-  },
-  "peerDependencies": {
-    "node-karin": "link:./lib"
+    "start": "node lib/cli/start.js start"
   },
   "dependencies": {
     "art-template": "4.13.2",
@@ -171,6 +171,9 @@
     "tsc-alias": "^1.8.10",
     "tsx": "^4.16.2",
     "typescript": "^5.5.3"
+  },
+  "peerDependencies": {
+    "node-karin": "link:./lib"
   },
   "engines": {
     "node": ">=18"
