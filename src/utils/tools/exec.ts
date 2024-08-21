@@ -1,5 +1,5 @@
 import logger from '../core/logger'
-import { exec as execCmd } from 'child_process'
+import { exec as execCmd, ExecOptions } from 'child_process'
 
 /**
  * 执行 shell 命令
@@ -7,49 +7,42 @@ import { exec as execCmd } from 'child_process'
  * @param log 是否打印日志
  * @param options 选项
  */
-export const exec = (
+export const exec = async (
   cmd: string,
   log = true,
-  options = { cwd: process.cwd(), encoding: 'utf-8' }
-): Promise<{
-  /**
-   * - 执行状态
-   */
-  status: 'ok' | 'failed'
-  /**
-   * - 错误信息
-   */
-  error: Error | null
-  stdout: string | ''
-  stderr: string | ''
-}> => {
+  options: ExecOptions = { cwd: process.cwd() }
+): Promise<{ status: 'ok' | 'failed', error: Error | null, stdout: string, stderr: string }> => {
+  const logType = (status: 'start' | 'ok' | 'failed') => ({
+    start: '[exec][开始执行]',
+    ok: '[exec][执行成功]',
+    failed: '[exec][执行失败]',
+  })[status]
+
+  const logMessage = (status: 'start' | 'ok' | 'failed', details = '') => {
+    if (log) {
+      const colorFunc = {
+        start: logger.yellow,
+        ok: logger.green,
+        failed: logger.red,
+      }[status]
+
+      logger.info([
+        colorFunc(logType(status)),
+        `cmd: ${cmd}`,
+        `cwd: ${options.cwd}`,
+        details,
+        '--------',
+      ].join('\n'))
+    }
+  }
+
+  logMessage('start')
+
   return new Promise(resolve => {
-    const logMessage = (level: 'trace' | 'debug' | 'mark' | 'info' | 'warn' | 'error' | 'fatal', message: string) => {
-      if (log) logger[level](message)
-    }
-
-    const logType = (status: string) => {
-      switch (status) {
-        case '开始执行':
-          return logger.yellow('[exec][开始执行]')
-        case 'ok':
-          return logger.green('[exec][执行成功]')
-        case 'failed':
-          return logger.red('[exec][执行失败]')
-      }
-    }
-
-    const formatMessage = (status: string, details: string) => [logType(status), `cmd: ${cmd}`, `cwd: ${options.cwd || process.cwd()}`, details, '--------'].join('\n')
-
-    logMessage('info', formatMessage('开始执行', ''))
-
-    execCmd(cmd, options, (error, stdout, stderr) => {
-      if (error) {
-        logMessage('error', formatMessage('failed', `Error: ${error.message || error.stack || error.toString()}`))
-        return resolve({ status: 'failed', error, stdout, stderr })
-      }
-      logMessage('mark', formatMessage('ok', `stdout: ${stdout}\nstderr: ${stderr}`))
-      resolve({ status: 'ok', error, stdout, stderr })
+    execCmd(cmd, options, (error, stdout = '', stderr = '') => {
+      const status = error ? 'failed' : 'ok'
+      logMessage(status, error ? `Error: ${error.message}` : `stdout: ${stdout}\nstderr: ${stderr}`)
+      resolve({ status, error, stdout, stderr })
     })
   })
 }
@@ -57,12 +50,11 @@ export const exec = (
 /**
  * 执行 shell 命令
  * @param cmd 命令
- * @param log 是否打印日志
  * @param options 选项
  */
 export const execs = (
   cmd: string,
-  options = { cwd: process.cwd(), encoding: 'utf-8' }
+  options: ExecOptions = { cwd: process.cwd() }
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
     execCmd(cmd, options, (error, stdout) => {

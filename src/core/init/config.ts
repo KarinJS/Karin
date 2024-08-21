@@ -209,15 +209,4 @@ export class KarinCfgInit {
       })
     })
   }
-
-  /**
-   * 获取当前的包管理器 根据锁文件判断
-   */
-  getRegistry (): 'pnpm' | 'cnpm' | 'yarn' | 'npm' {
-    if (fs.existsSync('./pnpm-lock.yaml')) return 'pnpm'
-    if (fs.existsSync('./yarn.lock')) return 'yarn'
-    if (fs.existsSync('./package-lock.json')) return 'npm'
-    // cnpm 没有锁文件
-    return 'cnpm'
-  }
 }

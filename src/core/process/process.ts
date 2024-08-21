@@ -77,11 +77,7 @@ export default class Process {
      * 根据配置文件判断是否继续
      */
     logger.error(logger.red(`后台进程关闭失败，请检查是否有进程正在占用端口${config.Server.http.port}`))
-    if (!config.Config.multi_progress) {
-      logger.error(logger.red('当前配置不允许多进程运行，程序即将退出'))
-      await this.exit(1)
-    }
-    logger.error(logger.red('当前配置允许多进程运行，程序继续运行'))
+    await this.exit()
     return this
   }
 

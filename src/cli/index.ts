@@ -3,8 +3,8 @@ import path from 'path'
 import yaml from 'yaml'
 import axios from 'axios'
 import { fileURLToPath } from 'url'
-import { exec as execCmd, spawn, ChildProcess } from 'child_process'
-import { KarinCfgInit } from '../core/init/config'
+import { getRegistry } from './pkg'
+import { exec as execCmd, spawn, ChildProcess, ExecOptions } from 'child_process'
 
 export const enum Runner {
   Node = 'node',
@@ -38,11 +38,12 @@ export class KarinCli {
     /** 入口文件(注意后缀) */
     this.file = path.join(path.dirname(this.filename), '../index.js')
     this.child = null as unknown as ChildProcess
+    process.env.karin_app_pkg = getRegistry()
     process.env.karin_app_version = this.pkg(true).version
   }
 
   /**
-   * 获取pkg
+   * 获取pkg配置
    * @param isNpm - 是否是npm包
    */
   pkg (isNpm: boolean) {
@@ -226,10 +227,9 @@ export class KarinCli {
     const list = Object.keys(this.pkg(false).dependencies).filter(key => !pkgdependencies.includes(key))
 
     /** 获取包管理器 */
-    const pkg = new KarinCfgInit().getRegistry()
+    const pkg = getRegistry()
     const cmd = pkg === 'yarn' ? 'yarn upgrade' : `${pkg} update`
 
-    /** 异步并发更新依赖 */
     await Promise.all(list.map(async item => {
       try {
         /** 检查是否已经是最新版本 */
@@ -246,12 +246,26 @@ export class KarinCli {
         console.log(`[依赖更新] ${item} 更新完成~`)
       } catch (error: any) {
         console.error(`[依赖更新] ${item} 更新失败:`)
-        console.error(`error.stack: ${error.stack}`)
-        console.error(`error.message: ${error.message}`)
+        console.error(error.stack || error.message || error)
       }
     }))
 
-    console.log('所有依赖已更新完成~')
+    console.log('[依赖更新] 所有npm依赖已更新完成~')
+    console.log('[依赖更新] 开始更新git插件...')
+    const gitList = this.getGitPlugins()
+    if (!gitList.length) return console.log('[依赖更新] 没有git插件需要更新~')
+
+    await Promise.all(gitList.map(async item => {
+      const dir = path.resolve(process.cwd(), 'plugins', item)
+      try {
+        await this.exec('git pull', { cwd: dir })
+        console.log(`[依赖更新] ${item} 更新完成~`)
+      } catch (error: any) {
+        console.error(`[依赖更新] ${item} 更新失败`)
+        console.error(error.stack || error.message || error)
+      }
+    }))
+    console.log('[依赖更新] 所有git插件已更新完成~')
   }
 
   /**
@@ -295,13 +309,27 @@ export class KarinCli {
   }
 
   /**
+   * 获取git插件列表
+   */
+  getGitPlugins (): Array<string> {
+    const dir = path.resolve(process.cwd(), 'plugins')
+    let list = fs.readdirSync(dir, { withFileTypes: true })
+    /** 忽略非文件夹、非 karin-plugin-开头的文件夹 */
+    list = list.filter(v => v.isDirectory() && v.name.startsWith('karin-plugin-'))
+    list = list.filter(v => fs.existsSync(`${dir}/${v.name}/package.json`))
+    const arr: string[] = []
+    list.map(v => arr.push(v.name))
+    return arr
+  }
+
+  /**
    * 封装exec
    * @param cmd - 命令
    */
-  exec (cmd: string): Promise<string> {
+  exec (cmd: string, options?: ExecOptions): Promise<string> {
     return new Promise((resolve, reject) => {
-      execCmd(cmd, (error, stdout, stderr) => {
-        if (stdout) return resolve(stdout.trim())
+      execCmd(cmd, options, (error, stdout, stderr) => {
+        if (stdout) return resolve(stdout.toString().trim())
         if (error) return reject(error)
         return reject(stderr)
       })

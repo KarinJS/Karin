@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { getRegistry } from './pkg'
 import { KarinCfgInit } from '../core/init/config'
 
 /**
@@ -20,7 +21,7 @@ async function main () {
 
   await sleep(1000)
 
-  const pkg = init.getRegistry()
+  const pkg = getRegistry()
 
   /** 结果 */
   await init.install(pkg)

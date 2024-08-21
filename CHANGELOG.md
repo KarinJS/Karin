@@ -707,7 +707,7 @@
 
 ## 0.0.3 (2024-6-19)
 
-### 新增功能
+### Features
 
 - feat: vue渲染兼容 ([4470d02](https://github.com/KarinJS/Karin/commit/4470d02b3521e6e91e7abb7c20c02a855728b1d7))
 - feat: ReactMessageWithEmojiRequest ([b92770b](https://github.com/KarinJS/Karin/commit/b92770bcaeb0d2b0966d125e7ad984f3dbe90263))
@@ -716,7 +716,7 @@
 - feat: redis 集群 触发fnc加上颜色使其更明确指令 ([d53560f](https://github.com/KarinJS/Karin/commit/d53560f3e4f852338693e2fddcd3f9c8761e3909))
 - feat: add updateVersion ([10c6446](https://github.com/KarinJS/Karin/commit/10c6446ee48ee4598b1fae336a9baf0b0a9415ca))
 
-### Bug修复
+### Bug Fixes
 
 - fix: 修正正向ws重连错误 修正getBot 失败 ([1cba613](https://github.com/KarinJS/Karin/commit/1cba6136fff9726a3cd2e2189f5c83357fd17de7))
 - fix: ob11的uid暂时全部默认为uin ([8fc3ccd](https://github.com/KarinJS/Karin/commit/8fc3ccd894d1bfd806f3882435a5e9cdd2a3f022))
@@ -735,13 +735,13 @@
 - Update Wormhole.js ([46a9797](https://github.com/KarinJS/Karin/commit/46a979734fb0ab98198129155716c983288cbede))
 
 
-## 0.0.2 (2024-6-4)
+## [0.1.1](https://github.com/KarinJS/Karin/compare/v0.0.1...v0.0.2) (2024-06-04)
 
 ### Releases
 
 - release: 0.0.2 ([5cf693a](https://github.com/KarinJS/Karin/commit/5cf693a6a9a06446654ffc65a6bdb936322401ee))
 
-### 新增功能
+### Features
 
 - feat: 添加配置文件视图 ([f567b61](https://github.com/KarinJS/Karin/commit/f567b6104a8970f86771763915aa730779368f2d))
 - feat: YamlEditor root ([a46b036](https://github.com/KarinJS/Karin/commit/a46b036b338359c0f921b5f7f97630dee63eacdb))
@@ -789,7 +789,7 @@
 - feat：完善结构、通知事件 ([933bbb9](https://github.com/KarinJS/Karin/commit/933bbb95a237ad02b26c0a8c6e8d0a23c8a7734b))
 - feat：`puppeteer` ([8928729](https://github.com/KarinJS/Karin/commit/8928729ca0d7df5e8af92e7bf6929ce840fc7b4a))
 
-### Bug修复
+### Bug Fixes
 
 - fix: 移除子模块 并屏蔽git跟踪 ([b838fd7](https://github.com/KarinJS/Karin/commit/b838fd7f72cc1048d69fc07d681d858149350576))
 - fix: 修正描述 继续挖坑 咕咕咕 ([2e18050](https://github.com/KarinJS/Karin/commit/2e1805014e0b5d1d1f9fda3eef46e22816d806cf))
@@ -872,30 +872,9 @@
 - fix：分离消息事件处理 ([2bbd5bd](https://github.com/KarinJS/Karin/commit/2bbd5bd077518e4a2d3892c683cae35ca8629bbd))
 - fix：`static` ([c6d4856](https://github.com/KarinJS/Karin/commit/c6d4856b4038036b1cfdec7f61b1a7e55cd5d342))
 
-### 文档更新
 
-- docs: add repobeats ([13a58a8](https://github.com/KarinJS/Karin/commit/13a58a820b4d5c508628c514031c44980240d865))
-- docs：更新 README.md ([a88bd8b](https://github.com/KarinJS/Karin/commit/a88bd8b64c9b57e7bf07e2871b6be4929f144f7f))
-- docs：Update README.md (#3) ([f1ab4c2](https://github.com/KarinJS/Karin/commit/f1ab4c237396a9b901f2d2858b2f4edd223f2854))
-- docs：更新 README.md ([a8a0963](https://github.com/KarinJS/Karin/commit/a8a0963ae549e2ba5120e1cfa36847331d456bc3))
+## [0.0.1](https://github.com/KarinJS/Karin/compare/v0.0.1) (2024-03-21)
 
-### 代码重构
+### Features
 
-- refactor: 将proto迁移到npm ([408fedb](https://github.com/KarinJS/Karin/commit/408fedbd95954a46e351614791aea2bd2d38e7c7))
-- :art: refactor: adapter and forward ([efb86fd](https://github.com/KarinJS/Karin/commit/efb86fdf8a22dc890be2d6c76dac2de34995f092))
-- :fire: refactor: 解耦事件 完善日志 ([f02a3e2](https://github.com/KarinJS/Karin/commit/f02a3e26f6291c32017540d982feb4c046713099))
-- refactor: kritor converter and struct definition ([427b524](https://github.com/KarinJS/Karin/commit/427b524aa72768c15069d566c4a1c931b85434fe))
-
-### 其他提交
-
-- rm gitmodules ([c4c0c57](https://github.com/KarinJS/Karin/commit/c4c0c579fedef1c172c2a7fada51c5152f95d816))
-- rm eslint-plugin-import ([fae7fa3](https://github.com/KarinJS/Karin/commit/fae7fa3a1a071eefd15451084d84c426ee8c282d))
-- rm scripts.build ([45e4dac](https://github.com/KarinJS/Karin/commit/45e4dacbf9b53a09463623d00ad7058f42a9a4da))
-- rm .npmrc ([fb6448a](https://github.com/KarinJS/Karin/commit/fb6448a5de365762a2266072e1b76a4844435281))
-- Create LICENSE ([2b5b6b0](https://github.com/KarinJS/Karin/commit/2b5b6b089e23afd371ad90107344c237662f4af2))
-- :heavy_minus_sign: Update package.json ([d623748](https://github.com/KarinJS/Karin/commit/d623748f14469b7ffe59b40b54b8ceae8bff7fb1))
-- use uid (#4) ([2abe1a5](https://github.com/KarinJS/Karin/commit/2abe1a531683bdd4a34b68a9d94a7f2987ae3f61))
-
-## 0.0.1 (2024-3-21)
-
-- :tada: 初次提交 ([9e12137](https://github.com/KarinJS/Karin/commit/9e12137b6cf0e778a28df78daaeea77d5e325f4c))
+- feat: 初次提交 ([9e12137](https://github.com/KarinJS/Karin/commit/9e12137b6cf0e778a28df78daaeea77d5e325f4c))

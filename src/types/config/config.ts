@@ -123,9 +123,9 @@ export interface Config {
    */
   log_color: string
   /**
-   * 关闭后台进程失败后是否继续启动 继续启动会导致多进程
+   * 重启是否调用pm2 如果不调用则会直接关机 此配置适合有进程守护的程序
    */
-  multi_progress: boolean
+  pm2Restart: boolean
   /**
    * ffmpeg配置
    */
