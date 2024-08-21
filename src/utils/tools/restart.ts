@@ -23,7 +23,7 @@ export const restart = async (self_id: string, contact: Contact, message_id: str
 
   if (isFront) {
     if (!process.send) return { status: 'failed', data: '前台重启失败，当前环境不支持，仅支持【npx karin start】启动的环境' }
-    process.send({ action: 'result', env: process.env })
+    process.send({ action: 'npx karin start', env: process.env })
     process.exit()
   }
 
