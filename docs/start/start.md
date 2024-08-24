@@ -27,7 +27,7 @@
 - `windows`用户如下载缓慢，可使用[腾讯软件管家][腾讯软件管家]进行加速下载。
 - 还是一样，`git`也是一个可选项，所有插件包括`Karin`本身都可以直接下载压缩包进行安装。
 
-- 目前`Karin`正在向纯`npm`包管理迁移，插件还在使用`git`，请继续安装。
+- 目前`Karin`及`karin官方插件`正在向纯`npm`包管理迁移，较多数插件还在使用`git`，请继续安装。
 
 ## 部署karin
 
@@ -52,9 +52,17 @@ npm --registry=https://registry.npmmirror.com install pnpm -g
 
 先新建一个空白文件夹，以下命令在文件夹里面执行，执行完成不出意外已经启动完毕了~
 
-```bash
-pnpm i node-karin && npx init && npx karin .
+::: code-group
+
+```bash [通用]
+pnpm init && pnpm i node-karin && npx init && npx karin .
 ```
+
+```powershell [powershell]
+pnpm init; pnpm i node-karin; npx init; npx karin .
+```
+
+:::
 
 ### 基本指令
 
@@ -106,12 +114,6 @@ npx karin log
 如果你是中国大陆服务器，并且无法访问`npm`官方源，这里请务必更换为镜像源。
 :::
 
-- 查询当前镜像源
-
-```bash
-npm config get registry
-```
-
 - 更换镜像源
 
 ::: code-group
@@ -128,6 +130,10 @@ npm config set registry https://mirrors.cloud.tencent.com/npm
 ```bash [官方源]
 # 如果你需要恢复为官方源
 npm config set registry https://registry.npmjs.org
+```
+
+```bash [查询当前源]
+npm config get registry
 ```
 
 :::

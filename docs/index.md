@@ -20,12 +20,16 @@ hero:
 
 
 features:
-  - title: 轻量级
-    details: 采用精简的代码设计，确保框架易于维护和扩展。框架无任何内置插件包，开发者可以根据自己的需求自由选择插件。
-  - title: 易于上手
-    details: 基于JavaScript，开发者可以快速学习并使用现有的编程知识来创建功能丰富的插件。
-  - title: 详尽文档
-    details: 提供全面的文档支持，帮助开发者轻松掌握框架的使用和插件开发。
+  - title: 轻量 · 高效
+    details: 极简设计，运行速度快，资源占用低，专为高性能Bot开发而生。
+
+  - title: 快速上手 · 全面支持
+    details: 提供详尽的文档和丰富的示例，帮助开发者迅速上手并深度掌握框架功能。
+
+  - title: TypeScript · 强类型支持
+    details: 基于TypeScript构建，提供完整的类型注释，确保代码可靠性和可维护性。
+
+
 ---
 
 <HomeUnderline />

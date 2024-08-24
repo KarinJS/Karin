@@ -32,8 +32,7 @@ import { axios } from 'node-karin/modules.js'
 
 export const image = karin.command(/^#动漫壁纸$/, async (e) => {
   // 来自: https://blog.jixiaob.cn/?post=93
-  const { data } = await axios.get('https://t.alcy.cc/mp')
-  await e.reply(segment.image(data.url))
+  await e.reply(segment.image('https://t.alcy.cc/mp'))
   return true
 })
 
