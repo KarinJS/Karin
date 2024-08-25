@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 
-export type LoggerLevel = 'trace' | 'debug' | 'mark' | 'info' | 'mark' | 'warn' | 'error' | 'fatal'
+export type LoggerLevel = 'all' | 'trace' | 'debug' | 'mark' | 'info' | 'mark' | 'warn' | 'error' | 'fatal' | 'off'
 
 export interface Logger {
   /**

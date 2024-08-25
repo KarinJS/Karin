@@ -48,10 +48,7 @@ export class Common {
       await this.streamPipeline(response.data, fs.createWriteStream(savePath))
       return true
     } catch (err) {
-      if (err instanceof AxiosError)
-        logger.error(`下载文件错误：${err.stack}`)
-      else
-        logger.error(`下载文件错误：${err}`)
+      if (err instanceof AxiosError) { logger.error(`下载文件错误：${err.stack}`) } else { logger.error(`下载文件错误：${err}`) }
       return false
     }
   }
@@ -67,10 +64,7 @@ export class Common {
       if (type === 'post') return await axios.post(url, param.data, param)
       return await axios.get(url, param)
     } catch (error) {
-      if (error instanceof AxiosError)
-        logger.debug(error.stack)
-      else
-        logger.debug(error)
+      error instanceof AxiosError ? logger.debug(error.stack) : logger.debug(error)
       return null
     }
   }

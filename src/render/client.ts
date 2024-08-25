@@ -24,6 +24,7 @@ export class RenderClient extends RenderBase {
     cache: boolean
     vue: boolean
   }
+
   constructor (url: string) {
     super()
     this.url = url

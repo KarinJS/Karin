@@ -161,7 +161,7 @@ export class AdapterInput implements KarinAdapter {
     return 'https://p.qlogo.cn/gh/967068507/967068507/0'
   }
 
-  getGroupAvatar () {
+  getGroupAvatarUrl () {
     return 'https://p.qlogo.cn/gh/967068507/967068507/0'
   }
 

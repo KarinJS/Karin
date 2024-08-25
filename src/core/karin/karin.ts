@@ -221,24 +221,37 @@ export class Karin extends Listeners {
 
   /**
    * 构建contact
-   * @param peer - 群号或者id
-   * @param isGroup - 是否是群聊
+   * @param scene - 场景
+   * @param peer - 群号或者用户id
    * @param sub_peer - 子id
    */
-  contact (peer: string, isGroup: boolean = true, sub_peer?: string): Contact {
-    if (isGroup) {
-      return {
-        peer,
-        scene: Scene.Group,
-        sub_peer: sub_peer || '',
-      }
-    }
+  contact (scene: Contact['scene'], peer: Contact['peer'], sub_peer?: Contact['sub_peer']): Contact {
+    return { scene, peer, sub_peer }
+  }
 
-    return {
-      peer,
-      scene: Scene.Private,
-      sub_peer: sub_peer || '',
-    }
+  /**
+   * 构建group_contact
+   * @param peer - 群号
+   */
+  contactGroup (peer: Contact['peer']): Contact {
+    return { scene: Scene.Group, peer }
+  }
+
+  /**
+   * 构建friend_contact
+   * @param peer - 用户id
+   */
+  contactFriend (peer: Contact['peer']): Contact {
+    return { scene: Scene.Private, peer }
+  }
+
+  /**
+   * 构建guild_contact
+   * @param peer - 频道id
+   * @param sub_peer - 子频道id
+   */
+  contactGuild (peer: Contact['peer'], sub_peer: string): Contact {
+    return { scene: Scene.Guild, peer, sub_peer }
   }
 
   /**

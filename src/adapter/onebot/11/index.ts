@@ -193,7 +193,7 @@ export class AdapterOneBot11 implements KarinAdapter {
    * @param history - 历史头像记录，默认`0`，若要获取历史群头像则填写1,2,3...
    * @returns - 群头像的url地址
    */
-  getGroupAvatar (group_id: string, size = 0, history = 0) {
+  getGroupAvatarUrl (group_id: string, size = 0, history = 0) {
     return `https://p.qlogo.cn/gh/${group_id}/${group_id}${history ? '_' + history : ''}/` + size
   }
 

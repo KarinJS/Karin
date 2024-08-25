@@ -118,7 +118,7 @@ export interface KarinAdapter {
    * @param history - 历史头像记录，默认`0`，若要获取历史群头像则填写1,2,3...
    * @returns 头像的url地址
    */
-  getGroupAvatar (group_id: string, size?: 0 | 40 | 100 | 140, history?: number): string
+  getGroupAvatarUrl (group_id: string, size?: 0 | 40 | 100 | 140, history?: number): string
 
   /**
    * 发送消息
