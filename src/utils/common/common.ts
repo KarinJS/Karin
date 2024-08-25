@@ -1,12 +1,11 @@
 import fs from 'fs'
 import path from 'path'
 import Yaml from 'yaml'
-import axios from 'axios'
+import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 import lodash from 'lodash'
 import { promisify } from 'util'
 import { fileURLToPath } from 'url'
 import { createRequire } from 'module'
-import { AxiosRequestConfig } from 'axios'
 import { pipeline, Readable } from 'stream'
 import { logger, segment, YamlEditor } from 'karin/utils'
 import { ButtonElement, ButtonType, dirName, KarinElement, NodeElement, KeyBoardElement } from 'karin/types'
@@ -49,7 +48,10 @@ export class Common {
       await this.streamPipeline(response.data, fs.createWriteStream(savePath))
       return true
     } catch (err) {
-      logger.error(`下载文件错误：${err}`)
+      if (err instanceof AxiosError)
+        logger.error(`下载文件错误：${err.stack}`)
+      else
+        logger.error(`下载文件错误：${err}`)
       return false
     }
   }
@@ -65,7 +67,10 @@ export class Common {
       if (type === 'post') return await axios.post(url, param.data, param)
       return await axios.get(url, param)
     } catch (error) {
-      logger.debug(error)
+      if (error instanceof AxiosError)
+        logger.debug(error.stack)
+      else
+        logger.debug(error)
       return null
     }
   }
