@@ -1,9 +1,10 @@
 import fs from 'fs'
+import axios from 'axios'
 import WebSocket from 'ws'
 import { render } from './app'
 import { RenderBase } from './base'
 import { createHash, randomUUID } from 'crypto'
-import { listener } from 'karin/core'
+import { karin } from 'karin/core'
 import { common, logger } from 'karin/utils'
 import { KarinRenderType, RenderResult } from 'karin/types'
 
@@ -13,8 +14,16 @@ export class RenderClient extends RenderBase {
   id: string
   index: number
   retry: number
+  short: boolean
   reg: RegExp
   ws!: WebSocket
+  // NOTE: 渲染器协议暂定方案，目前仅short用于短连接模式确认，其他无用
+  protocol?: {
+    application: string
+    short: boolean
+    cache: boolean
+    vue: boolean
+  }
   constructor (url: string) {
     super()
     this.url = url
@@ -22,6 +31,7 @@ export class RenderClient extends RenderBase {
     this.id = 'puppeteer'
     this.index = 0
     this.retry = 0
+    this.short = false
     this.reg = new RegExp(`(${process.cwd().replace(/\\/g, '\\\\')}|${process.cwd().replace(/\\/g, '/')})`, 'g')
   }
 
@@ -70,20 +80,69 @@ export class RenderClient extends RenderBase {
   }
 
   /**
+   * 创建短连接
+   */
+  async link () {
+    return new Promise<void>((resolve, reject) => {
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        return resolve()
+      }
+      logger.debug(`[渲染器:${this.id}][正向WS] 创建短连接`)
+      /** 连接ws */
+      this.ws = new WebSocket(this.url)
+      /** 建立连接 */
+      this.ws.on('open', () => {
+        logger.mark(`[渲染器:${this.id}][WebSocket] 建立连接：${logger.green(this.url)}`)
+        /** 监听消息 */
+        this.ws.on('message', data => this.message(data.toString()))
+        resolve()
+      })
+      /** 监听断开 */
+      this.ws.once('close', async () => {
+        logger.debug(`[渲染器:${this.id}][正向WS] 关闭短连接`)
+        /** 停止监听 */
+        this.ws.removeAllListeners()
+      })
+      /** 监听错误 */
+      this.ws.on('error', async (e) => {
+        logger.debug(e)
+        this.ws.close()
+      })
+    })
+  }
+
+  /**
    * 心跳
    */
   async heartbeat () {
     /** 无限循环 错误则停止 */
     while (true) {
-      try {
-        this.ws.send(JSON.stringify({ action: 'heartbeat' }))
-        logger.debug(`[渲染器:${this.id}] 心跳：${this.url}`)
-      } catch (e) {
-        logger.debug(`[渲染器:${this.id}] 心跳失败：`, e)
-        this.ws.close()
-        break
+      if (this.short) {
+        try {
+          const res = await axios.head(this.url)
+          if (res.status === 200) {
+            logger.debug(`[渲染器:${this.id}] 心跳：${this.url}`)
+          } else {
+            logger.debug(`[渲染器:${this.id}] 心跳失败：服务器错误，错误代码 ${res.status}`)
+            break
+          }
+        } catch (e) {
+          logger.debug(`[渲染器:${this.id}] 心跳失败：`, e)
+          break
+        }
+        // NOTE: 真的需要心跳的这么快吗
+        await common.sleep(60 * 1000)
+      } else {
+        try {
+          this.ws.send(JSON.stringify({ action: 'heartbeat' }))
+          logger.debug(`[渲染器:${this.id}] 心跳：${this.url}`)
+        } catch (e) {
+          logger.debug(`[渲染器:${this.id}] 心跳失败：`, e)
+          this.ws.close()
+          break
+        }
+        await common.sleep(5000)
       }
-      await common.sleep(5000)
     }
   }
 
@@ -94,6 +153,12 @@ export class RenderClient extends RenderBase {
     const data: {
       echo: string
       action: string
+      data?: {
+        application: string
+        short: boolean
+        cache: boolean
+        vue: boolean
+      }
       params: {
         md5?: string[]
         file: string
@@ -113,7 +178,26 @@ export class RenderClient extends RenderBase {
       }
       /** 渲染结果 */
       case 'renderRes': {
-        listener.emit(data.echo, data)
+        karin.emit(data.echo, data)
+        break
+      }
+      /** 超时 */
+      case 'timeout': {
+        logger.debug(`[渲染器:${this.id}][正向WS] 处理超时`)
+        break
+      }
+      /** 确认协议 */
+      case 'protocol': {
+        // 已确认协议，跳过
+        if (this.protocol) break
+        if (data.data) this.protocol = data.data
+        // 短连接模式
+        if (data.data?.short) {
+          logger.debug(`[渲染器:${this.id}][正向WS] 切换到短连接模式`)
+          this.short = data.data?.short
+          this.ws.removeAllListeners()
+          this.ws.close()
+        }
         break
       }
       /** 未知数据 */
@@ -160,10 +244,13 @@ export class RenderClient extends RenderBase {
 
     const req = JSON.stringify({ echo, action, data })
     logger.debug(`[渲染器:${this.id}:${this.index}][正向WS] 请求：${this.url} \nhtml: ${options.file} \ndata: ${JSON.stringify(data)}`)
+    if (this.short) {
+      await this.link()
+    }
     this.ws.send(req)
 
     return new Promise((resolve, reject) => {
-      listener.once(echo, (data: { ok: boolean; data: string | string[] }) => {
+      karin.once(echo, (data: { ok: boolean; data: string | string[] }) => {
         if (data.ok) return resolve((data.data as RenderResult<T>))
         reject(new Error(JSON.stringify(data)))
       })
