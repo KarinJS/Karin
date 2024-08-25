@@ -1,5 +1,23 @@
 # 更新日志
 
+## [0.12.0](https://github.com/KarinJS/Karin/compare/v0.11.15...v0.12.0) (2024-08-25)
+
+
+### Features
+
+* 为渲染ws正向添加渲染器协议、短连接模式支持 ([813c9f8](https://github.com/KarinJS/Karin/commit/813c9f88f4fa94ae4b61f76309c185f1774cdcd8))
+
+
+### Bug Fixes
+
+* [@types](https://github.com/types) ([77895ae](https://github.com/KarinJS/Karin/commit/77895aed28d9805be818ba58195521f4a07ca3ae))
+* 前台重启无反应 ([ea52396](https://github.com/KarinJS/Karin/commit/ea52396fae2fe9c09b4209dff25808aae4c0ba8f))
+
+
+### Performance Improvements
+
+* 优化axios封装错误提示 ([abd33a8](https://github.com/KarinJS/Karin/commit/abd33a8c008ebd38329ce8321c35fcae866285ed))
+
 ## [0.11.15](https://github.com/KarinJS/Karin/compare/v0.11.14...v0.11.15) (2024-08-21)
 
 
