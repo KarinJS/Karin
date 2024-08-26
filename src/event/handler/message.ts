@@ -185,13 +185,6 @@ export class MessageHandler extends EventBaseHandler {
   }
 
   /**
-   * 打印
-   */
-  print () {
-
-  }
-
-  /**
    * 处理消息
    */
   async deal () {

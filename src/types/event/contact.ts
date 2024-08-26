@@ -7,7 +7,7 @@ export const enum Scene {
   Guild = 'guild',
   Nearby = 'nearby',
   Stranger = 'stranger',
-  StrangerFromGroup = 'stranger_from_group'
+  StrangerFromGroup = 'stranger_from_group',
 }
 
 /**
