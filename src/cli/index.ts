@@ -257,6 +257,8 @@ export class KarinCli {
 
     await Promise.all(gitList.map(async item => {
       const dir = path.resolve(process.cwd(), 'plugins', item)
+      /** 检查是否是git仓库 */
+      if (!fs.existsSync(path.join(dir, '.git'))) return
       try {
         await this.exec('git pull', { cwd: dir })
         console.log(`[依赖更新] ${item} 更新完成~`)
