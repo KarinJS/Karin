@@ -1,0 +1,17 @@
+name: Issue Welcome
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  issue-welcome:
+    runs-on: ubuntu-latest
+    steps:
+      - name: welcome
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'welcome'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: 你好 @${{ github.event.issue.user.login }}，我们注意到你是一次创建问题，感谢你的加入！我们非常期待你的想法和贡献。🌟
+          issue-emoji: 'eyes'
