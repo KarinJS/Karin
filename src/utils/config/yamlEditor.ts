@@ -16,7 +16,7 @@ export class YamlEditor {
   document: Yaml.Document
   constructor (file: string) {
     this.filePath = file
-    const data = Yaml.parseDocument(fs.readFileSync(file, 'utf8'))
+    const data = Yaml.parseDocument(fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : file)
     this.doc = data
     this.document = data
   }
