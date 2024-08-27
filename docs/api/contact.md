@@ -21,6 +21,14 @@
 |      `stranger`       |   陌生人   |
 | `stranger_from_group` | 群临时会话 |
 
+## 快速构建方法
+
+```javascript
+const contact = karin.contactGroup('123455678') // 群
+const contact = karin.contactFriend('123455678') // 好友
+
+```
+
 ## 示例
 
 - 在收到事件时，此属性必须存在
@@ -31,15 +39,7 @@
 import { segment, Bot } from 'node-karin'
 
 const self_id = 123456789
-await Bot.sendMsg(
-  // 参数1 机器人ID
-  self_id,
-  // 参数2 contact
-  {
-    scene: 'group',
-    peer: '123456789',
-  },
-  // 参数3 elements
-  '这只一条主动消息'
-)
+const contact = karin.contactGroup('123455678')
+await Bot.sendMsg(self_id, contact, '这只一条主动消息')
+
 ```

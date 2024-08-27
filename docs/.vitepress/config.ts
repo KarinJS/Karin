@@ -181,7 +181,7 @@ export default defineConfig({
         text: 'Api',
         items: [
           { text: '目录', link: '/api/index' },
-          { text: '标准Api', link: '/api/standard' },
+          { text: '标准Api', link: '/api/api' },
           { text: '联系人相关', link: '/api/contact' },
           { text: '消息相关', link: '/api/message' }
         ]
@@ -242,7 +242,7 @@ export default defineConfig({
         collapsed: true,
         items: [
           { text: '目录', link: '/api/index' },
-          { text: '标准Api', link: '/api/standard' },
+          { text: '标准Api', link: '/api/api' },
           { text: '联系人相关', link: '/api/contact' },
           { text: '消息相关', link: '/api/message' }
         ]

@@ -30,7 +30,7 @@ console.log(data)
 
 ```
 
-## logger
+## 打印Bot专属日志
 
 > 方法名: `logger`  
 > 描述: `打印带有Bot前缀带有颜色日志`  
@@ -122,15 +122,62 @@ https://p.qlogo.cn/gh/1234567890/1234567890/100
 
 :::
 
+## 发送消息
+
+::: warning 注意
+`elements`参数必须为数组，并且每个元素都是由`segment`模块中的方法构建的
+:::
+
+> 方法名: `SendMessage`  
+> 描述: `发送群消息、好友消息、频道消息(暂不支持)`  
+> 参数: `contact` `elements` `retry_count`  
+> 返回值: `Promise<ReplyReturn>`  
+
+|   参数名称    |                   类型                   | 参数要求 |         备注         |
+| :-----------: | :--------------------------------------: | :------: | :------------------: |
+|   `contact`   |         [Contact](./contact.md)          |   ---    |      联系人信息      |
+|  `elements`   | Array\<[elements](../utils/segment.md)\> |   ---    |       消息元素       |
+| `retry_count` |                  number                  |   ---    | 重试次数`(暂未适配)` |
+
+::: code-group
+
+```JavaScript [被动事件调用]
+const elements = [
+  segment.text('hello')
+]
+e.bot.SendMessage(e.contact, elements)
+```
+
+```JavaScript [主动事件调用]
+const elements = [
+  segment.text('hello')
+]
+Bot.SendMessage(contact, elements)
+```
+
+```JavaScript [响应]
+{
+  /** 消息ID */
+  message_id: 'string',
+  /** 消息发送时间戳 可能会不存在 */
+  message_time: 'number',
+  /** 原始结果 QQBot适配器下为数组 其他已知适配器为对象 */
+  raw_data?: {
+    // ...
+  }
+}
+```
+
+:::
+
 <!-- 
   /**
-   * 获取群头像url 请使用`getGroupAvatarUrl`
-   * @param group_id - 群号
-   * @param size - 头像大小，默认`0`
-   * @param history - 历史头像记录，默认`0`，若要获取历史群头像则填写1,2,3...
-   * @returns 头像的url地址
-   * @deprecated
+   * 发送消息
+   * @param contact - 联系人信息
+   * @param elements - 消息元素
+   * @param retry_count - 重试次数 默认为1
+   * @returns 此接口因各平台问题，允许返回更多自定义数据
    */
-  getGroupAvatar (group_id: string, size?: 0 | 40 | 100 | 140, history?: number): string
+  SendMessage (contact: Contact, elements: Array<KarinElement>, retry_count?: number): Promise<ReplyReturn>
 
  -->
