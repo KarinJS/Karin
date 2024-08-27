@@ -9,17 +9,17 @@ import { exec as execCmd, spawn, ChildProcess, ExecOptions } from 'child_process
 export const enum Runner {
   Node = 'node',
   Tsx = 'tsx',
-  Pm2 = 'pm2'
+  Pm2 = 'pm2',
 }
 
 export const enum Mode {
   Dev = 'dev',
-  Prod = 'prod'
+  Prod = 'prod',
 }
 
 export const enum Lang {
   Js = 'js',
-  Ts = 'ts'
+  Ts = 'ts',
 }
 
 export class KarinCli {

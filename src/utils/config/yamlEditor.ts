@@ -39,10 +39,11 @@ export class YamlEditor {
    * 设置指定路径的值
    * @param path - 路径，多个路径使用`.`连接，例如：`a.b.c`
    * @param value - 要设置的值 允许的类型：`string`, `boolean`, `number`, `object`, `array`
+   * @param isSplit - 是否使用分割路径路径，默认为 `true`
    */
-  set (path: string, value: YamlValue): boolean {
+  set (path: string, value: YamlValue, isSplit = true): boolean {
     try {
-      const _path = typeof path === 'string' ? path.split('.') : path
+      const _path = typeof path === 'string' ? (isSplit ? path.split('.') : [path]) : path
       this.document.setIn(_path, value)
       return true
     } catch (error) {
@@ -55,10 +56,11 @@ export class YamlEditor {
    * 向指定路径添加新值
    * @param path - 路径，多个路径使用`.`连接，例如：`a.b.c`
    * @param value - 要添加的值
+   * @param isSplit - 是否使用分割路径路径，默认为 `true`
    */
-  add (path: string, value: YamlValue): boolean {
+  add (path: string, value: YamlValue, isSplit = true): boolean {
     try {
-      const _path = typeof path === 'string' ? path.split('.') : path
+      const _path = typeof path === 'string' ? (isSplit ? path.split('.') : [path]) : path
       this.document.addIn(_path, value)
       logger.debug(`[YamlEditor] 已在 ${path} 添加新的值`)
       return true
@@ -71,11 +73,12 @@ export class YamlEditor {
   /**
    * 删除指定路径
    * @param path - 路径，多个路径使用`.`连接，例如：`a.b.c`
+   * @param isSplit - 是否使用分割路径路径，默认为 `true`
    * @returns 是否删除成功
    */
-  del (path: string): boolean {
+  del (path: string, isSplit = true): boolean {
     try {
-      const _path = typeof path === 'string' ? path.split('.') : path
+      const _path = typeof path === 'string' ? (isSplit ? path.split('.') : [path]) : path
       this.document.deleteIn(_path)
       return true
     } catch (error) {
@@ -89,10 +92,11 @@ export class YamlEditor {
    * @param path - 路径，多个路径使用`.`连接，例如：`a.b.c`
    * @param value - 要添加的值
    * @param prepend - 如果为 true，则添加到数组的开头，否则添加到末尾
+   * @param isSplit - 是否使用分割路径路径，默认为 `true`
    */
-  append (path: string, value: string, prepend = false): boolean {
+  append (path: string, value: string, prepend = false, isSplit = true): boolean {
     try {
-      const _path = typeof path === 'string' ? path.split('.') : path || []
+      const _path = typeof path === 'string' ? (isSplit ? path.split('.') : [path]) : path
       let current = this.document.getIn(_path)
       if (!current) {
         current = new Yaml.YAMLSeq()
@@ -115,10 +119,11 @@ export class YamlEditor {
    * 向指定路径的数组删除值
    * @param path - 路径，多个路径使用`.`连接，例如：`a.b.c`
    * @param value - 要删除的值
+   * @param isSplit - 是否使用分割路径路径，默认为 `true`
    */
-  remove (path: string, value: YamlValue): boolean {
+  remove (path: string, value: YamlValue, isSplit = true): boolean {
     try {
-      const _path = typeof path === 'string' ? path.split('.') : path
+      const _path = typeof path === 'string' ? (isSplit ? path.split('.') : [path]) : path
       const current = this.document.getIn(_path)
       if (!current) {
         logger.error('[YamlEditor] 指定的路径不存在')
@@ -145,10 +150,11 @@ export class YamlEditor {
   /**
    * 检查指定路径的键是否存在
    * @param path - 路径，用点号分隔
+   * @param isSplit - 是否使用分割路径路径，默认为 `true`
    */
-  has (path: string): boolean {
+  has (path: string, isSplit = true): boolean {
     try {
-      const _path = typeof path === 'string' ? path.split('.') : path
+      const _path = typeof path === 'string' ? (isSplit ? path.split('.') : [path]) : path
       return this.document.hasIn(_path)
     } catch (error) {
       logger.error(`[YamlEditor] 检查路径是否存在时出错：${error}`)
@@ -160,10 +166,11 @@ export class YamlEditor {
    * 查询指定路径中是否包含指定的值
    * @param path - 路径，用点号分隔
    * @param value - 要查询的值
+   * @param isSplit - 是否使用分割路径路径，默认为 `true`
    */
-  hasval (path: string, value: YamlValue): boolean {
+  hasval (path: string, value: YamlValue, isSplit = true): boolean {
     try {
-      const _path = typeof path === 'string' ? path.split('.') : path
+      const _path = typeof path === 'string' ? (isSplit ? path.split('.') : [path]) : path
       const current = this.document.getIn(_path)
       if (!current) return false
 
@@ -238,10 +245,11 @@ export class YamlEditor {
   /**
    * 获取指定路径的pair对象
    * @param path - 路径，多个路径使用`.`连接，例如：`a.b.c`
+   * @param isSplit - 是否使用分割路径路径，默认为 `true`
    */
-  getpair (path: string) {
+  getpair (path: string, isSplit = true) {
     if (!path) throw new Error('path is required')
-    const keys = path.split('.')
+    const keys = typeof path === 'string' ? (isSplit ? path.split('.') : [path]) : path
     // 好多any啊，我要当any糕手~
     let pair = this.document.contents as any
     keys.forEach(key => {
@@ -261,10 +269,11 @@ export class YamlEditor {
    * @param path - 路径，多个路径使用`.`连接，例如：`a.b.c`
    * @param comment - 要设置的注释
    * @param prepend - 如果为 true，则添加到注释的开头，否则添加到同一行的末尾
+   * @param isSplit - 是否使用分割路径路径，默认为 `true`
    */
-  comment (path: string, comment: string, prepend: boolean) {
+  comment (path: string, comment: string, prepend: boolean, isSplit = true) {
     if (!path) throw new Error('[YamlEditor] path 不能为空')
-    const pair = this.getpair(path)
+    const pair = this.getpair(path, isSplit)
     if (!pair) throw new Error(`[YamlEditor] 未找到节点 ${path}`)
     comment = ` ${comment}`
     if (prepend) {
@@ -278,10 +287,11 @@ export class YamlEditor {
    * 删除指定键的注释
    * @param path - 路径，多个路径使用`.`连接，例如：`a.b.c`
    * @param type - 要删除的注释类型，`before` 为注释前，`after` 为注释后，`all` 为全部
+   * @param isSplit - 是否使用分割路径路径，默认为 `true`
    */
-  uncomment (path: string, type: 'before' | 'after' | 'all' = 'all') {
+  uncomment (path: string, type: 'before' | 'after' | 'all' = 'all', isSplit = true) {
     if (!path) throw new Error('[YamlEditor] path 不能为空')
-    const pair = this.getpair(path)
+    const pair = this.getpair(path, isSplit)
     if (!pair) throw new Error(`[YamlEditor] 未找到节点 ${path}`)
 
     if (type === 'all') {
@@ -298,10 +308,11 @@ export class YamlEditor {
    * 检查注释是否存在
    * @param path - 路径，多个路径使用`.`连接，例如：`a.b.c`
    * @param type - 要检查的注释类型，`before` 为注释前，`after` 为注释后
+   * @param isSplit - 是否使用分割路径路径，默认为 `true`
    */
-  hascomment (path: string, type: 'before' | 'after') {
+  hascomment (path: string, type: 'before' | 'after', isSplit = true) {
     if (!path) throw new Error('[YamlEditor] path 不能为空')
-    const pair = this.getpair(path)
+    const pair = this.getpair(path, isSplit)
     if (!pair) throw new Error(`[YamlEditor] 未找到节点 ${path}`)
 
     if (type === 'before') {

@@ -55,16 +55,6 @@
       "require": "./lib/modules/express.js",
       "types": "./lib/modules/express.d.ts"
     },
-    "./grpc-js": {
-      "import": "./lib/modules/grpc-js.js",
-      "require": "./lib/modules/grpc-js.js",
-      "types": "./lib/modules/grpc-js.d.ts"
-    },
-    "./kritor-proto": {
-      "import": "./lib/modules/kritor-proto.js",
-      "require": "./lib/modules/kritor-proto.js",
-      "types": "./lib/modules/kritor-proto.d.ts"
-    },
     "./level": {
       "import": "./lib/modules/level.js",
       "require": "./lib/modules/level.js",
@@ -89,11 +79,6 @@
       "import": "./lib/modules/node-schedule.js",
       "require": "./lib/modules/node-schedule.js",
       "types": "./lib/modules/node-schedule.d.ts"
-    },
-    "./proto-loader": {
-      "import": "./lib/modules/proto-loader.js",
-      "require": "./lib/modules/proto-loader.js",
-      "types": "./lib/modules/proto-loader.d.ts"
     },
     "./redis": {
       "import": "./lib/modules/redis.js",
