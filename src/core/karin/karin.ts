@@ -47,7 +47,7 @@ export const enum MiddlewareType {
   /** 回复消息前 */
   ReplyMsg = 'replyMsg',
   /** 发送主动消息前 */
-  SendMsg = 'sendMsg'
+  SendMsg = 'sendMsg',
 }
 
 export interface Options {
@@ -109,10 +109,13 @@ export interface OptionsElement extends OptionsCommand {
 export class Karin extends Listeners {
   /** 是否启动 */
   #start: boolean
+  /** 存储器 由开发者自行调用 */
+  store: Map<any, any>
   constructor () {
     super()
 
     this.#start = false
+    this.store = new Map()
     this.run()
   }
 

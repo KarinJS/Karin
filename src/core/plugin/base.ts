@@ -137,14 +137,18 @@ export class Plugin implements PluginType {
   }
 
   /**
+   * - 已废弃 请使用karin.ctx
    * - 构建上下文键
+   * @deprecated
    */
   conKey (): string {
     return `${this.e.isGroup ? `${this.e.group_id}.` : ''}` + (this.userId || this.e.user_id)
   }
 
   /**
-   * 设置上下文状态
+   * - 已废弃 请使用karin.ctx
+   * - 设置上下文状态
+   * @deprecated
    */
   setContext (
     /**
@@ -178,7 +182,8 @@ export class Plugin implements PluginType {
   }
 
   /**
-   * 获取上下文状态
+   * - 已废弃 请使用karin.ctx
+   * - 获取上下文状态
    */
   getContext (): stateArrType[string] {
     const key = this.conKey()
@@ -186,7 +191,9 @@ export class Plugin implements PluginType {
   }
 
   /**
-   * 清除上下文状态
+   * - 已废弃 请使用karin.ctx
+   * - 清除上下文状态
+   * @deprecated
    */
   finish () {
     const key = this.conKey()

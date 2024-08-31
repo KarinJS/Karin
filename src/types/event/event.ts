@@ -18,7 +18,7 @@ export const enum EventType {
   /**
    * - 请求事件
    */
-  Request = 'request'
+  Request = 'request',
 }
 
 /**
@@ -44,7 +44,7 @@ export const enum MessageSubType {
   /**
    * - 陌生人消息
    */
-  Stranger = 'stranger'
+  Stranger = 'stranger',
 }
 
 /**
@@ -114,7 +114,7 @@ export const enum NoticeSubType {
   /**
    * - 群聊消息表情动态回应
    */
-  GroupMessageReaction = 'group_message_reaction'
+  GroupMessageReaction = 'group_message_reaction',
 }
 
 /**
@@ -132,7 +132,7 @@ export const enum RequestSubType {
   /**
    * - 邀请入群
    */
-  InvitedGroup = 'invited_group'
+  InvitedGroup = 'invited_group',
 }
 
 /**
@@ -251,7 +251,7 @@ export interface KarinEventType {
   /**
    * - 存储器 由开发者自行调用
    */
-  store: Map<string, any>
+  store: Map<any, any>
   /**
    * - 原始消息
    */
