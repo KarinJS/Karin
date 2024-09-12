@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.12.5](https://github.com/KarinJS/Karin/compare/v0.12.4...v0.12.5) (2024-09-12)
+
+
+### Bug Fixes
+
+* build error ([92bb5e3](https://github.com/KarinJS/Karin/commit/92bb5e302f26873dbaaa3bd279b9573033aab4f8))
+
 ## [0.12.4](https://github.com/KarinJS/Karin/compare/v0.12.3...v0.12.4) (2024-09-12)
 
 
