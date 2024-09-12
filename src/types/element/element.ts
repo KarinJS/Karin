@@ -1,4 +1,4 @@
-export type ElementType = 'text' | 'at' | 'face' | 'bubble_face' | 'reply' | 'image' | 'video' | 'basketball' | 'dice' | 'rps' | 'poke' | 'music' | 'weather' | 'location' | 'share' | 'gift' | 'market_face' | 'forward' | 'contact' | 'json' | 'xml' | 'file' | 'markdown' | 'markdown_tpl' | 'keyboard' | 'node' | 'rows' | 'record' | 'long_msg'
+export type ElementType = 'text' | 'at' | 'face' | 'bubble_face' | 'reply' | 'image' | 'video' | 'basketball' | 'dice' | 'rps' | 'poke' | 'music' | 'weather' | 'location' | 'share' | 'gift' | 'market_face' | 'forward' | 'contact' | 'json' | 'xml' | 'file' | 'markdown' | 'markdown_tpl' | 'keyboard' | 'node' | 'rows' | 'record' | 'long_msg' | 'raw'
 
 export interface Element {
   /**
@@ -585,7 +585,15 @@ export interface LongMsgElement extends Element {
   id: string
 }
 
-export type KarinElement = TextElement | AtElement | FaceElement | BubbleFaceElement | ReplyElement | ImageElement | VideoElement | BasketballElement | DiceElement | RpsElement | PokeElement | MusicElement | WeatherElement | LocationElement | ShareElement | GiftElement | MarketFaceElement | ForwardElement | ContactElement | JsonElement | XmlElement | FileElement | ButtonElement | KeyBoardElement | RecordElement | LongMsgElement | TplMarkdownElement | RawMarkdownElement
+/**
+ * 原生元素
+ */
+export interface RawElement extends Element {
+  type: 'raw'
+  data: any
+}
+
+export type KarinElement = TextElement | AtElement | FaceElement | BubbleFaceElement | ReplyElement | ImageElement | VideoElement | BasketballElement | DiceElement | RpsElement | PokeElement | MusicElement | WeatherElement | LocationElement | ShareElement | GiftElement | MarketFaceElement | ForwardElement | ContactElement | JsonElement | XmlElement | FileElement | ButtonElement | KeyBoardElement | RecordElement | LongMsgElement | TplMarkdownElement | RawMarkdownElement | RawElement
 
 /**
  * - 构建自定义转发节点 此元素仅可通过专用接口发送 不支持混合发送
