@@ -10,7 +10,7 @@ const { log_level, log_days_Keep, log4jsCfg } = config.Config
 const level = log_level || log4jsCfg.level || 'info'
 const daysToKeep = log_days_Keep || log4jsCfg.daysToKeep || 7
 const { overall, fragments, maxLogSize } = log4jsCfg
-const defaultOptions = { appenders: ['console'], level, enableCallStack: process.env.KarinMode === 'dev' }
+const defaultOptions = { appenders: ['console'], level, enableCallStack: process.env.karin_app_mode === 'dev' }
 
 const options: {
   appenders: {
@@ -61,7 +61,7 @@ const options: {
       type: 'console',
       layout: {
         type: 'pattern',
-        pattern: `%[[Karin][%d{hh:mm:ss.SSS}][%4.4p]%] ${process.env.KarinMode === 'dev' ? '[%f{3}:%l] ' : ''}%m`,
+        pattern: `%[[Karin][%d{hh:mm:ss.SSS}][%4.4p]%] ${process.env.karin_app_mode === 'dev' ? '[%f{3}:%l] ' : ''}%m`,
       },
     },
   },
