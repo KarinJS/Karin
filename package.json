@@ -118,14 +118,17 @@
   ],
   "scripts": {
     ".": "node lib/cli/start.js .",
-    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix:all",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run build:vue && npm run fix:all && npm run copy-public",
+    "build:vue": "webpack --config webpack.config.js --mode production",
     "build:npm": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "dev": "node lib/cli/start.js dev",
     "fix": "eslint lib/**/*.js --fix",
     "fix:all": "eslint lib/**/*.js --fix && eslint lib/**/*.d.ts --fix",
     "pub": "npm publish --access public",
     "sort": "npx sort-package-json && sort-json tsconfig.json",
-    "start": "node lib/cli/start.js start"
+    "start": "node lib/cli/start.js start",
+    "restart": "npm run build && npm run start",
+    "copy-public": "ncp src/public lib/public"
   },
   "dependencies": {
     "@types/express": "^4.17.21",
@@ -133,6 +136,8 @@
     "@types/node": "^22.5.0",
     "@types/node-schedule": "^2.1.7",
     "@types/ws": "^8.5.12",
+    "@types/cors": "^2.8.12",
+    "@types/vue": "^2.0.0",
     "art-template": "4.13.2",
     "axios": "1.7.5",
     "chalk": "5.3.0",
@@ -146,9 +151,29 @@
     "node-schedule": "2.1.1",
     "redis": "4.7.0",
     "ws": "8.18.0",
-    "yaml": "2.5.0"
-  },
+    "yaml": "2.5.0",
+    "webpack": "^5.64.0",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.6.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "html-webpack-plugin": "^5.5.0",
+
+    "vue": "3.5.3",
+    "vue-draggable-plus": "0.5.3",
+    "vue-i18n": "9.14.0",
+    "vue-router": "4.4.3",
+    "vue-loader": "17.4.2",
+    "vue-style-loader": "^4.1.0",
+    "css-loader": "^6.5.3",
+    "element-plus": "2.8.0",
+    "@element-plus/icons-vue": "2.3.1",
+    "dayjs": "1.11.13",
+    "ts-loader": "^9.5.1",
+
+    "cors": "2.8.5"
+  },  
   "devDependencies": {
+    "ncp": "^2.0.0",
     "eslint": "^9.9.1",
     "neostandard": "^0.11.4",
     "sort-json": "^2.0.1",

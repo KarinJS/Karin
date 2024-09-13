@@ -381,7 +381,11 @@ export class Karin extends Listeners {
     if (this.#start) return
     this.#start = true
     const { server } = await import('../server/server')
+    const { dashboardServer } = await import('../server/dashboardServer')
+    const { api2Server } = await import('../server/v2Server')
     server.init()
+    dashboardServer.init()
+    api2Server.init()
     pluginLoader.load()
     this.emit('adapter', RenderServer)
     this.emit('adapter', onebot11)

@@ -50,22 +50,22 @@ export const config = new (class Cfg {
    * 初始化配置
    */
   async initCfg () {
-    const list = [
-      this.dir + '/temp/input',
-      this.dir + '/plugins/karin-plugin-example',
-      this.cfgDir + '/config',
-      this.cfgDir + '/plugin',
-    ]
+    // const list = [
+    //   this.dir + '/temp/input',
+    //   this.dir + '/plugins/karin-plugin-example',
+    //   this.cfgDir + '/config',
+    //   this.cfgDir + '/plugin',
+    // ]
 
-    list.forEach(path => this.mkdir(path))
-    if (this.pkgCfgDir !== (this.cfgDir + '/defSet').replace(/\\/g, '/')) {
-      const files = fs.readdirSync(this.pkgCfgDir).filter(file => file.endsWith('.yaml'))
-      files.forEach(file => {
-        const path = `${this.cfgDir}/config/${file}`
-        const pathDef = `${this.pkgCfgDir}/${file}`
-        if (!fs.existsSync(path)) fs.copyFileSync(pathDef, path)
-      })
-    }
+    // list.forEach(path => this.mkdir(path))
+    // if (this.pkgCfgDir !== (this.cfgDir + '/defSet').replace(/\\/g, '/')) {
+    //   const files = fs.readdirSync(this.pkgCfgDir).filter(file => file.endsWith('.yaml'))
+    //   files.forEach(file => {
+    //     const path = `${this.cfgDir}/config/${file}`
+    //     const pathDef = `${this.pkgCfgDir}/${file}`
+    //     if (!fs.existsSync(path)) fs.copyFileSync(pathDef, path)
+    //   })
+    // }
 
     /** 为每个插件包创建统一存储的文件夹 */
     const plugins = await this.getPlugins()
@@ -179,6 +179,16 @@ export const config = new (class Cfg {
     if (res) return res
 
     /** 取配置 */
+    /** 检查配置文件完整性 */
+    const defSetFiles = fs.readdirSync(this.pkgCfgDir).filter(file => file.endsWith('.yaml'))
+    defSetFiles.forEach(file => {
+      const path = `${this.cfgDir}/config/${file}`
+      const pathDef = `${this.pkgCfgDir}/${file}`
+      if (!fs.existsSync(path)) {
+        fs.copyFileSync(pathDef, path)
+        // console.log(`[配置文件缺失][${file}] 已复制`)
+      }
+    })
     const config = this.getYaml('config', 'config', true)
     const defSet = this.getYaml('defSet', 'config', false)
     const data = { ...defSet, ...config }

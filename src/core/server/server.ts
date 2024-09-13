@@ -126,7 +126,7 @@ export const server = new (class Server {
       /** 监听端口 */
       const { host, port } = config.Server.http
       this.server.listen(port, host, () => {
-        logger.mark('[服务器][启动成功][HTTP]: ' + logger.green(`http://${host}:${port}`))
+        logger.mark('[服务器]HTTP服务器监听在: ' + logger.green(`http://${host}:${port}`))
       })
 
       karin.once('restart.http', () => {

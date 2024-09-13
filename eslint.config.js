@@ -1,7 +1,7 @@
 import neostandard from 'neostandard'
 
 export default neostandard({
-  ignores: ['node_modules', 'temp', 'logs', 'data'],
+  ignores: ['node_modules', 'temp', 'logs', 'data', 'src/public', 'lib/public'],
   globals: ['logger', 'NodeJS'],
   ts: true,
 }).map(val => {
@@ -21,5 +21,9 @@ export default neostandard({
 
   /** 关闭驼峰命名: 追随已有标准 更自由的命名风格 */
   if (val?.rules?.['camelcase']) val.rules['camelcase'] = ['off']
+
+  /** 禁用 react/no-is-mounted 规则 */
+  if (val?.rules) val.rules['react/no-is-mounted'] = 'off'
+
   return val
 })
