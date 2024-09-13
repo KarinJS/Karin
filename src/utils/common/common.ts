@@ -10,7 +10,9 @@ import { pipeline, Readable } from 'stream'
 import { logger, segment, YamlEditor } from 'karin/utils'
 import { ButtonElement, ButtonType, dirName, KarinElement, NodeElement, KeyBoardElement } from 'karin/types'
 import os from 'os'
-
+import { readJson } from 'karin/api/readJson'
+import { getNpmPlugins } from 'karin/api/npm'
+import { getGitPlugins } from 'karin/api/git'
 export interface NpmInfo {
   plugin: string,
   path: string,
@@ -161,7 +163,7 @@ export class Common {
    */
   readJson (file: string, isThrow = false): any {
     try {
-      return JSON.parse(fs.readFileSync(file, 'utf8'))
+      return readJson(file)
     } catch (error) {
       logger.debug(`[common][error] 读取json文件错误: ${file} ` + error)
       if (isThrow) throw error
@@ -447,14 +449,7 @@ export class Common {
    * @param isPack - 是否屏蔽不带package.json的插件，默认为false
    */
   getPlugins (isPack = false): Array<dirName> {
-    const dir = this.absPath('./plugins', false)
-    let list = fs.readdirSync(dir, { withFileTypes: true })
-    /** 忽略非文件夹、非 karin-plugin-开头的文件夹 */
-    list = list.filter(v => v.isDirectory() && v.name.startsWith('karin-plugin-'))
-    if (isPack) list = list.filter(v => fs.existsSync(`${dir}/${v.name}/package.json`))
-    const arr: dirName[] = []
-    list.map(v => arr.push(v.name as dirName))
-    return arr
+    return this.getGitPlugins(isPack)
   }
 
   /**
@@ -462,7 +457,7 @@ export class Common {
    * @param isPack - 是否屏蔽不带package.json的插件，默认为false
    */
   getGitPlugins (isPack = false): Array<dirName> {
-    return this.getPlugins(isPack)
+    return getGitPlugins(isPack)
   }
 
   /**
@@ -471,62 +466,7 @@ export class Common {
    * 默认只返回插件npm包名，为true时返回详细的{dir, name}[]
    */
   async getNpmPlugins<T extends boolean> (showDetails: T): Promise<T extends true ? NpmInfo[] : string[]> {
-    /** 屏蔽的依赖包列表 */
-    const exclude = ['art-template', 'axios', 'chalk', 'chokidar', 'commander', 'express', 'level', 'lodash', 'log4js', 'moment', 'node-karin', 'node-schedule', 'redis', 'ws', 'yaml']
-
-    const pkg = this.readJson('./package.json')
-    const dependencies = Object.keys(pkg.dependencies).filter((name) => !exclude.includes(name))
-
-    if (!showDetails) {
-      const list: string[] = []
-      const readPackageJson = async (name: string) => {
-        try {
-          const pkgPath = path.join(process.cwd(), 'node_modules', name, 'package.json')
-          const pkg = this.readJson(pkgPath)
-          if (pkg?.karin) list.push(name)
-        } catch (error: any) {
-          logger.error(`[common] 解析 package.json 时出错：${error.stack || error.message || JSON.stringify(error)}`)
-        }
-      }
-
-      await Promise.all(dependencies.map(readPackageJson))
-      return list as T extends true ? NpmInfo[] : string[]
-    }
-
-    const list: NpmInfo[] = []
-    /** 获取详细的npm信息 */
-    const readPackageJson = async (files: string) => {
-      try {
-        const root = path.join(process.cwd(), 'node_modules', files)
-        const pkgPath = path.join(root, 'package.json')
-        const pkg = this.readJson(pkgPath)
-        if (!pkg?.karin) return
-
-        if (pkg?.main) {
-          list.push({ plugin: files, path: path.dirname(pkg.main), file: path.basename(pkg.main), isMain: true })
-        }
-
-        if (pkg?.karin?.apps?.length) {
-          pkg.karin.apps.forEach((app: string) => {
-            if (!fs.existsSync(path.join(root, app))) {
-              logger.error(`[common] npm插件${files}的app目录${app}不存在 已跳过`)
-              return
-            }
-
-            fs.readdirSync(path.join(root, app)).forEach((filename: string) => {
-              /** 忽略非js文件 npm包不考虑ts */
-              if (!filename.endsWith('.js')) return
-              list.push({ plugin: files, path: app, file: filename, isMain: false })
-            })
-          })
-        }
-      } catch (error: any) {
-        logger.error(`[common] 获取npm插件列表时出错：${error.stack || error.message || JSON.stringify(error)}`)
-      }
-    }
-
-    await Promise.all(dependencies.map(readPackageJson))
-    return list as T extends true ? NpmInfo[] : string[]
+    return getNpmPlugins(showDetails)
   }
 
   /**

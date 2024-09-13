@@ -3,7 +3,7 @@ import Yaml from 'yaml'
 import path from 'path'
 import { Logger } from 'log4js'
 import chokidar from 'chokidar'
-import { karinDir } from 'karin/core/init/dir'
+import { karinDir, isPkg } from 'karin/core/init/dir'
 import { common } from 'karin/utils/common/common'
 import { Redis, App, Config, Server, Package, GroupCfg, KarinEventTypes } from 'karin/types'
 
@@ -11,31 +11,24 @@ import { Redis, App, Config, Server, Package, GroupCfg, KarinEventTypes } from '
  * 配置文件
  */
 export const config = new (class Cfg {
-  /**
-   * 运行目录绝对路径
-   */
+  /** karin运行目录绝对路径 */
   dir: string
-  /**
-   * 运行目录配置文件夹路径
-   */
+  /** 用户生成配置目录 */
   cfgDir: string
-  /**
-   * node-karin npm包路径
-   */
-  pkgDir: string
-  /**
-   * node-karin 包配置文件夹路径
-   */
+  /** 默认配置目录 */
   pkgCfgDir: string
+  /** 缓存 */
   change: Map<string, any>
+  /** 监听 */
   watcher: Map<string, any>
+  /** 拦截器状态 */
   review: boolean
+
   logger!: Logger
   constructor () {
     this.dir = process.cwd()
-    this.pkgDir = karinDir
     this.cfgDir = this.dir + '/config'
-    this.pkgCfgDir = this.pkgDir + '/config/defSet'
+    this.pkgCfgDir = karinDir + '/config/defSet'
 
     /** 缓存 */
     this.change = new Map()
@@ -50,22 +43,31 @@ export const config = new (class Cfg {
    * 初始化配置
    */
   async initCfg () {
-    // const list = [
-    //   this.dir + '/temp/input',
-    //   this.dir + '/plugins/karin-plugin-example',
-    //   this.cfgDir + '/config',
-    //   this.cfgDir + '/plugin',
-    // ]
+    const list = [
+      this.dir + '/temp/input',
+      this.dir + '/plugins/karin-plugin-example',
+      this.cfgDir + '/config',
+      this.cfgDir + '/plugin',
+    ]
 
-    // list.forEach(path => this.mkdir(path))
-    // if (this.pkgCfgDir !== (this.cfgDir + '/defSet').replace(/\\/g, '/')) {
-    //   const files = fs.readdirSync(this.pkgCfgDir).filter(file => file.endsWith('.yaml'))
-    //   files.forEach(file => {
-    //     const path = `${this.cfgDir}/config/${file}`
-    //     const pathDef = `${this.pkgCfgDir}/${file}`
-    //     if (!fs.existsSync(path)) fs.copyFileSync(pathDef, path)
-    //   })
-    // }
+    list.forEach(path => this.mkdir(path))
+
+    /** 拷贝默认配置文件 */
+    if (isPkg) {
+      const files = fs.readdirSync(this.pkgCfgDir).filter(file => file.endsWith('.yaml'))
+      files.forEach(file => {
+        const path = `${this.cfgDir}/config/${file}`
+        const pathDef = `${this.pkgCfgDir}/${file}`
+        if (!fs.existsSync(path)) fs.copyFileSync(pathDef, path)
+      })
+    } else {
+      const files = fs.readdirSync(this.cfgDir + '/defSet').filter(file => file.endsWith('.yaml'))
+      files.forEach(file => {
+        const path = `${this.cfgDir}/config/${file}`
+        const pathDef = `${this.cfgDir}/defSet/${file}`
+        if (!fs.existsSync(path)) fs.copyFileSync(pathDef, path)
+      })
+    }
 
     /** 为每个插件包创建统一存储的文件夹 */
     const plugins = await this.getPlugins()
@@ -179,38 +181,28 @@ export const config = new (class Cfg {
     if (res) return res
 
     /** 取配置 */
-    /** 检查配置文件完整性 */
-    const defSetFiles = fs.readdirSync(this.pkgCfgDir).filter(file => file.endsWith('.yaml'))
-    defSetFiles.forEach(file => {
-      const path = `${this.cfgDir}/config/${file}`
-      const pathDef = `${this.pkgCfgDir}/${file}`
-      if (!fs.existsSync(path)) {
-        fs.copyFileSync(pathDef, path)
-        // console.log(`[配置文件缺失][${file}] 已复制`)
-      }
-    })
     const config = this.getYaml('config', 'config', true)
     const defSet = this.getYaml('defSet', 'config', false)
-    const data = { ...defSet, ...config }
+    const data = { ...defSet, ...config } as Config
     const Config = {
       ...data,
       WhiteList: {
-        users: data.WhiteList.users.map((i: string | number) => String(i)),
-        groups: data.WhiteList.groups.map((i: string | number) => String(i)),
-        GroupMsgLog: data.WhiteList.GroupMsgLog.map((i: string | number) => String(i)),
+        users: data?.WhiteList?.users?.map((i: string | number) => String(i)) || [],
+        groups: data?.WhiteList?.groups?.map((i: string | number) => String(i)) || [],
+        GroupMsgLog: data?.WhiteList?.GroupMsgLog?.map((i: string | number) => String(i)) || [],
       },
       BlackList: {
-        users: data.BlackList.users.map((i: string | number) => String(i)),
-        groups: data.BlackList.groups.map((i: string | number) => String(i)),
-        GroupMsgLog: data.BlackList.GroupMsgLog.map((i: string | number) => String(i)),
+        users: data?.BlackList?.users?.map((i: string | number) => String(i)) || [],
+        groups: data?.BlackList?.groups?.map((i: string | number) => String(i)) || [],
+        GroupMsgLog: data?.BlackList?.GroupMsgLog?.map((i: string | number) => String(i)) || [],
       },
-      master: data.master.map((i: string | number) => String(i)),
-      admin: data.admin.map((i: string | number) => String(i)),
+      master: data?.master?.map((i: string | number) => String(i)) || [],
+      admin: data?.admin?.map((i: string | number) => String(i)) || [],
       private: {
-        white_list: data.private.white_list.map((i: string | number) => String(i)),
-        tips: data.private.tips,
+        white_list: data?.private?.white_list?.map((i: string | number) => String(i)) || [],
+        tips: data?.private?.tips || '',
       },
-    }
+    } as Config
     /** 缓存 */
     this.change.set(key, Config)
     return Config
@@ -239,7 +231,7 @@ export const config = new (class Cfg {
    * 实时获取packageon文件
    */
   get package (): Package {
-    const data = fs.readFileSync(this.pkgDir + '/package.json', 'utf8')
+    const data = fs.readFileSync(karinDir + '/package.json', 'utf8')
     const pack = JSON.parse(data) as Package
     return pack
   }
@@ -352,7 +344,7 @@ export const config = new (class Cfg {
     // 应该改成事件监听
     if (this.review) return
     this.review = true
-    const { review } = await import('karin/event')
+    const { review } = await import('karin/event/handler/review')
     review.main()
     this.review = false
   }

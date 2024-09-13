@@ -1,4 +1,4 @@
-import { logger } from 'karin/utils'
+import { logger } from 'karin/utils/core/logger'
 
 /**
  * 启动日志

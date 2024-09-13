@@ -31,6 +31,7 @@ import {
   RecordElement,
   KeyBoardElement,
   Button,
+  RawElement,
 } from 'karin/types'
 
 export const segment = new (class Segment {
@@ -577,6 +578,17 @@ export const segment = new (class Segment {
       user_id,
       nickname,
       content,
+    }
+  }
+
+  /**
+   * 发送原生格式给予适配器处理
+   * @param data - 原生数据
+   */
+  raw (data: any): RawElement {
+    return {
+      type: 'raw',
+      data,
     }
   }
 })()

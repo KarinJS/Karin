@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 import { OB11Segment } from './segment'
 import { GroupSender, PrivateSender, ob11Sender } from './sender'
 
@@ -11,7 +9,7 @@ export const enum OB11PostType {
   Notice = 'notice',
   Request = 'request',
   MetaEvent = 'meta_event',
-  MessageSent = 'message_sent'
+  MessageSent = 'message_sent',
 }
 
 /**
@@ -19,7 +17,7 @@ export const enum OB11PostType {
  */
 export const enum OB11MessageType {
   Private = 'private',
-  Group = 'group'
+  Group = 'group',
 }
 
 /**
@@ -31,7 +29,7 @@ export const enum OB11MessageSubType {
   Other = 'other',
   Normal = 'normal',
   Anonymous = 'anonymous',
-  Notice = 'notice'
+  Notice = 'notice',
 }
 
 /**
@@ -174,7 +172,8 @@ export const enum OB11NoticeType {
   GroupRecall = 'group_recall',
   FriendRecall = 'friend_recall',
   Notify = 'notify',
-  GroupMsgEmojiLike = 'group_msg_emoji_like'
+  GroupMsgEmojiLike = 'group_msg_emoji_like',
+  GroupMsgEmojiLikeLagrange = 'reaction',
 }
 
 /**
@@ -503,11 +502,45 @@ export interface OneBot11GroupMessageReaction extends OneBot11Notice {
 }
 
 /**
+ * 群表情回应事件 Lagrange
+ */
+export interface OneBot11GroupMessageReactionLagrange extends OneBot11Notice {
+  /**
+   * - 消息类型
+   */
+  notice_type: OB11NoticeType.GroupMsgEmojiLikeLagrange
+  /**
+   * - 提示类型
+   */
+  sub_type: 'remove' | 'add'
+  /**
+   * - 群号
+   */
+  group_id: string
+  /**
+   * - 发送者 QQ 号
+   */
+  operator_id: string
+  /**
+   * - 消息 ID
+   */
+  message_id: string
+  /**
+   * - 表情ID
+   */
+  code: string
+  /**
+   * - 表情数量
+   */
+  count: number
+}
+
+/**
  * 请求事件类型
  */
 export const enum OB11RequestType {
   Friend = 'friend',
-  Group = 'group'
+  Group = 'group',
 }
 
 /**
@@ -627,7 +660,7 @@ export type OB11MessageEvent = OB11PrivateMessage | OB11GroupMessage
 /**
  * 所有通知事件类型
  */
-export type OB11NoticeEvent = OneBot11GroupUpload | OneBot11GroupAdmin | OneBot11GroupDecrease | OneBot11GroupIncrease | OneBot11GroupBan | OneBot11FriendAdd | OneBot11GroupRecall | OneBot11FriendRecall | OneBot11Poke | OneBot11LuckyKing | OneBot11Honor | OneBot11GroupMessageReaction
+export type OB11NoticeEvent = OneBot11GroupUpload | OneBot11GroupAdmin | OneBot11GroupDecrease | OneBot11GroupIncrease | OneBot11GroupBan | OneBot11FriendAdd | OneBot11GroupRecall | OneBot11FriendRecall | OneBot11Poke | OneBot11LuckyKing | OneBot11Honor | OneBot11GroupMessageReaction | OneBot11GroupMessageReactionLagrange
 
 /**
  * 所有请求事件类型

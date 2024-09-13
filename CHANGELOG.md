@@ -1,5 +1,29 @@
 # 更新日志
 
+## [0.12.5](https://github.com/KarinJS/Karin/compare/v0.12.4...v0.12.5) (2024-09-12)
+
+
+### Bug Fixes
+
+* build error ([92bb5e3](https://github.com/KarinJS/Karin/commit/92bb5e302f26873dbaaa3bd279b9573033aab4f8))
+
+## [0.12.4](https://github.com/KarinJS/Karin/compare/v0.12.3...v0.12.4) (2024-09-12)
+
+
+### Bug Fixes
+
+* close [#157](https://github.com/KarinJS/Karin/issues/157) ([76aaa47](https://github.com/KarinJS/Karin/commit/76aaa476ea30170f8f023655c5a4f36d9e3c5f70))
+* close [#162](https://github.com/KarinJS/Karin/issues/162) ([7e9ac29](https://github.com/KarinJS/Karin/commit/7e9ac29d1668d13f7d233ebd4c16f99e520cced2))
+* close [#164](https://github.com/KarinJS/Karin/issues/164) ([ee71426](https://github.com/KarinJS/Karin/commit/ee7142610f2f1ee04e540cc51e399adba768a2cc))
+
+## [0.12.3](https://github.com/KarinJS/Karin/compare/v0.12.2...v0.12.3) (2024-09-12)
+
+
+### Bug Fixes
+
+* close [#153](https://github.com/KarinJS/Karin/issues/153)  [#156](https://github.com/KarinJS/Karin/issues/156) [#152](https://github.com/KarinJS/Karin/issues/152) ([8447b93](https://github.com/KarinJS/Karin/commit/8447b93b0e9d7f992a310c9bb4bbd1fd5f9ae0a6))
+* store ([6f7bda3](https://github.com/KarinJS/Karin/commit/6f7bda3b4592059cede1505da95b88d1f46face0))
+
 ## [0.12.2](https://github.com/KarinJS/Karin/compare/v0.12.1...v0.12.2) (2024-08-27)
 
 

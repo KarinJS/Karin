@@ -5,6 +5,8 @@ import axios from 'axios'
 import { fileURLToPath } from 'url'
 import { getRegistry } from './pkg'
 import { exec as execCmd, spawn, ChildProcess, ExecOptions } from 'child_process'
+import { getNpmPlugins } from 'karin/api/npm'
+import { getGitPlugins } from 'karin/api/git'
 
 export const enum Runner {
   Node = 'node',
@@ -153,7 +155,7 @@ export class KarinCli {
 
     /** 修正入口文件路径 兼容0.6.28以前的版本 */
     if (!fs.existsSync('./src') && filePath === './config/config/pm2.yaml') {
-      const script = './node_modules/node-karin/lib/index.js'
+      const script = './node_modules/node-karin/lib/cli/start.js'
       if (data.apps[0].script !== script) {
         data.apps[0].script = script
         fs.writeFileSync(filePath, yaml.stringify(data))
@@ -206,25 +208,8 @@ export class KarinCli {
    * 更新依赖
    */
   async update () {
-    /** 屏蔽的依赖包列表 */
-    const pkgdependencies = [
-      'art-template',
-      'axios',
-      'chalk',
-      'chokidar',
-      'commander',
-      'express',
-      'level',
-      'lodash',
-      'log4js',
-      'moment',
-      'node-schedule',
-      'redis',
-      'ws',
-      'yaml',
-    ]
-
-    const list = Object.keys(this.pkg(false).dependencies).filter(key => !pkgdependencies.includes(key))
+    const list = await getNpmPlugins(false)
+    list.push('node-karin')
 
     /** 获取包管理器 */
     const pkg = getRegistry()
@@ -252,7 +237,7 @@ export class KarinCli {
 
     console.log('[依赖更新] 所有npm依赖已更新完成~')
     console.log('[依赖更新] 开始更新git插件...')
-    const gitList = this.getGitPlugins()
+    const gitList = getGitPlugins()
     if (!gitList.length) return console.log('[依赖更新] 没有git插件需要更新~')
 
     await Promise.all(gitList.map(async item => {
@@ -308,20 +293,6 @@ export class KarinCli {
     }
 
     return text.trim()
-  }
-
-  /**
-   * 获取git插件列表
-   */
-  getGitPlugins (): Array<string> {
-    const dir = path.resolve(process.cwd(), 'plugins')
-    let list = fs.readdirSync(dir, { withFileTypes: true })
-    /** 忽略非文件夹、非 karin-plugin-开头的文件夹 */
-    list = list.filter(v => v.isDirectory() && v.name.startsWith('karin-plugin-'))
-    list = list.filter(v => fs.existsSync(`${dir}/${v.name}/package.json`))
-    const arr: string[] = []
-    list.map(v => arr.push(v.name))
-    return arr
   }
 
   /**
