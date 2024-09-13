@@ -9,8 +9,8 @@
 ## 函数式语法糖示例
 
 - <Badge type="warning" text="文本" />
-
-```js
+::: code-group
+```js [js]
 import karin from 'node-karin'
 
 // 直接回复字符串
@@ -23,10 +23,10 @@ export const hello = karin.command(/^#你好$/, async (e) => {
 })
 
 ```
-
+:::
 - <Badge type="warning" text="图片" />
-
-```js
+::: code-group
+```js [js]
 import karin, { segment } from 'node-karin'
 import { axios } from 'node-karin/modules.js'
 
@@ -37,10 +37,11 @@ export const image = karin.command(/^#动漫壁纸$/, async (e) => {
 })
 
 ```
+:::
 
 - <Badge type="warning" text="at" />
-
-```js
+::: code-group
+```js [js]
 import karin, { segment } from 'node-karin'
 
 export const at = karin.command(/^#at$/, async (e) => {
@@ -59,10 +60,10 @@ export const at = karin.command(/^#at$/, async (e) => {
 })
 
 ```
-
+:::
 - <Badge type="warning" text="引用回复" />
-
-```js
+::: code-group
+```js [js]
 import karin, { segment } from 'node-karin'
 
 export const reply = karin.command(/^#reply$/, async (e) => {
@@ -81,10 +82,11 @@ export const reply = karin.command(/^#reply$/, async (e) => {
 })
 
 ```
+:::
 
 - <Badge type="warning" text="语音" />
-
-```js
+::: code-group
+```js [js]
 import karin, { segment } from 'node-karin'
 
 export const record = karin.command(/^#语音$/, async (e) => {
@@ -93,10 +95,11 @@ export const record = karin.command(/^#语音$/, async (e) => {
 })
 
 ```
+:::
 
 - <Badge type="warning" text="视频" />
-
-```js
+::: code-group
+```js [js]
 import karin, { segment } from 'node-karin'
 
 export const video = karin.command(/^#视频$/, async (e) => {
@@ -105,10 +108,11 @@ export const video = karin.command(/^#视频$/, async (e) => {
 })
 
 ```
+:::
 
 - <Badge type="warning" text="表情" />
-
-```js
+::: code-group
+```js [js]
 import karin, { segment } from 'node-karin'
 
 export const face = karin.command(/^#表情$/, async (e) => {
@@ -118,6 +122,7 @@ export const face = karin.command(/^#表情$/, async (e) => {
 })
 
 ```
+:::
 
 <Badge type="danger" text="待完善..." />
 
@@ -126,8 +131,8 @@ export const face = karin.command(/^#表情$/, async (e) => {
 > 该示例为消息插件示例  
 > 将下面的代码复制到 `index-demo.js` 中，保存  
 >对机器人发送 `#你好` ，机器人会回复 `你好` 、图片、语音、视频、@某人
-
-```js
+::: code-group
+```js [js]
 import { Plugin, segment } from 'node-karin'
 
 export class hello extends Plugin {
@@ -167,10 +172,11 @@ export class hello extends Plugin {
 }
 
 ```
+:::
 
 ## 更复杂的类语法糖示例
-
-```js
+::: code-group
+```js [js]
 import { Plugin, segment } from 'node-karin'
 
 export class hello extends Plugin {
@@ -234,3 +240,4 @@ export class hello extends Plugin {
 }
 
 ```
+:::

@@ -1,41 +1,112 @@
-export const Footer_Data = {
+export const Footer_Data: FooterData = {
   // beian: { icp: '备案号', police: '公网安备号' },
   author: { name: 'KarinJS', link: 'https://github.com/KarinJS', time: '2024' },
   group: [
     {
-      title: '生产依赖',
+      title: '解决方案',
+      icon: 'fa-solid fa-lightbulb',
       links: [
-        { name: 'art-template', href: 'https://www.npmjs.com/package/art-template' },
-        { name: 'axios', href: 'https://www.npmjs.com/package/axios' },
-        { name: 'chalk', href: 'https://www.npmjs.com/package/chalk' },
-        { name: 'chokidar', href: 'https://www.npmjs.com/package/chokidar' },
-        { name: 'commander', href: 'https://www.npmjs.com/package/commander' },
-        { name: 'express', href: 'https://www.npmjs.com/package/express' },
-        { name: 'level', href: 'https://www.npmjs.com/package/level' },
-        { name: 'log4js', href: 'https://www.npmjs.com/package/log4js' },
-        { name: 'moment', href: 'https://www.npmjs.com/package/moment' },
-        { name: 'node-schedule', href: 'https://www.npmjs.com/node-schedule' },
-        { name: 'redis', href: 'https://www.npmjs.com/package/redis' },
-        { name: 'ws', href: 'https://www.npmjs.com/package/ws' },
-        { name: 'yaml', href: 'https://www.npmjs.com/package/yaml' },
+        { name: '外置渲染器', href: 'https://github.com/KarinJS/karin-puppeteer' },
+        { name: 'Karin 渲染器核心', href: 'https://github.com/KarinJS/puppeteer-core' },
+        { name: '一站式 Karin 服务支持', href: 'https://github.com/KarinJS/karin-support' },
+        { name: 'Markdown 转 HTML', href: 'https://github.com/KarinJS/md-html' },
       ]
     },
     {
-      title: '开发依赖',
+      title: '适配器',
+      icon: 'fa-solid fa-puzzle-piece',
       links: [
-        { name: '@types/express', href: 'https://www.npmjs.com/package/@types/express' },
-        { name: '@types/lodash', href: 'https://www.npmjs.com/package/@types/lodash' },
-        { name: '@types/node', href: 'https://www.npmjs.com/package/@types/node' },
-        { name: '@types/node-schedule', href: 'https://www.npmjs.com/package/@types/node-schedule' },
-        { name: '@types/ws', href: 'https://www.npmjs.com/package/@types/ws' },
-        { name: 'eslint', href: 'https://www.npmjs.com/package/eslint' },
-        { name: 'neostandard', href: 'https://www.npmjs.com/package/neostandard' },
-        { name: 'sort-json', href: 'https://www.npmjs.com/package/sort-json' },
-        { name: 'sort-package-json', href: 'https://www.npmjs.com/package/sort-package-json' },
-        { name: 'tsc-alias', href: 'https://www.npmjs.com/package/tsc-alias' },
-        { name: 'tsx', href: 'https://www.npmjs.com/package/tsx' },
-        { name: 'typescript', href: 'https://www.npmjs.com/package/typescript' },
+        { name: 'ICQQ 适配器', href: 'https://github.com/KarinJS/karin-plugin-adapter-icqq' },
+        { name: 'QQBot 适配器', href: 'https://www.npmjs.com/package/axios' },
+      ]
+    },
+    {
+      title: '其他',
+      icon: 'fa-solid fa-expand',
+      links: [
+        { name: 'JavaScript 插件开发模板', href: 'https://github.com/KarinJS/karin-plugin-template' },
+        { name: 'TypeScript 插件开发模板', href: 'https://github.com/KarinJS/karin-plugin-template-ts' },
       ]
     }
   ]
+}
+
+/**
+ * Footer 的数据对象。
+ */
+interface FooterData {
+  /**
+   * 各个 section 的数据。
+   */
+  group: Array<{
+    /**
+     * Section 的标题。
+     */
+    title: string
+
+    /**
+     * 图标的类名（Font Awesome 图标类名）。
+     */
+    icon?: string
+
+    /**
+     * 该 section 下的链接。
+     */
+    links: Array<{
+      /**
+       * 链接文本。
+       */
+      name: string
+
+      /**
+       * 链接的图标类名（Font Awesome 图标类名）。
+       */
+      icon?: string
+
+      /**
+       * 链接地址。
+       */
+      href: string
+
+      /**
+       * 链接是否为内部链接。
+       */
+      internal?: boolean
+    }>
+  }>
+
+  /**
+   * 备案信息。
+   */
+  beian?: {
+    /**
+     * ICP 备案号。
+     */
+    icp?: string
+
+    /**
+     * 公安备案号。
+     */
+    police?: string
+  }
+
+  /**
+   * 作者信息。
+   */
+  author?: {
+    /**
+     * 作者名称。
+     */
+    name?: string
+
+    /**
+     * 版权年份。
+     */
+    time?: string
+
+    /**
+     * 作者的链接。
+     */
+    link?: string
+  }
 }

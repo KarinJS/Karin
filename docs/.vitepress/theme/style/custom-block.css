@@ -1,0 +1,94 @@
+/* .vitepress/theme/style/custom-block.css */
+/* 深浅色卡 */
+:root {
+  --vp-custom-block-info: #cccccc;
+  --vp-custom-block-info-bg: #fdfdfe;
+
+  --vp-custom-block-tip: #009400;
+  --vp-custom-block-tip-bg: #e6f6e6;
+
+  --vp-custom-block-warning: #e6a700;
+  --vp-custom-block-warning-bg: #fff8e6;
+
+  --vp-custom-block-danger: #e13238;
+  --vp-custom-block-danger-bg: #ffebec;
+
+  --vp-custom-block-note: #4cb3d4;
+  --vp-custom-block-note-bg: #eef9fd;
+
+  --vp-custom-block-important: #a371f7;
+  --vp-custom-block-important-bg: #f4eefe;
+
+  --vp-custom-block-details: #3e3e45;
+  --vp-custom-block-details-bg: #f1f1f1e8;
+}
+
+.dark {
+  --vp-custom-block-info: #cccccc;
+  --vp-custom-block-info-bg: #474748;
+
+  --vp-custom-block-tip: #009400;
+  --vp-custom-block-tip-bg: #003100;
+
+  --vp-custom-block-warning: #e6a700;
+  --vp-custom-block-warning-bg: #4d3800;
+
+  --vp-custom-block-danger: #e13238;
+  --vp-custom-block-danger-bg: #4b1113;
+
+  --vp-custom-block-note: #4cb3d4;
+  --vp-custom-block-note-bg: #193c47;
+
+  --vp-custom-block-important: #a371f7;
+  --vp-custom-block-important-bg: #230555;
+
+  --vp-custom-block-details-bg: #ffffff0d;
+}
+
+/* 标题字体大小 */
+.custom-block-title {
+  font-size: 16px;
+}
+
+/* 注释容器:背景色、左侧 */
+.custom-block.info {
+  background-color: var(--vp-custom-block-info-bg);
+  border-left: 5px solid var(--vp-custom-block-info);
+}
+
+/* 提示容器:边框色、背景色、左侧 */
+.custom-block.tip {
+  /* border-color: var(--vp-custom-block-tip); */
+  background-color: var(--vp-custom-block-tip-bg);
+  border-left: 5px solid var(--vp-custom-block-tip);
+}
+
+/* 警告容器:背景色、左侧 */
+.custom-block.warning {
+  background-color: var(--vp-custom-block-warning-bg);
+  border-left: 5px solid var(--vp-custom-block-warning);
+}
+
+/* 危险容器:背景色、左侧 */
+.custom-block.danger {
+  background-color: var(--vp-custom-block-danger-bg);
+  border-left: 5px solid var(--vp-custom-block-danger);
+}
+
+/* NOTE容器:背景色、左侧 */
+.custom-block.note {
+  background-color: var(--vp-custom-block-note-bg);
+  border-left: 5px solid var(--vp-custom-block-note);
+}
+
+/* IMPORTANT容器:背景色、左侧 */
+.custom-block.important {
+  background-color: var(--vp-custom-block-important-bg);
+  border-left: 5px solid var(--vp-custom-block-important);
+}
+
+/* CAUTION容器:背景色、左侧 */
+.custom-block.caution {
+  background-color: var(--vp-c-red-soft);
+  border-left: 5px solid var(--vp-c-red-3);
+}

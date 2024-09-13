@@ -21,28 +21,28 @@
 }
 
 /* 提示框背景颜色 */
-:root {
+/* :root {
   --vp-custom-block-tip-bg: var(--vp-c-green-soft);
   --vp-home-hero-name-color: transparent;
   --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #6B7BF8, #F68BC6);
-}
+} */
 
 /* 提示框 */
-.custom-block.tip {
+/* .custom-block.tip {
   border-color: var(--vp-c-green-2);
-}
+} */
 
 /* 警告框 */
-.custom-block.warning {
-  /* border-color: #d97706; */
-  border-color: var(--vp-c-yellow-2);
-}
+/* .custom-block.warning { */
+/* border-color: #d97706; */
+/* border-color: var(--vp-c-yellow-2);
+} */
 
 /* 危险框 */
-.custom-block.danger {
-  /* border-color: #f43f5e; */
-  border-color: var(--vp-c-red-2);
-}
+/* .custom-block.danger { */
+/* border-color: #f43f5e; */
+/* border-color: var(--vp-c-red-2);
+} */
 
 /** 响应式图片缩放覆盖范围 */
 /** 最顶层 */

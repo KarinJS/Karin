@@ -84,6 +84,6 @@ outline: [2, 4]
 <NCard title="🙋 获取即时支持" link="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=kDN3vwVj8Qozw94TWX69r24vxrWqkgMy&authKey=NxnqHYmo8037jCeDkO9yIFPOdQxkKa4JlxC%2FAV6UNxwGc%2FwKEVoogi44syB3BWuC&noverify=0&group_code=967068507" >
 你可以加入我们的官方用户交流群来提问
 </NCard>
-<NCard title="📬️ 通过 GitHub Issue" link="https://github.com/KarinJS/Karin/issues/new/choose" >
-也可以给通过创建新的 GitHub Issue 工单
+<NCard title="📬️ 通过 GitHub issue" link="https://github.com/KarinJS/Karin/issues/new/choose" >
+也可以给通过创建新的 GitHub issue 工单
 </NCard>
