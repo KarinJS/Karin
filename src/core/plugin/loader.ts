@@ -100,6 +100,8 @@ class PluginLoader {
       recvMsg: [],
       replyMsg: [],
       sendMsg: [],
+      forwardMsg: [],
+      notFound: [],
     }
 
     this.ext = process.env.karin_app_lang === 'ts' ? ['.js', '.ts'] : ['.js']
@@ -367,6 +369,8 @@ class PluginLoader {
     this.use.recvMsg = lodash.orderBy(this.use.recvMsg, ['rank'], ['asc'])
     this.use.replyMsg = lodash.orderBy(this.use.replyMsg, ['rank'], ['asc'])
     this.use.sendMsg = lodash.orderBy(this.use.sendMsg, ['rank'], ['asc'])
+    this.use.forwardMsg = lodash.orderBy(this.use.forwardMsg, ['rank'], ['asc'])
+    this.use.notFound = lodash.orderBy(this.use.notFound, ['rank'], ['asc'])
 
     const handler = Object.keys(this.handler)
     handler.forEach(key => {
@@ -513,6 +517,10 @@ class PluginLoader {
   /**
    * 缓存插件
    * @param index - 插件索引
+   * @param plugin - 插件名称
+   * @param file - 插件文件
+   * @param info - 插件信息
+   * @param App - 插件类
    */
   async cachePlugin (index: number, plugin: string, file: string, info: AppType, App?: any) {
     if (!info?.name) {
@@ -632,6 +640,9 @@ class PluginLoader {
 
   /**
    * 卸载插件
+   * @param plugin - 插件名称
+   * @param _path - 插件apps相对路径
+   * @param file - 插件文件名称
    */
   uninstallApp (plugin: string, _path: string, file: string) {
     this.plugin.forEach((info, key) => {
@@ -644,6 +655,8 @@ class PluginLoader {
         this.use.recvMsg = this.use.recvMsg.filter(val => val.key !== key)
         this.use.replyMsg = this.use.replyMsg.filter(val => val.key !== key)
         this.use.sendMsg = this.use.sendMsg.filter(val => val.key !== key)
+        this.use.forwardMsg = this.use.forwardMsg.filter(val => val.key !== key)
+        this.use.notFound = this.use.notFound.filter(val => val.key !== key)
 
         /** 定时任务需要先停止 */
         this.task = this.task.filter(val => {
@@ -673,6 +686,9 @@ class PluginLoader {
 
   /**
    * 监听文件夹更新
+   * @param plugin - 插件名称
+   * @param _path - 插件apps相对路径
+   * @returns 是否成功
    */
   async watchDir (plugin: string, _path: string) {
     const root = path.join(this.dir, plugin, _path)

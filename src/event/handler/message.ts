@@ -3,26 +3,38 @@ import { review } from './review'
 import { EventBaseHandler } from './base'
 import { logger, config } from 'karin/utils'
 import { karin, stateArr, pluginLoader } from 'karin/core'
-import { KarinMessageType, PluginCommandInfoType } from 'karin/types'
+import { KarinMessageType, MessageSubType, PluginCommandInfoType } from 'karin/types'
 
 /**
  * 消息事件
  */
 export class MessageHandler extends EventBaseHandler {
   e: KarinMessageType
+  /** 当前事件是否是上下文事件 */
+  isContext: boolean
   constructor (e: KarinMessageType) {
     super(e)
     this.e = e
-    this.init()
+    this.start()
+    this.isContext = !!this.getContext()
+  }
 
-    if (this.e.group_id) {
+  async start () {
+    this.init()
+    await this.startUse()
+
+    if (this.e.sub_event === MessageSubType.GroupMessage) {
       if (!this.getCd()) return
-      if (!this.getMode()) return
+      /** 下文不走响应模式 */
+      if (!this.isContext && !this.getMode()) return
       if (!this.getGroupEnable()) return
       if (!this.getUserEnable()) return
     } else {
       if (!this.private()) return
     }
+
+    /** 上下文 */
+    if (await this.context()) return
 
     /** 处理消息 */
     this.deal()
@@ -32,7 +44,7 @@ export class MessageHandler extends EventBaseHandler {
    * 先对消息事件进行初始化
    */
   init () {
-    karin.emit('karin:count:recv', 1)
+    karin.emit('karin:count:recv', this.e)
     const logs = []
     for (const val of this.e.elements) {
       switch (val.type) {
@@ -176,19 +188,9 @@ export class MessageHandler extends EventBaseHandler {
   }
 
   /**
-   * 响应模式检查 返回false表示未通过
+   * 开始中间件
    */
-  getMode () {
-    if (review.mode(this.e, this.config)) return true
-    logger.debug(`[消息拦截][${this.e.group_id}][${this.e.user_id}] 响应模式不匹配`)
-    return false
-  }
-
-  /**
-   * 处理消息
-   */
-  async deal () {
-    /** 先调用中间件 */
+  async startUse () {
     for (const info of pluginLoader.use.recvMsg) {
       try {
         let next = false
@@ -210,10 +212,48 @@ export class MessageHandler extends EventBaseHandler {
         logger.error(e)
       }
     }
+  }
 
-    /** 上下文 */
-    if (await this.context()) return
+  /**
+   * 结束中间件
+   */
+  async endUse () {
+    for (const info of pluginLoader.use.notFound) {
+      try {
+        let next = false
+        let exit = false
+        const nextFn = () => { next = true }
+        const exitFn = () => { exit = true }
 
+        await info.fn(this.e, nextFn, exitFn)
+
+        if (exit) {
+          const plugin = pluginLoader.plugin.get(info.key)!
+          logger.debug(`[消息中间件][${plugin.plugin}][${plugin.file}] 主动操作退出`)
+          return
+        }
+
+        if (!next) break
+      } catch (e) {
+        logger.error('[消息中间件] 调用失败，已跳过')
+        logger.error(e)
+      }
+    }
+  }
+
+  /**
+   * 响应模式检查 返回false表示未通过
+   */
+  getMode () {
+    if (review.mode(this.e, this.config)) return true
+    logger.debug(`[消息拦截][${this.e.group_id}][${this.e.user_id}] 响应模式不匹配`)
+    return false
+  }
+
+  /**
+   * 处理消息
+   */
+  async deal () {
     const app = this.e.group_id
       ? (info: PluginCommandInfoType) => review.PluginEnable(info, this.config)
       : () => true
@@ -262,6 +302,17 @@ export class MessageHandler extends EventBaseHandler {
         }
       }
     }
+
+    logger.debug(`[事件处理][${this.e.self_id}][${this.e.user_id}][${this.e.event_id}] 未匹配到任何插件`)
+    await this.endUse()
+  }
+
+  /**
+   * 获取下文
+   */
+  getContext () {
+    const key = this.e.isGroup ? `${this.e.group_id}.${this.e.user_id}` : this.e.user_id
+    return stateArr[key]
   }
 
   /**

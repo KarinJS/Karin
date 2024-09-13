@@ -98,11 +98,12 @@ export class OB11Event {
     const self_id = data.self_id + ''
     let notice = {} as KarinNotice
 
-    const user_id = data.user_id + ''
+    /** 别问为啥any... 我是any糕手~ */
+    const user_id = ((data as any).user_id || (data as any).operator_id) + ''
     const event_id = `notice.${time}`
     const sender = {
-      uid: data.user_id + '',
-      uin: data.user_id + '',
+      uid: user_id,
+      uin: user_id,
       nick: '',
       role: Role.Unknown,
     }
@@ -353,6 +354,31 @@ export class OB11Event {
           message_id: data.message_id,
           face_id: data.likes[0].emoji_id,
           is_set: true,
+        }
+
+        const options = {
+          raw_event: data,
+          time,
+          self_id,
+          user_id,
+          event_id,
+          sender,
+          contact,
+          content,
+          group_id,
+          sub_event: NoticeSubType.GroupMessageReaction,
+        }
+        notice = new KarinNotice(options)
+        break
+      }
+      // Language表情动态上报
+      case 'reaction': {
+        const group_id = data.group_id + ''
+        const content = {
+          group_id,
+          message_id: data.message_id,
+          face_id: Number(data.code),
+          is_set: data.sub_type === 'add',
         }
 
         const options = {

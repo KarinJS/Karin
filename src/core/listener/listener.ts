@@ -11,6 +11,7 @@ import {
   KarinNoticeType,
   KarinRequestType,
   KarinMessageType,
+  NodeElement,
 } from 'karin/types'
 
 type AdapterType = KarinAdapter['adapter']['type']
@@ -115,6 +116,36 @@ export class Listeners extends EventEmitter {
     this.list.push({ index, type: data.type, bot: data.bot })
     logger.info(`[机器人][注册][${data.type}] ` + logger.green(`[account:${data.bot.account.uid || data.bot.account.uin}(${data.bot.account.name})]`))
     this.#online(data.bot.account.uid || data.bot.account.uin)
+
+    /** 对sendForwardMessage方法进行修改 添加中间键 */
+    const sendForwardMessage = data.bot.sendForwardMessage
+    data.bot.sendForwardMessage = async (contact: Contact, elements: Array<NodeElement>) => {
+      for (const info of pluginLoader.use.forwardMsg) {
+        try {
+          let next = false
+          let exit = false
+          const nextFn = () => { next = true }
+          const exitFn = () => { exit = true }
+
+          await info.fn(contact, elements, nextFn, exitFn)
+
+          if (exit) {
+            const plugin = pluginLoader.plugin.get(info.key)!
+            logger.debug(`[消息中间件][${plugin.plugin}][${plugin.file}] 主动操作退出`)
+            return { message_id: '' }
+          }
+
+          if (!next) break
+        } catch (e) {
+          logger.error('[消息中间件] 调用失败，已跳过')
+          logger.error(e)
+        }
+      }
+
+      const result = await sendForwardMessage(contact, elements)
+      return result
+    }
+
     logger.debug('注册', this.list)
     return index
   }

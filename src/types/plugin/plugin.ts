@@ -2,7 +2,7 @@ import schedule from 'node-schedule'
 import { Plugin } from 'karin/core'
 import { Reply, replyCallback, replyForward } from '../event/reply'
 import { KarinNoticeType, KarinRequestType, AllListenEvent, KarinMessageType, PermissionType, AllMessageSubType, Contact, AllNoticeSubType, AllRequestSubType } from '../event'
-import { KarinElement } from '../element/element'
+import { KarinElement, NodeElement } from '../element/element'
 
 /**
  * - 插件根目录名称
@@ -27,7 +27,7 @@ export const enum AppsType {
   /** npm插件 */
   Npm = 'npm',
   /** 单个app插件 */
-  Js = 'js'
+  Js = 'js',
 }
 
 /**
@@ -37,7 +37,7 @@ export const enum MethodType {
   /** 函数 */
   Function = 'function',
   /** 类 */
-  Class = 'class'
+  Class = 'class',
 }
 
 /**
@@ -211,6 +211,44 @@ export interface PluginMiddlewareInfoType {
       /** 是否继续执行下一个中间件 */
       next: Function,
       /** 是否不发送此条消息 */
+      exit: Function
+    ) => Promise<boolean>,
+    /** 优先级 */
+    rank: number
+  }>
+  /** 发送合并转发前 */
+  forwardMsg: Array<{
+    /** 插件基本信息的映射key */
+    key: number,
+    /** 插件包名称 */
+    name: string,
+    /** 插件执行方法 */
+    fn: (
+      /** 发送的目标信息 */
+      contact: Contact,
+      /** 发送的消息体 */
+      elements: Array<NodeElement>,
+      /** 是否继续执行下一个中间件 */
+      next: Function,
+      /** 是否不发送此条消息 */
+      exit: Function
+    ) => Promise<boolean>,
+    /** 优先级 */
+    rank: number
+  }>
+  /** 消息事件没有找到任何匹配的插件触发 */
+  notFound: Array<{
+    /** 插件基本信息的映射key */
+    key: number,
+    /** 插件包名称 */
+    name: string,
+    /** 插件执行方法 */
+    fn: (
+      /** 消息事件方法 */
+      e: KarinMessageType,
+      /** 是否继续执行下一个中间件 */
+      next: Function,
+      /** 是否退出此条消息 不再执行匹配插件 */
       exit: Function
     ) => Promise<boolean>,
     /** 优先级 */

@@ -84,6 +84,7 @@ export class RequestHandler extends EventBaseHandler {
         break
       }
     }
+    logger.debug(`[事件处理][${this.e.self_id}][${this.e.user_id}][${this.e.event_id}] 未匹配到任何插件`)
   }
 
   /**

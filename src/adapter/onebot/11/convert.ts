@@ -158,6 +158,9 @@ export function KarinConvertAdapter (data: Array<KarinElement>, bot: AdapterOneB
         elements.push({ type: 'weather', data: { city: i.city, type: i.type } })
         break
       }
+      case 'raw':
+        elements.push(i.data)
+        break
       case 'button':
       case 'markdown':
       case 'keyboard':

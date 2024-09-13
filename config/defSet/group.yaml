@@ -18,7 +18,7 @@ default:
   disable: []
 
 # 单个Bot默认配置
-Bot.self_id:
+Bot:self_id:
   # 群聊中所有消息冷却时间，单位秒,0则无限制
   GroupCD: 0
   # 群聊中 每个人的消息冷却时间，单位秒，0则无限制。注意，开启后所有消息都会进CD，无论是否触发插件。
@@ -37,7 +37,7 @@ Bot.self_id:
   disable: []
 
 # 单个Bot单个群配置
-Bot.self_id.group_id:
+Bot:self_id:group_id:
   # 群聊中所有消息冷却时间，单位秒,0则无限制
   GroupCD: 0
   # 群聊中 每个人的消息冷却时间，单位秒，0则无限制。注意，开启后所有消息都会进CD，无论是否触发插件。
