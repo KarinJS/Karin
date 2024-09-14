@@ -87,6 +87,7 @@ layout: home
 | 名称     | 作者                    | 仓库地址             | 镜像仓库 | 开源协议            | 简介                   |
 | -------- | ----------------------- | -------------------- | -------- | ------------------- | --------------------- |
 | wormhole | [Alcedo][HalcyonAlcedo] | [wormhole][wormhole] | -        | [MIT][wormhole-tab] | 用于Karin的渲染代理插件 |
+| bili-analysis | [Aliorpse][Aliorpse] | [biliAnylasis][bili] | -        | [MIT][bili-tab] | Bilibili解析插件 |
 
 ## 🌐其他
 
@@ -122,3 +123,6 @@ layout: home
 [manage-tab]: https://github.com/HalcyonAlcedo/karin-plugin-manage?tab=GPL-3.0-1-ov-file#readme
 [auto-command]: https://github.com/HalcyonAlcedo/karin-plugin-auto-command
 [auto-command-tab]: https://github.com/HalcyonAlcedo/karin-plugin-auto-command?tab=GPL-3.0-1-ov-file#readme
+[Aliorpse]: https://github.com/Aliorpse
+[bili]: https://github.com/Aliorpse/karin-plugin-bilibili
+[bili-tab]: https://github.com/Aliorpse/karin-plugin-bilibili?tab=MIT-1-ov-file#readme
