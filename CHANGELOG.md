@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.12.10](https://github.com/KarinJS/Karin/compare/v0.12.9...v0.12.10) (2024-09-14)
+
+
+### Bug Fixes
+
+* 修正合并转发中间件获取上下文错误 ([324b11c](https://github.com/KarinJS/Karin/commit/324b11c24b0c0aa6649d955d64a7ac32f5b9f37b))
+
 ## [0.12.9](https://github.com/KarinJS/Karin/compare/v0.12.8...v0.12.9) (2024-09-14)
 
 
