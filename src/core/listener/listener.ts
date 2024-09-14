@@ -142,7 +142,7 @@ export class Listeners extends EventEmitter {
         }
       }
 
-      const result = await sendForwardMessage(contact, elements)
+      const result = await sendForwardMessage.call(data.bot, contact, elements)
       return result
     }
 
