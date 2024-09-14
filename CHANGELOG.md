@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.12.6](https://github.com/KarinJS/Karin/compare/v0.12.5...v0.12.6) (2024-09-14)
+
+
+### Bug Fixes
+
+* 修正读取自定义配置 ([00ba404](https://github.com/KarinJS/Karin/commit/00ba4045a09ea9147bdcdda24c702c92856e8b53))
+
 ## [0.12.5](https://github.com/KarinJS/Karin/compare/v0.12.4...v0.12.5) (2024-09-12)
 
 
