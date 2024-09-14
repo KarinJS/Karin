@@ -49,3 +49,23 @@ export const fetchCPUUsage = async () => {
     throw error;
   }
 };
+
+export const fetchConfig = async (type) => {
+  try {
+    const response = await apiClient.get(`/config/get/${type}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching config:', error);
+    throw error;
+  }
+};
+
+export const saveConfig = async (type, data) => {
+  try {
+    const response = await apiClient.post(`/config/save/${type}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error saving config:', error);
+    throw error;
+  }
+};

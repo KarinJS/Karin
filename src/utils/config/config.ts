@@ -336,6 +336,63 @@ export const config = new (class Cfg {
     }
   }
 
+  async saveConfig (type: string, data: any) {
+    const file = `${this.cfgDir}/config/${type}.yaml`
+
+    // 读取原始配置文件
+    const originalData = this.getYaml('config', type, false)
+
+    const hasChange = this.printDifference(originalData, data)
+
+    if (hasChange) {
+      fs.writeFileSync(file, Yaml.stringify(data))
+      this.change.set(`change.${type}`, data)
+    }
+  }
+
+  public printDifference (original: any, updated: any, path: string = ''): boolean {
+    let hasChange = false
+
+    const stringifyValue = (value: any): string => {
+      if (typeof value === 'object' && value !== null) {
+        return JSON.stringify(value)
+      }
+      return String(value)
+    }
+
+    const compareAndLogChange = (key: string, originalValue: any, updatedValue: any): boolean => {
+      if (JSON.stringify(originalValue) !== JSON.stringify(updatedValue)) {
+        const currentPath = path ? `${path}.${key}` : key
+        this.logger.info(`[修改配置文件][Config] 修改: ${currentPath}: ${stringifyValue(originalValue)} -> ${stringifyValue(updatedValue)}`)
+        return true
+      }
+      return false
+    }
+
+    for (const key in updated) {
+      if (!(key in original)) {
+        const currentPath = path ? `${path}.${key}` : key
+        this.logger.info(`[修改配置文件][Config] 新增: ${currentPath}: ${stringifyValue(updated[key])}`)
+        hasChange = true
+      } else if (typeof updated[key] === 'object' && updated[key] !== null && typeof original[key] === 'object' && original[key] !== null) {
+        const nestedChange = this.printDifference(original[key], updated[key], path ? `${path}.${key}` : key)
+        hasChange = hasChange || nestedChange
+      } else {
+        hasChange = compareAndLogChange(key, original[key], updated[key]) || hasChange
+      }
+    }
+
+    for (const key in original) {
+      if (!(key in updated)) {
+        const currentPath = path ? `${path}.${key}` : key
+        this.logger.info(`[修改配置文件][Config] 删除: ${currentPath}: ${stringifyValue(original[key])}`)
+        hasChange = true
+      }
+    }
+
+    return hasChange
+  }
+
   async changeGroup () {
     await this.#review()
   }

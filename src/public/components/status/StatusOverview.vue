@@ -6,7 +6,8 @@
     <div v-else>
       <div class="status-container">
         <ProgressBox title="内存" :downTitle="'总内存 ' + Number(status.data.system.info_memory_total).toFixed(0) + 'MB'" :value="status.data.system.info_memory_usage"/>
-        <ProgressBox title="CPU" :downTitle="'核心数' + cpuUsage.data.cpu_info.cpu_cpus" :value="cpuUsage.data.cpu_info.cpu_usage"/>
+        <ProgressBox v-if="cpuUsage" title="CPU" :downTitle="'核心数 ' + cpuUsage.data.cpu_info.cpu_cpus" :value="cpuUsage.data.cpu_info.cpu_usage"/>
+        <ProgressBox v-else title="CPU" downTitle="加载中..." :value="0"/>
         <ProgressBox title="内存" downTitle="使用率111" :value="status.data.system.info_memory_usage"/>
       </div>
       <h2 class="text-xl font-bold mb-2 mt-5">Karin</h2>
@@ -34,9 +35,9 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { fetchStatus, fetchCPUUsage } from '../v2';
-import StatusTimer from './status/StatusBox.vue';
-import ProgressBox from './status/ProgressBox.vue';
+import { fetchStatus, fetchCPUUsage } from '../../v2';
+import StatusTimer from './StatusBox.vue';
+import ProgressBox from './ProgressBox.vue';
 const status = ref(null);
 const loading = ref(true);
 const error = ref(null);
@@ -47,11 +48,15 @@ const loadStatus = async () => {
   try {
     const newStatus = await fetchStatus();
     status.value = newStatus;
-
-    const cpuUsagef = await fetchCPUUsage();
-    cpuUsage.value = cpuUsagef;
     loading.value = false;
     error.value = null;
+
+    // 异步加载CPU使用率
+    fetchCPUUsage().then(cpuUsageData => {
+      cpuUsage.value = cpuUsageData;
+    }).catch(err => {
+      console.error('加载CPU使用率失败:', err);
+    });
   } catch (err) {
     error.value = err.message;
     loading.value = false;
