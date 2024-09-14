@@ -6,7 +6,6 @@ import { Server as ServerType, ServerResponse, IncomingMessage } from 'http'
 import { common, config } from 'karin/utils'
 import { apiV2 } from 'karin/utils/api/v2/v2'
 import cors from 'cors'
-
 export const api2Server = new (class Api2Server {
   reg: RegExp
   list: string[]
@@ -36,6 +35,7 @@ export const api2Server = new (class Api2Server {
         credentials: true,
       }))
 
+      /** 获取服务器信息 **/
       this.app.get('/api/v2/info/status', async (req, res) => {
         res.json({
           code: 200,
@@ -58,6 +58,85 @@ export const api2Server = new (class Api2Server {
             cpu_info: cpuInfo,
           },
         })
+      })
+
+      /** Config处理 **/
+      this.app.get('/api/v2/config/get/:type', async (req, res) => {
+        const type = req.params.type
+        let _config = {}
+        switch (type) {
+          case 'app':
+            _config = config.App
+            break
+          case 'config':
+            _config = config.Config
+            break
+          case 'group':
+            _config = config.group
+            break
+          case 'pm2':
+            // Where is pm2 config?
+            _config = {}
+            break
+          case 'redis':
+            _config = config.redis
+            break
+          case 'server':
+            _config = config.Server
+            break
+          case 'all':
+            _config = config
+            break
+        }
+
+        res.json({
+          code: 200,
+          message: 'ok',
+          data: {
+            config: _config,
+          },
+        })
+      })
+
+      this.app.post('/api/v2/config/save/:type', async (req, res) => {
+        let type = req.params.type
+        if (type === 'app') {
+          type = 'App'
+        } else if (type === 'config') {
+          type = 'config'
+        } else if (type === 'group') {
+          type = 'group'
+        } else if (type === 'pm2') {
+          type = 'pm2'
+        } else if (type === 'redis') {
+          type = 'redis'
+        } else if (type === 'server') {
+          type = 'server'
+        } else {
+          res.status(400).json({
+            code: 400,
+            message: 'Invalid config type',
+          })
+          return
+        }
+
+        const data = req.body
+        try {
+          await config.saveConfig(type as keyof typeof config, data)
+          res.json({
+            code: 200,
+            message: 'ok',
+            data: {
+              // config: data,
+            },
+          })
+        } catch (error) {
+          logger.error(error)
+          res.status(500).json({
+            code: 500,
+            message: 'Error saving config',
+          })
+        }
       })
 
       const { host } = config.Server.http

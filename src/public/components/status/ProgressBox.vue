@@ -79,25 +79,28 @@ onMounted(() => {
   margin-right: 15px;
 }
 .percentage-value {
+  font-family: monospace;
   color: #ffffff;
   font-size: 1.5em;
   opacity: 0.7;
   margin-bottom: 5px;
 }
 .percentage-label {
+  font-family: monospace;
   color: #ffffff;
-  font-size: 1em;
+  font-size: 1.4em;
   opacity: 0.7;
   margin-bottom: 5px;
   margin-top: 5px;
 }
 .down-title {
+  font-family: monospace;
   position: absolute;
   bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
   color: #ffffff;
-  font-size: 1em;
+  font-size: 1.3em;
   opacity: 0.7;
   text-align: center;
   width: 100%;
