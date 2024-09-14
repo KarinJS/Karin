@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.12.8](https://github.com/KarinJS/Karin/compare/v0.12.7...v0.12.8) (2024-09-14)
+
+
+### Bug Fixes
+
+* sendForwardMessage ([e283eb6](https://github.com/KarinJS/Karin/commit/e283eb634b820793739682c32b3610476fddc940))
+
 ## [0.12.7](https://github.com/KarinJS/Karin/compare/v0.12.6...v0.12.7) (2024-09-14)
 
 
