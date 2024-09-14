@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.12.7](https://github.com/KarinJS/Karin/compare/v0.12.6...v0.12.7) (2024-09-14)
+
+
+### Bug Fixes
+
+* 修正cli ([4214f07](https://github.com/KarinJS/Karin/commit/4214f07a234d50d517a9d53898e7d1ad102660c4))
+
 ## [0.12.6](https://github.com/KarinJS/Karin/compare/v0.12.5...v0.12.6) (2024-09-14)
 
 
