@@ -118,7 +118,7 @@
   ],
   "scripts": {
     ".": "node lib/cli/start.js .",
-    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix:all",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "build:npm": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "dev": "node lib/cli/start.js dev",
     "fix": "eslint lib/**/*.js --fix",

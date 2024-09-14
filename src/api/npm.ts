@@ -23,7 +23,7 @@ export async function getNpmPlugins<T extends boolean> (showDetails: T): Promise
         const pkg = readJson(pkgPath)
         if (pkg?.karin) list.push(name)
       } catch (error: any) {
-        logger.error(`[common] 解析 package.json 时出错：${error.stack || error.message || JSON.stringify(error)}`)
+        console.error(`[common] 解析 package.json 时出错：${error.stack || error.message || JSON.stringify(error)}`)
       }
     }
 
@@ -47,7 +47,7 @@ export async function getNpmPlugins<T extends boolean> (showDetails: T): Promise
       if (pkg?.karin?.apps?.length) {
         pkg.karin.apps.forEach((app: string) => {
           if (!fs.existsSync(path.join(root, app))) {
-            logger.error(`[common] npm插件${files}的app目录${app}不存在 已跳过`)
+            console.error(`[common] npm插件${files}的app目录${app}不存在 已跳过`)
             return
           }
 
@@ -59,7 +59,7 @@ export async function getNpmPlugins<T extends boolean> (showDetails: T): Promise
         })
       }
     } catch (error: any) {
-      logger.error(`[common] 获取npm插件列表时出错：${error.stack || error.message || JSON.stringify(error)}`)
+      console.error(`[common] 获取npm插件列表时出错：${error.stack || error.message || JSON.stringify(error)}`)
     }
   }
 

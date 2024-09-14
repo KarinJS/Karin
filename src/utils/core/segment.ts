@@ -591,4 +591,14 @@ export const segment = new (class Segment {
       data,
     }
   }
+
+  /**
+   * 回复被动消息
+   */
+  passive_reply (id: string): { type: 'passive_reply', id: string } {
+    return {
+      type: 'passive_reply',
+      id,
+    }
+  }
 })()
