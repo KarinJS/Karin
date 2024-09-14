@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.12.9](https://github.com/KarinJS/Karin/compare/v0.12.8...v0.12.9) (2024-09-14)
+
+
+### Bug Fixes
+
+* 中间件类型 ([1a4e2c1](https://github.com/KarinJS/Karin/commit/1a4e2c1e716bce99407fd0dea73cdb336d677b25))
+
 ## [0.12.8](https://github.com/KarinJS/Karin/compare/v0.12.7...v0.12.8) (2024-09-14)
 
 
