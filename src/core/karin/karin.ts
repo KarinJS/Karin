@@ -1,4 +1,3 @@
-/* eslint-disable @stylistic/indent */
 import { stateArr } from '../plugin/base'
 import onebot11 from 'karin/adapter/onebot/11'
 import { render } from 'karin/render/app'
@@ -14,7 +13,6 @@ import {
   RenderResult,
   KarinNoticeType,
   KarinRequestType,
-  KarinMessageType,
   AllMessageSubType,
   CommandInfo,
   TaskInfo,
@@ -23,6 +21,7 @@ import {
   UseInfo,
   AllNoticeSubType,
   AllRequestSubType,
+  UseMapType,
 } from 'karin/types'
 
 import { pluginLoader } from '../plugin/loader'
@@ -30,37 +29,9 @@ import { common } from 'karin/utils/common/common'
 import { logger } from 'karin/utils/core/logger'
 import { Listeners } from '../listener/listener'
 
-type FncFunction = (e: KarinMessage) => Promise<boolean>
-type FncElement = string | KarinElement | Array<KarinElement>
-type UseReceive = (e: KarinMessageType, next: Function, exit: Function) => Promise<void>
-type UseReply = (e: KarinMessageType, element: KarinElement[], next: Function, exit: Function) => Promise<void>
-type UseRecord = (uid: string, contact: Contact, elements: KarinElement[], next: Function, exit: Function) => Promise<void>
-type ForwardRecord = (contact: Contact, elements: KarinElement[], next: Function, exit: Function) => Promise<void>
-type NotFoundRecord = (e: KarinMessageType, next: Function, exit: Function) => Promise<void>
-
-type MiddlewareFn<T extends MiddlewareType> =
-  T extends `${MiddlewareType.ReceiveMsg}` ? UseReceive :
-  T extends `${MiddlewareType.ReplyMsg}` ? UseReply :
-  T extends `${MiddlewareType.SendMsg}` ? UseRecord :
-  T extends `${MiddlewareType.ForwardMsg}` ? ForwardRecord :
-  T extends `${MiddlewareType.NotFoundMsg}` ? NotFoundRecord :
-  never
-
-/**
- * 中间件类型
- */
-export const enum MiddlewareType {
-  /** 收到消息后 */
-  ReceiveMsg = 'recvMsg',
-  /** 回复消息前 */
-  ReplyMsg = 'replyMsg',
-  /** 发送主动消息前 */
-  SendMsg = 'sendMsg',
-  /** 发送合并转发前 */
-  ForwardMsg = 'forwardMsg',
-  /** 消息事件没有找到任何匹配的插件触发 */
-  NotFoundMsg = 'notFound',
-}
+export type FncFunction = (e: KarinMessage) => Promise<boolean>
+export type FncElement = string | KarinElement | Array<KarinElement>
+export type UseFnType<K extends keyof UseMapType> = UseMapType[K]
 
 export interface Options {
   /**
@@ -364,19 +335,15 @@ export class Karin extends Listeners {
     }
   }
 
-  use (type: `${MiddlewareType.ReceiveMsg}`, fn: UseReceive, options?: Omit<Options, 'log'>): UseInfo
-  use (type: `${MiddlewareType.ReplyMsg}`, fn: UseReply, options?: Omit<Options, 'log'>): UseInfo
-  use (type: `${MiddlewareType.SendMsg}`, fn: UseRecord, options?: Omit<Options, 'log'>): UseInfo
-  use (type: `${MiddlewareType.ForwardMsg}`, fn: ForwardRecord, options?: Omit<Options, 'log'>): UseInfo
-  use (type: `${MiddlewareType.NotFoundMsg}`, fn: NotFoundRecord, options?: Omit<Options, 'log'>): UseInfo
   /**
    * 中间件
    * @param type 中间件类型
    * @param fn 中间件函数
+   * @param options 选项配置
    */
-  use<T extends MiddlewareType> (
+  use<T extends keyof UseMapType> (
     type: `${T}`,
-    fn: MiddlewareFn<T>,
+    fn: UseMapType[T][number]['fn'],
     options?: Omit<Options, 'log'>
   ): UseInfo {
     return {

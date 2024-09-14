@@ -1,5 +1,4 @@
-import { MiddlewareType } from '../../core/karin/karin'
-import { AllMessageSubType, AllNoticeSubType, AllRequestSubType, KarinMessageType, KarinNoticeType, KarinRequestType, NewMessagePlugin, Permission } from 'karin/types'
+import { AllMessageSubType, AllNoticeSubType, AllRequestSubType, KarinMessageType, KarinNoticeType, KarinRequestType, NewMessagePlugin, Permission, UseMapType } from 'karin/types'
 
 export const enum AppType {
   Command = 'command',
@@ -7,7 +6,7 @@ export const enum AppType {
   Handler = 'handler',
   Button = 'button',
   Accept = 'accept',
-  Use = 'use'
+  Use = 'use',
 }
 
 interface AppInfo {
@@ -74,5 +73,5 @@ export interface AcceptInfo extends AppInfo {
 export interface UseInfo extends Omit<AppInfo, 'log'> {
   type: `${AppType.Use}`
   /** 中间件类型key */
-  key: `${MiddlewareType}`
+  key: `${keyof UseMapType}`
 }

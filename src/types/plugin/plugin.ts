@@ -3,6 +3,7 @@ import { Plugin } from 'karin/core'
 import { Reply, replyCallback, replyForward } from '../event/reply'
 import { KarinNoticeType, KarinRequestType, AllListenEvent, KarinMessageType, PermissionType, AllMessageSubType, Contact, AllNoticeSubType, AllRequestSubType } from '../event'
 import { KarinElement, NodeElement } from '../element/element'
+import { KarinAdapter } from '../adapter/base'
 
 /**
  * - 插件根目录名称
@@ -155,7 +156,7 @@ export interface PluginHandlerInfoType {
 /**
  * 中间件规则集信息
  */
-export interface PluginMiddlewareInfoType {
+export interface UseValueType {
   /** 初始化消息前 */
   recvMsg: Array<{
     /** 插件基本信息的映射key */
@@ -224,6 +225,7 @@ export interface PluginMiddlewareInfoType {
     name: string,
     /** 插件执行方法 */
     fn: (
+      bot: KarinAdapter,
       /** 发送的目标信息 */
       contact: Contact,
       /** 发送的消息体 */
@@ -237,7 +239,7 @@ export interface PluginMiddlewareInfoType {
     rank: number
   }>
   /** 消息事件没有找到任何匹配的插件触发 */
-  notFound: Array<{
+  notFoundMsg: Array<{
     /** 插件基本信息的映射key */
     key: number,
     /** 插件包名称 */
@@ -254,6 +256,33 @@ export interface PluginMiddlewareInfoType {
     /** 优先级 */
     rank: number
   }>
+}
+
+/**
+ * 中间件类型
+ */
+export const enum UseKeyType {
+  /** 收到消息后 */
+  ReceiveMsg = 'recvMsg',
+  /** 回复消息前 */
+  ReplyMsg = 'replyMsg',
+  /** 发送主动消息前 */
+  SendMsg = 'sendMsg',
+  /** 发送合并转发前 */
+  ForwardMsg = 'forwardMsg',
+  /** 消息事件没有找到任何匹配的插件触发 */
+  NotFoundMsg = 'notFoundMsg',
+}
+
+/**
+ * 中间件映射
+ */
+export interface UseMapType {
+  [UseKeyType.ReceiveMsg]: UseValueType['recvMsg']
+  [UseKeyType.ReplyMsg]: UseValueType['replyMsg']
+  [UseKeyType.SendMsg]: UseValueType['sendMsg']
+  [UseKeyType.ForwardMsg]: UseValueType['forwardMsg']
+  [UseKeyType.NotFoundMsg]: UseValueType['notFoundMsg']
 }
 
 /**

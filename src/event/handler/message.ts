@@ -218,7 +218,7 @@ export class MessageHandler extends EventBaseHandler {
    * 结束中间件
    */
   async endUse () {
-    for (const info of pluginLoader.use.notFound) {
+    for (const info of pluginLoader.use.notFoundMsg) {
       try {
         let next = false
         let exit = false

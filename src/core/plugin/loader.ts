@@ -22,7 +22,7 @@ import {
   PluginAcceptInfoType,
   PluginHandlerInfoType,
   PluginCommandInfoType,
-  PluginMiddlewareInfoType,
+  UseValueType,
 } from 'karin/types'
 
 type AppType = CommandInfo | TaskInfo | HandlerInfo | ButtonInfo | AcceptInfo | UseInfo
@@ -85,7 +85,7 @@ class PluginLoader {
   /** task定时任务信息 */
   task: PluginTaskInfoType[]
   /** 中间件 */
-  use: PluginMiddlewareInfoType
+  use: UseValueType
   /** 加载的文件数组 .js .ts */
   ext: string[]
 
@@ -101,7 +101,7 @@ class PluginLoader {
       replyMsg: [],
       sendMsg: [],
       forwardMsg: [],
-      notFound: [],
+      notFoundMsg: [],
     }
 
     this.ext = process.env.karin_app_lang === 'ts' ? ['.js', '.ts'] : ['.js']
@@ -370,7 +370,7 @@ class PluginLoader {
     this.use.replyMsg = lodash.orderBy(this.use.replyMsg, ['rank'], ['asc'])
     this.use.sendMsg = lodash.orderBy(this.use.sendMsg, ['rank'], ['asc'])
     this.use.forwardMsg = lodash.orderBy(this.use.forwardMsg, ['rank'], ['asc'])
-    this.use.notFound = lodash.orderBy(this.use.notFound, ['rank'], ['asc'])
+    this.use.notFoundMsg = lodash.orderBy(this.use.notFoundMsg, ['rank'], ['asc'])
 
     const handler = Object.keys(this.handler)
     handler.forEach(key => {
@@ -656,7 +656,7 @@ class PluginLoader {
         this.use.replyMsg = this.use.replyMsg.filter(val => val.key !== key)
         this.use.sendMsg = this.use.sendMsg.filter(val => val.key !== key)
         this.use.forwardMsg = this.use.forwardMsg.filter(val => val.key !== key)
-        this.use.notFound = this.use.notFound.filter(val => val.key !== key)
+        this.use.notFoundMsg = this.use.notFoundMsg.filter(val => val.key !== key)
 
         /** 定时任务需要先停止 */
         this.task = this.task.filter(val => {
