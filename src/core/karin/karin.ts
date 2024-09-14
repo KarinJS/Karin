@@ -1,3 +1,4 @@
+/* eslint-disable @stylistic/indent */
 import { stateArr } from '../plugin/base'
 import onebot11 from 'karin/adapter/onebot/11'
 import { render } from 'karin/render/app'
@@ -34,9 +35,16 @@ type FncElement = string | KarinElement | Array<KarinElement>
 type UseReceive = (e: KarinMessageType, next: Function, exit: Function) => Promise<void>
 type UseReply = (e: KarinMessageType, element: KarinElement[], next: Function, exit: Function) => Promise<void>
 type UseRecord = (uid: string, contact: Contact, elements: KarinElement[], next: Function, exit: Function) => Promise<void>
-type MiddlewareFn<T extends MiddlewareType> = T extends `${MiddlewareType.ReceiveMsg}`
-  ? UseReceive
-  : T extends `${MiddlewareType.ReplyMsg}` ? UseReply : T extends `${MiddlewareType.SendMsg}` ? UseRecord : never
+type ForwardRecord = (contact: Contact, elements: KarinElement[], next: Function, exit: Function) => Promise<void>
+type NotFoundRecord = (e: KarinMessageType, next: Function, exit: Function) => Promise<void>
+
+type MiddlewareFn<T extends MiddlewareType> =
+  T extends `${MiddlewareType.ReceiveMsg}` ? UseReceive :
+  T extends `${MiddlewareType.ReplyMsg}` ? UseReply :
+  T extends `${MiddlewareType.SendMsg}` ? UseRecord :
+  T extends `${MiddlewareType.ForwardMsg}` ? ForwardRecord :
+  T extends `${MiddlewareType.NotFoundMsg}` ? NotFoundRecord :
+  never
 
 /**
  * 中间件类型
@@ -48,6 +56,10 @@ export const enum MiddlewareType {
   ReplyMsg = 'replyMsg',
   /** 发送主动消息前 */
   SendMsg = 'sendMsg',
+  /** 发送合并转发前 */
+  ForwardMsg = 'forwardMsg',
+  /** 消息事件没有找到任何匹配的插件触发 */
+  NotFoundMsg = 'notFound',
 }
 
 export interface Options {
@@ -355,6 +367,8 @@ export class Karin extends Listeners {
   use (type: `${MiddlewareType.ReceiveMsg}`, fn: UseReceive, options?: Omit<Options, 'log'>): UseInfo
   use (type: `${MiddlewareType.ReplyMsg}`, fn: UseReply, options?: Omit<Options, 'log'>): UseInfo
   use (type: `${MiddlewareType.SendMsg}`, fn: UseRecord, options?: Omit<Options, 'log'>): UseInfo
+  use (type: `${MiddlewareType.ForwardMsg}`, fn: ForwardRecord, options?: Omit<Options, 'log'>): UseInfo
+  use (type: `${MiddlewareType.NotFoundMsg}`, fn: NotFoundRecord, options?: Omit<Options, 'log'>): UseInfo
   /**
    * 中间件
    * @param type 中间件类型
