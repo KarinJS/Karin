@@ -1,5 +1,13 @@
 # 更新日志
 
+## [0.12.12](https://github.com/KarinJS/Karin/compare/v0.12.11...v0.12.12) (2024-09-15)
+
+
+### Bug Fixes
+
+* test postinstall ([3fe7c96](https://github.com/KarinJS/Karin/commit/3fe7c967b2e830aba67b450777b14838925ee92e))
+* 生成.npmrc ([729d725](https://github.com/KarinJS/Karin/commit/729d725baf5e9903fc24b03b5f9f59c1f598b658))
+
 ## [0.12.11](https://github.com/KarinJS/Karin/compare/v0.12.10...v0.12.11) (2024-09-15)
 
 
