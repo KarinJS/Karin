@@ -123,10 +123,11 @@
     "dev": "node lib/cli/start.js dev",
     "fix": "eslint lib/**/*.js --fix",
     "fix:all": "eslint lib/**/*.js --fix && eslint lib/**/*.d.ts --fix",
+    "init": "node lib/cli/init.js",
+    "postinstall": "npm run init",
     "pub": "npm publish --access public",
     "sort": "npx sort-package-json && sort-json tsconfig.json",
-    "start": "node lib/cli/start.js start",
-    "postinstall": "node lib/cli/init.js"
+    "start": "node lib/cli/start.js start"
   },
   "dependencies": {
     "@types/express": "^4.17.21",
