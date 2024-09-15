@@ -102,7 +102,7 @@ export class KarinCfgInit {
     const pkg = this.readJson(path.join(karinDir, 'package.json'))
     const projPkg = this.readJson('./package.json')
 
-    const main = 'node_modules/node-karin/lib/index.js'
+    const main = 'node_modules/node-karin/lib/cli/start.js'
 
     delete pkg.bin
     pkg.main = `./${main}`
@@ -115,13 +115,12 @@ export class KarinCfgInit {
     projPkg.main = `./${main}`
     projPkg.dependencies = { ...projPkg.dependencies, ...pkg.dependencies }
     projPkg.dependencies['node-karin'] = 'latest'
-    projPkg.dependencies['kritor-proto'] = 'latest'
 
     if (!projPkg.scripts) projPkg.scripts = {}
     if (!projPkg.devDependencies) projPkg.devDependencies = {}
 
     projPkg.scripts.debug = `node --watch ${main}`
-    projPkg.scripts.dev = `tsx --watch ${main}`
+    // projPkg.scripts.dev = `tsx --watch ${main}`
 
     fs.writeFileSync('./package.json', JSON.stringify(projPkg, null, 2))
   }
