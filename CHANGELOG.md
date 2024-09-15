@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.12.13](https://github.com/KarinJS/Karin/compare/v0.12.12...v0.12.13) (2024-09-15)
+
+
+### Bug Fixes
+
+* postinstall ([7e5dba2](https://github.com/KarinJS/Karin/commit/7e5dba27714cc8b03c144320d7cdb74c6968a40c))
+
 ## [0.12.12](https://github.com/KarinJS/Karin/compare/v0.12.11...v0.12.12) (2024-09-15)
 
 
