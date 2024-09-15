@@ -1,5 +1,13 @@
 # 更新日志
 
+## [0.12.11](https://github.com/KarinJS/Karin/compare/v0.12.10...v0.12.11) (2024-09-15)
+
+
+### Bug Fixes
+
+* 优化部分类型定义 ([4de3ae7](https://github.com/KarinJS/Karin/commit/4de3ae7a2b1e635a00fbe0bfa01dbbebc26e3e65))
+* 修正`node .`无法启动的问题 ([f3760df](https://github.com/KarinJS/Karin/commit/f3760dfbb4832af976982441602d2fcd3556cb09))
+
 ## [0.12.10](https://github.com/KarinJS/Karin/compare/v0.12.9...v0.12.10) (2024-09-14)
 
 
