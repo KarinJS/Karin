@@ -186,6 +186,23 @@ export class KarinCfgInit {
       console.log('检测到已安装pm2~')
     }
 
+    /** 检查是否为官方源 如果不是则生成.npmrc */
+    const registry = await this.shell('npm config get registry')
+    if (registry !== 'https://registry.npmjs.org/') {
+      const text = `node_sqlite3_binary_host_mirror=https://registry.npmmirror.com/-/binary/sqlite3
+better_sqlite3_binary_host_mirror=https://registry.npmmirror.com/-/binary/better-sqlite3
+sass_binary_site=https://registry.npmmirror.com/-/binary/node-sass
+sharp_binary_host=https://registry.npmmirror.com/-/binary/sharp
+sharp_libvips_binary_host=https://registry.npmmirror.com/-/binary/sharp-libvips
+canvas_binary_host_mirror=https://registry.npmmirror.com/-/binary/canvas
+# 19以下版本
+puppeteer_download_host=https://registry.npmmirror.com/mirrors
+# 20以上版本
+PUPPETEER_DOWNLOAD_BASE_URL = https://registry.npmmirror.com/binaries/chrome-for-testing`
+
+      fs.writeFileSync('.npmrc', text)
+    }
+
     console.log('依赖环境初始化完成~')
   }
 
