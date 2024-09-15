@@ -98,7 +98,7 @@ export type UseRecvMsgFn = (
   next: () => void,
   /** 是否退出此条消息 不再执行匹配插件 */
   exit: () => void
-) => Promise<boolean>
+) => Promise<void>
 
 /**
  * 回复消息前 中间件实现方法
@@ -112,7 +112,7 @@ export type UseSendMsgFn = (
   next: () => void,
   /** 是否不发送此条消息 */
   exit: () => void
-) => Promise<boolean>
+) => Promise<void>
 
 /**
  * 发送主动消息前 中间件实现方法
@@ -128,7 +128,7 @@ export type UseSendNoticeFn = (
   next: () => void,
   /** 是否不发送此条消息 */
   exit: () => void
-) => Promise<boolean>
+) => Promise<void>
 
 /**
  * 发送合并转发前 中间件实现方法
@@ -143,7 +143,7 @@ export type UseForwardMsgFn = (
   next: () => void,
   /** 是否不发送此条消息 */
   exit: () => void
-) => Promise<boolean>
+) => Promise<void>
 
 /**
  * 消息事件没有找到任何匹配的插件触发 中间件实现方法
@@ -155,7 +155,7 @@ export type UseNotFoundMsgFn = (
   next: () => void,
   /** 是否退出此条消息 不再执行匹配插件 */
   exit: () => void
-) => Promise<boolean>
+) => Promise<void>
 
 /** use规则集类型 */
 export interface UseInfo<T extends keyof UseMapType = keyof UseMapType> extends Omit<AppBase, 'log'> {
