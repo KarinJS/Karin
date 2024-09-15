@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /**
  * - 群身份枚举 值不存在时为unknown
  */
@@ -6,7 +5,7 @@ export const enum Role {
   Owner = 'owner',
   Admin = 'admin',
   Member = 'member',
-  Unknown = 'unknown'
+  Unknown = 'unknown',
 }
 
 /**
@@ -17,13 +16,8 @@ export const enum Permission {
   Master = 'master',
   Admin = 'admin',
   GroupOwner = 'group.owner',
-  GroupAdmin = 'group.admin'
+  GroupAdmin = 'group.admin',
 }
-
-/**
- * - 权限类型 纯文本
- */
-export type PermissionType = 'all' | 'master' | 'admin' | 'group.owner' | 'group.admin'
 
 /**
  * - 事件发送者信息

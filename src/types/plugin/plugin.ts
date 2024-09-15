@@ -1,9 +1,7 @@
 import schedule from 'node-schedule'
-import { Plugin } from 'karin/core'
 import { Reply, replyCallback, replyForward } from '../event/reply'
-import { KarinNoticeType, KarinRequestType, AllListenEvent, KarinMessageType, PermissionType, AllMessageSubType, Contact, AllNoticeSubType, AllRequestSubType } from '../event'
-import { KarinElement, NodeElement } from '../element/element'
-import { KarinAdapter } from '../adapter/base'
+import { KarinNoticeType, KarinRequestType, AllListenEvent, KarinMessageType, AllMessageSubType, Permission } from '../event'
+import { AcceptInfo, ButtonInfo, CommandInfo, HandlerInfo, Plugin, UseForwardMsgFn, UseInfo, UseNotFoundMsgFn, UseRecvMsgFn, UseSendMsgFn, UseSendNoticeFn } from 'karin/core'
 
 /**
  * - 插件根目录名称
@@ -46,7 +44,7 @@ export const enum MethodType {
  */
 export interface PluginInfoType {
   /** 插件包类型 */
-  type: `${AppsType}`,
+  type: `${AppsType}`
   /** 插件包名称 例: `karin-plugin-example` `@karinjs/adapter-qqbot` */
   plugin: string,
   /** 插件路径 在type为js下，path为空 */
@@ -62,25 +60,25 @@ export interface PluginCommandInfoType {
   /** 插件基本信息的映射key */
   key: number,
   /** 插件包名称 */
-  name: string,
+  name: CommandInfo['name'],
   /** 插件正则 */
-  reg: RegExp,
+  reg: CommandInfo['reg'],
   /** 插件执行方法 */
-  fn: (e: KarinMessageType) => Promise<boolean>,
+  fn: CommandInfo['fn'],
   /** 插件执行方法名称 */
-  fnname: string,
+  fnname: CommandInfo['fnname'],
   /** 插件类型 */
   type: `${MethodType}`,
   /** 在type为class的时候 data为class 否则为空字符串 */
   data: (() => PluginType) | undefined,
   /** 插件执行权限 */
-  perm: `${PermissionType}`,
+  perm: CommandInfo['perm'],
   /** 执行打印日志方法 */
-  log: Function,
+  log: CommandInfo['log'],
   /** 监听的子事件 高于父事件 */
-  event: AllMessageSubType,
+  event: CommandInfo['event']
   /** 优先级 */
-  rank: number
+  rank: CommandInfo['rank']
 }
 
 /**
@@ -90,15 +88,15 @@ export interface PluginAcceptInfoType {
   /** 插件基本信息的映射key */
   key: number,
   /** 插件包名称 */
-  name: string,
+  name: AcceptInfo['name'],
   /** 插件执行方法 */
-  fn: (e: KarinNoticeType | KarinRequestType) => Promise<boolean>,
+  fn: AcceptInfo['fn'],
   /** 优先级 */
-  rank: number
+  rank: AcceptInfo['rank'],
   /** 监听事件 */
-  event: AllNoticeSubType | AllRequestSubType
+  event: AcceptInfo['event']
   /** 执行打印日志方法 */
-  log: Function
+  log: AcceptInfo['log']
 }
 
 /**
@@ -130,13 +128,13 @@ export interface PluginButtonInfoType {
   /** 插件基本信息的映射key */
   key: number,
   /** 插件包名称 */
-  name: string,
+  name: ButtonInfo['name'],
   /** 插件正则 */
-  reg: RegExp,
+  reg: ButtonInfo['reg'],
   /** 插件执行方法 */
-  fn: (reject: Function, e?: KarinMessageType) => Promise<any>,
+  fn: ButtonInfo['fn'],
   /** 优先级 */
-  rank: number
+  rank: ButtonInfo['rank']
 }
 
 /**
@@ -146,116 +144,22 @@ export interface PluginHandlerInfoType {
   /** 插件基本信息的映射key */
   key: number,
   /** 插件包名称 */
-  name: string,
+  name: HandlerInfo['name'],
   /** handler的处理方法 */
-  fn: (args: any, reject: (msg?: string) => void) => Promise<any>,
+  fn: HandlerInfo['fn'],
   /** 优先级 */
-  rank: number
+  rank: HandlerInfo['rank'],
 }
 
-/**
- * 中间件规则集信息
- */
-export interface UseValueType {
-  /** 初始化消息前 */
-  recvMsg: Array<{
-    /** 插件基本信息的映射key */
-    key: number,
-    /** 插件包名称 */
-    name: string,
-    /** 插件执行方法 */
-    fn: (
-      /** 消息事件方法 */
-      e: KarinMessageType,
-      /** 是否继续执行下一个中间件 */
-      next: Function,
-      /** 是否退出此条消息 不再执行匹配插件 */
-      exit: Function
-    ) => Promise<boolean>,
-    /** 优先级 */
-    rank: number
-  }>,
-  /** 回复消息前 */
-  replyMsg: Array<{
-    /** 插件基本信息的映射key */
-    key: number,
-    /** 插件包名称 */
-    name: string,
-    /** 插件执行方法 */
-    fn: (
-      /** 消息事件方法 */
-      e: KarinMessageType,
-      /** 回复的消息体 */
-      element: KarinElement[],
-      /** 是否继续执行下一个中间件 */
-      next: Function,
-      /** 是否不发送此条消息 */
-      exit: Function
-    ) => Promise<boolean>,
-    /** 优先级 */
-    rank: number
-  }>,
-  /** 发送主动消息前 */
-  sendMsg: Array<{
-    /** 插件基本信息的映射key */
-    key: number,
-    /** 插件包名称 */
-    name: string,
-    /** 插件执行方法 */
-    fn: (
-      /** 发送的bot */
-      uid: string,
-      /** 发送目标 */
-      contact: Contact,
-      /** 发送的消息体 */
-      element: KarinElement[],
-      /** 是否继续执行下一个中间件 */
-      next: Function,
-      /** 是否不发送此条消息 */
-      exit: Function
-    ) => Promise<boolean>,
-    /** 优先级 */
-    rank: number
-  }>
-  /** 发送合并转发前 */
-  forwardMsg: Array<{
-    /** 插件基本信息的映射key */
-    key: number,
-    /** 插件包名称 */
-    name: string,
-    /** 插件执行方法 */
-    fn: (
-      bot: KarinAdapter,
-      /** 发送的目标信息 */
-      contact: Contact,
-      /** 发送的消息体 */
-      elements: Array<NodeElement>,
-      /** 是否继续执行下一个中间件 */
-      next: Function,
-      /** 是否不发送此条消息 */
-      exit: Function
-    ) => Promise<boolean>,
-    /** 优先级 */
-    rank: number
-  }>
-  /** 消息事件没有找到任何匹配的插件触发 */
-  notFoundMsg: Array<{
-    /** 插件基本信息的映射key */
-    key: number,
-    /** 插件包名称 */
-    name: string,
-    /** 插件执行方法 */
-    fn: (
-      /** 消息事件方法 */
-      e: KarinMessageType,
-      /** 是否继续执行下一个中间件 */
-      next: Function,
-      /** 是否退出此条消息 不再执行匹配插件 */
-      exit: Function
-    ) => Promise<boolean>,
-    /** 优先级 */
-    rank: number
-  }>
+export interface UseBase<T> {
+  /** 插件基本信息的映射key */
+  key: number
+  /** 插件包名称 */
+  name: UseInfo['name']
+  /** 插件执行方法 */
+  fn: T
+  /** 优先级 */
+  rank: UseInfo['rank']
 }
 
 /**
@@ -278,11 +182,11 @@ export const enum UseKeyType {
  * 中间件映射
  */
 export interface UseMapType {
-  [UseKeyType.ReceiveMsg]: UseValueType['recvMsg']
-  [UseKeyType.ReplyMsg]: UseValueType['replyMsg']
-  [UseKeyType.SendMsg]: UseValueType['sendMsg']
-  [UseKeyType.ForwardMsg]: UseValueType['forwardMsg']
-  [UseKeyType.NotFoundMsg]: UseValueType['notFoundMsg']
+  [UseKeyType.ReceiveMsg]: Array<UseBase<UseRecvMsgFn>>
+  [UseKeyType.ReplyMsg]: Array<UseBase<UseSendMsgFn>>
+  [UseKeyType.SendMsg]: Array<UseBase<UseSendNoticeFn>>
+  [UseKeyType.ForwardMsg]: Array<UseBase<UseForwardMsgFn>>
+  [UseKeyType.NotFoundMsg]: Array<UseBase<UseNotFoundMsgFn>>
 }
 
 /**
@@ -318,7 +222,7 @@ export interface PluginRule {
   /**
    * 权限
    */
-  permission?: PermissionType
+  permission?: `${Permission}`
   /**
    * - 打印日志 默认为true
    */

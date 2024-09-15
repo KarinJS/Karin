@@ -15,6 +15,8 @@ import {
   CommandInfo,
   HandlerInfo,
   Permission,
+  UseMapType,
+  UseKeyType,
   PluginInfoType,
   NewMessagePlugin,
   PluginTaskInfoType,
@@ -22,7 +24,6 @@ import {
   PluginAcceptInfoType,
   PluginHandlerInfoType,
   PluginCommandInfoType,
-  UseValueType,
 } from 'karin/types'
 
 type AppType = CommandInfo | TaskInfo | HandlerInfo | ButtonInfo | AcceptInfo | UseInfo
@@ -85,7 +86,7 @@ class PluginLoader {
   /** task定时任务信息 */
   task: PluginTaskInfoType[]
   /** 中间件 */
-  use: UseValueType
+  use: UseMapType
   /** 加载的文件数组 .js .ts */
   ext: string[]
 
@@ -97,11 +98,11 @@ class PluginLoader {
     this.plugin = new Map()
     this.task = []
     this.use = {
-      recvMsg: [],
-      replyMsg: [],
-      sendMsg: [],
-      forwardMsg: [],
-      notFoundMsg: [],
+      [UseKeyType['ReceiveMsg']]: [],
+      [UseKeyType['ReplyMsg']]: [],
+      [UseKeyType['SendMsg']]: [],
+      [UseKeyType['ForwardMsg']]: [],
+      [UseKeyType['NotFoundMsg']]: [],
     }
 
     this.ext = process.env.karin_app_lang === 'ts' ? ['.js', '.ts'] : ['.js']
@@ -366,11 +367,11 @@ class PluginLoader {
     this.button = lodash.orderBy(this.button, ['rank'], ['asc'])
     this.command = lodash.orderBy(this.command, ['rank'], ['asc'])
     this.task = lodash.orderBy(this.task, ['rank'], ['asc'])
-    this.use.recvMsg = lodash.orderBy(this.use.recvMsg, ['rank'], ['asc'])
-    this.use.replyMsg = lodash.orderBy(this.use.replyMsg, ['rank'], ['asc'])
-    this.use.sendMsg = lodash.orderBy(this.use.sendMsg, ['rank'], ['asc'])
-    this.use.forwardMsg = lodash.orderBy(this.use.forwardMsg, ['rank'], ['asc'])
-    this.use.notFoundMsg = lodash.orderBy(this.use.notFoundMsg, ['rank'], ['asc'])
+    this.use[UseKeyType['ReceiveMsg']] = lodash.orderBy(this.use[UseKeyType['ReceiveMsg']], ['rank'], ['asc'])
+    this.use[UseKeyType['ReplyMsg']] = lodash.orderBy(this.use[UseKeyType['ReplyMsg']], ['rank'], ['asc'])
+    this.use[UseKeyType['SendMsg']] = lodash.orderBy(this.use[UseKeyType['SendMsg']], ['rank'], ['asc'])
+    this.use[UseKeyType['ForwardMsg']] = lodash.orderBy(this.use[UseKeyType['ForwardMsg']], ['rank'], ['asc'])
+    this.use[UseKeyType['NotFoundMsg']] = lodash.orderBy(this.use[UseKeyType['NotFoundMsg']], ['rank'], ['asc'])
 
     const handler = Object.keys(this.handler)
     handler.forEach(key => {
@@ -652,11 +653,11 @@ class PluginLoader {
         this.accept = this.accept.filter(val => val.key !== key)
         this.button = this.button.filter(val => val.key !== key)
         this.command = this.command.filter(val => val.key !== key)
-        this.use.recvMsg = this.use.recvMsg.filter(val => val.key !== key)
-        this.use.replyMsg = this.use.replyMsg.filter(val => val.key !== key)
-        this.use.sendMsg = this.use.sendMsg.filter(val => val.key !== key)
-        this.use.forwardMsg = this.use.forwardMsg.filter(val => val.key !== key)
-        this.use.notFoundMsg = this.use.notFoundMsg.filter(val => val.key !== key)
+        this.use[UseKeyType['ReceiveMsg']] = this.use[UseKeyType['ReceiveMsg']].filter(val => val.key !== key)
+        this.use[UseKeyType['ReplyMsg']] = this.use[UseKeyType['ReplyMsg']].filter(val => val.key !== key)
+        this.use[UseKeyType['SendMsg']] = this.use[UseKeyType['SendMsg']].filter(val => val.key !== key)
+        this.use[UseKeyType['ForwardMsg']] = this.use[UseKeyType['ForwardMsg']].filter(val => val.key !== key)
+        this.use[UseKeyType['NotFoundMsg']] = this.use[UseKeyType['NotFoundMsg']].filter(val => val.key !== key)
 
         /** 定时任务需要先停止 */
         this.task = this.task.filter(val => {

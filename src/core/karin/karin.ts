@@ -9,10 +9,7 @@ import {
   KarinElement,
   KarinMessage,
   KarinRenderType,
-  PermissionType,
   RenderResult,
-  KarinNoticeType,
-  KarinRequestType,
   AllMessageSubType,
   CommandInfo,
   TaskInfo,
@@ -22,6 +19,9 @@ import {
   AllNoticeSubType,
   AllRequestSubType,
   UseMapType,
+  AppType,
+  ButtonInfo,
+  Permission,
 } from 'karin/types'
 
 import { pluginLoader } from '../plugin/loader'
@@ -59,7 +59,7 @@ export interface OptionsCommand extends Options {
    * - 权限
    * @default 'all'
    */
-  permission?: PermissionType
+  permission?: `${Permission}`
 }
 
 export interface OptionsElement extends OptionsCommand {
@@ -146,11 +146,11 @@ export class Karin extends Listeners {
       fn,
       fnname: 'fnc',
       log,
-      name: options.name || 'command',
+      name: options.name || AppType.Command,
       perm: options.permission || 'all',
       rank: options.priority || 10000,
       reg,
-      type: 'command',
+      type: AppType.Command,
     }
   }
 
@@ -171,9 +171,9 @@ export class Karin extends Listeners {
       cron,
       fn,
       log,
-      name: options?.name || 'task',
+      name: options?.name || AppType.Task,
       fnname: name,
-      type: 'task',
+      type: AppType.Task,
     }
   }
 
@@ -183,25 +183,16 @@ export class Karin extends Listeners {
    * @param fn - 函数实现
    * @param options - 选项
    */
-  handler (key: string, fn: (
-    /**
-     * - 自定义参数 由调用方传递
-     */
-    args: { [key: string]: any },
-    /**
-     * - 停止循环函数 调用后则不再继续执行下一个处理器
-     */
-    reject: (msg?: string) => void,
-  ) => Promise<any>, options?: Omit<Options, 'log'>): HandlerInfo {
+  handler (key: string, fn: HandlerInfo['fn'], options?: Omit<Options, 'log'>): HandlerInfo {
     if (!key) throw new Error('[handler]: 缺少参数[key]')
     if (!fn) throw new Error('[handler]: 缺少参数[fnc]')
 
     return {
       fn,
       key,
-      name: options?.name || 'handler',
+      name: options?.name || AppType.Handler,
       rank: options?.priority || 10000,
-      type: 'handler',
+      type: AppType.Handler,
     }
   }
 
@@ -320,7 +311,7 @@ export class Karin extends Listeners {
    * @param event - 监听事件
    * @param fn - 实现函数
    */
-  accept (event: AllNoticeSubType | AllRequestSubType, fn: (e: KarinNoticeType | KarinRequestType) => Promise<boolean>, options?: Options): AcceptInfo {
+  accept (event: AllNoticeSubType | AllRequestSubType, fn: AcceptInfo['fn'], options?: Options): AcceptInfo {
     const log = options?.log === false
       ? (id: string, text: string) => logger.bot('debug', id, text)
       : (id: string, text: string) => logger.bot('info', id, text)
@@ -329,9 +320,9 @@ export class Karin extends Listeners {
       event,
       fn,
       log,
-      name: options?.name || 'accept',
+      name: options?.name || AppType.Accept,
       rank: options?.priority || 10000,
-      type: 'accept',
+      type: AppType.Accept,
     }
   }
 
@@ -349,9 +340,24 @@ export class Karin extends Listeners {
     return {
       fn,
       key: type,
-      name: options?.name || 'use',
+      name: options?.name || AppType.Use,
       rank: options?.priority || 10000,
-      type: 'use',
+      type: AppType.Use,
+    }
+  }
+
+  /**
+   * 按钮
+   * @param reg - 正则表达式
+   * @param fn - 函数
+   */
+  button (reg: RegExp | string, fn: ButtonInfo['fn'], options?: Omit<Options, 'log'>): ButtonInfo {
+    return {
+      fn,
+      reg: reg instanceof RegExp ? reg : new RegExp(reg),
+      name: options?.name || AppType.Button,
+      rank: options?.priority || 10000,
+      type: AppType.Button,
     }
   }
 

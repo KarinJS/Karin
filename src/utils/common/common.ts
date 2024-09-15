@@ -641,9 +641,9 @@ export class Common {
         const data: ButtonType = {
           id: String(id),
           render_data: {
-            label: i.text,
+            label: i.text || i.link || '',
             style: i.style ?? 0,
-            visited_label: i.show || i.text,
+            visited_label: i.show || i.text || i.link || '',
           },
           action: {
             type,
