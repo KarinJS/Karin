@@ -1,5 +1,13 @@
 # 更新日志
 
+## [0.12.14](https://github.com/KarinJS/Karin/compare/v0.12.13...v0.12.14) (2024-09-15)
+
+
+### Bug Fixes
+
+* del postinstall ([35d8097](https://github.com/KarinJS/Karin/commit/35d8097ee76f4d873808c8ffca4cef9835ab1527))
+* 中间键返回错误 ([bea9870](https://github.com/KarinJS/Karin/commit/bea98701b1fc2c6a8046eff3ec4833d2b3913627))
+
 ## [0.12.13](https://github.com/KarinJS/Karin/compare/v0.12.12...v0.12.13) (2024-09-15)
 
 
