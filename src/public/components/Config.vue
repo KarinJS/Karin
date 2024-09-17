@@ -1,6 +1,6 @@
 <template>
-  <div class="w-full p-6">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 config-grid">
+  <div class="w-full p-6 fade-in">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 config-grid">
       <!-- App 配置 -->
       <div class="card">
         <h2 class="text-xl font-bold mb-4 text-white">App 配置</h2>
@@ -128,19 +128,19 @@ const saveConfigs = async () => {
 
 @media (max-width: 1600px) {
   .config-grid {
-    transform: scale(0.95);
+    transform: scale(0.97);
   }
 }
 
 @media (max-width: 1366px) {
   .config-grid {
-    transform: scale(0.9);
+    transform: scale(0.93);
   }
 }
 
 @media (max-width: 1024px) {
   .config-grid {
-    transform: scale(0.85);
+    transform: scale(0.88);
   }
 }
 
@@ -163,5 +163,15 @@ const saveConfigs = async () => {
     margin-top: 20px;
     width: 100%;
   }
+}
+
+/* 添加以下新的CSS规则 */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen">
+  <div class="flex h-screen fade-in">
     <!-- 侧边栏 -->
     <el-menu
       :default-active="activeIndex"
@@ -14,15 +14,11 @@
     >
       <el-menu-item index="1">
         <el-icon><icon-menu /></el-icon>
-        <span>Karin喵~</span>
+        <span>Karin 喵 ~</span>
       </el-menu-item>
       <el-menu-item v-for="(tool, index) in hrTools" :key="index" :index="(index + 2).toString()">
         <el-icon><icon-menu /></el-icon>
         <span>{{ tool }}</span>
-      </el-menu-item>
-      <el-menu-item index="6">
-        <el-icon><icon-menu /></el-icon>
-        <span>Karin 5</span>
       </el-menu-item>
     </el-menu>
 
@@ -36,14 +32,19 @@ import { ref, computed } from 'vue'
 import { Menu as IconMenu } from '@element-plus/icons-vue'
 import MainContent from './components/Dashboard.vue'
 import Config from './components/Config.vue'
+import Plugins from './components/Plugins.vue'
 
 const activeIndex = ref('1')
 const currentComponent = computed(() => {
-  return activeIndex.value === '2' ? Config : MainContent
+  switch (activeIndex.value) {
+    case '2': return Config
+    case '3': return Plugins
+    default: return MainContent
+  }
 })
 
 const isCollapse = ref(false)
-const hrTools = ref(['Config', 'Karin 2', 'Karin 3', 'Karin 4'])
+const hrTools = ref(['Config', 'Plugins'])
 
 const handleOpen = (key, keyPath) => {
   // console.log(key, keyPath)
@@ -80,5 +81,15 @@ body {
 
 .el-menu-item.is-active {
   background-color: #363636 !important;
+}
+
+/* 添加以下新的CSS规则 */
+.fade-in {
+  animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 </style>

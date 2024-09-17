@@ -8,7 +8,7 @@
         <ProgressBox title="内存" :downTitle="'总内存 ' + Number(status.data.system.info_memory_total).toFixed(0) + 'MB'" :value="Number(status.data.system.info_memory_usage).toFixed(1)"/>
         <ProgressBox v-if="cpuUsage" title="CPU" :downTitle="'核心数 ' + Number(cpuUsage.data.cpu_info.cpu_cpus).toFixed(0)" :value="Number(cpuUsage.data.cpu_info.cpu_usage).toFixed(1)"/>
         <ProgressBox v-else title="CPU" downTitle="加载中..." :value="0"/>
-        <ProgressBox title="消息数" :downTitle="'总消息数 ' + counter.data.value.total" :value="counter.data.value.today" :showPercent="false"/>
+        <ProgressBox title="今日处理" :downTitle="'总处理消息 ' + counter.data.value.total" :value="counter.data.value.today" :showPercent="false"/>
       </div>
       <h2 class="text-xl font-bold mb-2 mt-5">Karin</h2>
       <div class="status-container">
@@ -26,7 +26,7 @@
       <div class="status-container">
         <StatusTimer title="系统类型" :value=status.data.system.info_platform :showTime="false" color="#2196F3" />
         <StatusTimer title="系统架构" :value=status.data.system.info_arch :showTime="false" color="#2196F3" />
-        <StatusTimer title="Node.js版本" :value=status.data.system.info_version :showTime="false" color="#2196F3" />
+        <StatusTimer title="Node.js" :value=status.data.system.info_version :showTime="false" color="#2196F3" />
       </div>
     </div>
   </div>

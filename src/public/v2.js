@@ -79,3 +79,23 @@ export const saveConfig = async (type, data) => {
     throw error;
   }
 };
+
+export const fetchPlugins = async () => {
+  try {
+    const response = await apiClient.get('/plugins/list');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching plugins:', error);
+    throw error;
+  }
+};
+
+export const fetchPluginCommandsList = async (id) => {
+  try {
+    const response = await apiClient.get(`/plugins/list/commands/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching plugin commands list:', error);
+    throw error;
+  }
+}
