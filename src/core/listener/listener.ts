@@ -128,7 +128,7 @@ export class Listeners extends EventEmitter {
           const nextFn = () => { next = true }
           const exitFn = () => { exit = true }
 
-          await info.fn(contact, elements, nextFn, exitFn)
+          await info.fn(data.bot, contact, elements, nextFn, exitFn)
 
           if (exit) {
             const plugin = pluginLoader.plugin.get(info.key)!
@@ -143,7 +143,7 @@ export class Listeners extends EventEmitter {
         }
       }
 
-      const result = await sendForwardMessage(contact, elements)
+      const result = await sendForwardMessage.call(data.bot, contact, elements)
       return result
     }
 

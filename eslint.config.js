@@ -1,7 +1,7 @@
 import neostandard from 'neostandard'
 
 export default neostandard({
-  ignores: ['node_modules', 'temp', 'logs', 'data', 'src/public', 'lib/public'],
+  ignores: ['node_modules', 'temp', 'logs', 'data', 'lib', 'src/public', 'lib/public'],
   globals: ['logger', 'NodeJS'],
   ts: true,
 }).map(val => {

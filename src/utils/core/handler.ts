@@ -20,12 +20,8 @@ export const handler = new (class EventHandler {
          * 拒绝处理器 调用后则不再继续执行下一个处理器
          * @param msg 错误信息
          */
-        const reject = (msg = '') => {
-          if (msg) logger.mark(`[Handler][Reject]: [${plugin.plugin}][${info.name}][${key}] ${msg}`)
-          done = false
-        }
-
-        res = await info.fn(args, reject)
+        const next = () => { done = false }
+        res = await info.fn(args, next)
 
         if (done) {
           logger.mark(`[Handler][Done]: [${plugin.plugin}][${info.name}][${key}]`)

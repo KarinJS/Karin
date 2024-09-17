@@ -15,6 +15,8 @@ import {
   CommandInfo,
   HandlerInfo,
   Permission,
+  UseMapType,
+  UseKeyType,
   PluginInfoType,
   NewMessagePlugin,
   PluginTaskInfoType,
@@ -22,7 +24,6 @@ import {
   PluginAcceptInfoType,
   PluginHandlerInfoType,
   PluginCommandInfoType,
-  PluginMiddlewareInfoType,
 } from 'karin/types'
 
 type AppType = CommandInfo | TaskInfo | HandlerInfo | ButtonInfo | AcceptInfo | UseInfo
@@ -86,7 +87,7 @@ class PluginLoader {
   /** task定时任务信息 */
   task: PluginTaskInfoType[]
   /** 中间件 */
-  use: PluginMiddlewareInfoType
+  use: UseMapType
   /** 加载的文件数组 .js .ts */
   ext: string[]
 
@@ -98,11 +99,11 @@ class PluginLoader {
     this.plugin = new Map()
     this.task = []
     this.use = {
-      recvMsg: [],
-      replyMsg: [],
-      sendMsg: [],
-      forwardMsg: [],
-      notFound: [],
+      [UseKeyType['ReceiveMsg']]: [],
+      [UseKeyType['ReplyMsg']]: [],
+      [UseKeyType['SendMsg']]: [],
+      [UseKeyType['ForwardMsg']]: [],
+      [UseKeyType['NotFoundMsg']]: [],
     }
 
     this.ext = process.env.karin_app_lang === 'ts' ? ['.js', '.ts'] : ['.js']
@@ -367,11 +368,11 @@ class PluginLoader {
     this.button = lodash.orderBy(this.button, ['rank'], ['asc'])
     this.command = lodash.orderBy(this.command, ['rank'], ['asc'])
     this.task = lodash.orderBy(this.task, ['rank'], ['asc'])
-    this.use.recvMsg = lodash.orderBy(this.use.recvMsg, ['rank'], ['asc'])
-    this.use.replyMsg = lodash.orderBy(this.use.replyMsg, ['rank'], ['asc'])
-    this.use.sendMsg = lodash.orderBy(this.use.sendMsg, ['rank'], ['asc'])
-    this.use.forwardMsg = lodash.orderBy(this.use.forwardMsg, ['rank'], ['asc'])
-    this.use.notFound = lodash.orderBy(this.use.notFound, ['rank'], ['asc'])
+    this.use[UseKeyType['ReceiveMsg']] = lodash.orderBy(this.use[UseKeyType['ReceiveMsg']], ['rank'], ['asc'])
+    this.use[UseKeyType['ReplyMsg']] = lodash.orderBy(this.use[UseKeyType['ReplyMsg']], ['rank'], ['asc'])
+    this.use[UseKeyType['SendMsg']] = lodash.orderBy(this.use[UseKeyType['SendMsg']], ['rank'], ['asc'])
+    this.use[UseKeyType['ForwardMsg']] = lodash.orderBy(this.use[UseKeyType['ForwardMsg']], ['rank'], ['asc'])
+    this.use[UseKeyType['NotFoundMsg']] = lodash.orderBy(this.use[UseKeyType['NotFoundMsg']], ['rank'], ['asc'])
 
     const handler = Object.keys(this.handler)
     handler.forEach(key => {
@@ -624,13 +625,22 @@ class PluginLoader {
       const keys = Object.keys(this.dependErr)
       if (!keys.length) return
 
-      const msg = ['-----依赖缺失----']
+      const msg = ['\n-----依赖缺失----']
 
       keys.forEach(key => {
         const { plugin, path, file, depend } = this.dependErr[key]
         msg.push(`[${plugin}]${path ? `[${path}]` : ''}[${file}] 缺少依赖：${logger.red(depend)}`)
       })
 
+      msg.push('-------------------')
+      const one = this.dependErr[keys[0]]
+      msg.push(...[
+        '温馨提示:',
+        `1. 如果是新安装的插件，请尝试执行 ${logger.red('pnpm install -P')} 自动安装依赖`,
+        `2. 如果执行第一步无效，请尝试执行 ${logger.red('pnpm add 依赖名称 -w')} 手动安装依赖`,
+        `举例: ${logger.red(`pnpm add ${one.depend} -w`)}`,
+        logger.yellow('对于手动安装的依赖，如果对应插件未在使用，请进行及时卸载: pnpm uninstall 依赖名称'),
+      ])
       msg.push('-------------------')
       logger.error(msg.join('\n'))
     } finally {
@@ -653,11 +663,11 @@ class PluginLoader {
         this.accept = this.accept.filter(val => val.key !== key)
         this.button = this.button.filter(val => val.key !== key)
         this.command = this.command.filter(val => val.key !== key)
-        this.use.recvMsg = this.use.recvMsg.filter(val => val.key !== key)
-        this.use.replyMsg = this.use.replyMsg.filter(val => val.key !== key)
-        this.use.sendMsg = this.use.sendMsg.filter(val => val.key !== key)
-        this.use.forwardMsg = this.use.forwardMsg.filter(val => val.key !== key)
-        this.use.notFound = this.use.notFound.filter(val => val.key !== key)
+        this.use[UseKeyType['ReceiveMsg']] = this.use[UseKeyType['ReceiveMsg']].filter(val => val.key !== key)
+        this.use[UseKeyType['ReplyMsg']] = this.use[UseKeyType['ReplyMsg']].filter(val => val.key !== key)
+        this.use[UseKeyType['SendMsg']] = this.use[UseKeyType['SendMsg']].filter(val => val.key !== key)
+        this.use[UseKeyType['ForwardMsg']] = this.use[UseKeyType['ForwardMsg']].filter(val => val.key !== key)
+        this.use[UseKeyType['NotFoundMsg']] = this.use[UseKeyType['NotFoundMsg']].filter(val => val.key !== key)
 
         /** 定时任务需要先停止 */
         this.task = this.task.filter(val => {

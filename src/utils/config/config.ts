@@ -245,7 +245,7 @@ export const config = new (class Cfg {
     const key = 'change.group'
     /** 取缓存 */
     const res = this.change.get(key)
-    const keys = e?.self_id ? [`Bot.${e.self_id}.${group_id}`, `Bot.${e.self_id}`, group_id] : [group_id]
+    const keys = e?.self_id ? [`Bot:${e.self_id}:${group_id}`, `Bot:${e.self_id}`, group_id] : [group_id]
     if (res) {
       const cfg = { ...res.defCfg.default, ...res.Config.default }
       for (const k of keys) {
@@ -401,7 +401,7 @@ export const config = new (class Cfg {
   }
 
   async #review () {
-    // 应该改成事件监听
+    // todo: 应该改成事件监听
     if (this.review) return
     this.review = true
     const { review } = await import('karin/event/handler/review')

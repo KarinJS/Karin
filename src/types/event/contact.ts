@@ -2,11 +2,19 @@
  * - 事件来源枚举
  */
 export const enum Scene {
+  /** 群 */
   Group = 'group',
+  /** 好友 */
   Private = 'friend',
+  /** 频道 */
   Guild = 'guild',
+  /** 频道私信 */
+  GuildPrivate = 'guild_private',
+  /** 临时会话 */
   Nearby = 'nearby',
+  /** 陌生人 */
   Stranger = 'stranger',
+  /** 临时群会话 */
   StrangerFromGroup = 'stranger_from_group',
 }
 

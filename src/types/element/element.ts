@@ -1,4 +1,4 @@
-export type ElementType = 'text' | 'at' | 'face' | 'bubble_face' | 'reply' | 'image' | 'video' | 'basketball' | 'dice' | 'rps' | 'poke' | 'music' | 'weather' | 'location' | 'share' | 'gift' | 'market_face' | 'forward' | 'contact' | 'json' | 'xml' | 'file' | 'markdown' | 'markdown_tpl' | 'keyboard' | 'node' | 'rows' | 'record' | 'long_msg' | 'raw'
+export type ElementType = 'text' | 'at' | 'face' | 'bubble_face' | 'reply' | 'image' | 'video' | 'basketball' | 'dice' | 'rps' | 'poke' | 'music' | 'weather' | 'location' | 'share' | 'gift' | 'market_face' | 'forward' | 'contact' | 'json' | 'xml' | 'file' | 'markdown' | 'markdown_tpl' | 'keyboard' | 'node' | 'rows' | 'record' | 'long_msg' | 'raw' | 'passive_reply'
 
 export interface Element {
   /**
@@ -586,6 +586,14 @@ export interface LongMsgElement extends Element {
 }
 
 /**
+ * - 回复被动消息 键入此字段代表此条消息为被动消息
+ */
+export interface PassiveElement extends Element {
+  type: 'passive_reply'
+  id: string
+}
+
+/**
  * 原生元素
  */
 export interface RawElement extends Element {
@@ -593,7 +601,7 @@ export interface RawElement extends Element {
   data: any
 }
 
-export type KarinElement = TextElement | AtElement | FaceElement | BubbleFaceElement | ReplyElement | ImageElement | VideoElement | BasketballElement | DiceElement | RpsElement | PokeElement | MusicElement | WeatherElement | LocationElement | ShareElement | GiftElement | MarketFaceElement | ForwardElement | ContactElement | JsonElement | XmlElement | FileElement | ButtonElement | KeyBoardElement | RecordElement | LongMsgElement | TplMarkdownElement | RawMarkdownElement | RawElement
+export type KarinElement = TextElement | AtElement | FaceElement | BubbleFaceElement | ReplyElement | ImageElement | VideoElement | BasketballElement | DiceElement | RpsElement | PokeElement | MusicElement | WeatherElement | LocationElement | ShareElement | GiftElement | MarketFaceElement | ForwardElement | ContactElement | JsonElement | XmlElement | FileElement | ButtonElement | KeyBoardElement | RecordElement | LongMsgElement | TplMarkdownElement | RawMarkdownElement | RawElement | PassiveElement
 
 /**
  * - 构建自定义转发节点 此元素仅可通过专用接口发送 不支持混合发送

@@ -531,12 +531,9 @@ export const segment = new (class Segment {
   /**
    * 按钮 构建单行单个(obj)、多个按钮(obj[])
    * @param data - 按钮数据
-   * @returns {ButtonElement} 按钮元素
+   * @returns 按钮元素
    */
-  button (data: Button | Array<Button>): {
-    type: ButtonElement['type'],
-    data: Array<Button>
-  } {
+  button (data: Button | Array<Button>): ButtonElement {
     return {
       type: 'button',
       data: Array.isArray(data) ? data : [data],
@@ -589,6 +586,16 @@ export const segment = new (class Segment {
     return {
       type: 'raw',
       data,
+    }
+  }
+
+  /**
+   * 回复被动消息
+   */
+  passive_reply (id: string): { type: 'passive_reply', id: string } {
+    return {
+      type: 'passive_reply',
+      id,
     }
   }
 })()

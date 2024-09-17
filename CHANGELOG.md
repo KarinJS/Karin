@@ -1,5 +1,71 @@
 # 更新日志
 
+## [0.12.14](https://github.com/KarinJS/Karin/compare/v0.12.13...v0.12.14) (2024-09-15)
+
+
+### Bug Fixes
+
+* del postinstall ([35d8097](https://github.com/KarinJS/Karin/commit/35d8097ee76f4d873808c8ffca4cef9835ab1527))
+* 中间键返回错误 ([bea9870](https://github.com/KarinJS/Karin/commit/bea98701b1fc2c6a8046eff3ec4833d2b3913627))
+
+## [0.12.13](https://github.com/KarinJS/Karin/compare/v0.12.12...v0.12.13) (2024-09-15)
+
+
+### Bug Fixes
+
+* postinstall ([7e5dba2](https://github.com/KarinJS/Karin/commit/7e5dba27714cc8b03c144320d7cdb74c6968a40c))
+
+## [0.12.12](https://github.com/KarinJS/Karin/compare/v0.12.11...v0.12.12) (2024-09-15)
+
+
+### Bug Fixes
+
+* test postinstall ([3fe7c96](https://github.com/KarinJS/Karin/commit/3fe7c967b2e830aba67b450777b14838925ee92e))
+* 生成.npmrc ([729d725](https://github.com/KarinJS/Karin/commit/729d725baf5e9903fc24b03b5f9f59c1f598b658))
+
+## [0.12.11](https://github.com/KarinJS/Karin/compare/v0.12.10...v0.12.11) (2024-09-15)
+
+
+### Bug Fixes
+
+* 优化部分类型定义 ([4de3ae7](https://github.com/KarinJS/Karin/commit/4de3ae7a2b1e635a00fbe0bfa01dbbebc26e3e65))
+* 修正`node .`无法启动的问题 ([f3760df](https://github.com/KarinJS/Karin/commit/f3760dfbb4832af976982441602d2fcd3556cb09))
+
+## [0.12.10](https://github.com/KarinJS/Karin/compare/v0.12.9...v0.12.10) (2024-09-14)
+
+
+### Bug Fixes
+
+* 修正合并转发中间件获取上下文错误 ([324b11c](https://github.com/KarinJS/Karin/commit/324b11c24b0c0aa6649d955d64a7ac32f5b9f37b))
+
+## [0.12.9](https://github.com/KarinJS/Karin/compare/v0.12.8...v0.12.9) (2024-09-14)
+
+
+### Bug Fixes
+
+* 中间件类型 ([1a4e2c1](https://github.com/KarinJS/Karin/commit/1a4e2c1e716bce99407fd0dea73cdb336d677b25))
+
+## [0.12.8](https://github.com/KarinJS/Karin/compare/v0.12.7...v0.12.8) (2024-09-14)
+
+
+### Bug Fixes
+
+* sendForwardMessage ([e283eb6](https://github.com/KarinJS/Karin/commit/e283eb634b820793739682c32b3610476fddc940))
+
+## [0.12.7](https://github.com/KarinJS/Karin/compare/v0.12.6...v0.12.7) (2024-09-14)
+
+
+### Bug Fixes
+
+* 修正cli ([4214f07](https://github.com/KarinJS/Karin/commit/4214f07a234d50d517a9d53898e7d1ad102660c4))
+
+## [0.12.6](https://github.com/KarinJS/Karin/compare/v0.12.5...v0.12.6) (2024-09-14)
+
+
+### Bug Fixes
+
+* 修正读取自定义配置 ([00ba404](https://github.com/KarinJS/Karin/commit/00ba4045a09ea9147bdcdda24c702c92856e8b53))
+
 ## [0.12.5](https://github.com/KarinJS/Karin/compare/v0.12.4...v0.12.5) (2024-09-12)
 
 

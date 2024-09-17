@@ -2,6 +2,7 @@
 
 import { getRegistry } from './pkg'
 import { KarinCfgInit } from '../core/init/config'
+import { isPkg } from 'karin/core/init/dir'
 
 /**
  * 休眠函数
@@ -12,6 +13,7 @@ function sleep (ms: number) {
 }
 
 async function main () {
+  if (!isPkg) return
   /** 捕获错误 打印日志 */
   process.on('uncaughtException', err => console.error(err))
   process.on('unhandledRejection', err => console.error(err))
