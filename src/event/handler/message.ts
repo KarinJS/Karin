@@ -4,6 +4,7 @@ import { EventBaseHandler } from './base'
 import { logger, config } from 'karin/utils'
 import { karin, stateArr, pluginLoader } from 'karin/core'
 import { KarinMessageType, MessageSubType, PluginCommandInfoType } from 'karin/types'
+import counter from 'karin/utils/counter/counter'
 
 /**
  * 消息事件
@@ -152,6 +153,12 @@ export class MessageHandler extends EventBaseHandler {
     }
 
     this.e.raw_message = logs.join('')
+
+    /** 计数 */
+    if (this.e.user_id !== 'input') {
+      counter.increment('message:recive:total')
+      counter.increment('message:recive:' + this.e.user_id)
+    }
 
     /** 主人 */
     if (config.master.includes(String(this.e.user_id))) {
@@ -303,6 +310,11 @@ export class MessageHandler extends EventBaseHandler {
       }
     }
 
+    /** 计数 */
+    if (this.e.user_id !== 'input') {
+      counter.increment('message:recive:total:nodeal')
+      counter.increment('message:recive:' + this.e.user_id + ':nodeal')
+    }
     logger.debug(`[事件处理][${this.e.self_id}][${this.e.user_id}][${this.e.event_id}] 未匹配到任何插件`)
     await this.endUse()
   }

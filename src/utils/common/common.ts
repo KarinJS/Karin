@@ -9,10 +9,10 @@ import { createRequire } from 'module'
 import { pipeline, Readable } from 'stream'
 import { logger, segment, YamlEditor } from 'karin/utils'
 import { ButtonElement, ButtonType, dirName, KarinElement, NodeElement, KeyBoardElement } from 'karin/types'
+import os from 'os'
 import { readJson } from 'karin/api/readJson'
 import { getNpmPlugins } from 'karin/api/npm'
 import { getGitPlugins } from 'karin/api/git'
-
 export interface NpmInfo {
   plugin: string,
   path: string,
@@ -212,6 +212,26 @@ export class Common {
       logger.error('[common] 写入yaml文件错误：' + error)
       return false
     }
+  }
+
+  /**
+   * 获取局域网IP地址
+   * @returns 局域网IP地址
+   */
+  getLocalIP (): string {
+    const interfaces = os.networkInterfaces()
+    for (const devName in interfaces) {
+      const iface = interfaces[devName]
+      if (!iface) continue
+
+      for (let i = 0; i < iface.length; i++) {
+        const alias = iface[i]
+        if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+          return alias.address
+        }
+      }
+    }
+    return '0.0.0.0'
   }
 
   /**
