@@ -383,6 +383,8 @@ export class Karin extends Listeners {
     const { server } = await import('../server/server')
     const { dashboardServer } = await import('../server/dashboardServer')
     const { api2Server } = await import('../server/v2Server')
+    const { initAnalyzer } = await import('../../utils/core/analyzer')
+    initAnalyzer()
     server.init()
     dashboardServer.init()
     api2Server.init()

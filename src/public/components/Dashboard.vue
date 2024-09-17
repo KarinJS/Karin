@@ -1,6 +1,6 @@
 <template>
-  <div class="w-11/12 ml-6 p-6">
-    <div class="flex justify-between items-center mb-6">
+  <div class="w-full mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6">
       <div>
         <h1 class="text-2xl font-bold">Morning~ My Master</h1>
         <p class="text-gray-400">Welcome to the Karin Management System</p>
@@ -15,12 +15,12 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-3 gap-6">
+    <div class="grid grid-cols-3 gap-6 dashboard-grid">
       <!-- Status Overview Card -->
-      <StatusOverview class="col-span-1" />
+      <StatusOverview class="col-span-3 xl:col-span-1" />
 
       <!-- Statistics Cards -->
-      <div class="col-span-2 grid grid-cols-3 gap-6">
+      <div class="col-span-3 xl:col-span-2 grid grid-cols-3 gap-6 statistics-grid">
         <div v-for="(stat, index) in statistics" :key="index" class="card">
           <div class="flex justify-between items-center">
             <div>
@@ -48,7 +48,7 @@
       </div>
 
       <!-- Upcoming Birthdays -->
-      <div class="card col-span-1">
+      <div class="card col-span-3 sm:col-span-1">
         <h2 class="text-xl font-bold mb-4">Upcoming Birthdays</h2>
         <div class="space-y-4">
           <div v-for="(birthday, index) in upcomingBirthdays" :key="index" class="flex items-center">
@@ -63,7 +63,7 @@
       </div>
 
       <!-- Applicants Received Time -->
-      <div class="card col-span-2">
+      <div class="card col-span-3 sm:col-span-2">
         <h2 class="text-xl font-bold mb-4">Applicants Received Time</h2>
         <div class="flex justify-between items-center mb-4">
           <p class="text-gray-400">Week</p>
@@ -75,7 +75,7 @@
       </div>
 
       <!-- Calendar -->
-      <div class="card col-span-1">
+      <div class="card col-span-3 sm:col-span-1">
         <h2 class="text-xl font-bold mb-4">Calendar</h2>
         <!-- <div class="flex justify-between items-center mb-4">
             <i class="fas fa-chevron-left text-gray-500"></i>
@@ -147,7 +147,7 @@ const handleClose = (key, keyPath) => {
 }
 </script>
 
-<style>
+<style scoped>
 body {
   font-family: monospace;
   background-color: #121212;
@@ -190,5 +190,75 @@ body {
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
   min-height: 400px;
+}
+
+.dashboard-grid {
+  transform-origin: top left;
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 1920px) {
+  .dashboard-grid {
+    transform: scale(0.98);
+  }
+}
+
+@media (max-width: 1600px) {
+  .dashboard-grid {
+    transform: scale(0.95);
+  }
+}
+
+@media (max-width: 1366px) {
+  .dashboard-grid {
+    transform: scale(0.9);
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    transform: scale(0.85);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-grid {
+    transform: scale(0.8);
+  }
+}
+
+.statistics-grid {
+  transform-origin: top left;
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 1920px) {
+  .statistics-grid {
+    transform: scale(0.98);
+  }
+}
+
+@media (max-width: 1600px) {
+  .statistics-grid {
+    transform: scale(0.95);
+  }
+}
+
+@media (max-width: 1366px) {
+  .statistics-grid {
+    transform: scale(0.9);
+  }
+}
+
+@media (max-width: 1024px) {
+  .statistics-grid {
+    transform: scale(0.85);
+  }
+}
+
+@media (max-width: 768px) {
+  .statistics-grid {
+    transform: scale(0.8);
+  }
 }
 </style>

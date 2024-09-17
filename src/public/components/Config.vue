@@ -1,6 +1,6 @@
 <template>
-  <div class="w-11/12 ml-6 p-6">
-    <div class="grid grid-cols-4 gap-6">
+  <div class="w-full p-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 config-grid">
       <!-- App 配置 -->
       <div class="card">
         <h2 class="text-xl font-bold mb-4 text-white">App 配置</h2>
@@ -100,6 +100,54 @@ const saveConfigs = async () => {
   background-color: #1e1e1e;
   border-radius: 10px;
   padding: 20px;
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.card h2 {
+  margin-bottom: 1rem;
+}
+
+.card .el-form {
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.config-grid {
+  transform-origin: top left;
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 1920px) {
+  .config-grid {
+    transform: scale(0.98);
+  }
+}
+
+@media (max-width: 1600px) {
+  .config-grid {
+    transform: scale(0.95);
+  }
+}
+
+@media (max-width: 1366px) {
+  .config-grid {
+    transform: scale(0.9);
+  }
+}
+
+@media (max-width: 1024px) {
+  .config-grid {
+    transform: scale(0.85);
+  }
+}
+
+@media (max-width: 768px) {
+  .config-grid {
+    transform: scale(0.8);
+  }
 }
 
 .save-button {
@@ -107,5 +155,13 @@ const saveConfigs = async () => {
   bottom: 20px;
   right: 20px;
   z-index: 1000;
+}
+
+@media (max-width: 768px) {
+  .save-button {
+    position: static;
+    margin-top: 20px;
+    width: 100%;
+  }
 }
 </style>

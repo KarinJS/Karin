@@ -20,7 +20,8 @@
     "target": "ESNext",
     "types": [
       "@types/node"
-    ]
+    ],
+    "experimentalDecorators": true
   },
   "exclude": [
     "node_modules"

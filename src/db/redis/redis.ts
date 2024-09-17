@@ -59,10 +59,10 @@ class Redis {
         return data as RedisClientType
       }
 
-      logger.debug(`Redis 二次建立连接失败：${logger.red(data as string)}`)
+      logger.error(`Redis 二次建立连接失败：${logger.red(data as string)}`)
       return false
     } catch (error) {
-      logger.debug(`Redis 启动失败：${logger.red(data as string)}`)
+      logger.error(`Redis 启动失败：${logger.red(data as string)}`)
       return await this.LevelDB()
     }
   }

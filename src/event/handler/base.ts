@@ -2,6 +2,7 @@ import { listener, pluginLoader } from 'karin/core'
 import { review } from './review'
 import { segment, common, logger, config } from 'karin/utils'
 import { GroupCfg, KarinEventTypes, AllListenEvent, PluginRule, ReplyReturn, KarinMessageType } from 'karin/types'
+import counter from 'karin/utils/counter/counter'
 
 export class EventBaseHandler {
   e: KarinEventTypes
@@ -189,16 +190,19 @@ export class EventBaseHandler {
 
       try {
         listener.emit('karin:count:send', 1)
+        counter.increment('message:send')
         /** 取结果 */
         const Res = await result
         request.message_id = Res.message_id || ''
         request.message_time = Res.message_time || Date.now()
         request.raw_data = Res.raw_data || undefined
 
+        counter.increment('message:send_success')
         logger.bot('debug', this.e.self_id, `回复消息结果:${JSON.stringify(request)}`)
       } catch (error: any) {
         logger.bot('error', this.e.self_id, `回复消息失败:${ReplyLog.replace(/\n/g, '\\n')}`)
         logger.bot('error', this.e.self_id, error.stack || error.message || JSON.stringify(error))
+        counter.increment('message:send_failed')
       }
 
       /** 快速撤回 */

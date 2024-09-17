@@ -13,6 +13,7 @@ import {
   KarinMessageType,
   NodeElement,
 } from 'karin/types'
+import counter from 'karin/utils/counter/counter'
 
 type AdapterType = KarinAdapter['adapter']['type']
 type onAdapter = { type: AdapterType; adapter: new () => KarinAdapter; path?: string }
@@ -328,11 +329,14 @@ export class Listeners extends EventEmitter {
     }
 
     try {
+      counter.increment('message:send')
       this.emit('karin:count:send', 1)
       /** 取结果 */
       result = await bot.SendMessage(contact, NewElements, retry_count)
       logger.bot('debug', self_id, `主动消息结果:${JSON.stringify(result, null, 2)}`)
+      counter.increment('message:send_success')
     } catch (error) {
+      counter.increment('message:send_failed')
       logger.bot('error', self_id, `主动消息发送失败:${reply_log}`)
       logger.bot('error', self_id, error as string)
     }

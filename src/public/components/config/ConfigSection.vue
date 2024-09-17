@@ -104,21 +104,22 @@ const handleVisibleChange = (visible) => {
 
 <style scoped>
 .nested-config {
-  margin-left: 20px;
+  margin-left: 0.5rem;
   border-left: 1px solid #333;
-  padding-left: 10px;
+  padding-left: 0.5rem;
 }
 
 .config-item {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 0.5rem;
 }
 
 .config-item :deep(.el-form-item__label) {
   color: #e0e0e0;
   flex: 0 0 auto;
-  margin-right: 10px;
+  margin-right: 0.5rem;
+  font-size: 0.9em;
 }
 
 .config-item :deep(.el-form-item__content) {
@@ -129,7 +130,8 @@ const handleVisibleChange = (visible) => {
 }
 
 .dark-input {
-  width: 240px;
+  width: 100%;
+  max-width: 15rem;
 }
 
 .dark-input :deep(.el-input__wrapper),
@@ -138,7 +140,7 @@ const handleVisibleChange = (visible) => {
 .dark-input :deep(.el-select__wrapper) {
   background-color: #2c2c2c;
   box-shadow: 0 0 0 1px #4a4a4a inset !important;
-  border-radius: 4px;
+  border-radius: 0.25rem;
 }
 
 .dark-input :deep(.el-input__inner),
@@ -148,6 +150,7 @@ const handleVisibleChange = (visible) => {
 .dark-input :deep(.el-input__inner:-ms-input-placeholder),
 .dark-input :deep(.el-select__input) {
   color: #e0e0e0;
+  font-size: 0.9em;
 }
 
 .dark-input :deep(.el-input__inner::placeholder),

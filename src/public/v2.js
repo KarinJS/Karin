@@ -40,6 +40,16 @@ export const fetchStatus = async () => {
   }
 };
 
+export const fetchCounter = async (key) => {
+  try {
+    const response = await apiClient.get('/info/counter/' + key);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching counter:', error);
+    throw error;
+  }
+};
+
 export const fetchCPUUsage = async () => {
   try {
     const response = await apiClient.get('/info/cpu');

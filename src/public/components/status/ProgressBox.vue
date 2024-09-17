@@ -1,9 +1,9 @@
 <template>
   <div class="demo-progress">
     <div class="progress-container">
-      <el-progress type="dashboard" :percentage="percentage" :color="colors">
+      <el-progress type="dashboard" :percentage="percentage" :color="colors" :width="progressWidth">
         <template #default="{ percentage }: { percentage: number }">
-          <span class="percentage-value">{{ percentage.toFixed(1) }}%</span>
+          <span class="percentage-value">{{ percentage }}{{ showPercent ? '%' : '' }}</span>
           <br/>
           <span class="percentage-label">{{ title }}</span>
         </template>
@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, defineProps } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 
 const props = defineProps({
   title: {
@@ -28,6 +28,10 @@ const props = defineProps({
   value: {
     type: Number,
     default: 0
+  },
+  showPercent: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -54,23 +58,33 @@ const decrease = () => {
     percentage.value = 0
   }
 }
+
+const progressWidth = computed(() => {
+  return 120 // 保持固定大小,通过父元素缩放来适应
+})
+
 onMounted(() => {
   setInterval(() => {
     percentage.value = props.value
     downTitle.value = props.downTitle
   }, 500)
+  window.addEventListener('resize', () => {
+    // 触发重新计算 progressWidth
+  })
 })
 </script>
 
 <style scoped>
 .demo-progress {
+  width: 100%;
+}
+
+.progress-container {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.progress-container {
-  position: relative;
-}
+
 .demo-progress .el-progress--line {
   margin-bottom: 15px;
   max-width: 600px;
@@ -94,15 +108,11 @@ onMounted(() => {
   margin-top: 5px;
 }
 .down-title {
-  font-family: monospace;
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #ffffff;
-  font-size: 1.3em;
-  opacity: 0.7;
+  font-size: 1em;
   text-align: center;
   width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

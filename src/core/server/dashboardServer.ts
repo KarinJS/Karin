@@ -29,13 +29,12 @@ export const dashboardServer = new (class DashboardServer {
 
   async init () {
     this.app.use(express.static(path.resolve(__dirname, '../../public/dist')))
-
     try {
       /** 防止多进程端口冲突 启动失败 */
       await Process.check()
       // level.open()
 
-      this.app.get('/dashboard', (req, res) => {
+      this.app.get('/dashboard', async (req, res) => {
         res.sendFile(path.resolve(__dirname, '../../public/dist/index.html'))
       })
 

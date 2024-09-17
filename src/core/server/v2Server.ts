@@ -5,6 +5,7 @@ import express, { Express } from 'express'
 import { Server as ServerType, ServerResponse, IncomingMessage } from 'http'
 import { common, config } from 'karin/utils'
 import { apiV2 } from 'karin/utils/api/v2/v2'
+import counter from 'karin/utils/counter/counter'
 import cors from 'cors'
 export const api2Server = new (class Api2Server {
   reg: RegExp
@@ -58,6 +59,36 @@ export const api2Server = new (class Api2Server {
             cpu_info: cpuInfo,
           },
         })
+      })
+
+      this.app.get('/api/v2/info/counter/:key', async (req, res) => {
+        const key = req.params.key
+        let value = {}
+        if (key === 'total') {
+          value = await counter.getTotalCount()
+        } else {
+          value = {
+            today: await counter.getTodayCount(key),
+            total: await counter.getTotalCount(key),
+          }
+        }
+        try {
+          res.json({
+            code: 200,
+            message: 'ok',
+            data: {
+              key,
+              value,
+            },
+          })
+        } catch (error: unknown) {
+          logger.error(error)
+          res.status(500).json({
+            code: 500,
+            message: 'Error getting counter',
+            error: error instanceof Error ? error.message : String(error),
+          })
+        }
       })
 
       /** Config处理 **/
