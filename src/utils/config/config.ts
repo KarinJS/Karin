@@ -341,7 +341,7 @@ export const config = new (class Cfg {
   }
 
   async #review () {
-    // 应该改成事件监听
+    // todo: 应该改成事件监听
     if (this.review) return
     this.review = true
     const { review } = await import('karin/event/handler/review')
