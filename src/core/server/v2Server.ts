@@ -26,17 +26,25 @@ export const api2Server = new (class Api2Server {
   async init () {
     try {
       await Process.check()
-      // level.open()
-      // 基础路由
-      this.app.use('/api/v2', express.json())
-
-      // 允许所有源的CORS
       this.app.use(cors({
         origin: '*',
         credentials: true,
       }))
 
+      this.app.use('/api/v2', express.json())
+
       /** 获取服务器信息 **/
+      this.app.get('/api/v2/info/static', async (req, res) => {
+        const staticInfo = apiV2.getCachedStaticInfo()
+        res.json({
+          code: 200,
+          message: 'ok',
+          data: {
+            staticInfo,
+          },
+        })
+      })
+
       this.app.get('/api/v2/info/status', async (req, res) => {
         res.json({
           code: 200,
@@ -62,6 +70,13 @@ export const api2Server = new (class Api2Server {
       })
 
       this.app.get('/api/v2/info/counter/:key', async (req, res) => {
+        if (req.hostname !== 'localhost' && req.hostname !== '127.0.0.1') {
+          res.status(403).json({
+            code: 403,
+            message: 'Forbidden',
+          })
+          return
+        }
         const key = req.params.key
         let value = {}
         if (key === 'total') {
@@ -93,6 +108,14 @@ export const api2Server = new (class Api2Server {
 
       /** Config处理 **/
       this.app.get('/api/v2/config/get/:type', async (req, res) => {
+        if (req.hostname !== 'localhost' && req.hostname !== '127.0.0.1') {
+          res.status(403).json({
+            code: 403,
+            message: 'Forbidden',
+          })
+          return
+        }
+
         const type = req.params.type
         let _config = {}
         switch (type) {
@@ -130,6 +153,14 @@ export const api2Server = new (class Api2Server {
       })
 
       this.app.post('/api/v2/config/save/:type', async (req, res) => {
+        if (req.hostname !== 'localhost' && req.hostname !== '127.0.0.1') {
+          res.status(403).json({
+            code: 403,
+            message: 'Forbidden',
+          })
+          return
+        }
+
         let type = req.params.type
         if (type === 'app') {
           type = 'App'
@@ -170,10 +201,47 @@ export const api2Server = new (class Api2Server {
         }
       })
 
+      this.app.get('/api/v2/plugins/list', async (req, res) => {
+        if (req.hostname !== 'localhost' && req.hostname !== '127.0.0.1') {
+          res.status(403).json({
+            code: 403,
+            message: 'Forbidden',
+          })
+          return
+        }
+        const plugins = await apiV2.getPlugins()
+        res.json({
+          code: 200,
+          message: 'ok',
+          data: {
+            plugins,
+          },
+        })
+      })
+
+      this.app.get('/api/v2/plugins/list/commands/:id', async (req, res) => {
+        if (req.hostname !== 'localhost' && req.hostname !== '127.0.0.1') {
+          res.status(403).json({
+            code: 403,
+            message: 'Forbidden',
+          })
+          return
+        }
+        const id = req.params.id
+        const commands = await apiV2.getPluginCommandsList(id)
+        res.json({
+          code: 200,
+          message: 'ok',
+          data: {
+            commands,
+          },
+        })
+      })
+
       const { host } = config.Server.http
-      this.api2Server.listen(9000, host, () => {
-        const localIP = common.getLocalIP()
-        logger.mark('[服务器]Api服务器监听在: ' + logger.green(`http://${localIP}:9000/api/v2`))
+      const port = config.Server.api2.port
+      this.api2Server.listen(port, host, () => {
+        logger.mark('[服务器]Api服务器监听在: ' + logger.green(`http://${host}:${port}/api/v2`))
       })
     } catch (error) {
       logger.error(error)

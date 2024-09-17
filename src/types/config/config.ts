@@ -249,6 +249,36 @@ export interface Server {
     port: number
   }
   /**
+   * dashboard 服务器配置
+   */
+  dashboard: {
+    /**
+     * 是否开启dashboard
+     */
+    enable: boolean
+    /**
+     * 用户名
+     */
+    username: string
+    /**
+     * 密码
+     */
+    password: string
+    /**
+     * 监听端口
+     */
+    port: number
+  }
+  /**
+   * api2 服务器配置
+   */
+  api2: {
+    /**
+     * 监听端口
+     */
+    port: number
+  }
+  /**
    * grpc 服务器配置
    */
   grpc: {

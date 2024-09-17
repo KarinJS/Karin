@@ -79,6 +79,7 @@ class PluginLoader {
   command: PluginCommandInfoType[]
   /** handler */
   handler: { [key: string]: PluginHandlerInfoType[] }
+  handlerCount: number = 0
 
   /** plugin基本信息 */
   plugin: Map<number, PluginInfoType>
@@ -360,7 +361,7 @@ class PluginLoader {
    * @param isPrint - 是否打印
    */
   orderBy (isPrint = false) {
-    let handlerCount = 0
+    this.handlerCount = 0
 
     this.accept = lodash.orderBy(this.accept, ['rank'], ['asc'])
     this.button = lodash.orderBy(this.button, ['rank'], ['asc'])
@@ -375,7 +376,7 @@ class PluginLoader {
     const handler = Object.keys(this.handler)
     handler.forEach(key => {
       this.handler[key] = lodash.orderBy(this.handler[key], ['rank'], ['asc'])
-      handlerCount += this.handler[key].length
+      this.handlerCount += this.handler[key].length
     })
 
     if (!isPrint) return
@@ -386,7 +387,7 @@ class PluginLoader {
     logger.info(`[button][${this.button.length}个] 加载完成`)
     logger.info(`[accept][${this.accept.length}个] 加载完成`)
     logger.info(`[定时任务][${this.task.length}个] 加载完成`)
-    logger.info(`[Handler][Key:${handler.length}个][fnc:${handlerCount}个] 加载完成`)
+    logger.info(`[Handler][Key:${handler.length}个][fnc:${this.handlerCount}个] 加载完成`)
     logger.info(logger.green('-----------'))
     logger.info(`Karin启动完成：耗时 ${logger.green(process.uptime().toFixed(2))} 秒...`)
   }

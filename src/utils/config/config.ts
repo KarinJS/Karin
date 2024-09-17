@@ -338,9 +338,8 @@ export const config = new (class Cfg {
 
   async saveConfig (type: string, data: any) {
     const file = `${this.cfgDir}/config/${type}.yaml`
-
     // 读取原始配置文件
-    const originalData = this.getYaml('config', type, false)
+    const originalData = this.getYaml('config', type, false) || {}
 
     const hasChange = this.printDifference(originalData, data)
 
@@ -363,16 +362,20 @@ export const config = new (class Cfg {
     const compareAndLogChange = (key: string, originalValue: any, updatedValue: any): boolean => {
       if (JSON.stringify(originalValue) !== JSON.stringify(updatedValue)) {
         const currentPath = path ? `${path}.${key}` : key
-        this.logger.info(`[修改配置文件][Config] 修改: ${currentPath}: ${stringifyValue(originalValue)} -> ${stringifyValue(updatedValue)}`)
+        this.logger.info(`[修改配置文件][Config]修改: ${currentPath}: ${stringifyValue(originalValue)} -> ${stringifyValue(updatedValue)}`)
         return true
       }
       return false
     }
 
+    // 确保 original 和 updated 都是对象
+    original = original || {}
+    updated = updated || {}
+
     for (const key in updated) {
       if (!(key in original)) {
         const currentPath = path ? `${path}.${key}` : key
-        this.logger.info(`[修改配置文件][Config] 新增: ${currentPath}: ${stringifyValue(updated[key])}`)
+        this.logger.info(`[修改配置文件][Config]新增: ${currentPath}: ${stringifyValue(updated[key])}`)
         hasChange = true
       } else if (typeof updated[key] === 'object' && updated[key] !== null && typeof original[key] === 'object' && original[key] !== null) {
         const nestedChange = this.printDifference(original[key], updated[key], path ? `${path}.${key}` : key)
@@ -385,7 +388,7 @@ export const config = new (class Cfg {
     for (const key in original) {
       if (!(key in updated)) {
         const currentPath = path ? `${path}.${key}` : key
-        this.logger.info(`[修改配置文件][Config] 删除: ${currentPath}: ${stringifyValue(original[key])}`)
+        this.logger.info(`[修改配置文件][Config]删除: ${currentPath}: ${stringifyValue(original[key])}`)
         hasChange = true
       }
     }

@@ -8,6 +8,20 @@ http:
   # 端口
   port: 7000
 
+dashboard:
+  # 是否开启dashboard
+  enable: true
+  # 用户名
+  username: admin
+  # 密码
+  password: admin
+  # 端口
+  port: 7010
+
+api2:
+  # 端口
+  port: 7011
+
 # grpc 服务器配置
 grpc:
   # 监听地址

@@ -5,28 +5,27 @@
     <div v-else-if="error" class="text-red-500">错误: {{ error }}</div>
     <div v-else>
       <div class="grid grid-cols-3 gap-4 progress-boxes">
-        <ProgressBox title="内存" :downTitle="'总内存 ' + Number(status.data.system.info_memory_total).toFixed(0) + 'MB'" :value="Number(status.data.system.info_memory_usage).toFixed(1)"/>
-        <ProgressBox v-if="cpuUsage" title="CPU" :downTitle="'核心数 ' + Number(cpuUsage.data.cpu_info.cpu_cpus).toFixed(0)" :value="Number(cpuUsage.data.cpu_info.cpu_usage).toFixed(1)"/>
-        <ProgressBox v-else title="CPU" downTitle="加载中..." :value="0"/>
+        <ProgressBox title="内存" :downTitle="'总内存 ' + Number(staticInfo.system.info_memory_total).toFixed(0) + 'MB'" :value="Number(staticInfo.system.info_memory_usage).toFixed(1)"/>
+        <ProgressBox title="CPU" :downTitle="'核心数 ' + Number(staticInfo.cpu.cpu_cpus).toFixed(0)" :value="Number(staticInfo.cpu.cpu_usage).toFixed(1)"/>
         <ProgressBox title="今日处理" :downTitle="'总处理消息 ' + counter.data.value.total" :value="counter.data.value.today" :showPercent="false"/>
       </div>
       <h2 class="text-xl font-bold mb-2 mt-5">Karin</h2>
       <div class="status-container">
-        <StatusTimer title="状态" :value=status.data.status :showTime="false" color="#3375b9" />
-        <StatusTimer title="版本" :value=status.data.karin.info.version :showTime="false" color="#3375b9" />
-        <StatusTimer title="运行时间" :value=status.data.karin.uptime :showTime="true" color="#2196F3" />
+        <StatusTimer title="状态" value="running" :showTime="false" color="#3375b9" />
+        <StatusTimer title="版本" :value="staticInfo.karin.info.version" :showTime="false" color="#3375b9" />
+        <StatusTimer title="运行时间" :value="staticInfo.karin.uptime" :showTime="true" color="#2196F3" />
       </div>
       <h2 class="text-xl font-bold mb-2">数据库</h2>
       <div class="status-container">
-        <StatusTimer title="状态" :value=status.data.database.info_status :showTime="false" color="#2196F3" />
-        <StatusTimer title="数据库" :value=status.data.database.info_server :showTime="false" color="#2196F3" />
-        <StatusTimer title="版本" :value=status.data.database.info_version :showTime="false" color="#2196F3" />
+        <StatusTimer title="状态" :value="staticInfo.redis.info_status" :showTime="false" color="#2196F3" />
+        <StatusTimer title="数据库" :value="staticInfo.redis.info_server" :showTime="false" color="#2196F3" />
+        <StatusTimer title="版本" :value="staticInfo.redis.info_version" :showTime="false" color="#2196F3" />
       </div>
       <h2 class="text-xl font-bold mb-2">系统</h2>
       <div class="status-container">
-        <StatusTimer title="系统类型" :value=status.data.system.info_platform :showTime="false" color="#2196F3" />
-        <StatusTimer title="系统架构" :value=status.data.system.info_arch :showTime="false" color="#2196F3" />
-        <StatusTimer title="Node.js" :value=status.data.system.info_version :showTime="false" color="#2196F3" />
+        <StatusTimer title="系统类型" :value="staticInfo.system.info_platform" :showTime="false" color="#2196F3" />
+        <StatusTimer title="系统架构" :value="staticInfo.system.info_arch" :showTime="false" color="#2196F3" />
+        <StatusTimer title="Node.js" :value="staticInfo.system.info_version" :showTime="false" color="#2196F3" />
       </div>
     </div>
   </div>
@@ -34,31 +33,24 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { fetchStatus, fetchCPUUsage, fetchCounter } from '../../v2';
+import { fetchStatic, fetchCounter } from '../../v2';
 import StatusTimer from './StatusBox.vue';
 import ProgressBox from './ProgressBox.vue';
-const status = ref(null);
+
+const staticInfo = ref(null);
 const loading = ref(true);
 const error = ref(null);
 const intervalId = ref(null);
-const cpuUsage = ref(null);
 const counter = ref(null);
 
 const loadStatus = async () => {
   try {
-    const newStatus = await fetchStatus();
+    const newStatic = await fetchStatic();
     const newCounter = await fetchCounter("message:send");
-    status.value = newStatus;
+    staticInfo.value = newStatic.data.staticInfo;
     counter.value = newCounter;
     loading.value = false;
     error.value = null;
-
-    // 异步加载CPU使用率
-    fetchCPUUsage().then(cpuUsageData => {
-      cpuUsage.value = cpuUsageData;
-    }).catch(err => {
-      console.error('加载CPU使用率失败:', err);
-    });
   } catch (err) {
     error.value = err.message;
     loading.value = false;
@@ -67,7 +59,7 @@ const loadStatus = async () => {
 
 onMounted(() => {
   loadStatus();
-  intervalId.value = setInterval(loadStatus, 5000);
+  intervalId.value = setInterval(loadStatus, 10000);
 });
 
 onUnmounted(() => {

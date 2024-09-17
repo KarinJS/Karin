@@ -28,6 +28,8 @@ import { pluginLoader } from '../plugin/loader'
 import { common } from 'karin/utils/common/common'
 import { logger } from 'karin/utils/core/logger'
 import { Listeners } from '../listener/listener'
+import counter from 'karin/utils/counter/counter'
+import { apiV2 } from 'karin/utils/api/v2/v2'
 
 type FncFunction = (e: KarinMessage) => Promise<boolean>
 type FncElement = string | KarinElement | Array<KarinElement>
@@ -383,14 +385,14 @@ export class Karin extends Listeners {
     const { server } = await import('../server/server')
     const { dashboardServer } = await import('../server/dashboardServer')
     const { api2Server } = await import('../server/v2Server')
-    const { initAnalyzer } = await import('../../utils/core/analyzer')
-    initAnalyzer()
     server.init()
     dashboardServer.init()
     api2Server.init()
     pluginLoader.load()
     this.emit('adapter', RenderServer)
     this.emit('adapter', onebot11)
+    apiV2.startInfoRefreshWorker()
+    counter.increment('process:start')
   }
 }
 

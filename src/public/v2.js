@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://localhost:9000/api/v2';
+const baseURL = 'http://localhost:7011/api/v2';
 
 const apiClient = axios.create({
   baseURL,
@@ -56,6 +56,16 @@ export const fetchCPUUsage = async () => {
     return response.data;
   } catch (error) {
     console.error('Error fetching CPU usage:', error);
+    throw error;
+  }
+};
+
+export const fetchStatic = async () => {
+  try {
+    const response = await apiClient.get('/info/static');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching static:', error);
     throw error;
   }
 };

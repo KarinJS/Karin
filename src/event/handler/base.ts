@@ -197,12 +197,12 @@ export class EventBaseHandler {
         request.message_time = Res.message_time || Date.now()
         request.raw_data = Res.raw_data || undefined
 
-        counter.increment('message:send_success')
+        counter.increment('message:send:success')
         logger.bot('debug', this.e.self_id, `回复消息结果:${JSON.stringify(request)}`)
       } catch (error: any) {
         logger.bot('error', this.e.self_id, `回复消息失败:${ReplyLog.replace(/\n/g, '\\n')}`)
         logger.bot('error', this.e.self_id, error.stack || error.message || JSON.stringify(error))
-        counter.increment('message:send_failed')
+        counter.increment('message:send:failed')
       }
 
       /** 快速撤回 */
