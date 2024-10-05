@@ -60,7 +60,7 @@ export class KarinCli {
    */
   getConfigPath (name: 'pm2' | 'server') {
     const filePath = `./config/config/${name}.yaml`
-    if (!fs.existsSync(filePath)) return `${this.karinDir}/config/config/${name}.yaml`
+    if (!fs.existsSync(filePath)) return `${this.karinDir}/config/defSet/${name}.yaml`
     return filePath
   }
 
@@ -162,7 +162,7 @@ export class KarinCli {
       }
     }
 
-    const cmd = `pm2 start ${filePath} --env ${JSON.stringify(process.env)}`
+    const cmd = `pm2 start ${filePath}`
     await this.exec(cmd)
 
     console.log('pm2服务已启动 可执行 【npx karin log】 查看日志')
