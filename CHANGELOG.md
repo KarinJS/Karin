@@ -1,5 +1,14 @@
 # 更新日志
 
+## [0.12.15](https://github.com/KarinJS/Karin/compare/v0.12.14...v0.12.15) (2024-10-05)
+
+
+### Bug Fixes
+
+* close [#182](https://github.com/KarinJS/Karin/issues/182)  优化部分变量名称 ([58932bc](https://github.com/KarinJS/Karin/commit/58932bc3995b21270be7924143f864434a61dab1))
+* close [#183](https://github.com/KarinJS/Karin/issues/183) ([5b64fc5](https://github.com/KarinJS/Karin/commit/5b64fc509248432ad85dc7ab35906835a72f2835))
+* todo ([e90f6b1](https://github.com/KarinJS/Karin/commit/e90f6b1a4a850a5ac9117b7bc92ef8a316776194))
+
 ## [0.12.14](https://github.com/KarinJS/Karin/compare/v0.12.13...v0.12.14) (2024-09-15)
 
 
