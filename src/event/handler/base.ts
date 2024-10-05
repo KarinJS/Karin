@@ -7,9 +7,7 @@ export class EventBaseHandler {
   e: KarinEventTypes
   /** 仅在群聊下存在 */
   config!: GroupCfg
-  /**
-   * - 是否打印群消息日志
-   */
+  /** 是否打印群消息日志 */
   GroupMsgPrint: boolean
   /**
    * 处理事件，加入自定义字段

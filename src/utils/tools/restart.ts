@@ -5,16 +5,16 @@ import { config } from '../config/config'
 
 /**
  * 重启Bot
- * @param self_id - 机器人的id 传e.self_id
+ * @param selfId - 机器人的id 传e.self_id
  * @param contact - 事件联系人信息 也就是从哪来的这条消息 传e.contact即可
- * @param message_id - 消息id 传e.message_id
+ * @param messageId - 消息id 传e.message_id
  * @param isFront - 是否为前台重启 默认是
  */
-export const restart = async (self_id: string, contact: Contact, message_id: string, isFront = true) => {
+export const restart = async (selfId: string, contact: Contact, messageId: string, isFront = true) => {
   const options = {
-    id: self_id,
+    id: selfId,
     contact,
-    message_id,
+    message_id: messageId,
     time: Date.now(),
   }
 

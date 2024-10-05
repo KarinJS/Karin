@@ -42,27 +42,17 @@ export interface AppFile {
 
 class PluginLoader {
   dir: './plugins'
-  /**
-   * - 插件索引ID
-   */
+  /** 插件索引ID */
   index: number
-  /**
-   * - 定时任务
-   */
+  /** 定时任务 */
   // task: Array<PluginTask & { App: NewMessagePlugin, schedule?: schedule.Job, file: { dir: dirName, name: fileName } }>
 
-  /**
-   * - 监听器
-   */
+  /** 监听器 */
   watcher: Map<string, chokidar.FSWatcher>
-  /**
-   * - 热更新列表
-   */
+  /** 热更新列表 */
   watchList: Array<{ plugin: string, path: string }>
 
-  /**
-   * - 依赖缺失收集
-   */
+  /** 依赖缺失收集 */
   dependErr: {
     [key: string]: {
       plugin: string

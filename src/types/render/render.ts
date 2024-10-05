@@ -4,72 +4,40 @@ import chokidar from 'chokidar'
  * 渲染标准方法传参
  */
 export interface KarinRenderType {
-  /**
-   * - 渲染文件路径或HTTP地址 与vue二选一
-   */
+  /** 渲染文件路径或HTTP地址 与vue二选一 */
   file: string
-  /**
-   * - vue文件路径 与file二选一
-   */
+  /** vue文件路径 与file二选一 */
   vue?: boolean
   // 暂时先any处理 兼容旧版本
   props?: any
-  /**
-   * - 模板名称
-   */
+  /** 模板名称 */
   name?: string
-  /**
-   * - art-template后的文件名
-   */
+  /** art-template后的文件名 */
   fileID?: string
-  /**
-   * - 传递给模板的数据 template.render(data)
-   */
+  /** 传递给模板的数据 template.render(data) */
   data?: object
-  /**
-   * - 截图类型 默认'webp'
-   */
+  /** 截图类型 默认'webp' */
   type?: 'png' | 'jpeg' | 'webp'
-  /**
-   * - 截图质量 默认90 1-100
-   */
+  /** 截图质量 默认90 1-100 */
   quality?: number
-  /**
-   * - 是否隐藏背景 默认false
-   */
+  /** 是否隐藏背景 默认false */
   omitBackground?: boolean
-  /**
-   * - 设置视窗大小和设备像素比 默认1920*1080、1
-   */
+  /** 设置视窗大小和设备像素比 默认1920*1080、1 */
   setViewport?: {
-    /**
-     * - 视窗宽度
-     */
+    /** 视窗宽度 */
     width?: number
-    /**
-     * - 视窗高度
-     */
+    /** 视窗高度 */
     height?: number
-    /**
-     * - 设备像素比
-     */
+    /** 设备像素比 */
     deviceScaleFactor?: number
   }
-  /**
-   * - 分页截图 传递数字则视为视窗高度 返回数组
-   */
+  /** 分页截图 传递数字则视为视窗高度 返回数组 */
   multiPage?: number | boolean
-  /**
-   * - 页面goto时的参数
-   */
+  /** 页面goto时的参数 */
   pageGotoParams?: {
-    /**
-     * - 页面加载超时时间
-     */
+    /** 页面加载超时时间 */
     timeout?: number
-    /**
-     * - 页面加载状态
-     */
+    /** 页面加载状态 */
     waitUntil?: 'load' | 'domcontentloaded' | 'networkidle0' | 'networkidle2'
     [key: string]: any
   }

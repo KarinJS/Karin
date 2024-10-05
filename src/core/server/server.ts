@@ -184,11 +184,11 @@ export const server = new (class Server {
           .replace(/^\.\//, '')
         /** 判断是否为html文件且路径存在 */
         if (!html.endsWith('.html') || !fs.existsSync(html)) {
-          const not_found = config.Server.HttpRender.not_found
-          if (not_found.startsWith('http')) {
-            return res.redirect(not_found)
+          const notFound = config.Server.HttpRender.not_found
+          if (notFound.startsWith('http')) {
+            return res.redirect(notFound)
           } else {
-            return res.status(404).send(JSON.stringify({ code: 404, msg: not_found || '?' }))
+            return res.status(404).send(JSON.stringify({ code: 404, msg: notFound || '?' }))
           }
         }
 

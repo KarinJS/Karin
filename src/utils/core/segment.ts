@@ -32,6 +32,7 @@ import {
   KeyBoardElement,
   Button,
   RawElement,
+  PasmsgElement,
 } from 'karin/types'
 
 export const segment = new (class Segment {
@@ -67,14 +68,14 @@ export const segment = new (class Segment {
   /**
    * 表情
    * @param id - 表情ID
-   * @param is_big - 是否大表情，默认不是
+   * @param isBig - 是否大表情，默认不是
    * @returns {FaceElement} 表情元素
    */
-  face (id: number, is_big: boolean = false): FaceElement {
+  face (id: number, isBig: boolean = false): FaceElement {
     return {
       type: 'face',
       id: Number(id),
-      is_big,
+      is_big: isBig,
     }
   }
 
@@ -94,13 +95,13 @@ export const segment = new (class Segment {
 
   /**
    * 引用回复
-   * @param message_id - 消息ID
+   * @param messageId - 消息ID
    * @returns {ReplyElement} 引用回复元素
    */
-  reply (message_id: string): ReplyElement {
+  reply (messageId: string): ReplyElement {
     return {
       type: 'reply',
-      message_id: message_id + '',
+      message_id: messageId + '',
     }
   }
 
@@ -114,45 +115,33 @@ export const segment = new (class Segment {
   image (
     file: string,
     options: {
-      /**
-       * - 图片类型，show: 展示图片，flash: 闪照，original: 原图
-       */
+      /** 图片类型，show: 展示图片，flash: 闪照，original: 原图 */
       file_type?: 'show' | 'flash' | 'original'
-      /**
-       * - 图片名称
-       */
+      /** 图片名称 */
       name?: string
-      /**
-       * - 图片MD5
-       */
+      /** 图片MD5 */
       md5?: string
-      /**
-       * - 图片子类型
-       */
+      /** 图片子类型 */
       sub_type?: string
-      /**
-       * - 图片宽度
-       */
+      /** 图片宽度 */
       width?: number
-      /**
-       * - 图片高度
-       */
+      /** 图片高度 */
       height?: number
     } = {}
   ): ImageElement {
-    const file_type = options.file_type || 'original'
+    const fileType = options.file_type || 'original'
     const name = options.name || ''
     const md5 = options.md5 || ''
-    const sub_type = options.sub_type || ''
+    const subType = options.sub_type || ''
     const width = options.width || 0
     const height = options.height || 0
     return {
       type: 'image',
       file,
-      file_type,
+      file_type: fileType,
       name,
       md5,
-      sub_type,
+      sub_type: subType,
       width,
       height,
     }
@@ -247,15 +236,15 @@ export const segment = new (class Segment {
   /**
    * 戳一戳
    * @param id - 戳一戳ID
-   * @param poke_type - 戳一戳类型
+   * @param pokeType - 戳一戳类型
    * @param strength - 戳一戳强度(1-5 默认1)
    * @returns {PokeElement} 戳一戳元素
    */
-  poke (id: number, poke_type: number, strength: number = 1): PokeElement {
+  poke (id: number, pokeType: number, strength: number = 1): PokeElement {
     return {
       type: 'poke',
       id,
-      poke_type,
+      poke_type: pokeType,
       strength,
     }
   }
@@ -374,16 +363,16 @@ export const segment = new (class Segment {
 
   /**
    * 转发
-   * @param res_id - 资源ID
+   * @param resId - 资源ID
    * @param uniseq - 序列号(可能不对?)
    * @param summary - 摘要
    * @param description - 描述
    * @returns {ForwardElement} 转发元素
    */
-  forward (res_id: string, uniseq?: string, summary?: string, description?: string): ForwardElement {
+  forward (resId: string, uniseq?: string, summary?: string, description?: string): ForwardElement {
     return {
       type: 'forward',
-      res_id,
+      res_id: resId,
       uniseq: uniseq || '',
       summary: summary || '',
       description: description || '',
@@ -432,37 +421,21 @@ export const segment = new (class Segment {
    * 文件
    */
   file (options: {
-    /**
-     * - 文件URL
-     */
+    /** 文件URL */
     url: string
-    /**
-     * - 文件名称
-     */
+    /** 文件名称 */
     name?: string
-    /**
-     * - 文件大小
-     */
+    /** 文件大小 */
     size?: number
-    /**
-     * - 文件过期时间
-     */
+    /** 文件过期时间 */
     expire_time?: number
-    /**
-     * - 文件ID
-     */
+    /** 文件ID */
     id?: string
-    /**
-     * - 未知
-     */
+    /** 未知 */
     biz?: number
-    /**
-     * - 文件子ID
-     */
+    /** 文件子ID */
     sub_id?: string
-    /**
-     * - 文件MD5
-     */
+    /** 文件MD5 */
     md5?: string
   }): FileElement {
     return {
@@ -508,22 +481,18 @@ export const segment = new (class Segment {
 
   /**
    * 构建模板Markdown
-   * @param custom_template_id - 模板ID
+   * @param customTemplateId - 模板ID
    * @param params - 模板markdown参数
    */
   markdown_tpl (
-    /**
-     * - 模板ID
-     */
-    custom_template_id: TplMarkdownElement['custom_template_id'],
-    /**
-     * - 模板markdown参数
-     */
+    /** 模板ID */
+    customTemplateId: TplMarkdownElement['custom_template_id'],
+    /** 模板markdown参数 */
     params: TplMarkdownElement['params']
   ): TplMarkdownElement {
     return {
       type: 'markdown_tpl',
-      custom_template_id,
+      custom_template_id: customTemplateId,
       params,
     }
   }
@@ -565,14 +534,14 @@ export const segment = new (class Segment {
 
   /**
    * 转发自定义节点
-   * @param user_id - 用户ID
+   * @param userId - 用户ID
    * @param nickname - 用户昵称
    * @param content - 节点内容
    */
-  node (user_id: string, nickname: string, content: KarinElement | Array<KarinElement>): NodeElement {
+  node (userId: string, nickname: string, content: KarinElement | Array<KarinElement>): NodeElement {
     return {
       type: 'node',
-      user_id,
+      user_id: userId,
       nickname,
       content,
     }
@@ -592,9 +561,9 @@ export const segment = new (class Segment {
   /**
    * 回复被动消息
    */
-  passive_reply (id: string): { type: 'passive_reply', id: string } {
+  pasmsg (id: string): PasmsgElement {
     return {
-      type: 'passive_reply',
+      type: 'pasmsg',
       id,
     }
   }

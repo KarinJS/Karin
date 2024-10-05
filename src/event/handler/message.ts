@@ -3,7 +3,7 @@ import { review } from './review'
 import { EventBaseHandler } from './base'
 import { logger, config } from 'karin/utils'
 import { karin, stateArr, pluginLoader } from 'karin/core'
-import { KarinMessageType, MessageSubType, PluginCommandInfoType } from 'karin/types'
+import { KarinMessageType, MessageSubType, PluginCommandInfoType, Scene } from 'karin/types'
 
 /**
  * 消息事件
@@ -162,11 +162,11 @@ export class MessageHandler extends EventBaseHandler {
       this.e.isAdmin = true
     }
 
-    if (this.e.contact.scene === 'friend') {
+    if (this.e.contact.scene === Scene.Private) {
       this.e.isPrivate = true
       this.e.logText = `[Private:${this.e.sender.nick || ''}(${this.e.user_id})]`
       logger.bot('info', this.e.self_id, `私聊：[${this.e.user_id}(${this.e.sender.nick || ''})] ${this.e.raw_message}`)
-    } else if (this.e.contact.scene === 'group') {
+    } else if (this.e.contact.scene === Scene.Group) {
       this.e.isGroup = true
       this.e.logText = `[Group:${this.e.group_id}-${this.e.user_id}(${this.e.sender.nick || ''})]`
       this.GroupMsgPrint = review.GroupMsgPrint(this.e)
@@ -174,10 +174,15 @@ export class MessageHandler extends EventBaseHandler {
       this.e.group_id && review.alias(this.e, this.config)
 
       this.GroupMsgPrint && logger.bot('info', this.e.self_id, `群消息：[${this.e.group_id}-${this.e.user_id}(${this.e.sender.nick || ''})] ${this.e.raw_message}`)
-    } else if (this.e.contact.scene === 'guild') {
+    } else if (this.e.contact.scene === Scene.Guild) {
       this.e.isGuild = true
       this.e.logText = `[Guild:${this.e.contact.peer}-${this.e.contact.sub_peer}-${this.e.user_id}(${this.e.sender.nick || ''})]`
       logger.bot('info', this.e.self_id, `频道消息：[${this.e.contact.peer}-${this.e.contact.sub_peer}-${this.e.user_id}(${this.e.sender.nick || ''})] ${this.e.raw_message}`)
+    } else if (this.e.contact.scene === Scene.GuildDirect) {
+      this.e.isGuild = true
+      this.e.isPrivate = true
+      this.e.logText = `[GuildDirect:${this.e.contact.peer}-${this.e.contact.sub_peer}-${this.e.user_id}(${this.e.sender.nick || ''})]`
+      logger.bot('info', this.e.self_id, `频道私信：[${this.e.contact.peer}-${this.e.contact.sub_peer}-${this.e.user_id}(${this.e.sender.nick || ''})] ${this.e.raw_message}`)
     } else {
       logger.bot('info', this.e.self_id, `未知消息：${JSON.stringify(this.e)}`)
     }

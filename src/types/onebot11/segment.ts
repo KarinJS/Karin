@@ -1,6 +1,4 @@
-/**
- * - OneBot11消息类型枚举
- */
+/** OneBot11消息类型枚举 */
 export const enum OB11SegmentType {
   Text = 'text',
   Face = 'face',
@@ -24,16 +22,14 @@ export const enum OB11SegmentType {
   NodeCustom = 'node_custom',
   Xml = 'xml',
   Json = 'json',
-  File = 'file'
+  File = 'file',
 }
 
 export interface Segment {
   type: OB11SegmentType
 }
 
-/**
- * - 纯文本
- */
+/** 纯文本 */
 export interface TextSegment extends Segment {
   type: OB11SegmentType.Text
   data: {
@@ -41,9 +37,7 @@ export interface TextSegment extends Segment {
   }
 }
 
-/**
- * - QQ表情
- */
+/** QQ表情 */
 export interface FaceSegment extends Segment {
   type: OB11SegmentType.Face
   data: {
@@ -51,9 +45,7 @@ export interface FaceSegment extends Segment {
   }
 }
 
-/**
- * - 图片消息段
- */
+/** 图片消息段 */
 export interface ImageSegment extends Segment {
   type: OB11SegmentType.Image
   data: {
@@ -66,9 +58,7 @@ export interface ImageSegment extends Segment {
   }
 }
 
-/**
- * - 语音消息段
- */
+/** 语音消息段 */
 export interface RecordSegment extends Segment {
   type: OB11SegmentType.Record
   data: {
@@ -81,9 +71,7 @@ export interface RecordSegment extends Segment {
   }
 }
 
-/**
- * - 短视频消息段
- */
+/** 短视频消息段 */
 export interface VideoSegment extends Segment {
   type: OB11SegmentType.Video
   data: {
@@ -95,9 +83,7 @@ export interface VideoSegment extends Segment {
   }
 }
 
-/**
- * - @某人消息段
- */
+/** @某人消息段 */
 export interface AtSegment extends Segment {
   type: OB11SegmentType.At
   data: {
@@ -106,33 +92,25 @@ export interface AtSegment extends Segment {
   }
 }
 
-/**
- * - 猜拳魔法表情消息段
- */
+/** 猜拳魔法表情消息段 */
 export interface RpsSegment extends Segment {
   type: OB11SegmentType.Rps
   data: {}
 }
 
-/**
- * - 掷骰子魔法表情消息段
- */
+/** 掷骰子魔法表情消息段 */
 export interface DiceSegment extends Segment {
   type: OB11SegmentType.Dice
   data: {}
 }
 
-/**
- * - 窗口抖动（戳一戳）消息段
- */
+/** 窗口抖动（戳一戳）消息段 */
 export interface ShakeSegment extends Segment {
   type: OB11SegmentType.Shake
   data: {}
 }
 
-/**
- * - 戳一戳消息段
- */
+/** 戳一戳消息段 */
 export interface PokeSegment extends Segment {
   type: OB11SegmentType.Poke
   data: {
@@ -142,9 +120,7 @@ export interface PokeSegment extends Segment {
   }
 }
 
-/**
- * - 匿名发消息消息段
- */
+/** 匿名发消息消息段 */
 export interface AnonymousSegment extends Segment {
   type: OB11SegmentType.Anonymous
   data: {
@@ -152,9 +128,7 @@ export interface AnonymousSegment extends Segment {
   }
 }
 
-/**
- * - 链接分享消息段
- */
+/** 链接分享消息段 */
 export interface ShareSegment extends Segment {
   type: OB11SegmentType.Share
   data: {
@@ -165,9 +139,7 @@ export interface ShareSegment extends Segment {
   }
 }
 
-/**
- * - 推荐好友/群消息段
- */
+/** 推荐好友/群消息段 */
 export interface ContactSegment extends Segment {
   type: OB11SegmentType.Contact
   data: {
@@ -176,9 +148,7 @@ export interface ContactSegment extends Segment {
   }
 }
 
-/**
- * - 位置消息段
- */
+/** 位置消息段 */
 export interface LocationSegment extends Segment {
   type: OB11SegmentType.Location
   data: {
@@ -189,9 +159,7 @@ export interface LocationSegment extends Segment {
   }
 }
 
-/**
- * - 音乐分享消息段
- */
+/** 音乐分享消息段 */
 export interface MusicSegment extends Segment {
   type: OB11SegmentType.Music
   data: {
@@ -200,9 +168,7 @@ export interface MusicSegment extends Segment {
   }
 }
 
-/**
- * - 音乐自定义分享消息段
- */
+/** 音乐自定义分享消息段 */
 export interface CustomMusicSegment extends Segment {
   type: OB11SegmentType.MusicCustom
   data: {
@@ -215,9 +181,7 @@ export interface CustomMusicSegment extends Segment {
   }
 }
 
-/**
- * - 回复消息段
- */
+/** 回复消息段 */
 export interface ReplySegment extends Segment {
   type: OB11SegmentType.Reply
   data: {
@@ -232,9 +196,7 @@ export interface FileSegment extends Segment {
   }
 }
 
-/**
- * - 合并转发消息段
- */
+/** 合并转发消息段 */
 export interface ForwardSegment extends Segment {
   type: OB11SegmentType.Forward
   data: {
@@ -242,9 +204,7 @@ export interface ForwardSegment extends Segment {
   }
 }
 
-/**
- * - 合并转发节点消息段
- */
+/** 合并转发节点消息段 */
 export interface NodeSegment extends Segment {
   type: OB11SegmentType.Node
   data: {
@@ -252,9 +212,7 @@ export interface NodeSegment extends Segment {
   }
 }
 
-/**
- * - XML消息段
- */
+/** XML消息段 */
 export interface XmlSegment extends Segment {
   type: OB11SegmentType.Xml
   data: {
@@ -262,9 +220,7 @@ export interface XmlSegment extends Segment {
   }
 }
 
-/**
- * - JSON消息段
- */
+/** JSON消息段 */
 export interface JsonSegment extends Segment {
   type: OB11SegmentType.Json
   data: {
@@ -272,14 +228,10 @@ export interface JsonSegment extends Segment {
   }
 }
 
-/**
- * - OneBot11消息段
- */
+/** OneBot11消息段 */
 export type OB11SegmentBase = TextSegment | FaceSegment | ImageSegment | RecordSegment | VideoSegment | AtSegment | RpsSegment | DiceSegment | ShakeSegment | PokeSegment | AnonymousSegment | ShareSegment | ContactSegment | LocationSegment | MusicSegment | CustomMusicSegment | ReplySegment | ForwardSegment | NodeSegment | XmlSegment | JsonSegment
 
-/**
- * - 合并转发自定义节点消息段
- */
+/** 合并转发自定义节点消息段 */
 export interface CustomNodeSegment extends Segment {
   type: OB11SegmentType.NodeCustom
   data: {
@@ -289,7 +241,5 @@ export interface CustomNodeSegment extends Segment {
   }
 }
 
-/**
- * - OneBot11消息段
- */
+/** OneBot11消息段 */
 export type OB11Segment = OB11SegmentBase | CustomNodeSegment

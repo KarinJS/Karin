@@ -6,9 +6,9 @@ import { config } from '../config/config'
 const logsDir = './logs'
 if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir)
 
-const { log_level, log_days_Keep, log4jsCfg } = config.Config
-const level = log_level || log4jsCfg.level || 'info'
-const daysToKeep = log_days_Keep || log4jsCfg.daysToKeep || 7
+const { log_level: logLevel, log_days_Keep: logDaysKeep, log4jsCfg } = config.Config
+const level = logLevel || log4jsCfg.level || 'info'
+const daysToKeep = logDaysKeep || log4jsCfg.daysToKeep || 7
 const { overall, fragments, maxLogSize } = log4jsCfg
 const defaultOptions = { appenders: ['console'], level, enableCallStack: process.env.karin_app_mode === 'dev' }
 

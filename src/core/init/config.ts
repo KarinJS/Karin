@@ -187,8 +187,8 @@ export class KarinCfgInit {
     }
 
     /** 检查是否为官方源 如果不是则生成.npmrc */
-    const registry = await this.shell('npm config get registry')
-    if (registry !== 'https://registry.npmjs.org/') {
+    const registry = await this.shell('npm config get registry') as string
+    if (!registry || !registry?.includes('registry.npmjs.org')) {
       const text = `node_sqlite3_binary_host_mirror=https://registry.npmmirror.com/-/binary/sqlite3
 better_sqlite3_binary_host_mirror=https://registry.npmmirror.com/-/binary/better-sqlite3
 sass_binary_site=https://registry.npmmirror.com/-/binary/node-sass

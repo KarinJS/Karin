@@ -158,7 +158,7 @@ export class Listeners extends EventEmitter {
     const key = `karin:restart:${uid}`
     const options = await level.get(key)
     if (!options) return
-    const { id, contact, time, message_id } = options as any
+    const { id, contact, time, message_id: messageId } = options as any
     /** 重启花费时间 保留2位小数 */
     const restartTime = ((Date.now() - time) / 1000).toFixed(2)
     /** 超过2分钟不发 */
@@ -167,7 +167,7 @@ export class Listeners extends EventEmitter {
       return false
     }
     const element = [
-      segment.reply(message_id),
+      segment.reply(messageId),
       segment.text(`\nKarin 重启成功：${restartTime}秒`),
     ]
     await this.sendMsg(id, contact, element)
@@ -315,26 +315,26 @@ export class Listeners extends EventEmitter {
 
     const bot = this.getBot(uid)
     if (!bot) throw new Error('发送消息失败: 未找到对应Bot实例')
-    const { recallMsg, retry_count } = options
+    const { recallMsg, retry_count: retryCount } = options
     /** 标准化 */
     const NewElements = common.makeMessage(elements)
 
-    const reply_log = common.makeMessageLog(NewElements)
-    const self_id = bot.account.uid || bot.account.uin
+    const replyLog = common.makeMessageLog(NewElements)
+    const selfId = bot.account.uid || bot.account.uin
     if (contact.scene === 'group') {
-      logger.bot('info', self_id, `${logger.green('Send Proactive Group')} ${contact.peer}: ${reply_log}`)
+      logger.bot('info', selfId, `${logger.green('Send Proactive Group')} ${contact.peer}: ${replyLog}`)
     } else {
-      logger.bot('info', self_id, `${logger.green('Send Proactive private')} ${contact.peer}: ${reply_log}`)
+      logger.bot('info', selfId, `${logger.green('Send Proactive private')} ${contact.peer}: ${replyLog}`)
     }
 
     try {
       this.emit('karin:count:send', 1)
       /** 取结果 */
-      result = await bot.SendMessage(contact, NewElements, retry_count)
-      logger.bot('debug', self_id, `主动消息结果:${JSON.stringify(result, null, 2)}`)
+      result = await bot.SendMessage(contact, NewElements, retryCount)
+      logger.bot('debug', selfId, `主动消息结果:${JSON.stringify(result, null, 2)}`)
     } catch (error) {
-      logger.bot('error', self_id, `主动消息发送失败:${reply_log}`)
-      logger.bot('error', self_id, error as string)
+      logger.bot('error', selfId, `主动消息发送失败:${replyLog}`)
+      logger.bot('error', selfId, error as string)
     }
 
     /** 快速撤回 */

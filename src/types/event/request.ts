@@ -1,103 +1,69 @@
 import { KarinEventType, BaseEventDataType, EventType, RequestSubType } from './event'
 
-/**
- * - 好友申请
- */
+/** 好友申请 */
 export interface PrivateApplyType {
-  /**
-   * - 申请者uid
-   */
+  /** 申请者uid */
   applier_uid: string
-  /**
-   * - 申请者uin
-   */
+  /** 申请者uin */
   applier_uin: string
-  /**
-   * - 申请理由
-   */
+  /** 申请理由 */
   message: string
+  /** 请求 flag，在调用处理请求的 API 时需要传入 */
+  flag: string
 }
 
-/**
- * - 群申请
- */
+/** 群申请 */
 export interface GroupApply {
-  /**
-   * - 群ID
-   */
+  /** 群ID */
   group_id: string
-  /**
-   * - 申请者uid
-   */
+  /** 申请者uid */
   applier_uid: string
-  /**
-   * - 申请者uin
-   */
+  /** 申请者uin */
   applier_uin: string
-  /**
-   * - 邀请者uid
-   */
+  /** 邀请者uid */
   inviter_uid: string
-  /**
-   * - 邀请者uin
-   */
+  /** 邀请者uin */
   inviter_uin: string
-  /**
-   * - 申请理由
-   */
+  /** 申请理由 */
   reason: string
+  /** 请求 flag，在调用处理请求的 API 时需要传入 */
+  flag: string
 }
 
-/**
- * - 邀请入群
- */
+/** 邀请入群 */
 export interface GroupInvite {
-  /**
-   * - 群ID
-   */
+  /** 群ID */
   group_id: string
-  /**
-   * - 邀请者uid
-   */
+  /** 邀请者uid */
   inviter_uid: string
-  /**
-   * - 邀请者uin
-   */
+  /** 邀请者uin */
   inviter_uin: string
+  /** 请求 flag，在调用处理请求的 API 时需要传入 */
+  flag: string
 }
 
-/**
- * - 通知事件子类型
- */
+/** 通知事件子类型 */
 export interface RequestType {
   [RequestSubType.PrivateApply]: PrivateApplyType
   [RequestSubType.GroupApply]: GroupApply
   [RequestSubType.InvitedGroup]: GroupInvite
 }
 
-/**
- * - 请求事件基类
- */
+/** 请求事件基类 */
 export interface KarinRequestEventBase extends KarinEventType {
   event: EventType.Request
 }
 
-/**
- * - 辅助类型，用于生成 KarinRequestEvent 的联合类型来自动推导content的类型
- */
-type RequestEvent<T extends RequestSubType> = KarinRequestEventBase & {
+/** 辅助类型，用于生成 KarinRequestEvent 的联合类型来自动推导content的类型 */
+export type RequestEvent<T extends RequestSubType> = KarinRequestEventBase & {
   sub_event: T
   content: RequestType[T]
 }
 
-/**
- * - 请求事件定义
- */
+/** 请求事件定义 */
 export type KarinRequestType = RequestEvent<RequestSubType.GroupApply> | RequestEvent<RequestSubType.InvitedGroup> | RequestEvent<RequestSubType.PrivateApply>
 
-/**
- * - 创建一个请求事件
- */
+/** 创建一个请求事件 */
 export class KarinRequest implements KarinRequestEventBase {
   self_id: KarinRequestType['self_id']
   user_id: KarinRequestType['user_id']
@@ -125,33 +91,31 @@ export class KarinRequest implements KarinRequestEventBase {
   raw_event: KarinRequestType['raw_event']
 
   constructor ({
-    self_id,
-    user_id,
-    group_id = '',
+    self_id: selfId,
+    user_id: userId,
+    group_id: groupId = '',
     time,
     contact,
     sender,
-    sub_event,
-    event_id,
+    sub_event: subEvent,
+    event_id: eventId,
     content,
-    raw_event,
+    raw_event: rawEvent,
   }: BaseEventDataType & {
     sub_event: KarinRequestType['sub_event']
-    /**
-     * - 事件对应的内容参数
-     */
+    /** 事件对应的内容参数 */
     content: KarinRequestType['content']
   }) {
-    this.raw_event = raw_event
-    this.self_id = self_id
-    this.user_id = user_id
-    this.group_id = contact.scene === 'group' ? (contact.peer || group_id) : group_id
+    this.raw_event = rawEvent
+    this.self_id = selfId
+    this.user_id = userId
+    this.group_id = contact.scene === 'group' ? (contact.peer || groupId) : groupId
     this.time = time
     this.event = EventType.Request
-    this.event_id = event_id
+    this.event_id = eventId
     this.contact = contact
     this.sender = sender
-    this.sub_event = sub_event
+    this.sub_event = subEvent
     this.content = content
     this.isMaster = false
     this.isAdmin = false

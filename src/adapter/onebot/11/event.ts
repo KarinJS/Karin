@@ -1,4 +1,4 @@
-import { listener } from 'karin/core'
+import { karin } from 'karin/core'
 import { AdapterOneBot11 } from './index'
 import { EventType, KarinMessage, KarinNotice, KarinRequest, MessageSubType, NoticeSubType, OB11EventAll, OB11MessageEvent, OB11MetaEvent, OB11NoticeEvent, OB11RequestEvent, RequestSubType, Role, Scene } from 'karin/types'
 
@@ -44,8 +44,8 @@ export class OB11Event {
         disable: 'OneBot停用',
         connect: 'WebSocket连接成功',
       }
-      const sub_type = data.sub_type
-      this.adapter.logger('debug', `[生命周期]：${typeMap[sub_type]}`)
+      const subType = data.sub_type
+      this.adapter.logger('debug', `[生命周期]：${typeMap[subType]}`)
     }
   }
 
@@ -82,12 +82,8 @@ export class OB11Event {
 
     const e = new KarinMessage(message)
     e.bot = this.adapter
-    /**
-     * 快速回复 开发者不应该使用这个方法，应该使用由karin封装过后的reply方法
-     */
     e.replyCallback = async elements => await this.adapter.SendMessage(e.contact, elements)
-
-    listener.emit('adapter.message', e)
+    karin.emit('adapter.message', e)
   }
 
   /**
@@ -95,15 +91,15 @@ export class OB11Event {
    */
   noticeEvent (data: OB11NoticeEvent) {
     const time = data.time
-    const self_id = data.self_id + ''
+    const selfId = data.self_id + ''
     let notice = {} as KarinNotice
 
     /** 别问为啥any... 我是any糕手~ */
-    const user_id = ((data as any).user_id || (data as any).operator_id) + ''
-    const event_id = `notice.${time}`
+    const userId = ((data as any).user_id || (data as any).operator_id) + ''
+    const eventId = `notice.${time}`
     const sender = {
-      uid: user_id,
-      uin: user_id,
+      uid: userId,
+      uin: userId,
       nick: '',
       role: Role.Unknown,
     }
@@ -117,9 +113,9 @@ export class OB11Event {
     switch (data.notice_type) {
       // 群文件上传
       case 'group_upload': {
-        const group_id = data.group_id + ''
+        const groupId = data.group_id + ''
         const content = {
-          group_id,
+          group_id: groupId,
           operator_uid: data.user_id + '',
           operator_uin: data.user_id + '',
           file_id: data.file.id,
@@ -133,13 +129,13 @@ export class OB11Event {
         const options = {
           raw_event: data,
           time,
-          self_id,
-          user_id,
-          event_id,
+          self_id: selfId,
+          user_id: userId,
+          event_id: eventId,
           content,
           sender,
           contact,
-          group_id,
+          group_id: groupId,
           sub_event: NoticeSubType.GroupFileUploaded,
         }
         notice = new KarinNotice(options)
@@ -147,9 +143,9 @@ export class OB11Event {
       }
       // 群管理员变动
       case 'group_admin': {
-        const group_id = data.group_id + ''
+        const groupId = data.group_id + ''
         const content = {
-          group_id,
+          group_id: groupId,
           target_uid: data.user_id + '',
           target_uin: data.user_id + '',
           is_admin: data.sub_type === 'set',
@@ -158,13 +154,13 @@ export class OB11Event {
         const options = {
           raw_event: data,
           time,
-          self_id,
-          user_id,
-          event_id,
+          self_id: selfId,
+          user_id: userId,
+          event_id: eventId,
           sender,
           contact,
           content,
-          group_id,
+          group_id: groupId,
           sub_event: NoticeSubType.GroupAdminChanged,
         }
         notice = new KarinNotice(options)
@@ -172,9 +168,9 @@ export class OB11Event {
       }
       // 群成员减少
       case 'group_decrease': {
-        const group_id = data.group_id + ''
+        const groupId = data.group_id + ''
         const content = {
-          group_id,
+          group_id: groupId,
           operator_uid: (data.operator_id + '') || '',
           operator_uin: (data.operator_id + '') || '',
           target_uid: data.user_id || '',
@@ -185,13 +181,13 @@ export class OB11Event {
         const options = {
           raw_event: data,
           time,
-          self_id,
-          user_id,
-          event_id,
+          self_id: selfId,
+          user_id: userId,
+          event_id: eventId,
           sender,
           contact,
           content,
-          group_id,
+          group_id: groupId,
           sub_event: NoticeSubType.GroupMemberDecrease,
         }
         notice = new KarinNotice(options)
@@ -199,9 +195,9 @@ export class OB11Event {
       }
       // 群成员增加
       case 'group_increase': {
-        const group_id = data.group_id + ''
+        const groupId = data.group_id + ''
         const content = {
-          group_id,
+          group_id: groupId,
           operator_uid: (data.operator_id || '') + '',
           operator_uin: (data.operator_id || '') + '',
           target_uid: (data.user_id || '') + '',
@@ -212,13 +208,13 @@ export class OB11Event {
         const options = {
           raw_event: data,
           time,
-          self_id,
-          user_id,
-          event_id,
+          self_id: selfId,
+          user_id: userId,
+          event_id: eventId,
           sender,
           contact,
           content,
-          group_id,
+          group_id: groupId,
           sub_event: NoticeSubType.GroupMemberIncrease,
         }
         notice = new KarinNotice(options)
@@ -226,9 +222,9 @@ export class OB11Event {
       }
       // 群禁言事件
       case 'group_ban': {
-        const group_id = data.group_id + ''
+        const groupId = data.group_id + ''
         const content = {
-          group_id,
+          group_id: groupId,
           operator_uid: (data.operator_id + '') || '',
           operator_uin: (data.operator_id + '') || '',
           target_uid: data.user_id || '',
@@ -240,26 +236,43 @@ export class OB11Event {
         const options = {
           raw_event: data,
           time,
-          self_id,
-          user_id,
-          event_id,
+          self_id: selfId,
+          user_id: userId,
+          event_id: eventId,
           sender,
           contact,
           content,
-          group_id,
+          group_id: groupId,
           sub_event: NoticeSubType.GroupMemberBan,
         }
         notice = new KarinNotice(options)
         break
       }
-      case 'friend_add':
-        // todo kritor没有这个事件
-        this.adapter.logger('info', `[好友添加]：${JSON.stringify(data)}`)
-        break
-      case 'group_recall': {
-        const group_id = data.group_id + ''
+      case 'friend_add': {
         const content = {
-          group_id,
+          target_uid: userId,
+          target_uin: userId,
+        }
+
+        const options = {
+          raw_event: data,
+          time,
+          self_id: selfId,
+          user_id: userId,
+          event_id: eventId,
+          sender,
+          contact,
+          content,
+          group_id: '',
+          sub_event: NoticeSubType.FriendIncrease,
+        }
+        notice = new KarinNotice(options)
+        break
+      }
+      case 'group_recall': {
+        const groupId = data.group_id + ''
+        const content = {
+          group_id: groupId,
           operator_uid: (data.operator_id + '') || '',
           operator_uin: (data.operator_id + '') || '',
           target_uid: data.user_id || '',
@@ -271,13 +284,13 @@ export class OB11Event {
         const options = {
           raw_event: data,
           time,
-          self_id,
-          user_id,
-          event_id,
+          self_id: selfId,
+          user_id: userId,
+          event_id: eventId,
           sender,
           contact,
           content,
-          group_id,
+          group_id: groupId,
           sub_event: NoticeSubType.GroupRecall,
         }
         notice = new KarinNotice(options)
@@ -294,9 +307,9 @@ export class OB11Event {
         const options = {
           raw_event: data,
           time,
-          self_id,
-          user_id,
-          event_id,
+          self_id: selfId,
+          user_id: userId,
+          event_id: eventId,
           sender,
           contact,
           content,
@@ -308,9 +321,9 @@ export class OB11Event {
       case 'notify':
         switch (data.sub_type) {
           case 'poke': {
-            const group_id = 'group_id' in data ? data.group_id + '' : ''
+            const groupId = 'group_id' in data ? data.group_id + '' : ''
             const content = {
-              group_id,
+              group_id: groupId,
               operator_uid: data.user_id + '',
               operator_uin: data.user_id + '',
               target_uid: data.target_id + '',
@@ -323,13 +336,13 @@ export class OB11Event {
             const options = {
               raw_event: data,
               time,
-              self_id,
-              user_id,
-              event_id,
+              self_id: selfId,
+              user_id: userId,
+              event_id: eventId,
               sender,
               contact,
               content,
-              group_id,
+              group_id: groupId,
               sub_event: data.group_id ? NoticeSubType.GroupPoke : NoticeSubType.PrivatePoke,
             }
             notice = new KarinNotice(options)
@@ -348,9 +361,9 @@ export class OB11Event {
         }
         break
       case 'group_msg_emoji_like': {
-        const group_id = data.group_id + ''
+        const groupId = data.group_id + ''
         const content = {
-          group_id,
+          group_id: groupId,
           message_id: data.message_id,
           face_id: data.likes[0].emoji_id,
           is_set: true,
@@ -359,13 +372,13 @@ export class OB11Event {
         const options = {
           raw_event: data,
           time,
-          self_id,
-          user_id,
-          event_id,
+          self_id: selfId,
+          user_id: userId,
+          event_id: eventId,
           sender,
           contact,
           content,
-          group_id,
+          group_id: groupId,
           sub_event: NoticeSubType.GroupMessageReaction,
         }
         notice = new KarinNotice(options)
@@ -373,9 +386,9 @@ export class OB11Event {
       }
       // Language表情动态上报
       case 'reaction': {
-        const group_id = data.group_id + ''
+        const groupId = data.group_id + ''
         const content = {
-          group_id,
+          group_id: groupId,
           message_id: data.message_id,
           face_id: Number(data.code),
           is_set: data.sub_type === 'add',
@@ -384,13 +397,13 @@ export class OB11Event {
         const options = {
           raw_event: data,
           time,
-          self_id,
-          user_id,
-          event_id,
+          self_id: selfId,
+          user_id: userId,
+          event_id: eventId,
           sender,
           contact,
           content,
-          group_id,
+          group_id: groupId,
           sub_event: NoticeSubType.GroupMessageReaction,
         }
         notice = new KarinNotice(options)
@@ -402,12 +415,9 @@ export class OB11Event {
     }
 
     notice.bot = this.adapter
-    /**
-     * 快速回复 开发者不应该使用这个方法，应该使用由karin封装过后的reply方法
-     */
     notice.replyCallback = async elements => await this.adapter.SendMessage(notice.contact, elements)
 
-    listener.emit('adapter.notice', notice)
+    karin.emit('adapter.notice', notice)
   }
 
   /** 请求事件 */
@@ -436,16 +446,14 @@ export class OB11Event {
             applier_uid: data.user_id + '',
             applier_uin: data.user_id + '',
             message: data.comment,
+            flag: data.flag,
           },
         })
 
         request.bot = this.adapter
-        /**
-         * 快速回复 开发者不应该使用这个方法，应该使用由karin封装过后的reply方法
-         */
         request.replyCallback = async elements => await this.adapter.SendMessage(request.contact, elements)
 
-        listener.emit('adapter.request', request)
+        karin.emit('adapter.request', request)
         return
       }
       case 'group': {
@@ -474,16 +482,14 @@ export class OB11Event {
             inviter_uid: data.user_id + '',
             inviter_uin: data.user_id + '',
             message: data.comment,
+            flag: data.flag,
           },
         })
 
         request.bot = this.adapter
-        /**
-         * 快速回复 开发者不应该使用这个方法，应该使用由karin封装过后的reply方法
-         */
         request.replyCallback = async elements => await this.adapter.SendMessage(request.contact, elements)
 
-        listener.emit('adapter.request', request)
+        karin.emit('adapter.request', request)
         return
       }
       default: {

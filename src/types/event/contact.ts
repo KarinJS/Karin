@@ -1,5 +1,5 @@
 /**
- * - 事件来源枚举
+ * 事件来源枚举
  */
 export const enum Scene {
   /** 群 */
@@ -9,7 +9,7 @@ export const enum Scene {
   /** 频道 */
   Guild = 'guild',
   /** 频道私信 */
-  GuildPrivate = 'guild_private',
+  GuildDirect = 'guild_direct',
   /** 临时会话 */
   Nearby = 'nearby',
   /** 陌生人 */
@@ -19,19 +19,13 @@ export const enum Scene {
 }
 
 /**
- * - 事件联系人信息 也就是从哪来的这条消息
+ * 事件联系人信息 也就是从哪来的这条消息
  */
 export interface Contact {
-  /**
-   * - 事件来源场景
-   */
+  /** 事件来源场景 */
   scene: `${Scene}`
-  /**
-   * - 事件来源id 群号或者用户id
-   */
+  /** 事件来源id 群号或者用户id */
   peer: string
-  /**
-   * - 事件来源子id 仅在频道和临时会话中存在
-   */
+  /** 事件来源子id 仅在频道和临时会话中存在 */
   sub_peer?: string
 }

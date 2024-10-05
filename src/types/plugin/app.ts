@@ -54,13 +54,9 @@ export interface HandlerInfo extends Omit<AppBase, 'log'> {
   key: string
   /** 实现方法 */
   fn: (
-    /**
-     * - 自定义参数 由调用方传递
-     */
+    /** 自定义参数 由调用方传递 */
     args: { [key: string]: any },
-    /**
-     * - 停止循环函数 调用后则不再继续执行下一个处理器
-     */
+    /** 停止循环函数 调用后则不再继续执行下一个处理器 */
     next: (msg?: string) => void,
   ) => Promise<any>
 }

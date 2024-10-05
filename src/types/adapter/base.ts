@@ -353,7 +353,7 @@ export interface KarinAdapter {
 
   /**
    * 设置好友请求结果
-   * @param request_id - 请求ID
+   * @param request_id - 请求事件ID
    * @param is_approve - 是否同意
    * @param remark - 好友备注 同意时有效
    * @returns 设置结果
@@ -362,7 +362,7 @@ export interface KarinAdapter {
 
   /**
    * 设置申请加入群请求结果
-   * @param request_id - 请求ID
+   * @param request_id - 请求事件ID
    * @param is_approve - 是否同意
    * @param deny_reason - 拒绝理由 拒绝时有效
    * @returns 此接口标准是无返回值的，karin在此拓展可选返回一个boolean
@@ -371,7 +371,7 @@ export interface KarinAdapter {
 
   /**
    * 设置邀请加入群请求结果
-   * @param request_id - 请求ID
+   * @param request_id - 请求事件ID
    * @param is_approve - 是否同意
    * @returns 此接口标准是无返回值的，karin在此拓展可选返回一个boolean
    */

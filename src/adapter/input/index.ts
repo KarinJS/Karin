@@ -7,7 +7,7 @@ import { KarinAdapter, KarinMessage, Contact, KarinElement, LoggerLevel, Message
 const { enable, msgToFile, token: oldToken, ip } = config.Config.AdapterInput
 
 /**
- * - 标准输入输出适配器
+ * 标准输入输出适配器
  */
 export class AdapterInput implements KarinAdapter {
   token: string

@@ -52,30 +52,20 @@ export class Plugin implements PluginType {
     rule = [],
     handler = [],
   }: {
-    /**
-     * - 插件名称
-     */
+    /** 插件名称 */
     name: string
-    /**
-     * - 插件描述 没有则默认为插件名称
-     */
+    /** 插件描述 没有则默认为插件名称 */
     desc?: string
-    /**
-     * - 监听事件 默认为message
-     */
+    /** 监听事件 默认为message */
     event?: PluginType['event']
-    /**
-     * - 优先级 默认为10000
-     */
+    /** 优先级 默认为10000 */
     priority?: PluginType['priority']
     /**
      * - 定时任务 即将废弃 请使用karin.task
      * @deprecated
      */
     task?: PluginType['task']
-    /**
-     * - 命令规则
-     */
+    /** 命令规则 */
     rule?: PluginType['rule']
     /**
      * - handler 已废弃 请使用karin.handler
@@ -92,9 +82,7 @@ export class Plugin implements PluginType {
     this.handler = handler
   }
 
-  /**
-   * - 快速回复
-   */
+  /** 快速回复 */
   reply (
     msg: string | KarinElement | Array<KarinElement | string> = '',
     options: {
@@ -128,9 +116,7 @@ export class Plugin implements PluginType {
     return this.e.reply(msg, options)
   }
 
-  /**
-   * - 快速回复合并转发
-   */
+  /** 快速回复合并转发 */
   async replyForward (msg: NodeElement[]): Promise<{ message_id: string }> {
     const result = await this.e.bot.sendForwardMessage(this.e.contact, msg)
     return result

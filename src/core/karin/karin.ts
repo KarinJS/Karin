@@ -14,14 +14,12 @@ import {
   CommandInfo,
   TaskInfo,
   HandlerInfo,
-  AcceptInfo,
   UseInfo,
-  AllNoticeSubType,
-  AllRequestSubType,
   UseMapType,
   AppType,
   ButtonInfo,
   Permission,
+  AcceptDict,
 } from 'karin/types'
 
 import { pluginLoader } from '../plugin/loader'
@@ -34,9 +32,7 @@ export type FncElement = string | KarinElement | Array<KarinElement>
 export type UseFnType<K extends keyof UseMapType> = UseMapType[K]
 
 export interface Options {
-  /**
-   * - 插件名称 不传则使用 插件名称:函数名
-   */
+  /** 插件名称 不传则使用 插件名称:函数名 */
   name?: string
   /**
    * - 插件优先级 数字越小优先级越高
@@ -51,9 +47,7 @@ export interface Options {
 }
 
 export interface OptionsCommand extends Options {
-  /**
-   * - 监听事件
-   */
+  /** 监听事件 */
   event?: `${AllMessageSubType}`
   /**
    * - 权限
@@ -73,9 +67,7 @@ export interface OptionsElement extends OptionsCommand {
    * @default false
    */
   reply?: boolean
-  /**
-   * - 延迟回复 单位毫秒
-   */
+  /** 延迟回复 单位毫秒 */
   delay?: number
   /**
    * - 发送是否撤回消息 单位秒
@@ -200,10 +192,10 @@ export class Karin extends Listeners {
    * 构建contact
    * @param scene - 场景
    * @param peer - 群号或者用户id
-   * @param sub_peer - 子id
+   * @param subPeer - 子id
    */
-  contact (scene: Contact['scene'], peer: Contact['peer'], sub_peer?: Contact['sub_peer']): Contact {
-    return { scene, peer, sub_peer }
+  contact (scene: Contact['scene'], peer: Contact['peer'], subPeer?: Contact['sub_peer']): Contact {
+    return { scene, peer, sub_peer: subPeer }
   }
 
   /**
@@ -225,10 +217,10 @@ export class Karin extends Listeners {
   /**
    * 构建guild_contact
    * @param peer - 频道id
-   * @param sub_peer - 子频道id
+   * @param subPeer - 子频道id
    */
-  contactGuild (peer: Contact['peer'], sub_peer: string): Contact {
-    return { scene: Scene.Guild, peer, sub_peer }
+  contactGuild (peer: Contact['peer'], subPeer: string): Contact {
+    return { scene: Scene.Guild, peer, sub_peer: subPeer }
   }
 
   /**
@@ -270,21 +262,13 @@ export class Karin extends Listeners {
    * @param options - 上下文选项
    */
   async ctx (e: KarinMessage, options?: {
-    /**
-     * - 指定用户id触发下文 不指定则使用默认e.user_id
-     */
+    /** 指定用户id触发下文 不指定则使用默认e.user_id */
     userId?: string
-    /**
-     * - 超时时间 默认120秒
-     */
+    /** 超时时间 默认120秒 */
     time?: number
-    /**
-     * - 超时后是否回复
-     */
+    /** 超时后是否回复 */
     reply?: boolean
-    /**
-     * - 超时回复文本 默认为'操作超时已取消'
-     */
+    /** 超时回复文本 默认为'操作超时已取消' */
     replyMsg?: string
   }): Promise<KarinMessage> {
     const time = options?.time || 120
@@ -311,7 +295,7 @@ export class Karin extends Listeners {
    * @param event - 监听事件
    * @param fn - 实现函数
    */
-  accept (event: AllNoticeSubType | AllRequestSubType, fn: AcceptInfo['fn'], options?: Options): AcceptInfo {
+  accept<T extends keyof AcceptDict> (event: T, fn: (e: AcceptDict[T]) => boolean, options?: Options) {
     const log = options?.log === false
       ? (id: string, text: string) => logger.bot('debug', id, text)
       : (id: string, text: string) => logger.bot('info', id, text)
@@ -361,9 +345,7 @@ export class Karin extends Listeners {
     }
   }
 
-  /**
-   * - 启动
-   */
+  /** 启动 */
   async run () {
     if (this.#start) return
     this.#start = true

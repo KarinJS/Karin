@@ -51,7 +51,11 @@ export class Common {
       await this.streamPipeline(response.data, fs.createWriteStream(savePath))
       return true
     } catch (err) {
-      if (err instanceof AxiosError) { logger.error(`下载文件错误：${err.stack}`) } else { logger.error(`下载文件错误：${err}`) }
+      if (err instanceof AxiosError) {
+        logger.error(`下载文件错误：${err.stack}`)
+      } else {
+        logger.error(`下载文件错误：${err}`)
+      }
       return false
     }
   }
@@ -484,8 +488,7 @@ export class Common {
     const min = Math.floor((time % 3600) / 60)
     const sec = Math.floor(time % 60)
 
-    const parts = [day ? `${day}天` : '', hour ? `${hour}小时` : '', min ? `${min}分钟` : '', !day && sec ? `${sec}秒` : '']
-    return parts.filter(Boolean).join('')
+    return `${day}天${hour}小时${min}分钟${sec}秒`.replace(/0[天时分秒]/g, '')
   }
 
   /**
@@ -576,6 +579,9 @@ export class Common {
           break
         case 'long_msg':
           logs.push(`[long_msg: ${val.id}]`)
+          break
+        case 'pasmsg':
+          logs.push(`[pasmsg: ${val.id}]`)
           break
         default:
           logs.push(`[未知: ${JSON.stringify(val)}]`)

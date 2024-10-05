@@ -22,9 +22,7 @@ import { AdapterConvertKarin, KarinConvertAdapter } from './convert'
  * @extends KarinAdapter
  */
 export class AdapterOneBot11 implements KarinAdapter {
-  /**
-   * - 重连次数 仅正向ws使用
-   */
+  /** 重连次数 仅正向ws使用 */
   index: number
   socket!: WebSocket
   account: KarinAdapter['account']
@@ -44,14 +42,14 @@ export class AdapterOneBot11 implements KarinAdapter {
   async server (socket: WebSocket, request: IncomingMessage) {
     this.socket = socket
 
-    const self_id = String(request.headers['x-self-id']) as string
+    const selfId = String(request.headers['x-self-id']) as string
     const connect = 'ws://' + (request.headers.host as String) + (request.url as String)
 
-    this.account.uin = self_id
-    this.account.uid = self_id
+    this.account.uin = selfId
+    this.account.uid = selfId
     this.adapter.connect = connect
     this.adapter.sub_type = 'server'
-    this.logger('info', `[反向WS][onebot11-${request.headers.upgrade}][${self_id}] ` + logger.green(connect))
+    this.logger('info', `[反向WS][onebot11-${request.headers.upgrade}][${selfId}] ` + logger.green(connect))
     await this.#initListener(connect)
   }
 
@@ -132,15 +130,15 @@ export class AdapterOneBot11 implements KarinAdapter {
   async getSelf () {
     const data = await this.GetCurrentAccount()
     try {
-      const { app_name, version } = await this.GetVersion()
-      this.version.name = app_name
-      this.version.app_name = app_name
+      const { app_name: appName, version } = await this.GetVersion()
+      this.version.name = appName
+      this.version.app_name = appName
       this.version.version = version
     } catch (e) {
       /** 兼容onebots */
-      const { app_name, version } = await this.SendApi(OB11Api['get_version'])
-      this.version.name = app_name
-      this.version.app_name = app_name
+      const { app_name: appName, version } = await this.SendApi(OB11Api.getVersion)
+      this.version.name = appName
+      this.version.app_name = appName
       this.version.version = version
     }
 
@@ -188,13 +186,13 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 获取群头像
-   * @param group_id - 群号
+   * @param groupId - 群号
    * @param size - 头像大小，默认`0`
    * @param history - 历史头像记录，默认`0`，若要获取历史群头像则填写1,2,3...
    * @returns - 群头像的url地址
    */
-  getGroupAvatarUrl (group_id: string, size = 0, history = 0) {
-    return `https://p.qlogo.cn/gh/${group_id}/${group_id}${history ? '_' + history : ''}/` + size
+  getGroupAvatarUrl (groupId: string, size = 0, history = 0) {
+    return `https://p.qlogo.cn/gh/${groupId}/${groupId}${history ? '_' + history : ''}/` + size
   }
 
   /**
@@ -208,13 +206,13 @@ export class AdapterOneBot11 implements KarinAdapter {
     const { scene, peer } = contact
     let res
     if (scene === Scene.Group) {
-      res = await this.SendApi(OB11Api['send_msg'], {
+      res = await this.SendApi(OB11Api.sendMsg, {
         message_type: MessageType.Group,
         group_id: Number(peer),
         message: this.KarinConvertAdapter(elements),
       })
     } else {
-      res = await this.SendApi(OB11Api['send_msg'], {
+      res = await this.SendApi(OB11Api.sendMsg, {
         message_type: MessageType.Private,
         user_id: Number(peer),
         message: this.KarinConvertAdapter(elements),
@@ -236,7 +234,7 @@ export class AdapterOneBot11 implements KarinAdapter {
       throw new Error('elements should be all node type')
     }
     const { scene, peer } = contact
-    const message_type = scene === 'group' ? 'group_id' : 'user_id'
+    const messageType = scene === 'group' ? 'group_id' : 'user_id'
     const messages: any[] = []
     const selfUin = this.account.uin
     const selfNick = this.account.name
@@ -247,14 +245,14 @@ export class AdapterOneBot11 implements KarinAdapter {
         messages.push({ type, data: { id: i.id } })
       } else {
         const content = this.KarinConvertAdapter(i.content as KarinElement[])
-        const user_id = String(i.user_id || selfUin)
+        const userId = String(i.user_id || selfUin)
         const nickname = String(i.nickname || selfNick)
-        messages.push({ type, data: { user_id, nickname, content } })
+        messages.push({ type, data: { user_id: userId, nickname, content } })
       }
     }
 
-    const params = { [message_type]: String(peer), messages }
-    return await this.SendApi(OB11Api['send_forward_msg'], params)
+    const params = { [messageType]: String(peer), messages }
+    return await this.SendApi(OB11Api.sendForwardMsg, params)
   }
 
   /**
@@ -266,13 +264,13 @@ export class AdapterOneBot11 implements KarinAdapter {
     let res
     const { scene, peer } = contact
     if (scene === Scene.Group) {
-      res = await this.SendApi(OB11Api['send_msg'], {
+      res = await this.SendApi(OB11Api.sendMsg, {
         message_type: MessageType.Group,
         group_id: Number(peer),
         message: [{ type: OB11SegmentType.Forward, data: { id } }],
       })
     } else {
-      res = await this.SendApi(OB11Api['send_msg'], {
+      res = await this.SendApi(OB11Api.sendMsg, {
         message_type: MessageType.Private,
         user_id: Number(peer),
         message: [{ type: OB11SegmentType.Forward, data: { id } }],
@@ -285,11 +283,11 @@ export class AdapterOneBot11 implements KarinAdapter {
   /**
    * 撤回消息
    * @param _contact - ob11无需提供contact参数
-   * @param message_id - 消息ID
+   * @param messageId - 消息ID
    */
-  async RecallMessage (_contact: Contact, message_id: string) {
+  async RecallMessage (_contact: Contact, messageId: string) {
     try {
-      await this.SendApi(OB11Api['delete_msg'], { message_id: Number(message_id) })
+      await this.SendApi(OB11Api.deleteMsg, { message_id: Number(messageId) })
       return true
     } catch {
       return false
@@ -299,11 +297,11 @@ export class AdapterOneBot11 implements KarinAdapter {
   /**
    * 获取消息
    * @param contact - 联系人信息
-   * @param message_id - 消息ID
+   * @param messageId - 消息ID
    */
 
-  async GetMessage (contact: Contact, message_id: string) {
-    const res = await this.SendApi(OB11Api['get_msg'], { message_id: Number(message_id) })
+  async GetMessage (contact: Contact, messageId: string) {
+    const res = await this.SendApi(OB11Api.getMsg, { message_id: Number(messageId) })
 
     return {
       time: res.time,
@@ -327,25 +325,25 @@ export class AdapterOneBot11 implements KarinAdapter {
    * 获取msg_id获取历史消息
    * @description 此api各平台实现不同
    */
-  async GetHistoryMessage (contact: Contact, start_message_id: string, count: number = 1) {
-    const message_seq = (await this.GetMessage(contact, start_message_id)).message_seq
+  async GetHistoryMessage (contact: Contact, startMessageId: string, count: number = 1) {
+    const messageSeq = (await this.GetMessage(contact, startMessageId)).message_seq
     // 先拿到消息的seq
 
     let options: any
 
     if (this.version.name === 'Lagrange.OneBot') {
-      options = { message_id: Number(start_message_id), message_count: count }
+      options = { message_id: Number(startMessageId), message_count: count }
     } else {
-      options = { message_seq, message_count: count }
+      options = { message_seq: messageSeq, message_count: count }
     }
 
     let res
     if (contact.scene === 'group') {
       options.group_id = Number(contact.peer)
-      res = await this.SendApi(OB11Api['get_group_msg_history'], options)
+      res = await this.SendApi(OB11Api.getGroupMsgHistory, options)
     } else {
       options.user_id = Number(contact.peer)
-      res = await this.SendApi(OB11Api['get_friend_msg_history'], options)
+      res = await this.SendApi(OB11Api.getFriendMsgHistory, options)
     }
 
     const all = []
@@ -376,13 +374,13 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 发送好友赞
-   * @param target_uid_or_uin - 用户ID
-   * @param vote_count - 赞的次数，默认为`10`
+   * @param targetId - 用户ID
+   * @param voteCount - 赞的次数，默认为`10`
    */
-  async VoteUser (target_uid_or_uin: string, vote_count: number = 10) {
-    const user_id = Number(target_uid_or_uin)
+  async VoteUser (targetId: string, voteCount: number = 10) {
+    const userId = Number(targetId)
     try {
-      await this.SendApi(OB11Api['send_like'], { user_id, times: vote_count })
+      await this.SendApi(OB11Api.sendLike, { user_id: userId, times: voteCount })
       return true
     } catch {
       return false
@@ -391,11 +389,15 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 群组踢人
+   * @param groupId - 群号
+   * @param targetId - 用户ID
+   * @param rejectAddRequest - 是否拒绝此人的加群请求
+   * @param kickReason - 踢人理由
    */
-  async KickMember (group_id: string, target_uid_or_uin: string, reject_add_request: boolean = false, kick_reason: string = '') {
-    const user_id = Number(target_uid_or_uin)
+  async KickMember (groupId: string, targetId: string, rejectAddRequest: boolean = false, kickReason: string = '') {
+    const userId = Number(targetId)
     try {
-      await this.SendApi(OB11Api['set_group_kick'], { group_id: Number(group_id), user_id, reject_add_request })
+      await this.SendApi(OB11Api.setGroupKick, { group_id: Number(groupId), user_id: userId, reject_add_request: rejectAddRequest })
       return true
     } catch {
       return false
@@ -404,14 +406,14 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 禁言用户
-   * @param group_id - 群号
-   * @param target_uid_or_uin - 用户ID
+   * @param groupId - 群号
+   * @param targetId - 用户ID
    * @param duration - 禁言时长，单位秒，0 表示取消禁言
    */
-  async BanMember (group_id: string, target_uid_or_uin: string, duration: number) {
-    const user_id = Number(target_uid_or_uin)
+  async BanMember (groupId: string, targetId: string, duration: number) {
+    const userId = Number(targetId)
     try {
-      await this.SendApi(OB11Api['set_group_ban'], { group_id: Number(group_id), user_id, duration })
+      await this.SendApi(OB11Api.setGroupBan, { group_id: Number(groupId), user_id: userId, duration })
       return true
     } catch {
       return false
@@ -420,12 +422,12 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 群组全员禁言
-   * @param group_id - 群号
-   * @param is_ban - 是否全员禁言
+   * @param groupId - 群号
+   * @param isBan - 是否全员禁言
    */
-  async SetGroupWholeBan (group_id: string, is_ban = true) {
+  async SetGroupWholeBan (groupId: string, isBan = true) {
     try {
-      await this.SendApi(OB11Api['set_group_whole_ban'], { group_id: Number(group_id), enable: is_ban })
+      await this.SendApi(OB11Api.setGroupWholeBan, { group_id: Number(groupId), enable: isBan })
       return true
     } catch {
       return false
@@ -434,14 +436,14 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 设置群管理员
-   * @param group_id - 群号
-   * @param target_uid_or_uin - 目标用户ID
-   * @param is_admin - 是否设置为管理员
+   * @param groupId - 群号
+   * @param targetId - 目标用户ID
+   * @param isAdmin - 是否设置为管理员
    */
-  async SetGroupAdmin (group_id: string, target_uid_or_uin: string, is_admin: boolean) {
+  async SetGroupAdmin (groupId: string, targetId: string, isAdmin: boolean) {
     try {
-      const user_id = Number(target_uid_or_uin)
-      await this.SendApi(OB11Api['set_group_admin'], { group_id: Number(group_id), user_id, enable: is_admin })
+      const userId = Number(targetId)
+      await this.SendApi(OB11Api.setGroupAdmin, { group_id: Number(groupId), user_id: userId, enable: isAdmin })
       return true
     } catch {
       return false
@@ -450,14 +452,14 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 修改群名片
-   * @param group_id - 群号
-   * @param target_uid_or_uin - 目标用户ID
+   * @param groupId - 群号
+   * @param targetId - 目标用户ID
    * @param card - 新名片
    */
-  async ModifyMemberCard (group_id: string, target_uid_or_uin: string, card: string) {
+  async ModifyMemberCard (groupId: string, targetId: string, card: string) {
     try {
-      const user_id = Number(target_uid_or_uin)
-      await this.SendApi(OB11Api['set_group_card'], { group_id: Number(group_id), user_id, card })
+      const userId = Number(targetId)
+      await this.SendApi(OB11Api.setGroupCard, { group_id: Number(groupId), user_id: userId, card })
       return true
     } catch {
       return false
@@ -466,12 +468,12 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 设置群名
-   * @param group_id - 群号
-   * @param group_name - 新群名
+   * @param groupId - 群号
+   * @param groupName - 新群名
    */
-  async ModifyGroupName (group_id: string, group_name: string) {
+  async ModifyGroupName (groupId: string, groupName: string) {
     try {
-      await this.SendApi(OB11Api['set_group_name'], { group_id: Number(group_id), group_name })
+      await this.SendApi(OB11Api.setGroupName, { group_id: Number(groupId), group_name: groupName })
       return true
     } catch {
       return false
@@ -480,12 +482,12 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 退出群组
-   * @param group_id - 群号
-   * @param is_dismiss - 是否解散，如果登录号是群主，则仅在此项为 true 时能够解散
+   * @param groupId - 群号
+   * @param isDismiss - 是否解散，如果登录号是群主，则仅在此项为 true 时能够解散
    */
-  async LeaveGroup (group_id: string, is_dismiss = false) {
+  async LeaveGroup (groupId: string, isDismiss = false) {
     try {
-      await this.SendApi(OB11Api['set_group_leave'], { group_id: Number(group_id), is_dismiss })
+      await this.SendApi(OB11Api.setGroupLeave, { group_id: Number(groupId), is_dismiss: isDismiss })
     } catch {
       return false
     }
@@ -493,16 +495,16 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 设置群专属头衔
-   * @param group_id - 群号
-   * @param target_uid_or_uin - 目标用户ID
+   * @param groupId - 群号
+   * @param targetId - 目标用户ID
    * @param special_title - 专属头衔
    */
-  async SetGroupUniqueTitle (group_id: string, target_uid_or_uin: string, unique_title: string) {
-    const user_id = Number(target_uid_or_uin)
-    const special_title = unique_title
+  async SetGroupUniqueTitle (groupId: string, targetId: string, uniqueTitle: string) {
+    const userId = Number(targetId)
+    const specialTitle = uniqueTitle
     const duration = -1
     try {
-      await this.SendApi(OB11Api['set_group_special_title'], { group_id: Number(group_id), user_id, special_title, duration })
+      await this.SendApi(OB11Api.setGroupSpecialTitle, { group_id: Number(groupId), user_id: userId, special_title: specialTitle, duration })
     } catch {
       return false
     }
@@ -516,7 +518,7 @@ export class AdapterOneBot11 implements KarinAdapter {
     account_uin: string
     account_name: string
   }> {
-    const res = await this.SendApi(OB11Api['get_login_info'])
+    const res = await this.SendApi(OB11Api.getLoginInfo)
     return {
       account_uid: res.user_id + '',
       account_uin: res.user_id + '',
@@ -526,52 +528,32 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 获取陌生人信息 不支持批量获取 只支持一个
-   * @param target_uid_or_uin - 目标用户ID
+   * @param targetId - 目标用户ID
    */
-  async GetStrangerProfileCard (target_uid_or_uin: Array<string>) {
-    const user_id = Number(target_uid_or_uin[0])
-    const res = await this.SendApi(OB11Api['get_stranger_info'], { user_id, no_cache: true })
+  async GetStrangerProfileCard (targetId: Array<string>) {
+    const userId = Number(targetId[0])
+    const res = await this.SendApi(OB11Api.getStrangerInfo, { user_id: userId, no_cache: true })
     return [
       {
-        /**
-         * - 用户UID
-         */
+        /** 用户UID */
         uid: res.user_id + '',
-        /**
-       * - 用户UIN
-       */
+        /** 用户UIN */
         uin: res.user_id + '',
-        /**
-       * - qid
-       */
+        /** qid */
         qid: '',
-        /**
-       * - 名称
-       */
+        /** 名称 */
         nick: res.nickname,
-        /**
-       * - 备注
-       */
+        /** 备注 */
         remark: '',
-        /**
-       * - 用户等级
-       */
+        /** 用户等级 */
         level: 0,
-        /**
-       * - 生日
-       */
+        /** 生日 */
         birthday: '',
-        /**
-       * - 登录天数
-       */
+        /** 登录天数 */
         login_day: 0,
-        /**
-       * - 点赞数
-       */
+        /** 点赞数 */
         vote_cnt: 0,
-        /**
-       * - 学校是否已核实
-       */
+        /** 学校是否已核实 */
         is_school_verified: undefined,
         /**
        * - 年龄
@@ -613,49 +595,29 @@ export class AdapterOneBot11 implements KarinAdapter {
    * 获取好友列表
    */
   async GetFriendList () {
-    const friendList = await this.SendApi(OB11Api['get_friend_list'])
+    const friendList = await this.SendApi(OB11Api.getFriendList)
     return friendList.map(v => {
-      const user_id = v.user_id + ''
+      const userId = v.user_id + ''
       return {
-        /**
-         * - 用户UID
-         */
-        uid: user_id,
-        /**
-       * - 用户UIN
-       */
-        uin: user_id,
-        /**
-       * - qid
-       */
+        /** 用户UID */
+        uid: userId,
+        /** 用户UIN */
+        uin: userId,
+        /** qid */
         qid: '',
-        /**
-       * - 名称
-       */
+        /** 名称 */
         nick: v.nickname,
-        /**
-       * - 备注
-       */
+        /** 备注 */
         remark: '',
-        /**
-       * - 用户等级
-       */
+        /** 用户等级 */
         level: 0,
-        /**
-       * - 生日
-       */
+        /** 生日 */
         birthday: '',
-        /**
-       * - 登录天数
-       */
+        /** 登录天数 */
         login_day: 0,
-        /**
-       * - 点赞数
-       */
+        /** 点赞数 */
         vote_cnt: 0,
-        /**
-       * - 学校是否已核实
-       */
+        /** 学校是否已核实 */
         is_school_verified: undefined,
         /**
        * - 年龄
@@ -695,11 +657,11 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 获取群信息
-   * @param group_id - 群号
-   * @param no_cache - 是否不使用缓存
+   * @param _groupId - 群号
+   * @param noCache - 是否不使用缓存
    */
-  async GetGroupInfo (group_id: string, no_cache = false): Promise<GroupInfo> {
-    const info = await this.SendApi(OB11Api['get_group_info'], { group_id: Number(group_id), no_cache })
+  async GetGroupInfo (_groupId: string, noCache = false): Promise<GroupInfo> {
+    const info = await this.SendApi(OB11Api.getGroupInfo, { group_id: Number(_groupId), no_cache: noCache })
     const groupId = info.group_id + ''
     const groupName = info.group_name
     // todo 可以走群成员列表获取群主
@@ -719,7 +681,7 @@ export class AdapterOneBot11 implements KarinAdapter {
    * 获取群列表
    */
   async GetGroupList () {
-    const groupList = await this.SendApi(OB11Api['get_group_list'])
+    const groupList = await this.SendApi(OB11Api.getGroupList)
     return groupList.map(v => {
       const groupId = v.group_id + ''
       const groupName = v.group_name
@@ -738,16 +700,16 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 获取群成员信息
-   * @param group_id - 群号
-   * @param target_uid_or_uin - 目标用户ID
+   * @param groupId - 群号
+   * @param targetId - 目标用户ID
    * @param refresh - 是否刷新缓存，默认为 false
    */
-  async GetGroupMemberInfo (group_id: string, target_uid_or_uin: string, refresh = false) {
-    const user_id = Number(target_uid_or_uin)
-    const info = await this.SendApi(OB11Api['get_group_member_info'], { group_id: Number(group_id), user_id, no_cache: refresh })
+  async GetGroupMemberInfo (groupId: string, targetId: string, refresh = false) {
+    const userId = Number(targetId)
+    const info = await this.SendApi(OB11Api.getGroupMemberInfo, { group_id: Number(groupId), user_id: userId, no_cache: refresh })
     return {
-      uid: target_uid_or_uin,
-      uin: target_uid_or_uin,
+      uid: targetId,
+      uin: targetId,
       nick: info.nickname,
       role: info.role as Role,
       age: info.age,
@@ -767,16 +729,16 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 获取群成员列表
-   * @param group_id - 群号
+   * @param groupId - 群号
    * @param refresh - 是否刷新缓存，默认为 false
    */
-  async GetGroupMemberList (group_id: string, refresh = false) {
-    const gl = await this.SendApi(OB11Api['get_group_member_list'], { group_id: Number(group_id), no_cache: refresh })
+  async GetGroupMemberList (groupId: string, refresh = false) {
+    const gl = await this.SendApi(OB11Api.getGroupMemberList, { group_id: Number(groupId), no_cache: refresh })
     return gl.map(v => {
-      const user_id = v.user_id + ''
+      const userId = v.user_id + ''
       return {
-        uid: user_id,
-        uin: user_id,
+        uid: userId,
+        uin: userId,
         nick: v.nickname,
         role: v.role as Role,
         age: v.age,
@@ -798,15 +760,15 @@ export class AdapterOneBot11 implements KarinAdapter {
   /**
    * 获取群荣誉信息
    */
-  async GetGroupHonor (group_id: string, refresh = false) {
-    const groupHonor = await this.SendApi(OB11Api['get_group_honor_info'], { group_id: Number(group_id), type: 'all' })
+  async GetGroupHonor (groupId: string, refresh = false) {
+    const groupHonor = await this.SendApi(OB11Api.getGroupHonorInfo, { group_id: Number(groupId), type: 'all' })
 
     const result: GroupHonorInfo[] = []
     groupHonor.talkative_list.forEach(honor => {
-      const user_id = honor.user_id + ''
+      const userId = honor.user_id + ''
       result.push({
-        uin: user_id,
-        uid: user_id,
+        uin: userId,
+        uid: userId,
         nick: honor.nickname,
         honor_name: '历史龙王',
         id: 0,
@@ -815,10 +777,10 @@ export class AdapterOneBot11 implements KarinAdapter {
       })
     })
     groupHonor.performer_list.forEach(honor => {
-      const user_id = honor.user_id + ''
+      const userId = honor.user_id + ''
       result.push({
-        uin: user_id,
-        uid: user_id,
+        uin: userId,
+        uid: userId,
         nick: honor.nickname,
         honor_name: '群聊之火',
         avatar: honor.avatar,
@@ -827,10 +789,10 @@ export class AdapterOneBot11 implements KarinAdapter {
       })
     })
     groupHonor.legend_list.forEach(honor => {
-      const user_id = honor.user_id + ''
+      const userId = honor.user_id + ''
       result.push({
-        uin: user_id,
-        uid: user_id,
+        uin: userId,
+        uid: userId,
         nick: honor.nickname,
         honor_name: '群聊炽焰',
         avatar: honor.avatar,
@@ -839,10 +801,10 @@ export class AdapterOneBot11 implements KarinAdapter {
       })
     })
     groupHonor.strong_newbie_list.forEach(honor => {
-      const user_id = honor.user_id + ''
+      const userId = honor.user_id + ''
       result.push({
-        uin: user_id,
-        uid: user_id,
+        uin: userId,
+        uid: userId,
         nick: honor.nickname,
         honor_name: '冒尖小春笋',
         avatar: honor.avatar,
@@ -851,10 +813,10 @@ export class AdapterOneBot11 implements KarinAdapter {
       })
     })
     groupHonor.emotion_list.forEach(honor => {
-      const user_id = honor.user_id + ''
+      const userId = honor.user_id + ''
       result.push({
-        uin: user_id,
-        uid: user_id,
+        uin: userId,
+        uid: userId,
         nick: honor.nickname,
         honor_name: '快乐之源',
         avatar: honor.avatar,
@@ -868,12 +830,12 @@ export class AdapterOneBot11 implements KarinAdapter {
   /**
    * 对消息进行表情回应
    * @param contact - 联系人信息
-   * @param message_id - 消息ID
-   * @param face_id - 表情ID
+   * @param messageId - 消息ID
+   * @param faceId - 表情ID
    */
-  async ReactMessageWithEmoji (contact: Contact, message_id: string, face_id: number, is_set = true) {
+  async ReactMessageWithEmoji (contact: Contact, messageId: string, faceId: number, isSet = true) {
     try {
-      await this.SendApi(OB11Api['set_msg_emoji_like'], { message_id, emoji_id: face_id, is_set })
+      await this.SendApi(OB11Api.setMsgEmojiLike, { message_id: messageId, emoji_id: faceId, is_set: isSet })
       return true
     } catch {
       return false
@@ -884,7 +846,7 @@ export class AdapterOneBot11 implements KarinAdapter {
    * 获取版本信息
    */
   async GetVersion () {
-    const res = await this.SendApi(OB11Api['get_version_info'])
+    const res = await this.SendApi(OB11Api.getVersionInfo)
     return {
       name: res.app_name,
       app_name: res.app_name,
@@ -893,66 +855,42 @@ export class AdapterOneBot11 implements KarinAdapter {
     }
   }
 
-  async DownloadForwardMessage (res_id: string): Promise<any> {
+  async DownloadForwardMessage (resId: string): Promise<any> {
     throw new Error('Method not implemented.')
   }
 
   /**
    * 精华消息
    */
-  async GetEssenceMessageList (group_id: string, page: number, page_size: number) {
+  async GetEssenceMessageList (groupId: string, page: number, pageSize: number) {
     const list: EssenceMessageBody[] = []
-    const res = await this.SendApi(OB11Api['get_essence_msg_list'], { group_id: Number(group_id) })
+    const res = await this.SendApi(OB11Api.getEssenceMsgList, { group_id: Number(groupId) })
     for (const v of res) {
-      const { message_seq, elements } = await this.GetMessage({ scene: Scene.Group, peer: group_id }, v.message_id + '')
+      const { message_seq: messageSeq, elements } = await this.GetMessage({ scene: Scene.Group, peer: groupId }, v.message_id + '')
       list.push({
-        /**
-         * - 群ID
-         */
-        group_id,
-        /**
-         * - 发送者uid
-         */
+        /** 群ID */
+        group_id: groupId,
+        /** 发送者uid */
         sender_uid: v.sender_id + '',
-        /**
-         * - 发送者uin
-         */
+        /** 发送者uin */
         sender_uin: v.sender_id + '',
-        /**
-         * - 发送者昵称
-         */
+        /** 发送者昵称 */
         sender_nick: v.sender_nick,
-        /**
-         * - 操作者uid
-         */
+        /** 操作者uid */
         operator_uid: v.operator_id + '',
-        /**
-         * - 操作者uin
-         */
+        /** 操作者uin */
         operator_uin: v.operator_id + '',
-        /**
-         * - 操作者昵称
-         */
+        /** 操作者昵称 */
         operator_nick: v.operator_nick,
-        /**
-         * - 操作时间
-         */
+        /** 操作时间 */
         operation_time: v.operator_time,
-        /**
-         * - 消息时间
-         */
+        /** 消息时间 */
         message_time: v.sender_time,
-        /**
-         * - 消息ID
-         */
+        /** 消息ID */
         message_id: v.message_id + '',
-        /**
-         * - 消息序列号
-         */
-        message_seq,
-        /**
-         * - 被设置的精华消息元素文本
-         */
+        /** 消息序列号 */
+        message_seq: messageSeq,
+        /** 被设置的精华消息元素文本 */
         json_elements: JSON.stringify(elements),
       })
     }
@@ -962,14 +900,14 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 上传群文件
-   * @param group_id - 群号
+   * @param groupId - 群号
    * @param file - 本地文件绝对路径
    * @param name - 文件名称 必须提供
    * @param folder - 父目录ID 不提供则上传到根目录
    */
-  async UploadGroupFile (group_id: string, file: string, name: string, folder?: string) {
+  async UploadGroupFile (groupId: string, file: string, name: string, folder?: string) {
     try {
-      await this.SendApi(OB11Api['upload_group_file'], { group_id: Number(group_id), file, name, folder })
+      await this.SendApi(OB11Api.uploadGroupFile, { group_id: Number(groupId), file, name, folder })
       return true
     } catch {
       return false
@@ -978,13 +916,13 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 上传私聊文件
-   * @param user_id - 用户ID
+   * @param userId - 用户ID
    * @param file - 本地文件绝对路径
    * @param name - 文件名称 必须提供
    */
-  async UploadPrivateFile (user_id: string, file: string, name: string) {
+  async UploadPrivateFile (userId: string, file: string, name: string) {
     try {
-      await this.SendApi(OB11Api['upload_private_file'], { user_id: Number(user_id), file, name })
+      await this.SendApi(OB11Api.uploadPrivateFile, { user_id: Number(userId), file, name })
       return true
     } catch {
       return false
@@ -993,12 +931,12 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 设置精华消息
-   * @param _group_id - 群号
-   * @param message_id - 消息ID
+   * @param _groupId - 群号
+   * @param messageId - 消息ID
    */
-  async SetEssenceMessage (_group_id: string, message_id: string) {
+  async SetEssenceMessage (_groupId: string, messageId: string) {
     try {
-      await this.SendApi(OB11Api['set_essence_msg'], { message_id: Number(message_id) })
+      await this.SendApi(OB11Api.setEssenceMsg, { message_id: Number(messageId) })
       return true
     } catch {
       return false
@@ -1007,44 +945,44 @@ export class AdapterOneBot11 implements KarinAdapter {
 
   /**
    * 移除精华消息
-   * @param _group_id - 群号
-   * @param message_id - 消息ID
+   * @param _groupId - 群号
+   * @param messageId - 消息ID
    */
-  async DeleteEssenceMessage (_group_id: string, message_id: string) {
+  async DeleteEssenceMessage (_groupId: string, messageId: string) {
     try {
-      await this.SendApi(OB11Api['delete_essence_msg'], { message_id: Number(message_id) })
+      await this.SendApi(OB11Api.deleteEssenceMsg, { message_id: Number(messageId) })
       return true
     } catch {
       return false
     }
   }
 
-  async PokeMember (group_id: string, target_uid_or_uin: string) {
+  async PokeMember (groupId: string, targetId: string) {
     // 这个接口比较特殊 暂时先搁置 lgl单独接口 shamrock单独接口 gocq字段不一样 llob貌似没实现？
     throw new Error('Method not implemented.')
   }
 
-  async SetFriendApplyResult (request_id: string, is_approve: boolean, remark?: string) {
+  async SetFriendApplyResult (requestId: string, isApprove: boolean, remark?: string) {
     try {
-      await this.SendApi(OB11Api['set_friend_add_request'], { flag: request_id, approve: is_approve, remark })
+      await this.SendApi(OB11Api.setFriendAddRequest, { flag: requestId, approve: isApprove, remark })
       return true
     } catch {
       return false
     }
   }
 
-  async SetGroupApplyResult (request_id: string, is_approve: boolean, deny_reason?: string) {
+  async SetGroupApplyResult (requestId: string, isApprove: boolean, denyReason?: string) {
     try {
-      await this.SendApi(OB11Api['set_group_add_request'], { flag: request_id, approve: is_approve, sub_type: 'add', reason: deny_reason })
+      await this.SendApi(OB11Api.setGroupAddRequest, { flag: requestId, approve: isApprove, sub_type: 'add', reason: denyReason })
       return true
     } catch {
       return false
     }
   }
 
-  async SetInvitedJoinGroupResult (request_id: string, is_approve: boolean, deny_reason?: string) {
+  async SetInvitedJoinGroupResult (requestId: string, isApprove: boolean, denyReason?: string) {
     try {
-      await this.SendApi(OB11Api['set_group_add_request'], { flag: request_id, approve: is_approve, sub_type: 'invite', reason: deny_reason })
+      await this.SendApi(OB11Api.setGroupAddRequest, { flag: requestId, approve: isApprove, sub_type: 'invite', reason: denyReason })
       return true
     } catch {
       return false
@@ -1065,11 +1003,11 @@ export class AdapterOneBot11 implements KarinAdapter {
   SetMessageReaded (): Promise<any> { throw new Error('Method not implemented.') }
 
   async sendForwardMessage (contact: Contact, elements: NodeElement[]) {
-    let message_id = await this.UploadForwardMessage(contact, elements)
+    let messageId = await this.UploadForwardMessage(contact, elements)
     if (this.version.name === 'Lagrange.OneBot') {
-      message_id = (await this.SendMessage(contact, [segment.forward(message_id)])).message_id
+      messageId = (await this.SendMessage(contact, [segment.forward(messageId)])).message_id
     }
-    return { message_id }
+    return { message_id: messageId }
   }
 
   /**

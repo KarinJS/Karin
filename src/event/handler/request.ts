@@ -94,20 +94,20 @@ export class RequestHandler extends EventBaseHandler {
     switch (this.e.sub_event) {
       /** 好友申请 */
       case RequestSubType.PrivateApply: {
-        const { applier_uid, applier_uin, message } = this.e.content
-        this.e.raw_message = `[好友申请]: ${applier_uid || applier_uin} 申请理由: ${message}`
+        const { applier_uid: applierUid, applier_uin: applierUin, message } = this.e.content
+        this.e.raw_message = `[好友申请]: ${applierUid || applierUin} 申请理由: ${message}`
         break
       }
       /** 群申请 */
       case RequestSubType.GroupApply: {
-        const { group_id, applier_uid, applier_uin, inviter_uid, inviter_uin, reason } = this.e.content
-        this.e.raw_message = `[群申请]: ${group_id} 申请人: ${applier_uid || applier_uin} 邀请人: ${inviter_uid || inviter_uin} 理由: ${reason}`
+        const { group_id: groupId, applier_uid: applierUid, applier_uin: applierUin, inviter_uid: inviterUid, inviter_uin: inviterUin, reason } = this.e.content
+        this.e.raw_message = `[群申请]: ${groupId} 申请人: ${applierUid || applierUin} 邀请人: ${inviterUid || inviterUin} 理由: ${reason}`
         break
       }
       /** 邀请入群 */
       case RequestSubType.InvitedGroup: {
-        const { group_id, inviter_uid, inviter_uin } = this.e.content
-        this.e.raw_message = `[邀请入群]: ${group_id} 邀请人: ${inviter_uid || inviter_uin}`
+        const { group_id: groupId, inviter_uid: inviterUid, inviter_uin: inviterUin } = this.e.content
+        this.e.raw_message = `[邀请入群]: ${groupId} 邀请人: ${inviterUid || inviterUin}`
         break
       }
       default: {

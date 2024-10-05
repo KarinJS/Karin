@@ -10,21 +10,13 @@ export interface RawMarkdownType {
  * 模板Markdown消息结构
  */
 export interface TplMarkdownType {
-  /**
-  * - 模板ID
-  */
+  /** 模板ID */
   custom_template_id: string
-  /**
-   * - 模板参数
-   */
+  /** 模板参数 */
   params: Array<{
-    /**
-     * - 模板参数键名称
-     */
+    /** 模板参数键名称 */
     key: string
-    /**
-     * - 模板参数值
-     */
+    /** 模板参数值 */
     values: Array<string>
   }>
 }

@@ -1,43 +1,27 @@
 import { KarinElement } from '../element/element'
 import { KarinEventType, BaseEventDataType, EventType, MessageSubType } from './event'
 
-/**
- * - 消息事件定义
- */
+/** 消息事件定义 */
 export interface KarinMessageType extends KarinEventType {
   event: EventType.Message
   sub_event: MessageSubType
-  /**
-   * - 消息ID
-   */
+  /** 消息ID */
   message_id: string
-  /**
-   * - 消息序列号
-   */
+  /** 消息序列号 */
   message_seq?: number
-  /**
-   * - 原始消息文本
-   */
+  /** 原始消息文本 */
   raw_message: string
-  /**
-   * - 消息体元素
-   */
+  /** 消息体元素 */
   elements: Array<KarinElement>
-  /**
-   * - 群ID
-   */
+  /** 群ID */
   group_id: string
   /**
    * 经过处理后的消息
    */
   msg: string
-  /**
-   * - 消息图片
-   */
+  /** 消息图片 */
   image: string[]
-  /**
-   * - 语音url
-   */
+  /** 语音url */
   record: string
   file: any // 暂时先any 字段未确定
   /**
@@ -56,15 +40,11 @@ export interface KarinMessageType extends KarinEventType {
    * 引用回复的消息id
    */
   reply_id: string
-  /**
-   * - bot别名
-   */
+  /** bot别名 */
   alias: string
 }
 
-/**
- * - 创建一个消息事件
- */
+/** 创建一个消息事件 */
 export class KarinMessage implements KarinMessageType {
   self_id: KarinMessageType['self_id']
   user_id: KarinMessageType['user_id']
@@ -104,18 +84,18 @@ export class KarinMessage implements KarinMessageType {
 
   constructor ({
     event,
-    self_id,
-    user_id,
-    group_id = '',
+    self_id: selfId,
+    user_id: userId,
+    group_id: groupId = '',
     time,
     contact,
     sender,
-    sub_event,
-    event_id,
-    message_id,
-    message_seq,
+    sub_event: subEvent,
+    event_id: eventId,
+    message_id: messageId,
+    message_seq: messageSeq,
     elements,
-    raw_event,
+    raw_event: rawEvent,
   }: BaseEventDataType & {
     event: KarinMessageType['event']
     sub_event: KarinMessageType['sub_event']
@@ -123,19 +103,19 @@ export class KarinMessage implements KarinMessageType {
     message_seq?: KarinMessageType['message_seq']
     elements: KarinMessageType['elements']
   }) {
-    this.self_id = self_id
-    this.user_id = user_id
+    this.self_id = selfId
+    this.user_id = userId
     this.time = time
     this.event = event
-    this.event_id = event_id
+    this.event_id = eventId
     this.contact = contact
     this.sender = sender
-    this.sub_event = sub_event
-    this.message_id = message_id
-    this.message_seq = message_seq
+    this.sub_event = subEvent
+    this.message_id = messageId
+    this.message_seq = messageSeq
     this.elements = elements
-    this.group_id = contact.scene === 'group' ? (contact.peer || group_id) : group_id
-    this.raw_event = raw_event
+    this.group_id = contact.scene === 'group' ? (contact.peer || groupId) : groupId
+    this.raw_event = rawEvent
     this.isMaster = false
     this.isAdmin = false
     this.isPrivate = false
