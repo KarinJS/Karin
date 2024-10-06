@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.12.16](https://github.com/KarinJS/Karin/compare/v0.12.15...v0.12.16) (2024-10-06)
+
+
+### Bug Fixes
+
+* 增加`yaml.read` `yaml.save` ([46021f6](https://github.com/KarinJS/Karin/commit/46021f6c17579483f955bfd974e64f187228f08f))
+
 ## [0.12.15](https://github.com/KarinJS/Karin/compare/v0.12.14...v0.12.15) (2024-10-05)
 
 
