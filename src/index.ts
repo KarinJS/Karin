@@ -1,4 +1,3 @@
-import yaml from 'yaml'
 import axios from 'axios'
 import moment from 'moment'
 import lodash from 'lodash'
@@ -13,4 +12,4 @@ export * from 'karin/types'
 export * from 'karin/adapter'
 export { karin as default } from 'karin/core'
 
-export { axios, moment, lodash, express, yaml }
+export { axios, moment, lodash, express }
