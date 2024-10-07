@@ -405,6 +405,7 @@ class PluginLoader {
         /** 函数语法糖数组 */
         if (Array.isArray(Fn)) {
           for (const Val of Fn as AppType[]) {
+            if (typeof Val !== 'object' || !Val?.type) continue
             logger.debug(`载入插件 [${plugin}]${_path ? `${common.getRelPath(_path)}` : ''}[${file}][${Val.name}]`)
             list.push(this.cachePlugin(index, plugin, file, Val))
           }
