@@ -20,6 +20,7 @@ import {
   ButtonInfo,
   Permission,
   AcceptDict,
+  KarinAdapter,
 } from 'karin/types'
 
 import { pluginLoader } from '../plugin/loader'
@@ -44,6 +45,10 @@ export interface Options {
    * @default false
    */
   log?: boolean | Function
+  /** 只有对应的适配器才会生效 */
+  adapter?: Array<KarinAdapter['adapter']['name']>
+  /** 指定的适配器无效 */
+  notAdapter?: Array<KarinAdapter['adapter']['name']>
 }
 
 export interface OptionsCommand extends Options {
@@ -143,6 +148,8 @@ export class Karin extends Listeners {
       rank: options.priority || 10000,
       reg,
       type: AppType.Command,
+      adapter: options.adapter || [],
+      notAdapter: options.notAdapter || [],
     }
   }
 
@@ -194,7 +201,7 @@ export class Karin extends Listeners {
    * @param peer - 群号或者用户id
    * @param subPeer - 子id
    */
-  contact (scene: Contact['scene'], peer: Contact['peer'], subPeer?: Contact['sub_peer']): Contact {
+  contact (scene: Contact['scene'], peer: Contact['peer'], subPeer: Contact['sub_peer'] = null): Contact {
     return { scene, peer, sub_peer: subPeer }
   }
 
@@ -203,7 +210,7 @@ export class Karin extends Listeners {
    * @param peer - 群号
    */
   contactGroup (peer: Contact['peer']): Contact {
-    return { scene: Scene.Group, peer }
+    return { scene: Scene.Group, peer, sub_peer: null }
   }
 
   /**
@@ -211,7 +218,7 @@ export class Karin extends Listeners {
    * @param peer - 用户id
    */
   contactFriend (peer: Contact['peer']): Contact {
-    return { scene: Scene.Private, peer }
+    return { scene: Scene.Private, peer, sub_peer: null }
   }
 
   /**
@@ -219,7 +226,7 @@ export class Karin extends Listeners {
    * @param peer - 频道id
    * @param subPeer - 子频道id
    */
-  contactGuild (peer: Contact['peer'], subPeer: string): Contact {
+  contactGuild (peer: string, subPeer: string): Contact<Scene.Guild> {
     return { scene: Scene.Guild, peer, sub_peer: subPeer }
   }
 
@@ -307,6 +314,8 @@ export class Karin extends Listeners {
       name: options?.name || AppType.Accept,
       rank: options?.priority || 10000,
       type: AppType.Accept,
+      adapter: options?.adapter || [],
+      notAdapter: options?.notAdapter || [],
     }
   }
 

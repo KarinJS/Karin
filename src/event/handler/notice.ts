@@ -65,7 +65,8 @@ export class NoticeHandler extends EventBaseHandler {
     for (const info of pluginLoader.accept) {
       /** 判断事件 */
       if (!this.filtEvent(info.event)) continue
-
+      /** 判断适配器 */
+      if (!this.filterAdapter(info)) continue
       /** 检查黑白名单插件 */
       if (!review.PluginEnable(info, this.config)) continue
 

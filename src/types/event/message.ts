@@ -15,30 +15,20 @@ export interface KarinMessageType extends KarinEventType {
   elements: Array<KarinElement>
   /** 群ID */
   group_id: string
-  /**
-   * 经过处理后的消息
-   */
+  /** 经过处理后的消息 */
   msg: string
   /** 消息图片 */
   image: string[]
   /** 语音url */
   record: string
   file: any // 暂时先any 字段未确定
-  /**
-   * 是否atBot
-   */
+  /** 是否atBot */
   atBot: boolean
-  /**
-   * 是否atAll
-   */
+  /** 是否atAll */
   atAll: boolean
-  /**
-   * at的用户列表 不会出现Bot自身的at
-   */
+  /** at的用户列表 不会出现Bot自身的at */
   at: string[]
-  /**
-   * 引用回复的消息id
-   */
+  /** 引用回复的消息id */
   reply_id: string
   /** bot别名 */
   alias: string
@@ -81,6 +71,7 @@ export class KarinMessage implements KarinMessageType {
   at: KarinMessageType['at']
   reply_id: KarinMessageType['reply_id']
   alias: KarinMessageType['alias']
+  isDirect: KarinMessageType['isDirect']
 
   constructor ({
     event,
@@ -122,6 +113,7 @@ export class KarinMessage implements KarinMessageType {
     this.isGroup = false
     this.isGuild = false
     this.isGroupTemp = false
+    this.isDirect = false
     this.logFnc = ''
     this.logText = ''
     this.store = new Map()

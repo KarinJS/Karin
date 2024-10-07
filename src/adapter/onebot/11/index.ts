@@ -310,6 +310,7 @@ export class AdapterOneBot11 implements KarinAdapter {
       contact: {
         scene: res.message_type === 'group' ? Scene.Group : Scene.Private,
         peer: contact.peer, // 这里可能不准确 传入是什么就返回什么
+        sub_peer: null,
       },
       sender: {
         uid: res.sender.user_id,
@@ -357,7 +358,7 @@ export class AdapterOneBot11 implements KarinAdapter {
         contact: {
           scene,
           peer: '',
-          sub_peer: '',
+          sub_peer: null,
         },
         sender: {
           uid: '',
@@ -866,7 +867,7 @@ export class AdapterOneBot11 implements KarinAdapter {
     const list: EssenceMessageBody[] = []
     const res = await this.SendApi(OB11Api.getEssenceMsgList, { group_id: Number(groupId) })
     for (const v of res) {
-      const { message_seq: messageSeq, elements } = await this.GetMessage({ scene: Scene.Group, peer: groupId }, v.message_id + '')
+      const { message_seq: messageSeq, elements } = await this.GetMessage({ scene: Scene.Group, peer: groupId, sub_peer: null }, v.message_id + '')
       list.push({
         /** 群ID */
         group_id: groupId,

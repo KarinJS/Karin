@@ -172,6 +172,11 @@ export interface KarinEventType {
    * @default false
    */
   isGroupTemp: boolean
+  /**
+   * - 是否为频道私信
+   * @default false
+   */
+  isDirect: boolean
   /** 日志函数字符串 */
   logFnc: string
   /** 日志用户字符串 */

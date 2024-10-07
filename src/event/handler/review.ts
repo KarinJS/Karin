@@ -329,7 +329,7 @@ export const review = new (class Handler {
         if (this.GroupCD[e.group_id]) return false
         /** 全局 */
         this.GroupCD[e.group_id] = true
-        setTimeout(() => delete this.GroupCD[e.group_id], config.GroupCD * 1000)
+        setTimeout(() => delete this.GroupCD[e.group_id!], config.GroupCD * 1000)
         return true
       }
       return true

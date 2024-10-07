@@ -1,7 +1,7 @@
 import { listener, pluginLoader } from 'karin/core'
 import { review } from './review'
 import { segment, common, logger, config } from 'karin/utils'
-import { GroupCfg, KarinEventTypes, AllListenEvent, PluginRule, ReplyReturn, KarinMessageType } from 'karin/types'
+import { GroupCfg, KarinEventTypes, AllListenEvent, PluginRule, ReplyReturn, KarinMessageType, PluginCommandInfoType, PluginAcceptInfoType } from 'karin/types'
 
 export class EventBaseHandler {
   e: KarinEventTypes
@@ -207,5 +207,22 @@ export class EventBaseHandler {
       return request
     }
     Object.freeze(this.e.reply)
+  }
+
+  /**
+   * 处理适配器
+   * @param info 插件信息
+   */
+  filterAdapter (info: PluginCommandInfoType | PluginAcceptInfoType) {
+    if (!info.adapter.length && !info.notAdapter.length) return true
+    if (info.notAdapter.includes(this.e.bot.adapter.name)) {
+      logger.debug(`[插件适配器][${info.name}] 该插件不支持当前适配器`)
+      return false
+    }
+    if (!info.adapter.includes(this.e.bot.adapter.name)) {
+      logger.debug(`[插件适配器][${info.name}] 该插件不支持当前适配器`)
+      return false
+    }
+    return true
   }
 }

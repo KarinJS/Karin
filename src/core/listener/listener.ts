@@ -168,7 +168,7 @@ export class Listeners extends EventEmitter {
     }
     const element = [
       segment.reply(messageId),
-      segment.text(`\nKarin 重启成功：${restartTime}秒`),
+      segment.text(`\n重启成功：${restartTime}秒`),
     ]
     await this.sendMsg(id, contact, element)
     await level.del(key)

@@ -74,7 +74,7 @@ export class OB11Event {
       contact: {
         scene: data.message_type === 'private' ? Scene.Private : Scene.Group,
         peer: data.message_type === 'private' ? data.sender.user_id : data.group_id,
-        sub_peer: '',
+        sub_peer: null,
       },
       group_id: data.message_type === 'group' ? data.group_id : '',
       raw_message: '',
@@ -107,7 +107,7 @@ export class OB11Event {
     const contact = {
       scene: 'group_id' in data ? Scene.Group : Scene.Private,
       peer: 'group_id' in data ? data.group_id : data.user_id,
-      sub_peer: '',
+      sub_peer: null,
     }
 
     switch (data.notice_type) {
@@ -433,7 +433,7 @@ export class OB11Event {
           contact: {
             scene: Scene.Private,
             peer: data.user_id + '',
-            sub_peer: '',
+            sub_peer: null,
           },
           sender: {
             uid: data.user_id + '',
@@ -466,7 +466,7 @@ export class OB11Event {
           contact: {
             scene: Scene.Group,
             peer: data.group_id + '',
-            sub_peer: '',
+            sub_peer: null,
           },
           sender: {
             uid: data.user_id + '',

@@ -95,7 +95,7 @@ export class AdapterInput implements KarinAdapter {
       contact: {
         scene: Scene.Private as Scene.Private,
         peer: 'input',
-        sub_peer: '',
+        sub_peer: null,
       },
       raw_event: { data: elements },
     }

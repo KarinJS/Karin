@@ -80,6 +80,7 @@ export class KarinRequest implements KarinRequestEventBase {
   isGroup: KarinRequestType['isGroup']
   isGuild: KarinRequestType['isGuild']
   isGroupTemp: KarinRequestType['isGroupTemp']
+  isDirect: KarinRequestType['isDirect']
   logFnc: KarinRequestType['logFnc']
   logText: KarinRequestType['logText']
   store: KarinRequestType['store']
@@ -123,6 +124,7 @@ export class KarinRequest implements KarinRequestEventBase {
     this.isGroup = false
     this.isGuild = false
     this.isGroupTemp = false
+    this.isDirect = false
     this.logFnc = ''
     this.logText = ''
     this.store = new Map()

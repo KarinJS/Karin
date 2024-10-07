@@ -328,6 +328,7 @@ export class KarinNotice implements KarinNoticeEventBase {
   isGroup: KarinNoticeType['isGroup']
   isGuild: KarinNoticeType['isGuild']
   isGroupTemp: KarinNoticeType['isGroupTemp']
+  isDirect: KarinNoticeType['isDirect']
   logFnc: KarinNoticeType['logFnc']
   logText: KarinNoticeType['logText']
   store: KarinNoticeType['store']
@@ -369,6 +370,7 @@ export class KarinNotice implements KarinNoticeEventBase {
     this.isGroup = false
     this.isGuild = false
     this.isGroupTemp = false
+    this.isDirect = false
     this.logFnc = ''
     this.logText = ''
     this.store = new Map()

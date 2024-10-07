@@ -269,9 +269,10 @@ export class MessageHandler extends EventBaseHandler {
 
       const reg = info.reg
       if (reg.test(this.e.msg)) {
+        /** 判断适配器 */
+        if (!this.filterAdapter(info)) continue
         /** 检查黑白名单插件 */
         if (!app(info)) continue
-
         /** 判断子事件 */
         if (!this.filtEvent(info.event)) continue
 

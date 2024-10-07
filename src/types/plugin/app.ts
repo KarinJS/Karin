@@ -36,6 +36,10 @@ export interface CommandInfo extends AppBase {
   perm: `${Permission}`
   /** class */
   data: NewMessagePlugin | ''
+  /** 只有对应的适配器才会生效 */
+  adapter: Array<KarinAdapter['adapter']['name']>
+  /** 指定的适配器无效 */
+  notAdapter: Array<KarinAdapter['adapter']['name']>
 }
 
 /** task规则集类型 */
@@ -82,6 +86,10 @@ export interface AcceptInfo extends AppBase {
   type: `${AppType.Accept}`
   /** 监听事件 */
   event: `${AllNoticeSubType}` | `${AllRequestSubType}`
+  /** 只有对应的适配器才会生效 */
+  adapter: Array<KarinAdapter['adapter']['name']>
+  /** 指定的适配器无效 */
+  notAdapter: Array<KarinAdapter['adapter']['name']>
 }
 
 /**

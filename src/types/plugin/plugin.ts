@@ -2,6 +2,7 @@ import schedule from 'node-schedule'
 import { Reply, replyCallback, replyForward } from '../event/reply'
 import { KarinNoticeType, KarinRequestType, AllListenEvent, KarinMessageType, AllMessageSubType, Permission } from '../event'
 import { AcceptInfo, ButtonInfo, CommandInfo, HandlerInfo, Plugin, UseForwardMsgFn, UseInfo, UseNotFoundMsgFn, UseRecvMsgFn, UseSendMsgFn, UseSendNoticeFn } from 'karin/core'
+import { KarinAdapter } from '../adapter/base'
 
 /**
  * - 插件根目录名称
@@ -79,6 +80,10 @@ export interface PluginCommandInfoType {
   event: CommandInfo['event']
   /** 优先级 */
   rank: CommandInfo['rank']
+  /** 只有对应的适配器才会生效 */
+  adapter: Array<KarinAdapter['adapter']['name']>
+  /** 指定的适配器无效 */
+  notAdapter: Array<KarinAdapter['adapter']['name']>
 }
 
 /**
@@ -97,6 +102,10 @@ export interface PluginAcceptInfoType {
   event: AcceptInfo['event']
   /** 执行打印日志方法 */
   log: AcceptInfo['log']
+  /** 只有对应的适配器才会生效 */
+  adapter: Array<KarinAdapter['adapter']['name']>
+  /** 指定的适配器无效 */
+  notAdapter: Array<KarinAdapter['adapter']['name']>
 }
 
 /**

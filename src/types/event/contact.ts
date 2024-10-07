@@ -21,11 +21,11 @@ export const enum Scene {
 /**
  * 事件联系人信息 也就是从哪来的这条消息
  */
-export interface Contact {
+export interface Contact<T extends `${Scene}` = `${Scene}`> {
   /** 事件来源场景 */
-  scene: `${Scene}`
+  scene: T
   /** 事件来源id 群号或者用户id */
   peer: string
   /** 事件来源子id 仅在频道和临时会话中存在 */
-  sub_peer?: string
+  sub_peer: T extends Scene.Guild | Scene.Nearby ? string : null
 }

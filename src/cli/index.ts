@@ -227,7 +227,7 @@ export class KarinCli {
 
         console.log(`[依赖更新] ${item} 当前版本: ${local} 最新版本: ${remote}`)
 
-        await this.exec(`${cmd} ${item}@latest`)
+        await this.exec(`${cmd} ${item}@${remote}`)
         console.log(`[依赖更新] ${item} 更新完成~`)
       } catch (error: any) {
         console.error(`[依赖更新] ${item} 更新失败:`)

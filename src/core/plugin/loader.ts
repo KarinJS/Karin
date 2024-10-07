@@ -24,6 +24,7 @@ import {
   PluginAcceptInfoType,
   PluginHandlerInfoType,
   PluginCommandInfoType,
+  KarinAdapter,
 } from 'karin/types'
 
 type AppType = CommandInfo | TaskInfo | HandlerInfo | ButtonInfo | AcceptInfo | UseInfo
@@ -38,6 +39,10 @@ export interface AppFile {
   type: `${AppsType}`,
   /** 热更新 */
   isWatch: boolean
+  /** 只有对应的适配器才会生效 */
+  adapter?: Array<KarinAdapter['adapter']['name']>
+  /** 指定的适配器无效 */
+  notAdapter?: Array<KarinAdapter['adapter']['name']>
 }
 
 class PluginLoader {
@@ -403,6 +408,14 @@ class PluginLoader {
       const tmp: Array<NewMessagePlugin | AppType> = await import(rootPath)
 
       lodash.forEach(tmp, (Fn) => {
+        /** 函数语法糖数组 */
+        if (Array.isArray(Fn)) {
+          for (const Val of Fn as AppType[]) {
+            logger.debug(`载入插件 [${plugin}]${_path ? `${common.getRelPath(_path)}` : ''}[${file}][${Val.name}]`)
+            list.push(this.cachePlugin(index, plugin, file, Val))
+          }
+        }
+
         /** 函数语法糖 */
         if (typeof Fn === 'object' && Fn?.type) {
           logger.debug(`载入插件 [${plugin}]${_path ? `${common.getRelPath(_path)}` : ''}[${file}][${Fn.name}]`)
@@ -444,6 +457,8 @@ class PluginLoader {
                   perm: val.permission || Permission.All,
                   rank: val.priority || Class.priority || 10000,
                   reg: val.reg instanceof RegExp ? val.reg : new RegExp(val.reg),
+                  adapter: [],
+                  notAdapter: [],
                 },
                 Fn
               )
@@ -528,6 +543,8 @@ class PluginLoader {
           key: index,
           log: info.log,
           rank: info.rank,
+          adapter: info.adapter || [],
+          notAdapter: info.notAdapter || [],
         })
         return true
       }
@@ -564,6 +581,8 @@ class PluginLoader {
           rank: info.rank,
           reg: info.reg,
           type: App ? 'class' : 'function',
+          adapter: info.adapter,
+          notAdapter: info.notAdapter,
         })
         return true
       }
