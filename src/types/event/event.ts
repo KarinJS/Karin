@@ -3,9 +3,7 @@ import { Contact } from './contact'
 import { KarinAdapter } from 'karin/types'
 import { Reply, replyCallback } from './reply'
 
-/**
- * 事件类型枚举
- */
+/** 事件类型枚举 */
 export const enum EventType {
   /** 消息事件 */
   Message = 'message',
@@ -15,9 +13,7 @@ export const enum EventType {
   Request = 'request',
 }
 
-/**
- * 消息事件子类型枚举
- */
+/** 消息事件子类型枚举 */
 export const enum MessageSubType {
   /** 群消息 */
   GroupMessage = 'group_message',
@@ -33,9 +29,7 @@ export const enum MessageSubType {
   Stranger = 'stranger',
 }
 
-/**
- * 通知事件子类型枚举
- */
+/** 通知事件子类型枚举 */
 export const enum NoticeSubType {
   /** 私聊戳一戳 */
   PrivatePoke = 'private_poke',
@@ -73,9 +67,7 @@ export const enum NoticeSubType {
   FriendIncrease = 'friend_increase',
 }
 
-/**
- * 请求事件子类型枚举
- */
+/** 请求事件子类型枚举 */
 export const enum RequestSubType {
   /** 好友申请 */
   PrivateApply = 'private_apply',
@@ -92,34 +84,22 @@ export type EventToSubEvent = {
   [EventType.Request]: RequestSubType
 }
 
-/**
- * 所有消息事件类型
- */
+/** 所有消息事件类型 */
 export type AllMessageSubType = `${EventType.Message}` | `${EventType.Message}.${MessageSubType}`
 
-/**
- * 所有通知事件类型
- */
+/** 所有通知事件类型 */
 export type AllNoticeSubType = `${EventType.Notice}` | `${EventType.Notice}.${NoticeSubType}`
 
-/**
- * 所有请求事件类型
- */
+/** 所有请求事件类型 */
 export type AllRequestSubType = `${EventType.Request}` | `${EventType.Request}.${RequestSubType}`
 
-/**
- * 所有组合事件类型
- */
+/** 所有组合事件类型 */
 export type CombinedEventType = AllMessageSubType | AllNoticeSubType | AllRequestSubType
 
-/**
- * 所有监听事件
- */
+/** 所有监听事件 */
 export type AllListenEvent = `${EventType}` | `${CombinedEventType}`
 
-/**
- * 事件基类定义
- */
+/** 事件基类定义 */
 export interface KarinEventType {
   /** 机器人ID 请尽量使用UID */
   self_id: string

@@ -6,70 +6,42 @@ import { LoggerLevel } from '../logger/logger'
 import { PushMessageBody, EssenceMessageBody, FriendInfo, GroupInfo, GroupMemberInfo, GroupHonorInfo, GroupFileInfo, GroupFolderInfo, GetRemainCountAtAllResponse } from './api'
 
 export interface KarinAdapter {
-  /**
-   * 适配器版本信息
-   */
+  /** 适配器版本信息 */
   version: {
-    /**
-     * 适配器名称
-     */
+    /** 适配器名称 */
     name: string
     /**
      * 适配器名称
      * @deprecated 请使用`version.name`
      */
     app_name: string
-    /**
-     * 适配器版本
-     */
+    /** 适配器版本 */
     version: string
   }
 
-  /**
-   * 账号信息
-   */
+  /** 账号信息 */
   account: {
-    /**
-     * 账号uid
-     */
+    /** 账号uid */
     uid: string
-    /**
-     * 账号uin
-     */
+    /** 账号uin */
     uin: string
-    /**
-     * 账号名 不存在则是空字符串
-     */
+    /** 账号名 不存在则是空字符串 */
     name: string
   }
 
-  /**
-   * 适配器信息
-   */
+  /** 适配器信息 */
   adapter: {
-    /**
-     * 适配器注册之后的索引
-     */
+    /** 适配器注册之后的索引 */
     index: number,
-    /**
-     * 适配器ID
-     */
+    /** 适配器ID */
     id: 'QQ' | 'WeChat' | 'Telegram' | 'QQBot' | string
-    /**
-     * 适配器名称
-     */
+    /** 适配器名称 */
     name: 'ICQQ' | 'OneBot11' | 'OntBot12' | 'Kritor' | 'input' | string
-    /**
-     * 适配器类型
-     */
+    /** 适配器类型 */
     type: 'internal' | 'grpc' | 'http' | 'ws' | 'render'
-    /**
-     * 适配器子类型
-     */
+    /** 适配器子类型 */
     sub_type: 'server' | 'client' | 'internal'
-    /**
-     * 连接时间
-     */
+    /** 连接时间 */
     start_time: number
     /**
      * 适配器连接地址
@@ -78,9 +50,7 @@ export interface KarinAdapter {
     connect?: string
   }
 
-  /**
-   * 获取Bot自身UID
-   */
+  /** 获取Bot自身UID */
   get self_id (): string
 
   /**
@@ -423,29 +393,17 @@ export interface KarinAdapter {
    * @returns 下载文件的绝对路径和文件MD5
    */
   DownloadFile (options?: {
-    /**
-     * 下载文件的URL 二选一
-     */
+    /** 下载文件的URL 二选一 */
     url?: string,
-    /**
-     * 下载文件的base64 二选一
-     */
+    /** 下载文件的base64 二选一 */
     base64?: string,
-    /**
-     * 下载文件的根目录 需要保证Kritor有该目录访问权限 可选
-     */
+    /** 下载文件的根目录 需要保证Kritor有该目录访问权限 可选 */
     root_path?: string,
-    /**
-     * 保存的文件名称 默认为文件MD5 可选
-     */
+    /** 保存的文件名称 默认为文件MD5 可选 */
     file_name?: string,
-    /**
-     * 下载文件的线程数 默认为3 可选
-     */
+    /** 下载文件的线程数 默认为3 可选 */
     thread_cnt?: number,
-    /**
-     * 下载文件的请求头 可选
-     */
+    /** 下载文件的请求头 可选 */
     headers?: string
   }): Promise<{ file_absolute_path: string, file_md5: string }>
 

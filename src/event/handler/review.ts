@@ -63,9 +63,7 @@ export const review = new (class Handler {
     this.#Private()
   }
 
-  /**
-   * 群聊黑白名单 允许哪个群触发事件
-   */
+  /** 群聊黑白名单 允许哪个群触发事件 */
   #GroupEnable () {
     /** 同时启用 */
     if (this.App.WhiteList.groups && this.App.BlackList.groups) {
@@ -113,9 +111,7 @@ export const review = new (class Handler {
     this.GroupEnable = () => true
   }
 
-  /**
-   * 用户黑白名单 允许那个用户触发事件
-   */
+  /** 用户黑白名单 允许那个用户触发事件 */
   #UserEnable () {
     /** 同时启用 */
     if (this.App.WhiteList.users && this.App.BlackList.users) {
@@ -162,9 +158,7 @@ export const review = new (class Handler {
     this.UserEnable = () => true
   }
 
-  /**
-   * 群聊事件日志 是否打印
-   */
+  /** 群聊事件日志 是否打印 */
   #GroupMsgPrint () {
     /** 同时启用 */
     if (this.App.WhiteList.GroupMsgLog && this.App.BlackList.GroupMsgLog) {
@@ -211,9 +205,7 @@ export const review = new (class Handler {
     this.GroupMsgPrint = () => true
   }
 
-  /**
-   * 黑白名单插件 哪个插件可以被触发
-   */
+  /** 黑白名单插件 哪个插件可以被触发 */
   #PluginEnable () {
     /** 同时启用 */
     if (this.App.GroupConfig.enable && this.App.GroupConfig.disable) {
@@ -353,9 +345,7 @@ export const review = new (class Handler {
     this.CD = () => true
   }
 
-  /**
-   * 响应模式
-   */
+  /** 响应模式 */
   #mode () {
     /** 启用 */
     if (this.App.GroupConfig.mode) {
@@ -384,9 +374,7 @@ export const review = new (class Handler {
     this.mode = () => true
   }
 
-  /**
-   * 前缀、别名
-   */
+  /** 前缀、别名 */
   #alias () {
     /** 启用 */
     if (this.App.GroupConfig.alias) {
@@ -407,9 +395,7 @@ export const review = new (class Handler {
     this.alias = () => true
   }
 
-  /**
-   * 私聊功能
-   */
+  /** 私聊功能 */
   #Private () {
     /** 启用 */
     if (this.App.PrivateConfig?.enable) {

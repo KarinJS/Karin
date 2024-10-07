@@ -125,9 +125,7 @@ export class KarinCli {
     })
   }
 
-  /**
-   * pm2重启
-   */
+  /** pm2重启 */
   async restart () {
     const pm2Cfg = this.getConfigData('pm2')
     const serverCfg = this.getConfigData('server')
@@ -145,9 +143,7 @@ export class KarinCli {
     process.exit(0)
   }
 
-  /**
-   * pm2启动
-   */
+  /** pm2启动 */
   async pm2 () {
     console.log('pm2启动中...')
     const filePath = this.getConfigPath('pm2')
@@ -169,9 +165,7 @@ export class KarinCli {
     process.exit(0)
   }
 
-  /**
-   * pm2结束进程
-   */
+  /** pm2结束进程 */
   async stop () {
     console.log('pm2服务停止中...')
     const pm2Cfg = this.getConfigData('pm2')
@@ -188,9 +182,7 @@ export class KarinCli {
     process.exit(0)
   }
 
-  /**
-   * pm2查看日志
-   */
+  /** pm2查看日志 */
   async log () {
     const pm2Cfg = this.getConfigData('pm2')
     const serverCfg = this.getConfigData('server')
@@ -204,9 +196,7 @@ export class KarinCli {
     spawn(cmd, ['logs', type, '--lines', lines], { stdio: 'inherit', shell: true, cwd: process.cwd() })
   }
 
-  /**
-   * 更新依赖
-   */
+  /** 更新依赖 */
   async update () {
     const list = await getNpmPlugins(false)
     list.push('node-karin')

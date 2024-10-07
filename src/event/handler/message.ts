@@ -5,9 +5,7 @@ import { logger, config } from 'karin/utils'
 import { karin, stateArr, pluginLoader } from 'karin/core'
 import { KarinMessageType, MessageSubType, PluginCommandInfoType, Scene } from 'karin/types'
 
-/**
- * 消息事件
- */
+/** 消息事件 */
 export class MessageHandler extends EventBaseHandler {
   e: KarinMessageType
   /** 当前事件是否是上下文事件 */
@@ -40,9 +38,7 @@ export class MessageHandler extends EventBaseHandler {
     this.deal()
   }
 
-  /**
-   * 先对消息事件进行初始化
-   */
+  /** 先对消息事件进行初始化 */
   init () {
     karin.emit('karin:count:recv', this.e)
     const logs = []
@@ -192,9 +188,7 @@ export class MessageHandler extends EventBaseHandler {
     karin.emit('message', this.e)
   }
 
-  /**
-   * 开始中间件
-   */
+  /** 开始中间件 */
   async startUse () {
     for (const info of pluginLoader.use.recvMsg) {
       try {
@@ -219,9 +213,7 @@ export class MessageHandler extends EventBaseHandler {
     }
   }
 
-  /**
-   * 结束中间件
-   */
+  /** 结束中间件 */
   async endUse () {
     for (const info of pluginLoader.use.notFoundMsg) {
       try {
@@ -246,18 +238,14 @@ export class MessageHandler extends EventBaseHandler {
     }
   }
 
-  /**
-   * 响应模式检查 返回false表示未通过
-   */
+  /** 响应模式检查 返回false表示未通过 */
   getMode () {
     if (review.mode(this.e, this.config)) return true
     logger.debug(`[消息拦截][${this.e.group_id}][${this.e.user_id}] 响应模式不匹配`)
     return false
   }
 
-  /**
-   * 处理消息
-   */
+  /** 处理消息 */
   async deal () {
     const app = this.e.group_id
       ? (info: PluginCommandInfoType) => review.PluginEnable(info, this.config)
@@ -313,17 +301,13 @@ export class MessageHandler extends EventBaseHandler {
     await this.endUse()
   }
 
-  /**
-   * 获取下文
-   */
+  /** 获取下文 */
   getContext () {
     const key = this.e.isGroup ? `${this.e.group_id}.${this.e.user_id}` : this.e.user_id
     return stateArr[key]
   }
 
-  /**
-   * 处理上下文
-   */
+  /** 处理上下文 */
   async context (): Promise<boolean> {
     const key = this.e.isGroup ? `${this.e.group_id}.${this.e.user_id}` : this.e.user_id
     const App = stateArr[key]

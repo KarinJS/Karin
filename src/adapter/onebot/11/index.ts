@@ -36,9 +36,7 @@ export class AdapterOneBot11 implements KarinAdapter {
     this.version = { name: '', app_name: '', version: '' }
   }
 
-  /**
-   * 反向ws初始化
-   */
+  /** 反向ws初始化 */
   async server (socket: WebSocket, request: IncomingMessage) {
     this.socket = socket
 
@@ -124,9 +122,7 @@ export class AdapterOneBot11 implements KarinAdapter {
     return this.account.uid || this.account.uin
   }
 
-  /**
-   * 获取当前登录号信息
-   */
+  /** 获取当前登录号信息 */
   async getSelf () {
     const data = await this.GetCurrentAccount()
     try {
@@ -167,9 +163,7 @@ export class AdapterOneBot11 implements KarinAdapter {
     return KarinConvertAdapter(data, this)
   }
 
-  /**
-   * 专属当前Bot的日志打印方法
-   */
+  /** 专属当前Bot的日志打印方法 */
   logger (level: LoggerLevel, ...args: any[]) {
     logger.bot(level, this.account.uid || this.account.uin, ...args)
   }
@@ -511,9 +505,7 @@ export class AdapterOneBot11 implements KarinAdapter {
     }
   }
 
-  /**
-   * 获取登录号信息
-   */
+  /** 获取登录号信息 */
   async GetCurrentAccount (): Promise<{
     account_uid: string
     account_uin: string
@@ -567,34 +559,22 @@ export class AdapterOneBot11 implements KarinAdapter {
        */
         sex: res.sex,
         ext: {
-          /**
-           * 大会员
-           */
+          /** 大会员 */
           big_vip: undefined,
-          /**
-         * 好莱坞/腾讯视频会员
-         */
+          /** 好莱坞/腾讯视频会员 */
           hollywood_vip: undefined,
-          /**
-         * QQ会员
-         */
+          /** QQ会员 */
           qq_vip: undefined,
-          /**
-         * QQ超级会员
-         */
+          /** QQ超级会员 */
           super_vip: undefined,
-          /**
-         * 是否已经赞过
-         */
+          /** 是否已经赞过 */
           voted: undefined,
         },
       },
     ]
   }
 
-  /**
-   * 获取好友列表
-   */
+  /** 获取好友列表 */
   async GetFriendList () {
     const friendList = await this.SendApi(OB11Api.getFriendList)
     return friendList.map(v => {
@@ -631,25 +611,15 @@ export class AdapterOneBot11 implements KarinAdapter {
        */
         sex: v.sex,
         ext: {
-          /**
-           * 大会员
-           */
+          /** 大会员 */
           big_vip: undefined,
-          /**
-         * 好莱坞/腾讯视频会员
-         */
+          /** 好莱坞/腾讯视频会员 */
           hollywood_vip: undefined,
-          /**
-         * QQ会员
-         */
+          /** QQ会员 */
           qq_vip: undefined,
-          /**
-         * QQ超级会员
-         */
+          /** QQ超级会员 */
           super_vip: undefined,
-          /**
-         * 是否已经赞过
-         */
+          /** 是否已经赞过 */
           voted: undefined,
         },
       }
@@ -678,9 +648,7 @@ export class AdapterOneBot11 implements KarinAdapter {
     }
   }
 
-  /**
-   * 获取群列表
-   */
+  /** 获取群列表 */
   async GetGroupList () {
     const groupList = await this.SendApi(OB11Api.getGroupList)
     return groupList.map(v => {
@@ -758,9 +726,7 @@ export class AdapterOneBot11 implements KarinAdapter {
     })
   }
 
-  /**
-   * 获取群荣誉信息
-   */
+  /** 获取群荣誉信息 */
   async GetGroupHonor (groupId: string, refresh = false) {
     const groupHonor = await this.SendApi(OB11Api.getGroupHonorInfo, { group_id: Number(groupId), type: 'all' })
 
@@ -843,9 +809,7 @@ export class AdapterOneBot11 implements KarinAdapter {
     }
   }
 
-  /**
-   * 获取版本信息
-   */
+  /** 获取版本信息 */
   async GetVersion () {
     const res = await this.SendApi(OB11Api.getVersionInfo)
     return {
@@ -860,9 +824,7 @@ export class AdapterOneBot11 implements KarinAdapter {
     throw new Error('Method not implemented.')
   }
 
-  /**
-   * 精华消息
-   */
+  /** 精华消息 */
   async GetEssenceMessageList (groupId: string, page: number, pageSize: number) {
     const list: EssenceMessageBody[] = []
     const res = await this.SendApi(OB11Api.getEssenceMsgList, { group_id: Number(groupId) })

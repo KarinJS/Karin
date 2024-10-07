@@ -26,9 +26,7 @@ export const server = new (class Server {
     this.RegExp = new RegExp(`(${process.cwd()}|${process.cwd().replace(/\\/g, '/')})`, 'g')
   }
 
-  /**
-   * 监听WebSocket连接并初始化http服务器
-   */
+  /** 监听WebSocket连接并初始化http服务器 */
   async init () {
     try {
       /** 防止多进程端口冲突 启动失败 */
@@ -168,9 +166,7 @@ export const server = new (class Server {
     }
   }
 
-  /**
-   * HTTP渲染器
-   */
+  /** HTTP渲染器 */
   static () {
     this.staticPath()
 
@@ -227,9 +223,7 @@ export const server = new (class Server {
     this.app.use(express.static(process.cwd()))
   }
 
-  /**
-   * 构建静态资源路径
-   */
+  /** 构建静态资源路径 */
   async staticPath () {
     this.list = []
     /** 读取./resources文件夹 */

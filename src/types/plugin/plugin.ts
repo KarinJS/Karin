@@ -18,9 +18,7 @@ export type dirName = `karin-plugin-${string}` | string
  */
 export type fileName = `${string}.js` | `${string}.ts`
 
-/**
- * 插件类型枚举
- */
+/** 插件类型枚举 */
 export const enum AppsType {
   /** git插件 */
   Git = 'git',
@@ -30,9 +28,7 @@ export const enum AppsType {
   Js = 'js',
 }
 
-/**
- * 插件实现方法类型
- */
+/** 插件实现方法类型 */
 export const enum MethodType {
   /** 函数 */
   Function = 'function',
@@ -40,9 +36,7 @@ export const enum MethodType {
   Class = 'class',
 }
 
-/**
- * plugin基本信息
- */
+/** plugin基本信息 */
 export interface PluginInfoType {
   /** 插件包类型 */
   type: `${AppsType}`
@@ -54,9 +48,7 @@ export interface PluginInfoType {
   file: string,
 }
 
-/**
- * Command规则集信息
- */
+/** Command规则集信息 */
 export interface PluginCommandInfoType {
   /** 插件基本信息的映射key */
   key: number,
@@ -86,9 +78,7 @@ export interface PluginCommandInfoType {
   notAdapter: Array<KarinAdapter['adapter']['name']>
 }
 
-/**
- * accept规则集信息
- */
+/** accept规则集信息 */
 export interface PluginAcceptInfoType {
   /** 插件基本信息的映射key */
   key: number,
@@ -108,9 +98,7 @@ export interface PluginAcceptInfoType {
   notAdapter: Array<KarinAdapter['adapter']['name']>
 }
 
-/**
- * task规则集信息
- */
+/** task规则集信息 */
 export interface PluginTaskInfoType {
   /** 插件基本信息的映射key */
   key: number,
@@ -130,9 +118,7 @@ export interface PluginTaskInfoType {
   schedule: schedule.Job
 }
 
-/**
- * button规则集信息
- */
+/** button规则集信息 */
 export interface PluginButtonInfoType {
   /** 插件基本信息的映射key */
   key: number,
@@ -146,9 +132,7 @@ export interface PluginButtonInfoType {
   rank: ButtonInfo['rank']
 }
 
-/**
- * handler规则集信息
- */
+/** handler规则集信息 */
 export interface PluginHandlerInfoType {
   /** 插件基本信息的映射key */
   key: number,
@@ -171,9 +155,7 @@ export interface UseBase<T> {
   rank: UseInfo['rank']
 }
 
-/**
- * 中间件类型
- */
+/** 中间件类型 */
 export const enum UseKeyType {
   /** 收到消息后 */
   ReceiveMsg = 'recvMsg',
@@ -187,9 +169,7 @@ export const enum UseKeyType {
   NotFoundMsg = 'notFoundMsg',
 }
 
-/**
- * 中间件映射
- */
+/** 中间件映射 */
 export interface UseMapType {
   [UseKeyType.ReceiveMsg]: Array<UseBase<UseRecvMsgFn>>
   [UseKeyType.ReplyMsg]: Array<UseBase<UseSendMsgFn>>
@@ -198,9 +178,7 @@ export interface UseMapType {
   [UseKeyType.NotFoundMsg]: Array<UseBase<UseNotFoundMsgFn>>
 }
 
-/**
- * 上下文状态
- */
+/** 上下文状态 */
 export interface stateArrType {
   [key: string]:
   | { type: 'fnc', fnc: Function }
@@ -218,9 +196,7 @@ export interface PluginRule {
   event?: AllMessageSubType
   /** 优先级 默认为10000 */
   priority?: number
-  /**
-   * 权限
-   */
+  /** 权限 */
   permission?: `${Permission}`
   /** 打印日志 默认为true */
   log?: boolean | Function
@@ -361,7 +337,5 @@ export interface PluginApps {
   handler: Array<PluginHandler>
 }
 
-/**
- * 未实例化的插件
- */
+/** 未实例化的插件 */
 export type NewMessagePlugin = new (e?: KarinMessageType) => Plugin

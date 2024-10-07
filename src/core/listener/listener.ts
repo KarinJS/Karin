@@ -17,9 +17,7 @@ import {
 type AdapterType = KarinAdapter['adapter']['type']
 type onAdapter = { type: AdapterType; adapter: new () => KarinAdapter; path?: string }
 
-/**
- * 产生事件映射
- */
+/** 产生事件映射 */
 export interface EmittEventMap {
   'karin:count:send': number
   'karin:count:fnc': string
@@ -41,9 +39,7 @@ type ContextEvents = {
   [K in `ctx:${string}`]: (e: KarinMessage) => void
 }
 
-/**
- * 监听事件映射
- */
+/** 监听事件映射 */
 export interface OnEventMap extends ContextEvents {
   'karin:count:send': (count: number) => void
   'karin:count:fnc': (fnc: string) => void
@@ -60,9 +56,7 @@ export interface OnEventMap extends ContextEvents {
   'restart.http': undefined
 }
 
-/**
- * 监听器实例
- */
+/** 监听器实例 */
 export class Listeners extends EventEmitter {
   /** 框架名称 */
   name: string
@@ -102,9 +96,7 @@ export class Listeners extends EventEmitter {
     return super.emit(event, ...args)
   }
 
-  /**
-   * 注册Bot 返回索引id
-   */
+  /** 注册Bot 返回索引id */
   addBot (data: { bot: KarinAdapter; type: AdapterType }): number | false {
     this.#index++
     const index = this.#index
@@ -150,9 +142,7 @@ export class Listeners extends EventEmitter {
     return index
   }
 
-  /**
-   * 发送上线通知
-   */
+  /** 发送上线通知 */
   async #online (uid: string) {
     /** 重启 */
     const key = `karin:restart:${uid}`
@@ -218,9 +208,7 @@ export class Listeners extends EventEmitter {
     return this.list[index].bot
   }
 
-  /**
-   * 获取当前已注册Bot数量
-   */
+  /** 获取当前已注册Bot数量 */
   getBotCount (): number {
     return this.list.length
   }

@@ -109,9 +109,7 @@ class PluginLoader {
     this.dependErr = {}
   }
 
-  /**
-   * 插件初始化
-   */
+  /** 插件初始化 */
   async load () {
     karin.once('plugin.watch', () => {
       this.watchList.forEach(async ({ plugin, path }) => {
@@ -138,9 +136,7 @@ class PluginLoader {
     return this
   }
 
-  /**
-   * 获取Git插件
-   */
+  /** 获取Git插件 */
   async getGitPlugin () {
     /** 获取所有插件包 */
     const plugins = common.getPlugins()
@@ -258,9 +254,7 @@ class PluginLoader {
     return list
   }
 
-  /**
-   * 获取Npm插件
-   */
+  /** 获取Npm插件 */
   async getNpmPlugin () {
     const list: Promise<boolean>[] = []
     const info = await common.getNpmPlugins(true)
@@ -625,9 +619,7 @@ class PluginLoader {
     }
   }
 
-  /**
-   * 打印依赖缺失
-   */
+  /** 打印依赖缺失 */
   printDependErr () {
     try {
       const keys = Object.keys(this.dependErr)
@@ -753,7 +745,5 @@ class PluginLoader {
   }
 }
 
-/**
- * 加载插件
- */
+/** 加载插件 */
 export const pluginLoader = new PluginLoader()

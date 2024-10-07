@@ -4,9 +4,7 @@ import { karin, pluginLoader } from 'karin/core'
 import { logger, config } from 'karin/utils'
 import { KarinRequestType, RequestSubType } from 'karin/types'
 
-/**
- * 请求事件
- */
+/** 请求事件 */
 export class RequestHandler extends EventBaseHandler {
   e: KarinRequestType
   constructor (e: KarinRequestType) {
@@ -54,9 +52,7 @@ export class RequestHandler extends EventBaseHandler {
     karin.emit('request', this.e)
   }
 
-  /**
-   * 处理事件
-   */
+  /** 处理事件 */
   async deal () {
     for (const info of pluginLoader.accept) {
       /** 判断事件 */
@@ -88,9 +84,7 @@ export class RequestHandler extends EventBaseHandler {
     logger.debug(`[事件处理][${this.e.self_id}][${this.e.user_id}][${this.e.event_id}] 未匹配到任何插件`)
   }
 
-  /**
-   * 构建原始消息
-   */
+  /** 构建原始消息 */
   raw_message () {
     switch (this.e.sub_event) {
       /** 好友申请 */

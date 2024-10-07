@@ -92,9 +92,7 @@ export interface AcceptInfo extends AppBase {
   notAdapter: Array<KarinAdapter['adapter']['name']>
 }
 
-/**
- * 初始化消息前 中间件实现方法
- */
+/** 初始化消息前 中间件实现方法 */
 export type UseRecvMsgFn = (
   /** 消息事件方法 */
   e: KarinMessageType,
@@ -104,9 +102,7 @@ export type UseRecvMsgFn = (
   exit: () => void
 ) => Promise<void>
 
-/**
- * 回复消息前 中间件实现方法
- */
+/** 回复消息前 中间件实现方法 */
 export type UseSendMsgFn = (
   /** 消息事件方法 */
   e: KarinMessageType,
@@ -118,9 +114,7 @@ export type UseSendMsgFn = (
   exit: () => void
 ) => Promise<void>
 
-/**
- * 发送主动消息前 中间件实现方法
- */
+/** 发送主动消息前 中间件实现方法 */
 export type UseSendNoticeFn = (
   /** 发送的bot */
   uid: string,
@@ -134,9 +128,7 @@ export type UseSendNoticeFn = (
   exit: () => void
 ) => Promise<void>
 
-/**
- * 发送合并转发前 中间件实现方法
- */
+/** 发送合并转发前 中间件实现方法 */
 export type UseForwardMsgFn = (
   bot: KarinAdapter,
   /** 发送的目标信息 */
@@ -149,9 +141,7 @@ export type UseForwardMsgFn = (
   exit: () => void
 ) => Promise<void>
 
-/**
- * 消息事件没有找到任何匹配的插件触发 中间件实现方法
- */
+/** 消息事件没有找到任何匹配的插件触发 中间件实现方法 */
 export type UseNotFoundMsgFn = (
   /** 消息事件方法 */
   e: KarinMessageType,

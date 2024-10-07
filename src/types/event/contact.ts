@@ -1,6 +1,4 @@
-/**
- * 事件来源枚举
- */
+/** 事件来源枚举 */
 export const enum Scene {
   /** 群 */
   Group = 'group',
@@ -18,9 +16,7 @@ export const enum Scene {
   StrangerFromGroup = 'stranger_from_group',
 }
 
-/**
- * 事件联系人信息 也就是从哪来的这条消息
- */
+/** 事件联系人信息 也就是从哪来的这条消息 */
 export interface Contact<T extends `${Scene}` = `${Scene}`> {
   /** 事件来源场景 */
   scene: T

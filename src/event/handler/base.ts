@@ -9,9 +9,7 @@ export class EventBaseHandler {
   config!: GroupCfg
   /** 是否打印群消息日志 */
   GroupMsgPrint: boolean
-  /**
-   * 处理事件，加入自定义字段
-   */
+  /** 处理事件，加入自定义字段 */
   constructor (e: KarinEventTypes) {
     this.e = e
     this.GroupMsgPrint = true
@@ -20,36 +18,28 @@ export class EventBaseHandler {
     if (this.e.group_id) this.config = config.group(this.e.group_id, this.e)
   }
 
-  /**
-   * cd检查 返回false表示在cd中
-   */
+  /** cd检查 返回false表示在cd中 */
   getCd () {
     if (review.CD(this.e, this.config)) return true
     logger.debug(`[消息拦截][${this.e.group_id}][${this.e.user_id}] 正在冷却中`)
     return false
   }
 
-  /**
-   * 群聊黑白名单检查 返回false表示未通过
-   */
+  /** 群聊黑白名单检查 返回false表示未通过 */
   getGroupEnable () {
     if (review.GroupEnable(this.e)) return true
     logger.debug(`[消息拦截][${this.e.group_id}][${this.e.user_id}] 未通过群聊黑白名单检查`)
     return false
   }
 
-  /**
-   * 用户黑白名单检查 返回false表示未通过
-   */
+  /** 用户黑白名单检查 返回false表示未通过 */
   getUserEnable () {
     if (review.UserEnable(this.e)) return true
     logger.debug(`[消息拦截][${this.e.group_id}][${this.e.user_id}] 未通过用户黑白名单检查`)
     return false
   }
 
-  /**
-   * 处理私聊功能 功能开启返回true
-   */
+  /** 处理私聊功能 功能开启返回true */
   private () {
     /** 检查私聊是否开启 */
     if (this.e.user_id !== 'input' && this.e.isPrivate && !review.Private()) {
@@ -63,9 +53,7 @@ export class EventBaseHandler {
     return true
   }
 
-  /**
-   * 根据事件类型过滤事件 返回false表示未通过
-   */
+  /** 根据事件类型过滤事件 返回false表示未通过 */
   filtEvent (event: AllListenEvent): boolean {
     /** 事件映射表 */
     const eventMap = {
@@ -80,9 +68,7 @@ export class EventBaseHandler {
     return eventType.includes(event)
   }
 
-  /**
-   * 判断权限
-   */
+  /** 判断权限 */
   filterPermission (permission?: PluginRule['permission']): boolean {
     if (!permission || permission === 'all') return true
 
@@ -126,9 +112,7 @@ export class EventBaseHandler {
     return true
   }
 
-  /**
-   * 快速回复
-   */
+  /** 快速回复 */
   reply () {
     /**
      * 快速回复

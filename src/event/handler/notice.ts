@@ -4,9 +4,7 @@ import { logger, config } from 'karin/utils'
 import { karin, pluginLoader } from 'karin/core'
 import { KarinNoticeType, NoticeSubType } from 'karin/types'
 
-/**
- * 通知事件
- */
+/** 通知事件 */
 export class NoticeHandler extends EventBaseHandler {
   e: KarinNoticeType
   constructor (e: KarinNoticeType) {
@@ -58,9 +56,7 @@ export class NoticeHandler extends EventBaseHandler {
     karin.emit('notice', this.e)
   }
 
-  /**
-   * 处理事件
-   */
+  /** 处理事件 */
   async deal () {
     for (const info of pluginLoader.accept) {
       /** 判断事件 */
@@ -92,9 +88,7 @@ export class NoticeHandler extends EventBaseHandler {
     logger.debug(`[事件处理][${this.e.self_id}][${this.e.user_id}][${this.e.event_id}] 未匹配到任何插件`)
   }
 
-  /**
-   * 构建原始消息
-   */
+  /** 构建原始消息 */
   raw_message () {
     switch (this.e.sub_event) {
       /** 好友头像戳一戳 */

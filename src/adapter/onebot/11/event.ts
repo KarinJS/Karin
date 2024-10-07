@@ -32,9 +32,7 @@ export class OB11Event {
     }
   }
 
-  /**
-   * 元事件
-   */
+  /** 元事件 */
   metaEvent (data: OB11MetaEvent) {
     if (data.meta_event_type === 'heartbeat') {
       this.adapter.logger('trace', `[心跳]：${JSON.stringify(data.status)}`)
@@ -49,9 +47,7 @@ export class OB11Event {
     }
   }
 
-  /**
-   * 消息事件
-   */
+  /** 消息事件 */
   messageEvent (data: OB11MessageEvent) {
     const message = {
       event: EventType.Message as EventType.Message,
@@ -86,9 +82,7 @@ export class OB11Event {
     karin.emit('adapter.message', e)
   }
 
-  /**
-   * 通知事件
-   */
+  /** 通知事件 */
   noticeEvent (data: OB11NoticeEvent) {
     const time = data.time
     const selfId = data.self_id + ''
