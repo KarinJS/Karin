@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.12.17](https://github.com/KarinJS/Karin/compare/v0.12.16...v0.12.17) (2024-10-07)
+
+
+### Bug Fixes
+
+* 我也不想水啊...但是他没pr? ([88d4d5b](https://github.com/KarinJS/Karin/commit/88d4d5bc59dfbe6420d4623a706e865ff5397a85))
+
 ## [0.12.16](https://github.com/KarinJS/Karin/compare/v0.12.15...v0.12.16) (2024-10-06)
 
 
