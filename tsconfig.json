@@ -11,6 +11,9 @@
     "paths": {
       "karin/*": [
         "src/*"
+      ],
+      "@/*": [
+        "src/core/*"
       ]
     },
     "resolveJsonModule": true,

@@ -151,7 +151,7 @@ export class EventBaseHandler {
         }
       }
 
-      const { reply = false, recallMsg = 0, at, retry_count = 1 } = options
+      const { reply = false, recallMsg = 0, at, retry_count: retryCount = 1 } = options
 
       /** 加入at */
       if (at && this.e.isGroup) message.unshift(segment.at(this.e.user_id))
@@ -160,7 +160,7 @@ export class EventBaseHandler {
       if (reply && 'message_id' in this.e) message.unshift(segment.reply(this.e.message_id))
 
       /** 先发 提升速度 */
-      const result = this.e.replyCallback(message, retry_count)
+      const result = this.e.replyCallback(message, retryCount)
       const ReplyLog = common.makeMessageLog(message)
 
       if (this.e.isGroup) {

@@ -715,7 +715,7 @@ class PluginLoader {
 
       const name = path.basename(files)
       await this.createdApp(plugin, _path, name, `${AppsType.Git}`, true)
-      logger.mark(`[新增插件][${plugin}]${path ? `${common.getRelPath(_path)}` : ''}[${name}]`)
+      logger.mark(`[新增插件][${plugin}]${path ? `[${common.getRelPath(_path)}]` : ''}[${name}]`)
       return true
     })
 
@@ -727,7 +727,7 @@ class PluginLoader {
       this.uninstallApp(plugin, _path, name)
       /** 载入插件 */
       await this.createdApp(plugin, _path, name, `${AppsType.Git}`, true)
-      logger.mark(`[修改插件][${plugin}]${path ? `${common.getRelPath(_path)}` : ''}[${name}]`)
+      logger.mark(`[修改插件][${plugin}]${path ? `[${common.getRelPath(_path)}]` : ''}[${name}]`)
       return true
     })
 
@@ -737,7 +737,7 @@ class PluginLoader {
       const name = path.basename(files)
       /** 卸载 */
       this.uninstallApp(plugin, _path, name)
-      logger.mark(`[卸载插件][${plugin}]${path ? `${common.getRelPath(_path)}` : ''}[${name}]`)
+      logger.mark(`[卸载插件][${plugin}]${path ? `[${common.getRelPath(_path)}]` : ''}[${name}]`)
       return true
     })
 
