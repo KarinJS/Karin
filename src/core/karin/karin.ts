@@ -302,7 +302,7 @@ export class Karin extends Listeners {
    * @param event - 监听事件
    * @param fn - 实现函数
    */
-  accept<T extends keyof AcceptDict> (event: T, fn: (e: AcceptDict[T]) => boolean, options?: Options) {
+  accept<T extends keyof AcceptDict> (event: T, fn: (e: AcceptDict[T]) => Promise<boolean>, options?: Options) {
     const log = options?.log === false
       ? (id: string, text: string) => logger.bot('debug', id, text)
       : (id: string, text: string) => logger.bot('info', id, text)

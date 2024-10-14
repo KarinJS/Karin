@@ -144,15 +144,15 @@ export type Reply = (
  * 事件基类定义
  * @description 所有的事件都拥有这些基本属性
  */
-export interface BaseEvent {
+export interface BaseEventType {
   /** 机器人ID */
-  self_id: string
+  selfId: string
   /** 用户ID */
-  user_id: string
+  userId: string
   /** 事件类型 */
-  event: EventParentEnum
+  event: `${EventParentEnum}`
   /** 事件子类型 */
-  subEvent: EventSubType
+  subEvent: `${EventSubType}`
   /** 事件ID */
   eventId: string
   /** 原始事件 */
@@ -165,16 +165,17 @@ export interface BaseEvent {
   sender: Sender
   /** 快速回复源函数 适配器实现 */
   srcReply: SrcReply
-  /** bot自身实例 */
+  /** bot自身实例 所有标准Api都通过这里调用 */
   bot: AdapterType
 }
+
+/** 构建基本事件所需的参数 */
+export type BaseEventOptions = Omit<BaseEventType, 'user_id' | 'self_id'>
 
 /**
  * 事件处理基类定义
  */
-export interface BaseEventHandle extends BaseEvent {
-  // /** 序列化的纯文本 消息事件专属 */
-  // msg: string
+export interface BaseEventHandle extends BaseEventType {
   /** 快速回复 */
   reply: Reply
   /** 存储器 由开发者自行调用 */
@@ -204,55 +205,26 @@ export interface BaseEventHandle extends BaseEvent {
  * 事件实现基类
  */
 export class BaseEvent implements BaseEventHandle {
-  /** 机器人ID */
-  self_id: BaseEventHandle['self_id']
-  /** 用户ID */
-  user_id: BaseEventHandle['user_id']
-  /** 事件类型 */
-  event: BaseEventHandle['event']
-  /** 事件子类型 */
-  subEvent: BaseEventHandle['subEvent']
-  /** 事件ID */
-  eventId: BaseEventHandle['eventId']
-  /** 原始事件 */
-  rawEvent: BaseEventHandle['rawEvent']
-  /** 事件触发时间戳 */
-  time: BaseEventHandle['time']
-  /** 事件联系人信息 */
-  contact: BaseEventHandle['contact']
-  /** 事件发送者信息 */
-  sender: BaseEventHandle['sender']
-  /** 快速回复源函数 适配器实现 */
-  srcReply: BaseEventHandle['srcReply']
-  /** bot自身实例 */
-  bot: BaseEventHandle['bot']
+  #selfId: BaseEventHandle['selfId']
+  #event: BaseEventHandle['event']
+  #subEvent: BaseEventHandle['subEvent']
+  #eventId: BaseEventHandle['eventId']
+  #rawEvent: BaseEventHandle['rawEvent']
+  #time: BaseEventHandle['time']
+  #contact: BaseEventHandle['contact']
+  #sender: BaseEventHandle['sender']
+  #srcReply: BaseEventHandle['srcReply']
+  #bot: BaseEventHandle['bot']
 
-  /** 快速回复 */
-  reply: BaseEventHandle['reply']
-  /** 存储器 由开发者自行调用 */
-  store: BaseEventHandle['store']
-  /** 日志函数字符串 */
-  logFnc: BaseEventHandle['logFnc']
-  /** 日志用户字符串 */
-  logText: BaseEventHandle['logText']
-  /** 是否为主人 */
-  isMaster: BaseEventHandle['isMaster']
-  /** 是否为Bot管理员 */
-  isAdmin: BaseEventHandle['isAdmin']
-  /** 是否为私聊场景 */
-  isPrivate: BaseEventHandle['isPrivate']
-  /** 是否为群聊场景 */
-  isGroup: BaseEventHandle['isGroup']
-  /** 是否为频道场景 */
-  isGuild: BaseEventHandle['isGuild']
-  /** 是否为群临时会话场景 */
-  isGroupTemp: BaseEventHandle['isGroupTemp']
-  /** 是否为频道私信场景 */
-  isDirect: BaseEventHandle['isDirect']
+  public reply: BaseEventHandle['reply']
+  public store: BaseEventHandle['store']
+  public logFnc: BaseEventHandle['logFnc']
+  public logText: BaseEventHandle['logText']
+  public isMaster: BaseEventHandle['isMaster']
+  public isAdmin: BaseEventHandle['isAdmin']
 
   constructor ({
-    self_id: selfId,
-    user_id: userId,
+    selfId,
     event,
     subEvent,
     eventId,
@@ -262,35 +234,30 @@ export class BaseEvent implements BaseEventHandle {
     sender,
     srcReply,
     bot,
-  }: BaseEvent) {
-    this.self_id = selfId
-    this.user_id = userId
-    this.event = event
-    this.subEvent = subEvent
-    this.eventId = eventId
-    this.rawEvent = rawEvent
-    this.time = time
-    this.contact = contact
-    this.sender = sender
-    this.srcReply = srcReply
-    this.bot = bot
+  }: BaseEventOptions) {
+    this.#selfId = selfId
+    this.#selfId = selfId
+    this.#event = event
+    this.#subEvent = subEvent
+    this.#eventId = eventId
+    this.#rawEvent = rawEvent
+    this.#time = time
+    this.#contact = contact
+    this.#sender = sender
+    this.#srcReply = srcReply
+    this.#bot = bot
 
     this.store = new Map()
     this.logFnc = ''
     this.logText = ''
     this.isMaster = false
     this.isAdmin = false
-    this.isPrivate = false
-    this.isGroup = false
-    this.isGuild = false
-    this.isGroupTemp = false
-    this.isDirect = false
 
     this.reply = async (elements, options) => {
       const request: SendMsgResults = {
-        message_id: '',
-        message_time: 0,
-        raw_data: undefined,
+        messageId: '',
+        messageTime: 0,
+        rawData: undefined,
       }
 
       /** 参数归一化 */
@@ -313,13 +280,93 @@ export class BaseEvent implements BaseEventHandle {
       }
 
       /** 快速撤回 */
-      if (recallMsg > 0 && request.message_id) {
+      if (recallMsg > 0 && request.messageId) {
         setTimeout(() => {
-          this.bot.recallMsg(this.contact, request.message_id)
+          this.bot.recallMsg(this.contact, request.messageId)
         }, recallMsg * 1000)
       }
 
       return request
     }
+  }
+
+  /**
+   * @description 机器人ID
+   * @deprecated 即将废弃，请使用 `selfId`
+   */
+  get self_id () {
+    return this.#selfId
+  }
+
+  /**
+   * @description 用户ID
+   * @deprecated 即将废弃，请使用 `userId`
+   */
+  get user_id () {
+    return this.userId
+  }
+
+  get selfId () {
+    return this.#selfId
+  }
+
+  get userId () {
+    return this.#sender.userId
+  }
+
+  get event () {
+    return this.#event
+  }
+
+  get subEvent () {
+    return this.#subEvent
+  }
+
+  get eventId () {
+    return this.#eventId
+  }
+
+  get rawEvent () {
+    return this.#rawEvent
+  }
+
+  get time () {
+    return this.#time
+  }
+
+  get contact () {
+    return this.#contact
+  }
+
+  get sender () {
+    return this.#sender
+  }
+
+  get srcReply () {
+    return this.#srcReply
+  }
+
+  get bot () {
+    return this.#bot
+  }
+
+  get isPrivate () {
+    return this.#contact.scene === Scene.FRIEND || this.#contact.scene === Scene.GUILD_DIRECT
+  }
+
+  get isGroup () {
+    return this.#contact.scene === Scene.GROUP
+  }
+
+  get isGuild () {
+    return this.#contact.scene === Scene.GUILD
+  }
+
+  get isGroupTemp () {
+    return this.#contact.scene === Scene.GROUP_TEMP
+  }
+
+  get isDirect () {
+    return this.#contact.scene === Scene.GUILD_DIRECT
   }
 }

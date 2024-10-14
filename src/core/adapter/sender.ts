@@ -17,6 +17,8 @@ export const enum PermissionEnum {
 
 /** 事件发送者信息 */
 export interface Sender {
+  /** 发送者用户ID */
+  userId: string
   /** 发送者uid */
   uid: string
   /** 发送者uin */

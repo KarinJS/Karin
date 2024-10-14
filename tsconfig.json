@@ -9,11 +9,11 @@
     "noImplicitAny": true,
     "outDir": "./lib",
     "paths": {
-      "karin/*": [
-        "src/*"
-      ],
       "@/*": [
         "src/core/*"
+      ],
+      "karin/*": [
+        "src/*"
       ]
     },
     "resolveJsonModule": true,

@@ -84,11 +84,11 @@ export const enum AdapterCommunication {
 /** 发送消息后返回的结果 */
 export interface SendMsgResults {
   /** 消息ID */
-  message_id: string
+  messageId: string
   /** 消息发送时间戳 */
-  message_time?: number
+  messageTime?: number
   /** 原始结果 一般是Object、Array */
-  raw_data?: object | Array<any>
+  rawData?: object | Array<any>
 }
 
 /** 适配器类型 */
@@ -126,7 +126,7 @@ export interface AdapterType {
     /** Bot的uid */
     uid: string
     /** Bot的子ID 比如在QQ频道下Bot拥有一个和普通用户一样的ID */
-    sub_id: string
+    subId: string
     /** 账号名 不存在则是空字符串 */
     name: string
     /** Bot的头像链接 */
@@ -134,13 +134,13 @@ export interface AdapterType {
   }
 
   /** 获取Bot的id */
-  get self_id (): string
+  get selfId (): string
   /** 获取Bot的name */
-  get self_name (): string
-  /** 获取Bot的sub_id */
-  get self_sub_id (): string
+  get selfName (): string
+  /** 获取Bot的subId */
+  get selfSubId (): string
   /** 获取Bot的信息 */
-  get self_info (): string
+  get selfInfo (): string
 
   /**
    * 打印当前Bot的专属日志
@@ -169,7 +169,7 @@ export interface AdapterType {
    * @param contact 目标信息
    * @param elements 消息元素
    */
-  sendForwardMessage (contact: Contact, elements: Array<NodeElementType>): Promise<{ message_id: string }>
+  sendForwardMessage (contact: Contact, elements: Array<NodeElementType>): Promise<{ messageId: string }>
 
   /**
    * 撤回消息
@@ -185,7 +185,7 @@ export interface AdapterType {
    * @param size 头像大小，默认需要为`0`，请开发者注意
    * @returns 头像的url地址
    */
-  getAvatarUrl (userId: string, size?: 0 | 40 | 100 | 140): string
+  getAvatarUrl (userId: string, size?: 0 | 40 | 100 | 140): Promise<string>
 
   /**
    * 获取群头像url
@@ -194,7 +194,7 @@ export interface AdapterType {
    * @param history 历史头像记录，默认`0`，若要获取历史群头像则填写1,2,3...
    * @returns 头像的url地址
    */
-  getGroupAvatarUrl (groupId: string, size?: 0 | 40 | 100 | 140, history?: number): string
+  getGroupAvatarUrl (groupId: string, size?: 0 | 40 | 100 | 140, history?: number): Promise<string>
 
   /**
    * 获取消息
@@ -205,7 +205,7 @@ export interface AdapterType {
   getMsg (contact: Contact, messageId: string): Promise<MessageResponse>
 
   /**
-   * 获取msg_id获取历史消息
+   * 获取msgId获取历史消息
    * @param contact 目标信息
    * @param startMsgId 起始消息ID
    * @param count 获取消息数量 默认为1
@@ -339,10 +339,10 @@ export interface AdapterType {
   /**
    * 获取群信息
    * @param groupId 群ID
-   * @param no_cache 是否刷新缓存
+   * @param noCache 是否刷新缓存
    * @returns 群信息
    */
-  getGroupInfo (groupId: string, no_cache?: boolean): Promise<GroupInfo>
+  getGroupInfo (groupId: string, noCache?: boolean): Promise<GroupInfo>
 
   /**
    * 获取群列表

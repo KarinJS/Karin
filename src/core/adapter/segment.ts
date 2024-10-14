@@ -24,7 +24,7 @@ export const enum ElementTypeEnum {
   /** Markdown元素 */
   MARKDOWN = 'markdown',
   /** Markdown模板元素 */
-  MARKDOWN_TPL = 'markdown_tpl',
+  MARKDOWN_TPL = 'markdownTpl',
   /** 被动事件元素 */
   PASMSG = 'pasmsg',
   /** 多行按钮 */
@@ -33,7 +33,7 @@ export const enum ElementTypeEnum {
   BUTTON = 'button',
 
   /** 长元素 */
-  LONG_MSG = 'long_msg',
+  LONG_MSG = 'longMsg',
   /** 原始元素 */
   RAW = 'raw',
 
@@ -44,7 +44,7 @@ export const enum ElementTypeEnum {
   /** 猜拳元素 */
   RPS = 'rps',
   /** 弹射表情元素 */
-  BUBBLE_FACE = 'bubble_face',
+  BUBBLE_FACE = 'bubbleFace',
 
   /** 天气元素 */
   WEATHER = 'weather',
@@ -55,7 +55,7 @@ export const enum ElementTypeEnum {
   /** 礼物元素 */
   GIFT = 'gift',
   /** 商城表情元素 */
-  MARKET_FACE = 'market_face',
+  MARKET_FACE = 'marketFace',
   /** 分享名片元素 */
   CONTACT = 'contact',
 }
@@ -104,6 +104,8 @@ export interface ImageElementType extends Element {
   file: string
   /** 图片名称 */
   name?: string
+  /** 图片外显名称 */
+  summary?: string
   /** 图片MD5 */
   md5?: string
   /** 图片宽度 */
@@ -447,13 +449,15 @@ interface NodeType {
 /** 常规合并转发节点 */
 export interface NodeElementReadyType extends NodeType {
   /** 节点ID */
+  resId: string
+  /** @deprecated 即将废弃 请使用 `resId` */
   res_id: string
 }
 
 /** 自定义节点 */
 export interface NodeElementCustomType extends NodeType {
   /** 目标ID */
-  user_id: string
+  userId: string
   /** 目标名称 */
   nickname: string
   /** 转发的元素节点 */
@@ -761,9 +765,9 @@ class ElementBuilder {
 
   /**
    * 构建常规转发节点元素
-   * @param resId res_id - 资源ID
+   * @param resId resId - 资源ID
    */
-  node (resId: NodeElementReadyType['res_id']): NodeElementReadyType
+  node (resId: NodeElementReadyType['resId']): NodeElementReadyType
   /**
    * 构建自定义转发节点元素
    * @param userId - 目标ID
@@ -771,7 +775,7 @@ class ElementBuilder {
    * @param message - 转发的消息元素结构
    */
   node (
-    userId: NodeElementCustomType['user_id'],
+    userId: NodeElementCustomType['userId'],
     nickname: NodeElementCustomType['nickname'],
     message: NodeElementCustomType['message']
   ): NodeElementCustomType
@@ -782,16 +786,16 @@ class ElementBuilder {
    * @param message - 转发的消息元素结构
    */
   node (
-    resIdOrUserId: NodeElementCustomType['user_id'] | NodeElementReadyType['res_id'],
+    resIdOrUserId: NodeElementCustomType['userId'] | NodeElementReadyType['resId'],
     nickname?: NodeElementCustomType['nickname'],
     message?: NodeElementCustomType['message']
   ): NodeElementType {
     if (resIdOrUserId && nickname && message) {
       /** 自定义 */
-      return { type: NodeTypeEnum.NODE, user_id: resIdOrUserId, nickname, message }
+      return { type: NodeTypeEnum.NODE, userId: resIdOrUserId, nickname, message }
     } else {
       /** 常规 */
-      return { type: NodeTypeEnum.NODE, res_id: resIdOrUserId }
+      return { type: NodeTypeEnum.NODE, resId: resIdOrUserId, res_id: resIdOrUserId }
     }
   }
 }
