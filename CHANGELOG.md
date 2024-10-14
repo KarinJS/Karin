@@ -1,5 +1,13 @@
 # 更新日志
 
+## [0.12.18](https://github.com/KarinJS/Karin/compare/v0.12.17...v0.12.18) (2024-10-14)
+
+
+### Bug Fixes
+
+* accept type ([cef5f03](https://github.com/KarinJS/Karin/commit/cef5f03eae255966a5d74a28acead9276a636b4f))
+* isArray && object ([9954110](https://github.com/KarinJS/Karin/commit/9954110faa07619e908c5b5878accce46f613d05))
+
 ## [0.12.17](https://github.com/KarinJS/Karin/compare/v0.12.16...v0.12.17) (2024-10-07)
 
 
