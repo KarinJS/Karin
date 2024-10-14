@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.12.19](https://github.com/KarinJS/Karin/compare/v0.12.18...v0.12.19) (2024-10-14)
+
+
+### Bug Fixes
+
+* Syntax error ([8390ca3](https://github.com/KarinJS/Karin/commit/8390ca31d94d0d08b1fcebe2d7f691951c54d9da))
+
 ## [0.12.18](https://github.com/KarinJS/Karin/compare/v0.12.17...v0.12.18) (2024-10-14)
 
 
