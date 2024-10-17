@@ -5,7 +5,7 @@ import { BaseMessageEventType, Message, MessageOptions } from '.'
 /** new 频道私信消息事件所需参数 */
 export type DirectMessageOptions = MessageOptions & {
   /** 事件联系人信息 */
-  contact: Contact<Scene.GUILD_DIRECT>
+  contact: Contact<Scene.DIRECT>
   /** 来源频道ID */
   srcGuildId: string
 }

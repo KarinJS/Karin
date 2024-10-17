@@ -1,6 +1,5 @@
-import fs from 'fs'
+import fs from 'node:fs'
 import Yaml from 'yaml'
-import logger from '../core/logger'
 import { YamlEditor } from '../config/yamlEditor'
 
 type Comment = Record<string, string | { type: 'start' | 'end'; text: string }>

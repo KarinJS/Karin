@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'node:fs'
 import path from 'path'
 import { NpmInfo } from 'karin/utils'
 import { readJson } from './readJson'

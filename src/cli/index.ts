@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'node:fs'
 import path from 'path'
 import yaml from 'yaml'
 import axios from 'axios'

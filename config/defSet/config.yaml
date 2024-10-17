@@ -1,3 +1,5 @@
+# 详细配置请参考: https://karin.fun/config/config
+
 # log4js 日志配置
 log4jsCfg:
   # 日志等级: trace, debug, info, warn, fatal, mark, error, off
@@ -11,33 +13,41 @@ log4jsCfg:
   # 日志文件最大大小 MB
   maxLogSize: 30
 
-# 控制台触发插件日志颜色 十六进制 默认#FFFF00 不支持热更新
-log_color: "#E1D919"
+# logger.fnc颜色 不支持热更新
+logColor: "#E1D919"
 
 # 重启是否调用pm2 如果不调用则会直接关机 此配置适合有进程守护的程序
 pm2Restart: true
 
-# 私聊设置
+# 私聊设置 频道和好友共享此配置
 private:
+  # 是否启用私聊
+  enable: true
   # 关闭私聊后回复的提示词 为空则不回复
   tips: ""
   # 关闭私聊后的用户白名单
-  white_list: []
+  disable: []
 
 # input适配器配置 以下所有配置均不支持热更新
-AdapterInput:
+inputConfig:
   # 是否启用
   enable: true
   # 是否将语音、图片、视频消息转为文件 转为文件后可通过url访问
   msgToFile: true
-  # url访问token 如果为 AdapterInput 每次启动后会重新生成
-  token: "AdapterInput"
-  # 访问ip
+  # 鉴权token
+  token: "karin"
+  # 生成url的ip
   ip: 127.0.0.1
+  # 自定义host:port 如果配置此项则ip无效
+  host: ""
+  # 是否允许局域网访问 需要token不为kairn
+  local: false
+  # 是否允许公网访问 需要token不为kairn
+  internet: false
 
 # ffmpeg配置 用于音视频处理
-ffmpeg_path:
-ffprobe_path:
+ffmpegPath:
+ffprobePath:
 
 # 主人列表 主权限
 master:
@@ -47,19 +57,35 @@ master:
 admin: []
 
 # 黑名单相关
-BlackList:
+disable:
   # 黑名单用户
   users: []
   # 黑名单群聊
   groups: []
+  # 黑名单频道
+  guilds: []
+  # 黑名单子频道
+  channels: []
   # 消息日志黑名单群聊 设置后不会打印该群的消息日志
-  GroupMsgLog: []
+  groupLog: []
+  # 消息日志黑名单频道 设置后不会打印该频道的消息日志
+  guildLog: []
+  # 消息日志黑名单子频道 设置后不会打印该子频道的消息日志
+  channelLog: []
 
 # 白名单相关
-WhiteList:
+enable:
   # 白名单用户
   users: []
   # 白名单群聊
   groups: []
+  # 白名单频道
+  guilds: []
+  # 白名单子频道
+  channels: []
   # 消息日志白名单群聊 设置后只会打印该群的消息日志
-  GroupMsgLog: []
+  groupLog: []
+  # 消息日志白名单频道 设置后只会打印该频道的消息日志
+  guildLog: []
+  # 消息日志白名单子频道 设置后只会打印该子频道的消息日志
+  channelLog: []

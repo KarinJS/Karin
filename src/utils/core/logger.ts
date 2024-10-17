@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'node:fs'
 import chalk from 'chalk'
 import log4js from 'log4js'
 import { config } from '../config/config'

@@ -3,7 +3,7 @@ import Yaml from 'yaml'
 import path from 'path'
 import { Logger } from 'log4js'
 import chokidar from 'chokidar'
-import { karinDir, isPkg } from 'karin/core/init/dir'
+import { karinDir, isPkg } from '../command/fs/path'
 import { common } from 'karin/utils/common/common'
 import { Redis, App, Config, Server, Package, GroupCfg, KarinEventTypes } from 'karin/types'
 
@@ -36,83 +36,6 @@ export const config = new (class Cfg {
     this.watcher = new Map()
     /** 拦截器状态 */
     this.review = false
-    this.initCfg()
-  }
-
-  /**
-   * 初始化配置
-   */
-  async initCfg () {
-    const list = [
-      this.dir + '/temp/input',
-      this.dir + '/plugins/karin-plugin-example',
-      this.cfgDir + '/config',
-      this.cfgDir + '/plugin',
-    ]
-
-    list.forEach(path => this.mkdir(path))
-
-    /** 拷贝默认配置文件 */
-    if (isPkg) {
-      const files = fs.readdirSync(this.pkgCfgDir).filter(file => file.endsWith('.yaml'))
-      files.forEach(file => {
-        const path = `${this.cfgDir}/config/${file}`
-        const pathDef = `${this.pkgCfgDir}/${file}`
-        if (!fs.existsSync(path)) fs.copyFileSync(pathDef, path)
-      })
-    } else {
-      const files = fs.readdirSync(this.cfgDir + '/defSet').filter(file => file.endsWith('.yaml'))
-      files.forEach(file => {
-        const path = `${this.cfgDir}/config/${file}`
-        const pathDef = `${this.cfgDir}/defSet/${file}`
-        if (!fs.existsSync(path)) fs.copyFileSync(pathDef, path)
-      })
-    }
-
-    /** 为每个插件包创建统一存储的文件夹 */
-    const plugins = await this.getPlugins()
-    const DataList = [
-      'data',
-      'temp',
-      'resources',
-      'temp/html',
-      this.cfgDir + '/plugin',
-    ]
-    DataList.forEach(path => this.dirPath(path, plugins))
-    this.logger = (await import('../core/logger')).default
-  }
-
-  async getPlugins () {
-    const list: string[] = []
-    const files = fs.readdirSync('./plugins', { withFileTypes: true })
-    // 过滤掉非karin-plugin-开头的文件夹
-    list.push(...files.filter(file => file.isDirectory() && (file.name.startsWith('karin-plugin-'))).map(dir => dir.name))
-
-    // 获取npm插件
-    list.push(...(await common.getNpmPlugins(false)))
-    return list
-  }
-
-  /**
-   * 递归创建目录
-   * @param dirname - 要创建的文件夹路径
-   */
-  mkdir (dirname: string): boolean {
-    if (fs.existsSync(dirname)) return true
-    /** 递归自调用 */
-    if (this.mkdir(path.dirname(dirname))) fs.mkdirSync(dirname)
-    return true
-  }
-
-  /**
-   * 为每一个插件建立对应的文件夹
-   */
-  async dirPath (_path: string, plugins: string[]) {
-    this.mkdir(_path)
-    for (const plugin of plugins) {
-      const path = `${_path}/${plugin}`
-      this.mkdir(path)
-    }
   }
 
   /**

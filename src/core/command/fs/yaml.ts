@@ -1,17 +1,17 @@
 import fs from 'node:fs'
 import lodash from 'lodash'
-import Yaml, { isMap, isSeq, isPair } from 'yaml'
+import YAML, { isMap, isSeq, isPair } from 'yaml'
 
 export type YamlValue = string | boolean | number | object | any[]
 
 /** YAML 编辑器 */
 export class YamlEditor {
   filePath: string
-  doc: Yaml.Document
-  document: Yaml.Document
+  doc: YAML.Document
+  document: YAML.Document
   constructor (file: string) {
     this.filePath = file
-    const data = Yaml.parseDocument(fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : file)
+    const data = YAML.parseDocument(fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : file)
     this.doc = data
     this.document = data
   }
@@ -94,9 +94,9 @@ export class YamlEditor {
       const _path = typeof path === 'string' ? (isSplit ? path.split('.') : [path]) : path
       let current = this.document.getIn(_path)
       if (!current) {
-        current = new Yaml.YAMLSeq()
+        current = new YAML.YAMLSeq()
         this.document.setIn(_path, current)
-      } else if (!(current instanceof Yaml.YAMLSeq)) {
+      } else if (!(current instanceof YAML.YAMLSeq)) {
         logger.error('[YamlEditor] 指定的路径不是数组')
         return false
       } else {
@@ -124,7 +124,7 @@ export class YamlEditor {
         logger.error('[YamlEditor] 指定的路径不存在')
         return false
       }
-      if (!(current instanceof Yaml.YAMLSeq)) {
+      if (!(current instanceof YAML.YAMLSeq)) {
         logger.error('[YamlEditor] 指定的路径不是数组')
         return false
       }
@@ -170,10 +170,10 @@ export class YamlEditor {
       if (!current) return false
 
       /** 检查当前节点是否包含指定的值 */
-      if (current instanceof Yaml.YAMLSeq) {
+      if (current instanceof YAML.YAMLSeq) {
         /** 如果是序列，遍历序列查找值 */
         return current.items.some(item => lodash.isEqual(item.toJSON(), value))
-      } else if (current instanceof Yaml.YAMLMap) {
+      } else if (current instanceof YAML.YAMLMap) {
         /** 如果是映射，检查每个值 */
         return Array.from((current as any).values()).some((v: any) => lodash.isEqual(v.toJSON(), value))
       } else {
@@ -202,9 +202,9 @@ export class YamlEditor {
    */
   pusharr (value: YamlValue): boolean {
     try {
-      if (!(this.document.contents instanceof Yaml.YAMLSeq)) {
+      if (!(this.document.contents instanceof YAML.YAMLSeq)) {
         // 如果根节点不是数组，则将其转换为数组
-        this.document.contents = new Yaml.YAMLSeq()
+        this.document.contents = new YAML.YAMLSeq()
         logger.debug('[YamlEditor] 根节点已转换为数组')
       }
       this.document.contents.add(value)
@@ -222,7 +222,7 @@ export class YamlEditor {
    */
   delarr (index: number): boolean {
     try {
-      if (!(this.document.contents instanceof Yaml.YAMLSeq)) {
+      if (!(this.document.contents instanceof YAML.YAMLSeq)) {
         throw new Error('[YamlEditor] 根节点不是数组')
       }
       if (index < 0 || index >= this.document.contents.items.length) {
@@ -326,4 +326,50 @@ export class YamlEditor {
     fs.writeFileSync(this.filePath, this.document.toString())
     logger.debug('[YamlEditor] 文件已保存')
   }
+}
+
+/** YAML 工具 */
+export const Yaml = () => {
+  const yamlNew = {
+    /**
+     * 传入yaml文件路径 自动读取并解析
+     * @param path yaml文件路径
+     */
+    read: (path: string) => {
+      const data = fs.readFileSync(path, 'utf-8')
+      return YAML.parse(data)
+    },
+    /**
+     * 保存并写入注释
+     * @param path 保存的路径
+     * @param value 保存的数据
+     * @param commentConfig 注释配置文件路径或json
+     */
+    save: (path: string, value: any, commentConfig?: string) => {
+      if (!commentConfig) {
+        fs.writeFileSync(path, YAML.stringify(value))
+        return
+      }
+
+      const editor = new YamlEditor(YAML.stringify(value))
+      const comment = JSON.parse(fs.existsSync(commentConfig) ? fs.readFileSync(commentConfig, 'utf8') : commentConfig) as Comment
+
+      for (const [key, value] of Object.entries(comment)) {
+        try {
+          if (typeof value === 'object') {
+            editor.comment(key, value.text, value.type === 'start')
+          } else if (typeof value === 'string') {
+            editor.comment(key, value, true)
+          }
+        } catch (error: any) {
+          logger.error(`[YamlEditor] 添加注释时出错，已跳过：${error.stack || error.message || error}`)
+        }
+      }
+
+      fs.writeFileSync(path, editor.document.toString())
+    },
+  }
+
+  const yaml = Object.assign(YAML, yamlNew)
+  return yaml
 }

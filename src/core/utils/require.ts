@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'node:fs'
 import path from 'path'
 import yaml from 'yaml'
 
@@ -30,7 +30,7 @@ export type RequireFunction = <T = any>(
 const cache = new Map<string, CacheEntry>()
 
 /**
- * @description 缓存导入的文件
+ * @description 缓存导入的文件 默认缓存300秒
  * @param filePath 文件路径
  * @param options 选项
  * @returns 返回文件的内容

@@ -1,21 +1,21 @@
-# 最多显示多少行日志
+# 日志最多显示1000行
 lines: 1000
 
 apps:
-  - name: "Karin"
-    # 入口
-    script: "./node_modules/node-karin/lib/index.js"
-    # 进程守护
+  - name: karin
+    # 入口文件
+    script: index.js
+    # 自动重启
     autorestart: true
-    # 每分钟最大重启数量
+    # 重启次数
     max_restarts: 60
-    # 内存溢出重启，可以是“10M”、“100K”、“2G”等
-    max_memory_restart: "1G"
-    # 重启延迟 2s
+    # 最大重启次数
+    max_memory_restart: 1G
+    # 重启延迟
     restart_delay: 2000
-    # 避免使用进程 id 后缀日志文件
+    # 合并日志
     merge_logs: true
-    # 错误日志路径
-    error_file: "./logs/pm2_error.log"
-    # 输出日志路径
-    out_file: "./logs/pm2_out.log"
+    # 错误日志
+    error_file: ./logs/pm2_error.log
+    # 输出日志
+    out_file: ./logs/pm2_out.log

@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'node:fs'
 import exec from './exec'
 import { KarinCli } from 'karin/cli/index'
 import { getRegistry } from 'karin/cli/pkg'

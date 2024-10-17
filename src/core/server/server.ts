@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'node:fs'
 import { level } from 'karin/db'
 import { WebSocketServer } from 'ws'
 import { createServer } from 'http'

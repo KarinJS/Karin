@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'node:fs'
 import { randomUUID } from 'crypto'
 import { listener } from 'karin/core'
 import { config, common, YamlEditor, logger } from 'karin/utils'

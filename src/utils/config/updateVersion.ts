@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'node:fs'
 import { exec } from 'child_process'
 
 export default class Version {

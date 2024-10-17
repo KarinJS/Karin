@@ -7,7 +7,7 @@ export const enum Scene {
   /** 频道 */
   GUILD = 'guild',
   /** 频道私信 */
-  GUILD_DIRECT = 'direct',
+  DIRECT = 'direct',
   /** 临时群会话 */
   GROUP_TEMP = 'groupTemp',
 }
@@ -15,9 +15,9 @@ export const enum Scene {
 /** 具有 sub_peer 的事件联系人信息 */
 export interface ContactWithSubPeer<
   T extends Scene.GUILD
-  | Scene.GUILD_DIRECT
+  | Scene.DIRECT
   | Scene.GROUP_TEMP = Scene.GUILD
-  | Scene.GUILD_DIRECT
+  | Scene.DIRECT
   | Scene.GROUP_TEMP
 > {
   /** 事件来源场景 */
@@ -47,6 +47,6 @@ export interface ContactWithoutSubPeer<
 }
 
 /** 事件联系人信息的泛型类型 */
-export type Contact<T extends Scene = Scene> = T extends Scene.GUILD | Scene.GUILD_DIRECT | Scene.GROUP_TEMP
+export type Contact<T extends Scene = Scene> = T extends Scene.GUILD | Scene.DIRECT | Scene.GROUP_TEMP
   ? ContactWithSubPeer
   : ContactWithoutSubPeer

@@ -1,0 +1,6 @@
+export * from './base'
+export * from './message/index'
+export * from './message/group'
+export * from './message/friend'
+export * from './message/guild'
+export * from './message/direct'

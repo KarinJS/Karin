@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'node:fs'
 
 /**
  * 获取当前的包管理器 根据锁文件判断 优先级 pnpm > yarn > npm > cnpm

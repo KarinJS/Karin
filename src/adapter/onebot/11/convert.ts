@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'node:fs'
 import { AdapterOneBot11 } from '.'
 import { segment } from 'karin/utils'
 import { CustomMusicElemen, KarinElement, OB11Segment, OB11SegmentType } from 'karin/types'

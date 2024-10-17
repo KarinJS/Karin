@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'node:fs'
 import path from 'path'
 import { exec } from 'child_process'
 /** 必须详细指向根文件 否则会导致模块乱导入 */

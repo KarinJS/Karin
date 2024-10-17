@@ -270,7 +270,7 @@ export class BaseEvent implements BaseEventHandle {
       // const retryCount = options?.retryCount ?? 0
 
       /** 加入at */
-      if (at && this.contact.scene !== Scene.GUILD_DIRECT && this.contact.scene !== Scene.FRIEND) {
+      if (at && this.contact.scene !== Scene.DIRECT && this.contact.scene !== Scene.FRIEND) {
         elements.unshift(segment.at(this.user_id))
       }
 
@@ -351,7 +351,7 @@ export class BaseEvent implements BaseEventHandle {
   }
 
   get isPrivate () {
-    return this.#contact.scene === Scene.FRIEND || this.#contact.scene === Scene.GUILD_DIRECT
+    return this.#contact.scene === Scene.FRIEND || this.#contact.scene === Scene.DIRECT
   }
 
   get isGroup () {
@@ -367,6 +367,6 @@ export class BaseEvent implements BaseEventHandle {
   }
 
   get isDirect () {
-    return this.#contact.scene === Scene.GUILD_DIRECT
+    return this.#contact.scene === Scene.DIRECT
   }
 }

@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import fs from 'fs'
+import fs from 'node:fs'
 import path from 'path'
 import ws from 'ws'
 import moment from 'moment'
