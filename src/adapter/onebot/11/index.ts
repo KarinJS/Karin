@@ -239,13 +239,13 @@ export class AdapterOneBot11 implements KarinAdapter {
         messages.push({ type, data: { id: i.id } })
       } else {
         const content = this.KarinConvertAdapter(i.content as KarinElement[])
-        const userId = String(i.user_id || selfUin)
+        const userId = Number(i.user_id || selfUin)
         const nickname = String(i.nickname || selfNick)
         messages.push({ type, data: { user_id: userId, nickname, content } })
       }
     }
 
-    const params = { [messageType]: String(peer), messages }
+    const params = { [messageType]: Number(peer), messages }
     return await this.SendApi(OB11Api.sendForwardMsg, params)
   }
 
