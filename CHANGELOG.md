@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.12.20](https://github.com/KarinJS/Karin/compare/v0.12.19...v0.12.20) (2024-10-19)
+
+
+### Bug Fixes
+
+* 修复合并转发 ([111326e](https://github.com/KarinJS/Karin/commit/111326e1f96e05a91d5c746703de191438922b50))
+
 ## [0.12.19](https://github.com/KarinJS/Karin/compare/v0.12.18...v0.12.19) (2024-10-14)
 
 
