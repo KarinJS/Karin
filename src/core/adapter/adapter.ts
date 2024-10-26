@@ -1,5 +1,5 @@
 import { Contact } from './contact'
-import { LoggerLevel } from '@/utils'
+import { LoggerType } from '@/utils/logger/logger'
 import { ElementTypes, NodeElementType } from './segment'
 import {
   CreateGroupFolderResponse,
@@ -147,7 +147,7 @@ export interface AdapterType {
    * @param level 日志等级
    * @param args 日志内容
    */
-  logger (level: LoggerLevel, ...args: any[]): void
+  logger (level: LoggerType, ...args: any[]): void
 
   /**
    * 发送消息

@@ -1,7 +1,7 @@
 import exec from './exec'
 import { level } from 'karin/db'
 import { Contact } from 'karin/types'
-import { config } from '../config/config'
+import { config } from '../../core/utils/config/config'
 
 /**
  * 重启Bot

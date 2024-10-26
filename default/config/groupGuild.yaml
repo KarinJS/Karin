@@ -1,0 +1,70 @@
+# 详细配置请参考: https://karin.fun/config
+
+# 全局默认配置
+default:
+  # 群聊、频道中所有消息冷却时间，单位秒，0则无限制
+  cd: 0
+  # 群聊、频道中 每个人的消息冷却时间，单位秒，0则无限制。注意，开启后所有消息都会进CD，无论是否触发插件。
+  userCD: 1
+  # 机器人响应模式，0-所有 1-仅@机器人 2-仅回应管理员 3-仅回应前缀 4-前缀或@机器人 5-管理员无前缀，群员前缀或@机器人
+  mode: 0
+
+  # 机器人前缀 设置后前缀+指令触发机器人
+  alias:
+    - k
+
+  # 白名单插件、功能，只有在白名单中的插件、功能才会响应 {plugin: "插件包名"， name: "文件名称或插件名称"}
+  enable: []
+
+  # 黑名单插件、功能，黑名单中的插件、功能不会响应 {plugin: "插件包名"， name: "文件名称或插件名称"}
+  disable: []
+
+  # 群、频道成员单独黑名单
+  memberDisable: []
+
+  # 群、频道成员单独白名单
+  memberEnable: []
+
+# 单个Bot全局配置
+Bot:selfId:
+  cd: 0
+  userCD: 1
+  mode: 0
+  alias: []
+  enable: []
+  disable: []
+  memberDisable: []
+  memberEnable: []
+
+# 单个Bot:单个群 配置
+Bot:selfId:groupId:
+  cd: 0
+  userCD: 1
+  mode: 0
+  alias: []
+  enable: []
+  disable: []
+  memberDisable: []
+  memberEnable: []
+
+# 单个Bot:单个频道 配置
+Bot:selfId:guildId:
+  cd: 0
+  userCD: 1
+  mode: 0
+  alias: []
+  enable: []
+  disable: []
+  memberDisable: []
+  memberEnable: []
+
+# 单个Bot:单个频道:单个子频道 配置
+Bot:selfId:guildId:channelId:
+  cd: 0
+  userCD: 1
+  mode: 0
+  alias: []
+  enable: []
+  disable: []
+  memberDisable: []
+  memberEnable: []

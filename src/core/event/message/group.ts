@@ -1,6 +1,6 @@
-import { MessageEventSubEnum } from '../base'
+import { MessageEventSubEnum } from '../types'
 import { Contact, Scene } from '@/adapter/contact'
-import { BaseMessageEventType, Message, MessageOptions } from '.'
+import { BaseMessageEventType, MessageBase, MessageOptions } from '.'
 
 /** new 群消息事件所需参数 */
 export type GroupMessageOptions = MessageOptions & {
@@ -21,7 +21,7 @@ export interface GroupMessageEventType extends BaseMessageEventType {
  * @description 群消息事件类
  * @class GroupMessage
  */
-export class GroupMessage extends Message implements GroupMessageEventType {
+export class GroupMessage extends MessageBase implements GroupMessageEventType {
   #contact: GroupMessageOptions['contact']
   #subEvent: `${MessageEventSubEnum.GROUP_MESSAGE}`
 

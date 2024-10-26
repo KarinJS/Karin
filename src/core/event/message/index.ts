@@ -1,11 +1,11 @@
 import { ElementTypes, ElementTypeEnum } from '@/adapter/segment'
 import {
-  BaseEvent,
   BaseEventOptions,
   BaseEventType,
   EventParentEnum,
   MessageEventSubEnum,
-} from '../base'
+} from '../types'
+import { BaseEvent } from '../base'
 
 /** 消息事件基类定义 */
 export interface BaseMessageEventType extends BaseEventType {
@@ -50,7 +50,7 @@ export type MessageOptions = Omit<BaseEventOptions, 'event'> & {
  * @description 消息事件类
  * @class FriendMessage
  */
-export class Message extends BaseEvent implements BaseMessageEventType {
+export class MessageBase extends BaseEvent implements BaseMessageEventType {
   /** 事件子类型 */
   #subEvent: BaseMessageEventType['subEvent']
   /** 消息ID */

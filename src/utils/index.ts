@@ -1,6 +1,6 @@
 export * from './tools/button'
 export * from './common/common'
-export * from './config/config'
+export * from '../core/utils/config/config'
 export * from './tools/ffmpeg'
 export * from './core/handler'
 export * from './tools/exec'

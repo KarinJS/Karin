@@ -1,40 +1,58 @@
 import { Level } from 'level'
 
-const path = process.cwd() + '/data/db/Level'
+const levelPath = process.cwd() + '/data/db/level'
 
-/**
- * @type {Level}
- */
-export default class LevelDB extends Level {
+class LevelDB extends Level {
   id: string
-  constructor () {
+  constructor (path: string) {
     super(path, { valueEncoding: 'json' })
-    /**
-     * @type {'Level'} 唯一标识符 用于区分不同的数据库
-     */
     this.id = 'Level'
   }
 
   /**
-   * 对get方法进行重写 找不到数据时返回null
-   */
-  async get (key: string): Promise<string> {
-    try {
-      const res = await super.get(key)
-      return res
-    } catch {
-      return ''
-    }
-  }
-
-  /**
-   * 增加set方法
-   * @param {string} key 键
-   * @param {object|string} value 值
+   * 和get方法一样
+   * @param key 键
+   * @param value 值
    */
   async set (key: string, value: string | object) {
     return await super.put(key, value as string)
   }
+
+  /**
+   * 和get方法一样 但是不抛出错误
+   * @param key 键
+   */
+  async has (key: string) {
+    try {
+      return await super.get(key)
+    } catch {
+      return null
+    }
+  }
 }
 
-export const level = new LevelDB()
+/**
+ * 创建 LevelDB 数据库实例
+ * @param path 数据库存储路径
+ */
+export const createLevelDB = (path = levelPath) => {
+  const level = new LevelDB(path)
+
+  /** 代理get方法 使其不抛出错误 */
+  const levelProxy = new Proxy(level, {
+    get (target, prop) {
+      if (prop === 'get') {
+        return async (key: string) => {
+          try {
+            const res = await target.get(key)
+            return res
+          } catch {
+            return null
+          }
+        }
+      }
+      return Reflect.get(target, prop)
+    },
+  })
+  return levelProxy
+}

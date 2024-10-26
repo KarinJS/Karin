@@ -1,7 +1,8 @@
 import fs from 'node:fs'
 import path from 'path'
 import Yaml from 'yaml'
-import axios, { AxiosError, AxiosRequestConfig } from 'axios'
+import axios, { AxiosError } from 'axios'
+import type { AxiosRequestConfig, AxiosResponse } from 'axios'
 import lodash from 'lodash'
 import { promisify } from 'util'
 import { fileURLToPath } from 'url'
@@ -66,10 +67,9 @@ export class Common {
    * @param type 请求类型
    * @param param axios参数
    */
-  async axios (url: string, type: 'get' | 'post' = 'get', param: AxiosRequestConfig = {}): Promise<any | null> {
+  async axios (param: AxiosRequestConfig = {}): Promise<AxiosResponse<any, any> | null> {
     try {
-      if (type === 'post') return await axios.post(url, param.data, param)
-      return await axios.get(url, param)
+      return await axios(param)
     } catch (error) {
       error instanceof AxiosError ? logger.debug(error.stack) : logger.debug(error)
       return null

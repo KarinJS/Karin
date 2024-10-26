@@ -1,6 +1,6 @@
-import { MessageEventSubEnum } from '../base'
+import { MessageEventSubEnum } from '../types'
 import { Contact, Scene } from '@/adapter/contact'
-import { BaseMessageEventType, Message, MessageOptions } from '.'
+import { BaseMessageEventType, MessageBase, MessageOptions } from '.'
 
 /** new 好友消息事件所需参数 */
 export type FriendMessageOptions = MessageOptions & {
@@ -19,7 +19,7 @@ export interface FriendMessageEventType extends BaseMessageEventType {
  * @description 好友消息事件类
  * @class FriendMessage
  */
-export class FriendMessage extends Message implements FriendMessageEventType {
+export class FriendMessage extends MessageBase implements FriendMessageEventType {
   #contact: FriendMessageOptions['contact']
   #subEvent: `${MessageEventSubEnum.FRIEND_MESSAGE}`
 

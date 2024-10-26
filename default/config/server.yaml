@@ -1,0 +1,15 @@
+# 当前文件热更新是否重启http服务
+hmrToServer: false
+# http监听地址
+host: 0.0.0.0
+# http端口
+port: 7000
+# ws api请求超时时间 秒
+timeout: 60
+# onebot11 正向WebSocket地址
+onebot11Socket: []
+
+# websocket 渲染器地址 ws://127.0.0.1:7005/ws/render
+renderSocket: []
+# http渲染器地址
+renderHttp: []

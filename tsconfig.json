@@ -12,8 +12,8 @@
       "@/*": [
         "src/core/*"
       ],
-      "karin/*": [
-        "src/*"
+      "@plugin/*": [
+        "src/plugins/*"
       ]
     },
     "resolveJsonModule": true,

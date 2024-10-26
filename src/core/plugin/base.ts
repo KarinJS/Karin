@@ -1,4 +1,4 @@
-import { PluginType, KarinElement, NodeElement, EventType, stateArrType, KarinNoticeType, KarinRequestType, ReplyReturn, EType } from 'karin/types'
+import { PluginType, KarinElement, NodeElement, EventType, stateArrType, KarinNoticeType, KarinRequestType, ReplyReturn, EType } from '../../types'
 
 /**
  * 插件基类

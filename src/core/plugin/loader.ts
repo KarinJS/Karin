@@ -25,7 +25,7 @@ import {
   PluginHandlerInfoType,
   PluginCommandInfoType,
   KarinAdapter,
-} from 'karin/types'
+} from '../..//types'
 
 type AppType = CommandInfo | TaskInfo | HandlerInfo | ButtonInfo | AcceptInfo | UseInfo
 export interface AppFile {

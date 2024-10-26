@@ -1,7 +1,7 @@
 import schedule from 'node-schedule'
 import { Reply, replyCallback, replyForward } from '../event/reply'
 import { KarinNoticeType, KarinRequestType, AllListenEvent, KarinMessageType, AllMessageSubType, Permission } from '../event'
-import { AcceptInfo, ButtonInfo, CommandInfo, HandlerInfo, Plugin, UseForwardMsgFn, UseInfo, UseNotFoundMsgFn, UseRecvMsgFn, UseSendMsgFn, UseSendNoticeFn } from 'karin/core'
+import { AcceptInfo, ButtonInfo, CommandInfo, HandlerInfo, Plugin, UseForwardMsgFn, UseInfo, UseNotFoundMsgFn, UseRecvMsgFn, UseSendMsgFn, UseSendNoticeFn } from '../../core'
 import { KarinAdapter } from '../adapter/base'
 
 /**

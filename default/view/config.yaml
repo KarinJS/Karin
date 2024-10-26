@@ -1,0 +1,170 @@
+name: 通用配置
+view:
+  - key: 日志配置
+    comment: log4js日志配置
+    path: log4jsCfg
+    type: group
+    part:
+      - key: 日志等级
+        comment: 日志等级:trace,debug,info,warn,fatal,mark,error,off
+        path: log_level
+        type: select
+        multiple: false
+        item:
+          - name: Trace
+            value: trace
+          - name: Debug
+            value: ebug
+          - name: Info
+            value: info
+          - name: Warn
+            value: warn
+          - name: Fatal
+            value: fatal
+          - name: Mark
+            value: mark
+          - name: Error
+            value: error
+          - name: Off
+            value: off
+      - key: 日志保留天数
+        path: log_days_Keep
+        type: number
+      - key: 整体化
+        comment: 将日志输出到一个文件(一天为一个文件) 日志较多的情况下不建议与碎片化同时开启
+        path: overall
+        type: boolean
+      - key: 碎片化
+        comment: 将日志分片，达到指定大小后自动切割 日志较多的情况下不建议与整体化同时开启
+        path: fragments
+        type: boolean
+      - key: 日志文件最大大小
+        comment: 日志文件最大大小 MB
+        path: maxLogSize
+        type: number
+
+  - key: 后台进程
+    comment: 关闭后台进程失败后是否继续启动 继续启动会导致多进程
+    path: multi_progress
+    type: boolean
+
+  - key: 控制台插件日志颜色
+    comment: 控制台触发插件日志颜色 十六进制 默认#FFFF00 不支持热更新
+    path: log_color
+    type: text
+
+  - key: 私聊设置
+    comment: 私聊设置
+    path: private
+    type: group
+    part:
+      - key: 关闭私聊提示词
+        comment: 关闭私聊后回复的提示词 为空则不回复
+        path: tips
+        type: text
+      - key: 关闭私聊白名单
+        comment: 关闭私聊后的用户白名单
+        path: white_list
+        type: array
+
+  - key: input适配器配置
+    comment: input适配器配置 以下所有配置均不支持热更新
+    path: AdapterInput
+    type: group
+    part:
+      - key: 是否启用
+        comment: 是否启动input适配器
+        path: enable
+        type: boolean
+      - key: 是否转为文件
+        comment: 是否将语音、图片、视频消息转为文件 转为文件后可通过url访问
+        path: msgToFile
+        type: boolean
+      - key: url访问token
+        comment: url访问token 如果为 AdapterInput 每次启动后会重新生成
+        path: token
+        type: text
+      - key: 访问ip
+        comment: 访问ip
+        path: ip
+        type: text
+
+  - key: ffmpeg路径
+    comment: ffmpeg配置 用于音视频处理
+    path: ffmpeg_path
+    type: text
+
+  - key: ffprobe路径
+    comment: ffmpeg配置 用于音视频处理
+    path: ffprobe_path
+    type: text
+
+  - key: 主人列表
+    comment: 主人列表 主权限
+    path: master
+    type: array
+    arrayType: string
+
+  - key: 管理员列表
+    comment: 管理员列表 子权限
+    path: admin
+    type: array
+    arrayType: string
+
+  - key: 黑名单
+    comment: 黑名单相关
+    path: BlackList
+    type: group
+    part:
+      - key: 黑名单用户
+        path: BlackList.users
+        type: array
+        arrayType: string
+        associated:
+          - file: App
+            path: BlackList.users
+            requirement: true
+      - key: 黑名单群聊
+        path: BlackList.groups
+        type: array
+        arrayType: string
+        associated:
+          - file: App
+            path: BlackList.groups
+            requirement: true
+      - key: 消息日志黑名单群聊
+        comment: 设置后不会打印该群的消息日志
+        path: BlackList.GroupMsgLog
+        type: array
+        arrayType: string
+        associated:
+          - file: App
+            path: BlackList.GroupMsgLog
+            requirement: true
+  - key: 白名单
+    comment: 白名单相关
+    path: WhiteList
+    type: group
+    part:
+      - key: 白名单用户
+        path: WhiteList.users
+        type: boolean
+        associated:
+          - file: App
+            path: WhiteList.users
+            requirement: true
+      - key: 白名单群聊
+        path: WhiteList.groups
+        type: boolean
+        associated:
+          - file: App
+            path: WhiteList.groups
+            requirement: true
+      - key: 消息日志白名单群聊
+        comment: 消息日志白名单群聊 设置后只会打印该群的消息日志
+        path: WhiteList.GroupMsgLog
+        type: boolean
+        associated:
+          - file: App
+            path: WhiteList.GroupMsgLog
+            requirement: true

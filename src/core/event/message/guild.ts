@@ -1,6 +1,6 @@
-import { MessageEventSubEnum } from '../base'
+import { MessageEventSubEnum } from '../types'
 import { Contact, Scene } from '@/adapter/contact'
-import { BaseMessageEventType, Message, MessageOptions } from '.'
+import { BaseMessageEventType, MessageBase, MessageOptions } from '.'
 
 /** new 频道消息事件所需参数 */
 export type GuildMessageOptions = MessageOptions & {
@@ -23,7 +23,7 @@ export interface GuildMessageEventType extends BaseMessageEventType {
  * @description 频道消息事件类
  * @class GuildMessage
  */
-export class GuildMessage extends Message implements GuildMessageEventType {
+export class GuildMessage extends MessageBase implements GuildMessageEventType {
   #subEvent: `${MessageEventSubEnum.GUILD_MESSAGE}`
   #contact: GuildMessageOptions['contact']
 

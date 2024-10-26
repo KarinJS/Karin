@@ -2,6 +2,9 @@ import { EventEmitter } from 'events'
 
 /** 事件字典 */
 export interface EventMap {
+  exit: (data: { type: string, code: unknown }) => void
+  warn: (warning: unknown) => void
+  error: (error: unknown) => void
   'karin:count:send': (count: number) => void
 }
 

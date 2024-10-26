@@ -97,7 +97,7 @@
     }
   },
   "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
+  "types": "./lib/global.d.ts",
   "bin": {
     "init": "lib/cli/init.js",
     "karin": "lib/cli/karin.js"

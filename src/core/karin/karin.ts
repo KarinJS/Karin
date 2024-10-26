@@ -358,7 +358,7 @@ export class Karin extends Listeners {
   async run () {
     if (this.#start) return
     this.#start = true
-    const { server } = await import('../server/server')
+    const { server } = await import('../../server/server')
     server.init()
     pluginLoader.load()
     this.emit('adapter', RenderServer)
