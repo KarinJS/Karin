@@ -1,0 +1,33 @@
+# input适配器配置 以下所有配置均不支持热更新
+inputCfg:
+  # 是否启用
+  enable: true
+  # 是否将语音、图片、视频消息转为文件 转为文件后可通过url访问
+  msgToFile: true
+  # 鉴权token
+  token: "karin"
+  # 生成url的ip
+  ip: 127.0.0.1
+  # 自定义host:port 如果配置此项则ip无效
+  host: ""
+  # 是否允许局域网访问 需要token不为kairn
+  local: false
+  # 是否允许外网访问 需要token不为kairn
+  internet: false
+
+# 插件分组列表
+grouPingList:
+  # 默认分组
+  default:
+    # 分组模式 0-启用所有 1-启用指定 2-禁用所有 3-禁用指定
+    mode: 0
+    # 插件列表 在mode为1或3时生效
+    list:
+      - "karin-plugin-example"
+
+# 分组配置 指定Bot分组 > 适配器分组
+grouPingCfg:
+  # 适配器默认分组
+  "adapter:default": default
+  # 指定Bot默认分组 这只是一个示例，没有实际作用
+  "Bot:default": default

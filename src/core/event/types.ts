@@ -1,12 +1,36 @@
-import { Sender } from '../adapter/sender'
-import { Contact } from '../adapter/contact'
-import { AdapterType, SendMsgResults } from '../adapter/adapter'
-import { ElementTypes } from '../adapter/segment'
-import { Message } from './base'
-import { GroupMessage } from './message/group'
-import { FriendMessage } from './message/friend'
-import { GuildMessage } from './message/guild'
-import { DirectMessage } from './message/direct'
+import type { Sender } from '../adapter/sender'
+import type { Contact } from '../adapter/contact'
+import type { ElementTypes } from '../adapter/segment'
+import type { AdapterType, SendMsgResults } from '../adapter/adapter'
+import type {
+  Message,
+  Notice,
+  Request,
+  GroupMessage,
+  FriendMessage,
+  GuildMessage,
+  DirectMessage,
+  PrivatePokeNotice,
+  PrivateRecallNotice,
+  PrivateFileUploadedNotice,
+  GroupPokeNotice,
+  GroupRecallNotice,
+  GroupFileUploadedNotice,
+  GroupCardChangedNotice,
+  GroupMemberTitleUpdatedNotice,
+  GroupHlightsChangedNotice,
+  GroupMemberIncreaseNotice,
+  GroupMemberDecreaseNotice,
+  GroupAdminChangedNotice,
+  GroupSignInNotice,
+  GroupMemberBanNotice,
+  GroupWholeBanNotice,
+  GroupMessageReactionNotice,
+  FriendIncreaseNotice,
+  PrivateApplyRequest,
+  GroupApplyRequest,
+  GroupInviteRequest,
+} from '.'
 
 /** 事件父类型枚举 */
 export const enum EventParentEnum {
@@ -53,7 +77,7 @@ export const enum NoticeEventSubEnum {
   /** 群聊名片变动 */
   GROUP_CARD_CHANGED = 'groupCardChanged',
   /** 群聊成员头衔变动 */
-  GROUP_MEMBER_TITLE_UPDATED = 'GroupMemberTitleUpdate',
+  GROUP_MEMBER_TITLE_UPDATED = 'groupMemberTitleUpdate',
   /** 群聊精华消息变动 */
   GROUP_HIGHLIGHTS_CHANGED = 'groupHighlightsChange',
   /** 群聊撤回消息 */
@@ -130,12 +154,32 @@ export interface MessageEventMap {
 
 /** 通知事件对应的对象类型 */
 export interface NoticeEventMap {
-  notice: GroupMessage
+  notice: Notice
+  'notice.friendIncrease': FriendIncreaseNotice
+  'notice.privatePoke': PrivatePokeNotice
+  'notice.privateRecall': PrivateRecallNotice
+  'notice.privateFileUploaded': PrivateFileUploadedNotice
+  'notice.groupPoke': GroupPokeNotice
+  'notice.groupRecall': GroupRecallNotice
+  'notice.groupFileUploaded': GroupFileUploadedNotice
+  'notice.groupCardChanged': GroupCardChangedNotice
+  'notice.groupMemberTitleUpdate': GroupMemberTitleUpdatedNotice
+  'notice.groupHighlightsChange': GroupHlightsChangedNotice
+  'notice.groupMemberAdd': GroupMemberIncreaseNotice
+  'notice.groupMemberRemove': GroupMemberDecreaseNotice
+  'notice.groupAdminChanged': GroupAdminChangedNotice
+  'notice.groupSignIn': GroupSignInNotice
+  'notice.groupMemberBan': GroupMemberBanNotice
+  'notice.groupWholeBan': GroupWholeBanNotice
+  'notice.groupMessageReaction': GroupMessageReactionNotice
 }
 
 /** 请求事件对应的对象类型 */
 export interface RequestEventMap {
-  request: FriendMessage
+  request: Request
+  'request.friendApply': PrivateApplyRequest
+  'request.groupApply': GroupApplyRequest
+  'request.groupInvite': GroupInviteRequest
 }
 
 // /** 所有消息事件联合类型枚举 */

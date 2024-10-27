@@ -1,11 +1,7 @@
 import { Scene } from '@/adapter/contact'
 import { segment } from '@/adapter/segment'
 import { SendMsgResults } from '@/adapter/adapter'
-import { BaseEventHandle, BaseEventOptions } from './types'
-import { DirectMessage } from './message/direct'
-import { FriendMessage } from './message/friend'
-import { GroupMessage } from './message/group'
-import { GuildMessage } from './message/guild'
+import { BaseEventHandle, BaseEventOptions } from '../types'
 
 /** 事件实现基类 */
 export class BaseEvent implements BaseEventHandle {
@@ -174,6 +170,3 @@ export class BaseEvent implements BaseEventHandle {
     return this.#contact.scene === Scene.DIRECT
   }
 }
-
-/** 消息事件 */
-export type Message = FriendMessage | DirectMessage | GroupMessage | GuildMessage

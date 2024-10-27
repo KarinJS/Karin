@@ -187,6 +187,36 @@ export interface PackageType {
   }
 }
 
+/** 适配器、分组等配置 */
+export interface AdapterGroupPingType {
+  /** input适配器配置 以下所有配置均不支持热更新 */
+  inputCfg: {
+    /** 是否开启input适配器 */
+    enable: boolean
+    /** 是否将语音、图片、视频消息转为文件 转为文件后可通过url访问 */
+    msgToFile: boolean
+    /** 鉴权token 默认karin */
+    token: string
+    /** 生成url的ip */
+    ip: string
+    /** 自定义host:port 如果配置此项则ip无效 */
+    host: string
+    /** 是否允许局域网访问 需要token不为kairn */
+    local: boolean
+    /** 是否允许外网访问 需要token不为kairn */
+    internet: boolean
+  }
+  /** 插件分组列表 */
+  grouPingList: Record<string, {
+    /** 分组模式 0-启用所有 1-启用指定 2-禁用所有 3-禁用指定 */
+    mode: 0 | 1 | 2 | 3
+    /** 插件列表 在mode为1或3时生效 */
+    list: string[]
+  }>
+  /** 分组配置 指定Bot分组 > 适配器分组 */
+  grouPingCfg: Record<string, string>
+}
+
 /** 基本配置文件类型 */
 export interface ConfigType {
   /** log4js 配置 */
@@ -216,24 +246,6 @@ export interface ConfigType {
     tips: string
     /** 关闭私聊后的用户白名单 */
     disable: string[]
-  }
-
-  /** input适配器配置 以下所有配置均不支持热更新 */
-  inputConfig: {
-    /** 是否开启input适配器 */
-    enable: boolean
-    /** 是否将语音、图片、视频消息转为文件 转为文件后可通过url访问 */
-    msgToFile: boolean
-    /** 鉴权token 默认karin */
-    token: string
-    /** 生成url的ip */
-    ip: string
-    /** 自定义host:port 如果配置此项则ip无效 */
-    host: string
-    /** 是否允许局域网访问 需要token不为kairn */
-    local: boolean
-    /** 是否允许外网访问 需要token不为kairn */
-    internet: boolean
   }
 
   /** ffmpeg配置 */

@@ -13,7 +13,7 @@
         "src/core/*"
       ],
       "@plugin/*": [
-        "src/plugins/*"
+        "src/plugin/*"
       ]
     },
     "resolveJsonModule": true,

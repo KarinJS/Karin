@@ -27,8 +27,8 @@ export interface PrivateRecallType {
 }
 
 /**
- * - 私聊文件上传
- * - 文件信息最少需要提供一个url
+ * 私聊文件上传
+ * 文件信息最少需要提供一个url
  */
 export interface PrivateFileUploadedType {
   /** 操作者uid */
@@ -68,9 +68,9 @@ export interface GroupPokeType {
 }
 
 /**
- * - 群聊撤回
- * - 撤回自己消息时，operator和target为自己
- * - 撤回别人消息时，operator为操作者，target为被撤回者
+ * 群聊撤回
+ * 撤回自己消息时，operator和target为自己
+ * 撤回别人消息时，operator为操作者，target为被撤回者
  */
 export interface GroupRecallType {
   /** 操作者uid */
@@ -88,8 +88,8 @@ export interface GroupRecallType {
 }
 
 /**
- * - 群文件上传
- * - 文件信息最少需要提供一个url
+ * 群文件上传
+ * 文件信息最少需要提供一个url
  */
 export interface GroupFileUploadedType {
   /** 操作者uid */
@@ -181,7 +181,7 @@ export interface GroupMemberDecreaseType {
   /** 目标uin */
   target_uin: string
   /** 减少方式 leave:主动退群 kick:成员被踢 kick_me:机器人自身被踢 */
-  type: 'leave' | 'kick' | 'kick_me'
+  type: 'leave' | 'kick' | 'kickBot'
 }
 
 /** 群管理员变动 */

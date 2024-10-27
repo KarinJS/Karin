@@ -186,7 +186,7 @@ export interface OneBot11GroupDecrease extends OneBot11Notice {
   /** 通知类型 */
   notice_type: OB11NoticeType.GroupDecrease
   /** 事件子类型，分别表示主动退群、成员被踢、登录号被踢 */
-  sub_type: 'leave' | 'kick' | 'kick_me'
+  sub_type: 'leave' | 'kick' | 'kickBot'
   /** 群号 */
   group_id: string
   /** 操作者 QQ 号（如果是主动退群，则和 user_id 相同） */

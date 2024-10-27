@@ -27,23 +27,6 @@ private:
   # 关闭私聊后的用户白名单
   disable: []
 
-# input适配器配置 以下所有配置均不支持热更新
-inputConfig:
-  # 是否启用
-  enable: true
-  # 是否将语音、图片、视频消息转为文件 转为文件后可通过url访问
-  msgToFile: true
-  # 鉴权token
-  token: "karin"
-  # 生成url的ip
-  ip: 127.0.0.1
-  # 自定义host:port 如果配置此项则ip无效
-  host: ""
-  # 是否允许局域网访问 需要token不为kairn
-  local: false
-  # 是否允许外网访问 需要token不为kairn
-  internet: false
-
 # ffmpeg配置 用于音视频处理
 ffmpegPath:
 ffprobePath:

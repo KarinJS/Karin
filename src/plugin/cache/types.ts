@@ -1,10 +1,10 @@
+import type { Message } from '@/event'
 import type schedule from 'node-schedule'
 import type { PluginsType } from '../list/types'
-import type { ButtonElementType, ElementTypes, KeyboardElementType } from '@/adapter/segment'
-import type { Message } from '@/event'
 import type { Contact } from '@/adapter/contact'
 import type { AdapterType } from '@/adapter/adapter'
 import type { MessageEventMap, NoticeEventMap, RequestEventMap } from '@/event/types'
+import type { ButtonElementType, ElementTypes, KeyboardElementType } from '@/adapter/segment'
 import { PermissionEnum } from '@/adapter/sender'
 
 /** 插件索引值的类型 */
@@ -78,6 +78,8 @@ interface CommandBase extends PluginOptions {
   type: 'class' | 'fnc'
   /** 插件正则 */
   reg: RegExp
+  /** 优先级 */
+  rank: number
   /** 插件触发权限 例如只有主人才可触发 */
   perm: `${PermissionEnum}`
 }
@@ -95,6 +97,8 @@ export type CommandFnc<T extends keyof MessageEventMap = keyof MessageEventMap> 
     type: 'fnc'
     /** 监听事件 */
     event: T
+    /** 优先级 */
+    rank: number
     /** 执行方法 */
     fnc: (e: MessageEventMap[T]) => Promise<boolean> | boolean
   }
@@ -245,4 +249,6 @@ export interface Cache {
   button: Button[],
   handler: Handler[],
   middleware: Array<RecvMsg | ReplyMsg | SendMsg | ForwardMsg | NotFoundMsg>
+  /** 插件名称:缺失的依赖 */
+  missing: Map<string, string>
 }
