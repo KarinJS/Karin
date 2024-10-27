@@ -37,7 +37,7 @@ interface Base {
   name: string
   /** 插件方法类型 */
   fncType: fncType
-  /** 插件执行方法名称 */
+  /** 插件执行方法名称 载入的时候设置 */
   fncname: string
 }
 
@@ -56,23 +56,20 @@ interface AdapterBase {
 /** 通用参数 */
 type PluginOptions = Base & Log & AdapterBase
 /** 通知、请求事件联合类型 */
-type NoticeAndRequest = NoticeEventMap & RequestEventMap
+export type NoticeAndRequest = NoticeEventMap & RequestEventMap
 
 /** accept类型 */
-export type Accept<T extends keyof NoticeAndRequest = keyof NoticeAndRequest> = T extends keyof NoticeAndRequest
-  ? PluginOptions & {
-    fncType: 'accept'
-    /** 优先级 */
-    rank: number,
-    /** 监听事件 */
-    event: T,
-    /** 执行方法 */
-    fnc: (e: NoticeAndRequest[T]) => Promise<void> | void
-  }
-  : never
-
+export type Accept<T extends keyof NoticeAndRequest = keyof NoticeAndRequest> = PluginOptions & {
+  fncType: 'accept'
+  /** 优先级 */
+  rank: number,
+  /** 监听事件 */
+  event: T,
+  /** 执行方法 */
+  fnc: (e: NoticeAndRequest[T]) => Promise<boolean> | boolean
+}
 /** command base类型 */
-interface CommandBase extends PluginOptions {
+export interface CommandBase extends PluginOptions {
   fncType: 'command'
   /** 插件类型 */
   type: 'class' | 'fnc'
@@ -92,22 +89,19 @@ export interface CommandClass extends CommandBase {
 }
 
 /** command fnc类型 */
-export type CommandFnc<T extends keyof MessageEventMap = keyof MessageEventMap> = T extends keyof MessageEventMap
-  ? CommandBase & {
-    type: 'fnc'
-    /** 监听事件 */
-    event: T
-    /** 优先级 */
-    rank: number
-    /** 执行方法 */
-    fnc: (e: MessageEventMap[T]) => Promise<boolean> | boolean
-  }
-  : never
+export type CommandFnc<T extends keyof MessageEventMap = keyof MessageEventMap> = CommandBase & {
+  type: 'fnc'
+  /** 监听事件 */
+  event: T
+  /** 优先级 */
+  rank: number
+  /** 执行方法 */
+  fnc: (e: MessageEventMap[T]) => Promise<boolean> | boolean
+}
 
 /** task类型 */
 export interface Task extends Base, Log {
   fncType: 'task'
-  type: 'class' | 'fnc'
   /** 任务名称 */
   task: string
   /** cron表达式 */

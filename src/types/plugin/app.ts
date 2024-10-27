@@ -39,7 +39,7 @@ export interface CommandInfo extends AppBase {
   /** 只有对应的适配器才会生效 */
   adapter: Array<KarinAdapter['adapter']['name']>
   /** 指定的适配器无效 */
-  notAdapter: Array<KarinAdapter['adapter']['name']>
+  dsbAdapter: Array<KarinAdapter['adapter']['name']>
 }
 
 /** task规则集类型 */

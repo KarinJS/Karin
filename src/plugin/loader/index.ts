@@ -50,7 +50,10 @@ export const loaderPlugin = async () => {
   await Promise.all(load.apps)
 }
 
-/** 加载入口文件 */
+/**
+ * 加载入口文件
+ * @param list 插件列表详细信息
+ */
 export const loaderMain = async (list: PluginInfo[]) => {
   list.forEach(item => {
     load.main.push(async () => {
@@ -84,7 +87,11 @@ const loaderPkg = async (list: PluginInfo[]) => {
   }
 }
 
-/** 加载每个插件 */
+/**
+ * 加载每个插件
+ * @param fnc 插件方法
+ * @param key 插件方法名称
+ */
 const loaderApp = async (fnc: FncType | FncType[], key: string) => {
   if (typeof fnc === 'function') {
     if (!isClass(fnc)) return
@@ -104,7 +111,7 @@ const loaderApp = async (fnc: FncType | FncType[], key: string) => {
         index: v.priority || 10000,
         name: app.name,
         fncname: v.fnc,
-        apadter: v.adapter,
+        adapter: v.adapter,
         dsbAdapter: v.dsbAdapter,
         cls: fnc,
         reg: v.reg,

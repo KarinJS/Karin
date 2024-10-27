@@ -42,7 +42,7 @@ export interface AppFile {
   /** 只有对应的适配器才会生效 */
   adapter?: Array<KarinAdapter['adapter']['name']>
   /** 指定的适配器无效 */
-  notAdapter?: Array<KarinAdapter['adapter']['name']>
+  dsbAdapter?: Array<KarinAdapter['adapter']['name']>
 }
 
 class PluginLoader {
@@ -453,7 +453,7 @@ class PluginLoader {
                   rank: val.priority || Class.priority || 10000,
                   reg: val.reg instanceof RegExp ? val.reg : new RegExp(val.reg),
                   adapter: [],
-                  notAdapter: [],
+                  dsbAdapter: [],
                 },
                 Fn
               )
@@ -577,7 +577,7 @@ class PluginLoader {
           reg: info.reg,
           type: App ? 'class' : 'function',
           adapter: info.adapter,
-          notAdapter: info.notAdapter,
+          notAdapter: info.dsbAdapter,
         })
         return true
       }
