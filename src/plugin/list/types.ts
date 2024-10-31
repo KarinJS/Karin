@@ -16,14 +16,24 @@ export interface PluginInfo {
   /** 插件版本 */
   version: string
   /** 解析后的package.json */
-  pkg: Record<string, any> & {
-    karin?: {
-      /** 插件app列表 */
-      apps?: string | string[]
-      /** 静态资源目录 */
-      static?: string | string[]
-      /** 基本文件夹结构 */
-      files?: string[]
-    }
+  pkg: PackageJson
+}
+
+/** package.json类型 */
+export interface PackageJson {
+  /** 插件名称 */
+  name: string
+  /** 插件版本 */
+  version: string
+  /** 插件入口 */
+  main: string
+  karin?: {
+    /** 插件app列表 */
+    apps?: string | string[]
+    /** 静态资源目录 */
+    static?: string | string[]
+    /** 基本文件夹结构 */
+    files?: string[]
   }
+  [key: string]: any
 }

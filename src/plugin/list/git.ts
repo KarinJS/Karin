@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { getPlgsCache } from '../cache/cache'
+import { getPluginCache } from '../cache/cache'
 import { requireFile } from '@/utils/fs/require'
 import { type PluginInfo } from './types'
 
@@ -40,7 +40,7 @@ const getPkg = async (name: string) => {
  * ```
  */
 export const getGitPlugins = async (): Promise<GitPluginName[]> => {
-  const cached = getPlgsCache.get(key.list)
+  const cached = getPluginCache.get(key.list)
   if (cached) return cached
 
   const dir = './plugins'
@@ -60,8 +60,8 @@ export const getGitPlugins = async (): Promise<GitPluginName[]> => {
   list.filter(Boolean)
 
   /** 1分钟后删除缓存 */
-  getPlgsCache.set(key.list, list)
-  setTimeout(() => getPlgsCache.delete(key.list), 60 * 1000)
+  getPluginCache.set(key.list, list)
+  setTimeout(() => getPluginCache.delete(key.list), 60 * 1000)
   return list as GitPluginName[]
 }
 
@@ -70,7 +70,7 @@ export const getGitPlugins = async (): Promise<GitPluginName[]> => {
  * @description 获取git插件列表详细信息
  */
 export const getGitPluginsInfo = async (): Promise<PluginInfo[]> => {
-  const cached = getPlgsCache.get(key.info)
+  const cached = getPluginCache.get(key.info)
   if (cached) return cached
 
   /** 插件列表 */
@@ -112,7 +112,7 @@ export const getGitPluginsInfo = async (): Promise<PluginInfo[]> => {
   }))
 
   /** 1分钟后删除缓存 */
-  getPlgsCache.set(key.info, info)
-  setTimeout(() => getPlgsCache.delete(key.info), 60 * 1000)
+  getPluginCache.set(key.info, info)
+  setTimeout(() => getPluginCache.delete(key.info), 60 * 1000)
   return info
 }

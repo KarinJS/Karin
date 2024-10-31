@@ -4,7 +4,7 @@ import fs from 'node:fs'
 /**
  * 读取 JSON 文件
  * @param path 文件路径
- * @param isThrow 是否抛出异常
+ * @param isThrow 是否抛出异常 默认为`false`
  */
 export const readJsonSync = (path: string, isThrow = false): any => {
   try {
@@ -20,7 +20,7 @@ export const readJsonSync = (path: string, isThrow = false): any => {
  * 写入 JSON 文件
  * @param path 文件路径
  * @param data 数据
- * @param isThrow 是否抛出异常
+ * @param isThrow 是否抛出异常 默认为`false`
  */
 export const writeJsonSync = (path: string, data: any, isThrow = false): boolean => {
   try {
@@ -35,7 +35,7 @@ export const writeJsonSync = (path: string, data: any, isThrow = false): boolean
 /**
  * 异步读取 JSON 文件
  * @param path 文件路径
- *  @param isThrow 是否抛出异常
+ *  @param isThrow 是否抛出异常 默认为`false`
  */
 export const readJson = async (path: string, isThrow = false): Promise<any> => {
   try {
@@ -51,7 +51,7 @@ export const readJson = async (path: string, isThrow = false): Promise<any> => {
  * 异步写入 JSON 文件
  * @param path 文件路径
  * @param data 数据
- * @param isThrow 是否抛出异常
+ * @param isThrow 是否抛出异常 默认为`false`
  */
 export const writeJson = async (path: string, data: any, isThrow = false): Promise<boolean> => {
   try {

@@ -103,7 +103,7 @@ export interface AdapterType {
     platform: AdapterPlatform
     /** 适配器使用的协议标准 如onebot11 */
     standard: AdapterStandard
-    /** 适配器协议实现 如icqq */
+    /** 适配器协议实现 如icqq、napcat */
     protocol: AdapterProtocol
     /** 适配器通信方式 */
     communication: AdapterCommunication
@@ -168,8 +168,18 @@ export interface AdapterType {
    * 发送合并转发消息
    * @param contact 目标信息
    * @param elements 消息元素
+   * @param options 首层小卡片外显参数
    */
-  sendForwardMessage (contact: Contact, elements: Array<NodeElementType>): Promise<{ messageId: string }>
+  sendForwardMessage (contact: Contact, elements: Array<NodeElementType>, options?: {
+    /** 小卡片中间的外显 */
+    news: Array<{ text: string }>,
+    /** qwqa说这个叫不懂 消息列表的外显 */
+    prompt: string,
+    /** 小卡片底下文本: 查看1条转发消息 */
+    summary: string,
+    /** 小卡片标题 */
+    source: string
+  }): Promise<{ messageId: string }>
 
   /**
    * 撤回消息

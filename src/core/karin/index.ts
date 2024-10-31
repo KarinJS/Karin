@@ -1,6 +1,6 @@
 import type { Accept, CommandFnc, NoticeAndRequest, Task } from '@plugin/cache/types'
 import type { ElementTypes } from '@/adapter/segment'
-import type { MessageEventMap } from '@/event/types'
+import type { MessageEventMap } from '@/event/types/types'
 import { TypedListeners } from '@/internal/listeners'
 import { createLogger } from '@plugin/cache/cache'
 
@@ -48,6 +48,13 @@ export type FncElemOptions = FncOptions & {
   recallMsg?: number
   /** 是否停止执行后续插件 */
   stop?: boolean
+}
+
+export interface TaskOptions {
+  /** 插件名称 */
+  name?: string
+  /** 是否启用日志 */
+  log?: boolean
 }
 
 type Fnc<T extends keyof MessageEventMap> = FncElement | ((e: MessageEventMap[T]) => Promise<boolean> | boolean)
@@ -101,7 +108,7 @@ export class Karin extends TypedListeners {
       index: 0,
       fncType: 'command',
       type: 'fnc',
-      fncname: '',
+      fname: '',
       name: options.name || 'command',
       event: options.event || ('message' as T),
       fnc,
@@ -124,7 +131,7 @@ export class Karin extends TypedListeners {
     return {
       index: 0,
       fncType: 'accept',
-      fncname: '',
+      fname: '',
       event,
       fnc,
       log: createLogger(options.log),
@@ -142,13 +149,20 @@ export class Karin extends TypedListeners {
    * @param fnc 执行函数
    * @param options 选项
    */
-  task (name: string, cron: string, fnc: Function, options?: Omit<Options, 'priority'>): Task {
+  task (name: string, cron: string, fnc: Function, options: TaskOptions = {}): Task {
     if (!name) throw new Error('[task]: 缺少参数[name]')
     if (!cron) throw new Error('[task]: 缺少参数[cron]')
-    if (!fnc) throw new Error('[task]: 缺少参数[fnc]')
+    if (!fnc || typeof fnc !== 'function') throw new Error('[task]: 缺少参数或类型错误[fnc]')
 
     return {
-      type: 'task',
+      fncType: 'task',
+      index: 0,
+      fname: name,
+      name: options?.name || 'task',
+      cron,
+      fnc,
+      log: createLogger(options.log, false),
+      schedule: undefined,
     }
   }
 }

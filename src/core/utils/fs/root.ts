@@ -12,4 +12,4 @@ export const defaultConfig = Object.freeze(path.join(karinDir, 'default', 'confi
 /** 默认view路径 */
 export const defaultView = Object.freeze(path.join(karinDir, 'default', 'view'))
 /** 用户config路径 */
-export const userConfig = Object.freeze(path.join(process.cwd(), 'data', '@config'))
+export const userConfig = Object.freeze(path.join(process.cwd(), '.karin', 'config'))

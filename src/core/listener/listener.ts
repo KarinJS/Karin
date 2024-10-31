@@ -2,7 +2,7 @@ import { level } from 'karin/db'
 import { EventEmitter } from 'events'
 import { pluginLoader } from '../plugin/loader'
 import { common, logger, config, segment } from 'karin/utils'
-import { MessageHandler, NoticeHandler, RequestHandler } from 'karin/event'
+import { MessageHandler, NoticeHandler, RequestHandler } from '../..//event'
 import {
   Contact,
   KarinElement,

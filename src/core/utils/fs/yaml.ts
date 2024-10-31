@@ -3,6 +3,37 @@ import lodash from 'lodash'
 import YAML, { isMap, isSeq, isPair } from 'yaml'
 
 export type YamlValue = string | boolean | number | object | any[]
+export type YamlComment = Record<string, string>
+  | Record<string, { comment: string, type: 'top' | 'end' }>
+
+type Save = {
+  /**
+   * 保存数据并写入注释 (json文件路径)
+   * @param path 保存路径
+   * @param value 保存的数据
+   * @param commentPath 注释配置文件路径(json文件路径)
+   */
+  (path: string, value: any, commentPath?: string): void
+  /**
+   * 保存数据并写入注释 (键值对)
+   * @param path 保存路径
+   * @param value 保存的数据
+   * @param commentKV 键值对注释配置
+   */
+  (path: string, value: any, commentKV?: Record<string, string>): void
+  /**
+   * 保存数据并写入注释 (javascript对象)
+   * @param path 保存路径
+   * @param value 保存的数据
+   * @param commentJavascript javascript对象注释配置
+   */
+  (path: string, value: any, commentJavascript?: Record<string, {
+    /** 注释类型 */
+    type: 'top' | 'end'
+    /** 注释内容 */
+    comment: string,
+  }>): void
+}
 
 /** YAML 编辑器 */
 export class YamlEditor {
@@ -319,6 +350,18 @@ export class YamlEditor {
   }
 
   /**
+   * 获取指定键的注释
+   * @param path - 路径，多个路径使用`.`连接，例如：`a.b.c`
+   * @param isSplit - 是否使用分割路径路径，默认为 `true`
+   */
+  getcomment (path: string, isSplit = true) {
+    if (!path) throw new Error('[YamlEditor] path 不能为空')
+    const pair = this.getpair(path, isSplit)
+    if (!pair) throw new Error(`[YamlEditor] 未找到节点 ${path}`)
+    return pair.key.commentBefore || pair.key.comment
+  }
+
+  /**
    * 保存文件
    * 保存失败会抛出异常
    */
@@ -328,48 +371,91 @@ export class YamlEditor {
   }
 }
 
-/** YAML 工具 */
-export const Yaml = () => {
-  const yamlNew = {
-    /**
-     * 传入yaml文件路径 自动读取并解析
-     * @param path yaml文件路径
-     */
-    read: (path: string) => {
-      const data = fs.readFileSync(path, 'utf-8')
-      return YAML.parse(data)
-    },
-    /**
-     * 保存并写入注释
-     * @param path 保存的路径
-     * @param value 保存的数据
-     * @param commentConfig 注释配置文件路径或json
-     */
-    save: (path: string, value: any, commentConfig?: string) => {
-      if (!commentConfig) {
-        fs.writeFileSync(path, YAML.stringify(value))
-        return
-      }
+/**
+ * 读取并解析 YAML 文件
+ * @param path YAML 文件路径
+ * @returns 解析后的数据
+ */
+export const read = (path: string) => YAML.parse(fs.readFileSync(path, 'utf-8'))
 
-      const editor = new YamlEditor(YAML.stringify(value))
-      const comment = JSON.parse(fs.existsSync(commentConfig) ? fs.readFileSync(commentConfig, 'utf8') : commentConfig) as Comment
+/**
+ * 写入 YAML 文件
+ * @param path 文件路径
+ * @param value 数据
+ */
+export const write = (path: string, value: any) => {
+  try {
+    fs.writeFileSync(path, YAML.stringify(value))
+    return true
+  } catch {
+    return false
+  }
+}
 
-      for (const [key, value] of Object.entries(comment)) {
-        try {
-          if (typeof value === 'object') {
-            editor.comment(key, value.text, value.type === 'start')
-          } else if (typeof value === 'string') {
-            editor.comment(key, value, true)
-          }
-        } catch (error: any) {
-          logger.error(`[YamlEditor] 添加注释时出错，已跳过：${error.stack || error.message || error}`)
-        }
-      }
-
-      fs.writeFileSync(path, editor.document.toString())
-    },
+/**
+ * 保存数据并写入注释
+ * @param path 文件路径
+ * @param value 数据 仅支持 JavaScript 对象
+ * @param options 注释配置
+ */
+export const save: Save = (path: string, value: any, options?: string | YamlComment) => {
+  if (!options) {
+    fs.writeFileSync(path, YAML.stringify(value))
+    return
   }
 
-  const yaml = Object.assign(YAML, yamlNew)
-  return yaml
+  const editor = new YamlEditor(YAML.stringify(value))
+  const comment = typeof options === 'string'
+    ? JSON.parse(fs.readFileSync(options, 'utf8')) as YamlComment
+    : options
+
+  applyComments(editor, comment)
+  fs.writeFileSync(path, editor.document.toString())
 }
+
+/**
+ * 为指定文件写入注释
+ * @param filePath 文件路径
+ * @param commentConfig 注释配置文件路径或 JSON 对象
+ */
+export const comment = (filePath: string, commentConfig: string | YamlComment) => {
+  const editor = new YamlEditor(filePath)
+  const comment = typeof commentConfig === 'string'
+    ? JSON.parse(fs.readFileSync(commentConfig, 'utf8')) as YamlComment
+    : commentConfig
+
+  applyComments(editor, comment)
+  editor.save()
+}
+
+/**
+ * 批量添加注释
+ * @param editor YamlEditor 实例
+ * @param comments 注释配置对象
+ */
+export const applyComments = (editor: YamlEditor, comments: YamlComment) => {
+  for (const key of Object.keys(comments)) {
+    try {
+      const value = comments[key]
+      editor.comment(
+        key,
+        typeof value === 'string' ? value : value.comment,
+        typeof value === 'object' && value.type === 'top'
+      )
+    } catch (error: any) {
+      logger.error(`[YamlEditor] 添加注释时出错，已跳过：${error.stack || error.message || error}`)
+    }
+  }
+}
+
+/** YAML 工具 */
+export const YamlUtil = () => Object.assign(YAML, {
+  /** 读取并解析 YAML 文件 */
+  read,
+  /** 保存数据并写入注释 */
+  save,
+  /** 为指定文件写入注释 */
+  comment,
+  /** 批量添加注释 */
+  applyComments,
+})

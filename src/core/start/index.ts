@@ -1,5 +1,6 @@
 import { Config } from '@/utils/config/config'
 import { createLogger } from '@/utils/logger/logger'
+export * as common from '@/utils/common/common'
 
 /** 配置文件管理器 */
 export const config = await new Config().init()

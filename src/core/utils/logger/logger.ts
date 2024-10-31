@@ -7,6 +7,7 @@ export type LoggerType = log4js.Logger & LoggerExpand
 export type LoggerOptions = { config?: Configuration, log4jsCfg?: ConfigType['log4jsCfg'] }
 
 export interface LoggerExpand {
+  handler: log4js.Logger['debug']
   /**
    * 颜色模块
    */
@@ -100,6 +101,9 @@ const initLogger = (options: LoggerOptions = {}) => {
       },
     },
     categories: { default: { appenders: ['console'], level, enableCallStack: process.env.karin_app_mode === 'dev' } },
+    levels: {
+      handler: { value: 15000, colour: 'cyan' },
+    },
   }
 
   /** 整体化: 将日志输出到一个文件(一天为一个文件) 日志较多的情况下不建议与碎片化同时开启 */
@@ -162,8 +166,8 @@ const addColor = (Logger: log4js.Logger, color?: string) => {
   logger.cyan = chalk.cyan
   logger.white = chalk.white
   logger.gray = chalk.gray
-  logger.violet = chalk.hex(color || '#868ECC')
-  logger.fnc = chalk.hex('#FFFF00')
+  logger.violet = chalk.hex('#868ECC')
+  logger.fnc = chalk.hex(color || '#FFFF00')
   logger.bot = (level, id, ...args) => {
     switch (level) {
       case 'trace':
@@ -194,15 +198,8 @@ const addColor = (Logger: log4js.Logger, color?: string) => {
  */
 export const createLogger = (options: LoggerOptions = {}) => {
   initLogger(options)
-  const logger = log4js.getLogger('default')
-  return addColor(logger)
+  const logger = addColor(log4js.getLogger('default'))
+
+  global.logger = logger
+  return logger
 }
-
-// createLogger({})
-// const log = log4js.getLogger('default')
-
-// const logger = addColor(log)
-// console.log('🚀 ~ file: logger.ts:196 ~ logger:', logger)
-
-// global.logger = logger
-// // export default logger

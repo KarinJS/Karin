@@ -1,6 +1,9 @@
-import { createRequire } from 'module'
-import { isExists } from './exists'
 import path from 'node:path'
+import { isExists } from './exists'
+import { createRequire } from 'module'
+import { cache } from '@plugin/cache/cache'
+import { requireFileSync } from './require'
+import { PackageJson } from '@plugin/list/types'
 
 /**
  * 输入包名 返回包根目录的绝对路径 仅简单查找
@@ -8,10 +11,10 @@ import path from 'node:path'
  * @param rootPath - 导入包的路径 此项适用于在插件中读取插件的依赖包
  * @returns - 包根目录的绝对路径
  * @example
- * common.pkgroot('axios')
- * common.pkgroot('axios', import.meta.url)
+ * pkgRoot('axios')
+ * pkgRoot('axios', import.meta.url)
  */
-export const pkgroot = (name: string, rootPath?: string) => {
+export const pkgRoot = (name: string, rootPath?: string) => {
   const require = createRequire(rootPath || import.meta.url)
   let dir = require.resolve(name)
 
@@ -36,4 +39,31 @@ export const pkgroot = (name: string, rootPath?: string) => {
   } finally {
     delete require.cache[require.resolve(name)]
   }
+}
+
+/**
+ * 传入插件名称 返回插件根目录、路径、package.json等信息
+ * @param name - 插件名称
+ */
+export const getPluginInfo = (name: string) => {
+  const list = Object.values(cache.index)
+  const plugin = list.find(item => item.name === name)
+  if (!plugin) return null
+
+  const info = {
+    get pkg () {
+      if (!plugin.pkgPath) return null
+      return requireFileSync(plugin.pkgPath) as PackageJson
+    },
+  }
+
+  return Object.assign(plugin, info)
+}
+
+/**
+ * 传入一个名称 判断是否为插件
+ * @param name - 插件名称
+ */
+export const isPlugin = (name: string) => {
+  return !!getPluginInfo(name)
 }

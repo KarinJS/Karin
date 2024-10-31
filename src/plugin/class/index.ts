@@ -1,6 +1,6 @@
 import type { Message } from '@/event'
 import type { NodeElementType } from '@/adapter/segment'
-import type { BaseEventHandle, MessageEventMap } from '@/event/types'
+import type { BaseEventHandle, MessageEventMap } from '@/event/types/types'
 import { PermissionEnum } from '@/adapter/sender'
 
 export interface PluginRule {

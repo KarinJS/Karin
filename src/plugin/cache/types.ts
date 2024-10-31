@@ -2,23 +2,25 @@ import type { Message } from '@/event'
 import type schedule from 'node-schedule'
 import type { PluginsType } from '../list/types'
 import type { Contact } from '@/adapter/contact'
-import type { AdapterType } from '@/adapter/adapter'
-import type { MessageEventMap, NoticeEventMap, RequestEventMap } from '@/event/types'
+import type { AdapterProtocol, AdapterType } from '@/adapter/adapter'
+import type { MessageEventMap, NoticeEventMap, RequestEventMap } from '@/event/types/types'
 import type { ButtonElementType, ElementTypes, KeyboardElementType } from '@/adapter/segment'
 import { PermissionEnum } from '@/adapter/sender'
 
 /** 插件索引值的类型 */
-export interface PlgsIndex {
+export interface PluginIndex {
   /** 插件名称 */
   name: string
   /** 插件类型 */
   type: PluginsType
-  /** 插件目录 */
+  /** 插件根目录 */
   dir: string
+  /** package.json绝对路径 app类型的插件不存在 */
+  pkgPath: string
 }
 
 /** apps列表的类型 */
-export interface PlgsApp {
+export interface PluginApp {
   /** 索引 对应插件索引，用于查询一些基础信息 */
   index: number
   /** 文件名称 */
@@ -38,7 +40,7 @@ interface Base {
   /** 插件方法类型 */
   fncType: fncType
   /** 插件执行方法名称 载入的时候设置 */
-  fncname: string
+  fname: string
 }
 
 interface Log {
@@ -48,9 +50,9 @@ interface Log {
 
 interface AdapterBase {
   /** 生效的适配器 */
-  adapter: string[] // TODO: 类型
+  adapter: AdapterProtocol[]
   /** 禁用的适配器 */
-  dsbAdapter: string[] // TODO: 类型
+  dsbAdapter: AdapterProtocol[]
 }
 
 /** 通用参数 */
@@ -86,6 +88,8 @@ export interface CommandClass extends CommandBase {
   type: 'class'
   /** 插件类 */
   cls: Function // TODO: 类型
+  /** 监听事件 */
+  event: keyof MessageEventMap
 }
 
 /** command fnc类型 */
@@ -103,13 +107,13 @@ export type CommandFnc<T extends keyof MessageEventMap = keyof MessageEventMap> 
 export interface Task extends Base, Log {
   fncType: 'task'
   /** 任务名称 */
-  task: string
+  fname: string
   /** cron表达式 */
   cron: string
   /** 执行方法 */
   fnc: Function
   /** schedule */
-  schedule: schedule.Job
+  schedule?: schedule.Job
 }
 
 type ButtonType = ButtonElementType | KeyboardElementType | Array<ButtonElementType | KeyboardElementType>
@@ -166,6 +170,8 @@ export interface RecvMsg extends MiddlewareBase {
   fnc: (
     /** 消息事件对象 */
     e: Message,
+    /** 此条消息是否通过限制 黑白名单冷却等 */
+    pass: boolean,
     /** 调用后将继续执行下一个中间件 */
     next: () => void,
     /** 调用后将退出此条消息的后续处理 不再执行匹配插件 */
@@ -235,14 +241,49 @@ export interface NotFoundMsg extends MiddlewareBase {
   ) => Promise<void> | void
 }
 
+export interface Count {
+  accept: number
+  command: number
+  task: number
+  button: number
+  handler: {
+    /** 入口key */
+    key: number
+    /** handler处理函数 */
+    fnc: number
+  }
+  middleware: number
+}
+
 /** 缓存 */
 export interface Cache {
+  /** 插件索引 */
+  index: Record<number, PluginIndex>
+  /** accept */
   accept: Accept[],
+  /** command */
   command: Array<CommandClass | CommandFnc>,
+  /** 定时任务 */
   task: Array<Task>,
+  /** 按钮 */
   button: Button[],
-  handler: Handler[],
-  middleware: Array<RecvMsg | ReplyMsg | SendMsg | ForwardMsg | NotFoundMsg>
+  /** 插件数量统计 */
+  count: Count
   /** 插件名称:缺失的依赖 */
   missing: Map<string, string>
+  /** handler */
+  handler: Record<string, Handler[]>
+  /** 中间件 */
+  middleware: {
+    /** 收到消息后 */
+    recvMsg: Array<RecvMsg>,
+    /** 回复消息前 */
+    replyMsg: Array<ReplyMsg>,
+    /** 发送主动消息前 */
+    sendMsg: Array<SendMsg>,
+    /** 发送合并转发前 */
+    forwardMsg: Array<ForwardMsg>,
+    /** 消息事件没有找到任何匹配的插件触发 */
+    notFoundMsg: Array<NotFoundMsg>
+  },
 }

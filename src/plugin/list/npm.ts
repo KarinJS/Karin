@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'path'
-import { getPlgsCache } from '../cache/cache'
+import { getPluginCache } from '../cache/cache'
 import { requireFile } from '@/utils/fs/require'
 import { type PluginInfo } from './types'
 
@@ -31,8 +31,8 @@ export const isNpmPlugin = async (name: string) => {
  * // -> ['@karinjs/adapter-qqbot', 'xxxxx']
  * ```
  */
-export const getNpmPlugins = async () => {
-  const cached = getPlgsCache.get(key.list)
+export const getNpmPlugins = async (): Promise<string[]> => {
+  const cached = getPluginCache.get(key.list)
   if (cached) return cached
 
   /** 屏蔽的依赖包列表 */
@@ -67,8 +67,8 @@ export const getNpmPlugins = async () => {
   list.filter(Boolean)
 
   /** 1分钟后删除缓存 */
-  getPlgsCache.set(key.list, list)
-  setTimeout(() => getPlgsCache.delete(key.list), 60 * 1000)
+  getPluginCache.set(key.list, list)
+  setTimeout(() => getPluginCache.delete(key.list), 60 * 1000)
   return list
 }
 
@@ -77,7 +77,7 @@ export const getNpmPlugins = async () => {
  */
 export const getNpmPluginsInfo = async (): Promise<PluginInfo[]> => {
   /** 先读缓存 */
-  const cached = getPlgsCache.get(key.info)
+  const cached = getPluginCache.get(key.info)
   if (cached) return cached
 
   /** 插件列表 */
@@ -117,7 +117,7 @@ export const getNpmPluginsInfo = async (): Promise<PluginInfo[]> => {
   }))
 
   /** 1分钟后删除缓存 */
-  getPlgsCache.set(key.info, info)
-  setTimeout(() => getPlgsCache.delete(key.info), 60 * 1000)
+  getPluginCache.set(key.info, info)
+  setTimeout(() => getPluginCache.delete(key.info), 60 * 1000)
   return info
 }

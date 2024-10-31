@@ -1,5 +1,45 @@
+/** 按钮结构 */
+export interface KarinButton {
+  /** 按钮显示文本 */
+  text: string
+  /** 按钮类型 不建议使用 此为预留字段 */
+  type?: number
+  /**
+   * - 是否为回调按钮
+   * @default false
+   */
+  callback?: boolean
+  /** 跳转按钮 */
+  link?: string
+  /** 操作相关的数据 */
+  data?: string
+  /** 按钮点击后显示的文字，不传为text */
+  show?: string
+  /**
+   * 按钮样式
+   * - 0-灰色线框
+   * - 1-蓝色线框
+   * - 2-特殊样式按钮
+   * - 3-红色文字
+   * - 4-白色填充
+   */
+  style?: number
+  /** 点击按钮后直接自动发送 data */
+  enter?: boolean
+  /** 指令是否带引用回复本消息 */
+  reply?: boolean
+  /** 是否仅群管理员可操作 */
+  admin?: boolean
+  /** 有权限点击的用户UID列表 群聊、私聊 */
+  list?: string[]
+  /** 有权限点击的用户UID列表 频道 */
+  role?: string[]
+  /** 客户端不支持本 action 的时候，弹出的 toast 文案 */
+  tips?: string
+}
+
 /** QQ官方按钮消息结构 */
-export interface QQButtonType {
+export interface QQBotButton {
   /** 按钮ID：在一个keyboard消息内设置唯一 */
   id: string,
   /** 按钮上的文字 */
@@ -21,7 +61,7 @@ export interface QQButtonType {
   /** 操作相关的数据 */
   action: {
     /** 设置 0 跳转按钮：http 或 小程序 客户端识别 scheme，设置 1 回调按钮：回调后台接口, data 传给后台，设置 2 指令按钮：自动在输入框插入 @bot data */
-    type: number,
+    type: 0 | 1 | 2,
     /** 权限设置 */
     permission: {
       /** 0 指定用户可操作，1 仅管理者可操作，2 所有人可操作，3 指定身份组可操作（仅频道可用） */
@@ -48,4 +88,18 @@ export interface QQButtonType {
     /** 客户端不支持本action的时候，弹出的toast文案 */
     unsupport_tips: string
   }
+}
+
+export interface QQButtonTextType {
+  link?: string
+  text: string
+  show: string
+  style: number
+  tips: string
+  admin?: boolean
+  list?: string[]
+  role?: string[]
+  enter?: boolean
+  reply?: boolean
+  callback?: boolean
 }

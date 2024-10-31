@@ -1,3 +1,4 @@
+import { Event, GroupMessage } from '@/event'
 import { EventEmitter } from 'events'
 
 /** 事件字典 */
@@ -5,6 +6,8 @@ export interface EventMap {
   exit: (data: { type: string, code: unknown }) => void
   warn: (warning: unknown) => void
   error: (error: unknown) => void
+  message: (event: Event) => void
+  'message.group': (event: GroupMessage) => void
   'karin:count:send': (count: number) => void
 }
 

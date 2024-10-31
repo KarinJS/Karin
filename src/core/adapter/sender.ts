@@ -13,6 +13,8 @@ export const enum PermissionEnum {
   ADMIN = 'admin',
   GROUP_OWNER = 'group.owner',
   GROUP_ADMIN = 'group.admin',
+  Guild_OWNER = 'guild.owner',
+  Guild_ADMIN = 'guild.admin',
 }
 
 /** 事件发送者信息 */

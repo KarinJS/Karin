@@ -1,0 +1,62 @@
+{
+  "group_id": 1234567,
+  "messages": [
+    {
+      "type": "node",
+      "data": {
+        "user_id": "114514",
+        "nickname": "tx.sb",
+        "content": [
+          {
+            "type": "node",
+            "data": {
+              "user_id": "114514",
+              "nickname": "tx.sb",
+              "content": [
+                {
+                  "type": "node",
+                  "data": {
+                    "user_id": "114514",
+                    "nickname": "tx.sb",
+                    "content": [
+                      {
+                        "type": "text",
+                        "data": {
+                          "text": "hahahah"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "news": [
+                {
+                  "text": "第三层: 这是由napcat伪造的转发消息"
+                }
+              ],
+              "prompt": "prompt",
+              "summary": "summary",
+              "source": "source"
+            }
+          }
+        ],
+        "news": [
+          {
+            "text": "第二层: 这是由napcat伪造的转发消息"
+          }
+        ],
+        "prompt": "prompt",
+        "summary": "summary",
+        "source": "source"
+      }
+    }
+  ],
+  "news": [
+    {
+      "text": "第一层: 这是由napcat伪造的转发消息"
+    }
+  ],
+  "prompt": "prompt",
+  "summary": "summary",
+  "source": "source"
+}

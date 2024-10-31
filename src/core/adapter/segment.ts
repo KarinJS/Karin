@@ -1,3 +1,5 @@
+import { KarinButton } from '@/utils/button/types'
+
 /** 元素类型枚举 */
 export const enum ElementTypeEnum {
   /** 文本元素 */
@@ -243,46 +245,6 @@ export interface MarkdownTplElementType extends Element {
   }>
 }
 
-/** 按钮结构 */
-export interface ButtonInfo {
-  /** 按钮显示文本 */
-  text: string
-  /** 按钮类型 不建议使用 此为预留字段 */
-  type?: number
-  /**
-   * - 是否为回调按钮
-   * @default false
-   */
-  callback?: boolean
-  /** 跳转按钮 */
-  link?: string
-  /** 操作相关的数据 */
-  data?: string
-  /** 按钮点击后显示的文字，不传为text */
-  show?: string
-  /**
-   * 按钮样式
-   * - 0-灰色线框
-   * - 1-蓝色线框
-   * - 2-特殊样式按钮
-   * - 3-红色文字
-   * - 4-白色填充
-   */
-  style?: number
-  /** 点击按钮后直接自动发送 data */
-  enter?: boolean
-  /** 指令是否带引用回复本消息 */
-  reply?: boolean
-  /** 是否仅群管理员可操作 */
-  admin?: boolean
-  /** 有权限点击的用户UID列表 群聊、私聊 */
-  list?: string[]
-  /** 有权限点击的用户UID列表 频道 */
-  role?: string[]
-  /** 客户端不支持本 action 的时候，弹出的 toast 文案 */
-  tips?: string
-}
-
 /** 被动事件元素 */
 export interface PasmsgElementType extends Element {
   type: ElementTypeEnum.PASMSG
@@ -294,14 +256,14 @@ export interface PasmsgElementType extends Element {
 export interface KeyboardElementType extends Element {
   type: ElementTypeEnum.KEYBOARD
   /** 按钮行数组 */
-  rows: Array<Array<ButtonInfo>>
+  rows: Array<Array<KarinButton>>
 }
 
 /** 单行按钮 */
 export interface ButtonElementType extends Element {
   type: ElementTypeEnum.BUTTON
   /** 按钮数组 */
-  data: Array<ButtonInfo>
+  data: Array<KarinButton>
 }
 
 /** 长消息元素 */
@@ -630,15 +592,15 @@ class ElementBuilder {
    * 构建多行按钮元素
    * @param data - 按钮行数组
    */
-  keyboard (data: Array<Array<ButtonInfo>>): KeyboardElementType {
+  keyboard (data: Array<Array<KarinButton>>): KeyboardElementType {
     /** 每一个元素为一行按钮 每一行按钮存在多个 */
-    const rows: Array<Array<ButtonInfo>> = []
+    const rows: Array<Array<KarinButton>> = []
     if (!Array.isArray(data)) data = [data]
 
     for (const i of data) {
       /** 如果还是数组 说明是单行多个按钮 */
       if (Array.isArray(i)) {
-        const button: Array<ButtonInfo> = []
+        const button: Array<KarinButton> = []
         for (const v of i) button.push(v)
         rows.push(button)
       } else {
@@ -653,7 +615,7 @@ class ElementBuilder {
    * 构建单行按钮元素
    * @param data - 按钮数组
    */
-  button (data: Array<ButtonInfo>): ButtonElementType {
+  button (data: Array<KarinButton>): ButtonElementType {
     return { type: ElementTypeEnum.BUTTON, data: Array.isArray(data) ? data : [data] }
   }
 

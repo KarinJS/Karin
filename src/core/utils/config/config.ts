@@ -17,7 +17,7 @@ import type {
 
 /**
  * 配置文件管理器
- * @class Config
+ * @class Config 请在new的时候调用init方法并等待初始化完成
  */
 export class Config {
   /** 基本配置缓存key */
@@ -93,7 +93,7 @@ export class Config {
     }, 10000)
 
     /** 必须先调用一次产生缓存 */
-    await Promise.all([this.Config(), this.groupCfg('default')])
+    await Promise.all([this.Config(), this.groupGuildCfg('default')])
     return this
   }
 
@@ -104,9 +104,9 @@ export class Config {
    */
   watch (file: string, fn: Function) {
     /** 检查此文件是否已有监听器 已有则先将原来的停止 */
-    const iswatch = this.watcherMap.get(file)
-    if (iswatch) {
-      iswatch.close()
+    const isWatch = this.watcherMap.get(file)
+    if (isWatch) {
+      isWatch.close()
       this.watcherMap.delete(file)
     }
 
@@ -134,14 +134,41 @@ export class Config {
     return watcher
   }
 
+  /**
+   * 统一转换为字符串数组
+   * @param data 数据
+   */
+  setStr (data: any[]) {
+    try {
+      return data.map((v: string) => String(v)) || []
+    } catch {
+      return []
+    }
+  }
+
+  /**
+   * 初始化配置 统一用户、群id为str
+   * @param defaultCfg 默认配置
+   * @param userCfg 默认配置
+   */
+  initConfig (defaultCfg: ConfigType, userCfg: ConfigType) {
+    const data = { ...defaultCfg, ...userCfg }
+    data.admin = this.setStr(data.admin)
+    data.master = this.setStr(data.master)
+    data.private.disable = this.setStr(data.private.disable)
+    Object.keys(data.enable).forEach((key) => {
+      data.enable[key as keyof typeof data.enable] = this.setStr(data.enable[key as keyof typeof data.enable])
+    })
+    return data
+  }
+
   /** 基本配置 同步 */
   ConfigSync (): ConfigType {
     if (this.change.has(this.configKey)) return this.change.get(this.configKey)
 
     const defaultCfg = this.getUserYamlSync('config', 'default')
     const userCfg = this.getUserYamlSync('config', 'user')
-
-    const data = { ...defaultCfg, ...userCfg }
+    const data = this.initConfig(defaultCfg, userCfg)
     this.change.set(this.configKey, data)
     return data
   }
@@ -155,9 +182,20 @@ export class Config {
       this.getUserYaml('config', 'user'),
     ])
 
-    const data = { ...defaultCfg, ...userCfg }
+    const data = this.initConfig(defaultCfg, userCfg)
     this.change.set(this.configKey, data)
     return data
+  }
+
+  /**
+   * 初始化好友、频道私信配置 统一用户id为str
+   * @param config 配置
+   */
+  initGroupGuildCfg (config: GroupGuildFileCfg) {
+    config.alias = this.setStr(config.alias)
+    config.memberEnable = this.setStr(config.memberEnable)
+    config.memberDisable = this.setStr(config.memberDisable)
+    return config
   }
 
   /**
@@ -165,7 +203,7 @@ export class Config {
    * @param groupId - 群号
    * @param selfId - 机器人ID
    */
-  groupCfgSync (groupId: string, selfId?: string): GroupGuildFileCfg {
+  groupGuildCfgSync (groupId: string, selfId?: string): GroupGuildFileCfg {
     try {
       const keys = selfId ? [`Bot:${selfId}:${groupId}`, `Bot:${selfId}`, groupId] : [groupId]
       /** 先走缓存 */
@@ -182,10 +220,10 @@ export class Config {
       for (const k of keys) {
         if (!data[k]) continue
         this.#addCallCount(k, 'group')
-        return data[k]
+        return this.initGroupGuildCfg(data[k])
       }
 
-      return data['default'] || this.groupCfgDef
+      return this.initGroupGuildCfg(data['default'] || this.groupCfgDef)
     } catch (error) {
       logger.error(error)
       return this.groupCfgDef
@@ -197,7 +235,7 @@ export class Config {
    * @param groupId - 群号
    * @param selfId - 机器人ID
    */
-  async groupCfg (groupId: string, selfId?: string): Promise<GroupGuildFileCfg> {
+  async groupGuildCfg (groupId: string, selfId?: string): Promise<GroupGuildFileCfg> {
     try {
       const keys = selfId ? [`Bot:${selfId}:${groupId}`, `Bot:${selfId}`, groupId] : [groupId]
       /** 先走缓存 */
@@ -216,10 +254,10 @@ export class Config {
       for (const k of keys) {
         if (!data[k]) continue
         this.#addCallCount(k, 'group')
-        return data[k]
+        return this.initGroupGuildCfg(data[k])
       }
 
-      return data['default'] || this.groupCfgDef
+      return this.initGroupGuildCfg(data['default'] || this.groupCfgDef)
     } catch (error) {
       logger.error(error)
       return this.groupCfgDef
@@ -272,7 +310,10 @@ export class Config {
     return data
   }
 
-  /** 更新日志等级 同步 */
+  /**
+   * 更新日志等级 同步
+   * @param level - 日志等级
+   */
   updateLevelSync (level?: string) {
     if (level) {
       logger.level = level
@@ -282,7 +323,10 @@ export class Config {
     logger.level = data.log4jsCfg.level || 'info'
   }
 
-  /** 更新日志等级 异步 */
+  /**
+   * 更新日志等级 异步
+   * @param level - 日志等级
+   */
   async updateLevel (level?: string) {
     if (level) {
       logger.level = level
@@ -408,7 +452,7 @@ export class Config {
         switch (value.type) {
           case 'group': {
             const keys = key.split(':')
-            const data = keys.length === 3 ? this.groupCfg(keys[2], keys[1]) : this.groupCfg(keys[1] ?? keys[0])
+            const data = keys.length === 3 ? this.groupGuildCfg(keys[2], keys[1]) : this.groupGuildCfg(keys[1] ?? keys[0])
             this.change.set(key, data)
             break
           }

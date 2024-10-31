@@ -10,6 +10,14 @@ interface ErrorParams {
     file: string
     /** 错误信息 */
     error: any,
+  },
+  taskStart: {
+    /** 插件包名 */
+    name: string,
+    /** 任务名称 */
+    task: string,
+    /** 错误信息 */
+    error: any,
   }
 }
 
@@ -20,7 +28,7 @@ interface ErrorParams {
  */
 export const handleError = <T extends keyof ErrorParams = keyof ErrorParams> (key: T, params: ErrorParams[T]) => {
   if (key === 'loaderPlugin') {
-    const { name, error, file } = params
+    const { name, error, file } = params as ErrorParams['loaderPlugin']
     const pkg = /Cannot find package '(.+?)'/.exec(error)?.[1]
     if (pkg) {
       const key = `${name}.${pkg}`
@@ -29,5 +37,12 @@ export const handleError = <T extends keyof ErrorParams = keyof ErrorParams> (ke
       logger.error(`载入插件错误：${logger.red(`${name}/${path.basename(file)}`)}`)
       listeners.emit('error', error)
     }
+    return
+  }
+
+  if (key === 'taskStart') {
+    const { name, task, error } = params as ErrorParams['taskStart']
+    logger.error(`[定时任务][${name}][${task}] 执行错误`)
+    listeners.emit('error', error)
   }
 }

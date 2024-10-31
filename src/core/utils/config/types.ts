@@ -25,9 +25,9 @@ export interface GroupGuildFileCfg {
   cd: number
   /** 群聊、频道中 每个人的消息冷却时间，单位秒，0则无限制。注意，开启后所有消息都会进CD，无论是否触发插件。 */
   userCD: number
-  /** 机器人响应模式，0-所有 1-仅@机器人 2-仅回应管理员 3-仅回应前缀 4-前缀或@机器人 5-管理员无前缀，群员前缀或@机器人 */
-  mode: number
-  /** 机器人前缀 设置后前缀+指令触发机器人 */
+  /** 机器人响应模式，0-所有 1-仅@机器人 2-仅回应管理员 3-仅回应别名 4-别名或@机器人 5-管理员无限制，成员别名或@机器人 6-仅回应主人 */
+  mode: 0 | 1 | 2 | 3 | 4 | 5 | 6
+  /** 机器人别名 设置后别名+指令触发机器人 */
   alias: string[]
   /** 白名单插件、功能，只有在白名单中的插件、功能才会响应 {plugin: "插件包名"， name: "文件名称或插件名称"} */
   enable: { plugin: string, name: string }[]
@@ -43,9 +43,9 @@ export interface GroupGuildFileCfg {
 export interface FriendDirectFileCfg {
   /** 好友消息冷却时间，单位秒，0则无限制 */
   cd: number
-  /** 机器人响应模式，0-所有 2-仅回应管理员 3-仅回应前缀 5-管理员无前缀，非管理员前缀 */
-  mode: number
-  /** 机器人前缀 设置后前缀+指令触发机器人 */
+  /** 机器人响应模式，0-所有 2-仅回应管理员 3-仅回应别名 5-管理员无限制，非管理员别名 6-仅回应主人 */
+  mode: 0 | 2 | 3 | 5 | 6
+  /** 机器人别名 设置后别名+指令触发机器人 */
   alias: string[]
   /** 白名单插件、功能，只有在白名单中的插件、功能才会响应 {plugin: "插件包名"， name: "文件名称或插件名称"} */
   enable: { plugin: string, name: string }[]
@@ -206,15 +206,16 @@ export interface AdapterGroupPingType {
     /** 是否允许外网访问 需要token不为kairn */
     internet: boolean
   }
-  /** 插件分组列表 */
-  grouPingList: Record<string, {
-    /** 分组模式 0-启用所有 1-启用指定 2-禁用所有 3-禁用指定 */
-    mode: 0 | 1 | 2 | 3
-    /** 插件列表 在mode为1或3时生效 */
-    list: string[]
-  }>
-  /** 分组配置 指定Bot分组 > 适配器分组 */
-  grouPingCfg: Record<string, string>
+  // TODO: 暂时未想好如何实现
+  // /** 插件分组列表 */
+  // grouPingList: Record<string, {
+  //   /** 分组模式 0-启用所有 1-启用指定 2-禁用所有 3-禁用指定 */
+  //   mode: 0 | 1 | 2 | 3
+  //   /** 插件列表 在mode为1或3时生效 */
+  //   list: string[]
+  // }>
+  // /** 分组配置 指定Bot分组 > 适配器分组 */
+  // grouPingCfg: Record<string, string>
 }
 
 /** 基本配置文件类型 */
@@ -271,11 +272,11 @@ export interface ConfigType {
     /** 黑名单频道私聊 禁用指定来源频道的私聊 */
     directs: string[]
     /** 消息日志黑名单群聊 设置后不会打印指定群的消息日志 */
-    groupLog: []
+    groupLog: string[]
     /** 消息日志黑名单频道 设置后不会打印指定频道的消息日志 */
-    guildLog: []
+    guildLog: string[]
     /** 消息日志黑名单子频道 设置后不会打印指定子频道的消息日志 */
-    channelLog: []
+    channelLog: string[]
   }
   /** 白名单相关 */
   enable: {
@@ -290,11 +291,11 @@ export interface ConfigType {
     /** 白名单频道私聊 仅允许指定来源频道的私聊 */
     directs: string[]
     /** 消息日志白名单群聊 设置后只会打印指定群的消息日志 */
-    groupLog: []
+    groupLog: string[]
     /** 消息日志白名单频道 设置后只会打印指定频道的消息日志 */
-    guildLog: []
+    guildLog: string[]
     /** 消息日志白名单子频道 设置后只会打印指定子频道的消息日志 */
-    channelLog: []
+    channelLog: string[]
   }
 }
 
