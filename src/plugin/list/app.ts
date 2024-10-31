@@ -76,7 +76,7 @@ export const getAppPluginsInfo = async (): Promise<PluginInfo[]> => {
   const info: PluginInfo[] = []
 
   await Promise.all(list.map(async (name) => {
-    const filePath = `./plugins/${name}`
+    const filePath = `${process.cwd()}/plugins/${name}`
     const plugin: PluginInfo = {
       type: 'app',
       apps: [],

@@ -74,18 +74,37 @@ export const getGitPluginsInfo = async (): Promise<PluginInfo[]> => {
   if (cached) return cached
 
   /** 插件列表 */
-  const list = await getGitPlugins()
+  const list: {
+    /** 插件包根路径 */
+    filePath: string,
+    /** 插件包名 */
+    name: string
+  }[] = []
+
+  const dir = process.cwd() + '/plugins'
+  const files = fs.readdirSync(dir, { withFileTypes: true })
+  await Promise.all(files.map(async v => {
+    if (!v.isDirectory()) return
+    if (!v.name.startsWith('karin-plugin-')) return
+    if (!fs.existsSync(`${dir}${v.name}/package.json`)) return
+    list.push({ filePath: `${dir}/${v.name}`, name: v.name })
+  }))
+
+  /** 处理根目录 */
+  const root = await requireFile('./package.json')
+  if (root.karin) list.push({ filePath: process.cwd(), name: root.name })
+
   /** 插件信息 */
   const info: PluginInfo[] = []
 
-  await Promise.all(list.map(async (name) => {
+  await Promise.all(list.map(async ({ filePath, name }) => {
     const pkg = await getPkg(name).catch(() => null)
     if (!pkg) return
     const plugin: PluginInfo = {
       type: 'git',
       apps: [],
       main: pkg.data?.main,
-      path: pkg.path,
+      path: filePath,
       name: pkg.name,
       pkg: pkg.data,
       version: pkg.data?.version || '0.0.0',
@@ -105,7 +124,7 @@ export const getGitPluginsInfo = async (): Promise<PluginInfo[]> => {
     }
 
     await Promise.all(apps.map(async app => {
-      const appPath = path.join(pkg.path, app)
+      const appPath = path.join(filePath, app)
       if (!fs.existsSync(appPath)) return
       plugin.apps.push(appPath)
     }))

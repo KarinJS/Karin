@@ -1,10 +1,11 @@
+import { Middleware } from './../cache/types'
 import lodash from 'lodash'
 import util from 'node:util'
 import schedule from 'node-schedule'
 import { gitAllPlugin } from '../list/all'
 import { handleError } from '@/internal/error'
 import { isClass } from '@/utils/system/class'
-import { cache, createCommandClassCache as createCommandClass } from '../cache/cache'
+import { cache, createLogger } from '../cache/cache'
 import type { Plugin } from '../class'
 import type {
   Accept,
@@ -13,13 +14,10 @@ import type {
   Task,
   Button,
   Handler,
-  RecvMsg,
-  ReplyMsg,
-  SendMsg,
-  ForwardMsg,
-  NotFoundMsg,
 } from '../cache/types'
-import type { PluginInfo, PluginsType } from '../list/types'
+import type { PluginInfo } from '../list/types'
+import path from 'node:path'
+import { filesByExt } from '@/utils/fs/path'
 
 type List = { index: number, plugin: PluginInfo }[]
 type FncType = Accept
@@ -28,17 +26,13 @@ type FncType = Accept
   | Task
   | Button
   | Handler
-  | RecvMsg
-  | ReplyMsg
-  | SendMsg
-  | ForwardMsg
-  | NotFoundMsg
+  | Middleware
 type Fnc = Record<string, FncType | FncType[]>
 
 let index = 0
 const load: {
   main: (() => Promise<void>)[]
-  pkg: (Promise<void>)[]
+  pkg: (() => Promise<void>)[]
   apps: (Promise<void>)[]
 } = {
   main: [],
@@ -55,9 +49,9 @@ export const loaderPlugin = async () => {
 
   const list: List = []
   const all = await gitAllPlugin()
-  all.forEach(plugin => {
-    const index = createIndex(plugin.name, plugin.type, plugin.path)
-    list.push({ index, plugin })
+  all.forEach(info => {
+    const index = createIndex(info)
+    list.push({ index, plugin: info })
   })
 
   await Promise.all([loaderMain(list), loaderPkg(list)])
@@ -72,9 +66,14 @@ export const loaderPlugin = async () => {
  * @param type 插件类型
  * @param dir 插件根目录绝对路径
  */
-export const createIndex = (name: string, type: PluginsType, dir: string) => {
+export const createIndex = (info: PluginInfo) => {
   const id = ++index
-  cache.index[id] = { name, type, dir }
+  cache.index[id] = {
+    dir: info.path,
+    name: info.name,
+    pkgPath: path.join(info.path, 'package.json'),
+    type: info.type,
+  }
   return id
 }
 
@@ -108,36 +107,41 @@ const loaderMain = async (list: List, isRefresh = false) => {
  * @param isRefresh 是否刷新
  */
 const loaderPkg = async (list: List, isRefresh = false) => {
-  const createPkg = async (index: number, name: string, file: string) => {
-    try {
-      const data: Fnc = await import(`file://${file}${isRefresh ? `?t=${Date.now()}` : ''}`)
-      for (const key in data) {
-        load.apps.push(loaderApp(index, data[key], key))
+  const ext = process.env.karin_app_lang === 'ts' ? ['.ts', '.js'] : ['.js']
+  for (const info of list) {
+    load.pkg.push(async () => {
+      for (const dirname of info.plugin.apps) {
+        /** 读取指定apps路径下所有符合的文件 */
+        const files = filesByExt(dirname, ext)
+        await Promise.all(files.map(async basename => {
+          try {
+            /** 导入文件 */
+            const data: Fnc = await import(`file://${dirname}/${basename}${isRefresh ? `?t=${Date.now()}` : ''}`)
+            for (const key in data) {
+              load.apps.push(loaderApp(info, dirname, basename, key, data[key]))
+            }
+          } catch (error) {
+            handleError('loaderPlugin', { name: info.plugin.name, error, file: `${dirname}/${basename}` })
+          }
+        }))
       }
-    } catch (error) {
-      handleError('loaderPlugin', { name, error, file })
-    }
-  }
-
-  for (const { index, plugin } of list) {
-    const { name, apps } = plugin
-    for (const file of apps) {
-      load.pkg.push(createPkg(index, name, file))
-    }
+    })
   }
 }
 
 /**
  * 加载每个插件
- * @param index 插件索引
- * @param fnc 插件方法
+ * @param info 插件信息
+ * @param dirname app目录：`/root/karin/plugins/karin-plugin-example`
+ * @param basename app文件名：`index.ts` `index.js`
  * @param key 插件方法名称
+ * @param val 插件方法
  */
-const loaderApp = async (index: number, fnc: FncType | FncType[], key: string) => {
-  if (typeof fnc === 'function') {
-    if (!isClass(fnc)) return
-    const App = fnc as new () => Plugin
-    const app = new App()
+const loaderApp = async (info: List[number], dirname: string, basename: string, key: string, val: FncType | FncType[]) => {
+  if (typeof val === 'function') {
+    if (!isClass(val)) return
+    const Cls = val as new () => Plugin
+    const app = new Cls()
     /** 非插件 */
     if (!app?.rule) return
 
@@ -147,62 +151,81 @@ const loaderApp = async (index: number, fnc: FncType | FncType[], key: string) =
       /** 没有正则跳过 */
       if (typeof v.reg !== 'string' && !(v.reg instanceof RegExp)) continue
 
-      createCommandClass({
-        index,
-        log: v.log,
+      cache.command.push({
+        type: 'class',
+        index: info.index,
+        log: createLogger(v.log, false),
         name: app.name,
-        fname: v.fnc,
-        adapter: v.adapter,
-        dsbAdapter: v.dsbAdapter,
-        cls: fnc,
-        reg: v.reg,
-        permission: v.permission,
-        priority: v.priority,
+        adapter: v.adapter || [],
+        dsbAdapter: v.dsbAdapter || [],
+        cls: Cls,
+        reg: v.reg instanceof RegExp ? v.reg : new RegExp(v.reg),
+        perm: v.permission || 'all',
+        event: v.event || 'message',
+        rank: v.priority || 10000,
+        get info () {
+          return cache.index[this.index]
+        },
+        file: {
+          basename,
+          dirname,
+          method: key,
+          type: 'command',
+          get path () {
+            return path.join(this.dirname, this.basename)
+          },
+        },
       })
     }
     return
   }
 
-  const list: FncType[] = Array.isArray(fnc) ? fnc : [fnc]
+  if (typeof val !== 'object') return
+
+  const list: FncType[] = Array.isArray(val) ? val : [val]
   list.forEach(fnc => {
-    if (!fnc.fncType) return
-    if (!fnc.fname) fnc.fname = key
-    fnc.index = index
-    switch (fnc.fncType) {
+    if (!fnc?.file?.type) return
+    fnc.index = info.index
+    fnc.file.dirname = dirname
+    fnc.file.basename = basename
+    fnc.file.method = key
+    switch (fnc.file.type) {
       case 'accept':
         cache.count.accept++
-        return cache.accept.push(fnc)
+        return cache.accept.push(fnc as Accept)
+      case 'command':
+        cache.count.command++
+        return cache.command.push(fnc as CommandFnc)
       case 'button':
         cache.count.button++
-        return cache.button.push(fnc)
+        return cache.button.push(fnc as Button)
       case 'handler': {
-        if (!cache.handler[fnc.key]) {
+        const fn = fnc as Handler
+        if (!cache.handler[fn.key]) {
           cache.count.handler.key++
-          cache.handler[fnc.key] = []
+          cache.handler[fn.key] = []
         }
         cache.count.handler.fnc++
-        cache.handler[fnc.key].push(fnc)
+        cache.handler[fn.key].push(fn)
         return
       }
       case 'middleware':
         cache.count.middleware++
-        return cache.middleware[fnc.type].push(fnc as any)
-      case 'command':
-        cache.count.command++
-        return cache.command.push(fnc)
+        return cache.middleware[(fnc as Middleware).type].push(fnc as any)
       case 'task': {
-        fnc.schedule = schedule.scheduleJob(fnc.cron, async () => {
+        const fn = fnc as Task
+        fn.schedule = schedule.scheduleJob(fn.cron, async () => {
           try {
-            fnc.log(`[定时任务][${fnc.name}][${fnc.fname}]: 开始执行`)
-            const result = fnc.fnc()
+            fn.log(`[定时任务][${fnc.name}][${fn.name}]: 开始执行`)
+            const result = fn.fnc()
             if (util.types.isPromise(result)) await result
-            fnc.log(`[定时任务][${fnc.name}][${fnc.fname}]: 执行完成`)
+            fn.log(`[定时任务][${fn.name}][${fn.name}]: 执行完成`)
           } catch (error) {
-            handleError('taskStart', { name: fnc.name, task: fnc.fname, error })
+            handleError('taskStart', { name: fnc.name, task: fn.name, error })
           }
         })
         cache.count.task++
-        return cache.task.push(fnc)
+        return cache.task.push(fn)
       }
       default:
     }

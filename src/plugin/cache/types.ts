@@ -6,16 +6,17 @@ import type { AdapterProtocol, AdapterType } from '@/adapter/adapter'
 import type { MessageEventMap, NoticeEventMap, RequestEventMap } from '@/event/types/types'
 import type { ButtonElementType, ElementTypes, KeyboardElementType } from '@/adapter/segment'
 import { PermissionEnum } from '@/adapter/sender'
+import { Plugin } from '@plugin/class'
 
 /** 插件索引值的类型 */
 export interface PluginIndex {
-  /** 插件名称 */
-  name: string
   /** 插件类型 */
   type: PluginsType
+  /** 插件名称 */
+  name: string
   /** 插件根目录 */
   dir: string
-  /** package.json绝对路径 app类型的插件不存在 */
+  /** package.json绝对路径 app类型的插件为'' */
   pkgPath: string
 }
 
@@ -30,17 +31,28 @@ export interface PluginApp {
 }
 
 /** 插件方法类型 */
-export type fncType = 'accept' | 'command' | 'task' | 'button' | 'handler' | 'middleware'
+export type fileType = 'accept' | 'command' | 'task' | 'button' | 'handler' | 'middleware'
 
 interface Base {
   /** 索引 */
   index: number
-  /** 插件名称 由开发者提供 */
-  name: string
-  /** 插件方法类型 */
-  fncType: fncType
-  /** 插件执行方法名称 载入的时候设置 */
-  fname: string
+  /** 插件名称 如果没有设置则是插件类型 */
+  name: fileType | string
+  /** 插件包信息 */
+  get info (): PluginIndex
+  /** app文件信息 */
+  file: {
+    /** app类型 `accept` `command` `task` `button` `handler` `middleware` */
+    type: fileType,
+    /** app目录：`/root/karin/plugins/karin-plugin-example` */
+    dirname: string
+    /** app文件名：`index.ts` `index.js` */
+    basename: string
+    /** app函数方法名称 */
+    method: string
+    /** app绝对路径 */
+    get path (): string
+  }
 }
 
 interface Log {
@@ -62,7 +74,7 @@ export type NoticeAndRequest = NoticeEventMap & RequestEventMap
 
 /** accept类型 */
 export type Accept<T extends keyof NoticeAndRequest = keyof NoticeAndRequest> = PluginOptions & {
-  fncType: 'accept'
+  file: Omit<PluginOptions['file'], 'type'> & { type: 'accept' }
   /** 优先级 */
   rank: number,
   /** 监听事件 */
@@ -72,7 +84,7 @@ export type Accept<T extends keyof NoticeAndRequest = keyof NoticeAndRequest> = 
 }
 /** command base类型 */
 export interface CommandBase extends PluginOptions {
-  fncType: 'command'
+  file: Omit<PluginOptions['file'], 'type'> & { type: 'command' }
   /** 插件类型 */
   type: 'class' | 'fnc'
   /** 插件正则 */
@@ -87,7 +99,7 @@ export interface CommandBase extends PluginOptions {
 export interface CommandClass extends CommandBase {
   type: 'class'
   /** 插件类 */
-  cls: Function // TODO: 类型
+  cls: new () => Plugin
   /** 监听事件 */
   event: keyof MessageEventMap
 }
@@ -105,9 +117,9 @@ export type CommandFnc<T extends keyof MessageEventMap = keyof MessageEventMap> 
 
 /** task类型 */
 export interface Task extends Base, Log {
-  fncType: 'task'
+  file: Omit<PluginOptions['file'], 'type'> & { type: 'task' }
   /** 任务名称 */
-  fname: string
+  name: string
   /** cron表达式 */
   cron: string
   /** 执行方法 */
@@ -120,7 +132,7 @@ type ButtonType = ButtonElementType | KeyboardElementType | Array<ButtonElementT
 
 /** button类型 */
 export interface Button extends Base {
-  fncType: 'button'
+  file: Omit<PluginOptions['file'], 'type'> & { type: 'button' }
   /** 插件正则 */
   reg: RegExp
   /** 优先级 */
@@ -138,7 +150,7 @@ export interface Button extends Base {
 
 /** handler类型 */
 export interface Handler extends Base {
-  fncType: 'handler'
+  file: Omit<PluginOptions['file'], 'type'> & { type: 'handler' }
   /** 优先级 */
   rank: number
   /** 入口key */
@@ -157,7 +169,7 @@ export type MiddlewareType = 'recvMsg' | 'replyMsg' | 'sendMsg' | 'forwardMsg' |
 
 /** 中间件基类 */
 interface MiddlewareBase extends Base {
-  fncType: 'middleware'
+  file: Omit<PluginOptions['file'], 'type'> & { type: 'middleware' }
   /** 中间件方法类型 */
   type: MiddlewareType
   /** 优先级 */
@@ -240,6 +252,8 @@ export interface NotFoundMsg extends MiddlewareBase {
     exit: () => void
   ) => Promise<void> | void
 }
+
+export type Middleware = RecvMsg | ReplyMsg | SendMsg | ForwardMsg | NotFoundMsg
 
 export interface Count {
   accept: number

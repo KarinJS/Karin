@@ -1,7 +1,8 @@
+import { PermissionEnum } from '@/adapter/sender'
+import { AdapterProtocol } from '@/adapter/adapter'
 import type { Message } from '@/event'
 import type { NodeElementType } from '@/adapter/segment'
 import type { BaseEventHandle, MessageEventMap } from '@/event/types/types'
-import { PermissionEnum } from '@/adapter/sender'
 
 export interface PluginRule {
   /** 命令正则 */
@@ -17,9 +18,9 @@ export interface PluginRule {
   /** 打印日志 默认为true */
   log?: boolean
   /** 生效的适配器 */
-  adapter?: string[]
+  adapter?: AdapterProtocol[]
   /** 禁用的适配器 */
-  dsbAdapter?: string[]
+  dsbAdapter?: AdapterProtocol[]
 }
 
 export interface PluginOptions {

@@ -2,7 +2,8 @@ import type { Accept, CommandFnc, NoticeAndRequest, Task } from '@plugin/cache/t
 import type { ElementTypes } from '@/adapter/segment'
 import type { MessageEventMap } from '@/event/types/types'
 import { TypedListeners } from '@/internal/listeners'
-import { createLogger } from '@plugin/cache/cache'
+import { cache, createLogger } from '@plugin/cache/cache'
+import path from 'node:path'
 
 export type FncElement = string | ElementTypes | ElementTypes[]
 export type FncOptions = {
@@ -106,9 +107,7 @@ export class Karin extends TypedListeners {
 
     return {
       index: 0,
-      fncType: 'command',
       type: 'fnc',
-      fname: '',
       name: options.name || 'command',
       event: options.event || ('message' as T),
       fnc,
@@ -118,6 +117,18 @@ export class Karin extends TypedListeners {
       reg,
       adapter: Array.isArray(options.adapter) ? options.adapter : [],
       dsbAdapter: Array.isArray(dsbAdapter) ? dsbAdapter : [],
+      file: {
+        basename: '',
+        dirname: '',
+        method: '',
+        type: 'command',
+        get path () {
+          return path.join(this.dirname, this.basename)
+        },
+      },
+      get info () {
+        return cache.index[this.index]
+      },
     }
   }
 
@@ -130,8 +141,6 @@ export class Karin extends TypedListeners {
     const dsbAdapter = options.dsbAdapter || options.notAdapter || []
     return {
       index: 0,
-      fncType: 'accept',
-      fname: '',
       event,
       fnc,
       log: createLogger(options.log),
@@ -139,6 +148,18 @@ export class Karin extends TypedListeners {
       rank: options.rank ?? options?.priority ?? 10000,
       adapter: Array.isArray(options.adapter) ? options.adapter : [],
       dsbAdapter: Array.isArray(dsbAdapter) ? dsbAdapter : [],
+      file: {
+        basename: '',
+        dirname: '',
+        method: '',
+        type: 'accept',
+        get path () {
+          return path.join(this.dirname, this.basename)
+        },
+      },
+      get info () {
+        return cache.index[this.index]
+      },
     }
   }
 
@@ -155,14 +176,24 @@ export class Karin extends TypedListeners {
     if (!fnc || typeof fnc !== 'function') throw new Error('[task]: 缺少参数或类型错误[fnc]')
 
     return {
-      fncType: 'task',
       index: 0,
-      fname: name,
       name: options?.name || 'task',
       cron,
       fnc,
       log: createLogger(options.log, false),
       schedule: undefined,
+      file: {
+        basename: '',
+        dirname: '',
+        method: '',
+        type: 'task',
+        get path () {
+          return path.join(this.dirname, this.basename)
+        },
+      },
+      get info () {
+        return cache.index[this.index]
+      },
     }
   }
 }

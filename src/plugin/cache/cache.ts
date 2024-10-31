@@ -58,9 +58,7 @@ export type ClsOptions = Omit<FncOptions, 'perm' | 'rank'> & {
   /** 监听事件 */
   event?: CommandClass['event']
   /** 插件方法名称 */
-  fname: CommandClass['fname']
-  /** 权限 */
-  permission?: CommandClass['perm']
+  fname: CommandClass['file']['method']
   /** 优先级 */
   priority?: CommandClass['rank']
 }
@@ -81,24 +79,27 @@ export const createLogger = (enable?: boolean, isBot = true): Function => {
     : (log: string) => logger.mark(log)
 }
 
-/** 创建command class风格的插件缓存 */
-export const createCommandClassCache = (options: ClsOptions) => {
-  cache.command.push({
-    fncType: 'command',
-    type: 'class',
-    event: options.event || 'message',
-    index: options.index,
-    name: options.name,
-    fname: options.fname,
-    adapter: Array.isArray(options.adapter) ? options.adapter : [],
-    dsbAdapter: Array.isArray(options.dsbAdapter) ? options.dsbAdapter : [],
-    cls: options.cls,
-    reg: options.reg instanceof RegExp ? options.reg : new RegExp(options.reg),
-    perm: options.permission || 'all',
-    log: createLogger(options.log),
-    rank: options.priority ?? 10000,
-  })
-}
+// /** 创建command class风格的插件缓存 */
+// export const createCommandClassCache = (options: ClsOptions) => {
+//   cache.command.push({
+//     get info () {
+//       return cache.index[options.index]
+//     },
+//     file: {
+
+//     }
+//     type: 'class',
+//     event: options.event || 'message',
+//     index: options.index,
+//     name: options.name,
+//     adapter: Array.isArray(options.adapter) ? options.adapter : [],
+//     dsbAdapter: Array.isArray(options.dsbAdapter) ? options.dsbAdapter : [],
+//     cls: options.cls,
+//     reg: options.reg instanceof RegExp ? options.reg : new RegExp(options.reg),
+//     log: createLogger(options.log),
+//     rank: options.priority ?? 10000,
+//   })
+// }
 
 // /** 创建command fnc风格的插件 */
 // export const createCommandFncCache = <T extends keyof MessageEventMap = keyof MessageEventMap> (options: T extends keyof MessageEventMap

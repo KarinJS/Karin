@@ -80,17 +80,19 @@ export const getNpmPluginsInfo = async (): Promise<PluginInfo[]> => {
   const cached = getPluginCache.get(key.info)
   if (cached) return cached
 
+  const dirPath = path.join(process.cwd(), 'node_modules')
   /** 插件列表 */
   const list: string[] = await getNpmPlugins()
   /** 插件信息 */
   const info: PluginInfo[] = []
   await Promise.all(list.map(async (name) => {
+    const pkgPath = path.join(dirPath, name)
     const pkg = await getPkg(name)
     const plugin: PluginInfo = {
       type: 'npm',
       apps: [],
       main: pkg.data?.main,
-      path: pkg.path,
+      path: pkgPath,
       name: pkg.name,
       pkg: pkg.data,
       version: pkg.data?.version || '0.0.0',
@@ -110,7 +112,7 @@ export const getNpmPluginsInfo = async (): Promise<PluginInfo[]> => {
     }
 
     await Promise.all(apps.map(async app => {
-      const appPath = path.join(pkg.path, app)
+      const appPath = path.join(pkgPath, app)
       if (!fs.existsSync(appPath)) return
       plugin.apps.push(appPath)
     }))
