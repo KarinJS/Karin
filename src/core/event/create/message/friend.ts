@@ -1,6 +1,7 @@
 import { MessageEventSubEnum } from '../../types/types'
 import { Contact } from '@/adapter/contact'
 import { BaseMessageEventType, MessageBase, MessageOptions } from '.'
+import { FriendHandler } from '@/event/handler/message/friend'
 
 /** new 好友消息事件所需参数 */
 export type FriendMessageOptions = MessageOptions & {
@@ -36,4 +37,13 @@ export class FriendMessage extends MessageBase implements FriendMessageEventType
   get subEvent () {
     return this.#subEvent
   }
+}
+
+/**
+ * @description 创建好友消息事件
+ * @param options 好友消息事件所需参数
+ */
+export const createFriendMessage = (options: FriendMessageOptions) => {
+  const event = new FriendMessage(options)
+  return new FriendHandler(event).init()
 }

@@ -1,6 +1,6 @@
 // import fs from 'node:fs'
 import { AdapterBase } from '../base'
-import { createGroupMessage } from '@/event'
+import { createFriendMessage, createGroupMessage } from '@/event'
 import { karin } from '@/karin'
 import { listeners } from '@/internal/listeners'
 import { randomUUID } from 'crypto'
@@ -32,27 +32,45 @@ export class AdapterInput extends AdapterBase implements AdapterType {
 
   createEvent (data: Buffer) {
     const text = data.toString().trim()
+    const seq = Math.floor(Math.random() * 1000000000)
+    const time = Date.now()
     /** 如果带`group`前缀 则视为群环境 */
     if (text.startsWith('group')) {
-      const seq = Math.floor(Math.random() * 1000000000)
-      const time = Date.now()
-      const contact = karin.contactGroup('group_id')
+      const contact = karin.contactGroup('967068507')
       createGroupMessage({
         bot: this,
-        contact: karin.contactGroup('group_id'),
+        contact,
         elements: [segment.text(text.replace(/^group/, '').trim())],
         eventId: `input.${time}`,
         messageId: `input.${time}`,
         messageSeq: seq,
         rawEvent: { data },
         selfId: 'input',
-        sender: karin.senderUnknown('input'),
+        sender: karin.senderUnknown('3889021886'),
         time,
         srcReply: (elements) => this.sendMsg(contact, elements),
         subEvent: 'group',
-        userId: 'input',
+        userId: '3889021886',
       })
+      return
     }
+
+    const contact = karin.contactFriend('3889021886')
+    createFriendMessage({
+      bot: this,
+      contact,
+      elements: [segment.text(text.replace(/^group/, '').trim())],
+      eventId: `input.${time}`,
+      messageId: `input.${time}`,
+      messageSeq: seq,
+      rawEvent: { data },
+      selfId: 'input',
+      sender: karin.senderUnknown('3889021886'),
+      time,
+      srcReply: (elements) => this.sendMsg(contact, elements),
+      subEvent: 'friend',
+      userId: '3889021886',
+    })
   }
 
   async sendMsg (contact: Contact, elements: Array<ElementTypes>, retryCount?: number): Promise<SendMsgResults> {

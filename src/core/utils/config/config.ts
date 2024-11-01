@@ -207,7 +207,7 @@ export class Config {
    */
   groupGuildCfgSync (groupId: string, selfId?: string): GroupGuildFileCfg {
     try {
-      const keys = selfId ? [`Bot:${selfId}:${groupId}`, `Bot:${selfId}`, groupId] : [groupId]
+      const keys = selfId ? [`Bot:${selfId}:${groupId}`, `Bot:${selfId}`, groupId, 'default'] : [groupId, 'default']
       /** 先走缓存 */
       for (const k of keys) {
         if (this.change.has(k)) {
@@ -239,7 +239,7 @@ export class Config {
    */
   async groupGuildCfg (groupId: string, selfId?: string): Promise<GroupGuildFileCfg> {
     try {
-      const keys = selfId ? [`Bot:${selfId}:${groupId}`, `Bot:${selfId}`, groupId] : [groupId]
+      const keys = selfId ? [`Bot:${selfId}:${groupId}`, `Bot:${selfId}`, groupId, 'default'] : [groupId, 'default']
       /** 先走缓存 */
       for (const k of keys) {
         if (this.change.has(k)) {
@@ -263,6 +263,72 @@ export class Config {
     } catch (error) {
       logger.error(error)
       return this.groupCfgDef
+    }
+  }
+
+  /**
+   * 获取好友配置 同步
+   * @param userId - 用户ID
+   * @param selfId - 机器人ID
+   */
+  friendDirectCfgSync (userId: string, selfId?: string): FriendDirectFileCfg {
+    try {
+      const keys = selfId ? [`Bot:${selfId}:${userId}`, `Bot:${selfId}`, userId, 'default'] : [userId, 'default']
+      /** 先走缓存 */
+      for (const k of keys) {
+        if (this.change.has(k)) {
+          this.#addCallCount(k, 'friend')
+          return this.change.get(k)
+        }
+      }
+
+      const defaultCfg = this.getUserYamlSync('friendDirect', 'default')
+      const userCfg = this.getUserYamlSync('friendDirect', 'user')
+      const data = { ...defaultCfg, ...userCfg }
+      for (const k of keys) {
+        if (!data[k]) continue
+        this.#addCallCount(k, 'friend')
+        return data[k]
+      }
+
+      return this.friendCfgDef
+    } catch (error) {
+      logger.error(error)
+      return this.friendCfgDef
+    }
+  }
+
+  /**
+   * 获取好友配置 异步
+   * @param userId - 用户ID
+   * @param selfId - 机器人ID
+   */
+  async friendDirectCfg (userId: string, selfId?: string): Promise<FriendDirectFileCfg> {
+    try {
+      const keys = selfId ? [`Bot:${selfId}:${userId}`, `Bot:${selfId}`, userId, 'default'] : [userId, 'default']
+      /** 先走缓存 */
+      for (const k of keys) {
+        if (this.change.has(k)) {
+          this.#addCallCount(k, 'friend')
+          return this.change.get(k)
+        }
+      }
+
+      const [defaultCfg, userCfg] = await Promise.all([
+        this.getUserYaml('friendDirect', 'default'),
+        this.getUserYaml('friendDirect', 'user'),
+      ])
+      const data = { ...defaultCfg, ...userCfg }
+      for (const k of keys) {
+        if (!data[k]) continue
+        this.#addCallCount(k, 'friend')
+        return data[k]
+      }
+
+      return this.friendCfgDef
+    } catch (error) {
+      logger.error(error)
+      return this.friendCfgDef
     }
   }
 

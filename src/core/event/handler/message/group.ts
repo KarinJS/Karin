@@ -37,9 +37,7 @@ export class GroupHandler {
     karin.emit('message', this.event)
     karin.emit('message.group', this.event)
     const isRestricted = this.isRestricted()
-    console.log('🚀 ~ file: group.ts:40 ~ GroupHandler ~ init ~ isRestricted:', isRestricted)
-
-    this.deal()
+    !isRestricted && this.deal()
   }
 
   /** 检查是否存在cd中 */
@@ -123,7 +121,7 @@ export class GroupHandler {
     }
 
     if (!this.isGroupDisable) {
-      log(`[${this.event.groupId}][${this.event.userId}] 通过群黑名单: ${this.event.messageId}`)
+      log(`[${this.event.groupId}][${this.event.userId}] 未通过群黑名单: ${this.event.messageId}`)
       return true
     }
 
@@ -355,5 +353,7 @@ export class GroupHandler {
         this.isPrint && plugin.log(this.event.selfId, `${logFnc} ${lodash.truncate(this.event.msg, { length: 100 })} 处理完成 ${logger.green(Date.now() - start + 'ms')}`)
       }
     }
+
+    log(`[${this.event.groupId}][${this.event.userId}] 未找到匹配到相应插件: ${this.event.messageId}`)
   }
 }

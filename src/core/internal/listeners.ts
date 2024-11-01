@@ -1,4 +1,4 @@
-import { Event, GroupMessage, Message } from '@/event'
+import { Event, FriendMessage, GroupMessage, Message } from '@/event'
 import { EventEmitter } from 'events'
 
 /** 事件字典 */
@@ -8,6 +8,7 @@ export interface EventMap {
   error: (error: unknown) => void
   message: (event: Event) => void
   'message.group': (event: GroupMessage) => void
+  'message.friend': (event: FriendMessage) => void
   'karin:count:send': (count: number) => void
   'karin:count:fnc': (event: Message) => void
   'karin:adapter:open': () => void
