@@ -1,4 +1,19 @@
-import { Lang, Mode, Runner } from 'karin/cli'
+// import { Lang, Mode, Runner } from 'karin/cli'
+export const enum Runner {
+  Node = 'node',
+  Tsx = 'tsx',
+  Pm2 = 'pm2',
+}
+
+export const enum Mode {
+  Dev = 'dev',
+  Prod = 'prod',
+}
+
+export const enum Lang {
+  Js = 'js',
+  Ts = 'ts',
+}
 
 declare global {
   namespace NodeJS {

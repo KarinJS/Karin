@@ -3,6 +3,7 @@ import path from 'node:path'
 import { getPluginCache } from '../cache/cache'
 import { type PluginInfo } from './types'
 import { type GitPluginName } from './git'
+import { filesByExt } from '@/utils/fs/path'
 
 const key = {
   list: 'app:list',
@@ -88,13 +89,8 @@ export const getAppPluginsInfo = async (): Promise<PluginInfo[]> => {
     }
 
     const ext = process.env.karin_app_lang === 'ts' ? ['.ts', '.js'] : ['.js']
-    const files = fs.readdirSync(filePath, { withFileTypes: true })
-    for (const file of files) {
-      if (file.isDirectory()) continue
-      if (ext.includes(path.extname(file.name))) {
-        plugin.apps.push(`${filePath}/${file.name}`)
-      }
-    }
+    plugin.apps = filesByExt(filePath, ext).map(v => path.join(filePath, v))
+    info.push(plugin)
   }))
 
   /** 1分钟后删除缓存 */

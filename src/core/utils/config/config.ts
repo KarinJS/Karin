@@ -14,6 +14,7 @@ import type {
   GroupGuildFileCfg,
   FriendDirectFileCfg,
 } from './types'
+import { copyConfigSync } from './createCfg'
 
 /**
  * 配置文件管理器
@@ -79,6 +80,7 @@ export class Config {
 
   /** 初始化 */
   async init () {
+    copyConfigSync(defaultConfig, userConfig, ['.yaml'])
     /** 启动后每隔10秒调用一次 6次之后每60秒固定调用一次 */
     let count = 0
     const intervalId = setInterval(() => {

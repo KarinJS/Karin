@@ -23,6 +23,7 @@ export class AdapterInput extends AdapterBase implements AdapterType {
     this.account.name = 'input'
     this.account.selfId = 'input'
     this.account.avatar = 'https://p.qlogo.cn/gh/967068507/967068507/0'
+    listeners.emit('karin:adapter:open')
   }
 
   get selfId () {

@@ -1,6 +1,4 @@
-import { Scene } from '@/adapter/contact'
 import { segment } from '@/adapter/segment'
-import { SendMsgResults } from '@/adapter/adapter'
 import { BaseEventHandle, BaseEventOptions } from '../../types/types'
 
 /** 事件实现基类 */
@@ -54,15 +52,9 @@ export class BaseEvent implements BaseEventHandle {
     this.isAdmin = false
 
     this.reply = async (elements, options) => {
-      const request: SendMsgResults = {
-        messageId: '',
-        messageTime: 0,
-        rawData: undefined,
-      }
-
       /** 参数归一化 */
       if (!Array.isArray(elements)) elements = [elements]
-      elements = elements.map((element) => typeof element === 'string' ? segment.text(element) : element)
+      const message = elements.map((element) => typeof element === 'string' ? segment.text(element) : element)
 
       const at = options?.at ?? false
       const reply = options?.reply ?? false
@@ -70,23 +62,26 @@ export class BaseEvent implements BaseEventHandle {
       // const retryCount = options?.retryCount ?? 0
 
       /** 加入at */
-      if (at && this.contact.scene !== Scene.DIRECT && this.contact.scene !== Scene.FRIEND) {
-        elements.unshift(segment.at(this.userId))
+      if (at && !(this.contact.scene === 'direct' || this.contact.scene === 'friend')) {
+        message.unshift(segment.at(this.userId))
       }
 
       /** 加入引用回复 */
       if (reply && 'message_id' in this) {
-        elements.unshift(segment.reply(this.message_id as string))
+        message.unshift(segment.reply(this.message_id as string))
       }
 
+      /** 发送消息 */
+      const result = await this.bot.sendMsg(this.contact, message)
+
       /** 快速撤回 */
-      if (recallMsg > 0 && request.messageId) {
+      if (recallMsg > 0 && result.messageId) {
         setTimeout(() => {
-          this.bot.recallMsg(this.contact, request.messageId)
+          this.bot.recallMsg(this.contact, result.messageId)
         }, recallMsg * 1000)
       }
 
-      return request
+      return result
     }
   }
 
@@ -151,22 +146,22 @@ export class BaseEvent implements BaseEventHandle {
   }
 
   get isPrivate () {
-    return this.#contact.scene === Scene.FRIEND || this.#contact.scene === Scene.DIRECT
+    return this.#contact.scene === 'friend' || this.#contact.scene === 'direct'
   }
 
   get isGroup () {
-    return this.#contact.scene === Scene.GROUP
+    return this.#contact.scene === 'group'
   }
 
   get isGuild () {
-    return this.#contact.scene === Scene.GUILD
+    return this.#contact.scene === 'guild'
   }
 
   get isGroupTemp () {
-    return this.#contact.scene === Scene.GROUP_TEMP
+    return this.#contact.scene === 'groupTemp'
   }
 
   get isDirect () {
-    return this.#contact.scene === Scene.DIRECT
+    return this.#contact.scene === 'direct'
   }
 }

@@ -1,7 +1,7 @@
 import lodash from 'lodash'
 import { log } from '..'
 import { karin } from '@/karin'
-import { config as cfg } from 'src/start'
+import { config as cfg } from '@start/index'
 import { createRawMessage } from '@/utils/message'
 import { GroupMessage } from '@/event/create/message/group'
 import type { ConfigType, GroupGuildFileCfg } from '@/utils/config/types'
@@ -103,7 +103,7 @@ export class GroupHandler {
 
   /** 检查是否通过群日志打印黑名单 没在黑名单才返回`true` */
   get isLogDisable () {
-    if (!this.config.disable.groups.length) return false
+    if (!this.config.disable.groups.length) return true
     return !this.config.disable.groups.includes(this.event.groupId)
   }
 
@@ -218,14 +218,14 @@ export class GroupHandler {
    */
   isAdapter (plugin: CommandClass | CommandFnc): boolean {
     if (plugin.adapter.length && !plugin.adapter.includes(this.event.bot.adapter.protocol)) {
-      return false
+      return true
     }
 
     if (plugin.dsbAdapter.length && plugin.dsbAdapter.includes(this.event.bot.adapter.protocol)) {
-      return false
+      return true
     }
 
-    return true
+    return false
   }
 
   /**
@@ -233,16 +233,16 @@ export class GroupHandler {
    * @param plugin 插件对象
    */
   isPluginWhite (plugin: CommandClass | CommandFnc): boolean {
-    if (this.groupCfg.enable.length) {
-      const list = [
-        plugin.info.name,
-        `${plugin.info.name}:${plugin.file.basename}`,
-        `${plugin.info.name}:${plugin.file.method}`,
-      ]
-      for (const item of list) {
-        if (this.groupCfg.enable.includes(item)) {
-          return true
-        }
+    if (!this.groupCfg.enable.length) return true
+
+    const list = [
+      plugin.info.name,
+      `${plugin.info.name}:${plugin.file.basename}`,
+      `${plugin.info.name}:${plugin.file.method}`,
+    ]
+    for (const item of list) {
+      if (this.groupCfg.enable.includes(item)) {
+        return true
       }
     }
     return false
@@ -253,18 +253,18 @@ export class GroupHandler {
    * @param plugin 插件对象
    */
   isPluginBlack (plugin: CommandClass | CommandFnc): boolean {
-    if (this.groupCfg.disable.length) {
-      const list = [
-        plugin.info.name,
-        `${plugin.info.name}:${plugin.file.basename}`,
-        `${plugin.info.name}:${plugin.file.method}`,
-      ]
-      for (const item of list) {
-        if (this.groupCfg.disable.includes(item)) {
-          return false
-        }
+    if (!this.groupCfg.disable.length) return true
+    const list = [
+      plugin.info.name,
+      `${plugin.info.name}:${plugin.file.basename}`,
+      `${plugin.info.name}:${plugin.file.method}`,
+    ]
+    for (const item of list) {
+      if (this.groupCfg.disable.includes(item)) {
+        return false
       }
     }
+
     return true
   }
 

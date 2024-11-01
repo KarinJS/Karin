@@ -1,11 +1,11 @@
 import { MessageEventSubEnum } from '../../types/types'
-import { Contact, Scene } from '@/adapter/contact'
+import { Contact } from '@/adapter/contact'
 import { BaseMessageEventType, MessageBase, MessageOptions } from '.'
 
 /** new 频道私信消息事件所需参数 */
 export type DirectMessageOptions = MessageOptions & {
   /** 事件联系人信息 */
-  contact: Contact<Scene.DIRECT>
+  contact: Contact<'direct'>
   /** 来源频道ID */
   srcGuildId: string
 }

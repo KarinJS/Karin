@@ -116,6 +116,8 @@ export const getNpmPluginsInfo = async (): Promise<PluginInfo[]> => {
       if (!fs.existsSync(appPath)) return
       plugin.apps.push(appPath)
     }))
+
+    info.push(plugin)
   }))
 
   /** 1分钟后删除缓存 */

@@ -1,11 +1,11 @@
 import { MessageEventSubEnum } from '../../types/types'
-import { Contact, Scene } from '@/adapter/contact'
+import { Contact } from '@/adapter/contact'
 import { BaseMessageEventType, MessageBase, MessageOptions } from '.'
 
 /** new 好友消息事件所需参数 */
 export type FriendMessageOptions = MessageOptions & {
   /** 事件联系人信息 */
-  contact: Contact<Scene.FRIEND>
+  contact: Contact<'friend'>
 }
 
 /** 好友消息事件定义 */

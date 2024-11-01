@@ -17,7 +17,6 @@ import type {
 } from '../cache/types'
 import type { PluginInfo } from '../list/types'
 import path from 'node:path'
-import { filesByExt } from '@/utils/fs/path'
 
 type List = { index: number, plugin: PluginInfo }[]
 type FncType = Accept
@@ -55,6 +54,7 @@ export const loaderPlugin = async () => {
   })
 
   await Promise.all([loaderMain(list), loaderPkg(list)])
+  await Promise.all(load.pkg.map(fnc => fnc()))
   await Promise.all(load.apps)
   clearCache()
   sort()
@@ -107,23 +107,33 @@ const loaderMain = async (list: List, isRefresh = false) => {
  * @param isRefresh 是否刷新
  */
 const loaderPkg = async (list: List, isRefresh = false) => {
-  const ext = process.env.karin_app_lang === 'ts' ? ['.ts', '.js'] : ['.js']
   for (const info of list) {
     load.pkg.push(async () => {
-      for (const dirname of info.plugin.apps) {
-        /** 读取指定apps路径下所有符合的文件 */
-        const files = filesByExt(dirname, ext)
-        await Promise.all(files.map(async basename => {
-          try {
-            /** 导入文件 */
-            const data: Fnc = await import(`file://${dirname}/${basename}${isRefresh ? `?t=${Date.now()}` : ''}`)
-            for (const key in data) {
-              load.apps.push(loaderApp(info, dirname, basename, key, data[key]))
-            }
-          } catch (error) {
-            handleError('loaderPlugin', { name: info.plugin.name, error, file: `${dirname}/${basename}` })
+      for (const file of info.plugin.apps) {
+        const dirname = path.dirname(file)
+        const basename = path.basename(file)
+        try {
+          /** 导入文件 */
+          const data: Fnc = await import(`file://${dirname}/${basename}${isRefresh ? `?t=${Date.now()}` : ''}`)
+          for (const key in data) {
+            load.apps.push(loaderApp(info, dirname, basename, key, data[key]))
           }
-        }))
+        } catch (error) {
+          handleError('loaderPlugin', { name: info.plugin.name, error, file: `${dirname}/${basename}` })
+        }
+        // /** 读取指定apps路径下所有符合的文件 */
+        // const files = filesByExt(dirname, ext)
+        // await Promise.all(files.map(async basename => {
+        //   try {
+        //     /** 导入文件 */
+        //     const data: Fnc = await import(`file://${dirname}/${basename}${isRefresh ? `?t=${Date.now()}` : ''}`)
+        //     for (const key in data) {
+        //       load.apps.push(loaderApp(info, dirname, basename, key, data[key]))
+        //     }
+        //   } catch (error) {
+        //     handleError('loaderPlugin', { name: info.plugin.name, error, file: `${dirname}/${basename}` })
+        //   }
+        // }))
       }
     })
   }
