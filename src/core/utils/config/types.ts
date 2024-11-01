@@ -29,10 +29,10 @@ export interface GroupGuildFileCfg {
   mode: 0 | 1 | 2 | 3 | 4 | 5 | 6
   /** 机器人别名 设置后别名+指令触发机器人 */
   alias: string[]
-  /** 白名单插件、功能，只有在白名单中的插件、功能才会响应 {plugin: "插件包名"， name: "文件名称或插件名称"} */
-  enable: { plugin: string, name: string }[]
-  /** 黑名单插件、功能，黑名单中的插件、功能不会响应 {plugin: "插件包名"， name: "文件名称或插件名称"} */
-  disable: { plugin: string, name: string }[]
+  /** 白名单插件、功能，只有在白名单中的插件、功能才会响应 `karin-plugin-test:app.js` `karin-plugin-test:测试转发` */
+  enable: string[]
+  /** 黑名单插件、功能，黑名单中的插件、功能不会响应 `karin-plugin-test:app.js` `karin-plugin-test:测试转发` */
+  disable: string[]
   /** 群、频道成员单独黑名单 */
   memberDisable: string[]
   /** 群、频道成员单独白名单 */
@@ -47,10 +47,10 @@ export interface FriendDirectFileCfg {
   mode: 0 | 2 | 3 | 5 | 6
   /** 机器人别名 设置后别名+指令触发机器人 */
   alias: string[]
-  /** 白名单插件、功能，只有在白名单中的插件、功能才会响应 {plugin: "插件包名"， name: "文件名称或插件名称"} */
-  enable: { plugin: string, name: string }[]
-  /** 黑名单插件、功能，黑名单中的插件、功能不会响应 {plugin: "插件包名"， name: "文件名称或插件名称"} */
-  disable: { plugin: string, name: string }[]
+  /** 白名单插件、功能，只有在白名单中的插件、功能才会响应 `karin-plugin-test:app.js` `karin-plugin-test:测试转发` */
+  enable: string[]
+  /** 黑名单插件、功能，黑名单中的插件、功能不会响应 `karin-plugin-test:app.js` `karin-plugin-test:测试转发` */
+  disable: string[]
 }
 
 /** redis服务配置 */

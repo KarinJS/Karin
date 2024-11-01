@@ -1,3 +1,4 @@
+import lodash from 'lodash'
 import { log } from '..'
 import { karin } from '@/karin'
 import { config as cfg } from '@/start'
@@ -5,8 +6,8 @@ import { createRawMessage } from '@/utils/message'
 import { GroupMessage } from '@/event/create/message/group'
 import type { ConfigType, GroupGuildFileCfg } from '@/utils/config/types'
 import { cache } from '@plugin/cache/cache'
-import { CommandFnc } from '@plugin/cache/types'
-import { AdapterProtocol } from '@/adapter/adapter'
+import { CommandClass, CommandFnc } from '@plugin/cache/types'
+import { PermissionEnum } from '@/adapter/sender'
 
 const groupCD: Record<string, NodeJS.Timeout> = {}
 const groupUserCD: Record<string, NodeJS.Timeout> = {}
@@ -15,11 +16,13 @@ export class GroupHandler {
   event: GroupMessage
   config: ConfigType
   groupCfg: GroupGuildFileCfg
+  isPrint: boolean
 
   constructor (event: GroupMessage) {
     this.event = event
     this.config = cfg.ConfigSync()
     this.groupCfg = cfg.groupGuildCfgSync(this.event.groupId, this.event.selfId)
+    this.isPrint = this.isLogEnable && this.isLogDisable
   }
 
   init () {
@@ -175,7 +178,7 @@ export class GroupHandler {
   /** 打印日志 */
   print () {
     this.event.logText = `[Group:${this.event.groupId}-${this.event.userId}(${this.event.sender.nick || ''})]`
-    if (this.isLogEnable && this.isLogDisable) {
+    if (this.isPrint) {
       logger.bot('info', this.event.selfId, `群消息：[${this.event.groupId}-${this.event.userId}(${this.event.sender.nick || ''})] ${this.event.rawMessage}`)
     }
   }
@@ -214,7 +217,7 @@ export class GroupHandler {
    * @param plugin
    * @returns 返回`true`表示受限
    */
-  isAdapter (plugin: CommandFnc): boolean {
+  isAdapter (plugin: CommandClass | CommandFnc): boolean {
     if (plugin.adapter.length && !plugin.adapter.includes(this.event.bot.adapter.protocol)) {
       return false
     }
@@ -226,145 +229,132 @@ export class GroupHandler {
     return true
   }
 
+  /**
+   * 检查当前插件是否通过插件白名单 返回`true`表示通过
+   * @param plugin 插件对象
+   */
+  isPluginWhite (plugin: CommandClass | CommandFnc): boolean {
+    if (this.groupCfg.enable.length) {
+      const list = [
+        plugin.info.name,
+        `${plugin.info.name}:${plugin.file.basename}`,
+        `${plugin.info.name}:${plugin.file.method}`,
+      ]
+      for (const item of list) {
+        if (this.groupCfg.enable.includes(item)) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
+  /**
+   * 检查当前插件是否通过插件黑名单 返回`true`表示通过
+   * @param plugin 插件对象
+   */
+  isPluginBlack (plugin: CommandClass | CommandFnc): boolean {
+    if (this.groupCfg.disable.length) {
+      const list = [
+        plugin.info.name,
+        `${plugin.info.name}:${plugin.file.basename}`,
+        `${plugin.info.name}:${plugin.file.method}`,
+      ]
+      for (const item of list) {
+        if (this.groupCfg.disable.includes(item)) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+  /**
+   * 判断触发用户是否拥有权限
+   * @param permission 权限
+   */
+  filterPermission (permission: `${PermissionEnum}`): boolean {
+    if (!permission || permission === 'all') return true
+
+    if (permission === 'master') {
+      if (!this.event.isMaster) {
+        this.event.reply('暂无权限，只有主人才能操作')
+        return false
+      }
+      return true
+    }
+
+    if (permission === 'admin') {
+      if (!this.event.isMaster && !this.event.isAdmin) {
+        this.event.reply('暂无权限，只有管理员才能操作')
+        return false
+      }
+      return true
+    }
+
+    if (this.event.isGroup) {
+      const list = {
+        'group.owner': {
+          role: 'owner',
+          name: '群主',
+        },
+        'group.admin': {
+          role: 'admin',
+          name: '群管理员',
+        },
+      } as const
+
+      const role = list[permission as keyof typeof list]
+      if (!role) return true
+      if (role.role === 'owner' && this.event.sender?.role === 'owner') return true
+      if (role.role === 'admin' && (this.event.sender?.role === 'owner' || this.event.sender?.role === 'admin')) return true
+
+      this.event.reply(`暂无权限，只有${role.name}才能操作`)
+      return false
+    }
+
+    return true
+  }
+
   async deal () {
     for (const plugin of cache.command) {
       if (plugin.event !== 'message' && plugin.event !== 'message.group') continue
-      if (plugin.type === 'fnc') {
-        const reg = plugin.reg
-        if (reg && !reg.test(this.event.msg)) continue
-        if (this.isAdapter(plugin)) continue
-        const info = cache.index[plugin.index]
-        /** 判断黑白名单插件 */
-        if (this.groupCfg.enable.length) {
-          if (this.groupCfg.enable.some(item => item.plugin === info.name || item.name === plugin.)) {
-            continue
-          }
+      if (plugin.perm === 'guild.admin' || plugin.perm === 'guild.owner') continue
+      const reg = plugin.reg
+      if (reg && !reg.test(this.event.msg)) continue
+
+      if (this.isAdapter(plugin)) continue
+      if (!this.isPluginWhite(plugin)) continue
+      if (!this.isPluginBlack(plugin)) continue
+
+      this.event.logFnc = `[${plugin.name}][${plugin.file.method}]`
+      const logFnc = logger.fnc(this.event.logFnc)
+      this.isPrint && plugin.log(this.event.selfId, `${logFnc}${this.event.logText} ${lodash.truncate(this.event.msg, { length: 100 })}`)
+
+      /** 计算插件处理时间 */
+      const start = Date.now()
+      karin.emit('karin:count:fnc', this.event)
+
+      try {
+        if (!this.filterPermission(plugin.perm)) return
+        let result
+        if (plugin.type === 'fnc') {
+          result = await plugin.fnc(this.event)
+        } else {
+          const App = new plugin.Cls()
+          App.e = this.event
+          result = await (App as any)[plugin.file.method](App.e)
         }
-        await plugin.fnc(this.event)
+        /** 贪婪匹配下一个 */
+        if (result === false) continue
+        return
+      } catch (error: any) {
+        logger.error(`${this.event.logFnc}`)
+        karin.emit('error', error)
+        return
+      } finally {
+        this.isPrint && plugin.log(this.event.selfId, `${logFnc} ${lodash.truncate(this.event.msg, { length: 100 })} 处理完成 ${logger.green(Date.now() - start + 'ms')}`)
       }
     }
   }
-// export const groupHandler = async (event: GroupMessage) => {
-//   /** 是否处于限制 */
-//   const data = {
-//     /** 处于限制 `true=限制中` */
-//     limit: false,
-//     type: '',
-//   }
-
-//   const groupCfg = await cfg.groupGuildCfg(event.groupId, event.selfId)
-//   if (isCD(event.groupId, event.userId, groupCfg)) {
-//     data.type = 'cd'
-//     data.limit = true
-//     return data
-//   }
-
-//   const config = await cfg.Config()
-//   /** 群白名单 */
-//   if (config.enable.groups.length && config.enable.groups.includes(event.groupId)) {
-//     /** 群成员白名单、全局用户白名单 */
-//     const enable = [...groupCfg.memberEnable, ...config.enable.users]
-//     if (enable.length && enable.includes(event.userId)) {
-//       data.type = 'memberEnable'
-//       data.limit = false
-//       return data
-//     }
-
-//     /** 群成员黑名单、全局用户黑名单 */
-//     const disable = [...groupCfg.memberDisable, ...config.disable.users]
-//     if (disable.length && disable.includes(event.userId)) {
-//       data.type = 'memberDisable'
-//       data.limit = true
-//       return data
-//     }
-
-//     /** 通过了全部白名单、用户黑名单 */
-//     data.type = 'groupEnable'
-//     return data
-//   }
-
-//   /** 群黑名单 */
-//   if (config.disable.groups.length && config.disable.groups.includes(event.groupId)) {
-//     data.type = 'groupDisable'
-//     data.limit = true
-//     return data
-//   }
-
-//   /** 群成员、用户白名单 */
-//   const enable = [...groupCfg.memberEnable, ...config.enable.users]
-//   if (enable.length && enable.includes(event.userId)) {
-//     data.type = 'memberEnable'
-//     data.limit = false
-//     return data
-//   }
-
-//   /** 群成员、用户黑名单 */
-//   const disable = [...groupCfg.memberDisable, ...config.disable.users]
-//   if (disable.length && disable.includes(event.userId)) {
-//     data.type = 'memberDisable'
-//     data.limit = true
-//     return data
-//   }
-
-//   /** 通过了全部白名单、用户黑名单 */
-//   data.type = 'groupEnable'
-//   return data
-// }
-
-// /**
-//  * 检查是否处于cd中
-//  * @param groupId 群号
-//  * @param userId 用户号
-//  * @param GroupCfg 群配置或botId
-//  */
-// export const isCD = (groupId: string, userId: string, GroupCfg: GroupGuildFileCfg) => {
-//   const groupKey = groupId
-//   const userKey = `${groupKey}.${userId}`
-
-//   /** 计时器存在直接返回即可 */
-//   if (groupCD[groupKey] || groupUserCD[userKey]) {
-//     return true
-//   }
-
-//   /** 群CD */
-//   if (GroupCfg.cd > 0) {
-//     groupCD[groupKey] = setTimeout(() => {
-//       delete groupCD[groupKey]
-//     }, GroupCfg.cd * 1000)
-//   }
-
-//   /** 群个人cd */
-//   if (GroupCfg.userCD > 0) {
-//     groupUserCD[userKey] = setTimeout(() => {
-//       delete groupUserCD[userKey]
-//     }, GroupCfg.userCD * 1000)
-//   }
-
-//   return false
-// }
-
-// /**
-//  * 检查是否处于黑白名单
-//  * @param groupId 群号
-//  * @param userId 用户号
-//  * @param GroupCfgOrSelfId 群配置或botId
-//  */
-// export const isBlackWhite = (groupId: string, userId: string, GroupCfgOrSelfId: GroupGuildFileCfg | string) => {
-//   let GroupCfg: GroupGuildFileCfg
-
-//   if (typeof GroupCfgOrSelfId === 'string') {
-//     GroupCfg = cfg.groupGuildCfgSync(groupId, GroupCfgOrSelfId)
-//   } else {
-//     GroupCfg = GroupCfgOrSelfId
-//   }
-
-//   if (GroupCfg.memberDisable.includes(userId)) {
-//     return true
-//   }
-
-//   if (GroupCfg.memberEnable.includes(userId)) {
-//     return false
-//   }
-
-//   return false
-// }
+}

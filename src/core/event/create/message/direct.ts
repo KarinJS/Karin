@@ -60,5 +60,5 @@ export class DirectMessage extends MessageBase implements DirectMessageEventType
  * @param options 频道私信消息事件所需参数
  */
 export const createDirectMessage = (options: Omit<DirectMessageOptions, 'subEvent'>): DirectMessage => {
-  const event = new DirectMessage({ ...options, subEvent: MessageEventSubEnum.GUILD_DIRECT })
+  return new DirectMessage({ ...options, subEvent: MessageEventSubEnum.GUILD_DIRECT })
 }

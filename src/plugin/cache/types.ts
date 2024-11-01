@@ -99,7 +99,7 @@ export interface CommandBase extends PluginOptions {
 export interface CommandClass extends CommandBase {
   type: 'class'
   /** 插件类 */
-  cls: new () => Plugin
+  Cls: new () => Plugin
   /** 监听事件 */
   event: keyof MessageEventMap
 }

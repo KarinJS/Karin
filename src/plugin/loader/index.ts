@@ -158,10 +158,10 @@ const loaderApp = async (info: List[number], dirname: string, basename: string, 
         name: app.name,
         adapter: v.adapter || [],
         dsbAdapter: v.dsbAdapter || [],
-        cls: Cls,
+        Cls,
         reg: v.reg instanceof RegExp ? v.reg : new RegExp(v.reg),
         perm: v.permission || 'all',
-        event: v.event || 'message',
+        event: v.event || app.event || 'message',
         rank: v.priority || 10000,
         get info () {
           return cache.index[this.index]

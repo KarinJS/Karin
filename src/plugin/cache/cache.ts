@@ -54,7 +54,7 @@ export type ClsOptions = Omit<FncOptions, 'perm' | 'rank'> & {
   /** 插件索引 */
   index: number
   /** 插件类 */
-  cls: CommandClass['cls']
+  cls: CommandClass['Cls']
   /** 监听事件 */
   event?: CommandClass['event']
   /** 插件方法名称 */

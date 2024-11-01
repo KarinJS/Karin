@@ -1,5 +1,5 @@
-import { common } from '@/common'
 import { listeners } from './listeners'
+import { axios } from '@/utils/common'
 import { getPid } from '@/utils/system/pid'
 
 /** 处理基本信号 */
@@ -29,8 +29,8 @@ export const processHandler = () => {
  * @param port - 端口号
  */
 export const checkProcess = async (port: number) => {
-  const hpst = `http://127.0.0.1:${port}`
-  const data = await common.axios({ url: `${hpst}/ping`, method: 'get', timeout: 2000 })
+  const host = `http://127.0.0.1:${port}`
+  const data = await axios({ url: `${host}/ping`, method: 'get', timeout: 2000 })
   if (!data || data.status !== 200) return
 
   /** 端口被未知程序占用 获取对应的进程ID */
@@ -46,10 +46,10 @@ export const checkProcess = async (port: number) => {
   }
 
   logger.warn('检测到后台进程 正在关闭...')
-  await common.axios({ url: `${hpst}/exit`, method: 'get', timeout: 2000 })
+  await axios({ url: `${host}/exit`, method: 'get', timeout: 2000 })
 
   for (let i = 0; i < 50; i++) {
-    const result = await common.axios({ url: `${hpst}/ping`, method: 'get', timeout: 100 })
+    const result = await axios({ url: `${host}/ping`, method: 'get', timeout: 100 })
     /** 请求成功继续循环 */
     if (result) continue
     /** 请求异常即代表后台进程已关闭 */
