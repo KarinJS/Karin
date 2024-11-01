@@ -1,7 +1,7 @@
 import lodash from 'lodash'
 import { log } from '..'
 import { karin } from '@/karin'
-import { config as cfg } from '@/start'
+import { config as cfg } from 'src/start'
 import { createRawMessage } from '@/utils/message'
 import { GroupMessage } from '@/event/create/message/group'
 import type { ConfigType, GroupGuildFileCfg } from '@/utils/config/types'
@@ -37,10 +37,9 @@ export class GroupHandler {
     karin.emit('message', this.event)
     karin.emit('message.group', this.event)
     const isRestricted = this.isRestricted()
+    console.log('🚀 ~ file: group.ts:40 ~ GroupHandler ~ init ~ isRestricted:', isRestricted)
 
-    if (!isRestricted) {
-      this.deal()
-    }
+    this.deal()
   }
 
   /** 检查是否存在cd中 */

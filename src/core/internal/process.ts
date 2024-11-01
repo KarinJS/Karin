@@ -34,14 +34,14 @@ export const checkProcess = async (port: number) => {
   if (!data || data.status !== 200) return
 
   /** 端口被未知程序占用 获取对应的进程ID */
-  if (data.data.name !== 'karin') {
-    const pid = await getPid(port).catch(() => '')
+  if (data?.data?.name !== 'karin') {
+    const pid = await getPid(port).catch(() => -0)
     logger.fatal(`端口 ${port} 被进程占用，进程ID：${pid}，请手动关闭对应进程或解除端口占用`)
     return
   }
 
   /** 判断是否为同个进程 防止无限循环启动 */
-  if (data.data.pm2_id === process.pid) {
+  if (data?.data?.pm2_id === process.pid) {
     return
   }
 

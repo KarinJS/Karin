@@ -91,6 +91,17 @@ export interface SendMsgResults {
   rawData?: object | Array<any>
 }
 
+export interface ForwardOptions {
+  /** 小卡片中间的外显 */
+  news: Array<{ text: string }>,
+  /** qwqa说这个叫不懂 消息列表的外显 */
+  prompt: string,
+  /** 小卡片底下文本: 查看1条转发消息 */
+  summary: string,
+  /** 小卡片标题 */
+  source: string
+}
+
 /** 适配器类型 */
 export interface AdapterType {
   /** 适配器信息 */
@@ -122,9 +133,11 @@ export interface AdapterType {
   /** 账号信息 */
   account: {
     /** Bot的uin */
-    uin: string
+    _uin: string
     /** Bot的uid */
-    uid: string
+    _uid: string
+    /** Bot的selfId 一般使用此参数即可 */
+    selfId: string
     /** Bot的子ID 比如在QQ频道下Bot拥有一个和普通用户一样的ID */
     subId: string
     /** 账号名 不存在则是空字符串 */
@@ -170,16 +183,7 @@ export interface AdapterType {
    * @param elements 消息元素
    * @param options 首层小卡片外显参数
    */
-  sendForwardMessage (contact: Contact, elements: Array<NodeElementType>, options?: {
-    /** 小卡片中间的外显 */
-    news: Array<{ text: string }>,
-    /** qwqa说这个叫不懂 消息列表的外显 */
-    prompt: string,
-    /** 小卡片底下文本: 查看1条转发消息 */
-    summary: string,
-    /** 小卡片标题 */
-    source: string
-  }): Promise<{ messageId: string }>
+  sendForwardMessage (contact: Contact, elements: Array<NodeElementType>, options?: ForwardOptions): Promise<{ messageId: string }>
 
   /**
    * 撤回消息
@@ -266,7 +270,7 @@ export interface AdapterType {
   /**
    * 群踢人
    * @param groupId 群ID
-   * @param targetId 被踢出目标的UID或者UIN 任选其一
+   * @param targetId 被踢出目标的ID 任选其一
    * @param rejectAddRequest 是否拒绝再次申请，默认为false
    * @param kickReason 踢出原因，可选
    * @returns 此接口的返回值不值得信任
@@ -276,7 +280,7 @@ export interface AdapterType {
   /**
    * 禁言群成员
    * @param groupId 群ID
-   * @param targetId 被禁言目标的UID或者UIN 任选其一
+   * @param targetId 被禁言目标的ID 任选其一
    * @param duration 禁言时长 单位:秒
    * @returns 此接口的返回值不值得信任
    */
@@ -287,12 +291,12 @@ export interface AdapterType {
    * @param isBan 是否开启全员禁言
    * @returns 此接口的返回值不值得信任
    */
-  setGroupMute (groupId: string, isBan: boolean): Promise<boolean>
+  setGroupAllMute (groupId: string, isBan: boolean): Promise<boolean>
 
   /**
    * 设置群管理员
    * @param groupId 群ID
-   * @param targetId 目标用户的UID或者UIN 任选其一
+   * @param targetId 目标用户的ID
    * @param isAdmin 是否设置为管理员
    * @returns 此接口的返回值不值得信任
    */
@@ -301,7 +305,7 @@ export interface AdapterType {
   /**
    * 设置群名片
    * @param groupId 群ID
-   * @param targetId 目标用户的UID或者UIN 任选其一
+   * @param targetId 目标用户的ID
    * @param card 新的群名片
    * @returns 此接口的返回值不值得信任
    */
@@ -326,7 +330,7 @@ export interface AdapterType {
   /**
    * 设置群专属头衔 仅群主可用
    * @param groupId 群ID
-   * @param targetId 目标用户的UID或者UIN 任选其一
+   * @param targetId 目标用户的ID
    * @param title 新的专属头衔
    * @returns 此接口的返回值不值得信任
    */
@@ -334,7 +338,7 @@ export interface AdapterType {
 
   /**
    * 获取陌生人信息
-   * @param targetId 用户UID或者UIN 任选其一
+   * @param targetId 用户ID 任选其一
    * @returns 陌生人信息数组
    */
   getStrangerInfo (targetId: string): Promise<UserInfo>
@@ -365,7 +369,7 @@ export interface AdapterType {
    * 获取群成员信息
    * 此接口在非QQ平台上很难获取到标准信息，因此返回的数据可能会有所不同
    * @param groupId 群ID
-   * @param targetId 目标用户的UID或者UIN 任选其一
+   * @param targetId 目标用户的ID
    * @param refresh 是否刷新缓存
    * @returns 群成员信息
    */
@@ -504,7 +508,7 @@ export interface AdapterType {
    * @param remark 新的备注
    * @returns 此接口的返回值不值得信任
    */
-  setGroupRemark: (groupId: string, remark: string) => Promise<boolean>
+  setGroupRemark (groupId: string, remark: string): Promise<boolean>
 
   /**
    * 获取陌生群信息
@@ -532,7 +536,7 @@ export interface AdapterType {
    * @param count 戳一戳次数 默认为1
    * @returns 此接口的返回值不值得信任
    */
-  pokeUser: (contact: Contact, count?: number) => Promise<boolean>
+  pokeUser (contact: Contact, count?: number): Promise<boolean>
 
   /**
    * 获取 Cookies

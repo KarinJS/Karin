@@ -10,6 +10,8 @@ export interface EventMap {
   'message.group': (event: GroupMessage) => void
   'karin:count:send': (count: number) => void
   'karin:count:fnc': (event: Message) => void
+  'karin:adapter:open': () => void
+  'karin:adapter:close': () => void
 }
 
 /** 类型化事件监听器 */
