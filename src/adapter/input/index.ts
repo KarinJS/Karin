@@ -36,7 +36,7 @@ export class AdapterInput extends AdapterBase implements AdapterType {
     const time = Date.now()
     /** 如果带`group`前缀 则视为群环境 */
     if (text.startsWith('group')) {
-      const contact = karin.contactGroup('967068507')
+      const contact = karin.contactGroup('10010')
       createGroupMessage({
         bot: this,
         contact,
@@ -46,16 +46,16 @@ export class AdapterInput extends AdapterBase implements AdapterType {
         messageSeq: seq,
         rawEvent: { data },
         selfId: 'input',
-        sender: karin.senderUnknown('3889021886'),
+        sender: karin.senderUnknown('input', '神秘的群成员'),
         time,
         srcReply: (elements) => this.sendMsg(contact, elements),
         subEvent: 'group',
-        userId: '3889021886',
+        userId: 'input',
       })
       return
     }
 
-    const contact = karin.contactFriend('3889021886')
+    const contact = karin.contactFriend('input')
     createFriendMessage({
       bot: this,
       contact,
@@ -65,11 +65,11 @@ export class AdapterInput extends AdapterBase implements AdapterType {
       messageSeq: seq,
       rawEvent: { data },
       selfId: 'input',
-      sender: karin.senderUnknown('3889021886'),
+      sender: karin.senderUnknown('input', '未知的好友'),
       time,
       srcReply: (elements) => this.sendMsg(contact, elements),
       subEvent: 'friend',
-      userId: '3889021886',
+      userId: 'input',
     })
   }
 

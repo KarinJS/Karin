@@ -1,8 +1,9 @@
 import util from 'node:util'
 import chokidar from 'chokidar'
 import { karinDir } from '@/init/dir'
-import { defaultConfig, userConfig } from '@/utils/fs/root'
+import { exists } from '@/utils/fs/exists'
 import { clearRequireFile, requireFile, requireFileSync } from '@/utils'
+import { defaultConfigPath, configPath, basePath, dataPath, tempPath } from '@/utils/fs/root'
 
 import type {
   ConfigType,
@@ -80,7 +81,8 @@ export class Config {
 
   /** 初始化 */
   async init () {
-    copyConfigSync(defaultConfig, userConfig, ['.yaml'])
+    [basePath, configPath, dataPath, tempPath].map(v => exists(v))
+    copyConfigSync(defaultConfigPath, configPath, ['.yaml'])
     /** 启动后每隔10秒调用一次 6次之后每60秒固定调用一次 */
     let count = 0
     const intervalId = setInterval(() => {
@@ -125,7 +127,7 @@ export class Config {
         return
       }
       if (result === true) clearRequireFile(file)
-      if (file === `${userConfig}/config.yaml`) this.updateLevel()
+      if (file === `${configPath}/config.yaml`) this.updateLevel()
     })
 
     /** 如果watcher被关闭 则当前实例移除全部监听器并清理watcherMap中的缓存 */
@@ -410,7 +412,7 @@ export class Config {
    * @param type 文件类型 用户配置/默认配置
    */
   getUserYamlSync<T extends keyof ConfigMap = keyof ConfigMap> (name: T, type: 'user' | 'default'): ConfigMap[T] {
-    const file = `${type === 'default' ? defaultConfig : userConfig}/${name}.yaml`
+    const file = `${type === 'default' ? defaultConfigPath : configPath}/${name}.yaml`
     this.watch(file, () => true)
     /** tips: 不设置永不过期的缓存是因为group这些配置会另外解析缓存 */
     return requireFileSync(file)
@@ -422,7 +424,7 @@ export class Config {
    * @param type 文件类型 用户配置/默认配置
    */
   async getUserYaml<T extends keyof ConfigMap = keyof ConfigMap> (name: T, type: 'user' | 'default'): Promise<ConfigMap[T]> {
-    const file = `${type === 'default' ? defaultConfig : userConfig}/${name}.yaml`
+    const file = `${type === 'default' ? defaultConfigPath : configPath}/${name}.yaml`
     this.watch(file, () => true)
     /** tips: 不设置永不过期的缓存是因为group这些配置会另外解析缓存 */
     return requireFile(file)

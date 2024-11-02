@@ -8,6 +8,8 @@ import type { ConfigType, GroupGuildFileCfg } from '@/utils/config/types'
 import { cache } from '@plugin/cache/cache'
 import { CommandClass, CommandFnc } from '@plugin/cache/types'
 import { PermissionEnum } from '@/adapter/sender'
+import { alias } from '@/utils/message/alias'
+import { isAdapter } from '@/utils/message/adapter'
 
 const groupCD: Record<string, NodeJS.Timeout> = {}
 const groupUserCD: Record<string, NodeJS.Timeout> = {}
@@ -31,7 +33,7 @@ export class GroupHandler {
     this.event.rawMessage = raw
     this.print()
     this.admin()
-    this.alias()
+    alias(this.event, this.groupCfg.alias)
 
     // TODO: 总觉得没必要再进行分发一次 这里下个版本再去掉先兼容旧版 2024年10月31日14:33:53
     karin.emit('message', this.event)
@@ -192,40 +194,6 @@ export class GroupHandler {
     }
   }
 
-  /** 处理Bot别名 */
-  alias () {
-    const aliasRegex = new RegExp(`^(${this.groupCfg.alias.join('|')})`)
-    const match = this.event.msg.match(aliasRegex)
-    if (match) {
-      this.event.msg = this.event.msg.replace(aliasRegex, '').trim()
-      this.event.alias = match[1]
-      return true
-    }
-    return false
-  }
-
-  /** 过滤时间 返回false表示未通过 */
-  filterEvent (event: CommandFnc['event']): boolean {
-    return !!(event === 'message' || event !== 'message.group')
-  }
-
-  /**
-   * 检查当前适配器是否受到限制
-   * @param plugin
-   * @returns 返回`true`表示受限
-   */
-  isAdapter (plugin: CommandClass | CommandFnc): boolean {
-    if (plugin.adapter.length && !plugin.adapter.includes(this.event.bot.adapter.protocol)) {
-      return true
-    }
-
-    if (plugin.dsbAdapter.length && plugin.dsbAdapter.includes(this.event.bot.adapter.protocol)) {
-      return true
-    }
-
-    return false
-  }
-
   /**
    * 检查当前插件是否通过插件白名单 返回`true`表示通过
    * @param plugin 插件对象
@@ -320,7 +288,7 @@ export class GroupHandler {
       const reg = plugin.reg
       if (reg && !reg.test(this.event.msg)) continue
 
-      if (this.isAdapter(plugin)) continue
+      if (isAdapter(plugin, this.event.bot.adapter.protocol)) continue
       if (!this.isPluginWhite(plugin)) continue
       if (!this.isPluginBlack(plugin)) continue
 

@@ -11,7 +11,7 @@ export interface PluginInfo {
   apps: string[]
   /** 插件目录绝对路径 */
   path: string
-  /** 插件包名 */
+  /** 插件名称 */
   name: string
   /** 插件版本 */
   version: string

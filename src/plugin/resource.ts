@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { defaultConfig, userConfig } from '../core/utils/fs/root'
+import { defaultConfigPath, configPath } from '../core/utils/fs/root'
 import { copyConfigSync } from '../core/utils/config/createCfg'
 
 /**
@@ -24,5 +24,5 @@ export const createPluginDir = async (name: string, files: string[]) => {
  * 创建框架基本文件夹结构
  */
 export const createKarinDir = () => {
-  copyConfigSync(defaultConfig, userConfig, ['.yaml'])
+  copyConfigSync(defaultConfigPath, configPath, ['.yaml'])
 }

@@ -2,14 +2,14 @@ import fs from 'node:fs'
 import path from 'path'
 import { getPluginCache } from '../cache/cache'
 import { requireFile } from '@/utils/fs/require'
-import { type PluginInfo } from './types'
+import { PackageJson, type PluginInfo } from './types'
 
 const key = {
   list: 'npm:list',
   info: 'npm:list:info',
 }
 
-const getPkg = async (name: string) => {
+const getPkg = async (name: string): Promise<PackageJson> => {
   const data = await requireFile(path.join(process.cwd(), 'node_modules', name, 'package.json'))
   return data
 }
@@ -91,24 +91,24 @@ export const getNpmPluginsInfo = async (): Promise<PluginInfo[]> => {
     const plugin: PluginInfo = {
       type: 'npm',
       apps: [],
-      main: pkg.data?.main,
+      main: pkg.main,
       path: pkgPath,
       name: pkg.name,
       pkg: pkg.data,
-      version: pkg.data?.version || '0.0.0',
+      version: pkg.version || '0.0.0',
     }
 
     /** 没有apps */
-    if (!pkg.data?.karin?.apps?.length) {
+    if (!pkg.karin?.apps?.length) {
       info.push(plugin)
       return
     }
 
     const apps: string[] = []
-    if (typeof pkg.data.karin.apps === 'string') {
-      apps.push(pkg.data.karin.apps)
-    } else if (Array.isArray(pkg.data.karin.apps)) {
-      apps.push(...pkg.data.karin.apps)
+    if (typeof pkg.karin.apps === 'string') {
+      apps.push(pkg.karin.apps)
+    } else if (Array.isArray(pkg.karin.apps)) {
+      apps.push(...pkg.karin.apps)
     }
 
     await Promise.all(apps.map(async app => {

@@ -17,6 +17,8 @@ import type {
 } from '../cache/types'
 import type { PluginInfo } from '../list/types'
 import path from 'node:path'
+import { exists } from '@/utils/fs/exists'
+import { basePath } from '@/utils/fs/root'
 
 type List = { index: number, plugin: PluginInfo }[]
 type FncType = Accept
@@ -31,7 +33,7 @@ type Fnc = Record<string, FncType | FncType[]>
 let index = 0
 const load: {
   main: (() => Promise<void>)[]
-  pkg: (() => Promise<void>)[]
+  pkg: (Promise<void>)[]
   apps: (Promise<void>)[]
 } = {
   main: [],
@@ -54,7 +56,7 @@ export const loaderPlugin = async () => {
   })
 
   await Promise.all([loaderMain(list), loaderPkg(list)])
-  await Promise.all(load.pkg.map(fnc => fnc()))
+  await Promise.all(load.pkg)
   await Promise.all(load.apps)
   clearCache()
   sort()
@@ -108,34 +110,28 @@ const loaderMain = async (list: List, isRefresh = false) => {
  */
 const loaderPkg = async (list: List, isRefresh = false) => {
   for (const info of list) {
-    load.pkg.push(async () => {
-      for (const file of info.plugin.apps) {
-        const dirname = path.dirname(file)
-        const basename = path.basename(file)
-        try {
-          /** 导入文件 */
-          const data: Fnc = await import(`file://${dirname}/${basename}${isRefresh ? `?t=${Date.now()}` : ''}`)
-          for (const key in data) {
-            load.apps.push(loaderApp(info, dirname, basename, key, data[key]))
-          }
-        } catch (error) {
-          handleError('loaderPlugin', { name: info.plugin.name, error, file: `${dirname}/${basename}` })
-        }
-        // /** 读取指定apps路径下所有符合的文件 */
-        // const files = filesByExt(dirname, ext)
-        // await Promise.all(files.map(async basename => {
-        //   try {
-        //     /** 导入文件 */
-        //     const data: Fnc = await import(`file://${dirname}/${basename}${isRefresh ? `?t=${Date.now()}` : ''}`)
-        //     for (const key in data) {
-        //       load.apps.push(loaderApp(info, dirname, basename, key, data[key]))
-        //     }
-        //   } catch (error) {
-        //     handleError('loaderPlugin', { name: info.plugin.name, error, file: `${dirname}/${basename}` })
-        //   }
-        // }))
-      }
-    })
+    createPluginDir(info.plugin)
+    for (const file of info.plugin.apps) {
+      load.pkg.push(importPlugin(file, info, isRefresh))
+    }
+  }
+}
+
+/**
+ * 导入插件
+ * @param path 插件路径
+ */
+export const importPlugin = async (file: string, info: List[number], isRefresh = false) => {
+  const dirname = path.dirname(file)
+  const basename = path.basename(file)
+  try {
+    /** 导入文件 */
+    const data: Fnc = await import(`file://${dirname}/${basename}${isRefresh ? `?t=${Date.now()}` : ''}`)
+    for (const key in data) {
+      load.apps.push(loaderApp(info, dirname, basename, key, data[key]))
+    }
+  } catch (error) {
+    handleError('loaderPlugin', { name: info.plugin.name, error, file: `${dirname}/${basename}` })
   }
 }
 
@@ -148,6 +144,7 @@ const loaderPkg = async (list: List, isRefresh = false) => {
  * @param val 插件方法
  */
 const loaderApp = async (info: List[number], dirname: string, basename: string, key: string, val: FncType | FncType[]) => {
+  logger.debug(`加载插件：[index:${info.index}][${info.plugin.name}][${basename}][${key}]`)
   if (typeof val === 'function') {
     if (!isClass(val)) return
     const Cls = val as new () => Plugin
@@ -256,4 +253,24 @@ export const sort = () => {
   for (const key of Object.keys(cache.handler)) {
     cache.handler[key] = lodash.sortBy(cache.handler[key], ['rank'], ['asc'])
   }
+}
+
+/**
+ * 为插件创建基本的数据文件夹
+ * @param info 插件的paclage.json文件对象
+ */
+export const createPluginDir = (info: PluginInfo) => {
+  /** 不管任何情况下 都创建插件包名的根文件夹 */
+  exists(path.join(basePath, info.name))
+  const list: string[] = []
+  /** 如果没有这个配置，则默认创建基本目录 */
+  if (!info?.pkg?.karin?.files) {
+    list.push('config', 'data', 'resource')
+  } else if (Array.isArray(info?.pkg?.karin?.files)) {
+    list.push(...info.pkg.karin.files)
+  }
+
+  list.forEach(dir => {
+    exists(path.join(basePath, info.name, dir))
+  })
 }

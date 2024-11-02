@@ -8,6 +8,8 @@ import { cache } from '@plugin/cache/cache'
 import { CommandClass, CommandFnc } from '@plugin/cache/types'
 import { PermissionEnum } from '@/adapter/sender'
 import { FriendMessage } from '@/event/create/message/friend'
+import { alias } from '@/utils/message/alias'
+import { isAdapter } from '@/utils/message/adapter'
 
 const userCD: Record<string, NodeJS.Timeout> = {}
 
@@ -28,7 +30,7 @@ export class FriendHandler {
     this.event.rawMessage = raw
     this.print()
     this.admin()
-    this.alias()
+    alias(this.event, this.friendCfg.alias)
 
     // TODO: 总觉得没必要再进行分发一次 这里下个版本再去掉先兼容旧版 2024年10月31日14:33:53
     karin.emit('message', this.event)
@@ -116,8 +118,8 @@ export class FriendHandler {
 
   /** 打印日志 */
   print () {
-    this.event.logText = `[friend:${this.event.userId}-${this.event.userId}(${this.event.sender.nick || ''})]`
-    logger.bot('info', this.event.selfId, `好友消息: [${this.event.userId}-${this.event.userId}(${this.event.sender.nick || ''})] ${this.event.rawMessage}`)
+    this.event.logText = `[friend:${this.event.userId}(${this.event.sender.nick || ''})]`
+    logger.bot('info', this.event.selfId, `好友消息: [${this.event.userId}(${this.event.sender.nick || ''})] ${this.event.rawMessage}`)
   }
 
   /** 管理员身份 */
@@ -130,40 +132,6 @@ export class FriendHandler {
       /** 管理员 */
       this.event.isAdmin = true
     }
-  }
-
-  /** 处理Bot别名 */
-  alias () {
-    const aliasRegex = new RegExp(`^(${this.friendCfg.alias.join('|')})`)
-    const match = this.event.msg.match(aliasRegex)
-    if (match) {
-      this.event.msg = this.event.msg.replace(aliasRegex, '').trim()
-      this.event.alias = match[1]
-      return true
-    }
-    return false
-  }
-
-  /** 过滤时间 返回false表示未通过 */
-  filterEvent (event: CommandFnc['event']): boolean {
-    return !!(event === 'message' || event !== 'message.group')
-  }
-
-  /**
-   * 检查当前适配器是否受到限制
-   * @param plugin
-   * @returns 返回`true`表示受限
-   */
-  isAdapter (plugin: CommandClass | CommandFnc): boolean {
-    if (plugin.adapter.length && !plugin.adapter.includes(this.event.bot.adapter.protocol)) {
-      return true
-    }
-
-    if (plugin.dsbAdapter.length && plugin.dsbAdapter.includes(this.event.bot.adapter.protocol)) {
-      return true
-    }
-
-    return false
   }
 
   /**
@@ -241,7 +209,7 @@ export class FriendHandler {
       const reg = plugin.reg
       if (reg && !reg.test(this.event.msg)) continue
 
-      if (this.isAdapter(plugin)) continue
+      if (isAdapter(plugin, this.event.bot.adapter.protocol)) continue
       if (!this.isPluginWhite(plugin)) continue
       if (!this.isPluginBlack(plugin)) continue
 

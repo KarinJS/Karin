@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { getPluginCache } from '../cache/cache'
 import { requireFile } from '@/utils/fs/require'
-import { type PluginInfo } from './types'
+import { PackageJson, type PluginInfo } from './types'
 
 /** git插件包名规范 */
 export type GitPluginName = `karin-plugin-${string}`
@@ -12,7 +12,7 @@ const key = {
   info: 'git:list:info',
 }
 
-const getPkg = async (name: string) => {
+const getPkg = async (name: string): Promise<PackageJson | null> => {
   try {
     const data = await requireFile(path.join(process.cwd(), 'pluhins', name, 'package.json'))
     return data
@@ -77,7 +77,7 @@ export const getGitPluginsInfo = async (): Promise<PluginInfo[]> => {
   const list: {
     /** 插件包根路径 */
     filePath: string,
-    /** 插件包名 */
+    /** 插件名称 */
     name: string
   }[] = []
 
@@ -103,24 +103,24 @@ export const getGitPluginsInfo = async (): Promise<PluginInfo[]> => {
     const plugin: PluginInfo = {
       type: 'git',
       apps: [],
-      main: pkg.data?.main,
+      main: pkg.main,
       path: filePath,
       name: pkg.name,
-      pkg: pkg.data,
-      version: pkg.data?.version || '0.0.0',
+      pkg,
+      version: pkg.version || '0.0.0',
     }
 
     /** 没有apps */
-    if (!pkg.data?.karin?.apps?.length) {
+    if (!pkg.karin?.apps?.length) {
       info.push(plugin)
       return
     }
 
     const apps: string[] = []
-    if (typeof pkg.data.karin.apps === 'string') {
-      apps.push(pkg.data.karin.apps)
-    } else if (Array.isArray(pkg.data.karin.apps)) {
-      apps.push(...pkg.data.karin.apps)
+    if (typeof pkg.karin.apps === 'string') {
+      apps.push(pkg.karin.apps)
+    } else if (Array.isArray(pkg.karin.apps)) {
+      apps.push(...pkg.karin.apps)
     }
 
     await Promise.all(apps.map(async app => {
