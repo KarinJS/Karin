@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import chalk from 'chalk'
-import { type ConfigType, type LoggerLevel } from '../config/types'
+import type { ConfigType, LoggerLevel } from '../config/types'
 import log4js, { type Configuration } from 'log4js'
 
 export type LoggerType = log4js.Logger & LoggerExpand

@@ -1,4 +1,5 @@
 import { Event, FriendMessage, GroupMessage, Message } from '@/event'
+import { CommandBase } from '@plugin/cache/types'
 import { EventEmitter } from 'events'
 
 /** 事件字典 */
@@ -10,9 +11,10 @@ export interface EventMap {
   'message.group': (event: GroupMessage) => void
   'message.friend': (event: FriendMessage) => void
   'karin:count:send': (count: number) => void
-  'karin:count:fnc': (event: Message) => void
+  'karin:count:fnc': (options: { name: string, file: CommandBase['file'], event: Message }) => void
   'karin:adapter:open': () => void
   'karin:adapter:close': () => void
+  'update:logger:level': () => void
 }
 
 /** 类型化事件监听器 */

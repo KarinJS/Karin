@@ -1,3 +1,4 @@
+import type { LoggerLevel } from '@/utils/config/types'
 import type { AdapterType, ForwardOptions, SendMsgResults } from '@/adapter/adapter'
 import {
   AdapterCommunication,
@@ -9,10 +10,21 @@ import { Contact } from '@/adapter/contact'
 import {
   ElementTypes,
   NodeElementType,
-
 } from '@/adapter/segment'
-import { CreateGroupFolderResponse, DownloadFileOptions, DownloadFileResponse, GetAtAllCountResponse, GetGroupFileListResponse, GetGroupFileSystemInfoResponse, GetGroupHighlightsResponse, GetGroupMuteListResponse, GroupInfo, GroupMemberInfo, MessageResponse, QQGroupHonorInfo, UserInfo } from '@/adapter/types'
-import { LoggerType } from '@/utils'
+import {
+  CreateGroupFolderResponse,
+  DownloadFileOptions,
+  DownloadFileResponse,
+  GetAtAllCountResponse,
+  GetGroupFileListResponse,
+  GetGroupFileSystemInfoResponse,
+  GetGroupHighlightsResponse,
+  GetGroupMuteListResponse,
+  GroupInfo,
+  GroupMemberInfo,
+  MessageResponse,
+  QQGroupHonorInfo, UserInfo,
+} from '@/adapter/types'
 
 /**
  * 适配器基类 一个示例
@@ -25,31 +37,28 @@ export class AdapterBase implements AdapterType {
   constructor () {
     this.account = { _uin: '', _uid: '', selfId: '', subId: '', name: '', avatar: '' }
     this.adapter = {
+      index: -1,
       name: '',
       version: '',
       platform: AdapterPlatform.QQ,
       standard: AdapterStandard.ICQQ,
       protocol: AdapterProtocol.ICQQ,
-      communication: AdapterCommunication.Internal,
+      communication: AdapterCommunication.INTERNAL,
       address: '',
       secret: null,
     }
   }
 
   get selfId (): string {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
-  }
-
-  get selfInfo (): string {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    return this.account.selfId
   }
 
   get selfName (): string {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    return this.account.name
   }
 
   get selfSubId (): string {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    return this.account.subId
   }
 
   /**
@@ -57,8 +66,8 @@ export class AdapterBase implements AdapterType {
    * @param level 日志等级
    * @param args 日志内容
    */
-  logger (level: LoggerType, ...args: any[]): void {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+  logger (level: LoggerLevel, ...args: any[]): void {
+    logger.bot(level, this.account.selfId, ...args)
   }
 
   /**
@@ -185,7 +194,7 @@ export class AdapterBase implements AdapterType {
   /**
    * 发送好友赞
    * @param targetId 目标ID
-   * @param count 赞的次数，默认为10
+   * @param count 赞的次数
    * @returns 此接口的返回值不值得信任
    */
   sendLike (targetId: string, count: number): Promise<boolean> {
@@ -279,7 +288,7 @@ export class AdapterBase implements AdapterType {
   }
 
   /**
-   * 获取陌生人信息
+   * 获取陌生人信息 此接口数据无法保证完全正确并且无法保证数据的完整性
    * @param targetId 用户ID 任选其一
    * @returns 陌生人信息数组
    */
@@ -343,7 +352,7 @@ export class AdapterBase implements AdapterType {
    * @param refresh 是否刷新缓存
    * @returns 群荣誉信息数组
    */
-  getGroupHonor (groupId: string, refresh?: boolean): Promise<Array<QQGroupHonorInfo>> {
+  getGroupHonor (groupId: string): Promise<Array<QQGroupHonorInfo>> {
     throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
   }
 

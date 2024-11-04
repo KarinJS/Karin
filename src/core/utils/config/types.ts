@@ -1,3 +1,13 @@
+import type chokidar from 'chokidar'
+
+/** 配置文件缓存key */
+export const enum configKey {
+  /** 通用配置 */
+  CONFIG = 'change.config',
+  /** 服务器配置 */
+  SERVER = 'change.server',
+}
+
 /** 配置文件枚举 */
 export const enum ConfigEnum {
   /** 基本配置 */
@@ -15,7 +25,7 @@ export const enum ConfigEnum {
 }
 
 /** 消息配置文件类型 */
-export type ConfigFileType = 'group' | 'friend' | 'guild' | 'direct'
+export type ConfigFileType = 'groupGuild' | 'friendDirect'
 /** 日志等级 */
 export type LoggerLevel = 'all' | 'trace' | 'debug' | 'mark' | 'info' | 'warn' | 'error' | 'fatal' | 'off'
 
@@ -307,4 +317,40 @@ export interface ConfigMap {
   pm2: PM2Type
   redis: RedisType
   server: ServerType
+}
+
+/** 配置文件对应缓存 */
+export interface FileCache {
+  [configKey.CONFIG]: ConfigType
+  [configKey.SERVER]: ServerType
+}
+
+/** 缓存类型 */
+export interface CacheType {
+  /** 好友、频道私信消息配置默认值 */
+  friendCfgDef: FriendDirectFileCfg
+  /** 群、频道消息配置默认值 */
+  groupCfgDef: GroupGuildFileCfg
+  /** 配置文件对应缓存 */
+  file: FileCache
+  /** 监听器缓存 */
+  watcher: Map<string, chokidar.FSWatcher>
+  /** 单独群、频道配置缓存 */
+  groupGuild: Record<string, {
+    /** 前一分钟调用数量 */
+    start: number
+    /** 当前调用数量 */
+    count: number
+    /** 配置 */
+    config: GroupGuildFileCfg
+  }>
+  /** 单独好友、频道私信配置缓存 */
+  friendDirect: Record<string, {
+    /** 前一分钟调用数量 */
+    start: number
+    /** 当前调用数量 */
+    count: number
+    /** 配置 */
+    config: FriendDirectFileCfg
+  }>
 }

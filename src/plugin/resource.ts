@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { defaultConfigPath, configPath } from '../core/utils/fs/root'
-import { copyConfigSync } from '../core/utils/config/createCfg'
+import { copyConfigSync } from '../core/utils/config/initCfg'
 
 /**
  * 为每个插件创建基本文件夹结构

@@ -1,8 +1,8 @@
-import { PermissionEnum } from '@/adapter/sender'
 import { AdapterProtocol } from '@/adapter/adapter'
 import type { Message } from '@/event'
 import type { NodeElementType } from '@/adapter/segment'
 import type { BaseEventHandle, MessageEventMap } from '@/event/types/types'
+import { PermissionEnum } from '@/adapter/sender'
 
 export interface PluginRule {
   /** 命令正则 */
@@ -13,8 +13,8 @@ export interface PluginRule {
   event?: keyof Omit<MessageEventMap, 'message'>
   /** 优先级 默认为10000 */
   priority?: number
-  /** 权限 */
-  permission?: `${PermissionEnum}`
+  /** 插件触发权限 例如只有主人才可触发 */
+  permission: `${PermissionEnum}`
   /** 打印日志 默认为true */
   log?: boolean
   /** 生效的适配器 */

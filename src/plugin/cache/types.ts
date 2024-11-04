@@ -62,9 +62,9 @@ interface Log {
 
 interface AdapterBase {
   /** 生效的适配器 */
-  adapter: AdapterProtocol[]
+  adapter: Array<`${AdapterProtocol}`>
   /** 禁用的适配器 */
-  dsbAdapter: AdapterProtocol[]
+  dsbAdapter: Array<`${AdapterProtocol}`>
 }
 
 /** 通用参数 */

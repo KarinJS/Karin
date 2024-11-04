@@ -22,8 +22,8 @@ export class GroupHandler {
 
   constructor (event: GroupMessage) {
     this.event = event
-    this.config = cfg.ConfigSync()
-    this.groupCfg = cfg.groupGuildCfgSync(this.event.groupId, this.event.selfId)
+    this.config = cfg.config()
+    this.groupCfg = cfg.getGroupCfg(this.event.groupId, this.event.selfId)
     this.isPrint = this.isLogEnable && this.isLogDisable
   }
 
@@ -298,7 +298,7 @@ export class GroupHandler {
 
       /** 计算插件处理时间 */
       const start = Date.now()
-      karin.emit('karin:count:fnc', this.event)
+      karin.emit('karin:count:fnc', { name: plugin.info.name, file: plugin.file, event: this.event })
 
       try {
         if (!this.filterPermission(plugin.perm)) return
@@ -307,11 +307,19 @@ export class GroupHandler {
           result = await plugin.fnc(this.event)
         } else {
           const App = new plugin.Cls()
+          if (typeof App?.[plugin.file.method as keyof typeof App] !== 'function') {
+            continue
+          }
+
           App.e = this.event
           result = await (App as any)[plugin.file.method](App.e)
         }
         /** 贪婪匹配下一个 */
-        if (result === false) continue
+        if (result === false) {
+          logger.debug(`${this.event.logFnc} 继续匹配下一个插件`)
+          continue
+        }
+
         return
       } catch (error: any) {
         logger.error(`${this.event.logFnc}`)

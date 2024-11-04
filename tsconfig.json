@@ -17,6 +17,9 @@
       ],
       "@start/*": [
         "src/start/*"
+      ],
+      "@service/*": [
+        "src/service/*"
       ]
     },
     "resolveJsonModule": true,

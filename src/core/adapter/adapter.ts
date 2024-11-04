@@ -1,7 +1,7 @@
-import { Contact } from './contact'
-import { LoggerType } from '@/utils/logger/logger'
-import { ElementTypes, NodeElementType } from './segment'
-import {
+import type { Contact } from './contact'
+import type { LoggerLevel } from '@/utils/config/types'
+import type { ElementTypes, NodeElementType } from './segment'
+import type {
   CreateGroupFolderResponse,
   DownloadFileOptions,
   DownloadFileResponse,
@@ -25,12 +25,14 @@ export const enum AdapterPlatform {
   Telegram = 'telegram',
   /** Discord */
   Discord = 'discord',
-  /** Mirai */
-  Mirai = 'mirai',
   /** WeChat */
   WeChat = 'wechat',
   /** KOKO */
   KOKO = 'koko',
+  /** Shell */
+  Shell = 'shell',
+  /** 未知 */
+  Unknown = 'unknown',
 }
 
 /** 适配器标准协议枚举 */
@@ -43,8 +45,10 @@ export const enum AdapterStandard {
   Kritor = 'kritor',
   /** onebot12 */
   Onebot12 = 'onebot12',
-  /** 内部 */
-  Internal = 'internal',
+  /** karin */
+  Internal = 'karin',
+  /** 未知 */
+  Unknown = 'unknown',
 }
 
 /** 适配器协议实现名称 目前仅收集已知的协议实现 */
@@ -73,12 +77,14 @@ export const enum AdapterProtocol {
 export const enum AdapterCommunication {
   /** HTTP */
   HTTP = 'http',
-  /** WebSocket */
-  WebSocket = 'websocket',
+  /** 正向ws */
+  WEBSOCKET = 'webSocketServer',
+  /** 反向ws */
+  REVERSE_WEBSOCKET = 'webSocketClient',
   /** gRPC */
   GRPC = 'grpc',
-  /** nodejs内部继承 */
-  Internal = 'internal',
+  /** 内部 例如插件式适配器 */
+  INTERNAL = 'internal',
 }
 
 /** 发送消息后返回的结果 */
@@ -86,9 +92,9 @@ export interface SendMsgResults {
   /** 消息ID */
   messageId: string
   /** 消息发送时间戳 */
-  messageTime?: number
+  messageTime: number
   /** 原始结果 一般是Object、Array */
-  rawData?: object | Array<any>
+  rawData: object | Array<any>
 }
 
 export interface ForwardOptions {
@@ -106,18 +112,20 @@ export interface ForwardOptions {
 export interface AdapterType {
   /** 适配器信息 */
   adapter: {
+    /** 适配器索引 默认为-1 在注册适配器时会自动更改为对应的索引 */
+    index: number
     /** 适配器名称 */
     name: string
     /** 适配器版本 */
     version: string
     /** 适配器平台 */
-    platform: AdapterPlatform
+    platform: `${AdapterPlatform}`
     /** 适配器使用的协议标准 如onebot11 */
-    standard: AdapterStandard
+    standard: `${AdapterStandard}`
     /** 适配器协议实现 如icqq、napcat */
-    protocol: AdapterProtocol
+    protocol: `${AdapterProtocol}`
     /** 适配器通信方式 */
-    communication: AdapterCommunication
+    communication: `${AdapterCommunication}`
     /**
      * 适配器通信地址
      * @example `http://127.0.0.1:7000`
@@ -152,15 +160,13 @@ export interface AdapterType {
   get selfName (): string
   /** 获取Bot的subId */
   get selfSubId (): string
-  /** 获取Bot的信息 */
-  get selfInfo (): string
 
   /**
    * 打印当前Bot的专属日志
    * @param level 日志等级
    * @param args 日志内容
    */
-  logger (level: LoggerType, ...args: any[]): void
+  logger (level: LoggerLevel, ...args: any[]): void
 
   /**
    * 发送消息
@@ -386,10 +392,9 @@ export interface AdapterType {
   /**
    * 获取群荣誉信息
    * @param groupId 群ID
-   * @param refresh 是否刷新缓存
    * @returns 群荣誉信息数组
    */
-  getGroupHonor (groupId: string, refresh?: boolean): Promise<Array<QQGroupHonorInfo>>
+  getGroupHonor (groupId: string): Promise<Array<QQGroupHonorInfo>>
 
   /**
    * 设置好友请求结果

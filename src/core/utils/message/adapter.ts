@@ -6,7 +6,7 @@ import type { CommandClass, CommandFnc } from '@plugin/cache/types'
  * @param plugin 插件缓存对象
  * @param protocol 适配器协议实现名称
  */
-export const isAdapter = (plugin: CommandClass | CommandFnc, protocol: AdapterProtocol): boolean => {
+export const isAdapter = (plugin: CommandClass | CommandFnc, protocol: `${AdapterProtocol}`): boolean => {
   if (plugin.adapter.length && !plugin.adapter.includes(protocol)) {
     return true
   }

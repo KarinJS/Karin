@@ -20,6 +20,11 @@ export class AdapterInput extends AdapterBase implements AdapterType {
     listeners.on('karin:adapter:open', () => process.stdin.on('data', data => this.createEvent(data)))
     listeners.on('karin:adapter:close', () => process.stdin.removeAllListeners('data'))
 
+    this.adapter.name = 'input'
+    this.adapter.communication = 'internal'
+    this.adapter.platform = 'shell'
+    this.adapter.version = '1.0.0'
+    this.adapter.standard = 'karin'
     this.account.name = 'input'
     this.account.selfId = 'input'
     this.account.avatar = 'https://p.qlogo.cn/gh/967068507/967068507/0'
@@ -227,57 +232,4 @@ export class AdapterInput extends AdapterBase implements AdapterType {
   // async getGroupAvatarUrl () {
   //   return 'https://p.qlogo.cn/gh/967068507/967068507/0'
   // }
-
-  // async GetCurrentAccount () {
-  //   return { account_uid: 'input', account_uin: 'input', account_name: 'input' }
-  // }
-
-  // GetEssenceMessageList (): Promise<any> { throw new Error('Method not implemented.') }
-  // DownloadForwardMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  // SetEssenceMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  // DeleteEssenceMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  // SetFriendApplyResult (): Promise<any> { throw new Error('Method not implemented.') }
-  // SetGroupApplyResult (): Promise<any> { throw new Error('Method not implemented.') }
-  // SetInvitedJoinGroupResult (): Promise<any> { throw new Error('Method not implemented.') }
-  // ReactMessageWithEmoji (): Promise<any> { throw new Error('Method not implemented.') }
-  // UploadPrivateFile (): Promise<any> { throw new Error('Method not implemented.') }
-  // UploadGroupFile (): Promise<any> { throw new Error('Method not implemented.') }
-  // UploadForwardMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  // sendForwardMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  // SendMessageByResId (): Promise<any> { throw new Error('Method not implemented.') }
-  // RecallMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  // GetMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  // GetHistoryMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  // VoteUser (): Promise<any> { throw new Error('Method not implemented.') }
-  // KickMember (): Promise<any> { throw new Error('Method not implemented.') }
-  // BanMember (): Promise<any> { throw new Error('Method not implemented.') }
-  // SetGroupWholeBan (): Promise<any> { throw new Error('Method not implemented.') }
-  // SetGroupAdmin (): Promise<any> { throw new Error('Method not implemented.') }
-  // ModifyMemberCard (): Promise<any> { throw new Error('Method not implemented.') }
-  // ModifyGroupName (): Promise<any> { throw new Error('Method not implemented.') }
-  // LeaveGroup (): Promise<any> { throw new Error('Method not implemented.') }
-  // SetGroupUniqueTitle (): Promise<any> { throw new Error('Method not implemented.') }
-  // GetStrangerProfileCard (): Promise<any> { throw new Error('Method not implemented.') }
-  // GetFriendList (): Promise<any> { throw new Error('Method not implemented.') }
-  // GetGroupInfo (): Promise<any> { throw new Error('Method not implemented.') }
-  // GetGroupList (): Promise<any> { throw new Error('Method not implemented.') }
-  // GetGroupMemberInfo (): Promise<any> { throw new Error('Method not implemented.') }
-  // GetGroupMemberList (): Promise<any> { throw new Error('Method not implemented.') }
-  // GetGroupHonor (): Promise<any> { throw new Error('Method not implemented.') }
-  // DownloadFile (): Promise<any> { throw new Error('Method not implemented.') }
-  // CreateFolder (): Promise<any> { throw new Error('Method not implemented.') }
-  // RenameFolder (): Promise<any> { throw new Error('Method not implemented.') }
-  // DeleteFolde (): Promise<any> { throw new Error('Method not implemented.') }
-  // DeleteFolder (): Promise<any> { throw new Error('Method not implemented.') }
-  // UploadFile (): Promise<any> { throw new Error('Method not implemented.') }
-  // DeleteFile (): Promise<any> { throw new Error('Method not implemented.') }
-  // GetFileSystemInfo (): Promise<any> { throw new Error('Method not implemented.') }
-  // GetFileList (): Promise<any> { throw new Error('Method not implemented.') }
-  // ModifyGroupRemark (): Promise<any> { throw new Error('Method not implemented.') }
-  // GetRemainCountAtAll (): Promise<any> { throw new Error('Method not implemented.') }
-  // GetProhibitedUserList (): Promise<any> { throw new Error('Method not implemented.') }
-  // PokeMember (): Promise<any> { throw new Error('Method not implemented.') }
-  // SetMessageReaded (): Promise<any> { throw new Error('Method not implemented.') }
 }
-
-export const inputAdapter = new AdapterInput()

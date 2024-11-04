@@ -17,9 +17,9 @@ export interface MessageResponse {
   /** 消息发送时间 */
   time: number
   /** 消息ID */
-  message_id: string
+  messageId: string
   /** 消息序列号 */
-  message_seq: number
+  messageSeq: number
   /** 消息来源目标信息 */
   contact: Contact
   /** 消息发送者 */
@@ -58,7 +58,7 @@ export interface GetGroupHighlightsResponse {
  */
 export interface UserInfo {
   /** 用户ID */
-  user_id: string
+  userId: string
   /** 名称 */
   nick: string
   /** 用户UID */
@@ -93,7 +93,7 @@ export interface UserInfo {
   bigVip?: boolean
   /** 是否已经赞过 */
   isLike?: boolean
-  [key: string]: string | number | boolean | undefined
+  [key: string]: any
 }
 
 /**
@@ -108,7 +108,7 @@ export interface GroupInfo {
   /** 群主ID */
   owner?: string
   /** 群备注 */
-  group_remark?: string
+  groupRemark?: string
   /** 群管理员ID列表 */
   admins?: Array<string>
   /** 最大成员数 */

@@ -121,7 +121,7 @@ export interface ImageElementType extends Element {
    * - flash: 闪照
    * - original: 原图
    */
-  fileType: 'show' | 'flash' | 'original'
+  fileType?: 'show' | 'flash' | 'original'
 }
 
 /** 视频元素 */
@@ -426,7 +426,7 @@ export interface NodeElementCustomType extends NodeType {
   message: Array<ElementTypes>
 }
 
-/** 节点元素 */
+/** 合并转发节点元素 */
 export type NodeElementType = NodeElementReadyType | NodeElementCustomType
 
 /** 快速构建消息元素实例 */
@@ -471,11 +471,11 @@ class ElementBuilder {
    * @param fileType - 图片类型
    * @param options - 其他可选参数
    */
-  image (file: string, fileType: 'show' | 'flash' | 'original', options: Partial<Omit<ImageElementType, 'type' | 'file' | 'fileType'>> = {}): ImageElementType {
+  image (file: string, options: Partial<ImageElementType> = {}): ImageElementType {
     return {
       type: ElementTypeEnum.IMAGE,
       file,
-      fileType,
+      fileType: options.fileType,
       height: options?.height,
       width: options?.width,
       md5: options?.md5,
