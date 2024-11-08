@@ -42,14 +42,14 @@ export class GroupHandler {
     !isRestricted && this.deal()
   }
 
-  /** 检查是否存在cd中 */
+  /** 检查是否存在cd中 返回`true`表示通过 */
   get isCD (): boolean {
     const groupKey = this.event.groupId
     const userKey = `${groupKey}.${this.event.userId}`
 
     /** 计时器存在直接返回即可 */
     if (groupCD[groupKey] || groupUserCD[userKey]) {
-      return true
+      return false
     }
 
     /** 群CD */
@@ -66,42 +66,42 @@ export class GroupHandler {
       }, this.groupCfg.userCD * 1000)
     }
 
-    return false
+    return true
   }
 
-  /** 检查是否通过群白名单 */
+  /** 检查是否通过群白名单 返回`true`表示通过 */
   get isGroupEnable () {
     if (!this.config.enable.groups.length) return true
     return this.config.enable.groups.includes(this.event.groupId)
   }
 
-  /** 检查是否通过群黑名单 */
+  /** 检查是否通过群黑名单 返回`true`表示通过 */
   get isGroupDisable () {
-    if (!this.config.disable.groups.length) return false
+    if (!this.config.disable.groups.length) return true
     return !this.config.disable.groups.includes(this.event.groupId)
   }
 
-  /** 检查是否通过群成员白名单 */
+  /** 检查是否通过群成员白名单 返回`true`表示通过 */
   get isMemberEnable () {
     const enable = [...this.groupCfg.memberEnable, ...this.config.enable.users]
     if (!enable.length) return true
     return enable.includes(this.event.userId)
   }
 
-  /** 检查是否通过群成员黑名单 没在黑名单才返回`true`  */
+  /** 检查是否通过群成员黑名单 返回`true`表示通过  */
   get isMemberDisable () {
     const disable = [...this.groupCfg.memberDisable, ...this.config.disable.users]
-    if (!disable.length) return false
+    if (!disable.length) return true
     return !disable.includes(this.event.userId)
   }
 
-  /** 检查是否通过群日志打印白名单 */
+  /** 检查是否通过群日志打印白名单 返回`true`表示通过 */
   get isLogEnable () {
     if (!this.config.enable.groups.length) return true
     return this.config.enable.groups.includes(this.event.groupId)
   }
 
-  /** 检查是否通过群日志打印黑名单 没在黑名单才返回`true` */
+  /** 检查是否通过群日志打印黑名单 返回`true`表示通过 */
   get isLogDisable () {
     if (!this.config.disable.groups.length) return true
     return !this.config.disable.groups.includes(this.event.groupId)

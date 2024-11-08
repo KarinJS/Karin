@@ -1,21 +1,22 @@
 import { MessageEventSubEnum } from '../../types/types'
 import { Contact } from '@/adapter/contact'
-import { BaseMessageEventType, MessageBase, MessageOptions } from '.'
+import { BaseMessageEventType, MessageBase, MessageOptions } from './base'
 import { GroupHandler } from '@/event/handler/message/group'
+import { GroupSender } from '@/adapter/sender'
 
 /** new 群消息事件所需参数 */
-export type GroupMessageOptions = MessageOptions & {
-  /** 事件联系人信息 */
+export interface GroupMessageOptions extends MessageOptions {
   contact: Contact<'group'>
+  sender: GroupSender
 }
 
 /** 群消息事件定义 */
 export interface GroupMessageEventType extends BaseMessageEventType {
-  contact: GroupMessageOptions['contact']
-  /** 事件子类型 */
-  subEvent: `${MessageEventSubEnum.GROUP_MESSAGE}`
   /** 群ID */
   groupId: string
+  contact: GroupMessageOptions['contact']
+  subEvent: `${MessageEventSubEnum.GROUP_MESSAGE}`
+  sender: GroupSender
 }
 
 /**
@@ -23,11 +24,13 @@ export interface GroupMessageEventType extends BaseMessageEventType {
  * @class GroupMessage
  */
 export class GroupMessage extends MessageBase implements GroupMessageEventType {
+  #sender: GroupSender
   #contact: GroupMessageOptions['contact']
   #subEvent: `${MessageEventSubEnum.GROUP_MESSAGE}`
 
   constructor (options: GroupMessageOptions) {
     super(Object.assign(options, { subEvent: MessageEventSubEnum.GROUP_MESSAGE }))
+    this.#sender = options.sender
     this.#contact = options.contact
     this.#subEvent = MessageEventSubEnum.GROUP_MESSAGE
   }
@@ -57,6 +60,10 @@ export class GroupMessage extends MessageBase implements GroupMessageEventType {
 
   get subEvent () {
     return this.#subEvent
+  }
+
+  get sender () {
+    return this.#sender
   }
 }
 

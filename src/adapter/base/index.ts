@@ -30,7 +30,7 @@ import {
  * 适配器基类 一个示例
  * @class AdapterBase
  */
-export class AdapterBase implements AdapterType {
+export abstract class AdapterBase implements AdapterType {
   account: AdapterType['account']
   adapter: AdapterType['adapter']
 
@@ -95,7 +95,7 @@ export class AdapterBase implements AdapterType {
    * @param elements 消息元素
    * @param options 首层小卡片外显参数
    */
-  sendForwardMessage (contact: Contact, elements: Array<NodeElementType>, options?: ForwardOptions): Promise<{ messageId: string }> {
+  sendForwardMsg (contact: Contact, elements: Array<NodeElementType>, options?: ForwardOptions): Promise<{ messageId: string, forwardId: string }> {
     throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
   }
 

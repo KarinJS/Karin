@@ -26,6 +26,10 @@ import {
 export const pkg = requireFileSync<PackageType>(karinDir + '/package.json')
 /** http端口 */
 export const port = () => cache.file[configKey.SERVER].port
+/** host */
+export const host = () => cache.file[configKey.SERVER].host
+/** 根路由文案 */
+export const rootMsg = () => cache.file[configKey.SERVER].rootMsg
 /** 主人列表 */
 export const master = () => cache.file[configKey.CONFIG].master || []
 /** 管理员列表 */
@@ -194,6 +198,7 @@ export const getYaml: {
 /** 初始化 */
 export const init = () => {
   config()
+  server()
   const list = [basePath, configPath, dataPath, tempPath]
   list.map(v => isExists(v))
 

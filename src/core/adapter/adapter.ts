@@ -189,7 +189,7 @@ export interface AdapterType {
    * @param elements 消息元素
    * @param options 首层小卡片外显参数
    */
-  sendForwardMessage (contact: Contact, elements: Array<NodeElementType>, options?: ForwardOptions): Promise<{ messageId: string }>
+  sendForwardMsg (contact: Contact, elements: Array<NodeElementType>, options?: ForwardOptions): Promise<{ messageId: string }>
 
   /**
    * 撤回消息

@@ -1,4 +1,4 @@
-import { ElementTypeEnum, ElementTypes, NodeElementCustomType, segment } from '@/adapter/segment'
+import { ElementTypeEnum, ElementTypes, CustomNodeElementType, segment } from '@/adapter/segment'
 
 /**
  * 将消息元素转换为字符串
@@ -68,7 +68,7 @@ export const makeForward = (
   elements: string | ElementTypes | Array<string | ElementTypes>,
   fakeId: string,
   fakeName: string
-): Array<NodeElementCustomType> => {
+): Array<CustomNodeElementType> => {
   if (!Array.isArray(elements)) elements = [elements]
   return elements.map(v => segment.node(fakeId, fakeName, makeMessage(v)))
 }

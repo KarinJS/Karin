@@ -20,6 +20,9 @@
       ],
       "@service/*": [
         "src/service/*"
+      ],
+      "@adapter/*": [
+        "src/adapter/*"
       ]
     },
     "resolveJsonModule": true,

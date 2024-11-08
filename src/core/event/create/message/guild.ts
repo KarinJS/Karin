@@ -1,6 +1,6 @@
 import { MessageEventSubEnum } from '../../types/types'
 import { Contact } from '@/adapter/contact'
-import { BaseMessageEventType, MessageBase, MessageOptions } from '.'
+import { BaseMessageEventType, MessageBase, MessageOptions } from './base'
 
 /** new 频道消息事件所需参数 */
 export type GuildMessageOptions = MessageOptions & {

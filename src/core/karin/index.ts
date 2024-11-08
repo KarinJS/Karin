@@ -5,7 +5,7 @@ import { TypedListeners } from '@/internal/listeners'
 import { cache, createLogger } from '@plugin/cache/cache'
 import path from 'node:path'
 import { Contact, ContactWithoutSubPeer, ContactWithSubPeer, Scene } from '@/adapter/contact'
-import { RoleEnum, Sender } from '@/adapter/sender'
+import type { GroupSender, FriendSender } from '@/adapter/sender'
 
 export type FncElement = string | ElementTypes | ElementTypes[]
 export type FncOptions = {
@@ -281,95 +281,64 @@ export class Karin extends TypedListeners {
   }
 
   /**
-   * 构建群成员发送者信息
-   * @param role `member`
-   * @param userId 用户id
-   * @param nick 用户昵称
-   * @param uin 用户uin
-   * @param uid 用户uid
+   * 构建消息事件私聊发送者信息
+   * @param userId 发送者ID
+   * @param nick 昵称
+   * @param sex 性别
+   * @param age 年龄
+   * @param uid 隐藏字段 uid
+   * @param uin 隐藏字段 uin
    */
-  sender (role: `${RoleEnum.MEMBER}`, userId: string, nick?: string, uin?: string, uid?: string): Sender
+  friendSender (
+    userId: number | string,
+    nick: string,
+    sex: FriendSender['sex'] = 'unknown',
+    age?: number,
+    uid?: string,
+    uin?: number
+  ): FriendSender {
+    return { userId: String(userId), nick, sex, age, uid, uin }
+  }
+
   /**
-   * 构建群管理员发送者信息
-   * @param role `admin`
-   * @param userId 用户id
-   * @param nick 用户昵称
-   * @param uin 用户uin
-   * @param uid 用户uid
-   */
-  sender (role: `${RoleEnum.ADMIN}`, userId: string, nick?: string, uin?: string, uid?: string): Sender
-  /**
-   * 构建群主发送者信息
-   * @param role `owner`
-   * @param userId 用户id
-   * @param nick 用户昵称
-   * @param uin 用户uin
-   * @param uid 用户uid
-   */
-  sender (role: `${RoleEnum.OWNER}`, userId: string, nick?: string, uin?: string, uid?: string): Sender
-  /**
-   * 构建未知身份发送者信息
-   * @param role `unknown`
-   * @param userId 用户id
-   * @param nick 用户昵称
-   * @param uin 用户uin
-   * @param uid 用户uid
-   */
-  sender (role: `${RoleEnum.UNKNOWN}`, userId: string, nick?: string, uin?: string, uid?: string): Sender
-  /**
-   * 构建发送者信息
+   * 构建消息事件群聊发送者信息
+   * @param userId 发送者ID
+   * @param nick 昵称
    * @param role 角色
-   * @param userId 用户id
-   * @param nick 用户昵称
-   * @param uin 用户uin
-   * @param uid 用户uid
+   * @param sex 性别
+   * @param age 年龄
+   * @param card 群名片/备注
+   * @param area 地区
+   * @param level 成员等级
+   * @param title 专属头衔
+   * @param uid 隐藏字段 uid
+   * @param uin 隐藏字段 uin
    */
-  sender (role: `${RoleEnum}`, userId: string, nick?: string, uin?: string, uid?: string): Sender {
-    return { role: role as RoleEnum, userId, nick: nick || '', uin: uin || null, uid: uid || null }
-  }
-
-  /**
-   * 构建群成员发送者信息
-   * @param userId 用户id
-   * @param nick 用户昵称
-   * @param uin 用户uin
-   * @param uid 用户uid
-   */
-  senderMember (userId: string, nick?: string, uin?: string, uid?: string): Sender {
-    return { role: RoleEnum.MEMBER, userId, nick: nick || '', uin: uin || null, uid: uid || null }
-  }
-
-  /**
-   * 构建群管理员发送者信息
-   * @param userId 用户id
-   * @param nick 用户昵称
-   * @param uin 用户uin
-   * @param uid 用户uid
-   */
-  senderAdmin (userId: string, nick?: string, uin?: string, uid?: string): Sender {
-    return { role: RoleEnum.ADMIN, userId, nick: nick || '', uin: uin || null, uid: uid || null }
-  }
-
-  /**
-   * 构建群主发送者信息
-   * @param userId 用户id
-   * @param nick 用户昵称
-   * @param uin 用户uin
-   * @param uid 用户uid
-   */
-  senderOwner (userId: string, nick?: string, uin?: string, uid?: string): Sender {
-    return { role: RoleEnum.OWNER, userId, nick: nick || '', uin: uin || null, uid: uid || null }
-  }
-
-  /**
-   * 构建未知身份发送者信息
-   * @param userId 用户id
-   * @param nick 用户昵称
-   * @param uin 用户uin
-   * @param uid 用户uid
-   */
-  senderUnknown (userId: string, nick?: string, uin?: string, uid?: string): Sender {
-    return { role: RoleEnum.UNKNOWN, userId, nick: nick || '', uin: uin || null, uid: uid || null }
+  groupSender (
+    /** 发送者QQ号 */
+    userId: number | string,
+    /** 发送者昵称 */
+    nick: string,
+    /** 发送者在群的角色身份 非群、频道场景为`unknown` */
+    role: GroupSender['role'] = 'unknown',
+    /** 发送者性别 */
+    sex?: GroupSender['sex'],
+    /** 发送者年龄 */
+    age?: number,
+    /** 群名片/备注 */
+    card?: string,
+    /** 地区 */
+    area?: string,
+    /** 成员等级 */
+    level?: number,
+    /** 专属头衔 */
+    title?: string,
+    /** 发送者uid */
+    uid?: string,
+    /** 发送者uin */
+    uin?: number
+  ): GroupSender {
+    return { userId: String(userId), nick, role, sex, age, card, area, level, title, uid, uin }
   }
 }
 

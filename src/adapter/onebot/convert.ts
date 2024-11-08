@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { OB11Segment } from './types'
-import { ElementTypes, MusicPlatform, segment } from '@/adapter/segment'
+import { ElementTypes, MusicPlatform, segment, SendElementTypes } from '@/adapter/segment'
 
 /**
    * onebot11转karin
@@ -63,7 +63,7 @@ export function AdapterConvertKarin (data: Array<OB11Segment>): Array<ElementTyp
  * 处理非本地ws的文件
  * @param file 文件路径
  */
-function fileToBase64 (file: string, url: string): string {
+export const fileToBase64 = (file: string, url: string): string => {
   if (!url || !file.startsWith('file://')) return file
   const list = ['127.0.0.1', 'localhost']
   const link = new URL(url)
@@ -74,7 +74,7 @@ function fileToBase64 (file: string, url: string): string {
    * karin转onebot11
    * @param data karin格式消息
    */
-export function KarinConvertAdapter (data: Array<ElementTypes>, url: string): Array<OB11Segment> {
+export function KarinConvertAdapter (data: Array<SendElementTypes>, url: string): Array<OB11Segment> {
   const elements = []
 
   for (const i of data) {
@@ -146,6 +146,26 @@ export function KarinConvertAdapter (data: Array<ElementTypes>, url: string): Ar
       case 'raw':
         elements.push(i.data)
         break
+      case 'node': {
+        if ('resId' in i) {
+          elements.push({ type: 'node', data: { id: i.resId } })
+        } else {
+          if (i.message) {
+            elements.push({
+              type: 'node',
+              data: {
+                user_id: i.userId,
+                nickname: i.nickname,
+                content: KarinConvertAdapter(i.message, url),
+                prompt: i?.options?.prompt,
+                summary: i?.options?.summary,
+                source: i?.options?.source,
+              },
+            })
+          }
+        }
+        break
+      }
       case 'button':
       case 'markdown':
       case 'keyboard':

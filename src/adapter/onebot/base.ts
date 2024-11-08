@@ -1,15 +1,23 @@
-import { Action, OB11Segment, Params, Request } from './types'
+import { Action, OB11NodeSegment, OB11Segment, Params, Request } from './types'
 import { AdapterBase } from '../base'
 import { GetGroupHighlightsResponse, QQGroupHonorInfo, SexEnum } from '@/adapter/types'
 import { RoleEnum } from '@/adapter/sender'
-import type { AdapterType, SendMsgResults } from '@/adapter/adapter'
+import type { AdapterType, ForwardOptions, SendMsgResults } from '@/adapter/adapter'
 import type { Contact } from '@/adapter/contact'
-import type { ElementTypes } from '@/adapter/segment'
+import type { ElementTypes, NodeElementType } from '@/adapter/segment'
 import { AdapterConvertKarin, KarinConvertAdapter } from './convert'
+import { WebSocket } from 'ws'
+import { config } from '@start/index'
 
-export class AdapterOneBot extends AdapterBase implements AdapterType {
-  constructor () {
+export abstract class AdapterOneBot extends AdapterBase implements AdapterType {
+  /** 请求id */
+  seq: number
+  /** WebSocket实例 */
+  socket: WebSocket
+  constructor (socket: WebSocket) {
     super()
+    this.seq = 0
+    this.socket = socket
     this.adapter.platform = 'qq'
     this.adapter.standard = 'onebot11'
   }
@@ -214,30 +222,45 @@ export class AdapterOneBot extends AdapterBase implements AdapterType {
   //   return await this.sendApi(Action.sendForwardMsg, params)
   // }
 
-  // /**
-  //  * 通过资源id发送转发消息
-  //  * @param contact 联系人信息
-  //  * @param id 资源id
-  //  */
-  // async SendMessageByResId (contact: Contact, id: string) {
-  //   let res
-  //   const { scene, peer } = contact
-  //   if (scene === Scene.Group) {
-  //     res = await this.sendApi(Action.sendMsg, {
-  //       message_type: 'group',
-  //       group_id: Number(peer),
-  //       message: [{ type: OB11SegmentType.Forward, data: { id } }],
-  //     })
-  //   } else {
-  //     res = await this.sendApi(Action.sendMsg, {
-  //       message_type: 'private',
-  //       user_id: Number(peer),
-  //       message: [{ type: OB11SegmentType.Forward, data: { id } }],
-  //     })
-  //   }
+  /**
+   * 发送长消息
+   * @param contact 目标信息
+   * @param resId 资源ID
+   */
+  async sendLongMsg (contact: Contact, resId: string) {
+    let result
+    const { scene, peer } = contact
 
-  //   return { message_id: String(res.message_id), message_time: Date.now() }
-  // }
+    if (scene === 'group') {
+      result = await this.sendApi(Action.sendGroupMsg, {
+        group_id: Number(peer),
+        message: [{ type: 'forward', data: { id: resId } }],
+      })
+    } else {
+      result = await this.sendApi(Action.sendPrivateMsg, {
+        user_id: Number(peer),
+        message: [{ type: 'forward', data: { id: resId } }],
+      })
+    }
+
+    const messageId = String(result.message_id)
+    const messageTime = Date.now()
+
+    return {
+      messageId,
+      messageTime,
+      rawData: result,
+      message_id: messageId,
+      message_time: messageTime,
+    }
+  }
+
+  /**
+   * @deprecated 已废弃，请使用`sendLongMsg`
+   */
+  async SendMessageByResId (contact: Contact, id: string) {
+    return this.sendLongMsg(contact, id)
+  }
 
   /**
    * 撤回消息
@@ -285,7 +308,7 @@ export class AdapterOneBot extends AdapterBase implements AdapterType {
       sender: {
         userId,
         uid: userId,
-        uin: userId,
+        uin: result.sender.user_id,
         nick: result.sender.nickname,
         role: RoleEnum.UNKNOWN,
       },
@@ -344,7 +367,7 @@ export class AdapterOneBot extends AdapterBase implements AdapterType {
         sender: {
           userId,
           uid: userId,
-          uin: userId,
+          uin: v.sender.user_id,
           nick: v?.sender?.nickname || '',
           role: v?.sender?.role as RoleEnum || RoleEnum.UNKNOWN,
           card: contact.scene === 'group' ? v?.sender?.card || '' : '',
@@ -1201,22 +1224,75 @@ export class AdapterOneBot extends AdapterBase implements AdapterType {
   }
 
   /**
+   * 合并转发 karin -> adapter
+   * @param elements 消息元素
+   * @returns 适配器消息元素
+   */
+  forwardKarinConvertAdapter (elements: Array<NodeElementType>): Array<OB11NodeSegment> {
+    const messages: OB11NodeSegment[] = []
+    for (const elem of elements) {
+      if ('resId' in elem) {
+        messages.push({ type: 'node', data: { id: elem.resId } })
+      } else {
+        const node: OB11NodeSegment = {
+          type: 'node',
+          data: {
+            user_id: elem.userId,
+            nickname: elem.nickname,
+            content: this.KarinConvertAdapter(elem.message),
+          },
+        }
+
+        if (typeof elem.options === 'object') {
+          if (elem.options.prompt) node.data.prompt = elem.options.prompt
+          if (elem.options.summary) node.data.summary = elem.options.summary
+          if (elem.options.source) node.data.source = elem.options.source
+        }
+
+        messages.push(node)
+      }
+    }
+
+    return messages
+  }
+
+  /**
    * 发送合并转发消息
    * @param contact 目标信息
    * @param elements 消息元素
    * @param options 首层小卡片外显参数
    */
-  // async sendForwardMessage (contact: Contact, elements: Array<NodeElementType>, options?: ForwardOptions) {
+  async sendForwardMsg (contact: Contact, elements: NodeElementType[], options?: ForwardOptions) {
+    if (contact.scene === 'group') {
+      const result = await this.sendApi(Action.sendGroupForwardMsg, {
+        group_id: Number(contact.peer),
+        messages: this.forwardKarinConvertAdapter(elements),
+        ...options,
+      })
+      const messageId = String(result.message_id)
+      return { messageId, forwardId: result.forward_id, message_id: messageId }
+    }
 
-  // }
+    if (contact.scene === 'friend') {
+      const result = await this.sendApi(Action.sendPrivateForwardMsg, {
+        user_id: Number(contact.peer),
+        messages: this.forwardKarinConvertAdapter(elements),
+        ...options,
+      })
 
-  // async sendForwardMessage (contact: Contact, elements: NodeElement[]) {
-  //   let messageId = await this.UploadForwardMessage(contact, elements)
-  //   if (this.adapter.name === 'Lagrange.OneBot') {
-  //     messageId = (await this.SendMessage(contact, [segment.forward(messageId)])).message_id
-  //   }
-  //   return { message_id: messageId }
-  // }
+      const messageId = String(result.message_id)
+      return { messageId, forwardId: result.forward_id, message_id: messageId }
+    }
+
+    throw TypeError(`不支持的场景类型: ${contact.scene}`)
+  }
+
+  /**
+   * @deprecated 已废弃，请使用`sendForwardMsg`
+   */
+  async sendForwardMessage (contact: Contact, elements: NodeElementType[]) {
+    return this.sendForwardMsg(contact, elements)
+  }
 
   /**
    * 发送API请求
@@ -1224,34 +1300,33 @@ export class AdapterOneBot extends AdapterBase implements AdapterType {
    * @param params API参数
    */
   async sendApi<T extends keyof Params> (
-    action: T,
+    action: T | `${T}`,
     params: Params[T],
-    time = 0
+    time = 120
   ): Promise<Request[T]> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
-    // if (!time) time = config.timeout('ws')
-    // const echo = randomUUID()
-    // const request = JSON.stringify({ echo, action, params })
-    // logger.debug(`[API请求] ${action}: ${request}`)
+    if (!time) time = config.timeout()
+    const echo = ++this.seq + ''
+    const request = JSON.stringify({ echo, action, params })
+    logger.bot('debug', this.selfId, `发送Api请求 ${action}: ${request}`)
 
-    // return new Promise((resolve, reject) => {
-    //   const timeoutId = setTimeout(() => {
-    //     reject(new Error('API请求超时'))
-    //   }, time * 1000)
+    return new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => {
+        reject(new Error(`[sendApi][请求错误]:\n  error: 请求超时\n  action: ${action}\n  params: ${request}`))
+      }, time * 1000)
 
-    //   this.socket.send(request)
-    //   this.socket.once(echo, data => {
-    //     /** 停止监听器 */
-    //     clearTimeout(timeoutId)
+      this.socket.send(request)
+      this.socket.once(echo, data => {
+        /** 停止监听器 */
+        clearTimeout(timeoutId)
 
-    //     if (data.status === 'ok') {
-    //       resolve(data.data)
-    //     } else {
-    //       this.logger('error', `[Api请求错误] ${action}: ${JSON.stringify(data, null, 2)}`)
-    //       reject(data)
-    //     }
-    //   })
-    // })
+        if (data.status === 'ok') {
+          resolve(data.data)
+        } else {
+          const err = JSON.stringify(data, null, 2)
+          reject(new Error(`[sendApi][请求错误]:\n  action: ${action}\n  params: ${request}\n  error: ${err}`))
+        }
+      })
+    })
   }
 
   /**

@@ -1,21 +1,28 @@
-import { Event, FriendMessage, GroupMessage, Message } from '@/event'
-import { CommandBase } from '@plugin/cache/types'
+import type { Event } from '@/event'
 import { EventEmitter } from 'events'
+import { MessageEventMap, NoticeEventMap, RequestEventMap } from '@/event/types/types'
 
-/** 事件字典 */
-export interface EventMap {
+type MessageTypes<T extends keyof MessageEventMap> = Record<T, (event: MessageEventMap[T]) => void>
+type NoticeTypes<T extends keyof NoticeEventMap> = Record<T, (event: NoticeEventMap[T]) => void>
+type RequesTypes<T extends keyof RequestEventMap> = Record<T, (event: RequestEventMap[T]) => void>
+
+type OtherTypes = {
   exit: (data: { type: string, code: unknown }) => void
   warn: (warning: unknown) => void
   error: (error: unknown) => void
-  message: (event: Event) => void
-  'message.group': (event: GroupMessage) => void
-  'message.friend': (event: FriendMessage) => void
   'karin:count:send': (count: number) => void
-  'karin:count:fnc': (options: { name: string, file: CommandBase['file'], event: Message }) => void
+  'karin:count:fnc': (options: { name: string, file: object, event: Event }) => void
   'karin:adapter:open': () => void
   'karin:adapter:close': () => void
   'update:logger:level': () => void
 }
+
+/** 事件字典 */
+export type EventMap =
+  MessageTypes<keyof MessageEventMap>
+  & NoticeTypes<keyof NoticeEventMap>
+  & RequesTypes<keyof RequestEventMap>
+  & OtherTypes
 
 /** 类型化事件监听器 */
 export class TypedListeners extends EventEmitter {

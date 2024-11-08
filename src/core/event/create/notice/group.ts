@@ -371,3 +371,6 @@ export class GroupMessageReactionNotice extends NoticeBase {
     this.content = content
   }
 }
+
+/** 群聊通知事件联合类型 */
+export type GroupNotice = GroupRecallNotice | GroupPokeNotice | GroupFileUploadedNotice | GroupCardChangedNotice | GroupMemberTitleUpdatedNotice | GroupHlightsChangedNotice | GroupMemberIncreaseNotice | GroupMemberDecreaseNotice | GroupAdminChangedNotice | GroupSignInNotice | GroupMemberBanNotice | GroupWholeBanNotice | GroupMessageReactionNotice

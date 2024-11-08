@@ -1,6 +1,6 @@
 import { Contact } from './contact'
 import { ElementTypes } from './segment'
-import { RoleEnum, Sender } from './sender'
+import { RoleEnum, GroupSender } from './sender'
 
 /** 性别枚举 */
 export const enum SexEnum {
@@ -23,9 +23,17 @@ export interface MessageResponse {
   /** 消息来源目标信息 */
   contact: Contact
   /** 消息发送者 */
-  sender: Sender
+  sender: GroupSender
   /** 消息元素 */
   elements: Array<ElementTypes>
+}
+
+/** 发送转发消息后返回值接口 */
+export interface SendForwardMessageResponse {
+  /** 消息ID */
+  messageId: string
+  /** resID 可通过长消息接口进行发送 */
+  forwardId: string
 }
 
 /** 获取精华消息返回值结构 */

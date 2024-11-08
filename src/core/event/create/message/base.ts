@@ -40,7 +40,7 @@ export interface BaseMessageEventType extends BaseEventType {
   image: string[]
 }
 
-/** new 消息事件所需参数 */
+/** 所需参数 */
 export type MessageOptions = Omit<BaseEventOptions, 'event'> & {
   messageId: BaseMessageEventType['messageId']
   messageSeq: BaseMessageEventType['messageSeq']
@@ -52,7 +52,7 @@ export type MessageOptions = Omit<BaseEventOptions, 'event'> & {
  * @description 消息事件类
  * @class FriendMessage
  */
-export class MessageBase extends BaseEvent implements BaseMessageEventType {
+export abstract class MessageBase extends BaseEvent implements BaseMessageEventType {
   #subEvent: BaseMessageEventType['subEvent']
   #messageId: BaseMessageEventType['messageId']
   #messageSeq: BaseMessageEventType['messageSeq']

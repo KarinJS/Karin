@@ -1,4 +1,4 @@
-import type { Sender } from '../../adapter/sender'
+import type { FriendSender, GroupSender, NoticeAndRequestSender } from '../../adapter/sender'
 import type { Contact } from '../../adapter/contact'
 import type { ElementTypes } from '../../adapter/segment'
 import type { AdapterType, SendMsgResults } from '../../adapter/adapter'
@@ -30,6 +30,8 @@ import type {
   PrivateApplyRequest,
   GroupApplyRequest,
   GroupInviteRequest,
+  ReceiveLikeNotice,
+  FriendDecreaseNotice,
 } from '..'
 
 /** 事件父类型枚举 */
@@ -99,31 +101,31 @@ export const enum NoticeEventSubEnum {
   /** 群聊消息表情动态回应 */
   GROUP_MESSAGE_REACTION = 'groupMessageReaction',
 
-  /** 机器人被加入某个频道 */
-  BOT_JOIN_GUILD = 'botJoinGuild',
-  /** 频道资料发生变更 */
-  GUILD_UPDATE = 'guildUpdate',
-  /** 频道被解散或机器人被移除 */
-  GUILD_DELETE = 'guildDelete',
+  // /** 机器人被加入某个频道 */
+  // BOT_JOIN_GUILD = 'botJoinGuild',
+  // /** 频道资料发生变更 */
+  // GUILD_UPDATE = 'guildUpdate',
+  // /** 频道被解散或机器人被移除 */
+  // GUILD_DELETE = 'guildDelete',
 
-  /** 频道成员增加 */
-  GUILD_MEMBER_INCREASE = 'guildMemberIncrease',
-  /** 频道成员减少 */
-  GUILD_MEMBER_DECREASE = 'guildMemberDecrease',
-  /** 用户的频道属性发生变化，如频道昵称，或者身份组 */
-  GUILD_MEMBER_UPDATE = 'guildMemberUpdate',
+  // /** 频道成员增加 */
+  // GUILD_MEMBER_INCREASE = 'guildMemberIncrease',
+  // /** 频道成员减少 */
+  // GUILD_MEMBER_DECREASE = 'guildMemberDecrease',
+  // /** 用户的频道属性发生变化，如频道昵称，或者身份组 */
+  // GUILD_MEMBER_UPDATE = 'guildMemberUpdate',
 
-  /** 用户进入音视频/直播子频道时 */
-  AUDIO_OR_LIVE_CHANNEL_MEMBER_ENTER = 'audioOrLiveChannelMemberEnter',
-  /** 用户离开音视频/直播子频道时 */
-  AUDIO_OR_LIVE_CHANNEL_MEMBER_EXIT = 'audioOrLiveChannelMemberExit',
+  // /** 用户进入音视频/直播子频道时 */
+  // AUDIO_OR_LIVE_CHANNEL_MEMBER_ENTER = 'audioOrLiveChannelMemberEnter',
+  // /** 用户离开音视频/直播子频道时 */
+  // AUDIO_OR_LIVE_CHANNEL_MEMBER_EXIT = 'audioOrLiveChannelMemberExit',
 
-  /** 子频道被创建 */
-  CHANNEL_CREATE = 'channelCreate',
-  /** 子频道信息变更 */
-  CHANNEL_UPDATE = 'channelUpdate',
-  /** 子频道被删除 */
-  CHANNEL_DELETE = 'channelDelete',
+  // /** 子频道被创建 */
+  // CHANNEL_CREATE = 'channelCreate',
+  // /** 子频道信息变更 */
+  // CHANNEL_UPDATE = 'channelUpdate',
+  // /** 子频道被删除 */
+  // CHANNEL_DELETE = 'channelDelete',
 }
 
 /** 请求事件子类型枚举 */
@@ -152,13 +154,18 @@ export interface MessageEventMap {
   'message.direct': DirectMessage
 }
 
-/** 通知事件对应的对象类型 */
-export interface NoticeEventMap {
-  notice: Notice
+/** 私聊通知事件对应的对象类型 */
+export interface FriendNoticeEventMap {
+  'notice.receiveLike': ReceiveLikeNotice
+  'notice.friendDecrease': FriendDecreaseNotice
   'notice.friendIncrease': FriendIncreaseNotice
   'notice.privatePoke': PrivatePokeNotice
   'notice.privateRecall': PrivateRecallNotice
   'notice.privateFileUploaded': PrivateFileUploadedNotice
+}
+
+/** 群聊通知事件对应的对象类型 */
+export interface GroupNoticeEventMap {
   'notice.groupPoke': GroupPokeNotice
   'notice.groupRecall': GroupRecallNotice
   'notice.groupFileUploaded': GroupFileUploadedNotice
@@ -174,6 +181,11 @@ export interface NoticeEventMap {
   'notice.groupMessageReaction': GroupMessageReactionNotice
 }
 
+/** 通知事件对应的对象类型 */
+export interface NoticeEventMap extends FriendNoticeEventMap, GroupNoticeEventMap {
+  notice: Notice
+}
+
 /** 请求事件对应的对象类型 */
 export interface RequestEventMap {
   request: Request
@@ -181,78 +193,6 @@ export interface RequestEventMap {
   'request.groupApply': GroupApplyRequest
   'request.groupInvite': GroupInviteRequest
 }
-
-// /** 所有消息事件联合类型枚举 */
-// export const enum MessageEventSubType {
-//   /** 全部消息事件 */
-//   MESSAGE = EventParentEnum.MESSAGE,
-//   /** 群消息 */
-//   GROUP_MESSAGE = `${EventParentEnum.MESSAGE}.${MessageEventSubEnum.GROUP_MESSAGE}`,
-//   /** 好友消息 */
-//   FRIEND_MESSAGE = `${EventParentEnum.MESSAGE}.${MessageEventSubEnum.FRIEND_MESSAGE}`,
-//   /** 频道消息 */
-//   GUILD_MESSAGE = `${EventParentEnum.MESSAGE}.${MessageEventSubEnum.GUILD_MESSAGE}`,
-//   /** 频道私信 */
-//   GUILD_DIRECT = `${EventParentEnum.MESSAGE}.${MessageEventSubEnum.GUILD_DIRECT}`,
-// }
-
-// /** 所有通知事件联合类型枚举 */
-// export const enum NoticeEventSubType {
-//   /** 全部通知事件 */
-//   NOTICE = EventParentEnum.NOTICE,
-//   /** 收到点赞 */
-//   RECEIVE_LIKE = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.RECEIVE_LIKE}`,
-
-//   /** 好友戳一戳 */
-//   FRIENT_POKE = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.FRIENT_POKE}`,
-//   /** 好友撤回消息 */
-//   FRIEND_RECALL = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.FRIEND_RECALL}`,
-//   /** 好友发送文件 */
-//   FRIEND_FILE_UPLOADED = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.FRIEND_FILE_UPLOADED}`,
-//   /** 好友增加 */
-//   FRIEND_INCREASE = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.FRIEND_INCREASE}`,
-//   /** 好友减少 */
-//   FRIEND_DECREASE = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.FRIEND_DECREASE}`,
-
-//   /** 群聊戳一戳 */
-//   GROUP_POKE = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.GROUP_POKE}`,
-//   /** 群聊名片变动 */
-//   GROUP_CARD_CHANGED = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.GROUP_CARD_CHANGED}`,
-//   /** 群聊成员头衔变动 */
-//   GROUP_MEMBER_TITLE_UPDATED = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.GROUP_MEMBER_TITLE_UPDATED}`,
-//   /** 群聊精华消息变动 */
-//   GROUP_HIGHLIGHTS_CHANGED = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.GROUP_HIGHLIGHTS_CHANGED}`,
-//   /** 群聊撤回消息 */
-//   GROUP_RECALL = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.GROUP_RECALL}`,
-//   /** 群聊成员增加 */
-//   GROUP_MEMBER_ADD = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.GROUP_MEMBER_ADD}`,
-//   /** 群聊成员减少 */
-//   GROUP_MEMBER_REMOVE = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.GROUP_MEMBER_REMOVE}`,
-//   /** 群聊管理员变动 */
-//   GROUP_ADMIN_CHANGED = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.GROUP_ADMIN_CHANGED}`,
-//   /** 群聊成员禁言 */
-//   GROUP_MEMBER_BAN = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.GROUP_MEMBER_BAN}`,
-//   /** 群聊签到 */
-//   GROUP_SIGN_IN = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.GROUP_SIGN_IN}`,
-//   /** 群聊全员禁言 */
-//   GROUP_WHOLE_BAN = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.GROUP_WHOLE_BAN}`,
-//   /** 群聊发送文件 */
-//   GROUP_FILE_UPLOADED = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.GROUP_FILE_UPLOADED}`,
-//   /** 群聊消息表情动态回应 */
-//   GROUP_MESSAGE_REACTION = `${EventParentEnum.NOTICE}.${NoticeEventSubEnum.GROUP_MESSAGE_REACTION}`,
-// }
-
-// /** 所有请求事件联合类型枚举 */
-// export const enum RequestEventSubType {
-//   /** 全部请求事件 */
-//   REQUEST = EventParentEnum.REQUEST,
-//   /** 收到添加Bot为好友请求 */
-//   FRIEND = `${EventParentEnum.REQUEST}.${RequestEventSubEnum.FRIEND}`,
-//   /** 收到用户申请加入群聊请求 */
-//   GROUP = `${EventParentEnum.REQUEST}.${RequestEventSubEnum.GROUP}`,
-//   /** 收到邀请Bot加入群聊请求 */
-//   GROUP_INVITE = `${EventParentEnum.REQUEST}.${RequestEventSubEnum.GROUP_INVITE}`,
-// }
 
 /** 事件子类型联合 */
 export type EventSubType<T extends EventParentEnum = EventParentEnum> = EventToSubEvent[T]
@@ -302,7 +242,7 @@ export interface BaseEventType {
   /** 事件联系人信息 */
   contact: Contact
   /** 事件发送者信息 */
-  sender: Sender
+  sender: FriendSender | GroupSender | NoticeAndRequestSender
   /** 快速回复源函数 适配器实现 */
   srcReply: SrcReply
   /** bot自身实例 所有标准Api都通过这里调用 */

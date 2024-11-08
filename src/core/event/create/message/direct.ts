@@ -1,6 +1,6 @@
 import { MessageEventSubEnum } from '../../types/types'
 import { Contact } from '@/adapter/contact'
-import { BaseMessageEventType, MessageBase, MessageOptions } from '.'
+import { BaseMessageEventType, MessageBase, MessageOptions } from './base'
 
 /** new 频道私信消息事件所需参数 */
 export type DirectMessageOptions = MessageOptions & {
@@ -36,6 +36,7 @@ export class DirectMessage extends MessageBase implements DirectMessageEventType
     this.#subEvent = MessageEventSubEnum.GUILD_DIRECT
     this.#contact = options.contact
     this.#srcGuildId = options.srcGuildId
+    // TODO: sender
   }
 
   get contact () {

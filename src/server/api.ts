@@ -38,6 +38,7 @@ export const exit = async (req: Request, res: Response) => {
     return
   }
 
+  logger.mark('收到退出请求，正在退出...')
   res.json({ message: '退出成功' })
   process.exit(0)
 }

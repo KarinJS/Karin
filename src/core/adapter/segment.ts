@@ -1,4 +1,5 @@
 import { KarinButton } from '@/utils/button/types'
+import { ForwardOptions } from './adapter'
 
 /** 元素类型枚举 */
 export const enum ElementTypeEnum {
@@ -370,6 +371,7 @@ export interface ContactElementType extends Element {
   peer: string
 }
 
+/** 收到的消息元素类型 */
 export type ElementTypes =
   | TextElementType
   | AtElementType
@@ -399,6 +401,9 @@ export type ElementTypes =
   | MarketFaceElementType
   | ContactElementType
 
+/** 发送的消息元素类型 多了一个转发 */
+export type SendElementTypes = ElementTypes | NodeElementType
+
 const enum NodeTypeEnum {
   /** 节点 */
   NODE = 'node',
@@ -409,7 +414,7 @@ interface NodeType {
 }
 
 /** 常规合并转发节点 */
-export interface NodeElementReadyType extends NodeType {
+export interface DirectNodeElementType extends NodeType {
   /** 节点ID */
   resId: string
   /** @deprecated 即将废弃 请使用 `resId` */
@@ -417,17 +422,19 @@ export interface NodeElementReadyType extends NodeType {
 }
 
 /** 自定义节点 */
-export interface NodeElementCustomType extends NodeType {
+export interface CustomNodeElementType extends NodeType {
   /** 目标ID */
   userId: string
   /** 目标名称 */
   nickname: string
   /** 转发的元素节点 */
   message: Array<ElementTypes>
+  /** 外显设置 */
+  options?: ForwardOptions
 }
 
 /** 合并转发节点元素 */
-export type NodeElementType = NodeElementReadyType | NodeElementCustomType
+export type NodeElementType = DirectNodeElementType | CustomNodeElementType
 
 /** 快速构建消息元素实例 */
 class ElementBuilder {
@@ -729,7 +736,7 @@ class ElementBuilder {
    * 构建常规转发节点元素
    * @param resId resId - 资源ID
    */
-  node (resId: NodeElementReadyType['resId']): NodeElementReadyType
+  node (resId: DirectNodeElementType['resId']): DirectNodeElementType
   /**
    * 构建自定义转发节点元素
    * @param userId - 目标ID
@@ -737,10 +744,11 @@ class ElementBuilder {
    * @param message - 转发的消息元素结构
    */
   node (
-    userId: NodeElementCustomType['userId'],
-    nickname: NodeElementCustomType['nickname'],
-    message: NodeElementCustomType['message']
-  ): NodeElementCustomType
+    userId: CustomNodeElementType['userId'],
+    nickname: CustomNodeElementType['nickname'],
+    message: CustomNodeElementType['message'],
+    options?: CustomNodeElementType['options']
+  ): CustomNodeElementType
   /**
    * 构建转发节点元素
    * @param resIdOrUserId - 资源ID或目标ID
@@ -748,13 +756,14 @@ class ElementBuilder {
    * @param message - 转发的消息元素结构
    */
   node (
-    resIdOrUserId: NodeElementCustomType['userId'] | NodeElementReadyType['resId'],
-    nickname?: NodeElementCustomType['nickname'],
-    message?: NodeElementCustomType['message']
+    resIdOrUserId: CustomNodeElementType['userId'] | DirectNodeElementType['resId'],
+    nickname?: CustomNodeElementType['nickname'],
+    message?: CustomNodeElementType['message'],
+    options?: CustomNodeElementType['options']
   ): NodeElementType {
     if (resIdOrUserId && nickname && message) {
       /** 自定义 */
-      return { type: NodeTypeEnum.NODE, userId: resIdOrUserId, nickname, message }
+      return { type: NodeTypeEnum.NODE, userId: resIdOrUserId, nickname, message, options }
     } else {
       /** 常规 */
       return { type: NodeTypeEnum.NODE, resId: resIdOrUserId, res_id: resIdOrUserId }

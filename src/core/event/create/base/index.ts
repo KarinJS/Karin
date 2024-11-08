@@ -2,7 +2,7 @@ import { segment } from '@/adapter/segment'
 import { BaseEventHandle, BaseEventOptions } from '../../types/types'
 
 /** 事件实现基类 */
-export class BaseEvent implements BaseEventHandle {
+export abstract class BaseEvent implements BaseEventHandle {
   #selfId: BaseEventHandle['selfId']
   #event: BaseEventHandle['event']
   #subEvent: BaseEventHandle['subEvent']

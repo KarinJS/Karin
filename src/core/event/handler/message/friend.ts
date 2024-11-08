@@ -57,13 +57,13 @@ export class FriendHandler {
     return false
   }
 
-  /** 检查是否通过好友白名单 */
+  /** 检查是否通过用户白名单 */
   get isFriendEnable () {
     if (!this.config.enable.users.length) return true
     return this.config.enable.users.includes(this.event.userId)
   }
 
-  /** 检查是否通过好友黑名单 */
+  /** 检查是否通过用户黑名单 */
   get isFriendDisable () {
     if (!this.config.disable.users.length) return true
     return !this.config.disable.users.includes(this.event.userId)

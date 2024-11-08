@@ -1,3 +1,5 @@
+import { OB11NodeSegment, OB11Segment } from './segment'
+
 export const enum Action {
   /** 发送私聊消息 */
   sendPrivateMsg = 'send_private_msg',
@@ -79,6 +81,10 @@ export const enum Action {
   cleanCache = 'clean_cache',
   /** 发送合并转发消息 */
   sendForwardMsg = 'send_forward_msg',
+  /** 发送群聊合并转发消息 */
+  sendGroupForwardMsg = 'send_group_forward_msg',
+  /** 发送好友合并转发消息 */
+  sendPrivateForwardMsg = 'send_private_forward_msg',
   /** 获取好友历史消息记录 */
   getFriendMsgHistory = 'get_friend_msg_history',
   /** 获取群组历史消息记录 */
@@ -104,7 +110,7 @@ export interface Params {
     /** 对方 QQ 号 */
     user_id: number
     /** 要发送的内容 */
-    message: string
+    message: Array<OB11Segment>
     /** 消息内容是否作为纯文本发送（即不解析 CQ 码），只在 `message` 字段是字符串时有效 */
     auto_escape?: boolean
   }
@@ -113,7 +119,7 @@ export interface Params {
     /** 群号 */
     group_id: number
     /** 要发送的内容 */
-    message: string
+    message: Array<OB11Segment>
     /** 消息内容是否作为纯文本发送（即不解析 CQ 码），只在 `message` 字段是字符串时有效 */
     auto_escape?: boolean
   }
@@ -350,7 +356,23 @@ export interface Params {
     /** 群号，当消息类型为 "group" 时有效 */
     group_id?: number
     /** 要发送的内容 */
-    messages: Array<CustomNodeSegment>
+    messages: Array<OB11NodeSegment>
+  }
+
+  /** 发送群聊合并转发消息 */
+  [Action.sendGroupForwardMsg]: {
+    /** 群号 */
+    group_id: number
+    /** 要发送的内容 */
+    messages: Array<OB11NodeSegment>
+  }
+
+  /** 发送好友合并转发消息 */
+  [Action.sendPrivateForwardMsg]: {
+    /** 对方 QQ 号 */
+    user_id: number
+    /** 要发送的内容 */
+    messages: Array<OB11NodeSegment>
   }
 
   /** 获取好友历史消息记录 */
@@ -497,7 +519,7 @@ export interface GetMsg {
   real_id: number
   sender: {
     /** 发送者 QQ 号 */
-    user_id: string
+    user_id: number
     /** 昵称 不存在则为空字符串 */
     nickname: string
     /** 性别 */
@@ -687,7 +709,7 @@ export interface Request {
 
   /** 获取转发消息 */
   [Action.getForwardMsg]: {
-    message: Array<CustomNodeSegment>
+    message: Array<OB11NodeSegment>
   }
 
   /** 发送好友赞 */
@@ -863,7 +885,28 @@ export interface Request {
   [Action.cleanCache]: {}
 
   /** 发送合并转发消息 */
-  [Action.sendForwardMsg]: string
+  [Action.sendForwardMsg]: {
+    /** 消息 ID */
+    message_id: number
+    /** res_id 可通过长消息接口发送 */
+    forward_id: string
+  }
+
+  /** 发送群聊合并转发消息 */
+  [Action.sendGroupForwardMsg]: {
+    /** 消息 ID */
+    message_id: number
+    /** res_id 可通过长消息接口发送 */
+    forward_id: string
+  }
+
+  /** 发送好友合并转发消息 */
+  [Action.sendPrivateForwardMsg]: {
+    /** 消息 ID */
+    message_id: number
+    /** res_id 可通过长消息接口发送 */
+    forward_id: string
+  }
 
   /** 获取好友历史消息记录 */
   [Action.getFriendMsgHistory]: { messages: GetMsg[] }
@@ -913,269 +956,3 @@ export interface Request {
    */
   [Action.deleteEssenceMsg]: {}
 }
-
-/** OneBot11消息类型 */
-export type OB11SegmentType =
-  | 'text'
-  | 'face'
-  | 'image'
-  | 'record'
-  | 'video'
-  | 'at'
-  | 'rps'
-  | 'dice'
-  | 'shake'
-  | 'poke'
-  | 'anonymous'
-  | 'share'
-  | 'contact'
-  | 'location'
-  | 'music'
-  | 'music_custom'
-  | 'reply'
-  | 'forward'
-  | 'node'
-  | 'node_custom'
-  | 'xml'
-  | 'json'
-  | 'file'
-
-export interface Segment {
-  type: OB11SegmentType
-}
-
-/** 纯文本 */
-export interface TextSegment extends Segment {
-  type: 'text'
-  data: {
-    text: string
-  }
-}
-
-/** QQ表情 */
-export interface FaceSegment extends Segment {
-  type: 'face'
-  data: {
-    id: string
-  }
-}
-
-/** 图片消息段 */
-export interface ImageSegment extends Segment {
-  type: 'image'
-  data: {
-    file: string
-    type?: 'flash'
-    url?: string
-    cache?: 0 | 1
-    proxy?: 0 | 1
-    timeout?: number
-  }
-}
-
-/** 语音消息段 */
-export interface RecordSegment extends Segment {
-  type: 'record'
-  data: {
-    file: string
-    magic?: 0 | 1
-    url?: string
-    cache?: 0 | 1
-    proxy?: 0 | 1
-    timeout?: number
-  }
-}
-
-/** 短视频消息段 */
-export interface VideoSegment extends Segment {
-  type: 'video'
-  data: {
-    file: string
-    url?: string
-    cache?: 0 | 1
-    proxy?: 0 | 1
-    timeout?: number
-  }
-}
-
-/** @某人消息段 */
-export interface AtSegment extends Segment {
-  type: 'at'
-  data: {
-    qq: string | 'all',
-    name?: string
-  }
-}
-
-/** 猜拳魔法表情消息段 */
-export interface RpsSegment extends Segment {
-  type: 'rps'
-  data: {}
-}
-
-/** 掷骰子魔法表情消息段 */
-export interface DiceSegment extends Segment {
-  type: 'dice'
-  data: {}
-}
-
-/** 窗口抖动（戳一戳）消息段 */
-export interface ShakeSegment extends Segment {
-  type: 'shake'
-  data: {}
-}
-
-/** 戳一戳消息段 */
-export interface PokeSegment extends Segment {
-  type: 'poke'
-  data: {
-    type: string
-    id: string
-    name?: string
-  }
-}
-
-/** 匿名发消息消息段 */
-export interface AnonymousSegment extends Segment {
-  type: 'anonymous'
-  data: {
-    ignore?: 0 | 1
-  }
-}
-
-/** 链接分享消息段 */
-export interface ShareSegment extends Segment {
-  type: 'share'
-  data: {
-    url: string
-    title: string
-    content?: string
-    image?: string
-  }
-}
-
-/** 推荐好友/群消息段 */
-export interface ContactSegment extends Segment {
-  type: 'contact'
-  data: {
-    type: 'qq' | 'group'
-    id: string
-  }
-}
-
-/** 位置消息段 */
-export interface LocationSegment extends Segment {
-  type: 'location'
-  data: {
-    lat: string
-    lon: string
-    title?: string
-    content?: string
-  }
-}
-
-/** 音乐分享消息段 */
-export interface MusicSegment extends Segment {
-  type: 'music'
-  data: {
-    type: 'qq' | '163' | 'xm'
-    id: string
-  }
-}
-
-/** 音乐自定义分享消息段 */
-export interface CustomMusicSegment extends Segment {
-  type: 'music_custom'
-  data: {
-    type: 'custom'
-    url: string
-    audio: string
-    title: string
-    content?: string
-    image?: string
-  }
-}
-
-/** 回复消息段 */
-export interface ReplySegment extends Segment {
-  type: 'reply'
-  data: {
-    id: string
-  }
-}
-
-export interface FileSegment extends Segment {
-  type: 'file'
-  data: {
-    file: string
-  }
-}
-
-/** 合并转发消息段 */
-export interface ForwardSegment extends Segment {
-  type: 'forward'
-  data: {
-    id: string
-  }
-}
-
-/** 合并转发节点消息段 */
-export interface NodeSegment extends Segment {
-  type: 'node'
-  data: {
-    id: string
-  }
-}
-
-/** XML消息段 */
-export interface XmlSegment extends Segment {
-  type: 'xml'
-  data: {
-    data: string
-  }
-}
-
-/** JSON消息段 */
-export interface JsonSegment extends Segment {
-  type: 'json'
-  data: {
-    data: string
-  }
-}
-
-/** OneBot11消息段 */
-export type OB11SegmentBase =
-  | TextSegment
-  | FaceSegment
-  | ImageSegment
-  | RecordSegment
-  | VideoSegment
-  | AtSegment
-  | RpsSegment
-  | DiceSegment
-  | ShakeSegment
-  | PokeSegment
-  | AnonymousSegment
-  | ShareSegment
-  | ContactSegment
-  | LocationSegment
-  | MusicSegment
-  | CustomMusicSegment
-  | ReplySegment
-  | ForwardSegment
-  | NodeSegment
-  | XmlSegment
-  | JsonSegment
-
-/** 合并转发自定义节点消息段 */
-export interface CustomNodeSegment extends Segment {
-  type: 'node_custom'
-  data: {
-    user_id: string
-    nickname: string
-    content: OB11SegmentBase[]
-  }
-}
-
-/** OneBot11消息段 */
-export type OB11Segment = OB11SegmentBase | CustomNodeSegment

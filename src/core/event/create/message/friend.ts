@@ -1,19 +1,20 @@
-import { MessageEventSubEnum } from '../../types/types'
-import { Contact } from '@/adapter/contact'
-import { BaseMessageEventType, MessageBase, MessageOptions } from '.'
+import { BaseMessageEventType, MessageBase, MessageOptions } from './base'
 import { FriendHandler } from '@/event/handler/message/friend'
+import { MessageEventSubEnum } from '../../types/types'
+import type { Contact } from '@/adapter/contact'
+import type { FriendSender } from '@/adapter/sender'
 
 /** new 好友消息事件所需参数 */
-export type FriendMessageOptions = MessageOptions & {
-  /** 事件联系人信息 */
+export interface FriendMessageOptions extends MessageOptions {
   contact: Contact<'friend'>
+  sender: FriendSender
 }
 
 /** 好友消息事件定义 */
 export interface FriendMessageEventType extends BaseMessageEventType {
   contact: FriendMessageOptions['contact']
-  /** 事件子类型 */
   subEvent: `${MessageEventSubEnum.FRIEND_MESSAGE}`
+  sender: FriendSender
 }
 
 /**
@@ -21,11 +22,13 @@ export interface FriendMessageEventType extends BaseMessageEventType {
  * @class FriendMessage
  */
 export class FriendMessage extends MessageBase implements FriendMessageEventType {
+  #sender: FriendSender
   #contact: FriendMessageOptions['contact']
   #subEvent: `${MessageEventSubEnum.FRIEND_MESSAGE}`
 
   constructor (options: FriendMessageOptions) {
     super(Object.assign(options, { subEvent: MessageEventSubEnum.FRIEND_MESSAGE }))
+    this.#sender = options.sender
     this.#contact = options.contact
     this.#subEvent = MessageEventSubEnum.FRIEND_MESSAGE
   }
@@ -36,6 +39,10 @@ export class FriendMessage extends MessageBase implements FriendMessageEventType
 
   get subEvent () {
     return this.#subEvent
+  }
+
+  get sender () {
+    return this.#sender
   }
 }
 

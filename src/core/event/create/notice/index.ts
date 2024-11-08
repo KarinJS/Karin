@@ -1,3 +1,4 @@
+import { NoticeAndRequestSender } from '@/adapter/sender'
 import {
   BaseEventOptions,
   BaseEventType,
@@ -6,29 +7,35 @@ import {
 } from '../../types/types'
 import { BaseEvent } from '../base'
 
-/** 消息事件基类定义 */
+/** 通知事件基类定义 */
 export interface BaseNoticeEventType extends BaseEventType {
-  /** 事件类型 */
   event: `${EventParentEnum.NOTICE}`
-  /** 事件子类型 */
   subEvent: `${NoticeEventSubEnum}`
+  sender: NoticeAndRequestSender
 }
 
-export type NoticeOptions = Omit<BaseEventOptions, 'event'> & {
+/** 所需参数 */
+export type NoticeOptions = Omit<BaseEventOptions, 'event' | 'sender'> & {
   subEvent: BaseNoticeEventType['subEvent']
+  sender: NoticeAndRequestSender
 }
 
 /**
  * @description 通知事件类
  * @class NoticeBase
  */
-export class NoticeBase extends BaseEvent implements BaseNoticeEventType {
+export abstract class NoticeBase extends BaseEvent implements BaseNoticeEventType {
+  /** 提示: 123戳了戳Bot */
+  tips: string
   /** 事件子类型 */
   #subEvent: BaseNoticeEventType['subEvent']
+  #sender: NoticeAndRequestSender
 
   constructor (options: NoticeOptions) {
     super(Object.assign(options, { event: EventParentEnum.NOTICE }))
+    this.#sender = options.sender
     this.#subEvent = options.subEvent
+    this.tips = ''
   }
 
   get event () {
@@ -37,5 +44,9 @@ export class NoticeBase extends BaseEvent implements BaseNoticeEventType {
 
   get subEvent () {
     return this.#subEvent
+  }
+
+  get sender () {
+    return this.#sender
   }
 }

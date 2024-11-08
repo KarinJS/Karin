@@ -71,7 +71,7 @@ export class Plugin<T extends keyof MessageEventMap = keyof MessageEventMap> {
    * @param element 合并转发消息元素节点
    */
   async replyForward (element: NodeElementType[]) {
-    const result = await this.e.bot.sendForwardMessage(this.e.contact, element)
+    const result = await this.e.bot.sendForwardMsg(this.e.contact, element)
     return {
       ...result,
       /** @deprecated 已废弃 请请使用 messageId */

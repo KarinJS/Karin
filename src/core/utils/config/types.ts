@@ -127,6 +127,8 @@ export interface ServerType {
   renderSocket: string[]
   /** http渲染器地址 */
   renderHttp: string[]
+  /** http根理由随机返回的文案列表 */
+  rootMsg: string[]
 }
 
 /** package.json */
