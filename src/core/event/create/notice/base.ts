@@ -16,7 +16,6 @@ export interface BaseNoticeEventType extends BaseEventType {
 
 /** 所需参数 */
 export type NoticeOptions = Omit<BaseEventOptions, 'event' | 'sender'> & {
-  subEvent: BaseNoticeEventType['subEvent']
   sender: NoticeAndRequestSender
 }
 
@@ -27,15 +26,21 @@ export type NoticeOptions = Omit<BaseEventOptions, 'event' | 'sender'> & {
 export abstract class NoticeBase extends BaseEvent implements BaseNoticeEventType {
   /** 提示: 123戳了戳Bot */
   tips: string
+  /** 事件内容 */
+  content: any
   /** 事件子类型 */
-  #subEvent: BaseNoticeEventType['subEvent']
+  #subEvent: BaseNoticeEventType['subEvent'] = 'privateRecall'
+  /** 事件发送者信息 */
   #sender: NoticeAndRequestSender
 
   constructor (options: NoticeOptions) {
-    super(Object.assign(options, { event: EventParentEnum.NOTICE }))
-    this.#sender = options.sender
-    this.#subEvent = options.subEvent
+    super(Object.assign(options, {
+      event: EventParentEnum.NOTICE,
+      /** 给一个默认子事件 */
+      subEvent: 'privateRecall' as const,
+    }))
     this.tips = ''
+    this.#sender = options.sender
   }
 
   get event () {

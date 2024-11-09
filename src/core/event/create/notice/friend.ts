@@ -1,6 +1,6 @@
-import { FriendNoticeHandle } from '@/event/handler/notice/friend'
-import { NoticeBase, NoticeOptions } from '.'
+import { NoticeBase, NoticeOptions } from './base'
 import { NoticeEventSubEnum } from '../../types/types'
+import { FriendNoticeHandle } from '@/event/handler/notice/friend'
 
 /** 收到点赞 */
 export interface ReceiveLikeType {
@@ -72,13 +72,10 @@ export interface PrivateFileUploadedType {
  * @class ReceiveLikeNotice
  */
 export class ReceiveLikeNotice extends NoticeBase {
-  /** 事件内容 */
   content: ReceiveLikeType
-  #subEvent: `${NoticeEventSubEnum.RECEIVE_LIKE}`
+  #subEvent: NoticeEventSubEnum.RECEIVE_LIKE
   constructor (options: NoticeOptions, content: ReceiveLikeType) {
-    super(Object.assign(options, {
-      subEvent: NoticeEventSubEnum.RECEIVE_LIKE,
-    }))
+    super(options)
 
     this.content = content
     this.#subEvent = NoticeEventSubEnum.RECEIVE_LIKE
@@ -94,13 +91,10 @@ export class ReceiveLikeNotice extends NoticeBase {
  * @class FriendIncreaseNotice
  */
 export class FriendIncreaseNotice extends NoticeBase {
-  /** 事件内容 */
   content: FriendIncreaseType
-  #subEvent: `${NoticeEventSubEnum.FRIEND_INCREASE}`
+  #subEvent: NoticeEventSubEnum.FRIEND_INCREASE
   constructor (options: NoticeOptions, content: FriendIncreaseType) {
-    super(Object.assign(options, {
-      subEvent: NoticeEventSubEnum.FRIEND_INCREASE,
-    }))
+    super(options)
 
     this.content = content
     this.#subEvent = NoticeEventSubEnum.FRIEND_INCREASE
@@ -116,13 +110,10 @@ export class FriendIncreaseNotice extends NoticeBase {
  * @class FriendDecreaseNotice
  */
 export class FriendDecreaseNotice extends NoticeBase {
-  /** 事件内容 */
   content: FriendDecreaseType
-  #subEvent: `${NoticeEventSubEnum.FRIEND_DECREASE}`
+  #subEvent: NoticeEventSubEnum.FRIEND_DECREASE
   constructor (options: NoticeOptions, content: FriendDecreaseType) {
-    super(Object.assign(options, {
-      subEvent: NoticeEventSubEnum.FRIEND_DECREASE,
-    }))
+    super(options)
 
     this.content = content
     this.#subEvent = NoticeEventSubEnum.FRIEND_DECREASE
@@ -138,13 +129,10 @@ export class FriendDecreaseNotice extends NoticeBase {
  * @class PrivatePokeNotice
  */
 export class PrivatePokeNotice extends NoticeBase {
-  /** 事件内容 */
   content: PrivatePokeType
-  #subEvent: `${NoticeEventSubEnum.FRIENT_POKE}`
+  #subEvent: NoticeEventSubEnum.FRIENT_POKE
   constructor (options: NoticeOptions, content: PrivatePokeType) {
-    super(Object.assign(options, {
-      subEvent: NoticeEventSubEnum.FRIENT_POKE,
-    }))
+    super(options)
 
     this.content = content
     this.#subEvent = NoticeEventSubEnum.FRIENT_POKE
@@ -160,13 +148,10 @@ export class PrivatePokeNotice extends NoticeBase {
  * @class PrivateRecallNotice
  */
 export class PrivateRecallNotice extends NoticeBase {
-  /** 事件内容 */
   content: PrivateRecallType
-  #subEvent: `${NoticeEventSubEnum.FRIEND_RECALL}`
+  #subEvent: NoticeEventSubEnum.FRIEND_RECALL
   constructor (options: NoticeOptions, content: PrivateRecallType) {
-    super(Object.assign(options, {
-      subEvent: NoticeEventSubEnum.FRIEND_RECALL,
-    }))
+    super(options)
 
     this.content = content
     this.#subEvent = NoticeEventSubEnum.FRIEND_RECALL
@@ -182,13 +167,10 @@ export class PrivateRecallNotice extends NoticeBase {
  * @class PrivateFileUploadedNotice
  */
 export class PrivateFileUploadedNotice extends NoticeBase {
-  /** 事件内容 */
   content: PrivateFileUploadedType
-  #subEvent: `${NoticeEventSubEnum.FRIEND_FILE_UPLOADED}`
+  #subEvent: NoticeEventSubEnum.FRIEND_FILE_UPLOADED
   constructor (options: NoticeOptions, content: PrivateFileUploadedType) {
-    super(Object.assign(options, {
-      subEvent: NoticeEventSubEnum.FRIEND_FILE_UPLOADED,
-    }))
+    super(options)
 
     this.content = content
     this.#subEvent = NoticeEventSubEnum.FRIEND_FILE_UPLOADED
@@ -199,59 +181,87 @@ export class PrivateFileUploadedNotice extends NoticeBase {
   }
 }
 
-// export type PrivateNotice<T extends NoticeEventSubEnum.FRIEND_INCREASE | NoticeEventSubEnum.FRIEND_DECREASE | NoticeEventSubEnum.FRIENT_POKE | NoticeEventSubEnum.FRIEND_RECALL | NoticeEventSubEnum.FRIEND_FILE_UPLOADED> = T extends NoticeEventSubEnum.FRIEND_INCREASE ? FriendIncreaseNotice : T extends NoticeEventSubEnum.FRIEND_DECREASE ? FriendDecreaseNotice : T extends NoticeEventSubEnum.FRIENT_POKE ? PrivatePokeNotice : T extends NoticeEventSubEnum.FRIEND_RECALL ? PrivateRecallNotice : T extends NoticeEventSubEnum.FRIEND_FILE_UPLOADED ? PrivateFileUploadedNotice : never
+export interface CreatePrivateNoticeOptions {
+  /**
+   * @description 创建收到点赞事件
+   * @param type 事件子类型
+   * @param options 事件所需参数
+   * @param content 事件内容
+   */
+  (type: `${NoticeEventSubEnum.RECEIVE_LIKE}`, options: NoticeOptions, content: ReceiveLikeType): FriendNoticeHandle
+  /**
+   * @description 创建好友新增事件
+   * @param type 事件子类型
+   * @param options 事件所需参数
+   * @param content 事件内容
+   */
+  (type: `${NoticeEventSubEnum.FRIEND_INCREASE}`, options: NoticeOptions, content: FriendIncreaseType): FriendNoticeHandle
+  /**
+   * @description 创建好友减少事件
+   * @param type 事件子类型
+   * @param options 事件所需参数
+   * @param content 事件内容
+   */
+  (type: `${NoticeEventSubEnum.FRIEND_DECREASE}`, options: NoticeOptions, content: FriendDecreaseType): FriendNoticeHandle
+  /**
+   * @description 创建私聊戳一戳事件
+   * @param type 事件子类型
+   * @param options 事件所需参数
+   * @param content 事件内容
+   */
+  (type: `${NoticeEventSubEnum.FRIENT_POKE}`, options: NoticeOptions, content: PrivatePokeType): FriendNoticeHandle
+  /**
+   * @description 创建私聊撤回消息事件
+   * @param type 事件子类型
+   * @param options 事件所需参数
+   * @param content 事件内容
+   */
+  (type: `${NoticeEventSubEnum.FRIEND_RECALL}`, options: NoticeOptions, content: PrivateRecallType): FriendNoticeHandle
+  /**
+   * @description 创建私聊文件上传事件
+   * @param type 事件子类型
+   * @param options 事件所需参数
+   * @param content 事件内容
+   */
+  (type: `${NoticeEventSubEnum.FRIEND_FILE_UPLOADED}`, options: NoticeOptions, content: PrivateFileUploadedType): FriendNoticeHandle
+}
+
+/**
+ * @description 创建私聊通知事件
+ * @param type 事件子类型
+ * @param options 事件所需参数
+ * @param content 事件内容
+ */
+export const createPrivateNotice: CreatePrivateNoticeOptions = (type, options, content) => {
+  switch (type) {
+    case `${NoticeEventSubEnum.RECEIVE_LIKE}`: {
+      const event = new ReceiveLikeNotice(options, content as ReceiveLikeType)
+      return new FriendNoticeHandle(event).init()
+    }
+    case `${NoticeEventSubEnum.FRIEND_DECREASE}`: {
+      const event = new FriendDecreaseNotice(options, content as FriendDecreaseType)
+      return new FriendNoticeHandle(event).init()
+    }
+    case `${NoticeEventSubEnum.FRIEND_INCREASE}`: {
+      const event = new FriendIncreaseNotice(options, content as FriendIncreaseType)
+      return new FriendNoticeHandle(event).init()
+    }
+    case `${NoticeEventSubEnum.FRIENT_POKE}`: {
+      const event = new PrivatePokeNotice(options, content as PrivatePokeType)
+      return new FriendNoticeHandle(event).init()
+    }
+    case `${NoticeEventSubEnum.FRIEND_RECALL}`: {
+      const event = new PrivateRecallNotice(options, content as PrivateRecallType)
+      return new FriendNoticeHandle(event).init()
+    }
+    case `${NoticeEventSubEnum.FRIEND_FILE_UPLOADED}`: {
+      const event = new PrivateFileUploadedNotice(options, content as PrivateFileUploadedType)
+      return new FriendNoticeHandle(event).init()
+    }
+    default:
+      throw new Error(`[createPrivateNotice]: 未知的事件子类型: ${JSON.stringify({ type, options, content })}`)
+  }
+}
+
+/** 私聊通知事件 */
 export type PrivateNotice = ReceiveLikeNotice | FriendIncreaseNotice | FriendDecreaseNotice | PrivatePokeNotice | PrivateRecallNotice | PrivateFileUploadedNotice
-
-/**
- * @description 创建新增好友事件
- * @param options 事件所需参数
- */
-export const createFriendIncreaseNotice = (options: NoticeOptions, content: FriendIncreaseType) => {
-  const event = new FriendIncreaseNotice(options, content)
-  return new FriendNoticeHandle(event).init()
-}
-
-/**
- * @description 创建好友减少事件
- * @param options 事件所需参数
- */
-export const createFriendDecreaseNotice = (options: NoticeOptions, content: FriendDecreaseType) => {
-  const event = new FriendDecreaseNotice(options, content)
-  return new FriendNoticeHandle(event).init()
-}
-
-/**
- * @description 创建私聊戳一戳事件
- * @param options 事件所需参数
- */
-export const createPrivatePokeNotice = (options: NoticeOptions, content: PrivatePokeType) => {
-  const event = new PrivatePokeNotice(options, content)
-  return new FriendNoticeHandle(event).init()
-}
-
-/**
- * @description 创建私聊撤回消息事件
- * @param options 事件所需参数
- */
-export const createPrivateRecallNotice = (options: NoticeOptions, content: PrivateRecallType) => {
-  const event = new PrivateRecallNotice(options, content)
-  return new FriendNoticeHandle(event).init()
-}
-
-/**
- * @description 创建私聊文件上传事件
- * @param options 事件所需参数
- */
-export const createPrivateFileUploadedNotice = (options: NoticeOptions, content: PrivateFileUploadedType) => {
-  const event = new PrivateFileUploadedNotice(options, content)
-  return new FriendNoticeHandle(event).init()
-}
-
-/**
- * @description 创建收到点赞事件
- * @param options 事件所需参数
- */
-export const createReceiveLikeNotice = (options: NoticeOptions, content: ReceiveLikeType) => {
-  const event = new ReceiveLikeNotice(options, content)
-  return new FriendNoticeHandle(event).init()
-}
