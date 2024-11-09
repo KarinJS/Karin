@@ -2,11 +2,12 @@ import { Action } from './types'
 import { AdapterOneBot } from './base'
 import { OB11Event } from './types/event'
 import { registerWSPath } from '@service/server'
-import { createMessage, createNotice, createRequest } from './event'
+import { createMessage } from './create/message'
+import { createNotice, createRequest } from './create/notice'
+import { registerBot, unregisterBot } from '@service/adapter'
 import type { WebSocket } from 'ws'
 import type { IncomingMessage } from 'http'
 import type { OB11Message, OB11Meta, OB11Notice, OB11Request } from './types/event'
-import { registerBot, unregisterBot } from '@service/adapter'
 
 export class AdapterServerOneBot11 extends AdapterOneBot {
   /** websocket实例 */

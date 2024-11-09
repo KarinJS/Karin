@@ -181,6 +181,72 @@ export class PrivateFileUploadedNotice extends NoticeBase {
   }
 }
 
+/**
+ * @description 创建收到点赞事件
+ * @param type 事件子类型
+ * @param options 事件所需参数
+ * @param content 事件内容
+ */
+export const createReceiveLikeNotice = (options: NoticeOptions, content: ReceiveLikeType) => {
+  const event = new ReceiveLikeNotice(options, content)
+  return new FriendNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建好友新增事件
+ * @param type 事件子类型
+ * @param options 事件所需参数
+ * @param content 事件内容
+ */
+export const createFriendIncreaseNotice = (options: NoticeOptions, content: FriendIncreaseType) => {
+  const event = new FriendIncreaseNotice(options, content)
+  return new FriendNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建好友减少事件
+ * @param type 事件子类型
+ * @param options 事件所需参数
+ * @param content 事件内容
+ */
+export const createFriendDecreaseNotice = (options: NoticeOptions, content: FriendDecreaseType) => {
+  const event = new FriendDecreaseNotice(options, content)
+  return new FriendNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建私聊戳一戳事件
+ * @param type 事件子类型
+ * @param options 事件所需参数
+ * @param content 事件内容
+ */
+export const createPrivatePokeNotice = (options: NoticeOptions, content: PrivatePokeType) => {
+  const event = new PrivatePokeNotice(options, content)
+  return new FriendNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建私聊撤回消息事件
+ * @param type 事件子类型
+ * @param options 事件所需参数
+ * @param content 事件内容
+ */
+export const createPrivateRecallNotice = (options: NoticeOptions, content: PrivateRecallType) => {
+  const event = new PrivateRecallNotice(options, content)
+  return new FriendNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建私聊文件上传事件
+ * @param type 事件子类型
+ * @param options 事件所需参数
+ * @param content 事件内容
+ */
+export const createPrivateFileUploadedNotice = (options: NoticeOptions, content: PrivateFileUploadedType) => {
+  const event = new PrivateFileUploadedNotice(options, content)
+  return new FriendNoticeHandle(event).init()
+}
+
 export interface CreatePrivateNoticeOptions {
   /**
    * @description 创建收到点赞事件

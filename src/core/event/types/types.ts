@@ -32,6 +32,8 @@ import type {
   GroupInviteRequest,
   ReceiveLikeNotice,
   FriendDecreaseNotice,
+  GroupLuckKingNotice,
+  GroupHonorChangedNotice,
 } from '..'
 
 /** 事件父类型枚举 */
@@ -100,6 +102,10 @@ export const enum NoticeEventSubEnum {
   GROUP_FILE_UPLOADED = 'groupFileUploaded',
   /** 群聊消息表情动态回应 */
   GROUP_MESSAGE_REACTION = 'groupMessageReaction',
+  /** 群聊运气王事件 */
+  GROUP_LUCKY_KING = 'groupLuckyKing',
+  /** 群聊荣誉变更事件 */
+  GROUP_HONOR_CHANGE = 'groupHonorChange',
 
   // /** 机器人被加入某个频道 */
   // BOT_JOIN_GUILD = 'botJoinGuild',
@@ -179,6 +185,8 @@ export interface GroupNoticeEventMap {
   'notice.groupMemberBan': GroupMemberBanNotice
   'notice.groupWholeBan': GroupWholeBanNotice
   'notice.groupMessageReaction': GroupMessageReactionNotice
+  'notice.groupLuckyKing': GroupLuckKingNotice
+  'notice.groupHonorChange': GroupHonorChangedNotice
 }
 
 /** 通知事件对应的对象类型 */

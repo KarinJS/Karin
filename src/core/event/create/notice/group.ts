@@ -2,6 +2,24 @@ import { GroupNoticeHandle } from '@/event/handler/notice/group'
 import { NoticeBase, NoticeOptions } from './base'
 import { NoticeEventSubEnum } from '../../types/types'
 
+/** 群聊通知事件联合类型 */
+export type GroupNotice =
+  GroupRecallNotice
+  | GroupPokeNotice
+  | GroupFileUploadedNotice
+  | GroupCardChangedNotice
+  | GroupMemberTitleUpdatedNotice
+  | GroupHlightsChangedNotice
+  | GroupMemberIncreaseNotice
+  | GroupMemberDecreaseNotice
+  | GroupAdminChangedNotice
+  | GroupSignInNotice
+  | GroupMemberBanNotice
+  | GroupWholeBanNotice
+  | GroupMessageReactionNotice
+  | GroupLuckKingNotice
+  | GroupHonorChangedNotice
+
 /** 群聊戳一戳 */
 export interface GroupPokeType {
   /** 操作者id */
@@ -24,7 +42,7 @@ export interface GroupPokeType {
 export interface GroupRecallType {
   /** 操作者id */
   operatorId: string
-  /** 目标id */
+  /** 目标id 撤回自己消息为自己 否则是被撤回者 */
   targetId: string
   /** 撤回的消息id */
   messageId: string
@@ -37,20 +55,18 @@ export interface GroupRecallType {
  * 文件信息最少需要提供一个url
  */
 export interface GroupFileUploadedType {
-  /** 操作者id */
-  operatorId: string
-  /** 文件ID 此项没有则为空字符串 */
+  /** 文件ID */
   fid: string
-  /** 文件子ID 此项没有则为0 */
+  /** 文件子ID */
   subId: number
-  /** 文件名 此项没有则为空字符串 */
+  /** 文件名 */
   name: string
-  /** 文件大小 此项没有则为0 */
+  /** 文件大小 */
   size: number
-  /** 过期时间 此项没有则为0 */
-  expireTime: number
+  /** 过期时间 */
+  expireTime?: number
   /** 文件URL */
-  url: string
+  url?: string
 }
 
 /** 群名片变动 */
@@ -73,12 +89,10 @@ export interface GroupMemberUniqueTitleChangedType {
 
 /** 群精华消息变动 */
 export interface GroupHlightsChangedType {
-  /** 群ID */
-  groupId: string
   /** 操作者id */
   operatorId: string
-  /** 目标id */
-  targetId: string
+  /** 发送者id */
+  senderId: string
   /** 被操作的消息id */
   messageId: string
   /** 设置、取消精华 */
@@ -87,11 +101,9 @@ export interface GroupHlightsChangedType {
 
 /** 群成员增加 */
 export interface GroupMemberIncreaseType {
-  /** 群ID */
-  groupId: string
   /** 操作者id */
   operatorId: string
-  /** 目标id */
+  /** 加入者id */
   targetId: string
   /** 加入方式 APPROVE:管理员批准 INVITE:管理员邀请 */
   type: 'invite' | 'approve'
@@ -99,8 +111,6 @@ export interface GroupMemberIncreaseType {
 
 /** 群成员减少 */
 export interface GroupMemberDecreaseType {
-  /** 群ID */
-  groupId: string
   /** 操作者id */
   operatorId: string
   /** 目标id */
@@ -111,8 +121,6 @@ export interface GroupMemberDecreaseType {
 
 /** 群管理员变动 */
 export interface GroupAdminChangedType {
-  /** 群ID */
-  groupId: string
   /** 目标id */
   targetId: string
   /** 设置、取消管理员 */
@@ -121,8 +129,6 @@ export interface GroupAdminChangedType {
 
 /** 群打卡 */
 export interface GroupSignInType {
-  /** 群ID */
-  groupId: string
   /** 目标id */
   targetId: string
   /** 操作名称，如“打卡了” */
@@ -133,8 +139,6 @@ export interface GroupSignInType {
 
 /** 群成员被禁言 */
 export interface GroupMemberBanType {
-  /** 群ID */
-  groupId: string
   /** 操作者id */
   operatorId: string
   /** 目标id */
@@ -147,8 +151,6 @@ export interface GroupMemberBanType {
 
 /** 群全员禁言 */
 export interface GroupWholeBanType {
-  /** 群ID */
-  groupId: string
   /** 操作者id */
   operatorId: string
   /** 是否开启全体禁言 */
@@ -157,14 +159,28 @@ export interface GroupWholeBanType {
 
 /** 群表情动态 */
 export interface GroupMessageReactionType {
-  /** 群ID */
-  groupId: string
   /** 消息ID */
   messageId: string
   /** 表情ID 参考: https://bot.q.qq.com/wiki/develop/api-v2/openapi/emoji/model.html#EmojiType */
   faceId: number
+  /** 数量 */
+  count: number
   /** 添加、取消回应 */
   isSet: boolean
+}
+
+/** 群聊运气王 */
+export interface GroupLuckKingType {
+  /** 红包发送者id */
+  userId: string
+  /** 运气王id */
+  targetId: string
+}
+
+/** 群聊荣誉变更事件 */
+export interface GroupHonorChangedType {
+  /** 荣誉类型，分别表示龙王、群聊之火、快乐源泉 */
+  honorType: 'talkative' | 'performer' | 'emotion'
 }
 
 class GroupNoticeBase extends NoticeBase {
@@ -426,6 +442,209 @@ export class GroupMessageReactionNotice extends GroupNoticeBase {
   }
 }
 
+/**
+ * @description 群聊运气王事件
+ * @class GroupLuckKingNotice
+ */
+export class GroupLuckKingNotice extends GroupNoticeBase {
+  content: GroupLuckKingType
+  #subEvent: NoticeEventSubEnum.GROUP_LUCKY_KING
+  constructor (options: NoticeOptions, content: GroupLuckKingType) {
+    super(options)
+
+    this.content = content
+    this.#subEvent = NoticeEventSubEnum.GROUP_LUCKY_KING
+  }
+
+  get subEvent () {
+    return this.#subEvent
+  }
+}
+
+/**
+ * @description 群聊荣誉变更事件
+ * @class GroupHonorChangedNotice
+ */
+export class GroupHonorChangedNotice extends GroupNoticeBase {
+  content: GroupHonorChangedType
+  #subEvent: NoticeEventSubEnum.GROUP_HONOR_CHANGE
+  constructor (options: NoticeOptions, content: GroupHonorChangedType) {
+    super(options)
+
+    this.content = content
+    this.#subEvent = NoticeEventSubEnum.GROUP_HONOR_CHANGE
+  }
+
+  get subEvent () {
+    return this.#subEvent
+  }
+}
+
+/**
+ * @description 创建群聊戳一戳事件
+ * @param type 事件子类型
+ * @param content 事件内容
+ * @param options 事件参数
+ */
+export const createGroupPokeNotice = (options: NoticeOptions, content: GroupPokeType) => {
+  const event = new GroupPokeNotice(options, content)
+  return new GroupNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建群聊撤回消息事件
+ * @param type 事件子类型
+ * @param content 事件内容
+ * @param options 事件参数
+ */
+export const createGroupRecallNotice = (options: NoticeOptions, content: GroupRecallType) => {
+  const event = new GroupRecallNotice(options, content)
+  return new GroupNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建群文件上传事件
+ * @param type 事件子类型
+ * @param content 事件内容
+ * @param options 事件参数
+ */
+export const createGroupFileUploadedNotice = (options: NoticeOptions, content: GroupFileUploadedType) => {
+  const event = new GroupFileUploadedNotice(options, content)
+  return new GroupNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建群名片变动事件
+ * @param type 事件子类型
+ * @param content 事件内容
+ * @param options 事件参数
+ */
+export const createGroupCardChangedNotice = (options: NoticeOptions, content: GroupCardChangedType) => {
+  const event = new GroupCardChangedNotice(options, content)
+  return new GroupNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建群成员头衔变动事件
+ * @param type 事件子类型
+ * @param content 事件内容
+ * @param options 事件参数
+ */
+export const createGroupMemberTitleUpdatedNotice = (options: NoticeOptions, content: GroupMemberUniqueTitleChangedType) => {
+  const event = new GroupMemberTitleUpdatedNotice(options, content)
+  return new GroupNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建群精华消息变动事件
+ * @param type 事件子类型
+ * @param content 事件内容
+ * @param options 事件参数
+ */
+export const createGroupHlightsChangedNotice = (options: NoticeOptions, content: GroupHlightsChangedType) => {
+  const event = new GroupHlightsChangedNotice(options, content)
+  return new GroupNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建群成员增加事件
+ * @param type 事件子类型
+ * @param content 事件内容
+ * @param options 事件参数
+ */
+export const createGroupMemberAddNotice = (options: NoticeOptions, content: GroupMemberIncreaseType) => {
+  const event = new GroupMemberIncreaseNotice(options, content)
+  return new GroupNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建群成员减少事件
+ * @param type 事件子类型
+ * @param content 事件内容
+ * @param options 事件参数
+ */
+export const createGroupMemberDelNotice = (options: NoticeOptions, content: GroupMemberDecreaseType) => {
+  const event = new GroupMemberDecreaseNotice(options, content)
+  return new GroupNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建群管理员变动事件
+ * @param type 事件子类型
+ * @param content 事件内容
+ * @param options 事件参数
+ */
+export const createGroupAdminChangedNotice = (options: NoticeOptions, content: GroupAdminChangedType) => {
+  const event = new GroupAdminChangedNotice(options, content)
+  return new GroupNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建群打卡事件
+ * @param type 事件子类型
+ * @param content 事件内容
+ * @param options 事件参数
+ */
+export const createGroupSignInNotice = (options: NoticeOptions, content: GroupSignInType) => {
+  const event = new GroupSignInNotice(options, content)
+  return new GroupNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建群成员被禁言事件
+ * @param type 事件子类型
+ * @param content 事件内容
+ * @param options 事件参数
+ */
+export const createGroupMemberBanNotice = (options: NoticeOptions, content: GroupMemberBanType) => {
+  const event = new GroupMemberBanNotice(options, content)
+  return new GroupNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建群全员禁言事件
+ * @param type 事件子类型
+ * @param content 事件内容
+ * @param options 事件参数
+ */
+export const createGroupWholeBanNotice = (options: NoticeOptions, content: GroupWholeBanType) => {
+  const event = new GroupWholeBanNotice(options, content)
+  return new GroupNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建群表情动态事件
+ * @param type 事件子类型
+ * @param content 事件内容
+ * @param options 事件参数
+ */
+export const createGroupMessageReactionNotice = (options: NoticeOptions, content: GroupMessageReactionType) => {
+  const event = new GroupMessageReactionNotice(options, content)
+  return new GroupNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建群聊运气王事件
+ * @param type 事件子类型
+ * @param content 事件内容
+ * @param options 事件参数
+ */
+export const createGroupLuckKingNotice = (options: NoticeOptions, content: GroupLuckKingType) => {
+  const event = new GroupLuckKingNotice(options, content)
+  return new GroupNoticeHandle(event).init()
+}
+
+/**
+ * @description 创建群聊荣誉变更事件
+ * @param type 事件子类型
+ * @param content 事件内容
+ * @param options 事件参数
+ */
+export const createGroupHonorChangedNotice = (options: NoticeOptions, content: GroupHonorChangedType) => {
+  const event = new GroupHonorChangedNotice(options, content)
+  return new GroupNoticeHandle(event).init()
+}
+
 export interface CreateGroupNoticeOptions {
   /**
    * @description 创建群聊戳一戳事件
@@ -518,6 +737,20 @@ export interface CreateGroupNoticeOptions {
    * @param options 事件参数
    */
   (type: `${NoticeEventSubEnum.GROUP_MESSAGE_REACTION}`, options: NoticeOptions, content: GroupMessageReactionType): GroupNoticeHandle
+  /**
+   * @description 创建群聊运气王事件
+   * @param type 事件子类型
+   * @param content 事件内容
+   * @param options 事件参数
+   */
+  (type: `${NoticeEventSubEnum.GROUP_LUCKY_KING}`, options: NoticeOptions, content: GroupLuckKingType): GroupNoticeHandle
+  /**
+   * @description 创建群聊荣誉变更事件
+   * @param type 事件子类型
+   * @param content 事件内容
+   * @param options 事件参数
+   */
+  (type: `${NoticeEventSubEnum.GROUP_HONOR_CHANGE}`, options: NoticeOptions, content: GroupHonorChangedType): GroupNoticeHandle
 }
 
 /**
@@ -580,11 +813,16 @@ export const createGroupNotice: CreateGroupNoticeOptions = (type, options, conte
       const event = new GroupMessageReactionNotice(options, content as GroupMessageReactionType)
       return new GroupNoticeHandle(event).init()
     }
+    case `${NoticeEventSubEnum.GROUP_LUCKY_KING}`: {
+      const event = new GroupLuckKingNotice(options, content as GroupLuckKingType)
+      return new GroupNoticeHandle(event).init()
+    }
+    case `${NoticeEventSubEnum.GROUP_HONOR_CHANGE}`: {
+      const event = new GroupHonorChangedNotice(options, content as GroupHonorChangedType)
+      return new GroupNoticeHandle(event).init()
+    }
     default: {
       throw new Error(`[createGroupNotice]: 未知的事件子类型: ${JSON.stringify({ type, options, content })}`)
     }
   }
 }
-
-/** 群聊通知事件联合类型 */
-export type GroupNotice = GroupRecallNotice | GroupPokeNotice | GroupFileUploadedNotice | GroupCardChangedNotice | GroupMemberTitleUpdatedNotice | GroupHlightsChangedNotice | GroupMemberIncreaseNotice | GroupMemberDecreaseNotice | GroupAdminChangedNotice | GroupSignInNotice | GroupMemberBanNotice | GroupWholeBanNotice | GroupMessageReactionNotice

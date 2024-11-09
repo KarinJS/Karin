@@ -1,4 +1,4 @@
-import { RequestBase, RequestOptions } from '.'
+import { RequestBase, RequestOptions } from './base'
 import { RequestEventSubEnum } from '../../types/types'
 
 /** 好友申请 */

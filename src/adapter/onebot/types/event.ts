@@ -35,17 +35,30 @@ export const enum OB11MessageSubType {
 
 /** 通知事件枚举 */
 export const enum OB11NoticeType {
+  /** 群文件上传 */
   GroupUpload = 'group_upload',
+  /** 群管理员变动 */
   GroupAdmin = 'group_admin',
+  /** 群成员减少 */
   GroupDecrease = 'group_decrease',
+  /** 群成员增加 */
   GroupIncrease = 'group_increase',
+  /** 群禁言 */
   GroupBan = 'group_ban',
+  /** 新增好友 */
   FriendAdd = 'friend_add',
+  /** 群消息撤回 */
   GroupRecall = 'group_recall',
+  /** 好友消息撤回 */
   FriendRecall = 'friend_recall',
+  /** 通知 */
   Notify = 'notify',
+  /** 群表情回应 */
   GroupMsgEmojiLike = 'group_msg_emoji_like',
+  /** 群表情回应 Lagrange */
   GroupMsgEmojiLikeLagrange = 'reaction',
+  /** 精华 */
+  GroupEssence = 'essence',
 }
 
 /** 请求事件类型 */
@@ -279,8 +292,8 @@ export interface OneBot11Poke extends NoticeBase {
   notice_type: OB11NoticeType.Notify
   /** 提示类型 */
   sub_type: 'poke'
-  /** 群号 */
-  group_id: number
+  /** 群号 私聊不存在 */
+  group_id?: number
   /** 发送者 QQ 号 */
   user_id: number
   /** 被戳者 QQ 号 */
@@ -315,7 +328,7 @@ export interface OneBot11Honor extends NoticeBase {
   user_id: number
 }
 
-/** 群表情回应事件 */
+/** 群表情回应事件 napcat、llonebot */
 export interface OneBot11GroupMessageReaction extends NoticeBase {
   /** 消息类型 */
   notice_type: OB11NoticeType.GroupMsgEmojiLike
@@ -325,7 +338,7 @@ export interface OneBot11GroupMessageReaction extends NoticeBase {
   user_id: number
   /** 消息 ID */
   message_id: number
-  /** 表情信息 此处目前只有llob有 */
+  /** 表情信息 */
   likes: Array<{
     count: number
     /** 表情ID参考: https://bot.q.qq.com/wiki/develop/api-v2/openapi/emoji/model.html#EmojiType */
@@ -351,6 +364,22 @@ export interface OneBot11GroupMessageReactionLagrange extends NoticeBase {
   count: number
 }
 
+/** 群精华 */
+export interface OneBot11GroupEssence extends NoticeBase {
+  /** 通知类型 */
+  notice_type: OB11NoticeType.GroupEssence
+  /** 操作类型 */
+  sub_type: 'add' | 'delete'
+  /** 群号 */
+  group_id: number
+  /** 精华消息 ID */
+  message_id: number
+  /** 消息发送者 */
+  sender_id: number
+  /** 操作者id */
+  operator_id: number
+}
+
 /** 通知事件 */
 export type OB11Notice = OneBot11GroupUpload
   | OneBot11GroupAdmin
@@ -365,6 +394,7 @@ export type OB11Notice = OneBot11GroupUpload
   | OneBot11Honor
   | OneBot11GroupMessageReaction
   | OneBot11GroupMessageReactionLagrange
+  | OneBot11GroupEssence
 
 /** 请求事件基类 */
 export interface RequestBase extends OB11EventBase {

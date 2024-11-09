@@ -15,7 +15,7 @@ export interface BaseNoticeEventType extends BaseEventType {
 }
 
 /** 所需参数 */
-export type NoticeOptions = Omit<BaseEventOptions, 'event' | 'sender'> & {
+export type NoticeOptions = Omit<BaseEventOptions, 'event' | 'sender' | 'subEvent'> & {
   sender: NoticeAndRequestSender
 }
 

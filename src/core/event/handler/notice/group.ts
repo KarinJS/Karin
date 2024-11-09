@@ -98,7 +98,7 @@ export class GroupNoticeHandle {
         this.event.tips = `戳一戳: ${this.event.content.operatorId} ${this.event.content.action || '戳了戳'} ${this.event.content.targetId}`
         break
       case NoticeEventSubEnum.GROUP_MESSAGE_REACTION:
-        this.event.tips = `表情动态: 给消息${this.event.content.messageId}${this.event.content.isSet ? '添加' : '取消'}了表情 ${this.event.content.faceId}`
+        this.event.tips = `表情动态: 给消息 ${this.event.content.messageId} ${this.event.content.isSet ? '添加' : '取消'}了表情 ${this.event.content.faceId}`
         break
       case NoticeEventSubEnum.GROUP_RECALL:
         this.event.tips = `撤回消息: ${this.event.content.messageId}`
@@ -123,6 +123,12 @@ export class GroupNoticeHandle {
         break
       case NoticeEventSubEnum.GROUP_MEMBER_TITLE_UPDATED:
         this.event.tips = `头衔变动: ${this.event.content.title}`
+        break
+      case NoticeEventSubEnum.GROUP_HONOR_CHANGE:
+        this.event.tips = `荣誉变更: ${this.event.userId} 获得了 ${this.event.content.honorType} 荣誉`
+        break
+      case NoticeEventSubEnum.GROUP_LUCKY_KING:
+        this.event.tips = `运气王: ${this.event.content.userId} 从 ${this.event.content.userId} 发的红包中获得了运气王`
         break
       case NoticeEventSubEnum.GROUP_HIGHLIGHTS_CHANGED: {
         if (this.event.content.isSet) {
@@ -157,8 +163,8 @@ export class GroupNoticeHandle {
   /** 打印日志 */
   print () {
     this.event.logText = `[private:${this.event.userId}(${this.event.sender.nick || ''})]`
-    const text = `[${this.event.userId}(${this.event.sender.nick || ''})] ${this.event.tips}`
-    logger.bot('info', this.event.selfId, `${logger.green('私聊通知: ')}${text}`)
+    const text = `[${this.event.groupId}-${this.event.userId}(${this.event.sender.nick || ''})] ${this.event.tips}`
+    logger.bot('info', this.event.selfId, `${logger.green('群通知: ')}${text}`)
   }
 
   /** 管理员身份 */
