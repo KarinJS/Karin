@@ -15,6 +15,7 @@ const userCD: Record<string, NodeJS.Timeout> = {}
  * @class FriendHandler
  */
 export class FriendHandler {
+  ctx!: boolean
   event: FriendMessage
   config: ConfigType
   eventCfg: FriendDirectFileCfg
@@ -34,6 +35,9 @@ export class FriendHandler {
     common.setEventRole(this.event)
     common.alias(this.event, this.eventCfg.alias)
     common.emit(this.event)
+    this.ctx = common.context(this.event)
+    if (this.ctx) return this
+
     this.isLimitEvent() && this.deal()
     return this
   }

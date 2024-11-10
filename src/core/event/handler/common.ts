@@ -1,5 +1,6 @@
 import { karin } from '@/karin'
 import { config as cfg } from '@start/index'
+import { context as ctx } from '@/event/handler/message/context'
 import type { AdapterProtocol } from '@/adapter/adapter'
 import type { Accept, CommandClass, CommandFnc } from '@plugin/cache/types'
 import type { FriendDirectFileCfg, GroupGuildFileCfg } from '@/utils/config/types'
@@ -438,4 +439,22 @@ export const isLimitedFriendModeNoticeAndRequest = (
       return true
     }
   }
+}
+
+/**
+ * 处理事件上下文
+ * @param event 事件对象
+ */
+export const context = (e: Message) => {
+  const key = e.contact.subPeer
+    ? `${e.contact.peer}:${e.contact.subPeer}:${e.userId}`
+    : `${e.contact.peer}:${e.userId}`
+
+  if (!ctx.has(key)) {
+    return false
+  }
+
+  karin.emit(`ctx:${key}`, e)
+  ctx.delete(key)
+  return true
 }

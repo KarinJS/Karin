@@ -1,4 +1,4 @@
-import type { Event } from '@/event'
+import type { Event, Message } from '@/event'
 import { EventEmitter } from 'events'
 import { MessageEventMap, NoticeEventMap, RequestEventMap } from '@/event/types/types'
 
@@ -15,6 +15,7 @@ type OtherTypes = {
   'karin:adapter:open': () => void
   'karin:adapter:close': () => void
   'update:logger:level': () => void
+  [key: `ctx:${string}`]: (e: Message) => void
 }
 
 /** 事件字典 */

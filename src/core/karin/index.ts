@@ -1,11 +1,13 @@
-import type { Accept, CommandFnc, NoticeAndRequest, Task } from '@plugin/cache/types'
-import type { ElementTypes } from '@/adapter/segment'
-import type { MessageEventMap } from '@/event/types/types'
+import path from 'node:path'
 import { TypedListeners } from '@/internal/listeners'
 import { cache, createLogger } from '@plugin/cache/cache'
-import path from 'node:path'
 import { Contact, ContactWithoutSubPeer, ContactWithSubPeer, Scene } from '@/adapter/contact'
+import type { ElementTypes } from '@/adapter/segment'
+import type { MessageEventMap } from '@/event/types/types'
 import type { GroupSender, FriendSender } from '@/adapter/sender'
+import type { Accept, CommandFnc, NoticeAndRequest, Task } from '@plugin/cache/types'
+import { Message } from '@/event'
+import { context } from '@/event/handler/message/context'
 
 export type FncElement = string | ElementTypes | ElementTypes[]
 export type FncOptions = {
@@ -339,6 +341,48 @@ export class Karin extends TypedListeners {
     uin?: number
   ): GroupSender {
     return { userId: String(userId), nick, role, sex, age, card, area, level, title, uid, uin }
+  }
+
+  /**
+   * 上下文
+   * @param e - 消息事件
+   * @param options - 上下文选项
+   * @returns 返回下文消息事件 如果超时则返回null
+   */
+  async ctx (e: Message, options?: {
+    /** 指定用户id触发下文 不指定则使用默认e.user_id */
+    userId?: string
+    /** 超时时间 默认120秒 */
+    time?: number
+    /** 超时后是否回复 */
+    reply?: boolean
+    /** 超时回复文本 默认为'操作超时已取消' */
+    replyMsg?: string
+  }): Promise<Message | null> {
+    const time = options?.time || 120
+    const userId = options?.userId || e.userId || e.user_id
+    const key = e.contact.subPeer ? `${e.contact.peer}:${e.contact.subPeer}:${userId}` : `${e.contact.peer}:${userId}`
+    context.set(key, e)
+
+    return new Promise((resolve) => {
+      const timeout = setTimeout(() => {
+        const data = context.get(key)
+        if (data?.eventId === e.eventId) {
+          context.delete(key)
+          if (options?.reply) e.reply(options.replyMsg || '操作超时已取消')
+          /** 移除监听器 */
+          this.removeAllListeners(`ctx:${key}`)
+          logger.bot('error', e.selfId, `接收下文事件超时，已取消下文监听: ${key}`)
+          resolve(null)
+          return true
+        }
+      }, time * 1000)
+
+      this.once(`ctx:${key}`, (e: Message) => {
+        clearTimeout(timeout)
+        resolve(e)
+      })
+    })
   }
 }
 

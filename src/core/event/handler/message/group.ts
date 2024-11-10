@@ -17,6 +17,7 @@ const groupUserCD: Record<string, NodeJS.Timeout> = {}
  * @class GroupMessageHandler
  */
 export class GroupMessageHandler {
+  ctx!: boolean
   event: GroupMessage
   config: ConfigType
   eventCfg: GroupGuildFileCfg
@@ -37,7 +38,11 @@ export class GroupMessageHandler {
     common.setEventRole(this.event)
     common.alias(this.event, this.eventCfg.alias)
     common.emit(this.event)
+    this.ctx = common.context(this.event)
+    if (this.ctx) return this
+
     this.isLimitEvent() && this.deal()
+    return this
   }
 
   /**
