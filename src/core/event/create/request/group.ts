@@ -2,6 +2,8 @@ import { RequestBase, RequestOptions } from './base'
 import { RequestEventSubEnum } from '../../types/types'
 import { GroupRequestHandler } from '@/event/handler/request/group'
 
+export type GroupRequest = GroupApplyRequest | GroupInviteRequest
+
 /** 新成员加入群聊申请 */
 export interface GroupApply {
   /** 申请者id */

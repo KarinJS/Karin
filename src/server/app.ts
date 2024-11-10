@@ -4,9 +4,10 @@ import { WebSocketServer } from 'ws'
 
 /**
  * @description 创建 express、WebSocketServer 服务
+ * @param port 端口号
  * @param list `/` 路由返回的随机消息列表
  */
-export const createExpressWebSocketServer = (list?: string[]) => {
+export const createExpressWebSocketServer = (port: number, list?: string[]) => {
   const app: Express = express()
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
@@ -30,6 +31,16 @@ export const createExpressWebSocketServer = (list?: string[]) => {
   const server = createServer(app)
   const wss = new WebSocketServer({ server })
 
+  wss.on('error', (error: NodeJS.ErrnoException) => {
+    if (error.code === 'EADDRINUSE') {
+      logger.fatal(`[service][websocket] 端口 ${port} 已被占用，无法启动 WebSocket 服务`)
+    } else {
+      logger.fatal(`[service][websocket] WebSocket服务启动失败: ${error.message}`)
+    }
+
+    throw error
+  })
+
   return {
     /** express 服务 */
     app,
@@ -52,17 +63,17 @@ export const startServer = async (httpServe: ReturnType<typeof createExpressWebS
     app.get(`/${key}`, (req, res) => list[key as keyof typeof list](req, res))
   }
 
-  httpServe.listen(port, host, () => {
-    logger.info(`[service][express] http服务启动成功，正在监听: http://${host}:${port}`)
-  })
-
   httpServe.on('error', (error: NodeJS.ErrnoException) => {
     if (error.code === 'EADDRINUSE') {
-      logger.error(`[service][express] 端口 ${port} 已被占用`)
+      logger.fatal(`[service][express] 端口 ${port} 已被占用，无法启动 http 服务`)
     } else {
-      logger.error(`[service][express] http服务启动失败: ${error.message}`)
+      logger.fatal(`[service][express] http服务启动失败: ${error.message}`)
     }
 
     throw error
+  })
+
+  httpServe.listen(port, host, () => {
+    logger.info(`[service][express] http服务启动成功，正在监听: http://${host}:${port}`)
   })
 }

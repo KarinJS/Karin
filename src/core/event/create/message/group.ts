@@ -1,7 +1,7 @@
 import { MessageEventSubEnum } from '../../types/types'
 import { Contact } from '@/adapter/contact'
 import { BaseMessageEventType, MessageBase, MessageOptions } from './base'
-import { GroupHandler } from '@/event/handler/message/group'
+import { GroupMessageHandler } from '@/event/handler/message/group'
 import { GroupSender } from '@/adapter/sender'
 
 /** new 群消息事件所需参数 */
@@ -73,5 +73,5 @@ export class GroupMessage extends MessageBase implements GroupMessageEventType {
  */
 export const createGroupMessage = (options: GroupMessageOptions) => {
   const event = new GroupMessage(options)
-  return new GroupHandler(event).init()
+  return new GroupMessageHandler(event).init()
 }

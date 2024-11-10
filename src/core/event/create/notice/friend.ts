@@ -2,6 +2,14 @@ import { NoticeBase, NoticeOptions } from './base'
 import { NoticeEventSubEnum } from '../../types/types'
 import { FriendNoticeHandler } from '@/event/handler/notice/friend'
 
+/** 私聊通知事件 */
+export type PrivateNotice = ReceiveLikeNotice
+  | FriendIncreaseNotice
+  | FriendDecreaseNotice
+  | PrivatePokeNotice
+  | PrivateRecallNotice
+  | PrivateFileUploadedNotice
+
 /** 收到点赞 */
 export interface ReceiveLikeType {
   /** 点赞者id */
@@ -328,6 +336,3 @@ export const createPrivateNotice: CreatePrivateNoticeOptions = (type, options, c
       throw new Error(`[createPrivateNotice]: 未知的事件子类型: ${JSON.stringify({ type, options, content })}`)
   }
 }
-
-/** 私聊通知事件 */
-export type PrivateNotice = ReceiveLikeNotice | FriendIncreaseNotice | FriendDecreaseNotice | PrivatePokeNotice | PrivateRecallNotice | PrivateFileUploadedNotice

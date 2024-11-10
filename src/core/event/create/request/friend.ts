@@ -2,6 +2,8 @@ import { RequestBase, RequestOptions } from './base'
 import { RequestEventSubEnum } from '../../types/types'
 import { FriendRequestHandler } from '@/event/handler/request/friend'
 
+export type FriendRequest = PrivateApplyRequest
+
 /** 好友申请 */
 export interface PrivateApplyType {
   /** 申请者id */

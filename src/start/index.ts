@@ -34,10 +34,11 @@ export const run = async () => {
     import('@adapter/onebot/server'),
   ])
 
-  const { app: appServe, wss: wssServe, server: httpServe } = createExpressWebSocketServer(config.rootMsg())
+  const port = config.port()
+  const { app: appServe, wss: wssServe, server: httpServe } = createExpressWebSocketServer(port, config.rootMsg())
   app = appServe
   createWebSocketServer(wssServe)
-  await startServer(httpServe, appServe, config.host(), config.port())
+  await startServer(httpServe, appServe, config.host(), port)
   adapterService.registerBot('internal', new inputService.AdapterInput())
 
   await new Promise((resolve) => setTimeout(resolve, 50))
