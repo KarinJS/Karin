@@ -26,7 +26,7 @@ export type RequestOptions = Omit<BaseEventOptions, 'event' | 'sender'> & {
  * @class RequestBase
  */
 export abstract class RequestBase extends BaseEvent implements BaseRequestEventType {
-  /** 提示: 123戳了戳Bot */
+  /** 提示: 123申请添加Bot为好友 */
   tips: string
   #subEvent: BaseRequestEventType['subEvent']
   #sender: NoticeAndRequestSender

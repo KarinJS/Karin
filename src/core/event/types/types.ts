@@ -139,7 +139,7 @@ export const enum RequestEventSubEnum {
   /** 收到添加Bot为好友请求 */
   FRIEND = 'friendApply',
   /** 收到用户申请加入群聊请求 */
-  GROUP = 'groupApply',
+  GROUP_APPLY = 'groupApply',
   /** 收到邀请Bot加入群聊请求 */
   GROUP_INVITE = 'groupInvite',
 }
@@ -194,12 +194,20 @@ export interface NoticeEventMap extends FriendNoticeEventMap, GroupNoticeEventMa
   notice: Notice
 }
 
-/** 请求事件对应的对象类型 */
-export interface RequestEventMap {
-  request: Request
+/** 好友请求事件对应的对象类型 */
+export interface FriendRequestEventMap {
   'request.friendApply': PrivateApplyRequest
+}
+
+/** 群聊请求事件对应的对象类型 */
+export interface GroupRequestEventMap {
   'request.groupApply': GroupApplyRequest
   'request.groupInvite': GroupInviteRequest
+}
+
+/** 请求事件对应的对象类型 */
+export interface RequestEventMap extends FriendRequestEventMap, GroupRequestEventMap {
+  request: Request
 }
 
 /** 事件子类型联合 */

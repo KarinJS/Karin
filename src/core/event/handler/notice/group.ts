@@ -9,7 +9,7 @@ import { GroupNoticeEventMap, NoticeEventSubEnum } from '@/event/types/types'
 
 const userCD: Record<string, NodeJS.Timeout> = {}
 
-export class GroupNoticeHandle {
+export class GroupNoticeHandler {
   event: GroupNoticeEventMap[keyof GroupNoticeEventMap]
   config: ConfigType
   GroupCfg: GroupGuildFileCfg

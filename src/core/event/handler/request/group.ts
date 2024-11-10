@@ -4,20 +4,18 @@ import { config as cfg } from '@start/index'
 import { cache } from '@plugin/cache/cache'
 import { isAdapter } from '@/utils/message/adapter'
 import type { Accept } from '@plugin/cache/types'
-import type { ConfigType, FriendDirectFileCfg } from '@/utils/config/types'
-import { FriendNoticeEventMap, NoticeEventSubEnum } from '@/event/types/types'
+import type { ConfigType, GroupGuildFileCfg } from '@/utils/config/types'
+import { GroupRequestEventMap, RequestEventSubEnum } from '@/event/types/types'
 
-const userCD: Record<string, NodeJS.Timeout> = {}
-
-export class FriendNoticeHandler {
-  event: FriendNoticeEventMap[keyof FriendNoticeEventMap]
+export class GroupRequestHandler {
+  event: GroupRequestEventMap[keyof GroupRequestEventMap]
   config: ConfigType
-  friendCfg: FriendDirectFileCfg
+  GroupCfg: GroupGuildFileCfg
 
-  constructor (event: FriendNoticeEventMap[keyof FriendNoticeEventMap]) {
+  constructor (event: GroupRequestEventMap[keyof GroupRequestEventMap]) {
     this.event = event
     this.config = cfg.config()
-    this.friendCfg = cfg.getFriendCfg(this.event.userId, this.event.selfId)
+    this.GroupCfg = cfg.getGroupCfg(this.event.groupId, this.event.selfId)
   }
 
   init () {
@@ -26,34 +24,11 @@ export class FriendNoticeHandler {
     this.admin()
 
     // TODO: 总觉得没必要再进行分发一次 这里下个版本再去掉先兼容旧版 2024年10月31日14:33:53
-    karin.emit('notice', this.event)
-    karin.emit(`notice.${this.event.subEvent}`, this.event)
+    karin.emit('request', this.event)
+    karin.emit(`request.${this.event.subEvent}`, this.event)
     const isRestricted = this.isRestricted()
     !isRestricted && this.deal()
     return this
-  }
-
-  /** 检查是否存在cd中 */
-  get isCD (): boolean {
-    /** 并非所有事件都需要cd */
-    const list: string[] = [
-      NoticeEventSubEnum.FRIENT_POKE,
-      NoticeEventSubEnum.RECEIVE_LIKE,
-    ]
-    const userKey = this.event.userId
-    /** 计时器存在直接返回即可 */
-    if (userCD[userKey] && list.includes(this.event.subEvent)) {
-      return true
-    }
-
-    /** 用户个人CD */
-    if (this.friendCfg.cd > 0) {
-      userCD[userKey] = setTimeout(() => {
-        delete userCD[userKey]
-      }, this.friendCfg.cd * 1000)
-    }
-
-    return false
   }
 
   /** 检查是否通过好友白名单 */
@@ -73,11 +48,6 @@ export class FriendNoticeHandler {
    * @returns `true` 表示事件受限，`false` 表示事件未受限
    */
   isRestricted () {
-    if (this.isCD) {
-      log(`[${this.event.userId}] 正在冷却中: ${this.event.eventId}`)
-      return true
-    }
-
     if (!this.isFriendEnable) {
       log(`[${this.event.userId}] 未通过用户白名单: ${this.event.eventId}`)
       return true
@@ -94,34 +64,29 @@ export class FriendNoticeHandler {
   /** 构建事件提示 */
   tips () {
     switch (this.event.subEvent) {
-      case NoticeEventSubEnum.FRIENT_POKE:
-        this.event.tips = `戳一戳: ${this.event.content.operatorId} ${this.event.content.action || '戳了戳'} ${this.event.content.targetId}`
+      case RequestEventSubEnum.GROUP_INVITE:
+        this.event.tips = `邀请加群: ${this.event.content.inviterId} 邀请Bot加入群聊 ${this.event.groupId} flag: ${this.event.content.flag}`
         break
-      case NoticeEventSubEnum.RECEIVE_LIKE:
-        this.event.tips = `收到点赞: ${this.event.content.count}`
+      case RequestEventSubEnum.GROUP_APPLY: {
+        const { content } = this.event
+        if (!content.inviterId || content.inviterId === content.applierId) {
+          this.event.tips = `申请加群: ${content.applierId} 申请加入群聊 ${this.event.groupId} flag: ${content.flag}`
+        } else {
+          this.event.tips = `申请加群: ${content.inviterId} 邀请 ${content.applierId} 加入群聊 ${this.event.groupId} flag: ${content.flag}`
+        }
         break
-      case NoticeEventSubEnum.FRIEND_RECALL:
-        this.event.tips = `撤回消息: ${this.event.content.messageId}`
-        break
-      case NoticeEventSubEnum.FRIEND_FILE_UPLOADED:
-        this.event.tips = `文件上传: [fid:${this.event.content.fid}][url:${this.event.content.url}][name:${this.event.content.name}]`
-        break
-      case NoticeEventSubEnum.FRIEND_INCREASE:
-        this.event.tips = `新增好友: ${this.event.content.targetId}`
-        break
-      case NoticeEventSubEnum.FRIEND_DECREASE:
-        this.event.tips = `好友减少: ${this.event.content.targetId}`
-        break
-      default:
-      // this.event.tips = `未知子事件: ${JSON.stringify(this.event)}`
+      }
+      default: {
+        // this.event.tips = `未知事件: ${this.event.subEvent}`
+      }
     }
   }
 
   /** 打印日志 */
   print () {
     this.event.logText = `[private:${this.event.userId}(${this.event.sender.nick || ''})]`
-    const text = `[${this.event.userId}(${this.event.sender.nick || ''})] ${this.event.tips}`
-    logger.bot('info', this.event.selfId, `${logger.green('好友通知: ')}${text}`)
+    const text = `[${this.event.groupId}-${this.event.userId}(${this.event.sender.nick || ''})] ${this.event.tips}`
+    logger.bot('info', this.event.selfId, `${logger.green('群请求: ')}${text}`)
   }
 
   /** 管理员身份 */
@@ -141,7 +106,7 @@ export class FriendNoticeHandler {
    * @param plugin 插件对象
    */
   isPluginWhite (plugin: Accept): boolean {
-    if (!this.friendCfg.enable.length) return true
+    if (!this.GroupCfg.enable.length) return true
 
     const list = [
       plugin.info.name,
@@ -149,7 +114,7 @@ export class FriendNoticeHandler {
       `${plugin.info.name}:${plugin.file.method}`,
     ]
     for (const item of list) {
-      if (this.friendCfg.enable.includes(item)) {
+      if (this.GroupCfg.enable.includes(item)) {
         return true
       }
     }
@@ -161,14 +126,14 @@ export class FriendNoticeHandler {
    * @param plugin 插件对象
    */
   isPluginBlack (plugin: Accept): boolean {
-    if (!this.friendCfg.disable.length) return true
+    if (!this.GroupCfg.disable.length) return true
     const list = [
       plugin.info.name,
       `${plugin.info.name}:${plugin.file.basename}`,
       `${plugin.info.name}:${plugin.file.method}`,
     ]
     for (const item of list) {
-      if (this.friendCfg.disable.includes(item)) {
+      if (this.GroupCfg.disable.includes(item)) {
         return false
       }
     }

@@ -1,6 +1,6 @@
 import { NoticeBase, NoticeOptions } from './base'
 import { NoticeEventSubEnum } from '../../types/types'
-import { FriendNoticeHandle } from '@/event/handler/notice/friend'
+import { FriendNoticeHandler } from '@/event/handler/notice/friend'
 
 /** 收到点赞 */
 export interface ReceiveLikeType {
@@ -189,7 +189,7 @@ export class PrivateFileUploadedNotice extends NoticeBase {
  */
 export const createReceiveLikeNotice = (options: NoticeOptions, content: ReceiveLikeType) => {
   const event = new ReceiveLikeNotice(options, content)
-  return new FriendNoticeHandle(event).init()
+  return new FriendNoticeHandler(event).init()
 }
 
 /**
@@ -200,7 +200,7 @@ export const createReceiveLikeNotice = (options: NoticeOptions, content: Receive
  */
 export const createFriendIncreaseNotice = (options: NoticeOptions, content: FriendIncreaseType) => {
   const event = new FriendIncreaseNotice(options, content)
-  return new FriendNoticeHandle(event).init()
+  return new FriendNoticeHandler(event).init()
 }
 
 /**
@@ -211,7 +211,7 @@ export const createFriendIncreaseNotice = (options: NoticeOptions, content: Frie
  */
 export const createFriendDecreaseNotice = (options: NoticeOptions, content: FriendDecreaseType) => {
   const event = new FriendDecreaseNotice(options, content)
-  return new FriendNoticeHandle(event).init()
+  return new FriendNoticeHandler(event).init()
 }
 
 /**
@@ -222,7 +222,7 @@ export const createFriendDecreaseNotice = (options: NoticeOptions, content: Frie
  */
 export const createPrivatePokeNotice = (options: NoticeOptions, content: PrivatePokeType) => {
   const event = new PrivatePokeNotice(options, content)
-  return new FriendNoticeHandle(event).init()
+  return new FriendNoticeHandler(event).init()
 }
 
 /**
@@ -233,7 +233,7 @@ export const createPrivatePokeNotice = (options: NoticeOptions, content: Private
  */
 export const createPrivateRecallNotice = (options: NoticeOptions, content: PrivateRecallType) => {
   const event = new PrivateRecallNotice(options, content)
-  return new FriendNoticeHandle(event).init()
+  return new FriendNoticeHandler(event).init()
 }
 
 /**
@@ -244,7 +244,7 @@ export const createPrivateRecallNotice = (options: NoticeOptions, content: Priva
  */
 export const createPrivateFileUploadedNotice = (options: NoticeOptions, content: PrivateFileUploadedType) => {
   const event = new PrivateFileUploadedNotice(options, content)
-  return new FriendNoticeHandle(event).init()
+  return new FriendNoticeHandler(event).init()
 }
 
 export interface CreatePrivateNoticeOptions {
@@ -254,42 +254,42 @@ export interface CreatePrivateNoticeOptions {
    * @param options 事件所需参数
    * @param content 事件内容
    */
-  (type: `${NoticeEventSubEnum.RECEIVE_LIKE}`, options: NoticeOptions, content: ReceiveLikeType): FriendNoticeHandle
+  (type: `${NoticeEventSubEnum.RECEIVE_LIKE}`, options: NoticeOptions, content: ReceiveLikeType): FriendNoticeHandler
   /**
    * @description 创建好友新增事件
    * @param type 事件子类型
    * @param options 事件所需参数
    * @param content 事件内容
    */
-  (type: `${NoticeEventSubEnum.FRIEND_INCREASE}`, options: NoticeOptions, content: FriendIncreaseType): FriendNoticeHandle
+  (type: `${NoticeEventSubEnum.FRIEND_INCREASE}`, options: NoticeOptions, content: FriendIncreaseType): FriendNoticeHandler
   /**
    * @description 创建好友减少事件
    * @param type 事件子类型
    * @param options 事件所需参数
    * @param content 事件内容
    */
-  (type: `${NoticeEventSubEnum.FRIEND_DECREASE}`, options: NoticeOptions, content: FriendDecreaseType): FriendNoticeHandle
+  (type: `${NoticeEventSubEnum.FRIEND_DECREASE}`, options: NoticeOptions, content: FriendDecreaseType): FriendNoticeHandler
   /**
    * @description 创建私聊戳一戳事件
    * @param type 事件子类型
    * @param options 事件所需参数
    * @param content 事件内容
    */
-  (type: `${NoticeEventSubEnum.FRIENT_POKE}`, options: NoticeOptions, content: PrivatePokeType): FriendNoticeHandle
+  (type: `${NoticeEventSubEnum.FRIENT_POKE}`, options: NoticeOptions, content: PrivatePokeType): FriendNoticeHandler
   /**
    * @description 创建私聊撤回消息事件
    * @param type 事件子类型
    * @param options 事件所需参数
    * @param content 事件内容
    */
-  (type: `${NoticeEventSubEnum.FRIEND_RECALL}`, options: NoticeOptions, content: PrivateRecallType): FriendNoticeHandle
+  (type: `${NoticeEventSubEnum.FRIEND_RECALL}`, options: NoticeOptions, content: PrivateRecallType): FriendNoticeHandler
   /**
    * @description 创建私聊文件上传事件
    * @param type 事件子类型
    * @param options 事件所需参数
    * @param content 事件内容
    */
-  (type: `${NoticeEventSubEnum.FRIEND_FILE_UPLOADED}`, options: NoticeOptions, content: PrivateFileUploadedType): FriendNoticeHandle
+  (type: `${NoticeEventSubEnum.FRIEND_FILE_UPLOADED}`, options: NoticeOptions, content: PrivateFileUploadedType): FriendNoticeHandler
 }
 
 /**
@@ -302,27 +302,27 @@ export const createPrivateNotice: CreatePrivateNoticeOptions = (type, options, c
   switch (type) {
     case `${NoticeEventSubEnum.RECEIVE_LIKE}`: {
       const event = new ReceiveLikeNotice(options, content as ReceiveLikeType)
-      return new FriendNoticeHandle(event).init()
+      return new FriendNoticeHandler(event).init()
     }
     case `${NoticeEventSubEnum.FRIEND_DECREASE}`: {
       const event = new FriendDecreaseNotice(options, content as FriendDecreaseType)
-      return new FriendNoticeHandle(event).init()
+      return new FriendNoticeHandler(event).init()
     }
     case `${NoticeEventSubEnum.FRIEND_INCREASE}`: {
       const event = new FriendIncreaseNotice(options, content as FriendIncreaseType)
-      return new FriendNoticeHandle(event).init()
+      return new FriendNoticeHandler(event).init()
     }
     case `${NoticeEventSubEnum.FRIENT_POKE}`: {
       const event = new PrivatePokeNotice(options, content as PrivatePokeType)
-      return new FriendNoticeHandle(event).init()
+      return new FriendNoticeHandler(event).init()
     }
     case `${NoticeEventSubEnum.FRIEND_RECALL}`: {
       const event = new PrivateRecallNotice(options, content as PrivateRecallType)
-      return new FriendNoticeHandle(event).init()
+      return new FriendNoticeHandler(event).init()
     }
     case `${NoticeEventSubEnum.FRIEND_FILE_UPLOADED}`: {
       const event = new PrivateFileUploadedNotice(options, content as PrivateFileUploadedType)
-      return new FriendNoticeHandle(event).init()
+      return new FriendNoticeHandler(event).init()
     }
     default:
       throw new Error(`[createPrivateNotice]: 未知的事件子类型: ${JSON.stringify({ type, options, content })}`)
