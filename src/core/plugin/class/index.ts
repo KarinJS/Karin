@@ -14,7 +14,7 @@ export interface PluginRule {
   /** 优先级 默认为10000 */
   priority?: number
   /** 插件触发权限 例如只有主人才可触发 */
-  permission: `${PermissionEnum}`
+  permission?: `${PermissionEnum}`
   /** 打印日志 默认为true */
   log?: boolean
   /** 生效的适配器 */
@@ -51,7 +51,7 @@ export class Plugin<T extends keyof MessageEventMap = keyof MessageEventMap> {
   /** 消息事件对象 */
   e!: T extends keyof MessageEventMap ? MessageEventMap[T] : Message
   /** 快速回复 */
-  reply: BaseEventHandle['reply']
+  reply!: BaseEventHandle['reply']
 
   constructor (options: PluginOptions & { event?: T }) {
     const { name, rule } = options
@@ -63,7 +63,6 @@ export class Plugin<T extends keyof MessageEventMap = keyof MessageEventMap> {
     this.desc = options.desc || '无描述'
     this.event = (options.event || 'message') as T
     this.priority = options.priority || 10000
-    this.reply = this.e.reply.bind(this.e)
   }
 
   /**

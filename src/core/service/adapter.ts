@@ -68,5 +68,3 @@ export const getAdapter = (name: string) => list.find(item => item.adapter.name 
  * @returns 适配器
  */
 export const getAdapterByBotId = (botId: string) => list.find(item => item.selfId === botId)
-
-logger.debug('[service] 适配器服务加载完成')

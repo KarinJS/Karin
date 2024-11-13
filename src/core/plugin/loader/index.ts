@@ -6,12 +6,15 @@ import schedule from 'node-schedule'
 import { gitAllPlugin } from '../list'
 import { Middleware } from '../cache/types'
 import { handleError } from '@/internal/error'
-import { isClass } from '@/utils/system/class'
 import { cache, createLogger } from '../cache/cache'
-import { isDir } from '@/utils/fs/exists'
-import { requireFileSync } from '@/utils'
-import { filesByExt } from '@/utils/fs/path'
-import { createPluginDir } from '@/plugin/resource'
+import {
+  isDir,
+  isClass,
+  filesByExt,
+  requireFileSync,
+  createPluginDir,
+} from '@/utils'
+
 import type { Info } from '../list/types'
 import type { PkgData } from '@/utils/fs/pkg'
 import type { Plugin } from '../class'
@@ -201,101 +204,105 @@ const loaderApp = async (
   key: string,
   val: FncType | FncType[]
 ) => {
-  const dirname = path.dirname(file)
-  const basename = path.basename(file)
-  logger.debug(`加载插件：[index:${index}][${info.name}][${basename}][${key}]`)
-  if (typeof val === 'function') {
-    if (!isClass(val)) return
-    const Cls = val as new () => Plugin
-    const app = new Cls()
-    /** 非插件 */
-    if (!app?.rule) return
+  try {
+    const dirname = path.dirname(file)
+    const basename = path.basename(file)
+    logger.debug(`加载插件：[index:${index}][${info.name}][${basename}][${key}]`)
+    if (typeof val === 'function') {
+      if (!isClass(val)) return
+      const Cls = val as new () => Plugin
+      const app = new Cls()
+      /** 非插件 */
+      if (!app?.rule) return
 
-    for (const v of app.rule) {
-      /** 没有对应方法跳过 */
-      if (!(v.fnc in app)) continue
-      /** 没有正则跳过 */
-      if (typeof v.reg !== 'string' && !(v.reg instanceof RegExp)) continue
+      for (const v of app.rule) {
+        /** 没有对应方法跳过 */
+        if (!(v.fnc in app)) continue
+        /** 没有正则跳过 */
+        if (typeof v.reg !== 'string' && !(v.reg instanceof RegExp)) continue
 
-      cache.command.push({
-        type: 'class',
-        index,
-        log: createLogger(v.log, false),
-        name: app.name,
-        adapter: v.adapter || [],
-        dsbAdapter: v.dsbAdapter || [],
-        Cls,
-        reg: v.reg instanceof RegExp ? v.reg : new RegExp(v.reg),
-        perm: v.permission || 'all',
-        event: v.event || app.event || 'message',
-        rank: v.priority || 10000,
-        get info () {
-          return cache.index[this.index]
-        },
-        file: {
-          basename,
-          dirname,
-          method: key,
-          type: 'command',
-          get path () {
-            return path.join(this.dirname, this.basename)
+        cache.command.push({
+          type: 'class',
+          index,
+          log: createLogger(v.log, false),
+          name: app.name,
+          adapter: v.adapter || [],
+          dsbAdapter: v.dsbAdapter || [],
+          Cls,
+          reg: v.reg instanceof RegExp ? v.reg : new RegExp(v.reg),
+          perm: v.permission || 'all',
+          event: v.event || app.event || 'message',
+          rank: v.priority || 10000,
+          get info () {
+            return cache.index[this.index]
           },
-        },
-      })
-    }
-    return
-  }
-
-  if (typeof val !== 'object') return
-
-  const list: FncType[] = Array.isArray(val) ? val : [val]
-  list.forEach(fnc => {
-    if (!fnc?.file?.type) return
-    fnc.index = index
-    fnc.file.dirname = dirname
-    fnc.file.basename = basename
-    fnc.file.method = key
-    switch (fnc.file.type) {
-      case 'accept':
-        cache.count.accept++
-        return cache.accept.push(fnc as Accept)
-      case 'command':
-        cache.count.command++
-        return cache.command.push(fnc as CommandFnc)
-      case 'button':
-        cache.count.button++
-        return cache.button.push(fnc as Button)
-      case 'handler': {
-        const fn = fnc as Handler
-        if (!cache.handler[fn.key]) {
-          cache.count.handler.key++
-          cache.handler[fn.key] = []
-        }
-        cache.count.handler.fnc++
-        cache.handler[fn.key].push(fn)
-        return
-      }
-      case 'middleware':
-        cache.count.middleware++
-        return cache.middleware[(fnc as Middleware).type].push(fnc as any)
-      case 'task': {
-        const fn = fnc as Task
-        fn.schedule = schedule.scheduleJob(fn.cron, async () => {
-          try {
-            fn.log(`[定时任务][${fnc.name}][${fn.name}]: 开始执行`)
-            const result = fn.fnc()
-            if (util.types.isPromise(result)) await result
-            fn.log(`[定时任务][${fn.name}][${fn.name}]: 执行完成`)
-          } catch (error) {
-            handleError('taskStart', { name: fnc.name, task: fn.name, error })
-          }
+          file: {
+            basename,
+            dirname,
+            method: v.fnc,
+            type: 'command',
+            get path () {
+              return path.join(this.dirname, this.basename)
+            },
+          },
         })
-        cache.count.task++
-        return cache.task.push(fn)
       }
-      default:
+      return
     }
-  })
+
+    if (typeof val !== 'object') return
+
+    const list: FncType[] = Array.isArray(val) ? val : [val]
+    list.forEach(fnc => {
+      if (!fnc?.file?.type) return
+      fnc.index = index
+      fnc.file.dirname = dirname
+      fnc.file.basename = basename
+      fnc.file.method = key
+      switch (fnc.file.type) {
+        case 'accept':
+          cache.count.accept++
+          return cache.accept.push(fnc as Accept)
+        case 'command':
+          cache.count.command++
+          return cache.command.push(fnc as CommandFnc)
+        case 'button':
+          cache.count.button++
+          return cache.button.push(fnc as Button)
+        case 'handler': {
+          const fn = fnc as Handler
+          if (!cache.handler[fn.key]) {
+            cache.count.handler.key++
+            cache.handler[fn.key] = []
+          }
+          cache.count.handler.fnc++
+          cache.handler[fn.key].push(fn)
+          return
+        }
+        case 'middleware':
+          cache.count.middleware++
+          return cache.middleware[(fnc as Middleware).type].push(fnc as any)
+        case 'task': {
+          const fn = fnc as Task
+          fn.schedule = schedule.scheduleJob(fn.cron, async () => {
+            try {
+              fn.log(`[定时任务][${fnc.name}][${fn.name}]: 开始执行`)
+              const result = fn.fnc()
+              if (util.types.isPromise(result)) await result
+              fn.log(`[定时任务][${fn.name}][${fn.name}]: 执行完成`)
+            } catch (error) {
+              handleError('taskStart', { name: fnc.name, task: fn.name, error })
+            }
+          })
+          cache.count.task++
+          return cache.task.push(fn)
+        }
+        default:
+      }
+    })
+  } catch (error) {
+    handleError('loaderPlugin', { name: info.name, error, file: `${file}` })
+  }
 }
 
 /** 排序 */

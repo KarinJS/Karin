@@ -1,2 +1,2 @@
-export * from '@/karin'
-export { karin as default } from '@/karin'
+export * from './main'
+export { karin as default } from './main'

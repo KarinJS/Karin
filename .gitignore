@@ -40,3 +40,4 @@ dist/
 build/
 modules.js
 modules.d.ts
+index.js

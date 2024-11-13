@@ -96,8 +96,8 @@
       "types": "./lib/modules/yaml.d.ts"
     }
   },
-  "main": "./lib/main/index.js",
-  "types": "./lib/global.d.ts",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "bin": {
     "init": "lib/cli/init.js",
     "karin": "lib/cli/karin.js"

@@ -12,15 +12,6 @@
       "@/*": [
         "src/core/*"
       ],
-      "@plugin/*": [
-        "src/core/plugin/*"
-      ],
-      "@start/*": [
-        "src/main/*"
-      ],
-      "@service/*": [
-        "src/core/service/*"
-      ],
       "@adapter/*": [
         "src/adapter/*"
       ],
