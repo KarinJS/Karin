@@ -102,8 +102,8 @@ export class EventBaseHandler {
 
       const role = list[permission]
       if (!role) return true
-      if (role.role === 'owner' && this.e.sender?.role === 'owner') return true
-      if (role.role === 'admin' && (this.e.sender?.role === 'owner' || this.e.sender?.role === 'admin')) return true
+      if (role.role === 'owner' && (this.e.sender?.role === 'owner' || this.e.isMaster || this.e.isAdmin)) return true
+      if (role.role === 'admin' && (this.e.sender?.role === 'owner' || this.e.sender?.role === 'admin' || this.e.isMaster || this.e.isAdmin)) return true
 
       this.e.reply(`暂无权限，只有${role.name}才能操作`)
       return false
