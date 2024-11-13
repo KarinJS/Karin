@@ -1,13 +1,13 @@
 import { Action, OB11NodeSegment, OB11Segment, Params, Request } from './types'
 import { AdapterBase } from '../base'
-import { GetGroupHighlightsResponse, QQGroupHonorInfo, SexEnum } from '@/adapter/types'
-import { RoleEnum } from '@/adapter/sender'
+import { AdapterConvertKarin, KarinConvertAdapter } from './convert'
+import { config } from '@main/index'
+import { GetGroupHighlightsResponse, QQGroupHonorInfo } from '@/adapter/types'
+import { RoleEnum, SexEnum } from '@/adapter/sender'
+import { WebSocket } from 'ws'
 import type { AdapterType, ForwardOptions, SendMsgResults } from '@/adapter/adapter'
 import type { Contact } from '@/adapter/contact'
 import type { ElementTypes, NodeElementType } from '@/adapter/segment'
-import { AdapterConvertKarin, KarinConvertAdapter } from './convert'
-import { WebSocket } from 'ws'
-import { config } from '@start/index'
 
 export abstract class AdapterOneBot extends AdapterBase implements AdapterType {
   /** 请求id */

@@ -13,11 +13,11 @@ export const enum RoleEnum {
 /** 性别枚举 */
 export const enum SexEnum {
   /** 男 */
-  Male = 'male',
+  MALE = 'male',
   /** 女 */
-  Female = 'female',
+  FEMALE = 'female',
   /** 未知 */
-  Unknown = 'unknown',
+  UNKNOWN = 'unknown',
 }
 
 /** 权限类型枚举 */

@@ -1,5 +1,5 @@
 import * as common from '../common'
-import { config } from '@start/index'
+import { config } from '@main/index'
 import { BaseNoticeHandler } from './base'
 import type { GroupGuildFileCfg } from '@/utils/config/types'
 import { GroupNoticeEventMap, NoticeEventSubEnum } from '@/event/types/types'

@@ -1,8 +1,8 @@
 import { karin } from '@/karin'
-import { config as cfg } from '@start/index'
+import { config as cfg } from '@main/index'
 import { context as ctx } from '@/event/handler/message/context'
 import type { AdapterProtocol } from '@/adapter/adapter'
-import type { Accept, CommandClass, CommandFnc } from '@plugin/cache/types'
+import type { Accept, CommandClass, CommandFnc } from '@/plugin/cache/types'
 import type { FriendDirectFileCfg, GroupGuildFileCfg } from '@/utils/config/types'
 import type {
   FriendNoticeEventMap,

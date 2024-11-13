@@ -47,7 +47,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.RELEASE }}
         if: ${{ steps.release.outputs.release_created }}
       # 构建输出
-      - run: pnpm run build:npm
+      - run: pnpm run build
         if: ${{ steps.release.outputs.release_created }}
       # 删除开发依赖 使用jq工具删除
       - run: jq 'del(.devDependencies)' package.json > package.json.tmp && mv package.json.tmp package.json

@@ -96,7 +96,7 @@
       "types": "./lib/modules/yaml.d.ts"
     }
   },
-  "main": "./lib/index.js",
+  "main": "./lib/main/index.js",
   "types": "./lib/global.d.ts",
   "bin": {
     "init": "lib/cli/init.js",
@@ -118,8 +118,8 @@
   ],
   "scripts": {
     ".": "node lib/cli/start.js .",
-    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
-    "build:npm": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "cp": "node lib/cli/cp.js",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run cp",
     "dev": "node lib/cli/start.js dev",
     "fix": "eslint lib/**/*.js --fix",
     "fix:all": "eslint lib/**/*.js --fix && eslint lib/**/*.d.ts --fix",

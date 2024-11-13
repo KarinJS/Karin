@@ -1,10 +1,16 @@
 import { watch, type Watch } from './watch'
 import { configKey } from './types'
-import { karinDir } from '@/init/dir'
 import { isExists } from '../fs/exists'
 import { requireFileSync } from '@/utils'
 import { copyConfigSync } from './initCfg'
-import { defaultConfigPath, configPath, basePath, dataPath, tempPath } from '@/utils/fs/root'
+import {
+  basePath,
+  dataPath,
+  tempPath,
+  karinDir,
+  configPath,
+  defaultConfigPath,
+} from '@/utils/fs/root'
 
 import type {
   ConfigMap,
@@ -15,11 +21,11 @@ import type {
 
 import {
   cache,
+  setStr,
   getFriendOrDirectCache,
   getGroupOrGuildCache,
   setFriendOrDirectCache,
   setGroupOrGuildCache,
-  setStr,
 } from './cache'
 
 /** node-karin的package */

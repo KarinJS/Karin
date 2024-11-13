@@ -1,16 +1,6 @@
 import { Contact } from './contact'
 import { ElementTypes } from './segment'
-import { RoleEnum, GroupSender } from './sender'
-
-/** 性别枚举 */
-export const enum SexEnum {
-  /** 男 */
-  MALE = 'male',
-  /** 女 */
-  FEMALE = 'female',
-  /** 未知 */
-  UNKNOWN = 'unknown',
-}
+import { RoleEnum, GroupSender, SexEnum } from './sender'
 
 /** 基本消息返回值结构 */
 export interface MessageResponse {

@@ -13,16 +13,19 @@
         "src/core/*"
       ],
       "@plugin/*": [
-        "src/plugin/*"
+        "src/core/plugin/*"
       ],
       "@start/*": [
-        "src/start/*"
+        "src/main/*"
       ],
       "@service/*": [
-        "src/service/*"
+        "src/core/service/*"
       ],
       "@adapter/*": [
         "src/adapter/*"
+      ],
+      "@main/*": [
+        "src/main/*"
       ]
     },
     "resolveJsonModule": true,

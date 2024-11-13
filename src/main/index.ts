@@ -1,12 +1,17 @@
-export * as common from '@/utils/common'
-export * as config from '@/utils/config'
-import * as config from '@/utils/config'
-export * from '@service/server'
+export * from '@/utils'
+export * from '@/adapter'
+export * from '@/event'
+export * from '@/karin'
+export * from '@/internal/error'
+export * from '@/service/server'
+export { karin as default } from '@/karin'
+export { TypedListeners } from '@/internal/listeners'
 
+import * as config from '@/utils/config'
 import { createLogger } from '@/utils/logger/logger'
-import { loaderPlugin } from '@plugin/loader'
-import { createWebSocketServer } from '@service/server'
-import { createExpressWebSocketServer, startServer } from '../server/app'
+import { loaderPlugin } from '@/plugin/loader'
+import { createWebSocketServer } from '@/service/server'
+import { createExpressWebSocketServer, startServer } from '../core/server/app'
 
 /** 日志管理器 */
 export let logger: ReturnType<typeof createLogger>
@@ -29,7 +34,7 @@ export const run = async () => {
     adapterService,
   ] = await Promise.all([
     import('../adapter/input'),
-    import('../service/adapter'),
+    import('../core/service/adapter'),
     loaderPlugin(),
     import('@adapter/onebot/server'),
   ])

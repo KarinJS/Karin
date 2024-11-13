@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { isExists } from './exists'
 import { createRequire } from 'module'
-import { cache } from '@plugin/cache/cache'
+import { cache } from '@/plugin/cache/cache'
 import { requireFileSync } from './require'
 
 /** package.json类型 */

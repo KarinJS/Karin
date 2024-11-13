@@ -1,11 +1,11 @@
 import path from 'node:path'
 import { TypedListeners } from '@/internal/listeners'
-import { cache, createLogger } from '@plugin/cache/cache'
+import { cache, createLogger } from '@/plugin/cache/cache'
 import { Contact, ContactWithoutSubPeer, ContactWithSubPeer, Scene } from '@/adapter/contact'
 import type { ElementTypes } from '@/adapter/segment'
 import type { MessageEventMap } from '@/event/types/types'
 import type { GroupSender, FriendSender } from '@/adapter/sender'
-import type { Accept, CommandFnc, NoticeAndRequest, Task } from '@plugin/cache/types'
+import type { Accept, CommandFnc, NoticeAndRequest, Task } from '@/plugin/cache/types'
 import { Message } from '@/event'
 import { context } from '@/event/handler/message/context'
 

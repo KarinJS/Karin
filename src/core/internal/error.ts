@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { cache } from '@plugin/cache/cache'
+import { cache } from '@/plugin/cache/cache'
 import { listeners } from './listeners'
 
 interface ErrorParams {

@@ -4,14 +4,14 @@ import util from 'node:util'
 import chokidar from 'chokidar'
 import schedule from 'node-schedule'
 import { gitAllPlugin } from '../list'
-import { Middleware } from './../cache/types'
+import { Middleware } from '../cache/types'
 import { handleError } from '@/internal/error'
 import { isClass } from '@/utils/system/class'
 import { cache, createLogger } from '../cache/cache'
 import { isDir } from '@/utils/fs/exists'
 import { requireFileSync } from '@/utils'
 import { filesByExt } from '@/utils/fs/path'
-import { createPluginDir } from '@plugin/resource'
+import { createPluginDir } from '@/plugin/resource'
 import type { Info } from '../list/types'
 import type { PkgData } from '@/utils/fs/pkg'
 import type { Plugin } from '../class'
@@ -347,7 +347,7 @@ export const watchApps = async (dir: string, index: number, info: Info) => {
 
   const ext = process.env.karin_app_lang === 'ts' ? ['.ts', '.js'] : ['.js']
 
-  logger.debug(`[热更新][${info.name}] 监听文件夹：${dir}`)
+  logger.debug(`[hmr][${info.name}] 监听文件夹：${dir}`)
   const watcher = chokidar.watch(dir)
 
   /** 处理文件变动 */
@@ -356,7 +356,7 @@ export const watchApps = async (dir: string, index: number, info: Info) => {
 
     if (action === 'unlink') {
       await unloadApps(file, index)
-      logger.info(`[热更新][${info.name}][${path.basename(file)}] 卸载完成`)
+      logger.info(`[hmr][${info.name}][${path.basename(file)}] 卸载完成`)
       return
     }
 
@@ -374,9 +374,10 @@ export const watchApps = async (dir: string, index: number, info: Info) => {
       }
 
       await Promise.all(list)
-      const actionText = action === 'add' ? '加载' : '重载'
-      logger.info(`[热更新][${info.name}][${path.basename(file)}] ${actionText}完成`)
     }
+
+    const actionText = action === 'add' ? '加载' : '重载'
+    logger.info(`[hmr][${info.name}][${path.basename(file)}] ${actionText}完成`)
   }
 
   watcher.on('add', async (file: string) => await handleFileChange(file, 'add'))

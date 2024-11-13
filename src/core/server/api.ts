@@ -1,4 +1,4 @@
-import { isLocalRequest } from '../core/utils'
+import { isLocalRequest } from '../utils'
 import { type Request, type Response } from 'express'
 
 /**

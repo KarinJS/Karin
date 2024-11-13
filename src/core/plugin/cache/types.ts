@@ -7,7 +7,7 @@ import type { AdapterProtocol, AdapterType } from '@/adapter/adapter'
 import type { MessageEventMap, NoticeEventMap, RequestEventMap } from '@/event/types/types'
 import type { ButtonElementType, ElementTypes, KeyboardElementType } from '@/adapter/segment'
 import { PermissionEnum } from '@/adapter/sender'
-import { Plugin } from '@plugin/class'
+import { Plugin } from '@/plugin/class'
 
 /** 插件索引值的类型 */
 export interface PluginIndex {

@@ -1,7 +1,8 @@
 import { YamlEditor } from '../fs/yaml'
 import Axios, { AxiosError } from 'axios'
+import { formatTime as FormatTime } from '../system/time'
 import type { AxiosRequestConfig, AxiosResponse } from 'axios'
-import { getAppPlugins, getNpmPlugins as GetNpmPlugins, getGitPlugins as GetGitPlugins } from '@plugin/index'
+import { getAppPlugins, getNpmPlugins as GetNpmPlugins, getGitPlugins as GetGitPlugins } from '@/plugin/index'
 
 export { isDir, exists } from '../fs/exists'
 export { downFile, absPath } from '../fs/file'
@@ -98,27 +99,17 @@ export const uptime = () => {
 }
 
 /**
- * 传入一个时间戳
- * 返回距今已过去的时间
+ * @description 传入一个或两个时间戳
+ * @description 传入一个返回当前时间 - 时间1
+ * @description 传入两个返回时间2 - 时间1
  * @param time - 时间戳
- *
  * @example
- * formatTime(1620000000)
+ * common.formatTime(1620000000)
+ * // -> '18天'
+ * common.formatTime(1620000000, 1620000000)
  * // -> '18天'
  */
-export const formatTime = (time: number): string => {
-  if (typeof time !== 'number') throw TypeError('时间戳必须为数字')
-
-  time = time.toString().length === 10 ? time * 1000 : time
-  time = Math.floor((Date.now() - time) / 1000)
-
-  const day = Math.floor(time / 86400)
-  const hour = Math.floor((time % 86400) / 3600)
-  const min = Math.floor((time % 3600) / 60)
-  const sec = Math.floor(time % 60)
-
-  return `${day}天${hour}小时${min}分钟${sec}秒`.replace(/0[天时分秒]/g, '')
-}
+export const formatTime = FormatTime
 
 /**
  * @deprecated 已废弃 建议使用`yaml`模块
