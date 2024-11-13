@@ -3,6 +3,16 @@
   "version": "0.12.17",
   "private": false,
   "description": "基于 Kritor 进行开发的nodejs机器人框架",
+  "keywords": [
+    "node",
+    "nodejs",
+    "karin",
+    "bot",
+    "icqq",
+    "onebot",
+    "kritor",
+    "node-karin"
+  ],
   "homepage": "https://github.com/KarinJS/Karin",
   "bugs": {
     "url": "https://github.com/KarinJS/Karin/issues"
@@ -11,7 +21,7 @@
     "type": "git",
     "url": "git+https://github.com/KarinJS/Karin.git"
   },
-  "license": "GPL-3.0-only",
+  "license": "MIT",
   "author": "Karin",
   "type": "module",
   "exports": {
@@ -118,12 +128,11 @@
   ],
   "scripts": {
     ".": "node lib/cli/start.js .",
-    "cp": "node lib/cli/cp.js",
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run cp",
+    "cp": "node lib/cli/cp.js",
     "dev": "node lib/cli/start.js dev",
-    "fix": "eslint lib/**/*.js --fix",
-    "fix:all": "eslint lib/**/*.js --fix && eslint lib/**/*.d.ts --fix",
     "init": "node lib/cli/init.js",
+    "lint": "eslint src/**/*.ts --fix",
     "pub": "npm publish --access public",
     "sort": "npx sort-package-json && sort-json tsconfig.json",
     "start": "node lib/cli/start.js start"

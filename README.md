@@ -1,51 +1,8 @@
 ![karin](https://socialify.git.ci/karinjs/karin/image?description=1&font=Bitter&forks=1&issues=1&language=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F162426977%3Fs%3D400%26u%3D8ae82fa0321857b24c7ed33a3d0d0d51323d3cfc%26v%3D4&name=1&owner=1&pattern=Plus&pulls=1&stargazers=1&theme=Light)
 
-[![neostandard javascript style](https://img.shields.io/badge/code_style-neostandard-brightgreen?style=flat)](https://github.com/neostandard/neostandard)
+## 快速开始
 
-[文档](https://karinjs.github.io/Karin/)  
-[文档`(瑜笙提供)`](https://karin.fun)
-
-基于 [Kritor](https://github.com/KarinJS/kritor-kotlin) 标准进行开发的 [nodejs](https://nodejs.org/en) 机器人框架  
-
-> 本项目正在开发中，现阶段我并不能为你解决任何问题，谨慎使用。  
-> 此项目不想成为、代替任何项目，也没有这个能力，请别造谣。  
-> ~~不欢迎某些人，勿扰谢谢(ps: )~~  
-
----
-
-### 目前计划
-
-- [x] [kritor标准](https://github.com/KarinJS/kritor) **暂时去除**
-- [x] [onebot11](https://github.com/botuniverse/onebot-11)
-- [ ] [onebot12](https://onebot.dev/)
-- [ ] 支持主动[grpc](https://grpc.io/)
-- [x] 支持被动[grpc](https://grpc.io/) **暂时去除**
-- [x] 支持主动ws 12暂未支持
-- [x] 支持被动ws
-- [ ] 支持onebot HTTP
-- [x] 支持[onebots](https://github.com/lc-cn/onebots)
-- [x] 外置[puppeteer](https://github.com/KarinJS/karin-plugin-puppeteer)
-- [x] 降低对`redis`的依赖，开始逐渐抛弃redis
-- [x] 支持 package.karin
-- [x] 支持`redis`集群
-
-### 感谢
-
-Karin的开发离不开以下项目的帮助：
-
-- [icqqjs](https://github.com/icqqjs)
-- [Kritor](https://github.com/KarinJS/kritor) Kritor标准
-- [OpenShamrock](https://github.com/whitechi73/OpenShamrock) Kritor标准Kotlin的实现
-- [onebots](https://github.com/lc-cn/onebots) onebots适配器
-- [onebot-11](https://github.com/botuniverse/onebot-11) onebot11标准
-- [Miao-Yunzai](https://github.com/yoimiya-kokomi/Miao-Yunzai) 最开始的代码结构
-- [Yunzai-Bot](https://gitee.com/le-niao/Yunzai-Bot) 最开始的代码结构
-
-### 来加入我们吧~
-
-QQGroup: 967068507
-
-Discord: [☘Karin的喵趴～](https://discord.com/channels/1251552521957408878/1251552521957408881)
+[点击跳转文档](https://karin.fun/)
 
 ### 贡献者
 
