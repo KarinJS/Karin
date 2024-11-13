@@ -121,7 +121,15 @@ export class Watcher<T> {
   get value () {
     const dynamicData = requireFileSync<T>(this.dynamicFile)
     const defaultData = requireFileSync<T>(this.defaultCFile)
-    return { ...defaultData, ...dynamicData }
+    if (typeof defaultData === 'object' && typeof dynamicData === 'object') {
+      return { ...defaultData, ...dynamicData }
+    }
+
+    if (Array.isArray(defaultData) && Array.isArray(dynamicData)) {
+      return [...defaultData, ...dynamicData]
+    }
+
+    return dynamicData
   }
 
   /**
