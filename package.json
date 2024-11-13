@@ -159,7 +159,7 @@
     "typescript": "^5.5.4"
   },
   "peerDependencies": {
-    "node-karin": "link:./lib"
+    "node-karin": "link:."
   },
   "engines": {
     "node": ">=18"
