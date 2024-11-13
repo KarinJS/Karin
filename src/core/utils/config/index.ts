@@ -95,7 +95,7 @@ export const getMergeYaml = <T extends keyof ConfigMap> (name: T, isRefresh = fa
 export const getYaml = <
   T extends keyof ConfigMap,
   K extends boolean = false
-> (name: T, type: 'user' | 'default', isRefresh: K): K extends true ? ConfigMap[T] : Watch<ConfigMap[T]> => {
+> (name: T, type: 'user' | 'default', isRefresh?: K): K extends true ? ConfigMap[T] : Watch<ConfigMap[T]> => {
   const file = `${type === 'default' ? defaultConfigPath : configPath}/${name}.yaml`
 
   if (type === 'default') {
