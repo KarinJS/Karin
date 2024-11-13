@@ -1,9 +1,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { getPluginCache } from '../cache/cache'
-import { type PluginInfo } from './types'
-import { type GitPluginName } from './git'
 import { filesByExt } from '@/utils/fs/path'
+import { getPluginCache } from '../cache/cache'
+import type { Info } from './types'
+import type { GitPluginName } from './git'
 
 const key = {
   list: 'app:list',
@@ -25,24 +25,13 @@ export const getAppPlugins = async (): Promise<GitPluginName[]> => {
   const dir = './plugins'
   const files = await fs.promises.readdir(dir, { withFileTypes: true })
   /** 忽略文件、非`karin-plugin-`开头的文件夹、忽略存在`package.json` */
-  const list = await Promise.all(files.map(async v => {
+  const list = (await Promise.all(files.map(async v => {
     if (!v.isDirectory()) return ''
     if (!v.name.startsWith('karin-plugin-')) return ''
-    if (fs.existsSync(`${dir + v.name}/package.json`)) return ''
-    return v.name
-  })) || []
+    if (fs.existsSync(`${dir}/${v.name}/package.json`)) return ''
 
-  const ext = process.env.karin_app_lang === 'ts' ? ['.ts', '.js'] : ['.js']
-  /** 如果对应的文件夹没有包含一个这些后缀文件 则去除该文件夹 */
-  await Promise.all(list.map(async name => {
-    if (!name) return
-    const files = fs.readdirSync(path.join(dir, name), { withFileTypes: true })
-    for (const file of files) {
-      if (file.isDirectory()) continue
-      if (ext.includes(path.extname(file.name))) return true
-    }
-    return false
-  }))
+    return v.name
+  }))).filter(Boolean) as string[]
 
   /** 1分钟后删除缓存 */
   getPluginCache.set(key.list, list)
@@ -59,33 +48,27 @@ export const getAppPlugins = async (): Promise<GitPluginName[]> => {
  * // -> [{
  * //   type: 'app',
  * //   apps: ['plugins/karin-plugin-test/index.js'],
- * //   main: '',
  * //   path: 'plugins/karin-plugin-test',
  * //   name: 'karin-plugin-test',
- * //   pkg: { name: 'karin-plugin-test', version: '0.0.0' },
- * //   version: '0.0.0'
  * // }]
  * ```
  */
-export const getAppPluginsInfo = async (): Promise<PluginInfo[]> => {
+export const getAppPluginsInfo = async (): Promise<Info[]> => {
   const cached = getPluginCache.get(key.info)
   if (cached) return cached
 
   /** 插件列表 */
   const list = await getAppPlugins()
   /** 插件信息 */
-  const info: PluginInfo[] = []
+  const info: Info[] = []
 
   await Promise.all(list.map(async (name) => {
     const filePath = `${process.cwd()}/plugins/${name}`
-    const plugin: PluginInfo = {
+    const plugin: Info = {
       type: 'app',
       apps: [],
-      main: '',
-      path: filePath,
+      dir: filePath,
       name,
-      pkg: { name, version: '0.0.0', main: '' },
-      version: '0.0.0',
     }
 
     const ext = process.env.karin_app_lang === 'ts' ? ['.ts', '.js'] : ['.js']

@@ -1,8 +1,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { getPluginCache } from '../cache/cache'
-import { requireFile } from '@/utils/fs/require'
-import { PackageJson, type PluginInfo } from './types'
+import { requireFileSync } from '@/utils/fs/require'
+import { PkgData } from '@/utils/fs/pkg'
+import { Info } from './types'
 
 /** git插件包名规范 */
 export type GitPluginName = `karin-plugin-${string}`
@@ -12,12 +13,12 @@ const key = {
   info: 'git:list:info',
 }
 
-const getPkg = async (name: string): Promise<PackageJson | null> => {
+const getPkg = (name: string): PkgData | null => {
   try {
-    const data = await requireFile(path.join(process.cwd(), 'pluhins', name, 'package.json'))
+    const data = requireFileSync(path.join(process.cwd(), 'pluhins', name, 'package.json'))
     return data
   } catch (error) {
-    const data = await requireFile(path.join(process.cwd(), 'package.json'))
+    const data = requireFileSync(path.join(process.cwd(), 'package.json'))
     if (data.name === name) {
       return data
     }
@@ -54,7 +55,7 @@ export const getGitPlugins = async (): Promise<GitPluginName[]> => {
   })) || []
 
   /** 处理根目录 */
-  const root = await requireFile('./package.json')
+  const root = await requireFileSync('./package.json')
   if (root.name.startsWith('karin-plugin-') && root.karin) list.push(root.name)
 
   list.filter(Boolean)
@@ -69,7 +70,7 @@ export const getGitPlugins = async (): Promise<GitPluginName[]> => {
  * 获取插件git插件列表详细信息
  * @description 获取git插件列表详细信息
  */
-export const getGitPluginsInfo = async (): Promise<PluginInfo[]> => {
+export const getGitPluginsInfo = async (): Promise<Info[]> => {
   const cached = getPluginCache.get(key.info)
   if (cached) return cached
 
@@ -91,23 +92,20 @@ export const getGitPluginsInfo = async (): Promise<PluginInfo[]> => {
   }))
 
   /** 处理根目录 */
-  const root = await requireFile('./package.json')
+  const root = await requireFileSync('./package.json')
   if (root.karin) list.push({ filePath: process.cwd(), name: root.name })
 
   /** 插件信息 */
-  const info: PluginInfo[] = []
+  const info: Info[] = []
 
   await Promise.all(list.map(async ({ filePath, name }) => {
-    const pkg = await getPkg(name).catch(() => null)
+    const pkg = getPkg(name)
     if (!pkg) return
-    const plugin: PluginInfo = {
+    const plugin: Info = {
       type: 'git',
       apps: [],
-      main: pkg.main,
-      path: filePath,
+      dir: filePath,
       name: pkg.name,
-      pkg,
-      version: pkg.version || '0.0.0',
     }
 
     /** 没有apps */

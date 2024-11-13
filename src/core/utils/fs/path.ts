@@ -9,22 +9,40 @@ import path from 'node:path'
  * 根据文件后缀名从指定路径下读取符合要求的文件
  * @param path - 路径
  * @param ext - 后缀名、或后缀名列表
+ * @param returnType - 返回类型
  * @example
  * ```ts
  * filesByExt('./plugins/karin-plugin-test', '.js')
  * // -> ['1.js', '2.js']
  * filesByExt('./plugins', ['.js', '.ts'])
  * // -> ['1.js', '2.js', '3.ts']
+ * filesByExt('./plugins', '.js', 'relativePath')
+ * // -> ['plugins/1.js', 'plugins/2.js']
+ * filesByExt('./plugins', '.js', 'absolutePath')
+ * // -> ['C:/Users/karin/plugins/1.js', 'C:/Users/karin/plugins/2.js']
  * ```
  */
-export const filesByExt = (filePath: string, ext: string | string[]): string[] => {
+export const filesByExt = (
+  filePath: string,
+  ext: string | string[],
+  returnType: 'fileName' | 'relativePath' | 'absolutePath' = 'fileName'
+): string[] => {
   if (!isDir(filePath)) return []
   const files = fs.readdirSync(filePath, { withFileTypes: true })
   const list: string[] = []
   if (!Array.isArray(ext)) ext = [ext]
   files.forEach(v => {
     if (v.isDirectory()) return
-    if (ext.includes(path.extname(v.name))) list.push(v.name)
+    if (ext.includes(path.extname(v.name))) {
+      if (returnType === 'fileName') {
+        list.push(v.name)
+      } else if (returnType === 'relativePath') {
+        const file = path.resolve(filePath, v.name)
+        list.push(path.relative(process.cwd(), file))
+      } else if (returnType === 'absolutePath') {
+        list.push(path.resolve(filePath, v.name))
+      }
+    }
   })
   return list
 }

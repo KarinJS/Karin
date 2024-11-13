@@ -13,6 +13,7 @@ export const cache: Cache = {
   button: [],
   handler: {},
   missing: new Map(),
+  watcher: new Map(),
   middleware: {
     recvMsg: [],
     replyMsg: [],

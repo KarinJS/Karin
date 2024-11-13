@@ -8,7 +8,8 @@ import { copyConfigSync } from '../core/utils/config/initCfg'
  * @param name 插件名称
  * @param files 需要创建的文件夹列表
  */
-export const createPluginDir = async (name: string, files: string[]) => {
+export const createPluginDir = async (name: string, files?: string[]) => {
+  if (!Array.isArray(files)) files = ['config', 'data', 'resource']
   if (files.length === 0) return
   const pluginPath = path.join(process.cwd(), 'config', name)
   if (!fs.existsSync(pluginPath)) await fs.promises.mkdir(pluginPath)

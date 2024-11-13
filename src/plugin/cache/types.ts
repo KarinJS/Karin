@@ -1,6 +1,7 @@
+import type { FSWatcher } from 'chokidar'
 import type { Message } from '@/event'
 import type schedule from 'node-schedule'
-import type { PluginsType } from '../list/types'
+import type { AppsType } from '../list/types'
 import type { Contact } from '@/adapter/contact'
 import type { AdapterProtocol, AdapterType } from '@/adapter/adapter'
 import type { MessageEventMap, NoticeEventMap, RequestEventMap } from '@/event/types/types'
@@ -11,7 +12,7 @@ import { Plugin } from '@plugin/class'
 /** 插件索引值的类型 */
 export interface PluginIndex {
   /** 插件类型 */
-  type: PluginsType
+  type: AppsType
   /** 插件名称 */
   name: string
   /** 插件根目录 */
@@ -285,6 +286,8 @@ export interface Cache {
   count: Count
   /** 插件名称:缺失的依赖 */
   missing: Map<string, string>
+  /** apps监听 */
+  watcher: Map<string, FSWatcher>
   /** handler */
   handler: Record<string, Handler[]>
   /** 中间件 */

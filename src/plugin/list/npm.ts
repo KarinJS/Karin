@@ -1,16 +1,17 @@
 import fs from 'node:fs'
 import path from 'path'
 import { getPluginCache } from '../cache/cache'
-import { requireFile } from '@/utils/fs/require'
-import { PackageJson, type PluginInfo } from './types'
+import { requireFileSync } from '@/utils/fs/require'
+import { Info } from './types'
+import { PkgData } from '@/utils/fs/pkg'
 
 const key = {
   list: 'npm:list',
   info: 'npm:list:info',
 }
 
-const getPkg = async (name: string): Promise<PackageJson> => {
-  const data = await requireFile(path.join(process.cwd(), 'node_modules', name, 'package.json'))
+const getPkg = async (name: string): Promise<PkgData> => {
+  const data = await requireFileSync(path.join(process.cwd(), 'node_modules', name, 'package.json'))
   return data
 }
 
@@ -55,7 +56,7 @@ export const getNpmPlugins = async (): Promise<string[]> => {
   ]
 
   /** 获取package.json */
-  const pkg = await requireFile('./package.json', { ex: 0 })
+  const pkg = await requireFileSync('./package.json', { ex: 0 })
   /** 获取dependencies列表 同时排除掉exclude、带@types的 */
   const dependencies = Object.keys(pkg.dependencies).filter((name) => !exclude.includes(name) && !name.startsWith('@types'))
   /** 排除非插件 */
@@ -75,7 +76,7 @@ export const getNpmPlugins = async (): Promise<string[]> => {
 /**
  * 获取插件npm插件列表详细信息
  */
-export const getNpmPluginsInfo = async (): Promise<PluginInfo[]> => {
+export const getNpmPluginsInfo = async (): Promise<Info[]> => {
   /** 先读缓存 */
   const cached = getPluginCache.get(key.info)
   if (cached) return cached
@@ -84,18 +85,15 @@ export const getNpmPluginsInfo = async (): Promise<PluginInfo[]> => {
   /** 插件列表 */
   const list: string[] = await getNpmPlugins()
   /** 插件信息 */
-  const info: PluginInfo[] = []
+  const info: Info[] = []
   await Promise.all(list.map(async (name) => {
     const pkgPath = path.join(dirPath, name)
     const pkg = await getPkg(name)
-    const plugin: PluginInfo = {
+    const plugin: Info = {
       type: 'npm',
       apps: [],
-      main: pkg.main,
-      path: pkgPath,
+      dir: pkgPath,
       name: pkg.name,
-      pkg: pkg.data,
-      version: pkg.version || '0.0.0',
     }
 
     /** 没有apps */

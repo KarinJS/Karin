@@ -1,4 +1,4 @@
-import type chokidar from 'chokidar'
+import type { FSWatcher } from 'chokidar'
 
 /** 配置文件缓存key */
 export const enum configKey {
@@ -336,7 +336,7 @@ export interface CacheType {
   /** 配置文件对应缓存 */
   file: FileCache
   /** 监听器缓存 */
-  watcher: Map<string, chokidar.FSWatcher>
+  watcher: Map<string, FSWatcher>
   /** 单独群、频道配置缓存 */
   groupGuild: Record<string, {
     /** 前一分钟调用数量 */

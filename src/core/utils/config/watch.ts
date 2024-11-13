@@ -1,6 +1,6 @@
 import path from 'node:path'
-import chokidar from 'chokidar'
 import { cache } from './cache'
+import chokidar, { type FSWatcher } from 'chokidar'
 import { clearRequireFile, requireFileSync } from '../fs/require'
 
 /**
@@ -68,11 +68,11 @@ export const watchAndMerge = <T> (
 }
 
 export class Watch<T> {
-  watcher: chokidar.FSWatcher
+  watcher: FSWatcher
   file: string
   constructor (
     file: string,
-    watcher: chokidar.FSWatcher
+    watcher: FSWatcher
   ) {
     /** 监听器 */
     this.watcher = watcher
@@ -99,13 +99,13 @@ export class Watch<T> {
 }
 
 export class Watcher<T> {
-  watcher: chokidar.FSWatcher
+  watcher: FSWatcher
   dynamicFile: string
   defaultCFile: string
   constructor (
     dynamicFile: string,
     defaultCfgFile: string,
-    watcher: chokidar.FSWatcher
+    watcher: FSWatcher
   ) {
     /** 监听器 */
     this.watcher = watcher

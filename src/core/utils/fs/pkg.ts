@@ -3,7 +3,25 @@ import { isExists } from './exists'
 import { createRequire } from 'module'
 import { cache } from '@plugin/cache/cache'
 import { requireFileSync } from './require'
-import { PackageJson } from '@plugin/list/types'
+
+/** package.json类型 */
+export interface PkgData {
+  /** 插件名称 */
+  name: string
+  /** 插件版本 */
+  version: string
+  /** 插件入口 */
+  main: string
+  karin?: {
+    /** 插件app列表 */
+    apps?: string | string[]
+    /** 静态资源目录 */
+    static?: string | string[]
+    /** 基本文件夹结构 */
+    files?: string[]
+  }
+  [key: string]: any
+}
 
 /**
  * 输入包名 返回包根目录的绝对路径 仅简单查找
@@ -53,7 +71,7 @@ export const getPluginInfo = (name: string) => {
   const info = {
     get pkg () {
       if (!plugin.pkgPath) return null
-      return requireFileSync(plugin.pkgPath) as PackageJson
+      return requireFileSync(plugin.pkgPath) as PkgData
     },
   }
 
