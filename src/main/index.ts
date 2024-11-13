@@ -12,7 +12,7 @@ export { TypedListeners } from '@/internal/listeners'
 
 import * as config from '@/utils/config'
 import { createLogger } from '@/utils/logger/logger'
-import { processHandler } from '@/internal/process'
+import { processExit, processHandler } from '@/internal/process'
 import { loaderPlugin } from '@/plugin/loader'
 import { createWebSocketServer } from '@/service/server'
 import { createExpressWebSocketServer, startServer } from '../core/server/app'
@@ -29,7 +29,8 @@ export let app: ReturnType<typeof createExpressWebSocketServer>['app']
 export const run = async () => {
   config.init()
   logger = createLogger({ log4jsCfg: config.config().log4jsCfg })
-  listeners.on('error', (error:any)=>logger.error(error))
+  listeners.on('error', (error: any) => logger.error(error))
+  listeners.on('exit', ({ code }) => processExit(code))
 
   logger.mark('Karin 启动中...')
   logger.mark(`当前版本: ${process.env.karin_app_version}`)

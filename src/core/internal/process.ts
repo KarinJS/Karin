@@ -1,3 +1,5 @@
+import lodash from 'lodash'
+import { uptime } from '@/utils'
 import { listeners } from './listeners'
 import { axios } from '@/utils/common'
 import { getPid } from '@/utils/system/pid'
@@ -61,3 +63,18 @@ export const checkProcess = async (port: number) => {
   logger.error(`后台进程关闭失败，请检查是否有进程正在占用端口${port}`)
   process.exit()
 }
+
+const processExitHandler = async (code: unknown) => {
+  try {
+    // TODO: 退出前保存redis数据
+    logger.mark(`Karin 已停止运行 运行时间：${uptime()} 退出码：${code || '未知'}`)
+  } finally {
+    process.exit()
+  }
+}
+
+/**
+ * @description 处理退出事件
+ * @param code 退出码
+ */
+export const processExit = lodash.debounce(processExitHandler, 300)

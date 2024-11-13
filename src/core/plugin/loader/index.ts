@@ -82,9 +82,12 @@ export const loaderPlugin = async () => {
 
   logger.info('插件加载完成')
   logger.info(logger.green('-----------'))
-
-  load.watchList.forEach(({ file, index, info }) => watchApps(file, index, info))
   clearCache()
+
+  setTimeout(() => {
+    load.watchList.forEach(({ file, index, info }) => watchApps(file, index, info))
+    load.watchList.length = 0
+  }, 2000)
 }
 
 /**
@@ -151,7 +154,6 @@ export const clearCache = () => {
   load.main.length = 0
   load.apps.length = 0
   load.createDir.length = 0
-  load.watchList.length = 0
 }
 
 /**
