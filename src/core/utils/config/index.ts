@@ -1,4 +1,4 @@
-import { watch } from './watch'
+import { watch, type Watch } from './watch'
 import { configKey } from './types'
 import { karinDir } from '@/init/dir'
 import { isExists } from '../fs/exists'
@@ -37,24 +37,9 @@ export const admin = () => cache.file[configKey.CONFIG].admin || []
 /** 超时时间 */
 export const timeout = () => cache.file[configKey.SERVER].timeout || 60
 /** Redis 配置 */
-export const redis = () => getConfig('redis')
+export const redis = () => getMergeYaml('redis')
 /** Pm2配置 */
-export const pm2 = () => getConfig('pm2')
-/** Config */
-export const config = () => {
-  if (cache.file[configKey.CONFIG]) {
-    return cache.file[configKey.CONFIG]
-  }
-  const data = getConfig('config')
-  data.admin = setStr(data.admin)
-  data.master = setStr(data.master)
-  data.private.disable = setStr(data.private.disable)
-  Object.keys(data.enable).forEach((key) => {
-    data.enable[key as keyof typeof data.enable] = setStr(data.enable[key as keyof typeof data.enable])
-  })
-  cache.file[configKey.CONFIG] = data
-  return data
-}
+export const pm2 = () => getMergeYaml('pm2')
 
 /**
  * 获取好友配置
@@ -87,30 +72,92 @@ export const getGuildCfg = (guildId: string, channelId?: string, selfId?: string
 /**
  * 获取配置 包含默认配置和用户配置
  * @param name 文件名称
+ * @param isRefresh 是否刷新缓存
  */
-export const getConfig = <T extends keyof ConfigMap> (name: T): ConfigMap[T] => {
-  const defaultCfg = getUserYaml(name, 'default')
-  const userCfg = getUserYaml(name, 'user')
-  return { ...defaultCfg, ...userCfg }
+export const getMergeYaml = <T extends keyof ConfigMap> (name: T, isRefresh = false): ConfigMap[T] => {
+  if (isRefresh) {
+    const defaultCfg = getYaml(name, 'default', true)
+    const userCfg = getYaml(name, 'user', true)
+    return { ...defaultCfg, ...userCfg }
+  }
+
+  const defaultCfg = getYaml(name, 'default', false)
+  const userCfg = getYaml(name, 'user', false)
+  return { ...defaultCfg.value, ...userCfg.value }
 }
 
 /**
  * 获取配置yaml
  * @param name 文件名称
  * @param type 文件类型 用户配置/默认配置
+ * @param isRefresh 是否刷新缓存
  */
-export const getUserYaml = <T extends keyof ConfigMap> (name: T, type: 'user' | 'default'): ConfigMap[T] => {
+export const getYaml = <
+  T extends keyof ConfigMap,
+  K extends boolean = false
+> (name: T, type: 'user' | 'default', isRefresh: K): K extends true ? ConfigMap[T] : Watch<ConfigMap[T]> => {
   const file = `${type === 'default' ? defaultConfigPath : configPath}/${name}.yaml`
-  /** tips: 不设置永不过期的缓存是因为group这些配置会另外解析缓存 */
-  return requireFileSync(file)
+
+  if (type === 'default') {
+    return requireFileSync<ConfigMap[T]>(file, { force: isRefresh }) as K extends true ? ConfigMap[T] : Watch<ConfigMap[T]>
+  }
+
+  if (isRefresh) {
+    return requireFileSync<ConfigMap[T]>(file, { force: true }) as K extends true ? ConfigMap[T] : Watch<ConfigMap[T]>
+  }
+
+  const fnc = (name: T) => {
+    if (name === 'config') {
+      return (old: any, data: any) => updateLevel(data?.log4jsCfg?.level || 'info')
+    }
+
+    if (name === 'groupGuild') {
+      return () => {
+        cache.groupGuild = {}
+      }
+    }
+
+    if (name === 'friendDirect') {
+      return () => {
+        cache.friendDirect = {}
+      }
+    }
+
+    return () => true
+  }
+
+  return watch<ConfigMap[T]>(file, fnc(name)) as K extends true ? ConfigMap[T] : Watch<ConfigMap[T]>
 }
 
-/** Server 配置 */
-export const server = () => {
-  if (cache.file[configKey.SERVER]) {
+/**
+ * Config 配置
+ * @param isRefresh 是否刷新缓存
+ */
+export const config = (isRefresh = false) => {
+  if (!isRefresh && cache.file[configKey.CONFIG]) {
+    return cache.file[configKey.CONFIG]
+  }
+  const data = getMergeYaml('config')
+  data.admin = setStr(data.admin)
+  data.master = setStr(data.master)
+  data.private.disable = setStr(data.private.disable)
+  Object.keys(data.enable).forEach((key) => {
+    data.enable[key as keyof typeof data.enable] = setStr(data.enable[key as keyof typeof data.enable])
+  })
+  cache.file[configKey.CONFIG] = data
+  return data
+}
+
+/**
+ * Server 配置
+ * @param isRefresh 是否刷新缓存
+ */
+export const server = (isRefresh = false) => {
+  if (!isRefresh && cache.file[configKey.SERVER]) {
     return cache.file[configKey.SERVER]
   }
-  const data = getConfig('server')
+
+  const data = getMergeYaml('server')
   cache.file[configKey.SERVER] = data
   return data
 }
@@ -124,7 +171,7 @@ export const updateLevel = (level?: string) => {
     logger.level = level
     return
   }
-  const data = getConfig('config')
+  const data = getMergeYaml('config')
   logger.level = data.log4jsCfg.level || 'info'
 }
 
@@ -133,13 +180,14 @@ export const updateLevel = (level?: string) => {
  * @param groupOrGuildId 群号或频道ID
  * @param selfIdOrChannelId 机器人ID或子频道ID
  * @param selfId 机器人ID
+ * @param isRefresh 是否刷新缓存
  */
-const getGroupOrGuildCfg = (groupOrGuildId: string, selfIdOrChannelId?: string, selfId?: string): GroupGuildFileCfg => {
+const getGroupOrGuildCfg = (groupOrGuildId: string, selfIdOrChannelId?: string, selfId?: string, isRefresh = false): GroupGuildFileCfg => {
   try {
     const cache = getGroupOrGuildCache(groupOrGuildId, selfIdOrChannelId, selfId)
-    if (cache.ok) return cache.config!
+    if (!isRefresh && cache.ok) return cache.config!
 
-    const data = getConfig('groupGuild')
+    const data = getMergeYaml('groupGuild')
     return setGroupOrGuildCache(cache.keys!, data)
   } catch (error) {
     logger.error(error)
@@ -151,48 +199,19 @@ const getGroupOrGuildCfg = (groupOrGuildId: string, selfIdOrChannelId?: string, 
  * 获取好友、频道私信配置
  * @param userId 用户ID
  * @param selfId 机器人ID
+ * @param isRefresh 是否刷新缓存
  */
-const getFriendOrDirectCfg = (userId: string, selfId?: string): FriendDirectFileCfg => {
+const getFriendOrDirectCfg = (userId: string, selfId?: string, isRefresh = false): FriendDirectFileCfg => {
   try {
     const cache = getFriendOrDirectCache(userId, selfId)
-    if (cache.ok) return cache.config!
+    if (!isRefresh && cache.ok) return cache.config!
 
-    const data = getConfig('friendDirect')
+    const data = getMergeYaml('friendDirect')
     return setFriendOrDirectCache(cache.keys!, data)
   } catch (error) {
     logger.error(error)
     return cache.friendCfgDef
   }
-}
-
-/**
- * 获取自定义配置yaml
- * @param file 文件路径
- * @param watch 是否监听文件变动 | 自定义监听函数 文件发生变动时调用 根据返回值判断是否清除缓存
- */
-export const getYaml: {
-  /**
-   * 获取自定义配置yaml
-   * @description 此方法默认监听文件变动
-   * @param file 文件路径
-   * @param watch 自定义监听函数 文件发生变动时调用 根据返回值判断是否清除缓存
-   */
-  (file: string, watch: (file: string) => Promise<boolean>): any;
-  /**
-   * 获取自定义配置yaml
-   * @description 此方法由框架管理缓存
-   * @param file 文件路径
-   * @param isWatch 是否监听文件 由框架来管理缓存 发生变动自动清除缓存
-   */
-  (file: string, isWatch: boolean): any
-} = (file: string, fnc?: ((file: string) => Promise<boolean>) | boolean): any => {
-  if (typeof fnc === 'function') {
-    watch(file, fnc)
-  } else if (typeof fnc === 'boolean' && watch) {
-    watch(file, () => true)
-  }
-
-  return requireFileSync(file)
 }
 
 /** 初始化 */

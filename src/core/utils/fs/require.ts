@@ -41,7 +41,10 @@ const cache = new Map<string, CacheEntry>()
  * @param filePath 文件路径
  * @returns 是否清除成功
  */
-export const clearRequireFile = (filePath: string) => cache.delete(path.resolve(filePath))
+export const clearRequireFile = (filePath: string) => {
+  const absPath = path.resolve(filePath).replace(/\\/g, '/')
+  return cache.has(absPath) && cache.delete(absPath)
+}
 
 /**
  * @description 清除所有缓存
@@ -57,7 +60,7 @@ export const clearRequire = () => cache.clear()
  */
 export const requireFile: RequireFunction = async (filePath, options = {}) => {
   const now = Date.now()
-  const absPath = path.resolve(filePath)
+  const absPath = path.resolve(filePath).replace(/\\/g, '/')
   const { encoding = 'utf-8', force = false, ex = 300, size = 0, parser } = options
 
   const data = fileReady(absPath, now, force, ex)
@@ -76,7 +79,7 @@ export const requireFile: RequireFunction = async (filePath, options = {}) => {
  */
 export const requireFileSync: RequireFunctionSync = (filePath, options = {}) => {
   const now = Date.now()
-  const absPath = path.resolve(filePath)
+  const absPath = path.resolve(filePath).replace(/\\/g, '/')
   const { encoding = 'utf-8', force = false, ex = 300, size = 0, parser } = options
 
   const data = fileReady(absPath, now, force, ex)
@@ -144,11 +147,11 @@ const fileCache = (content: string, absPath: string, ex: number, now: number, si
  * @param ex 过期时间
  */
 const touchRequireFile = async (filePath: string, ex: number) => {
-  const absPath = path.resolve(filePath)
-  const entry = cache.get(absPath)
+  // 内部使用的filePath不需要转换为绝对路径 已经是绝对路径了
+  const entry = cache.get(filePath)
   if (entry) {
     entry.expiry = Date.now() + ex * 1000
-    cache.set(absPath, entry)
+    cache.set(filePath, entry)
   }
 }
 

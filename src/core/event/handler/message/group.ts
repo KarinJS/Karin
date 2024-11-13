@@ -38,6 +38,7 @@ export class GroupMessageHandler {
     common.setEventRole(this.event)
     common.alias(this.event, this.eventCfg.alias)
     common.emit(this.event)
+    this.print()
     this.ctx = common.context(this.event)
     if (this.ctx) return this
 
