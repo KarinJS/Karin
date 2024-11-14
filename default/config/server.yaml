@@ -6,11 +6,14 @@ host: 0.0.0.0
 port: 7000
 # ws api请求超时时间 秒
 timeout: 60
+
+# 反向ws鉴权秘钥
+reverseWsToken: ""
 # onebot11 正向WebSocket地址
-onebot11Socket: []
+forwardWs: []
 
 # websocket 渲染器地址 ws://127.0.0.1:7005/ws/render
-renderSocket: []
+renderWs: []
 # http渲染器地址
 renderHttp: []
 

@@ -121,12 +121,14 @@ export interface ServerType {
   port: number
   /** ws api请求超时时间 秒 */
   timeout: number
+  /** 反向ws鉴权秘钥 */
+  reverseWsToken: string
   /** onebot11 正向WebSocket地址 */
-  onebot11Socket: string[]
+  forwardWs: Array<string | { url: string, token: string }>
   /** websocket 渲染器地址 ws://127.0.0.1:7005/ws/render */
-  renderSocket: string[]
+  renderWs: Array<string | { url: string, token: string }>
   /** http渲染器地址 */
-  renderHttp: string[]
+  renderHttp: Array<string | { url: string, token: string }>
   /** http根理由随机返回的文案列表 */
   rootMsg: string[]
 }

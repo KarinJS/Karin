@@ -9,14 +9,14 @@ const list: AdapterBase[] = []
  */
 export const registerBot = (type: `${AdapterCommunication}`, cla: AdapterBase) => {
   if (type === AdapterCommunication.REVERSE_WEBSOCKET) {
-    logger.info(`[service][注册适配器][反向webSocket] ${cla.adapter.name}: ${cla.adapter.address}`)
+    logger.info(`[service][注册适配器][正向webSocket] ${cla.adapter.name}: ${cla.adapter.address}`)
   } else if (type === AdapterCommunication.INTERNAL) {
     cla.adapter.address = 'internal://127.0.0.1'
     logger.info(`[service][注册适配器][internal] ${cla.adapter.name}`)
   } else if (type === AdapterCommunication.HTTP) {
     logger.info(`[service][注册适配器][HTTP] ${cla.adapter.name}: ${cla.adapter.address}`)
   } else if (type === AdapterCommunication.WEBSOCKET) {
-    logger.info(`[service][注册适配器][正向WebSocket] ${cla.adapter.name}: ${cla.adapter.address}`)
+    logger.info(`[service][注册适配器][反向WebSocket] ${cla.adapter.name}: ${cla.adapter.address}`)
   } else if (type === AdapterCommunication.GRPC) {
     logger.info(`[service][注册适配器][gRPC] ${cla.adapter.name}: ${cla.adapter.address}`)
   }

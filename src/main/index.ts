@@ -17,6 +17,7 @@ import { loaderPlugin } from '@/plugin/loader'
 import { createWebSocketServer } from '@/service/server'
 import { createExpressWebSocketServer, startServer } from '../core/server/app'
 import { listeners } from '@/internal/listeners'
+import { createClient } from '@adapter/onebot/connect/client'
 
 /** 日志管理器 */
 export let logger: ReturnType<typeof createLogger>
@@ -43,8 +44,9 @@ export const run = async () => {
   ] = await Promise.all([
     import('@adapter/input'),
     import('@/service/adapter'),
-    import('@adapter/onebot/server'),
+    import('@adapter/onebot/connect/server'),
     loaderPlugin(),
+    createClient(),
   ])
 
   const port = config.port()

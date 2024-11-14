@@ -59,25 +59,25 @@ export const loaderPlugin = async () => {
   const list = await getPluginList()
 
   /** 导入的apps promise数组 */
-  const loadApps: Promise<{ data: Fnc, index: number, info: Info, file: string } | undefined>[] = []
+  const loadApps: Promise<{ data: Fnc, index: number, info: Info, file: string } | null>[] = []
 
-  for (const { index, info, apps } of list) {
+  list.forEach(({ index, info, apps }) => {
     for (const file of apps) {
       loadApps.push(importPlugin(file, index, info))
     }
-  }
+  })
 
-  const apps = await Promise.all(loadApps)
+  const apps = await Promise.allSettled(loadApps)
   for (const app of apps) {
-    if (!app) continue
-    const { data, index, info, file } = app
+    if (!app || app.status === 'rejected' || !app.value) continue
+    const { data, index, info, file } = app.value
     if (typeof data !== 'object') continue
     for (const [key, val] of Object.entries(data)) {
       load.apps.push(loaderApp(index, info, file, key, val))
     }
   }
 
-  await Promise.all([...load.main, ...load.apps, ...load.createDir])
+  await Promise.allSettled([...load.main, ...load.apps, ...load.createDir])
   sort()
 
   logger.info('插件加载完成')
@@ -189,6 +189,7 @@ export const importPlugin = async (file: string, index: number, info: Info, isRe
     }
   } catch (error) {
     handleError('loaderPlugin', { name: info.name, error, file: `${file}` })
+    return null
   }
 }
 
@@ -210,101 +211,125 @@ const loaderApp = async (
     const dirname = path.dirname(file)
     const basename = path.basename(file)
     logger.debug(`加载插件：[index:${index}][${info.name}][${basename}][${key}]`)
+
     if (typeof val === 'function') {
-      if (!isClass(val)) return
-      const Cls = val as new () => Plugin
-      const app = new Cls()
-      /** 非插件 */
-      if (!app?.rule) return
-
-      for (const v of app.rule) {
-        /** 没有对应方法跳过 */
-        if (!(v.fnc in app)) continue
-        /** 没有正则跳过 */
-        if (typeof v.reg !== 'string' && !(v.reg instanceof RegExp)) continue
-
-        cache.command.push({
-          type: 'class',
-          index,
-          log: createLogger(v.log, false),
-          name: app.name,
-          adapter: v.adapter || [],
-          dsbAdapter: v.dsbAdapter || [],
-          Cls,
-          reg: v.reg instanceof RegExp ? v.reg : new RegExp(v.reg),
-          perm: v.permission || 'all',
-          event: v.event || app.event || 'message',
-          rank: v.priority || 10000,
-          get info () {
-            return cache.index[this.index]
-          },
-          file: {
-            basename,
-            dirname,
-            method: v.fnc,
-            type: 'command',
-            get path () {
-              return path.join(this.dirname, this.basename)
-            },
-          },
-        })
-      }
-      return
+      return loadClassApp(val, index, dirname, basename)
     }
 
     if (typeof val !== 'object') return
-
-    const list: FncType[] = Array.isArray(val) ? val : [val]
-    list.forEach(fnc => {
-      if (!fnc?.file?.type) return
-      fnc.index = index
-      fnc.file.dirname = dirname
-      fnc.file.basename = basename
-      fnc.file.method = key
-      switch (fnc.file.type) {
-        case 'accept':
-          cache.count.accept++
-          return cache.accept.push(fnc as Accept)
-        case 'command':
-          cache.count.command++
-          return cache.command.push(fnc as CommandFnc)
-        case 'button':
-          cache.count.button++
-          return cache.button.push(fnc as Button)
-        case 'handler': {
-          const fn = fnc as Handler
-          if (!cache.handler[fn.key]) {
-            cache.count.handler.key++
-            cache.handler[fn.key] = []
-          }
-          cache.count.handler.fnc++
-          cache.handler[fn.key].push(fn)
-          return
-        }
-        case 'middleware':
-          cache.count.middleware++
-          return cache.middleware[(fnc as Middleware).type].push(fnc as any)
-        case 'task': {
-          const fn = fnc as Task
-          fn.schedule = schedule.scheduleJob(fn.cron, async () => {
-            try {
-              fn.log(`[定时任务][${fnc.name}][${fn.name}]: 开始执行`)
-              const result = fn.fnc()
-              if (util.types.isPromise(result)) await result
-              fn.log(`[定时任务][${fn.name}][${fn.name}]: 执行完成`)
-            } catch (error) {
-              handleError('taskStart', { name: fnc.name, task: fn.name, error })
-            }
-          })
-          cache.count.task++
-          return cache.task.push(fn)
-        }
-        default:
-      }
-    })
+    loadFncApp(val, index, dirname, basename, key)
   } catch (error) {
     handleError('loaderPlugin', { name: info.name, error, file: `${file}` })
   }
+}
+
+/**
+ * 加载类插件
+ * @param val 类
+ * @param index 索引
+ * @param dirname 插件目录
+ * @param basename 插件文件名
+ */
+const loadClassApp = async (val: Function, index: number, dirname: string, basename: string) => {
+  if (!isClass(val)) return
+  const Cls = val as new () => Plugin
+  const app = new Cls()
+
+  /** 确保 app.rule 存在且是数组 */
+  if (!Array.isArray(app?.rule)) return
+
+  app.rule.forEach((v, i) => {
+    /** 没有对应方法跳过 */
+    if (!(v.fnc in app)) return
+    /** 没有正则跳过 */
+    if (typeof v.reg !== 'string' && !(v.reg instanceof RegExp)) return
+
+    cache.command.push({
+      type: 'class',
+      index,
+      log: createLogger(v.log, false),
+      name: app.name,
+      adapter: v.adapter || [],
+      dsbAdapter: v.dsbAdapter || [],
+      Cls,
+      reg: v.reg instanceof RegExp ? v.reg : new RegExp(v.reg),
+      perm: v.permission || 'all',
+      event: v.event || app.event || 'message',
+      rank: v.priority || 10000,
+      get info () {
+        return cache.index[this.index]
+      },
+      file: {
+        basename,
+        dirname,
+        method: v.fnc,
+        type: 'command',
+        get path () {
+          return path.join(this.dirname, this.basename)
+        },
+      },
+    })
+  })
+}
+
+/**
+ * 加载函数插件
+ * @param val 函数
+ * @param index 索引
+ * @param dirname 插件目录
+ * @param basename 插件文件名
+ * @param key 插件方法名称
+ */
+export const loadFncApp = (val: FncType | FncType[], index: number, dirname: string, basename: string, key: string) => {
+  const list: FncType[] = Array.isArray(val) ? val : [val]
+  list.forEach(fnc => {
+    if (!fnc?.file?.type) return
+    fnc.index = index
+    fnc.file.dirname = dirname
+    fnc.file.basename = basename
+    fnc.file.method = key
+
+    switch (fnc.file.type) {
+      case 'accept':
+        cache.count.accept++
+        return cache.accept.push(fnc as Accept)
+      case 'command':
+        cache.count.command++
+        return cache.command.push(fnc as CommandFnc)
+      case 'button':
+        cache.count.button++
+        return cache.button.push(fnc as Button)
+      case 'handler': {
+        const fn = fnc as Handler
+        if (!cache.handler[fn.key]) {
+          cache.count.handler.key++
+          cache.handler[fn.key] = []
+        }
+        cache.count.handler.fnc++
+        cache.handler[fn.key].push(fn)
+        return
+      }
+      case 'middleware':
+        cache.count.middleware++
+        return cache.middleware[(fnc as Middleware).type].push(fnc as any)
+      case 'task': {
+        const fn = fnc as Task
+        fn.schedule = schedule.scheduleJob(fn.cron, async () => {
+          try {
+            fn.log(`[定时任务][${fnc.name}][${fn.name}]: 开始执行`)
+            const result = fn.fnc()
+            if (util.types.isPromise(result)) await result
+            fn.log(`[定时任务][${fn.name}][${fn.name}]: 执行完成`)
+          } catch (error) {
+            handleError('taskStart', { name: fnc.name, task: fn.name, error })
+          }
+        })
+        cache.count.task++
+        return cache.task.push(fn)
+      }
+      default:
+    }
+  })
 }
 
 /** 排序 */
@@ -382,7 +407,7 @@ export const watchApps = async (dir: string, index: number, info: Info) => {
         list.push(loaderApp(index, info, file, key, val))
       }
 
-      await Promise.all(list)
+      await Promise.allSettled(list)
     }
 
     const actionText = action === 'add' ? '加载' : '重载'

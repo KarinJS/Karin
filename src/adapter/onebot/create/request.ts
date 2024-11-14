@@ -8,7 +8,7 @@ import { createGroupApplyRequest, createGroupInviteRequest, createPrivateApplyRe
  * @param event onebot11请求事件
  * @param bot 标准api实例
  */
-export const createMessage = (event: OB11Request, bot: AdapterOneBot) => {
+export const createRequest = (event: OB11Request, bot: AdapterOneBot) => {
   const time = event.time
   const selfId = event.self_id + ''
   const userId = event.user_id + ''
