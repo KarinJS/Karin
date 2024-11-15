@@ -3,6 +3,22 @@ import { OB11Segment } from './types'
 import { ElementTypes, MusicPlatform, segment, SendElementTypes } from '@/adapter/segment'
 
 /**
+ * 构建错误信息
+ * @param selfId 机器人ID
+ * @param action 请求的action
+ * @param request 请求的参数
+ * @param error 错误信息
+ */
+export const buildError = (selfId: string, action: string, request: string, error?: unknown) => {
+  if (error) {
+    const err = JSON.stringify(error, null, 2)
+    return new Error(`[${selfId}][sendApi] 请求错误:\n  action: ${action}\n  params: ${request}\n  error: ${err}}`)
+  }
+
+  logger.error(`[${selfId}][sendApi][请求错误]:\n  action: ${action}\n  params: ${request}`)
+}
+
+/**
    * onebot11转karin
    * @return karin格式消息
    */

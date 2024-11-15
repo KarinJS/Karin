@@ -1,6 +1,6 @@
 import WebSocket from 'ws'
 import { config } from '@/utils'
-import { WsAdapterOneBot11 } from '../base'
+import { WsAdapterOneBot11 } from './ws'
 import { unregisterBot } from '@main/index'
 
 export class AdapterClientOneBot11 extends WsAdapterOneBot11 {
@@ -29,6 +29,11 @@ export class AdapterClientOneBot11 extends WsAdapterOneBot11 {
 
     socket.on('open', async () => {
       await new AdapterClientOneBot11(socket, token).init('获取中...', url, 'webSocketClient')
+    })
+
+    socket.on('error', (error) => {
+      logger.error(`[onebot][webSocketClient]连接失败: ${url}`)
+      logger.error(error)
     })
   }
 }

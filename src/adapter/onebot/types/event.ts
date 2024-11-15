@@ -462,3 +462,5 @@ export interface OneBot11Heartbeat extends MetaEventBase {
 
 /** 元事件 */
 export type OB11Meta = OneBot11Lifecycle | OneBot11Heartbeat
+/** 全部事件 */
+export type OB11AllEvent = OB11Message | OB11Notice | OB11Request | OB11Meta

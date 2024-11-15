@@ -186,7 +186,10 @@ export class GroupMessageHandler {
 
       this.event.logFnc = `[${plugin.name}][${plugin.file.method}]`
       const logFnc = logger.fnc(this.event.logFnc)
-      this.isPrint && plugin.log(`${logFnc}${this.event.logText} ${lodash.truncate(this.event.msg, { length: 100 })}`)
+      this.isPrint && plugin.log(
+        this.event.selfId,
+        `${logFnc}${this.event.logText} ${lodash.truncate(this.event.msg, { length: 100 })}`
+      )
 
       /** 计算插件处理时间 */
       const start = Date.now()
@@ -219,7 +222,10 @@ export class GroupMessageHandler {
         common.emitError(error)
         return
       } finally {
-        this.isPrint && plugin.log(`${logFnc} ${lodash.truncate(this.event.msg, { length: 100 })} 处理完成 ${logger.green(Date.now() - start + 'ms')}`)
+        this.isPrint && plugin.log(
+          this.event.selfId,
+          `${logFnc} ${lodash.truncate(this.event.msg, { length: 100 })} 处理完成 ${logger.green(Date.now() - start + 'ms')}`
+        )
       }
     }
 

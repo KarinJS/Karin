@@ -27,6 +27,7 @@ import {
   setFriendOrDirectCache,
   setGroupOrGuildCache,
 } from './cache'
+import { updateHttpBotToken } from '@main/index'
 
 /** node-karin的package */
 export const pkg = requireFileSync<PackageType>(karinDir + '/package.json')
@@ -126,6 +127,25 @@ export const getYaml = <
     if (name === 'friendDirect') {
       return () => {
         cache.friendDirect = {}
+      }
+    }
+
+    if (name === 'server') {
+      return (old: any, data: any) => {
+        if (!data.onebotHttp || !Array.isArray(data.onebotHttp)) {
+          logger.error('请配置onebotHttp')
+          return true
+        }
+
+        for (let { selfId, api, token } of data.onebotHttp) {
+          selfId = String(selfId)
+          token = String(token)
+          if (!selfId || !api || !api.startsWith('http')) {
+            logger.bot('error', selfId, '请配置正确的 onebot http 信息')
+            continue
+          }
+          updateHttpBotToken(selfId, token)
+        }
       }
     }
 

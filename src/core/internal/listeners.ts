@@ -1,6 +1,7 @@
-import type { Event, Message } from '@/event'
 import { EventEmitter } from 'events'
-import { MessageEventMap, NoticeEventMap, RequestEventMap } from '@/event/types/types'
+import type { Event, Message } from '@/event'
+import type { OB11AllEvent } from '@adapter/onebot/types/event'
+import type { MessageEventMap, NoticeEventMap, RequestEventMap } from '@/event/types/types'
 
 type MessageTypes<T extends keyof MessageEventMap> = Record<T, (event: MessageEventMap[T]) => void>
 type NoticeTypes<T extends keyof NoticeEventMap> = Record<T, (event: NoticeEventMap[T]) => void>
@@ -15,7 +16,8 @@ type OtherTypes = {
   'karin:adapter:open': () => void
   'karin:adapter:close': () => void
   'update:logger:level': () => void
-  [key: `ctx:${string}`]: (e: Message) => void
+  [key: `ctx:${string}`]: (event: Message) => void
+  [key: `onebot:${string}`]: (event: OB11AllEvent) => void
 }
 
 /** 事件字典 */

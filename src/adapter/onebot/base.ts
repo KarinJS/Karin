@@ -1,23 +1,75 @@
-import { WebSocket } from 'ws'
 import { AdapterBase } from '../base'
 import { OB11Event } from './types/event'
 import { createMessage } from './create/message'
 import { RoleEnum, SexEnum } from '@/adapter/sender'
 import { createNotice, createRequest } from './create/notice'
-import { config, registerBot, unregisterBot } from '@main/index'
 import { AdapterConvertKarin, KarinConvertAdapter } from './convert'
 import { GetGroupHighlightsResponse, QQGroupHonorInfo } from '@/adapter/types'
 import { Action, OB11NodeSegment, OB11Segment, Params, Request } from './types'
 import type { Contact } from '@/adapter/contact'
+import type { OB11AllEvent } from './types/event'
 import type { ElementTypes, NodeElementType } from '@/adapter/segment'
-import type { OB11Message, OB11Meta, OB11Notice, OB11Request } from './types/event'
-import type { AdapterCommunication, AdapterType, ForwardOptions, SendMsgResults } from '@/adapter/adapter'
+import type { ForwardOptions, SendMsgResults } from '@/adapter/adapter'
 
-export abstract class AdapterOneBot extends AdapterBase implements AdapterType {
+export abstract class AdapterOneBot extends AdapterBase {
   constructor () {
     super()
     this.adapter.platform = 'qq'
     this.adapter.standard = 'onebot11'
+  }
+
+  /**
+   * 事件处理
+   * @param data 事件数据对象
+   * @param str 事件字符串
+   */
+  eventHandlers (data: OB11AllEvent, str: string) {
+    if (data.post_type === OB11Event.Message) {
+      createMessage(data, this)
+      return
+    }
+
+    if (data.post_type === OB11Event.Notice) {
+      createNotice(data, this)
+      return
+    }
+
+    if (data.post_type === OB11Event.Request) {
+      createRequest(data, this)
+      return
+    }
+
+    if (data.post_type === OB11Event.MetaEvent) {
+      if (data.meta_event_type === 'lifecycle') {
+        if (data.sub_type === 'enable') {
+          logger.bot('debug', this.selfId, 'OneBot启用')
+        }
+
+        if (data.sub_type === 'disable') {
+          logger.bot('debug', this.selfId, 'OneBot停用')
+        }
+
+        if (data.sub_type === 'connect') {
+          logger.bot('debug', this.selfId, 'WebSocket连接成功')
+        }
+        return
+      }
+
+      logger.bot('warn', this.selfId, `收到未知元事件: ${str}`)
+      return
+    }
+
+    if ((data as any).retcode) {
+      const { retcode } = data as any
+      if (retcode === 1401 || retcode === 1403) {
+        logger.error(`[oneBot11][鉴权失败] address: ${this.adapter.address} event: ${str}`)
+        return
+      }
+
+      logger.bot('error', this.selfId, `发生未知错误: ${str}`)
+    }
+
+    logger.bot('warn', this.selfId, `收到未知事件: ${str}`)
   }
 
   /**
@@ -1234,152 +1286,5 @@ export abstract class AdapterOneBot extends AdapterBase implements AdapterType {
     time = 0
   ): Promise<Request[T]> {
     return this.sendApi(action, params, time)
-  }
-}
-
-export abstract class WsAdapterOneBot11 extends AdapterOneBot {
-  /** 请求id */
-  seq: number
-  /** WebSocket实例 */
-  socket: WebSocket
-
-  constructor (socket: WebSocket) {
-    super()
-    this.seq = 0
-    this.socket = socket
-  }
-
-  /**
-   * 初始化
-   * @param selfId 机器人ID
-   * @param url WebSocket地址
-   * @param communication 通讯方式
-   */
-  async init (selfId: string, url: string, communication: `${AdapterCommunication}`) {
-    this.account.selfId = selfId
-    this.adapter.address = url
-    try {
-      this.adapter.communication = communication
-      this.onEvent()
-      await Promise.all([this.setBotInfo(), this.setAdapterInfo()])
-      logger.bot('info', this.selfId, `[onebot11][${communication}] 连接成功: ${url}`)
-
-      registerBot(communication, this)
-    } catch (error) {
-      unregisterBot(this.selfId, this.adapter.address)
-      this.socket.close()
-      throw new Error(`[onebot11][${communication}] 连接失败: ${url}`)
-    }
-  }
-
-  private onEvent () {
-    this.socket.on('message', (rawData) => {
-      const str = rawData.toString()
-      const json = JSON.parse(str)
-      const data = json as OB11Meta | OB11Message | OB11Request | OB11Notice
-
-      if (json.echo) {
-        logger.bot('debug', this.selfId, `Api调用回应: ${str}`)
-        return this.socket.emit(json.echo, json)
-      } else {
-        if (data.post_type === OB11Event.MetaEvent && data.meta_event_type === 'heartbeat') {
-          logger.bot('trace', this.selfId, `下次心跳: ${data.status.interval}`)
-          return
-        }
-
-        logger.bot('debug', this.selfId, `收到上报事件: ${str}`)
-      }
-
-      if (data.post_type === OB11Event.Message) {
-        createMessage(data, this)
-        return
-      }
-
-      if (data.post_type === OB11Event.Notice) {
-        createNotice(data, this)
-        return
-      }
-
-      if (data.post_type === OB11Event.Request) {
-        createRequest(data, this)
-        return
-      }
-
-      if (data.post_type === OB11Event.MetaEvent) {
-        if (data.meta_event_type === 'lifecycle') {
-          if (data.sub_type === 'enable') {
-            logger.bot('debug', this.selfId, 'OneBot启用')
-          }
-
-          if (data.sub_type === 'disable') {
-            logger.bot('debug', this.selfId, 'OneBot停用')
-          }
-
-          if (data.sub_type === 'connect') {
-            logger.bot('debug', this.selfId, 'WebSocket连接成功')
-          }
-          return
-        }
-
-        logger.bot('warn', this.selfId, `收到未知元事件: ${str}`)
-        return
-      }
-
-      if ((data as any).retcode) {
-        const { retcode } = data as any
-        if (retcode === 1401 || retcode === 1403) {
-          logger.error(`[oneBot11][鉴权失败] address: ${this.adapter.address} event: ${str}`)
-          return
-        }
-
-        logger.bot('error', this.selfId, `发生未知错误: ${str}`)
-      }
-
-      logger.bot('warn', this.selfId, `收到未知事件: ${str}`)
-    })
-  }
-
-  /** 获取登录号信息 */
-  private async setAdapterInfo () {
-    const info = await this.sendApi(Action.getVersionInfo, {})
-    this.adapter.name = info.app_name
-    this.adapter.version = info.app_version
-  }
-
-  private async setBotInfo () {
-    const info = await this.sendApi(Action.getLoginInfo, {})
-    this.account.name = info.nickname
-    this.account.selfId = info.user_id + ''
-    this.account.avatar = `https://q1.qlogo.cn/g?b=qq&s=0&nk=${info.user_id}`
-  }
-
-  sendApi<T extends keyof Params> (
-    action: T | `${T}`,
-    params: Params[T],
-    time = 120
-  ): Promise<Request[T]> {
-    if (!time) time = config.timeout()
-    const echo = ++this.seq + ''
-    const request = JSON.stringify({ echo, action, params })
-    logger.bot('debug', this.selfId, `发送Api请求 ${action}: ${request}`)
-
-    return new Promise((resolve, reject) => {
-      const timeoutId = setTimeout(() => {
-        reject(new Error(`[sendApi][请求错误]:\n  error: 请求超时\n  action: ${action}\n  params: ${request}`))
-      }, time * 1000)
-
-      this.socket.send(request)
-      this.socket.once(echo, data => {
-        /** 停止监听器 */
-        clearTimeout(timeoutId)
-
-        if (data.status === 'ok') {
-          resolve(data.data)
-        } else {
-          const err = JSON.stringify(data, null, 2)
-          reject(new Error(`[sendApi][请求错误]:\n  action: ${action}\n  params: ${request}\n  error: ${err}`))
-        }
-      })
-    })
   }
 }

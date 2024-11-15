@@ -7,6 +7,13 @@ port: 7000
 # ws api请求超时时间 秒
 timeout: 60
 
+# onebot http
+onebotHttp:
+  - selfId: default
+    api: http://127.0.0.1:7777
+    # 强烈建议配置 防止恶意伪造事件上报
+    token: ""
+
 # 反向ws鉴权秘钥
 reverseWsToken: ""
 # onebot11 正向WebSocket地址

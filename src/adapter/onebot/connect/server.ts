@@ -1,9 +1,9 @@
 import { config } from '@/utils'
-import { WsAdapterOneBot11 } from '../base'
+import { unregisterBot } from '@main/index'
+import { WsAdapterOneBot11 } from './ws'
 import { registerWSPath } from '@/service/server'
 import type { WebSocket } from 'ws'
 import type { IncomingMessage } from 'http'
-import { unregisterBot } from '@main/index'
 
 export class AdapterServerOneBot11 extends WsAdapterOneBot11 {
   /** websocket实例 */

@@ -131,6 +131,15 @@ export interface ServerType {
   renderHttp: Array<string | { url: string, token: string }>
   /** http根理由随机返回的文案列表 */
   rootMsg: string[]
+  /** onebot http配置 */
+  onebotHttp: Array<{
+    /** 机器人ID */
+    selfId: string
+    /** api地址 */
+    api: string
+    /** 鉴权token */
+    token: string
+  }>
 }
 
 /** package.json */

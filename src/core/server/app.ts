@@ -60,6 +60,11 @@ export const createExpressWebSocketServer = (port: number, list?: string[]) => {
 export const startServer = async (httpServe: ReturnType<typeof createExpressWebSocketServer>['server'], app: Express, host: string, port: number) => {
   const list = await import('./api')
   for (const key in list) {
+    if (key === 'onebot') {
+      app.post('/', (req, res) => list[key as keyof typeof list](req, res))
+      app.post(`/${key}`, (req, res) => list[key as keyof typeof list](req, res))
+      continue
+    }
     app.get(`/${key}`, (req, res) => list[key as keyof typeof list](req, res))
   }
 
