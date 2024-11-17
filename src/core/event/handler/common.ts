@@ -1,5 +1,5 @@
 import { karin } from '@/karin'
-import { config as cfg } from '@main/index'
+import { config as cfg } from '@/utils'
 import { context as ctx } from '@/event/handler/message/context'
 import type { AdapterProtocol } from '@/adapter/adapter'
 import type { Accept, CommandClass, CommandFnc } from '@/plugin/cache/types'

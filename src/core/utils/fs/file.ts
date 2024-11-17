@@ -5,6 +5,7 @@ import axios, { AxiosError } from 'axios'
 import fs from 'node:fs'
 import path from 'node:path'
 import type { AxiosRequestConfig } from 'axios'
+import { basePath } from './root'
 
 /** promisify stream.pipeline */
 const streamPipeline = promisify(pipeline)
@@ -58,12 +59,12 @@ export const absPath = (file: string, absPath = true, prefix = false) => {
 export const createPluginDir = async (name: string, files?: string[]) => {
   if (!Array.isArray(files)) files = ['config', 'data', 'resource']
   if (files.length === 0) return
-  const pluginPath = path.join(process.cwd(), 'config', name)
-  if (!fs.existsSync(pluginPath)) await fs.promises.mkdir(pluginPath)
+  const pluginPath = path.join(basePath, name)
+  if (!fs.existsSync(pluginPath)) await fs.promises.mkdir(pluginPath, { recursive: true })
 
   await Promise.all(files.map(file => {
     const filePath = path.join(pluginPath, file)
-    if (!fs.existsSync(filePath)) return fs.promises.mkdir(filePath)
+    if (!fs.existsSync(filePath)) return fs.promises.mkdir(filePath, { recursive: true })
     return Promise.resolve()
   }))
 }

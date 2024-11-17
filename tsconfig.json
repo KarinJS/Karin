@@ -14,9 +14,6 @@
       ],
       "@adapter/*": [
         "src/adapter/*"
-      ],
-      "@main/*": [
-        "src/main/*"
       ]
     },
     "resolveJsonModule": true,

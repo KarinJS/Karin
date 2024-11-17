@@ -1,7 +1,7 @@
 import lodash from 'lodash'
 import * as common from '../common'
 import { cache } from '@/plugin/cache/cache'
-import { config as cfg } from '@main/index'
+import { config as cfg } from '@/utils'
 import { createRawMessage } from '@/utils/message'
 import { PermissionEnum } from '@/adapter/sender'
 import type { FriendMessage } from '@/event/create/message/friend'
@@ -31,7 +31,6 @@ export class FriendHandler {
     this.event.msg = data.msg
     this.event.rawMessage = data.raw
 
-    this.print()
     common.setEventRole(this.event)
     common.alias(this.event, this.eventCfg.alias)
     common.emit(this.event)

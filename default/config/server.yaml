@@ -1,9 +1,12 @@
 # 当前文件热更新是否重启http服务
 hmrToServer: false
+
 # http监听地址
 host: 0.0.0.0
+
 # http端口
 port: 7000
+
 # ws api请求超时时间 秒
 timeout: 60
 

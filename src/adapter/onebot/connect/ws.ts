@@ -3,7 +3,7 @@ import { AdapterOneBot } from '../base'
 import { Action, Params, Request } from '../types'
 import { AdapterCommunication } from '@/adapter'
 import { OB11Event, type OB11AllEvent } from '../types/event'
-import { registerBot, unregisterBot } from '@main/index'
+import { registerBot, unregisterBot } from '@/service/adapter'
 import type { WebSocket } from 'ws'
 import { buildError } from '../convert'
 

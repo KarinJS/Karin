@@ -382,7 +382,7 @@ export const watchApps = async (dir: string, index: number, info: Info) => {
   const ext = process.env.karin_app_lang === 'ts' ? ['.ts', '.js'] : ['.js']
 
   logger.debug(`[hmr][${info.name}] 监听文件夹：${dir}`)
-  const watcher = chokidar.watch(dir)
+  const watcher = chokidar.watch(dir, { ignoreInitial: true })
 
   /** 处理文件变动 */
   const handleFileChange = async (file: string, action: 'add' | 'change' | 'unlink') => {
@@ -414,9 +414,9 @@ export const watchApps = async (dir: string, index: number, info: Info) => {
     logger.info(`[hmr][${info.name}][${path.basename(file)}] ${actionText}完成`)
   }
 
-  watcher.on('add', async (file: string) => await handleFileChange(file, 'add'))
-  watcher.on('change', async (file: string) => await handleFileChange(file, 'change'))
-  watcher.on('unlink', async (file: string) => await handleFileChange(file, 'unlink'))
+  watcher.on('add', (file: string) => handleFileChange(file, 'add'))
+  watcher.on('change', (file: string) => handleFileChange(file, 'change'))
+  watcher.on('unlink', (file: string) => handleFileChange(file, 'unlink'))
 
   sort()
 }

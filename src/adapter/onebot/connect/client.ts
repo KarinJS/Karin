@@ -1,7 +1,7 @@
 import WebSocket from 'ws'
 import { config } from '@/utils'
 import { WsAdapterOneBot11 } from './ws'
-import { unregisterBot } from '@main/index'
+import { unregisterBot } from '@/service/adapter'
 
 export class AdapterClientOneBot11 extends WsAdapterOneBot11 {
   token?: string

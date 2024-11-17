@@ -11,6 +11,7 @@ export { karin as default } from '@/karin'
 export { TypedListeners } from '@/internal/listeners'
 
 import * as config from '@/utils/config'
+import { createRedis, createLevelDB } from '@/db'
 import { createLogger } from '@/utils/logger/logger'
 import { processExit, processHandler } from '@/internal/process'
 import { loaderPlugin } from '@/plugin/loader'
@@ -19,11 +20,16 @@ import { createExpressWebSocketServer, startServer } from '../core/server/app'
 import { listeners } from '@/internal/listeners'
 import { createClient } from '@adapter/onebot/connect/client'
 import { createHttp } from '@adapter/onebot/connect/http'
+import type { LevelDB, Client } from '@/db'
 
 /** 日志管理器 */
 export let logger: ReturnType<typeof createLogger>
 /** express服务 */
 export let app: ReturnType<typeof createExpressWebSocketServer>['app']
+/** redis服务 */
+export let redis: Client
+/** level服务 */
+export let level: LevelDB
 
 /**
  * 初始化karin
@@ -38,6 +44,13 @@ export const run = async () => {
   logger.mark(`当前版本: ${process.env.karin_app_version}`)
   logger.mark('https://github.com/KarinJS/Karin')
 
+  const [
+    redisClient,
+    levelClient,
+  ] = await Promise.all([createRedis(), createLevelDB()])
+
+  redis = redisClient
+  level = levelClient
   processHandler()
   const [
     { AdapterInput },
@@ -46,13 +59,17 @@ export const run = async () => {
     import('@adapter/input'),
     import('@/service/adapter'),
     import('@adapter/onebot/connect/server'),
-    loaderPlugin(),
     createClient(),
     createHttp(),
+    loaderPlugin(),
   ])
 
   const port = config.port()
-  const { app: appServe, wss: wssServe, server: httpServe } = createExpressWebSocketServer(port, config.rootMsg())
+  const {
+    app: appServe,
+    wss: wssServe,
+    server: httpServe,
+  } = createExpressWebSocketServer(port, config.rootMsg())
   app = appServe
   createWebSocketServer(wssServe)
   await startServer(httpServe, appServe, config.host(), port)

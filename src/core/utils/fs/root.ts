@@ -8,16 +8,24 @@ const filename = fileURLToPath(import.meta.url)
 export const karinDir = Object.freeze(path.join(filename, '../../../../..').replace(/\\/g, '/'))
 /** 是否处于node_modules中 */
 export const isPkg = Object.freeze(filename.includes('node_modules'))
-/** 默认config路径 */
+/** 默认config目录 */
 export const defaultConfigPath = Object.freeze(path.join(karinDir, 'default', 'config'))
-/** 默认view路径 */
+/** 默认view目录 */
 export const defaultViewPath = Object.freeze(path.join(karinDir, 'default', 'view'))
 
-/** 配置根路径 */
+/** 配置根目录 */
 export const basePath = Object.freeze(path.join(process.cwd(), '@karinjs'))
-/** config路径 */
+/** config目录 */
 export const configPath = Object.freeze(path.join(basePath, 'config'))
-/** data路径 */
+/** data目录 */
 export const dataPath = Object.freeze(path.join(basePath, 'data'))
 /** 临时文件存储 */
 export const tempPath = Object.freeze(path.join(basePath, 'temp'))
+/** db根目录 */
+export const dbPath = Object.freeze(path.join(dataPath, 'db'))
+/** level目录 */
+export const levelPath = Object.freeze(path.join(dbPath, 'level'))
+/** 伪redis save-level目录 */
+export const redisLevelPath = Object.freeze(path.join(dbPath, 'redis-level'))
+/** logs目录 */
+export const logsPath = Object.freeze(path.join(basePath, 'logs'))

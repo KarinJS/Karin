@@ -1,5 +1,5 @@
 import { config } from '@/utils'
-import { unregisterBot } from '@main/index'
+import { unregisterBot } from '@/service/adapter'
 import { WsAdapterOneBot11 } from './ws'
 import { registerWSPath } from '@/service/server'
 import type { WebSocket } from 'ws'

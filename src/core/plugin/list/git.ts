@@ -47,7 +47,7 @@ export const getGitPlugins = async (): Promise<GitPluginName[]> => {
   const dir = './plugins'
   const files = await fs.promises.readdir(dir, { withFileTypes: true })
   /** 忽略文件、非`karin-plugin-`开头的文件夹、不存在`package.json` */
-  const list = await Promise.all(files.map(async v => {
+  let list = await Promise.all(files.map(async v => {
     if (!v.isDirectory()) return ''
     if (!v.name.startsWith('karin-plugin-')) return ''
     if (!fs.existsSync(`${dir + v.name}/package.json`)) return ''
@@ -58,7 +58,7 @@ export const getGitPlugins = async (): Promise<GitPluginName[]> => {
   const root = await requireFileSync('./package.json')
   if (root.name.startsWith('karin-plugin-') && root.karin) list.push(root.name)
 
-  list.filter(Boolean)
+  list = list.filter(Boolean)
 
   /** 1分钟后删除缓存 */
   getPluginCache.set(key.list, list)

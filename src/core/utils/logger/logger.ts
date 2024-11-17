@@ -1,7 +1,8 @@
 import fs from 'node:fs'
 import chalk from 'chalk'
-import type { ConfigType, LoggerLevel } from '../config/types'
+import { logsPath } from '@/utils'
 import log4js, { type Configuration } from 'log4js'
+import type { ConfigType, LoggerLevel } from '../config/types'
 
 export type LoggerType = log4js.Logger & LoggerExpand
 export type LoggerOptions = { config?: Configuration, log4jsCfg?: ConfigType['log4jsCfg'] }
@@ -71,8 +72,7 @@ export interface LoggerExpand {
   bot: (level: LoggerLevel, id: string, ...args: string[]) => void
 }
 
-const logsDir = './logs'
-if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir)
+if (!fs.existsSync(logsPath)) fs.mkdirSync(logsPath)
 
 /**
  * 创建日志记录器

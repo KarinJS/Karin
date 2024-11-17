@@ -1,6 +1,6 @@
 import lodash from 'lodash'
 import * as common from '../common'
-import { config as cfg } from '@main/index'
+import { config as cfg } from '@/utils'
 import { cache } from '@/plugin/cache/cache'
 import { PermissionEnum } from '@/adapter/sender'
 import { createRawMessage } from '@/utils/message'

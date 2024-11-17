@@ -1,5 +1,5 @@
 import * as common from '../common'
-import { config as cfg } from '@main/index'
+import { config as cfg } from '@/utils'
 import { cache } from '@/plugin/cache/cache'
 import { FriendRequestEventMap, GroupRequestEventMap } from '@/event/types/types'
 import type { ConfigType, FriendDirectFileCfg, GroupGuildFileCfg } from '@/utils/config/types'

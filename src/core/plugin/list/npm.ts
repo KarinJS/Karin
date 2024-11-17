@@ -60,12 +60,12 @@ export const getNpmPlugins = async (): Promise<string[]> => {
   /** 获取dependencies列表 同时排除掉exclude、带@types的 */
   const dependencies = Object.keys(pkg.dependencies).filter((name) => !exclude.includes(name) && !name.startsWith('@types'))
   /** 排除非插件 */
-  const list = await Promise.all(dependencies.map(async (name) => {
+  let list = await Promise.all(dependencies.map(async (name) => {
     const isPlugin = await isNpmPlugin(name)
     return isPlugin ? name : ''
   }))
 
-  list.filter(Boolean)
+  list = list.filter(Boolean)
 
   /** 1分钟后删除缓存 */
   getPluginCache.set(key.list, list)

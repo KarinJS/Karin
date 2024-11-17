@@ -2,7 +2,7 @@ import crypto from 'crypto'
 import { isLocalRequest } from '../utils'
 import { listeners } from '@/internal/listeners'
 import { OB11AllEvent } from '@adapter/onebot/types/event'
-import { getHttpBotToken } from '@main/index'
+import { getHttpBotToken } from '@/service/server'
 import { type Request, type Response } from 'express'
 
 /**

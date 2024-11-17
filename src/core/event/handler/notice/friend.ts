@@ -1,5 +1,5 @@
 import * as common from '../common'
-import { config } from '@main/index'
+import { config } from '@/utils'
 import { BaseNoticeHandler } from './base'
 import type { FriendDirectFileCfg } from '@/utils/config/types'
 import { type FriendNoticeEventMap, NoticeEventSubEnum } from '@/event/types/types'

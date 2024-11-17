@@ -27,7 +27,7 @@ import {
   setFriendOrDirectCache,
   setGroupOrGuildCache,
 } from './cache'
-import { updateHttpBotToken } from '@main/index'
+import { updateHttpBotToken } from '@/service/server'
 
 /** node-karin的package */
 export const pkg = requireFileSync<PackageType>(karinDir + '/package.json')

@@ -1,4 +1,5 @@
 import type { FSWatcher } from 'chokidar'
+import type { RedisClientOptions } from 'redis'
 
 /** 配置文件缓存key */
 export const enum configKey {
@@ -61,27 +62,6 @@ export interface FriendDirectFileCfg {
   enable: string[]
   /** 黑名单插件、功能，黑名单中的插件、功能不会响应 `karin-plugin-test:app.js` `karin-plugin-test:测试转发` */
   disable: string[]
-}
-
-/** redis服务配置 */
-export interface RedisType {
-  /** 地址 */
-  host: string
-  /** 端口 */
-  port: number
-  /** 用户名 */
-  username: string
-  /** 密码 */
-  password: string
-  /** 数据库 */
-  db: number
-  /** 集群 */
-  cluster: {
-    /** 是否启用 */
-    enable: boolean
-    /** 根节点 */
-    rootNodes: string[]
-  }
 }
 
 /** pm2服务配置 */
@@ -328,7 +308,7 @@ export interface ConfigMap {
   friendDirect: Record<string, FriendDirectFileCfg>
   groupGuild: Record<string, GroupGuildFileCfg>
   pm2: PM2Type
-  redis: RedisType
+  redis: RedisClientOptions
   server: ServerType
 }
 

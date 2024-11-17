@@ -4,7 +4,8 @@ import { buildError } from '../convert'
 import { AdapterOneBot } from '../base'
 import { listeners } from '@/internal/listeners'
 import { Action, Params, Request } from '../types'
-import { registerBot, registerHttpBot, unregisterBot, unregisterHttpBot } from '@main/index'
+import { registerBot, unregisterBot } from '@/service/adapter'
+import { registerHttpBot, unregisterHttpBot } from '@/service/server'
 
 export class HttpAdapterOneBot11 extends AdapterOneBot {
   #token?: string

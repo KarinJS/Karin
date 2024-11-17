@@ -66,7 +66,9 @@ export const checkProcess = async (port: number) => {
 
 const processExitHandler = async (code: unknown) => {
   try {
-    // TODO: 退出前保存redis数据
+    const { redis, level } = await import('../../main/index')
+    await Promise.allSettled([redis.save(), level.close()])
+
     logger.mark(`Karin 已停止运行 运行时间：${uptime()} 退出码：${code || '未知'}`)
   } finally {
     process.exit()
@@ -77,4 +79,4 @@ const processExitHandler = async (code: unknown) => {
  * @description 处理退出事件
  * @param code 退出码
  */
-export const processExit = lodash.debounce(processExitHandler, 300)
+export const processExit = lodash.debounce(processExitHandler, 500)

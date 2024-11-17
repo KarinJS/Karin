@@ -1,5 +1,5 @@
 import * as common from '../common'
-import { config } from '@main/index'
+import { config } from '@/utils'
 import { BaseRequestHandler } from './base'
 import { GroupRequestEventMap, RequestEventSubEnum } from '@/event/types/types'
 import type { GroupGuildFileCfg } from '@/utils/config/types'

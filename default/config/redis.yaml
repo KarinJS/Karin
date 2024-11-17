@@ -1,18 +1,19 @@
-# redis地址
-host: 127.0.0.1
-# redis端口
-port: 6379
-# redis用户名，可以为空
-username:
-# redis密码，没有密码可以为空
-password:
-# redis数据库
-db: 0
+# 这里的所有配置会全部传递给redis 详情参数请查阅
 
-# 集群配置
-cluster:
-  # 是否启用集群
-  enable: false
-  # 集群地址
-  rootNodes:
-    - url: Redis://127.0.0.1:6379/0
+# url的优先级是高于下方配置的，如果url没有的参数会读取最下方配置
+# redis[s]://[[username][:password]@][host][:port][/db-number]
+url: redis://127.0.0.1:6379
+
+# 套接字连接属性
+socket:
+  # 地址
+  host: 127.0.0.1
+  # 端口
+  port: 6379
+
+# 用户名
+username:
+# 密码
+password:
+# 数据库索引
+database: 0
