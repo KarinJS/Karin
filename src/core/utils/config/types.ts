@@ -106,9 +106,9 @@ export interface ServerType {
   /** onebot11 正向WebSocket地址 */
   forwardWs: Array<string | { url: string, token: string }>
   /** websocket 渲染器地址 ws://127.0.0.1:7005/ws/render */
-  renderWs: Array<string | { url: string, token: string }>
+  renderWs: Array<{ url: string, token: string }>
   /** http渲染器地址 */
-  renderHttp: Array<string | { url: string, token: string }>
+  renderHttp: Array<{ url: string, token: string }>
   /** http根理由随机返回的文案列表 */
   rootMsg: string[]
   /** onebot http配置 */

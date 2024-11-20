@@ -303,4 +303,6 @@ export interface Cache {
     /** 消息事件没有找到任何匹配的插件触发 */
     notFoundMsg: Array<NotFoundMsg>
   },
+  /** 静态资源目录 */
+  static: string[]
 }

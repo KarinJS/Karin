@@ -124,6 +124,11 @@ export const getPluginList = async () => {
     /** 创建插件文件夹 */
     load.createDir.push(createPluginDir(info.name, pkg?.karin?.files))
 
+    if (pkg?.karin?.static) {
+      const list = Array.isArray(pkg.karin.static) ? pkg.karin.static : [pkg.karin.static]
+      cache.static.push(...list.map(file => path.resolve(info.dir, file)))
+    }
+
     const apps: string[] = []
     if (pkg.karin?.apps) {
       /** 热更新 */

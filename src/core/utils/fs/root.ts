@@ -28,4 +28,6 @@ export const levelPath = Object.freeze(path.join(dbPath, 'level'))
 /** 伪redis save-level目录 */
 export const redisLevelPath = Object.freeze(path.join(dbPath, 'redis-level'))
 /** logs目录 */
-export const logsPath = Object.freeze(path.join(basePath, 'logs'))
+export const logsPath = Object.freeze(path.join(process.cwd(), 'logs'))
+/** html目录 */
+export const htmlPath = Object.freeze(path.join(tempPath, 'html'))

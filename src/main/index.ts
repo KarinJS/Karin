@@ -3,10 +3,9 @@ export * from '@/adapter'
 export * from '@/event'
 export * from '@/karin'
 export * from '@/internal/error'
-export * from '@/service/bot'
-export * from '@/service/server'
-export * from '@/service/adapter'
+export * from '@/service'
 export * from '@/plugin/index'
+export * from '@adapter/render/cache'
 export { karin as default } from '@/karin'
 export { TypedListeners } from '@/internal/listeners'
 
@@ -20,6 +19,8 @@ import { createExpressWebSocketServer, startServer } from '../core/server/app'
 import { listeners } from '@/internal/listeners'
 import { createClient } from '@adapter/onebot/connect/client'
 import { createHttp } from '@adapter/onebot/connect/http'
+import { createWebSocketRenderClient } from '@adapter/render/connect/client'
+import { createHttpRenderClient } from '@adapter/render/connect/http'
 import type { LevelDB, Client } from '@/db'
 
 /** 日志管理器 */
@@ -59,9 +60,12 @@ export const run = async () => {
     import('@adapter/input'),
     import('@/service/adapter'),
     import('@adapter/onebot/connect/server'),
+    import('@adapter/render/connect/server'),
     createClient(),
     createHttp(),
     loaderPlugin(),
+    createWebSocketRenderClient(),
+    createHttpRenderClient(),
   ])
 
   const port = config.port()
@@ -74,7 +78,5 @@ export const run = async () => {
   createWebSocketServer(wssServe)
   await startServer(httpServe, appServe, config.host(), port)
   registerBot('internal', new AdapterInput())
-
-  await new Promise((resolve) => setTimeout(resolve, 50))
   logger.info(`Karin启动完成：耗时 ${logger.green(process.uptime().toFixed(2))} 秒...`)
 }

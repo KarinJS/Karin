@@ -23,7 +23,7 @@ export const createExpressWebSocketServer = (port: number, list?: string[]) => {
       '若知是梦何须醒，不比真如一相会。',
     ]
   }
-  app.get('/', (req, res) => {
+  app.get('/info', (req, res) => {
     const msg = list[Math.floor(Math.random() * list.length)]
     res.status(200).send({ code: 0, msg })
   })

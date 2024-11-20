@@ -76,7 +76,9 @@ export const createWebSocketServer = (wss: WebSocketServer) => {
       const url = request.url || '/'
       /** 请求头 */
       const headers = request.headers
-      logger.debug(`[WebSocketServer] 收到连接请求: ${url}\nheaders: ${JSON.stringify(headers, null, 2)}`)
+      /** 请求ip */
+      const ip = request.socket.remoteAddress
+      logger.debug(`[WebSocketServer] 收到连接请求: ${url}\nip: ${ip}\nheaders: ${JSON.stringify(headers, null, 2)}`)
       const App = pathClassMap.get(url)
       if (!App) {
         logger.error(`[WebSocketServer] 未找到请求路由对应的实现类: ${url}`)

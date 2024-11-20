@@ -1,13 +1,15 @@
 import path from 'node:path'
+import { Message } from '@/event'
 import { TypedListeners } from '@/internal/listeners'
+import { context } from '@/event/handler/message/context'
 import { cache, createLogger } from '@/plugin/cache/cache'
 import { Contact, ContactWithoutSubPeer, ContactWithSubPeer, Scene } from '@/adapter/contact'
 import type { ElementTypes } from '@/adapter/segment'
 import type { MessageEventMap } from '@/event/types/types'
 import type { GroupSender, FriendSender } from '@/adapter/sender'
+import type { Options, RenderResult } from '@adapter/render/types'
 import type { Accept, CommandFnc, NoticeAndRequest, Task } from '@/plugin/cache/types'
-import { Message } from '@/event'
-import { context } from '@/event/handler/message/context'
+import { callRender, renderHtml, renderMultiHtml } from '@adapter/render/cache'
 
 export type FncElement = string | ElementTypes | ElementTypes[]
 export type FncOptions = {
@@ -64,7 +66,7 @@ export interface TaskOptions {
 
 type Fnc<T extends keyof MessageEventMap> = FncElement | ((e: MessageEventMap[T]) => Promise<boolean> | boolean)
 type ElemAndEvent<T extends keyof MessageEventMap> = FncElemOptions & { event: T }
-type Options<T extends keyof MessageEventMap> = (FncOptions & { event?: T }) | ElemAndEvent<T>
+type commandOptions<T extends keyof MessageEventMap> = (FncOptions & { event?: T }) | ElemAndEvent<T>
 
 export class Karin extends TypedListeners {
   /**
@@ -92,7 +94,7 @@ export class Karin extends TypedListeners {
    * @param options 选项
    * @returns 返回插件对象
    */
-  command<T extends keyof MessageEventMap = keyof MessageEventMap> (reg: string | RegExp, second: Fnc<T>, options: Options<T> = {}): CommandFnc<T> {
+  command<T extends keyof MessageEventMap = keyof MessageEventMap> (reg: string | RegExp, second: Fnc<T>, options: commandOptions<T> = {}): CommandFnc<T> {
     reg = typeof reg === 'string' ? new RegExp(reg) : reg
     /** 参数归一化 */
     const fnc = typeof second === 'function'
@@ -117,7 +119,7 @@ export class Karin extends TypedListeners {
       fnc,
       log: createLogger(options.log),
       perm: options.perm || options.permission || 'all',
-      rank: options.rank ?? options.priority ?? 10000,
+      rank: Number(options.rank ?? options.priority) ?? 10000,
       reg,
       adapter: Array.isArray(options.adapter) ? options.adapter : [],
       dsbAdapter: Array.isArray(dsbAdapter) ? dsbAdapter : [],
@@ -149,7 +151,7 @@ export class Karin extends TypedListeners {
       fnc,
       log: createLogger(options.log),
       name: options?.name || '',
-      rank: options.rank ?? options?.priority ?? 10000,
+      rank: Number(options.rank ?? options?.priority) ?? 10000,
       adapter: Array.isArray(options.adapter) ? options.adapter : [],
       dsbAdapter: Array.isArray(dsbAdapter) ? dsbAdapter : [],
       file: {
@@ -383,6 +385,37 @@ export class Karin extends TypedListeners {
         resolve(e)
       })
     })
+  }
+
+  /**
+   * 快速渲染
+   * @param file - 文件路径、http地址
+   */
+  render (file: string): Promise<string>
+  /**
+   * 分片渲染
+   * @param options - 渲染参数
+   */
+  render (file: string, multiPage: number | boolean): Promise<Array<string>>
+  /**
+   * 自定义渲染
+   * @param options - 渲染参数
+   */
+  render<T extends Options> (options: T, id?: string): Promise<RenderResult<T>>
+
+  render<T extends Options> (
+    options: string | T,
+    multiPageOrId?: string | number | boolean
+  ): Promise<RenderResult<T> | string | Array<string>> {
+    if (typeof options === 'string') {
+      if (!multiPageOrId) {
+        return renderHtml(options)
+      }
+
+      return renderMultiHtml(options, multiPageOrId as number | boolean)
+    }
+
+    return callRender(options, multiPageOrId as string)
   }
 }
 

@@ -3,7 +3,7 @@ import { unregisterBot } from '@/service/adapter'
 import { WsAdapterOneBot11 } from './ws'
 import { registerWSPath } from '@/service/server'
 import type { WebSocket } from 'ws'
-import type { IncomingMessage } from 'http'
+import type { IncomingMessage } from 'node:http'
 
 export class AdapterServerOneBot11 extends WsAdapterOneBot11 {
   /** websocket实例 */

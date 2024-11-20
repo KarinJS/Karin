@@ -32,6 +32,7 @@ export const cache: Cache = {
     },
     middleware: 0,
   },
+  static: [],
 }
 
 export type FncOptions = {
