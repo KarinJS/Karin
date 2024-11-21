@@ -55,9 +55,6 @@ export class Plugin<T extends keyof MessageEventMap = keyof MessageEventMap> {
 
   constructor (options: PluginOptions & { event?: T }) {
     const { name, rule } = options
-    if (!name) throw TypeError('plugin.name 不能为空')
-    if (!rule || !Array.isArray(rule) || rule?.length === 0) throw TypeError('plugin.rule 不能为空')
-
     this.name = name
     this.rule = rule
     this.desc = options.desc || '无描述'

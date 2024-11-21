@@ -3,13 +3,20 @@ import { Message } from '@/event'
 import { TypedListeners } from '@/internal/listeners'
 import { context } from '@/event/handler/message/context'
 import { cache, createLogger } from '@/plugin/cache/cache'
+import { callRender, renderHtml, renderMultiHtml } from '@adapter/render/cache'
 import { Contact, ContactWithoutSubPeer, ContactWithSubPeer, Scene } from '@/adapter/contact'
 import type { ElementTypes } from '@/adapter/segment'
 import type { MessageEventMap } from '@/event/types/types'
 import type { GroupSender, FriendSender } from '@/adapter/sender'
 import type { Options, RenderResult } from '@adapter/render/types'
-import type { Accept, CommandFnc, NoticeAndRequest, Task } from '@/plugin/cache/types'
-import { callRender, renderHtml, renderMultiHtml } from '@adapter/render/cache'
+import type {
+  Accept,
+  Task,
+  Button,
+  CommandFnc,
+  MiddlewareMap,
+  NoticeAndRequest,
+} from '@/plugin/cache/types'
 
 export type FncElement = string | ElementTypes | ElementTypes[]
 export type FncOptions = {
@@ -34,7 +41,6 @@ export type FncOptions = {
   /**
    * 插件优先级 数字越小优先级越高
    * @default 10000
-   * @deprecated 已废弃 请使用`rank`
    */
   priority?: CommandFnc['rank']
   /**
@@ -62,6 +68,24 @@ export interface TaskOptions {
   name?: string
   /** 是否启用日志 */
   log?: boolean
+}
+
+export interface ButtonOptions {
+  /** 插件名称 */
+  name?: string
+  /** 优先级 */
+  rank?: number
+  /** 优先级 */
+  priority?: number
+}
+
+export interface MiddlewareOptions {
+  /** 插件名称 */
+  name?: string
+  /** 优先级 */
+  priority?: number
+  /** 优先级 */
+  rank?: number
 }
 
 type Fnc<T extends keyof MessageEventMap> = FncElement | ((e: MessageEventMap[T]) => Promise<boolean> | boolean)
@@ -110,7 +134,7 @@ export class Karin extends TypedListeners {
       }
 
     const dsbAdapter = options.dsbAdapter || options.notAdapter || []
-
+    const rank = Number(options.rank ?? options.priority)
     return {
       index: 0,
       type: 'fnc',
@@ -119,7 +143,7 @@ export class Karin extends TypedListeners {
       fnc,
       log: createLogger(options.log),
       perm: options.perm || options.permission || 'all',
-      rank: Number(options.rank ?? options.priority) ?? 10000,
+      rank: isNaN(rank) ? 10000 : rank,
       reg,
       adapter: Array.isArray(options.adapter) ? options.adapter : [],
       dsbAdapter: Array.isArray(dsbAdapter) ? dsbAdapter : [],
@@ -145,13 +169,14 @@ export class Karin extends TypedListeners {
    */
   accept<T extends keyof NoticeAndRequest = keyof NoticeAndRequest> (event: T, fnc: (e: NoticeAndRequest[T]) => Promise<boolean> | boolean, options: Omit<FncOptions, 'perm' | 'permission'> = {}): Accept<T> {
     const dsbAdapter = options.dsbAdapter || options.notAdapter || []
+    const rank = Number(options.rank ?? options.priority)
     return {
       index: 0,
       event,
       fnc,
       log: createLogger(options.log),
       name: options?.name || '',
-      rank: Number(options.rank ?? options?.priority) ?? 10000,
+      rank: isNaN(rank) ? 10000 : rank,
       adapter: Array.isArray(options.adapter) ? options.adapter : [],
       dsbAdapter: Array.isArray(dsbAdapter) ? dsbAdapter : [],
       file: {
@@ -201,6 +226,67 @@ export class Karin extends TypedListeners {
         return cache.index[this.index]
       },
     }
+  }
+
+  /**
+   * 按钮
+   * @param reg - 正则表达式
+   * @param fnc - 函数
+   */
+  button (reg: RegExp | string, fnc: Button['fnc'], options: ButtonOptions = {}): Button {
+    const rank = Number(options.rank ?? options.priority)
+    return {
+      index: 0,
+      fnc,
+      reg: reg instanceof RegExp ? reg : new RegExp(reg),
+      name: options?.name || 'button',
+      rank: isNaN(rank) ? 10000 : rank,
+      file: {
+        basename: '',
+        dirname: '',
+        method: '',
+        type: 'button',
+        get path () {
+          return path.join(this.dirname, this.basename)
+        },
+      },
+      get info () {
+        return cache.index[this.index]
+      },
+    }
+  }
+
+  /**
+   * 中间件
+   * @param type 中间件类型
+   * @param fn 中间件函数
+   * @param options 选项配置
+   */
+  use<T extends keyof MiddlewareMap> (
+    type: `${T}`,
+    fnc: MiddlewareMap[T]['fnc'],
+    options: MiddlewareOptions = {}
+  ): MiddlewareMap[T] {
+    const rank = Number(options.rank ?? options.priority)
+    return {
+      index: 0,
+      type,
+      fnc,
+      name: options?.name || 'use',
+      rank: isNaN(rank) ? 10000 : rank,
+      file: {
+        basename: '',
+        dirname: '',
+        method: '',
+        type: 'middleware',
+        get path () {
+          return path.join(this.dirname, this.basename)
+        },
+      },
+      get info () {
+        return cache.index[this.index]
+      },
+    } as MiddlewareMap[T]
   }
 
   /**

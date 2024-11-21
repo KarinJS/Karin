@@ -42,11 +42,23 @@ const load: {
   apps: (Promise<void>)[]
   createDir: (Promise<void>)[]
   watchList: { file: string, index: number, info: Info }[]
+  /** 依赖缺失收集 */
+  dependErr: {
+    [key: string]: {
+      /** 插件名称 */
+      name: string
+      /** 报错的文件名称 */
+      file: string
+      /** 缺少的依赖 */
+      depend: string
+    }
+  }
 } = {
   main: [],
   apps: [],
   createDir: [],
   watchList: [],
+  dependErr: {},
 }
 
 /**
@@ -84,9 +96,12 @@ export const loaderPlugin = async () => {
   logger.info(logger.green('-----------'))
   clearCache()
 
+  handleLoadError()
+
   setTimeout(() => {
     load.watchList.forEach(({ file, index, info }) => watchApps(file, index, info))
     load.watchList.length = 0
+    load.dependErr = {}
   }, 2000)
 }
 
@@ -162,6 +177,27 @@ export const clearCache = () => {
 }
 
 /**
+ * @description 导入插件错误处理
+ * @param name 插件名称
+ * @param file 插件文件
+ * @param error 错误信息
+ */
+export const handleImportError = (name: string, file: string, error: any) => {
+  if (/Cannot find package '(.+?)'/.exec(error)?.[1]) {
+    const key = `${name}.${file}`
+    /** 检查是否已经保存 */
+    if (load.dependErr[key]) return false
+    load.dependErr[key] = {
+      name,
+      file,
+      depend: /Cannot find package '(.+?)'/.exec(error)?.[1] || '',
+    }
+  } else {
+    handleError('loaderPlugin', { name, error, file })
+  }
+}
+
+/**
  * 加载入口文件
  * @param name 插件名称
  * @param file 入口文件
@@ -169,9 +205,9 @@ export const clearCache = () => {
  */
 const loaderMain = async (name: string, file: string, isRefresh = false) => {
   try {
-    return import(`file://${file}${isRefresh ? `?t=${Date.now()}` : ''}`)
-  } catch (error) {
-    handleError('loaderPlugin', { name, error, file })
+    return await import(`file://${file}${isRefresh ? `?t=${Date.now()}` : ''}`)
+  } catch (error: any) {
+    return handleImportError(name, file, error)
   }
 }
 
@@ -192,8 +228,8 @@ export const importPlugin = async (file: string, index: number, info: Info, isRe
       info,
       file,
     }
-  } catch (error) {
-    handleError('loaderPlugin', { name: info.name, error, file: `${file}` })
+  } catch (error: any) {
+    handleImportError(info.name, file, error)
     return null
   }
 }
@@ -239,6 +275,19 @@ const loadClassApp = async (val: Function, index: number, dirname: string, basen
   if (!isClass(val)) return
   const Cls = val as new () => Plugin
   const app = new Cls()
+
+  /** 转相对 */
+  const relative = (file: string) => path.relative(process.cwd(), file).replace(/\\/g, '/').replace('plugins/', '')
+
+  if (!app.name) {
+    logger.error(`[load][${relative(dirname)}/${basename}] plugin.name 不能为空`)
+    return
+  }
+
+  if (!app.rule || !Array.isArray(app.rule) || app.rule?.length === 0) {
+    logger.error(`[load][${relative(dirname)}/${basename}] ${app.name} plugin.rule 不能为空`)
+    return
+  }
 
   /** 确保 app.rule 存在且是数组 */
   if (!Array.isArray(app?.rule)) return
@@ -424,4 +473,36 @@ export const watchApps = async (dir: string, index: number, info: Info) => {
   watcher.on('unlink', (file: string) => handleFileChange(file, 'unlink'))
 
   sort()
+}
+
+/**
+ * @description 处理插件加载失败错误
+ */
+export const handleLoadError = () => {
+  try {
+    const keys = Object.keys(load.dependErr)
+    if (!keys.length) return
+
+    const msg = ['\n-----依赖缺失----']
+
+    keys.forEach(key => {
+      const { name, file, depend } = load.dependErr[key]
+      msg.push(`[${name}][${file}] 缺少依赖：${logger.red(depend)}`)
+    })
+
+    msg.push('-------------------')
+    const one = load.dependErr[keys[0]]
+    msg.push(...[
+      '温馨提示:',
+      `1. 如果是新安装的插件，请尝试执行 ${logger.red('pnpm install -P')} 自动安装依赖`,
+      `2. 如果执行第一步无效，请尝试执行 ${logger.red('pnpm add 依赖名称 -w')} 手动安装依赖`,
+      `举例: ${logger.red(`pnpm add ${one.depend} -w`)}`,
+      logger.yellow('对于手动安装的依赖，如果对应插件未在使用，请进行及时卸载: pnpm uninstall 依赖名称'),
+    ])
+    msg.push('-------------------')
+    logger.error(msg.join('\n'))
+  } finally {
+    /** 回收缓存 */
+    load.dependErr = {}
+  }
 }

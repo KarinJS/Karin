@@ -1,4 +1,5 @@
 import { segment } from '@/adapter/segment'
+import { cache } from '@/plugin/cache/cache'
 import { BaseEventHandle, BaseEventOptions } from '../../types/types'
 
 /** 事件实现基类 */
@@ -71,8 +72,46 @@ export abstract class BaseEvent implements BaseEventHandle {
         message.unshift(segment.reply(this.message_id as string))
       }
 
+      let result: any = {
+        messageId: '',
+        messageTime: 0,
+        rawData: {},
+        /** @deprecated 已废弃，请使用 messageId */
+        message_id: '',
+        /** @deprecated 已废弃，请使用 messageTime */
+        message_time: 0,
+        /** @deprecated 已废弃，请使用 rawData */
+        raw_data: undefined,
+      }
+
+      /** 先调用中间件 */
+      for (const info of cache.middleware.replyMsg) {
+        try {
+          let next = false
+          let exit = false
+          const nextFn = () => { next = true }
+          const exitFn = () => { exit = true }
+
+          await info.fnc(this as any, message, nextFn, exitFn)
+
+          if (exit) {
+            logger.debug(`[消息中间件][${info.info.name}][${info.file.basename}] 主动操作退出`)
+            return result
+          }
+
+          if (!next) break
+          if (!next) break
+        } catch (error) {
+          logger.error('[消息中间件] 调用失败，已跳过')
+          throw error
+        }
+      }
+
       /** 发送消息 */
-      const result = await this.bot.sendMsg(this.contact, message)
+      result = await this.bot.sendMsg(this.contact, message)
+      result.message_id = result.messageId
+      result.message_time = result.messageTime
+      result.raw_data = result.rawData
 
       /** 快速撤回 */
       if (recallMsg > 0 && result.messageId) {

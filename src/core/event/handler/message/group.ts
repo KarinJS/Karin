@@ -229,6 +229,6 @@ export class GroupMessageHandler {
       }
     }
 
-    common.log(`[${this.event.groupId}][${this.event.userId}] 未找到匹配到相应插件: ${this.event.eventId}`)
+    common.log(`[${this.event.groupId}-${this.event.userId}] 未找到匹配到相应插件: ${this.event.eventId}`)
   }
 }

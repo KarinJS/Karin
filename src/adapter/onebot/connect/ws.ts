@@ -52,7 +52,7 @@ export abstract class WsAdapterOneBot11 extends AdapterOneBot {
         return this.socket.emit(json.echo, json)
       } else {
         if (data.post_type === OB11Event.MetaEvent && data.meta_event_type === 'heartbeat') {
-          logger.bot('trace', this.selfId, `下次心跳: ${data.status.interval}`)
+          logger.bot('trace', this.selfId, '心跳')
           return
         }
 

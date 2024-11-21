@@ -254,6 +254,14 @@ export interface NotFoundMsg extends MiddlewareBase {
   ) => Promise<void> | void
 }
 
+export type MiddlewareMap = {
+  recvMsg: RecvMsg
+  replyMsg: ReplyMsg
+  sendMsg: SendMsg
+  forwardMsg: ForwardMsg
+  notFoundMsg: NotFoundMsg
+}
+
 export type Middleware = RecvMsg | ReplyMsg | SendMsg | ForwardMsg | NotFoundMsg
 
 export interface Count {
