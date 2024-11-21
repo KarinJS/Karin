@@ -6,6 +6,7 @@ import { createRawMessage } from '@/utils/message'
 import { PermissionEnum } from '@/adapter/sender'
 import type { FriendMessage } from '@/event/create/message/friend'
 import type { ConfigType, FriendDirectFileCfg } from '@/utils/config/types'
+import { MiddlewareHandler } from '../../../utils/message/middleware'
 
 /** 用户个人CD */
 const userCD: Record<string, NodeJS.Timeout> = {}
@@ -26,7 +27,7 @@ export class FriendHandler {
     this.eventCfg = cfg.getFriendCfg(this.event.userId, this.event.selfId)
   }
 
-  init () {
+  async init () {
     const data = createRawMessage(this.event.elements)
     this.event.msg = data.msg
     this.event.rawMessage = data.raw
@@ -38,7 +39,14 @@ export class FriendHandler {
     this.ctx = common.context(this.event)
     if (this.ctx) return this
 
-    this.isLimitEvent() && this.deal()
+    const pass = this.isLimitEvent()
+
+    /** 先调用中间件 */
+    const result = await MiddlewareHandler(cache.middleware.recvMsg, this.event, pass)
+    if (result) return this
+
+    pass && this.deal()
+
     return this
   }
 
@@ -182,6 +190,8 @@ export class FriendHandler {
       }
     }
 
+    /** 未找到匹配插件 */
     common.log(`[${this.event.userId}] 未找到匹配到相应插件: ${this.event.messageId}`)
+    MiddlewareHandler(cache.middleware.notFoundMsg, this.event)
   }
 }

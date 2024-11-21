@@ -1,6 +1,8 @@
 import { segment } from '@/adapter/segment'
 import { cache } from '@/plugin/cache/cache'
 import { BaseEventHandle, BaseEventOptions } from '../../types/types'
+import { MiddlewareHandler } from '@/utils'
+import { makeMessageLog } from '@/utils/common'
 
 /** 事件实现基类 */
 export abstract class BaseEvent implements BaseEventHandle {
@@ -85,30 +87,21 @@ export abstract class BaseEvent implements BaseEventHandle {
       }
 
       /** 先调用中间件 */
-      for (const info of cache.middleware.replyMsg) {
-        try {
-          let next = false
-          let exit = false
-          const nextFn = () => { next = true }
-          const exitFn = () => { exit = true }
+      if (await MiddlewareHandler(cache.middleware.replyMsg, this, message)) {
+        return result
+      }
 
-          await info.fnc(this as any, message, nextFn, exitFn)
-
-          if (exit) {
-            logger.debug(`[消息中间件][${info.info.name}][${info.file.basename}] 主动操作退出`)
-            return result
-          }
-
-          if (!next) break
-          if (!next) break
-        } catch (error) {
-          logger.error('[消息中间件] 调用失败，已跳过')
-          throw error
-        }
+      /** 先发 提升速度 */
+      const request = this.bot.sendMsg(this.contact, message)
+      const { raw } = makeMessageLog(message)
+      if (this.isGroup) {
+        logger.bot('info', this.selfId, `${logger.green(`Send Group ${this.contact.peer}: `)}${raw.replace(/\n/g, '\\n')}`)
+      } else {
+        this.selfId !== 'input' && logger.bot('info', this.selfId, `${logger.green(`Send private ${this.contact.peer}: `)}${raw.replace(/\n/g, '\\n')}`)
       }
 
       /** 发送消息 */
-      result = await this.bot.sendMsg(this.contact, message)
+      result = await request
       result.message_id = result.messageId
       result.message_time = result.messageTime
       result.raw_data = result.rawData

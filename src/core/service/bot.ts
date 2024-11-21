@@ -3,7 +3,7 @@ import { AdapterProtocol, AdapterType } from '@/adapter/adapter'
 let index = 0
 const list: { index: number, adapter: AdapterType }[] = []
 
-type GetBot = {
+export type GetBot = {
   /**
    * 获取指定Bot类
    * @param index 适配器索引

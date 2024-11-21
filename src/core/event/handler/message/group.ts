@@ -6,6 +6,7 @@ import { PermissionEnum } from '@/adapter/sender'
 import { createRawMessage } from '@/utils/message'
 import type { ConfigType, GroupGuildFileCfg } from '@/utils/config/types'
 import type { GroupMessage } from '@/event/create/message/group'
+import { MiddlewareHandler } from '../../../utils/message/middleware'
 
 /** 群CD */
 const groupCD: Record<string, NodeJS.Timeout> = {}
@@ -30,7 +31,7 @@ export class GroupMessageHandler {
     this.isPrint = common.isLimitedLogEnable(this.event) && common.isLimitedLogDisable(this.event)
   }
 
-  init () {
+  async init () {
     const data = createRawMessage(this.event.elements)
     this.event.msg = data.msg
     this.event.rawMessage = data.raw
@@ -42,7 +43,14 @@ export class GroupMessageHandler {
     this.ctx = common.context(this.event)
     if (this.ctx) return this
 
-    this.isLimitEvent() && this.deal()
+    const pass = this.isLimitEvent()
+
+    /** 先调用中间件 */
+    const result = await MiddlewareHandler(cache.middleware.recvMsg, this.event, pass)
+    if (result) return this
+
+    pass && this.deal()
+
     return this
   }
 
@@ -229,6 +237,8 @@ export class GroupMessageHandler {
       }
     }
 
+    /** 未找到匹配插件 */
     common.log(`[${this.event.groupId}-${this.event.userId}] 未找到匹配到相应插件: ${this.event.eventId}`)
+    MiddlewareHandler(cache.middleware.notFoundMsg, this.event)
   }
 }
