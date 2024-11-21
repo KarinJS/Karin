@@ -1,12 +1,11 @@
 import path from 'node:path'
 import { Message } from '@/event'
-import { getAllBot, getAllBotList, getBot, getBotCount } from '@/service'
 import { TypedListeners } from '@/internal/listeners'
 import { context } from '@/event/handler/message/context'
 import { cache, createLogger } from '@/plugin/cache/cache'
+import { getAllBot, getAllBotList, getBot, getBotCount } from '@/service'
 import { callRender, renderHtml, renderMultiHtml } from '@adapter/render/cache'
 import { Contact, ContactWithoutSubPeer, ContactWithSubPeer, Scene } from '@/adapter/contact'
-import type { GetBot } from '@/service'
 import type { ElementTypes } from '@/adapter/segment'
 import type { MessageEventMap } from '@/event/types/types'
 import type { GroupSender, FriendSender } from '@/adapter/sender'
@@ -19,6 +18,7 @@ import type {
   MiddlewareMap,
   NoticeAndRequest,
 } from '@/plugin/cache/types'
+import { sendMsg } from './sendMsg'
 
 export type FncElement = string | ElementTypes | ElementTypes[]
 export type FncOptions = {
@@ -103,36 +103,22 @@ export class Karin extends TypedListeners {
    * @param isProtocol 此项是为了区分传入的是BotID还是协议实现
    * @returns 适配器
    */
-  public getBot: GetBot
+  public getBot: typeof getBot
+  /**
+   * 发送主动消息
+   * @param uid - Bot的uid
+   * @param contact - 目标信息
+   * @param elements - 消息内容
+   * @param options - 消息选项
+   * @param options.recallMsg - 发送成功后撤回消息时间
+   * @param options.retryCount - 重试次数
+   */
+  public sendMsg: typeof sendMsg
 
   constructor () {
     super()
     this.getBot = getBot
-  }
-
-  /**
-   * 根据索引获取Bot
-   * @param index - Bot的索引id
-   */
-  getBotByIndex (index: number) {
-    return getBot(index)
-  }
-
-  /**
-   * 获取注册的Bot数量
-   * @returns Bot数量
-   */
-  getBotCount () {
-    return getBotCount()
-  }
-
-  /**
-   * 获取所有Bot列表
-   * @param isIndex - 是否返回包含的索引列表 默认返回Bot实例列表
-   */
-  getBotAll<T extends boolean> (isIndex?: T): T extends true ? ReturnType<typeof getAllBotList> : ReturnType<typeof getAllBot> {
-    if (isIndex) return getAllBotList() as any
-    return getAllBot().map((item) => item) as any
+    this.sendMsg = sendMsg
   }
 
   /**
@@ -544,6 +530,31 @@ export class Karin extends TypedListeners {
     }
 
     return callRender(options, multiPageOrId as string)
+  }
+
+  /**
+   * 根据索引获取Bot
+   * @param index - Bot的索引id
+   */
+  getBotByIndex (index: number) {
+    return getBot(index)
+  }
+
+  /**
+   * 获取注册的Bot数量
+   * @returns Bot数量
+   */
+  getBotCount () {
+    return getBotCount()
+  }
+
+  /**
+   * 获取所有Bot列表
+   * @param isIndex - 是否返回包含的索引列表 默认返回Bot实例列表
+   */
+  getBotAll<T extends boolean> (isIndex?: T): T extends true ? ReturnType<typeof getAllBotList> : ReturnType<typeof getAllBot> {
+    if (isIndex) return getAllBotList() as any
+    return getAllBot().map((item) => item) as any
   }
 }
 

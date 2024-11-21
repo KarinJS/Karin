@@ -3,7 +3,7 @@ import { AdapterOneBot } from '../base'
 import { Action, Params, Request } from '../types'
 import { AdapterCommunication } from '@/adapter'
 import { OB11Event, type OB11AllEvent } from '../types/event'
-import { registerBot, unregisterBot } from '@/service/adapter'
+import { registerBot, unregisterBot } from '@/service/bot'
 import type { WebSocket } from 'ws'
 import { buildError } from '../convert'
 
@@ -34,7 +34,7 @@ export abstract class WsAdapterOneBot11 extends AdapterOneBot {
       await Promise.all([this.setBotInfo(), this.setAdapterInfo()])
       logger.bot('info', this.selfId, `[onebot11][${communication}] 连接成功: ${url}`)
 
-      registerBot(communication, this)
+      this.adapter.index = registerBot(communication, this)
     } catch (error) {
       this.socket.close()
       throw new Error(`[onebot11][${communication}] 连接失败: ${url}`)
@@ -64,7 +64,7 @@ export abstract class WsAdapterOneBot11 extends AdapterOneBot {
 
     this.socket.on('close', () => {
       logger.bot('info', this.selfId, `[onebot11][${this.adapter.communication}] 连接关闭: ${this.adapter.address}`)
-      unregisterBot(this.selfId, this.adapter.address)
+      unregisterBot('index', this.adapter.index)
     })
   }
 

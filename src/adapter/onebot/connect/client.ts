@@ -1,7 +1,7 @@
 import WebSocket from 'ws'
 import { config } from '@/utils'
 import { WsAdapterOneBot11 } from './ws'
-import { unregisterBot } from '@/service/adapter'
+import { unregisterBot } from '@/service/bot'
 
 export class AdapterClientOneBot11 extends WsAdapterOneBot11 {
   token?: string
@@ -13,7 +13,7 @@ export class AdapterClientOneBot11 extends WsAdapterOneBot11 {
         /** 停止全部监听 */
         this.socket.removeAllListeners()
         this.socket.close()
-        unregisterBot(this.selfId, this.adapter.address)
+        unregisterBot('index', this.adapter.index)
         logger.bot('info', this.selfId, `连接关闭，将在5秒后重连: ${this.adapter.address}`)
       } finally {
         setTimeout(() => {

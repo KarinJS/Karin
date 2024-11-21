@@ -1,7 +1,11 @@
-import { AdapterProtocol, AdapterType } from '@/adapter/adapter'
+import { Contact, NodeElementType } from '@/adapter'
+import { AdapterCommunication, AdapterProtocol, AdapterType, ForwardOptions } from '@/adapter/adapter'
+import { cache } from '@/plugin/cache/cache'
+import { MiddlewareHandler } from '@/utils'
+import { AdapterBase } from '@adapter/base'
 
 let index = 0
-const list: { index: number, adapter: AdapterType }[] = []
+const list: { index: number, bot: AdapterType }[] = []
 
 export type GetBot = {
   /**
@@ -22,8 +26,28 @@ export type GetBot = {
   (botID: string): AdapterType | null
 }
 
+export type UnregisterBot = {
+  /**
+   * @description 通过索引ID卸载Bot
+   * @param index 适配器索引
+   */
+  (type: 'index', index: number): boolean
+  /**
+   * @description 通过BotID卸载Bot
+   * @param selfId 机器人ID
+   */
+  (type: 'selfId', selfId: string): boolean
+  /**
+   * @description 通过BotID和地址卸载Bot
+   * @param type 卸载类型
+   * @param selfId 机器人ID
+   * @param address 机器人地址
+   */
+  (type: 'address', selfId: string, address: string): boolean
+}
+
 /**
- * 获取适配器
+ * 获取Bot
  * @param id 适配器索引 | 适配器协议实现 | 机器人ID
  * @param isProtocol 此项是为了区分传入的是BotID还是协议实现
  * @returns 适配器
@@ -31,14 +55,14 @@ export type GetBot = {
 export const getBot: GetBot = (id: number | AdapterProtocol | string, isProtocol = false) => {
   try {
     if (typeof id === 'number') {
-      return list.find(item => item.index === id)?.adapter || null
+      return list.find(item => item.index === id)?.bot || null
     }
 
     if (isProtocol) {
-      return list.find(item => item.adapter.adapter.protocol === id)?.adapter || null
+      return list.find(item => item.bot.adapter.protocol === id)?.bot || null
     }
 
-    return list.find(item => item.adapter.selfId === id)?.adapter || null
+    return list.find(item => item.bot.selfId === id)?.bot || null
   } catch {
     return null
   }
@@ -49,7 +73,7 @@ export const getBot: GetBot = (id: number | AdapterProtocol | string, isProtocol
  * @returns Bot类列表
  */
 export const getAllBot = () => {
-  return list.map(item => item.adapter)
+  return list.map(item => item.bot)
 }
 
 /**
@@ -65,7 +89,7 @@ export const getAllBotList = () => {
  * @returns BotID列表
  */
 export const getAllBotID = () => {
-  return list.map(item => item.adapter.selfId)
+  return list.map(item => item.bot.selfId)
 }
 
 /**
@@ -78,28 +102,72 @@ export const getBotCount = () => {
 
 /**
  * 卸载Bot
- * @param id 适配器索引
+ * @param type 卸载方式
+ * @param idOrIndex 适配器索引 | 机器人ID
+ * @param address 机器人地址
  */
-export const removeBot = (id: number) => {
-  const index = list.findIndex(item => item.index === id)
-  if (index !== -1) {
-    const bot = getBot(id)!
-    list.splice(index, 1)
-    logger.bot('info', bot.selfId, `[service][Bot卸载][${id}]: ${bot.adapter.name}`)
-    return true
+export const unregisterBot: UnregisterBot = (type, idOrIndex, address?) => {
+  const findIndexAndRemove = (predicate: (item: { index: number, bot: AdapterType }) => boolean) => {
+    const index = list.findIndex(predicate)
+    if (index !== -1) {
+      const [removed] = list.splice(index, 1)
+      logger.bot('info', removed.bot.selfId, `[service][卸载Bot] ${removed.bot.adapter.name} 卸载成功`)
+      return true
+    }
+
+    logger.bot('warn', '', `[service][卸载Bot] 未找到指定Bot: ${JSON.stringify({ type, idOrIndex, address })}`)
+    return false
   }
+
+  if (type === 'index') {
+    return findIndexAndRemove(item => item.index === idOrIndex)
+  }
+
+  if (type === 'selfId') {
+    return findIndexAndRemove(({ bot }) => bot.selfId === idOrIndex)
+  }
+
+  if (type === 'address') {
+    return findIndexAndRemove(({ bot }) => bot.selfId === idOrIndex && bot.adapter.address === address)
+  }
+
+  logger.bot('warn', '', `[service][卸载Bot] 未知的卸载方式: ${type}`)
   return false
 }
 
 /**
  * 注册Bot
- * @param bot 适配器
+ * @param bot 适配器实例
  * @returns 适配器索引
  */
-export const registerAdapter = (bot: AdapterType) => {
+export const registerBot = (type: `${AdapterCommunication}`, bot: AdapterBase) => {
   const id = ++index
-  list.push({ index: id, adapter: bot })
-  logger.bot('info', bot.selfId, `[service][Bot注册][${id}]: ${bot.adapter.address}`)
-  // TODO: 重写转发api 加入中间件
+  if (type === AdapterCommunication.REVERSE_WEBSOCKET) {
+    logger.bot('info', bot.selfId, `[service][注册Bot][正向webSocket] ${bot.adapter.name}: ${bot.adapter.address}`)
+  } else if (type === AdapterCommunication.INTERNAL) {
+    bot.adapter.address = 'internal://127.0.0.1'
+    logger.bot('info', bot.selfId, `[service][注册Bot][internal] ${bot.adapter.name}`)
+  } else if (type === AdapterCommunication.HTTP) {
+    logger.bot('info', bot.selfId, `[service][注册Bot][HTTP] ${bot.adapter.name}: ${bot.adapter.address}`)
+  } else if (type === AdapterCommunication.WEBSOCKET) {
+    logger.bot('info', bot.selfId, `[service][注册Bot][反向WebSocket] ${bot.adapter.name}: ${bot.adapter.address}`)
+  } else if (type === AdapterCommunication.GRPC) {
+    logger.bot('info', bot.selfId, `[service][注册Bot][gRPC] ${bot.adapter.name}: ${bot.adapter.address}`)
+  }
+
+  list.push({ index: id, bot })
+
+  /**
+   * @description 重写转发消息方法 添加中间件
+   */
+  const sendForwardMsg = bot.sendForwardMsg
+  bot.sendForwardMsg = async (contact: Contact, elements: Array<NodeElementType>, options?: ForwardOptions) => {
+    /** 先调用中间件 */
+    if (await MiddlewareHandler(cache.middleware.forwardMsg, bot, contact, elements)) {
+      return { messageId: '', forwardId: '' }
+    }
+    return sendForwardMsg.call(bot, contact, elements, options)
+  }
+
   return id
 }

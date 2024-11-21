@@ -69,7 +69,7 @@ export interface LoggerExpand {
    * @param id 机器人ID
    * @param args 参数
    */
-  bot: (level: LoggerLevel, id: string, ...args: string[]) => void
+  bot: (level: LoggerLevel, id: string, ...args: any[]) => void
 }
 
 if (!fs.existsSync(logsPath)) fs.mkdirSync(logsPath)

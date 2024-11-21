@@ -4,7 +4,7 @@ import { buildError } from '../convert'
 import { AdapterOneBot } from '../base'
 import { listeners } from '@/internal/listeners'
 import { Action, Params, Request } from '../types'
-import { registerBot, unregisterBot } from '@/service/adapter'
+import { registerBot, unregisterBot } from '@/service/bot'
 import { registerHttpBot, unregisterHttpBot } from '@/service/server'
 
 export class HttpAdapterOneBot11 extends AdapterOneBot {
@@ -26,14 +26,14 @@ export class HttpAdapterOneBot11 extends AdapterOneBot {
 
     await this.setBotInfo()
     logger.bot('info', this.selfId, `[onebot11][${this.adapter.communication}] 连接成功: ${this.adapter.address}`)
-    registerBot(this.adapter.communication, this)
+    this.adapter.index = registerBot(this.adapter.communication, this)
 
     // 每1分钟请求一次 如果出现失败则卸载适配器
     const timer = setInterval(async () => {
       const result = await this.firstRequest()
       if (!result) {
         logger.bot('info', this.selfId, `[onebot11][${this.adapter.communication}] 连接关闭: ${this.adapter.address}`)
-        unregisterBot(this.selfId, this.adapter.address)
+        unregisterBot('index', this.adapter.index)
         unregisterHttpBot(this.selfId)
         clearInterval(timer)
       }
