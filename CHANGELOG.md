@@ -1,5 +1,19 @@
 # 更新日志
 
+## [0.12.22](https://github.com/KarinJS/Karin/compare/v0.12.21...v0.12.22) (2024-11-23)
+
+
+### Bug Fixes
+
+* 导出非函数导致该文件所有方法注册失败 ([263fa68](https://github.com/KarinJS/Karin/commit/263fa6871aa72942f43eb82d8e83365ee68da1b2))
+
+## [0.12.21](https://github.com/KarinJS/Karin/compare/v0.12.20...v0.12.21) (2024-11-17)
+
+
+### Bug Fixes
+
+* 使机器人管理员组的权限凌驾于群管理员 ([#192](https://github.com/KarinJS/Karin/issues/192)) ([3237e55](https://github.com/KarinJS/Karin/commit/3237e554226dc122f9b4dac38d20493c15f33a6a))
+
 ## [0.12.20](https://github.com/KarinJS/Karin/compare/v0.12.19...v0.12.20) (2024-10-19)
 
 

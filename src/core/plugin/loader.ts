@@ -418,7 +418,7 @@ class PluginLoader {
           return true
         }
 
-        if (typeof Fn !== 'function' || !Fn?.prototype?.constructor) return false
+        if (typeof Fn !== 'function' || !Fn?.prototype?.constructor) return true
 
         const Class = new Fn()
         if (!Class.name) {
