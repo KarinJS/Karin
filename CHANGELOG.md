@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.12.23](https://github.com/KarinJS/Karin/compare/v0.12.22...v0.12.23) (2024-11-23)
+
+
+### Bug Fixes
+
+* 应确保OB11NoticeEvent中的target_uid为String类型 ([#200](https://github.com/KarinJS/Karin/issues/200)) ([7d8e2ca](https://github.com/KarinJS/Karin/commit/7d8e2ca9054ee88e881f76ac352daca1deba672c))
+
 ## [0.12.22](https://github.com/KarinJS/Karin/compare/v0.12.21...v0.12.22) (2024-11-23)
 
 
