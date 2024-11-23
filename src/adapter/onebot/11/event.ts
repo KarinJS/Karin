@@ -221,8 +221,8 @@ export class OB11Event {
           group_id: groupId,
           operator_uid: (data.operator_id + '') || '',
           operator_uin: (data.operator_id + '') || '',
-          target_uid: data.user_id || '',
-          target_uin: data.user_id || '',
+          target_uid: (data.user_id + '') || '',
+          target_uin: (data.user_id + '') || '',
           duration: data.duration,
           type: data.sub_type,
         }
