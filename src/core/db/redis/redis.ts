@@ -79,8 +79,9 @@ const isArm64 = async (): Promise<string> => {
   if (os.arch() !== 'arm64') return ''
 
   /** 提取版本 只有>=6的版本才忽略警告 */
-  const version = await exec('redis-server -v', { throwOnError: false })
-  if (typeof version !== 'string') return ''
+  const { stdout } = await exec('redis-server -v')
+  const version = stdout.toString()
+  if (!version) return ''
 
   const RedisVersion = version.match(/v=(\d)./)
   if (RedisVersion && Number(RedisVersion[1]) >= 6) return ' --ignore-warnings ARM64-COW-BUG'

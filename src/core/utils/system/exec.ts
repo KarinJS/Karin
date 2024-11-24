@@ -5,8 +5,8 @@ const logger = global?.logger || console
 
 type ExecError = {
   error: ExecException | null
-  stderr: string | Buffer<ArrayBufferLike>
-  stdout: string | Buffer<ArrayBufferLike>
+  stderr: string | Buffer
+  stdout: string | Buffer
 }
 type ExecReturn<K extends boolean> = K extends true ? boolean : ExecError
 

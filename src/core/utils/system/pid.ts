@@ -7,11 +7,11 @@ import { isWin } from './system'
  */
 export const getPid = async (port: number): Promise<number> => {
   const command = isWin ? `netstat -ano | findstr :${port}` : `lsof -i:${port} | grep LISTEN | awk '{print $2}'`
-  const output = await exec(command)
+  const { stdout } = await exec(command)
   if (isWin) {
-    const pid = output.split(/\s+/).filter(Boolean).pop()
+    const pid = stdout.toString().split(/\s+/).filter(Boolean).pop()
     return Number(pid)
   }
 
-  return Number(output)
+  return Number(stdout)
 }
