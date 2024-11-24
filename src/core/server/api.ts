@@ -18,6 +18,7 @@ export const ping = async (req: Request, res: Response) => {
   }
 
   const data = {
+    name: 'karin',
     pid: process.pid,
     pm2_id: process.env.pm_id || '',
     uptime: process.uptime(),
@@ -25,7 +26,6 @@ export const ping = async (req: Request, res: Response) => {
     karin_app_mode: process.env.karin_app_mode,
     karin_app_lang: process.env.karin_app_lang,
     karin_app_runner: process.env.karin_app_runner,
-    karin_app_start_count: process.env.karin_app_start_count,
   }
 
   res.json(data)
@@ -44,7 +44,8 @@ export const exit = async (req: Request, res: Response) => {
 
   logger.mark('收到退出请求，正在退出...')
   res.json({ message: '退出成功' })
-  process.exit(0)
+  const { processExit } = await import('@/internal/process')
+  await processExit(0)
 }
 
 /**

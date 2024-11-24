@@ -255,7 +255,7 @@ export interface CustomNodeSegments extends Segment {
   data: {
     user_id: string
     nickname: string
-    content: OB11SegmentBase[]
+    content: OB11Segment[]
     prompt?: string
     summary?: string
     source?: string

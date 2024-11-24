@@ -1,5 +1,5 @@
+import Axios from 'axios'
 import { YamlEditor } from '../fs/yaml'
-import Axios, { AxiosError } from 'axios'
 import { formatTime as FormatTime } from '../system/time'
 import type { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { getAppPlugins, getNpmPlugins as GetNpmPlugins, getGitPlugins as GetGitPlugins } from '@/plugin/index'
@@ -70,7 +70,7 @@ export const axios: AxiosFn = async (
     const config = typeof paramOrUrl === 'string' ? { ...param, url: paramOrUrl, method: type } : paramOrUrl
     return await Axios(config)
   } catch (error) {
-    error instanceof AxiosError ? logger.debug(error.stack) : logger.debug(error)
+    logger.trace(error)
     return null
   }
 }

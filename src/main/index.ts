@@ -8,11 +8,16 @@ export * from '@/plugin/index'
 export * from '@adapter/render/cache'
 export { karin as default } from '@/karin'
 export { TypedListeners } from '@/internal/listeners'
+export { default as axios } from 'axios'
+export { default as moment } from 'moment'
+export { default as yaml } from 'yaml'
+export { default as schedule } from 'node-schedule'
 
 import * as config from '@/utils/config'
 import { createRedis, createLevelDB } from '@/db'
 import { createLogger } from '@/utils/logger/logger'
-import { processExit, processHandler } from '@/internal/process'
+import { setDefault } from '@/env/env'
+import { processExit, processHandler, checkProcess } from '@/internal/process'
 import { loaderPlugin } from '@/plugin/loader'
 import { createWebSocketServer } from '@/service/server'
 import { createExpressWebSocketServer, startServer } from '../core/server/app'
@@ -38,13 +43,15 @@ export let level: LevelDB
 export const run = async () => {
   config.init()
   logger = createLogger({ log4jsCfg: config.config().log4jsCfg })
-  listeners.on('error', (error: any) => logger.error(error))
+  listeners.on('error', (error: unknown) => logger.error(error))
   listeners.on('exit', ({ code }) => processExit(code))
 
   logger.mark('Karin 启动中...')
   logger.mark(`当前版本: ${process.env.karin_app_version}`)
   logger.mark('https://github.com/KarinJS/Karin')
 
+  setDefault()
+  await checkProcess(config.port())
   const [
     redisClient,
     levelClient,
@@ -58,7 +65,7 @@ export const run = async () => {
     { registerBot },
   ] = await Promise.all([
     import('@adapter/input'),
-    import('@/service/adapter'),
+    import('@/service/bot'),
     import('@adapter/onebot/connect/server'),
     import('@adapter/render/connect/server'),
     createClient(),

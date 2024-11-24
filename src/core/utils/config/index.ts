@@ -28,6 +28,7 @@ import {
   setGroupOrGuildCache,
 } from './cache'
 import { updateHttpBotToken } from '@/service/server'
+import { setPort, setVersion } from '@/env/env'
 
 /** node-karin的package */
 export const pkg = requireFileSync<PackageType>(karinDir + '/package.json')
@@ -240,10 +241,16 @@ const getFriendOrDirectCfg = (userId: string, selfId?: string, isRefresh = false
   }
 }
 
+/**
+ * @description 创建基本配置
+ */
+
 /** 初始化 */
 export const init = () => {
   config()
   server()
+  setPort(port())
+  setVersion(pkg.version)
   const list = [basePath, configPath, dataPath, tempPath]
   list.map(v => isExists(v))
 

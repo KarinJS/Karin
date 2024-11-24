@@ -23,7 +23,7 @@
     "url": "git+https://github.com/KarinJS/Karin.git"
   },
   "license": "MIT",
-  "author": "Karin",
+  "author": "shijin",
   "type": "module",
   "exports": {
     ".": {
@@ -31,10 +31,10 @@
       "require": "./lib/index.js",
       "types": "./lib/index.d.ts"
     },
-    "./modules.js": {
-      "import": "./lib/modules.js",
-      "require": "./lib/modules.js",
-      "types": "./lib/modules.d.ts"
+    "./template": {
+      "import": "./lib/modules/art-template.js",
+      "require": "./lib/modules/art-template.js",
+      "types": "./lib/modules/art-template.d.ts"
     },
     "./art-template": {
       "import": "./lib/modules/art-template.js",
@@ -86,6 +86,11 @@
       "require": "./lib/modules/moment.js",
       "types": "./lib/modules/moment.d.ts"
     },
+    "./schedule": {
+      "import": "./lib/modules/node-schedule.js",
+      "require": "./lib/modules/node-schedule.js",
+      "types": "./lib/modules/node-schedule.d.ts"
+    },
     "./node-schedule": {
       "import": "./lib/modules/node-schedule.js",
       "require": "./lib/modules/node-schedule.js",
@@ -111,15 +116,12 @@
   "types": "./lib/index.d.ts",
   "bin": {
     "init": "lib/cli/init.js",
-    "karin": "lib/cli/karin.js"
+    "karin": "lib/main/scripts.js"
   },
   "files": [
     "/lib/**/*.js",
     "/lib/**/*.d.ts",
-    "/config/defSet/*.yaml",
-    "/config/view/*.yaml",
-    "modules.js",
-    "modules.d.ts",
+    "/default/**",
     "LICENSE",
     "package.json",
     "README.md"
@@ -131,10 +133,11 @@
     ".": "node lib/cli/start.js .",
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run cp",
     "cp": "node lib/cli/cp.js",
-    "dev": "node lib/cli/start.js dev",
-    "init": "node lib/cli/init.js",
+    "dev": "node lib/main/scripts.js dev",
+    "init": "node lib/main/scripts.js init",
     "lint": "eslint src/**/*.ts --fix",
     "pub": "npm publish --access public",
+    "postinstall": "node lib/cli/cfg.js --init",
     "sort": "npx sort-package-json && sort-json tsconfig.json",
     "start": "node lib/cli/start.js start"
   },

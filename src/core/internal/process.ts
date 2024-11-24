@@ -1,8 +1,8 @@
 import lodash from 'lodash'
-import { uptime } from '@/utils'
 import { listeners } from './listeners'
-import { axios } from '@/utils/common'
+import { exec } from '@/utils/system/exec'
 import { getPid } from '@/utils/system/pid'
+import { axios, sleep, uptime } from '@/utils/common/index'
 
 /** 处理基本信号 */
 export const processHandler = () => {
@@ -32,7 +32,7 @@ export const processHandler = () => {
  */
 export const checkProcess = async (port: number) => {
   const host = `http://127.0.0.1:${port}`
-  const data = await axios({ url: `${host}/ping`, method: 'get', timeout: 2000 })
+  const data = await axios({ url: `${host}/ping`, method: 'get', timeout: 500 })
   if (!data || data.status !== 200) return
 
   /** 端口被未知程序占用 获取对应的进程ID */
@@ -47,21 +47,24 @@ export const checkProcess = async (port: number) => {
     return
   }
 
-  logger.warn('检测到后台进程 正在关闭...')
-  await axios({ url: `${host}/exit`, method: 'get', timeout: 2000 })
+  await axios({ url: `${host}/exit`, method: 'get', timeout: 500 })
+  logger.mark(logger.red('检测到后台进程 正在关闭...'))
 
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 100; i++) {
     const result = await axios({ url: `${host}/ping`, method: 'get', timeout: 100 })
     /** 请求成功继续循环 */
-    if (result) continue
+    if (result) {
+      await sleep(50)
+      continue
+    }
     /** 请求异常即代表后台进程已关闭 */
-    logger.mark('后台进程已关闭')
+    logger.mark(logger.green('后台进程已关闭'))
     return
   }
 
   /** 走到这里说明后台关闭失败 */
   logger.error(`后台进程关闭失败，请检查是否有进程正在占用端口${port}`)
-  process.exit()
+  processExit(1)
 }
 
 const processExitHandler = async (code: unknown) => {
@@ -69,7 +72,12 @@ const processExitHandler = async (code: unknown) => {
     const { redis, level } = await import('../../main/index')
     await Promise.allSettled([redis.save(), level.close()])
 
-    logger.mark(`Karin 已停止运行 运行时间：${uptime()} 退出码：${code || '未知'}`)
+    logger.mark(`运行结束 运行时间：${uptime()} 退出码：${code ?? '未知'}`)
+
+    /** 如果是pm2环境 */
+    if (process.env.pm_id) {
+      await exec(`pm2 delete ${process.env.pm_id}`)
+    }
   } finally {
     process.exit()
   }

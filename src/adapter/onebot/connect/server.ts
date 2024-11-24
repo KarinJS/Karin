@@ -1,5 +1,5 @@
 import { config } from '@/utils'
-import { unregisterBot } from '@/service/adapter'
+import { unregisterBot } from '@/service/bot'
 import { WsAdapterOneBot11 } from './ws'
 import { registerWSPath } from '@/service/server'
 import type { WebSocket } from 'ws'
@@ -25,7 +25,7 @@ export class AdapterServerOneBot11 extends WsAdapterOneBot11 {
     super.init(selfId, url, 'webSocketServer')
 
     this.socket.on('close', () => {
-      unregisterBot(this.selfId, this.adapter.address)
+      unregisterBot('index', this.adapter.index)
       logger.bot('info', this.selfId, '连接关闭')
       /** 停止全部监听 */
       this.socket.removeAllListeners()

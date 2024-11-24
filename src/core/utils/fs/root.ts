@@ -31,3 +31,5 @@ export const redisLevelPath = Object.freeze(path.join(dbPath, 'redis-level'))
 export const logsPath = Object.freeze(path.join(process.cwd(), 'logs'))
 /** html目录 */
 export const htmlPath = Object.freeze(path.join(tempPath, 'html'))
+/** pm2配置路径 */
+export const pm2Path = Object.freeze(path.join(configPath, 'pm2.yaml'))

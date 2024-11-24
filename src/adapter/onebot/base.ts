@@ -5,7 +5,7 @@ import { RoleEnum, SexEnum } from '@/adapter/sender'
 import { createNotice, createRequest } from './create/notice'
 import { AdapterConvertKarin, KarinConvertAdapter } from './convert'
 import { GetGroupHighlightsResponse, QQGroupHonorInfo } from '@/adapter/types'
-import { Action, OB11NodeSegment, OB11Segment, Params, Request } from './types'
+import { Action, CustomNodeSegments, OB11NodeSegment, OB11Segment, Params, Request } from './types'
 import type { Contact } from '@/adapter/contact'
 import type { OB11AllEvent } from './types/event'
 import type { ElementTypes, NodeElementType } from '@/adapter/segment'
@@ -76,7 +76,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * onebot11转karin
    * @return karin格式消息
    */
-  AdapterConvertKarin (data: Array<OB11Segment>): any {
+  AdapterConvertKarin (data: Array<OB11Segment>) {
     return AdapterConvertKarin(data)
   }
 
@@ -84,7 +84,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * karin转onebot11
    * @param data karin格式消息
    */
-  KarinConvertAdapter (data: Array<ElementTypes>): any {
+  KarinConvertAdapter (data: Array<ElementTypes>) {
     return KarinConvertAdapter(data, this.adapter.address)
   }
 
@@ -1203,7 +1203,7 @@ export abstract class AdapterOneBot extends AdapterBase {
       if ('resId' in elem) {
         messages.push({ type: 'node', data: { id: elem.resId } })
       } else {
-        const node: OB11NodeSegment = {
+        const node: CustomNodeSegments = {
           type: 'node',
           data: {
             user_id: elem.userId,
@@ -1212,11 +1212,11 @@ export abstract class AdapterOneBot extends AdapterBase {
           },
         }
 
-        if (typeof elem.options === 'object') {
-          if (elem.options.prompt) node.data.prompt = elem.options.prompt
-          if (elem.options.summary) node.data.summary = elem.options.summary
-          if (elem.options.source) node.data.source = elem.options.source
-        }
+        // if (typeof elem.options === 'object') {
+        //   if (elem.options.prompt) node.data.prompt = elem.options.prompt
+        //   if (elem.options.summary) node.data.summary = elem.options.summary
+        //   if (elem.options.source) node.data.source = elem.options.source
+        // }
 
         messages.push(node)
       }
