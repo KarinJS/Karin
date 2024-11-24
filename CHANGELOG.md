@@ -1,5 +1,12 @@
 # 更新日志
 
+## [0.12.24](https://github.com/KarinJS/Karin/compare/v0.12.23...v0.12.24) (2024-11-24)
+
+
+### Bug Fixes
+
+* 都怪永恒 ([3f66447](https://github.com/KarinJS/Karin/commit/3f66447b94eeea3955ddb62f256673744aada6b9))
+
 ## [0.12.23](https://github.com/KarinJS/Karin/compare/v0.12.22...v0.12.23) (2024-11-23)
 
 
