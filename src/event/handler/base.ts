@@ -1,3 +1,4 @@
+import lodash from 'lodash'
 import { listener, pluginLoader } from 'karin/core'
 import { review } from './review'
 import { segment, common, logger, config } from 'karin/utils'
@@ -161,7 +162,8 @@ export class EventBaseHandler {
 
       /** 先发 提升速度 */
       const result = this.e.replyCallback(message, retry_count)
-      const ReplyLog = common.makeMessageLog(message)
+      /** 限制长度为500 */
+      const ReplyLog = lodash.truncate(common.makeMessageLog(message), { length: 500 })
 
       if (this.e.isGroup) {
         review.GroupMsgPrint(this.e) && logger.bot('info', this.e.self_id, `${logger.green(`Send Group ${this.e.group_id}: `)}${ReplyLog.replace(/\n/g, '\\n')}`)

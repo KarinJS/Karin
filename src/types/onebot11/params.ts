@@ -1,10 +1,9 @@
-/* eslint-disable no-unused-vars */
 import { OB11Api } from './api'
 import { CustomNodeSegment, OB11Segment } from './segment'
 
 export const enum MessageType {
   Private = 'private',
-  Group = 'group'
+  Group = 'group',
 }
 
 /** OneBot11公开Api参数 params */
