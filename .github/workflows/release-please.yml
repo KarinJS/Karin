@@ -1,9 +1,11 @@
-name: Release and Publish
+name: PR Release Please
+
+# 监听 PR 相关事件
 on:
-  push:
-    # 监听 dev 分支的 push 事件
-    branches:
-      - dev
+  pull_request:
+    # 监听 PR 被打开、重新打开和推送事件
+    types: [opened, reopened, synchronize]
+
 # 赋予 release-please-action 权限
 permissions:
   contents: write
@@ -14,19 +16,8 @@ jobs:
     # 设置任务运行环境为 ubuntu-latest
     runs-on: ubuntu-latest
     steps:
-      # 使用 release-please-action 动作来自动创建发布 PR
-      - uses: google-github-actions/release-please-action@v3
-        id: release
-        with:
-          # 设置发布类型为 node
-          release-type: node
-          # 设置包名
-          package-name: node-karin
-          # 设置发布PR分支
-          default-branch: dev
       # 检出代码
       - uses: actions/checkout@v4
-        if: ${{ steps.release.outputs.release_created }}
       # 设置 Node.js 环境
       - uses: actions/setup-node@v4
         with:
@@ -34,26 +25,21 @@ jobs:
           node-version: 20
           # 设置 npm 源
           registry-url: "https://registry.npmjs.org"
-        if: ${{ steps.release.outputs.release_created }}
-      # 安装jq工具 删除对等依赖 对等依赖是给karin自身使用的
-      - run: sudo apt-get install jq && jq 'del(.peerDependencies)' package.json > package.json.tmp && mv package.json.tmp package.json
-        if: ${{ steps.release.outputs.release_created }}
-      # 安装 pnpm
-      - run: npm install -g pnpm
-        if: ${{ steps.release.outputs.release_created }}
       # 安装依赖 不安装对等依赖
-      - run: pnpm install --config.auto-install-peers=false --ignore-scripts
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.RELEASE }}
-        if: ${{ steps.release.outputs.release_created }}
+      - run: npm install --config.auto-install-peers=false --ignore-scripts
       # 构建输出
-      - run: pnpm run build
-        if: ${{ steps.release.outputs.release_created }}
-      # 删除开发依赖 使用jq工具删除
-      - run: jq 'del(.devDependencies)' package.json > package.json.tmp && mv package.json.tmp package.json
-        if: ${{ steps.release.outputs.release_created }}
+      - run: npm run build
+      # 获取当前 PR 编号并设置环境变量
+      - run: echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+      # 自动修改 package.json 的版本号、删除开发、对等依赖
+      - run: npm run pr --all
       # 发布到 npm
-      - run: pnpm run pub
+      - run: npm run pub
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        if: ${{ steps.release.outputs.release_created }}
+      # 在 PR 上发布评论
+      - run: |
+          INSTALL_COMMAND="npm install ${{ env.PKG_NAME }}@${{ env:.PKG_VERSION }}"
+          gh pr comment ${{ env.PR_NUMBER }} --body "🎉 构建完成！您可以通过以下命令安装此版本：\n\`\`\`\n${INSTALL_COMMAND}\n\`\`\`"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

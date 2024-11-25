@@ -135,9 +135,10 @@
     "cp": "node lib/cli/cp.js",
     "dev": "node lib/main/scripts.js dev",
     "init": "node lib/main/scripts.js init",
-    "lint": "eslint src/**/*.ts --fix",
-    "pub": "npm publish --access public",
     "postinstall": "node lib/cli/cfg.js --init",
+    "lint": "eslint src/**/*.ts --fix",
+    "pr": "node lib/cli/pr.js",
+    "pub": "npm publish --access public",
     "sort": "npx sort-package-json && sort-json tsconfig.json",
     "start": "node lib/cli/start.js start"
   },
