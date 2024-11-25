@@ -286,6 +286,10 @@ export const updateGitPlugin = async<T extends 'ok' | 'failed' = 'ok' | 'failed'
 export const updateAllGitPlugin = async (time = 120): Promise<string> => {
   const logger = global?.logger || console
   const list = await getGitPlugins(false)
+  if (!list.length) {
+    logger.info('没有可更新的插件~')
+    return '没有可更新的插件~'
+  }
   const result: string[] = []
 
   await Promise.allSettled(list.map(async (name) => {
