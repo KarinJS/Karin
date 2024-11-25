@@ -73,7 +73,7 @@ export const updateAllPkg = async (): Promise<string> => {
     local: string | null
     remote: string
   }> = {}
-  const tips = ['---------- 更新npm插件 ----------']
+  const tips = ['------- 更新npm插件 --------']
   const cmd = ['pnpm up']
   const pkg = await getPkg()
   const result: string[] = []
@@ -97,8 +97,13 @@ export const updateAllPkg = async (): Promise<string> => {
   tips.push('----------------------------')
   logger.info(tips.join('\n'))
 
+  if (cmd.length === 1) {
+    logger.info('没有可更新的插件~')
+    return '没有可更新的插件~'
+  }
+
   const shell = cmd.join(' ')
-  logger.mark(`开始更新: ${shell}`)
+  logger.info(`开始更新: ${shell}`)
 
   const { error } = await exec(shell)
   if (error) {

@@ -35,7 +35,8 @@ async function init () {
  * @description 更新插件
  */
 async function up () {
-  await import('../cli/up')
+  const { up } = await import('../cli/up')
+  await up()
 }
 
 import('commander').then(({ program }) => {
