@@ -28,6 +28,7 @@ const getPkg = (name: string): PkgData | null => {
 
 /**
  * @description 获取git插件列表
+ * @param includeRoot 是否包含根目录的`package.json`
  * - 在 `0.13.0` 引入了对根目录下的插件的支持
  * - 满足以下条件 根目录也将被视为一个git插件
  * 1. 根目录存在`package.json`
@@ -40,7 +41,7 @@ const getPkg = (name: string): PkgData | null => {
  * // -> ['karin-plugin-test', 'karin-plugin-xxx']
  * ```
  */
-export const getGitPlugins = async (): Promise<GitPluginName[]> => {
+export const getGitPlugins = async (includeRoot = true): Promise<GitPluginName[]> => {
   const cached = getPluginCache.get(key.list)
   if (cached) return cached
 
@@ -55,8 +56,10 @@ export const getGitPlugins = async (): Promise<GitPluginName[]> => {
   })) || []
 
   /** 处理根目录 */
-  const root = await requireFileSync('./package.json')
-  if (root.name.startsWith('karin-plugin-') && root.karin) list.push(root.name)
+  if (includeRoot) {
+    const root = await requireFileSync('./package.json')
+    if (root.karin) list.push(root.name)
+  }
 
   list = list.filter(Boolean)
 

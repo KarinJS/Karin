@@ -33,8 +33,7 @@ export const isDir = (path: string): boolean => {
  */
 export const isExists = (path: string): boolean => {
   try {
-    fs.accessSync(path)
-    return true
+    return fs.existsSync(path)
   } catch {
     return false
   }
