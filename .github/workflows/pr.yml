@@ -26,7 +26,7 @@ jobs:
           # 设置 npm 源
           registry-url: "https://registry.npmjs.org"
       # 安装依赖 不安装对等依赖
-      - run: npm install --config.auto-install-peers=false --ignore-scripts
+      - run: npm install --config.auto-install-peers=false --ignore-scripts --omit=peer
       # 构建输出
       - run: npm run build
       # 获取当前 PR 编号并设置环境变量

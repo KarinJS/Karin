@@ -173,15 +173,8 @@
     "typescript": "^5.6.3"
   },
   "peerDependencies": {
-    "node-karin": "link:./lib"
+    "node-karin": "file:./lib"
   },
-  "bundledDependencies": [
-    "@types/express",
-    "@types/lodash",
-    "@types/node",
-    "@types/node-schedule",
-    "@types/ws"
-  ],
   "engines": {
     "node": ">=18"
   },
