@@ -6,9 +6,10 @@
 export const init = async () => {
   const fs = await import('fs').then((res) => res.default)
 
-  const indexPath = `${process.cwd()}/index.js`
-  const pnpmPath = `${process.cwd()}/pnpm-workspace.yaml`
-  const npmrcPath = `${process.cwd()}/.npmrc`
+  const root = process.env.INIT_CWD || process.cwd()
+  const indexPath = `${root}/index.js`
+  const pnpmPath = `${root}/pnpm-workspace.yaml`
+  const npmrcPath = `${root}/.npmrc`
 
   /** 创建入口 */
   if (!fs.existsSync(indexPath)) {
