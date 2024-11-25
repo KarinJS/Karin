@@ -70,10 +70,10 @@ const all = () => {
 }
 
 const cmd = process.argv[2]
-if (cmd === '--version') {
+if (cmd === 'version') {
   version()
-} else if (cmd === '--clean') {
+} else if (cmd === 'clean') {
   clean()
-} else if (cmd === '--all') {
+} else if (cmd === 'all') {
   all()
 }
