@@ -21,6 +21,16 @@ export const init = async () => {
     fs.writeFileSync(pnpmPath, 'packages:\n  - \'plugins/**\'\n')
   }
 
+  /** 修改当前环境为esm */
+  const packagePath = `${root}/package.json`
+  if (fs.existsSync(packagePath)) {
+    const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf-8'))
+    if (!packageJson.type || packageJson.type !== 'module') {
+      packageJson.type = 'module'
+      fs.writeFileSync(packagePath, JSON.stringify(packageJson, null, 2))
+    }
+  }
+
   /** 根据当前npm源来决定是否设置镜像源 */
   if (!fs.existsSync(npmrcPath)) {
     const { exec } = await import('@/utils/system/exec')
