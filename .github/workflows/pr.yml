@@ -26,22 +26,38 @@ jobs:
           # 设置 npm 源
           registry-url: "https://registry.npmjs.org"
       # 安装依赖 不安装对等依赖
-      - run: npm install --config.auto-install-peers=false --ignore-scripts --omit=peer
+      - name: 安装依赖
+        run: npm install --config.auto-install-peers=false --ignore-scripts --omit=peer
       # 构建输出
-      - run: npm run build
+      - name: 构建输出
+        id: build
+        run: npm run build > build.log 2>&1
+        continue-on-error: true # 捕获失败并允许后续步骤运行
       # 获取当前 PR 编号并设置环境变量
-      - run: echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+      - name: 获取 PR 编号
+        run: echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
       # 自动修改 package.json 的版本号、删除开发、对等依赖
-      - run: npm run pr all
+      - name: 修订版本号
+        run: npm run pr all
+        if: success()
       # 发布到 npm
-      - run: npm run pub-beta
+      - name: 发布到 npm
+        run: npm run pub-beta
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      # 在 PR 上发布评论
-      - run: |
-          TIPS="pr版本号格式：<主版本号>.<次版本号>.<修订号>-<预发布标识>.<PR标识>.<PR编号>.<工作流编号>-<时间戳>"
-          INSTALL_COMMAND_NPM="npm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }}"
-          INSTALL_COMMAND_PNPM="pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -w"
-          gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 构建完成！\n\n'"${TIPS}"$'\n\n安装此版本：\n```\n'"NPM: ${INSTALL_COMMAND_NPM}\nPNPM: ${INSTALL_COMMAND_PNPM}"$'\n```'
+        if: success()
+      # 在 PR 上发布构建完成或失败信息
+      - name: 发布评论
+        run: |
+          if [ "${{ steps.build.outcome }}" = "failure" ]; then
+            # 捕获构建失败日志
+            ERROR_MESSAGE=$(cat build.log || echo "未找到详细的构建日志。")
+            # 发布构建失败评论
+            gh pr comment ${{ env.PR_NUMBER }} --body $'❌ 构建失败！以下是错误日志：\n\n<details>\n<summary>展开查看错误日志</summary>\n\n```\n'"${ERROR_MESSAGE}"$'\n```\n\n</details>'
+          else
+            # 构建成功评论
+            INSTALL_COMMAND="pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -w"
+            gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 构建完成！您可以通过以下命令安装此版本：\n\n```\n'"${INSTALL_COMMAND}"$'\n```'
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE }}
