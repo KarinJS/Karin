@@ -134,7 +134,7 @@
     "cp": "node lib/cli/cp.js",
     "dev": "node lib/main/scripts.js dev",
     "init": "node lib/main/scripts.js init",
-    "prepare": "node lib/main/scripts.js init",
+    "preinstall": "node lib/main/scripts.js init",
     "lint": "eslint src/**/*.ts --fix",
     "pr": "node lib/cli/pr.js",
     "pub": "npm publish --access public",
