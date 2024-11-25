@@ -75,7 +75,7 @@ export const updateAllPkg = async (): Promise<string> => {
     local: string | null
     remote: string
   }> = {}
-  const tips = ['------- 更新npm插件 --------']
+  const tips = ['\n------- 更新npm插件 --------']
   const cmd = ['pnpm up']
   const pkg = await getPkg()
   const result: string[] = []
@@ -96,12 +96,14 @@ export const updateAllPkg = async (): Promise<string> => {
     state[name] = { local, remote }
   }))
 
-  tips.push('----------------------------')
-  logger.info(tips.join('\n'))
-
   if (cmd.length === 1) {
-    logger.info('没有可更新的插件~')
+    tips.push('没有可更新的插件~')
+    tips.push('---------------------------')
+    logger.info(tips.join('\n'))
     return '没有可更新的插件~'
+  } else {
+    tips.push('----------------------------')
+    logger.info(tips.join('\n'))
   }
 
   const shell = cmd.join(' ')
@@ -286,22 +288,27 @@ export const updateGitPlugin = async<T extends 'ok' | 'failed' = 'ok' | 'failed'
 export const updateAllGitPlugin = async (time = 120): Promise<string> => {
   const logger = global?.logger || console
   const list = await getGitPlugins(false)
+  const tips = ['\n------- 更新git插件 --------']
   if (!list.length) {
-    logger.info('没有可更新的插件~')
+    tips.push('没有可更新的插件~')
+    tips.push('----------------------------')
+    logger.info(tips.join('\n'))
     return '没有可更新的插件~'
   }
   const result: string[] = []
-
   await Promise.allSettled(list.map(async (name) => {
     const filePath = `./plugins/${name}`
     const { status, data } = await updateGitPlugin(filePath, 'git pull', time)
     if (status === 'ok') {
+      tips.push(`[${name}][更新成功] ${data}`)
       result.push(`[${name}][更新成功] ${data}`)
     } else {
+      tips.push(`[${name}][更新失败] ${data}`)
       result.push(`[${name}][更新失败] ${data}`)
     }
   }))
 
-  logger.info(result.join('\n'))
+  tips.push('----------------------------')
+  logger.info(tips.join('\n'))
   return result.join('\n')
 }
