@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 /**
- * @description 入口函数
+ * @description 初始化基本配置
  */
-export const main = async () => {
+export const init = async () => {
   const fs = await import('fs').then((res) => res.default)
 
   const indexPath = `${process.cwd()}/index.js`
@@ -42,6 +42,3 @@ export const main = async () => {
     fs.writeFileSync(`${process.cwd()}/.npmrc`, list.join('\n'))
   }
 }
-
-/** 如果脚本是 node cfg.js --init则执行脚本 */
-if (process.argv.includes('--init')) main()

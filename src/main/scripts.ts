@@ -19,8 +19,16 @@ async function main (
   program.command('ts').description('TypeScript开发模式').action(() => { karin.runTsx() })
   program.command('log').description('查看日志').action(() => { karin.logPM2() })
   // program.command('up').description('更新依赖').action(() => karin.runFork())
-  // program.command('init').description('初始化karin').action(() => { import('./init') })
+  program.command('init').description('初始化karin').action(() => init())
   program.parse(process.argv)
+}
+
+/**
+ * @description 初始化基本配置
+ */
+async function init () {
+  const { init } = await import('../cli/cfg')
+  await init()
 }
 
 import('commander').then(({ program }) => {
