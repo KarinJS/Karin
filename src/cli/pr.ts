@@ -17,13 +17,15 @@ const readPkg = () => JSON.parse(fs.readFileSync(getPkgPath(), 'utf-8'))
 const writePkg = (pkg: any) => fs.writeFileSync(getPkgPath(), JSON.stringify(pkg, null, 2))
 
 /**
- * @description 构建pr版本号
+ * @description 构建pr版本号 <主版本号>.<次版本号>.<修订号>-<预发布标识>.<PR标识>.<PR编号>.<工作流唯一编号>-<时间戳>
+
  * @param pkg package.json
  */
 const updateVersion = (pkg: any) => {
   const list = pkg.version.split('.')
-  // 1.0.0 => 1.0.1-beta-pr编号-时间戳 => 1.0.1-beta-100-1628180000000
-  list[2] = `${Number(list[2]) + 1}-beta-${process.env.PR_NUMBER}-${Date.now().toString()}`
+  // 1.0.0 => 1.0.1-beta.pr.pr编号.工作流唯一编号-时间戳 => 1.0.1-beta.pr.184-1631537630
+  const timestamp = Math.floor(Date.now() / 1000)
+  list[2] = `${Number(list[2]) + 1}-beta.pr.${process.env.PR_NUMBER}.${process.env.GITHUB_RUN_ATTEMPT || 1}-${timestamp}`
   pkg.version = list.join('.')
 }
 
