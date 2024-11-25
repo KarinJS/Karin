@@ -1,7 +1,7 @@
 import { watch, type Watch } from './watch'
 import { configKey } from './types'
-import { isExists } from '../fs/exists'
-import { requireFileSync } from '@/utils'
+import { isExists } from '@/utils/fs/exists'
+import { requireFileSync } from '@/utils/fs/require'
 import { copyConfigSync } from './initCfg'
 import {
   basePath,
@@ -247,12 +247,11 @@ const getFriendOrDirectCfg = (userId: string, selfId?: string, isRefresh = false
 
 /** 初始化 */
 export const init = () => {
+  copyConfigSync(defaultConfigPath, configPath, ['.yaml'])
   config()
   server()
   setPort(port())
   setVersion(pkg.version)
   const list = [basePath, configPath, dataPath, tempPath]
   list.map(v => isExists(v))
-
-  copyConfigSync(defaultConfigPath, configPath, ['.yaml'])
 }
