@@ -175,6 +175,13 @@
   "peerDependencies": {
     "node-karin": "link:./lib"
   },
+  "bundledDependencies": [
+    "@types/express",
+    "@types/lodash",
+    "@types/node",
+    "@types/node-schedule",
+    "@types/ws"
+  ],
   "engines": {
     "node": ">=18"
   },

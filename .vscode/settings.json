@@ -21,14 +21,4 @@
   // 构造函数后面加空格
   "typescript.format.insertSpaceAfterConstructor": true,
   "javascript.format.insertSpaceAfterConstructor": true,
-  "vetur.format.defaultFormatter.html": "js-beautify-html",
-  "vetur.format.defaultFormatter.js": "prettier",
-  "vetur.format.defaultFormatterOptions": {
-    "js-beautify-html": {
-      "wrap_attributes": "force-aligned"
-    }
-  },
-  "vetur.validation.template": true,
-  "vetur.validation.script": true,
-  "vetur.validation.style": true
 }
