@@ -1,4 +1,4 @@
-name: PR Release Please
+name: PR
 
 # 监听 PR 相关事件
 on:
@@ -39,7 +39,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       # 在 PR 上发布评论
       - run: |
-          INSTALL_COMMAND="npm install ${{ env.PKG_NAME }}@${{ env:.PKG_VERSION }}"
+          INSTALL_COMMAND="npm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }}"
           gh pr comment ${{ env.PR_NUMBER }} --body "🎉 构建完成！您可以通过以下命令安装此版本：\n\`\`\`\n${INSTALL_COMMAND}\n\`\`\`"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
