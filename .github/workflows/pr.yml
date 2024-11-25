@@ -1,0 +1,45 @@
+name: PR
+
+# 监听 PR 相关事件
+on:
+  pull_request:
+    # 监听 PR 被打开、重新打开和推送事件
+    types: [opened, reopened, synchronize]
+
+# 赋予 release-please-action 权限
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  # 设置 release-please 任务
+  release-please:
+    # 设置任务运行环境为 ubuntu-latest
+    runs-on: ubuntu-latest
+    steps:
+      # 检出代码
+      - uses: actions/checkout@v4
+      # 设置 Node.js 环境
+      - uses: actions/setup-node@v4
+        with:
+          # 设置 Node.js 版本
+          node-version: 20
+          # 设置 npm 源
+          registry-url: "https://registry.npmjs.org"
+      # 安装依赖 不安装对等依赖
+      - run: npm install --config.auto-install-peers=false --ignore-scripts
+      # 构建输出
+      - run: npm run build
+      # 获取当前 PR 编号并设置环境变量
+      - run: echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+      # 自动修改 package.json 的版本号、删除开发、对等依赖
+      - run: npm run pr --all
+      # 发布到 npm
+      - run: npm run pub
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # 在 PR 上发布评论
+      - run: |
+          INSTALL_COMMAND="npm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }}"
+          gh pr comment ${{ env.PR_NUMBER }} --body "🎉 构建完成！您可以通过以下命令安装此版本：\n\`\`\`\n${INSTALL_COMMAND}\n\`\`\`"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
