@@ -1,5 +1,4 @@
-import { Cache } from './types'
-import type { CommandClass, CommandFnc } from './types'
+import type { Cache, CommandClass, CommandFnc } from './types'
 
 /** 获取插件列表时的缓存 */
 export const getPluginCache = new Map<string, any>()

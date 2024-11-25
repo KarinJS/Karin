@@ -18,7 +18,7 @@ async function main (
   program.command('dev').description('JavaScript开发模式').action(() => { karin.runDev() })
   program.command('ts').description('TypeScript开发模式').action(() => { karin.runTsx() })
   program.command('log').description('查看日志').action(() => { karin.logPM2() })
-  // program.command('up').description('更新依赖').action(() => karin.runFork())
+  program.command('up').description('更新插件').action(() => up())
   program.command('init').description('初始化karin').action(() => init())
   program.parse(process.argv)
 }
@@ -29,6 +29,13 @@ async function main (
 async function init () {
   const { init } = await import('../cli/cfg')
   await init()
+}
+
+/**
+ * @description 更新插件
+ */
+async function up () {
+  await import('../cli/up')
 }
 
 import('commander').then(({ program }) => {

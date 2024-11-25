@@ -26,6 +26,7 @@ export * from './system/ip'
 export * from './system/pid'
 export * from './system/system'
 export * from './system/time'
+export * from './system/update'
 
 export * as common from './common'
 export * as config from './config/index'

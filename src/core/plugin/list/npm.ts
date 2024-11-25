@@ -75,6 +75,16 @@ export const getNpmPlugins = async (): Promise<string[]> => {
 
 /**
  * 获取插件npm插件列表详细信息
+ * @example
+ * ```ts
+ * console.log(await getNpmPluginsInfo())
+ * // -> [{
+ * //  type: 'npm',
+ * //  apps: ['/root/karin/node_modules/karin-plugin-example/lib'],
+ * //  dir: '/root/karin/plugins/karin-plugin-example',
+ * //  name: 'karin-plugin-example'
+ * // }]
+ * ```
  */
 export const getNpmPluginsInfo = async (): Promise<Info[]> => {
   /** 先读缓存 */

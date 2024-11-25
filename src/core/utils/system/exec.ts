@@ -5,8 +5,8 @@ const logger = global?.logger || console
 
 type ExecError = {
   error: ExecException | null
-  stderr: string | Buffer
-  stdout: string | Buffer
+  stderr: string
+  stdout: string
 }
 type ExecReturn<K extends boolean> = K extends true ? boolean : ExecError
 
@@ -51,7 +51,11 @@ export const exec = <K extends boolean = false> (
         return resolve((!!error) as ExecReturn<K>)
       }
 
-      const value = { error, stdout, stderr } as ExecReturn<K>
+      const value = {
+        error,
+        stdout: stdout.toString().trim(),
+        stderr: stderr.toString().trim(),
+      } as ExecReturn<K>
       resolve(value)
     })
   })
