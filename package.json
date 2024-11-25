@@ -1,6 +1,6 @@
 {
   "name": "node-karin",
-  "version": "0.12.17",
+  "version": "0.12.24",
   "private": false,
   "description": "Lightweight, efficient, concise, and stable robot framework.",
   "keywords": [
@@ -139,6 +139,7 @@
     "lint": "eslint src/**/*.ts --fix",
     "pr": "node lib/cli/pr.js",
     "pub": "npm publish --access public",
+    "pub-beta": "npm publish --tag beta",
     "sort": "npx sort-package-json && sort-json tsconfig.json",
     "start": "node lib/cli/start.js start"
   },

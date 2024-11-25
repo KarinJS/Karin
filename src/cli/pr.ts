@@ -22,10 +22,8 @@ const writePkg = (pkg: any) => fs.writeFileSync(getPkgPath(), JSON.stringify(pkg
  */
 const updateVersion = (pkg: any) => {
   const list = pkg.version.split('.')
-  list[2] = `${Number(list[2])}-dev`
-  list.push(process.env.PR_NUMBER)
-  list.push(Date.now().toString())
-
+  // 1.0.0 => 1.0.1-beta-pr编号-时间戳 => 1.0.1-beta-100-1628180000000
+  list[2] = `${Number(list[2]) + 1}-beta-${process.env.PR_NUMBER}-${Date.now().toString()}`
   pkg.version = list.join('.')
 }
 
