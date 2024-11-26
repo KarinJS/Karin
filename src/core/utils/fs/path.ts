@@ -9,23 +9,23 @@ import path from 'node:path'
  * @description 根据文件后缀名从指定路径下读取符合要求的文件
  * @param path - 路径
  * @param ext - 后缀名、或后缀名列表
- * @param returnType - 返回类型
+ * @param returnType - 返回类型 `name:文件名` `rel:相对路径` `abs:绝对路径`
  * @example
  * ```ts
  * filesByExt('./plugins/karin-plugin-test', '.js')
  * // -> ['1.js', '2.js']
- * filesByExt('./plugins', ['.js', '.ts'])
+ * filesByExt('./plugins', ['.js', '.ts'], 'name')
  * // -> ['1.js', '2.js', '3.ts']
- * filesByExt('./plugins', '.js', 'relativePath')
+ * filesByExt('./plugins', '.js', 'rel')
  * // -> ['plugins/1.js', 'plugins/2.js']
- * filesByExt('./plugins', '.js', 'absolutePath')
+ * filesByExt('./plugins', '.js', 'abs')
  * // -> ['C:/Users/karin/plugins/1.js', 'C:/Users/karin/plugins/2.js']
  * ```
  */
 export const filesByExt = (
   filePath: string,
   ext: string | string[],
-  returnType: 'fileName' | 'relativePath' | 'absolutePath' = 'fileName'
+  returnType: 'name' | 'rel' | 'abs' = 'name'
 ): string[] => {
   if (!isDir(filePath)) return []
   const files = fs.readdirSync(filePath, { withFileTypes: true })
@@ -34,12 +34,12 @@ export const filesByExt = (
   files.forEach(v => {
     if (v.isDirectory()) return
     if (ext.includes(path.extname(v.name))) {
-      if (returnType === 'fileName') {
+      if (returnType === 'name') {
         list.push(v.name)
-      } else if (returnType === 'relativePath') {
+      } else if (returnType === 'rel') {
         const file = path.resolve(filePath, v.name)
         list.push(path.relative(process.cwd(), file))
-      } else if (returnType === 'absolutePath') {
+      } else if (returnType === 'abs') {
         list.push(path.resolve(filePath, v.name))
       }
     }
@@ -88,9 +88,9 @@ export const getRelPath = (filePath: string) => filePath.replace(/\\+/g, '/').re
 export const urlToPath = (url: string) => {
   const filePath = fileURLToPath(url)
   /** 当前文件到项目根目录的相对路径 */
-  const relativePath = path.relative(path.dirname(filePath), process.cwd())
+  const rel = path.relative(path.dirname(filePath), process.cwd())
   /** 相对路径的层级数量 */
-  const upLevelsCount = relativePath.split(path.sep).length
+  const upLevelsCount = rel.split(path.sep).length
   return lodash.repeat('../', upLevelsCount)
 }
 

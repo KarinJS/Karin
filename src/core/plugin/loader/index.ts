@@ -131,7 +131,7 @@ export const getPluginList = async () => {
       return {
         index,
         info,
-        apps: filesByExt(info.dir, ext, 'absolutePath'),
+        apps: filesByExt(info.dir, ext, 'abs'),
       }
     }
 
@@ -145,17 +145,12 @@ export const getPluginList = async () => {
     }
 
     const apps: string[] = []
-    if (pkg.karin?.apps) {
-      /** 热更新 */
-      const appsList = Array.isArray(pkg.karin.apps) ? pkg.karin.apps : [pkg.karin.apps]
-      appsList.forEach(file => {
-        load.watchList.push({ file, index, info })
-        const filePath = path.resolve(info.dir, file)
-        if (isDir(filePath)) {
-          apps.push(...filesByExt(filePath, ext, 'absolutePath'))
-        }
-      })
-    }
+    info.apps.forEach(file => {
+      load.watchList.push({ file, index, info })
+      if (isDir(file)) {
+        apps.push(...filesByExt(file, ext, 'abs'))
+      }
+    })
 
     if (pkg.main) {
       load.main.push(loaderMain(info.name, path.join(info.dir, pkg.main)))
