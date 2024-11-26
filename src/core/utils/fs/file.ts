@@ -57,7 +57,7 @@ export const absPath = (file: string, absPath = true, prefix = false) => {
  * @param files 需要创建的文件夹列表
  */
 export const createPluginDir = async (name: string, files?: string[]) => {
-  if (!Array.isArray(files)) files = ['config', 'data', 'resource']
+  if (!Array.isArray(files)) files = ['config', 'data', 'resources']
   if (files.length === 0) return
   const pluginPath = path.join(basePath, name)
   if (!fs.existsSync(pluginPath)) await fs.promises.mkdir(pluginPath, { recursive: true })

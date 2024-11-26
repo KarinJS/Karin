@@ -130,8 +130,12 @@
   ],
   "scripts": {
     ".": "node lib/cli/start.js .",
-    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run cp",
+    "alias": "tsc-alias -p tsconfig.json",
+    "alias:types": "tsc-alias -p tsconfig.types.json",
+    "build": "tsc --project tsconfig.json && npm run alias && npm run cp",
+    "build:types": "tsc --project tsconfig.types.json && npm run alias:types  && npm run cp:types",
     "cp": "node lib/cli/cp.js",
+    "cp:types": "node dist/cli/cp.js types",
     "dev": "node lib/main/scripts.js dev",
     "init": "node lib/main/scripts.js init",
     "lint": "eslint src/**/*.ts --fix",
