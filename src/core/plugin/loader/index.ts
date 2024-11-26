@@ -438,8 +438,13 @@ export const watchApps = async (dir: string, index: number, info: Info) => {
   logger.debug(`[hmr][${info.name}] 监听文件夹：${dir}`)
   const watcher = chokidar.watch(dir, { ignoreInitial: true })
 
-  /** 处理文件变动 */
+  /**
+   * @description 处理文件变动
+   * @param file 文件路径
+   * @param action 文件操作
+   */
   const handleFileChange = async (file: string, action: 'add' | 'change' | 'unlink') => {
+    file = path.resolve(file)
     if (!ext.includes(path.extname(file))) return
 
     if (action === 'unlink') {

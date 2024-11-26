@@ -15,6 +15,8 @@ export interface PkgData {
   karin?: {
     /** 插件app列表 */
     apps?: string | string[]
+    /** ts插件app列表 ts专属 仅在ts开发模式下生效 */
+    ['ts-apps']?: string | string[]
     /** 静态资源目录 */
     static?: string | string[]
     /** 基本文件夹结构 */

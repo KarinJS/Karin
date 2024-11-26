@@ -40,11 +40,9 @@ export const runDev = (isWatch = false) => {
 export const runTsx = async (isWatch = false) => {
   setMode('dev')
   setLang('ts')
-  const cmd = 'npx tsx watch --exclude "./@karinjs/**/*" --exclude "./lib/**/*" index.js'
-  const result = await command(isWatch ? cmd : 'npx tsx index.js')
-  if (!result) {
-    console.log('[tsx] 启动失败: 请检查是否安装了 `tsx` 依赖')
-  }
+  const cmd = 'watch --exclude "./@karinjs/**/*" --exclude "./lib/**/*" index.js'
+  const { spawn } = await import('child_process')
+  spawn('tsx', isWatch ? cmd.split(' ') : ['index.js'], { stdio: 'inherit', shell: true })
 }
 
 /**

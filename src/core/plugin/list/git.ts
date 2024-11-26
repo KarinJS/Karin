@@ -58,7 +58,7 @@ export const getGitPlugins = async (includeRoot = true): Promise<GitPluginName[]
   /** 处理根目录 */
   if (includeRoot) {
     const root = await requireFileSync('./package.json')
-    if (root.karin) list.push(root.name)
+    if (root.name && root.karin) list.push(root.name)
   }
 
   list = list.filter(Boolean)
@@ -96,7 +96,7 @@ export const getGitPluginsInfo = async (): Promise<Info[]> => {
 
   /** 处理根目录 */
   const root = await requireFileSync('./package.json')
-  if (root.karin) list.push({ filePath: process.cwd(), name: root.name })
+  if (root.name && root.karin) list.push({ filePath: process.cwd(), name: root.name })
 
   /** 插件信息 */
   const info: Info[] = []
@@ -112,13 +112,20 @@ export const getGitPluginsInfo = async (): Promise<Info[]> => {
     }
 
     /** 没有apps */
-    if (!pkg.karin?.apps?.length) {
+    if (!pkg?.karin || !pkg.karin?.apps?.length || !(process.env.karin_app_lang === 'ts' && pkg?.karin?.['ts-apps'])) {
       info.push(plugin)
       return
     }
 
+    /** ts-dev加载专属的apps */
     const apps: string[] = []
-    if (typeof pkg.karin.apps === 'string') {
+    if (process.env.karin_app_lang === 'ts') {
+      if (typeof pkg.karin['ts-apps'] === 'string') {
+        apps.push(pkg.karin['ts-apps'])
+      } else if (Array.isArray(pkg.karin['ts-apps'])) {
+        apps.push(...pkg.karin['ts-apps'])
+      }
+    } else if (typeof pkg.karin.apps === 'string') {
       apps.push(pkg.karin.apps)
     } else if (Array.isArray(pkg.karin.apps)) {
       apps.push(...pkg.karin.apps)
