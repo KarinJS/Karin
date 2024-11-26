@@ -252,10 +252,12 @@ export interface ConfigType {
     disable: string[]
   }
 
-  /** ffmpeg配置 */
+  /** ffmpeg路径 */
   ffmpegPath: string
-  /** ffprobe配置 */
+  /** ffprobe路径 */
   ffprobePath: string
+  /** ffplay路径 */
+  ffplayPath: string
 
   /** Bot主人列表 主权限 */
   master: string[]

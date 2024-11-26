@@ -27,6 +27,7 @@ export * from './system/pid'
 export * from './system/system'
 export * from './system/time'
 export * from './system/update'
+export * from './system/ffmpeg'
 
 export * as common from './common'
 export * as config from './config/index'
