@@ -111,24 +111,25 @@ export const getGitPluginsInfo = async (): Promise<Info[]> => {
       name: pkg.name,
     }
 
-    /** 没有apps */
-    if (!pkg?.karin || !pkg.karin?.apps?.length || !(process.env.karin_app_lang === 'ts' && pkg?.karin?.['ts-apps'])) {
+    /** 没有karin */
+    if (!pkg?.karin) {
       info.push(plugin)
       return
     }
 
     /** ts-dev加载专属的apps */
     const apps: string[] = []
-    if (process.env.karin_app_lang === 'ts') {
-      if (typeof pkg.karin['ts-apps'] === 'string') {
-        apps.push(pkg.karin['ts-apps'])
-      } else if (Array.isArray(pkg.karin['ts-apps'])) {
-        apps.push(...pkg.karin['ts-apps'])
+    const pushApps = (app: string | string[]) => {
+      if (typeof app === 'string') {
+        apps.push(app)
+      } else if (Array.isArray(app)) {
+        apps.push(...app)
       }
-    } else if (typeof pkg.karin.apps === 'string') {
-      apps.push(pkg.karin.apps)
-    } else if (Array.isArray(pkg.karin.apps)) {
-      apps.push(...pkg.karin.apps)
+    }
+    if (process.env.karin_app_lang === 'ts' && pkg.karin['ts-apps']) {
+      pushApps(pkg.karin['ts-apps'])
+    } else if (pkg.karin.apps) {
+      pushApps(pkg.karin.apps)
     }
 
     await Promise.all(apps.map(async app => {

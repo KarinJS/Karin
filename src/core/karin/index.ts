@@ -138,7 +138,7 @@ export class Karin extends TypedListeners {
    * @param element 字符串或者KarinElement、KarinElement数组
    * @param options 选项
    */
-  command<T extends keyof MessageEventMap = keyof MessageEventMap> (reg: string | RegExp, element: FncElement, options: ElemAndEvent<T>): CommandFnc<T>
+  command<T extends keyof MessageEventMap = keyof MessageEventMap> (reg: string | RegExp, element: FncElement, options?: ElemAndEvent<T>): CommandFnc<T>
   /**
    * 快速构建命令
    * @param reg 正则表达式
