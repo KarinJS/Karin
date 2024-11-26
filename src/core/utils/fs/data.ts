@@ -58,7 +58,7 @@ export const buffer = async <T extends { http: boolean }> (data: unknown, option
 
   if (typeof data !== 'string') {
     if (Buffer.isBuffer(data)) return data as ResultType
-    if (data instanceof Uint8Array) return Buffer.from(data) as ResultType
+    if (data instanceof Uint8Array) return Buffer.from(data) as unknown as ResultType
     if (data instanceof Readable) return await stream(data) as ResultType
     return data as ResultType
   }
