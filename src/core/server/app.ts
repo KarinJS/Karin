@@ -29,7 +29,14 @@ export const createExpressWebSocketServer = (port: number, list?: string[]) => {
   })
 
   const server = createServer(app)
-  const wss = new WebSocketServer({ server })
+  /**
+   * tips: 这里必须要这样 否则编译出来的d.ts会变成以下类型
+   * ```ts
+   * import("ws").Server<typeof import("ws"), typeof import("http").IncomingMessage>
+   * // => 命名空间“"./node_modules/.pnpm/@types+ws@8.5.13/node_modules/@types/ws/index"”没有已导出的成员“Server”。
+   * ```
+   */
+  const wss: import('ws').WebSocketServer = new WebSocketServer({ server })
 
   wss.on('error', (error: NodeJS.ErrnoException) => {
     if (error.code === 'EADDRINUSE') {
