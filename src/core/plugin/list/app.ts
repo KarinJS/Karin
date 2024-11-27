@@ -23,6 +23,7 @@ export const getAppPlugins = async (): Promise<GitPluginName[]> => {
   if (cached) return cached
 
   const dir = './plugins'
+  if (!fs.existsSync(dir)) return []
   const files = await fs.promises.readdir(dir, { withFileTypes: true })
   /** 忽略文件、非`karin-plugin-`开头的文件夹、忽略存在`package.json` */
   const list = (await Promise.all(files.map(async v => {
@@ -59,6 +60,8 @@ export const getAppPluginsInfo = async (): Promise<Info[]> => {
 
   /** 插件列表 */
   const list = await getAppPlugins()
+  if (!list.length) return []
+
   /** 插件信息 */
   const info: Info[] = []
 

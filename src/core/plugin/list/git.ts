@@ -47,6 +47,7 @@ export const getGitPlugins = async (includeRoot = true): Promise<GitPluginName[]
 
   const dir = './plugins'
   let list: string[] = []
+
   if (fs.existsSync(dir)) {
     const files = await fs.promises.readdir(dir, { withFileTypes: true })
     /** 忽略文件、非`karin-plugin-`开头的文件夹、不存在`package.json` */
@@ -89,6 +90,7 @@ export const getGitPluginsInfo = async (): Promise<Info[]> => {
   }[] = []
 
   const dir = process.cwd() + '/plugins'
+
   if (fs.existsSync(dir)) {
     const files = fs.readdirSync(dir, { withFileTypes: true })
     await Promise.all(files.map(async v => {

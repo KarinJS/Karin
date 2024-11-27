@@ -55,14 +55,16 @@ export const getNpmPlugins = async (): Promise<string[]> => {
     'yaml',
   ]
 
+  let list: string[] = []
+
   /** 获取package.json */
   const pkg = await requireFileSync('./package.json', { ex: 0 })
   /** 获取dependencies列表 同时排除掉exclude、带@types的 */
-  const dependencies = Object.keys(pkg.dependencies).filter((name) => !exclude.includes(name) && !name.startsWith('@types'))
+  const dependencies = Object.keys(pkg.dependencies || {}).filter((name) => !exclude.includes(name) && !name.startsWith('@types'))
   /** 排除非插件 */
-  let list = await Promise.all(dependencies.map(async (name) => {
+  await Promise.all(dependencies.map(async (name) => {
     const isPlugin = await isNpmPlugin(name)
-    return isPlugin ? name : ''
+    if (isPlugin) list.push(name)
   }))
 
   list = list.filter(Boolean)
