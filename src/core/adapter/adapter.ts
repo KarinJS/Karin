@@ -89,6 +89,8 @@ export const enum AdapterCommunication {
 
 /** 发送消息后返回的结果 */
 export interface SendMsgResults {
+  /** @deprecated 已废弃 请使用 `messageId` */
+  message_id: string
   /** 消息ID */
   messageId: string
   /** 消息发送时间戳 */
@@ -141,9 +143,9 @@ export interface AdapterType {
   /** 账号信息 */
   account: {
     /** Bot的uin */
-    _uin: string
+    uin: string
     /** Bot的uid */
-    _uid: string
+    uid: string
     /** Bot的selfId 一般使用此参数即可 */
     selfId: string
     /** Bot的子ID 比如在QQ频道下Bot拥有一个和普通用户一样的ID */

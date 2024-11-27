@@ -157,12 +157,12 @@ export interface Handler extends Base {
   /** 入口key */
   key: string
   /** handler的处理方法 */
-  fnc: <T = any>(
+  fnc: (
     /** 自定义参数 由调用方传递 */
     args: { [key: string]: any },
     /** 调用后将继续执行下一个handler */
     next: (msg?: string) => void,
-  ) => Promise<T> | T
+  ) => Promise<any> | any
 }
 
 /** 中间件type类型 */

@@ -35,7 +35,7 @@ export abstract class AdapterBase implements AdapterType {
   adapter: AdapterType['adapter']
 
   constructor () {
-    this.account = { _uin: '', _uid: '', selfId: '', subId: '', name: '', avatar: '' }
+    this.account = { uin: '', uid: '', selfId: '', subId: '', name: '', avatar: '' }
     this.adapter = {
       index: -1,
       name: '',

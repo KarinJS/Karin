@@ -132,7 +132,7 @@ export class Karin extends TypedListeners {
     fnc: (e: MessageEventMap[T]) => Promise<boolean> | boolean,
     options?: FncOptions & {
       /** 监听事件 */
-      event: T
+      event?: T
     }): CommandFnc<T>
   /**
    * @param reg 正则表达式

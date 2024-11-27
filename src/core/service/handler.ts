@@ -1,3 +1,4 @@
+import util from 'node:util'
 import { cache } from '@/plugin/cache/cache'
 
 /**
@@ -5,7 +6,7 @@ import { cache } from '@/plugin/cache/cache'
  * @param key 事件键
  * @param args 自定义参数 一般用来传递e之类的
  */
-export const call = async (key: string, args: { [key: string]: any, e?: any }) => {
+export const call = async <T = any> (key: string, args: { [key: string]: any, e?: any }): Promise<T> => {
   let result
   for (const info of cache.handler[key] || []) {
     try {
@@ -15,7 +16,8 @@ export const call = async (key: string, args: { [key: string]: any, e?: any }) =
        * @param msg 错误信息
        */
       const next = () => { done = false }
-      result = await info.fnc(args, next)
+      const res = info.fnc(args, next)
+      result = util.types.isPromise(res) ? await res : res
       if (done) {
         logger.mark(`[Handler][Done]: [${info.name}][${info.file.method}][${key}]`)
         return result

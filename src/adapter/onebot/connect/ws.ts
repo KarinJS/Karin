@@ -26,6 +26,8 @@ export abstract class WsAdapterOneBot11 extends AdapterOneBot {
    * @param communication 通讯方式
    */
   async init (selfId: string, url: string, communication: `${AdapterCommunication}`) {
+    this.account.uid = selfId
+    this.account.uin = selfId
     this.account.selfId = selfId
     this.adapter.address = url
     try {

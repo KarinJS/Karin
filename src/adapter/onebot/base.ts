@@ -119,7 +119,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async sendMsg (
     contact: Contact, elements: Array<ElementTypes>, retryCount?: number
-  ): Promise<SendMsgResults & { message_id: string, message_time: number }> {
+  ): Promise<SendMsgResults> {
     try {
       const { scene, peer } = contact
       let res
@@ -141,7 +141,7 @@ export abstract class AdapterOneBot extends AdapterBase {
       const messageTime = Date.now()
       const rawData = res
 
-      return { messageId, messageTime, rawData, message_id: messageId, message_time: messageTime }
+      return { messageId, messageTime, rawData, message_id: messageId }
     } catch (error) {
       if (retryCount && retryCount > 0) {
         return this.sendMsg(contact, elements, retryCount - 1)
