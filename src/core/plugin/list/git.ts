@@ -46,14 +46,17 @@ export const getGitPlugins = async (includeRoot = true): Promise<GitPluginName[]
   if (cached) return cached
 
   const dir = './plugins'
-  const files = await fs.promises.readdir(dir, { withFileTypes: true })
-  /** 忽略文件、非`karin-plugin-`开头的文件夹、不存在`package.json` */
-  let list = await Promise.all(files.map(async v => {
-    if (!v.isDirectory()) return ''
-    if (!v.name.startsWith('karin-plugin-')) return ''
-    if (!fs.existsSync(`${dir + v.name}/package.json`)) return ''
-    return v.name
-  })) || []
+  let list: string[] = []
+  if (fs.existsSync(dir)) {
+    const files = await fs.promises.readdir(dir, { withFileTypes: true })
+    /** 忽略文件、非`karin-plugin-`开头的文件夹、不存在`package.json` */
+    await Promise.all(files.map(async v => {
+      if (!v.isDirectory()) return
+      if (!v.name.startsWith('karin-plugin-')) return
+      if (!fs.existsSync(`${dir + v.name}/package.json`)) return
+      list.push(v.name)
+    }))
+  }
 
   /** 处理根目录 */
   if (includeRoot) {
@@ -86,13 +89,15 @@ export const getGitPluginsInfo = async (): Promise<Info[]> => {
   }[] = []
 
   const dir = process.cwd() + '/plugins'
-  const files = fs.readdirSync(dir, { withFileTypes: true })
-  await Promise.all(files.map(async v => {
-    if (!v.isDirectory()) return
-    if (!v.name.startsWith('karin-plugin-')) return
-    if (!fs.existsSync(`${dir}${v.name}/package.json`)) return
-    list.push({ filePath: `${dir}/${v.name}`, name: v.name })
-  }))
+  if (fs.existsSync(dir)) {
+    const files = fs.readdirSync(dir, { withFileTypes: true })
+    await Promise.all(files.map(async v => {
+      if (!v.isDirectory()) return
+      if (!v.name.startsWith('karin-plugin-')) return
+      if (!fs.existsSync(`${dir}${v.name}/package.json`)) return
+      list.push({ filePath: `${dir}/${v.name}`, name: v.name })
+    }))
+  }
 
   /** 处理根目录 */
   const root = await requireFileSync('./package.json')
