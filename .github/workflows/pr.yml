@@ -47,20 +47,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         if: success()
-      # 发布types包准备工作
-      - name: 发布types包准备工作
-        run: rm -rf lib
-        if: success()
-      # 编译types包
-      - name: 编译types包
-        run: npm run build:types
-        if: success()
-      # 发布types包
-      - name: 发布types包
-        run: npm run pub-beta
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        if: success()
       # 在 PR 上发布构建完成或失败信息
       - name: 发布评论
         run: |
@@ -71,9 +57,8 @@ jobs:
             gh pr comment ${{ env.PR_NUMBER }} --body $'❌ 构建失败！以下是错误日志：\n\n<details>\n<summary>展开查看错误日志</summary>\n\n```\n'"${ERROR_MESSAGE}"$'\n```\n\n</details>'
           else
             # 构建成功评论
-            INSTALL_COMMAND="pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -w"
-            INSTALL_TYPES_COMMAND="pnpm install @karinjs/types@${{ env.PKG_VERSION }} -w"
-            gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 构建完成！您可以通过以下命令安装此版本：\n\n```\n'"${INSTALL_COMMAND}"$'\n```\n\n```\n'"${INSTALL_TYPES_COMMAND}"$'\n```'
+            INSTALL_COMMAND="pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -w"           
+            gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 构建完成！您可以通过以下命令安装此版本：\n\n```\n'"${INSTALL_COMMAND}"$'\n```'
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE }}

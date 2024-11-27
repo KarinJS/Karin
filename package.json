@@ -27,89 +27,89 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./lib/index.d.ts",
       "import": "./lib/index.js",
-      "require": "./lib/index.js",
-      "types": "./lib/index.d.ts"
+      "require": "./lib/index.js"
     },
     "./template": {
+      "types": "./lib/modules/art-template.d.ts",
       "import": "./lib/modules/art-template.js",
-      "require": "./lib/modules/art-template.js",
-      "types": "./lib/modules/art-template.d.ts"
+      "require": "./lib/modules/art-template.js"
     },
     "./art-template": {
+      "types": "./lib/modules/art-template.d.ts",
       "import": "./lib/modules/art-template.js",
-      "require": "./lib/modules/art-template.js",
-      "types": "./lib/modules/art-template.d.ts"
+      "require": "./lib/modules/art-template.js"
     },
     "./axios": {
+      "types": "./lib/modules/axios.d.ts",
       "import": "./lib/modules/axios.js",
-      "require": "./lib/modules/axios.js",
-      "types": "./lib/modules/axios.d.ts"
+      "require": "./lib/modules/axios.js"
     },
     "./chalk": {
+      "types": "./lib/modules/chalk.d.ts",
       "import": "./lib/modules/chalk.js",
-      "require": "./lib/modules/chalk.js",
-      "types": "./lib/modules/chalk.d.ts"
+      "require": "./lib/modules/chalk.js"
     },
     "./chokidar": {
+      "types": "./lib/modules/chokidar.d.ts",
       "import": "./lib/modules/chokidar.js",
-      "require": "./lib/modules/chokidar.js",
-      "types": "./lib/modules/chokidar.d.ts"
+      "require": "./lib/modules/chokidar.js"
     },
     "./commander": {
+      "types": "./lib/modules/commander.d.ts",
       "import": "./lib/modules/commander.js",
-      "require": "./lib/modules/commander.js",
-      "types": "./lib/modules/commander.d.ts"
+      "require": "./lib/modules/commander.js"
     },
     "./express": {
+      "types": "./lib/modules/express.d.ts",
       "import": "./lib/modules/express.js",
-      "require": "./lib/modules/express.js",
-      "types": "./lib/modules/express.d.ts"
+      "require": "./lib/modules/express.js"
     },
     "./level": {
+      "types": "./lib/modules/level.d.ts",
       "import": "./lib/modules/level.js",
-      "require": "./lib/modules/level.js",
-      "types": "./lib/modules/level.d.ts"
+      "require": "./lib/modules/level.js"
     },
     "./lodash": {
+      "types": "./lib/modules/lodash.d.ts",
       "import": "./lib/modules/lodash.js",
-      "require": "./lib/modules/lodash.js",
-      "types": "./lib/modules/lodash.d.ts"
+      "require": "./lib/modules/lodash.js"
     },
     "./log4js": {
+      "types": "./lib/modules/log4js.d.ts",
       "import": "./lib/modules/log4js.js",
-      "require": "./lib/modules/log4js.js",
-      "types": "./lib/modules/log4js.d.ts"
+      "require": "./lib/modules/log4js.js"
     },
     "./moment": {
+      "types": "./lib/modules/moment.d.ts",
       "import": "./lib/modules/moment.js",
-      "require": "./lib/modules/moment.js",
-      "types": "./lib/modules/moment.d.ts"
+      "require": "./lib/modules/moment.js"
     },
     "./schedule": {
+      "types": "./lib/modules/node-schedule.d.ts",
       "import": "./lib/modules/node-schedule.js",
-      "require": "./lib/modules/node-schedule.js",
-      "types": "./lib/modules/node-schedule.d.ts"
+      "require": "./lib/modules/node-schedule.js"
     },
     "./node-schedule": {
+      "types": "./lib/modules/node-schedule.d.ts",
       "import": "./lib/modules/node-schedule.js",
-      "require": "./lib/modules/node-schedule.js",
-      "types": "./lib/modules/node-schedule.d.ts"
+      "require": "./lib/modules/node-schedule.js"
     },
     "./redis": {
+      "types": "./lib/modules/redis.d.ts",
       "import": "./lib/modules/redis.js",
-      "require": "./lib/modules/redis.js",
-      "types": "./lib/modules/redis.d.ts"
+      "require": "./lib/modules/redis.js"
     },
     "./ws": {
+      "types": "./lib/modules/ws.d.ts",
       "import": "./lib/modules/ws.js",
-      "require": "./lib/modules/ws.js",
-      "types": "./lib/modules/ws.d.ts"
+      "require": "./lib/modules/ws.js"
     },
     "./yaml": {
+      "types": "./lib/modules/yaml.d.ts",
       "import": "./lib/modules/yaml.js",
-      "require": "./lib/modules/yaml.js",
-      "types": "./lib/modules/yaml.d.ts"
+      "require": "./lib/modules/yaml.js"
     }
   },
   "main": "./lib/index.js",
@@ -131,11 +131,8 @@
   "scripts": {
     ".": "node lib/cli/start.js .",
     "alias": "tsc-alias -p tsconfig.json",
-    "alias:types": "tsc-alias -p tsconfig.types.json",
     "build": "tsc --project tsconfig.json && npm run alias && npm run cp",
-    "build:types": "tsc --project tsconfig.types.json && npm run alias:types  && npm run cp:types",
     "cp": "node lib/cli/cp.js",
-    "cp:types": "node dist/cli/cp.js types",
     "dev": "node lib/main/scripts.js dev",
     "init": "node lib/main/scripts.js init",
     "lint": "eslint src/**/*.ts --fix",
