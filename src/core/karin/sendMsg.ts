@@ -21,7 +21,7 @@ export const sendMsg = async (selfId: string, contact: Contact, elements: string
   retry_count?: number
   /** 重试次数 */
   retryCount?: number
-} = { recallMsg: 0, retryCount: 1, retry_count: 1 }) => {
+} = { recallMsg: 0, retryCount: 1, retry_count: 1 }): Promise<SendMsgResults> => {
   /** 结果 */
   let result: any = {}
   /** 标准化 */
