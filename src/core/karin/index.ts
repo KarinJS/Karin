@@ -14,6 +14,7 @@ import type {
   Accept,
   Task,
   Button,
+  Handler,
   CommandFnc,
   MiddlewareMap,
   NoticeAndRequest,
@@ -180,6 +181,37 @@ export class Karin extends TypedListeners {
         dirname: '',
         method: '',
         type: 'command',
+        get path () {
+          return path.join(this.dirname, this.basename)
+        },
+      },
+      get info () {
+        return cache.index[this.index]
+      },
+    }
+  }
+
+  /**
+   * - 构建handler
+   * @param key - 事件key
+   * @param fnc - 函数实现
+   * @param options - 选项
+   */
+  handler (key: string, fnc: Handler['fnc'], options: Omit<FncOptions, 'perm' | 'permission' | 'log' | 'adapter' | 'dsbAdapter' | 'notAdapter'> = {}): Handler {
+    if (!key) throw new Error('[handler]: 缺少参数[key]')
+    if (!fnc) throw new Error('[handler]: 缺少参数[fnc]')
+
+    return {
+      index: 0,
+      name: options?.name || 'handler',
+      key,
+      fnc,
+      rank: Number(options.rank ?? options.priority) || 10000,
+      file: {
+        basename: '',
+        dirname: '',
+        method: '',
+        type: 'handler',
         get path () {
           return path.join(this.dirname, this.basename)
         },
