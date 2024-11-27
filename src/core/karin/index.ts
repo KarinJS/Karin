@@ -559,3 +559,7 @@ export class Karin extends TypedListeners {
 }
 
 export const karin = new Karin()
+/**
+ * @deprecated 已废弃，请使用`karin`
+ */
+export const Bot = karin
