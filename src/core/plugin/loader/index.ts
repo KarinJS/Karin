@@ -406,12 +406,15 @@ export const unloadApps = async (file: string, index: number) => {
   cache.accept = cache.accept.filter(fnc => fnc.index !== index || fnc.file.path !== file)
   cache.command = cache.command.filter(fnc => fnc.index !== index || fnc.file.path !== file)
   cache.button = cache.button.filter(fnc => fnc.index !== index || fnc.file.path !== file)
-  cache.task = cache.task.filter(fnc => fnc.index !== index || fnc.file.path !== file)
   cache.middleware.recvMsg = cache.middleware.recvMsg.filter(fnc => fnc.index !== index || fnc.file.path !== file)
   cache.middleware.replyMsg = cache.middleware.replyMsg.filter(fnc => fnc.index !== index || fnc.file.path !== file)
   cache.middleware.sendMsg = cache.middleware.sendMsg.filter(fnc => fnc.index !== index || fnc.file.path !== file)
   cache.middleware.forwardMsg = cache.middleware.forwardMsg.filter(fnc => fnc.index !== index || fnc.file.path !== file)
   cache.middleware.notFoundMsg = cache.middleware.notFoundMsg.filter(fnc => fnc.index !== index || fnc.file.path !== file)
+  cache.task = cache.task.filter(fnc => {
+    if (fnc.schedule) fnc.schedule.cancel()
+    return fnc.index !== index || fnc.file.path !== file
+  })
   for (const key of Object.keys(cache.handler)) {
     cache.handler[key] = cache.handler[key].filter(fnc => fnc.index !== index || fnc.file.path !== file)
   }
