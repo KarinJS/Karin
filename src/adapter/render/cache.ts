@@ -75,7 +75,7 @@ export const getRender = (id?: string | number) => {
  */
 export const callRender = async <T extends Options> (options: T, id?: string) => {
   const res = getRender(id)
-  const result = await res.render(options)
+  const result = await res.render(Object.assign(options, { encoding: 'base64' }))
   return result
 }
 

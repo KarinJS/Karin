@@ -1,5 +1,7 @@
 import path from 'node:path'
 import { Message } from '@/event'
+import { sendMsg } from './sendMsg'
+import { lock } from '@/utils/data/lock'
 import { TypedListeners } from '@/internal/listeners'
 import { context } from '@/event/handler/message/context'
 import { cache, createLogger } from '@/plugin/cache/cache'
@@ -19,7 +21,6 @@ import type {
   MiddlewareMap,
   NoticeAndRequest,
 } from '@/plugin/cache/types'
-import { sendMsg } from './sendMsg'
 
 export type FncElement = string | ElementTypes | ElementTypes[]
 export type FncOptions = {
@@ -129,6 +130,8 @@ export class Karin extends TypedListeners {
     super()
     this.getBot = getBot
     this.sendMsg = sendMsg
+    lock(this, 'getBot')
+    lock(this, 'sendMsg')
   }
 
   /**
@@ -561,16 +564,16 @@ export class Karin extends TypedListeners {
   render<T extends Options> (
     options: string | T,
     multiPageOrId?: string | number | boolean
-  ): Promise<RenderResult<T> | string | Array<string>> {
+  ): Promise<RenderResult<T>> {
     if (typeof options === 'string') {
       if (!multiPageOrId) {
-        return renderHtml(options)
+        return renderHtml(options) as any
       }
 
-      return renderMultiHtml(options, multiPageOrId as number | boolean)
+      return renderMultiHtml(options, multiPageOrId as number | boolean) as any
     }
 
-    return callRender(options, multiPageOrId as string)
+    return callRender(options, multiPageOrId as string) as any
   }
 
   /**

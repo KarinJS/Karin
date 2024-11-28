@@ -73,7 +73,7 @@ export declare interface ScreenshotOptions {
   /**
    * 图像的编码方式。
    *
-   * @defaultValue `'binary'`
+   * @deprecated 这是无效选项，强制性返回string<base64>
    */
   encoding?: 'base64' | 'binary'
   /**
@@ -220,9 +220,7 @@ export interface Options extends screenshot {
   data?: Record<string, any>
 }
 
-/** 截图返回 */
-export type RenderEncoding<T extends screenshot> = T['encoding'] extends 'base64' ? string : Uint8Array
 /** 单页或多页截图返回 */
 export type RenderResult<T extends screenshot> = T['multiPage'] extends true | number
-  ? RenderEncoding<T> extends string ? string[] : Uint8Array[]
-  : RenderEncoding<T>
+  ? string[]
+  : string
