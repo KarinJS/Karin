@@ -297,7 +297,7 @@ export class YamlEditor {
    * @param prepend - 如果为 true，则添加到注释的开头，否则添加到同一行的末尾
    * @param isSplit - 是否使用分割路径路径，默认为 `true`
    */
-  comment (path: string, comment: string, prepend: boolean, isSplit = true) {
+  comment (path: string, comment: string, prepend: boolean = true, isSplit = true) {
     if (!path) throw new Error('[YamlEditor] path 不能为空')
     const pair = this.getpair(path, isSplit)
     if (!pair) throw new Error(`[YamlEditor] 未找到节点 ${path}`)
@@ -371,12 +371,38 @@ export class YamlEditor {
   }
 }
 
+interface ReadFunction {
+  (path: string): any
+  /**
+   * 保存数据并写入注释
+   * @param options utf-8编码的字符串或注释配置对象
+   */
+  save?: (options?: string | YamlComment) => boolean
+}
+
 /**
- * 读取并解析 YAML 文件
- * @param path YAML 文件路径
+ * 读取并解析 yaml 文件
+ * @param path yaml 文件路径
  * @returns 解析后的数据
  */
-export const read = (path: string) => YAML.parse(fs.readFileSync(path, 'utf-8'))
+export const read: ReadFunction = (path: string) => {
+  const data = YAML.parse(fs.readFileSync(path, 'utf-8'))
+  /**
+   * 保存数据并写入注释
+   * @param options json路径或注释配置对象
+   */
+  read.save = (options?: string | YamlComment) => {
+    try {
+      save(path, data, typeof options === 'string' ? JSON.parse(options) : options)
+      return true
+    } catch (error) {
+      logger.error('[YamlEditor] 保存文件时出错')
+      logger.error(error)
+      return false
+    }
+  }
+  return data
+}
 
 /**
  * 写入 YAML 文件
@@ -398,7 +424,7 @@ export const write = (path: string, value: any) => {
  * @param value 数据 仅支持 JavaScript 对象
  * @param options 注释配置
  */
-export const save: Save = (path: string, value: any, options?: string | YamlComment) => {
+export const save: Save = (path: string, value: Record<string, any>, options?: string | YamlComment) => {
   if (!options) {
     fs.writeFileSync(path, YAML.stringify(value))
     return
@@ -449,7 +475,7 @@ export const applyComments = (editor: YamlEditor, comments: YamlComment) => {
 }
 
 /** YAML 工具 */
-export const YamlUtil = () => Object.assign(YAML, {
+export const yaml = () => Object.assign(YAML, {
   /** 读取并解析 YAML 文件 */
   read,
   /** 保存数据并写入注释 */

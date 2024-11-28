@@ -30,6 +30,7 @@ private:
 # ffmpeg配置 用于音视频处理
 ffmpegPath:
 ffprobePath:
+ffplayPath:
 
 # Bot主人列表 主权限
 master:

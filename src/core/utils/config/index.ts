@@ -10,6 +10,7 @@ import {
   karinDir,
   configPath,
   defaultConfigPath,
+  commentPath,
 } from '@/utils/fs/root'
 
 import type {
@@ -29,6 +30,7 @@ import {
 } from './cache'
 import { updateHttpBotToken } from '@/service/server'
 import { setPort, setVersion } from '@/env/env'
+import { save } from '@/utils/fs/yaml'
 
 /** node-karin的package */
 export const pkg = requireFileSync<PackageType>(karinDir + '/package.json')
@@ -239,6 +241,29 @@ const getFriendOrDirectCfg = (userId: string, selfId?: string, isRefresh = false
     logger.error(error)
     return cache.friendCfgDef
   }
+}
+
+/**
+ * @description 修改框架配置
+ * @param name 文件名称
+ * @param data 配置数据
+ */
+export const setYaml = <T extends keyof ConfigMap> (name: T, data: Record<string, any>) => {
+  const file = `${configPath}/${name}.yaml`
+  const comment = `${commentPath}/${name}.json`
+
+  if (!isExists(file)) {
+    return false
+  }
+
+  const cfg = requireFileSync<ConfigMap[T]>(file)
+
+  if (isExists(comment)) {
+    save(file, Object.assign(cfg, data), comment)
+  } else {
+    save(file, Object.assign(cfg, data))
+  }
+  return true
 }
 
 /**

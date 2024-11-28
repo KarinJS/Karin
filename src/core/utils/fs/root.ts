@@ -12,6 +12,8 @@ export const isPkg = Object.freeze(filename.includes('node_modules'))
 export const defaultConfigPath = Object.freeze(path.join(karinDir, 'default', 'config'))
 /** 默认view目录 */
 export const defaultViewPath = Object.freeze(path.join(karinDir, 'default', 'view'))
+/** 注释目录 */
+export const commentPath = Object.freeze(path.join(karinDir, 'default', 'comment'))
 
 /** 配置根目录 */
 export const basePath = Object.freeze(path.join(process.cwd(), '@karinjs'))
