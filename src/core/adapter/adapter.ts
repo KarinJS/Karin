@@ -456,7 +456,7 @@ export interface AdapterType {
    * @param name 文件夹名
    * @returns 返回文件夹id和已使用空间
    */
-  createGroupFolder (groupId: number, name: string): Promise<CreateGroupFolderResponse>
+  createGroupFolder (groupId: string, name: string): Promise<CreateGroupFolderResponse>
 
   /**
    * 重命名群文件的文件夹
@@ -465,7 +465,7 @@ export interface AdapterType {
    * @param name 文件夹名
    * @returns 无返回值
    */
-  renameGroupFolder (groupId: number, folderId: string, name: string): Promise<boolean>
+  renameGroupFolder (groupId: string, folderId: string, name: string): Promise<boolean>
 
   /**
    * 删除群文件的文件夹
@@ -473,7 +473,7 @@ export interface AdapterType {
    * @param folderId 文件夹id
    * @returns 无返回值
    */
-  delGroupFolder (groupId: number, folderId: string): Promise<boolean>
+  delGroupFolder (groupId: string, folderId: string): Promise<boolean>
 
   /**
    * 上传群文件
@@ -483,7 +483,7 @@ export interface AdapterType {
    * @param name 文件名
    * @returns 无返回值
    */
-  uploadGroupFile (groupId: number, file: string, name?: string): Promise<boolean>
+  uploadGroupFile (groupId: string, file: string, name?: string): Promise<boolean>
 
   /**
    * 删除群文件
@@ -492,14 +492,14 @@ export interface AdapterType {
    * @param busId 文件类型ID
    * @returns 无返回值
    */
-  delGroupFile (groupId: number, fileId: string, busId: number): Promise<boolean>
+  delGroupFile (groupId: string, fileId: string, busId: number): Promise<boolean>
 
   /**
    * 获取群文件系统信息
    * @param groupId 群号
    * @returns 返回文件数量、文件数量上限、已使用空间和空间上限
    */
-  getGroupFileSystemInfo (groupId: number): Promise<GetGroupFileSystemInfoResponse>
+  getGroupFileSystemInfo (groupId: string): Promise<GetGroupFileSystemInfoResponse>
 
   /**
    * 获取群文件夹下文件列表
@@ -507,7 +507,7 @@ export interface AdapterType {
    * @param folderId 文件夹id，空则为根目录
    * @returns 返回文件和文件夹的列表
    */
-  getGroupFileList (groupId: number, folderId?: string): Promise<GetGroupFileListResponse>
+  getGroupFileList (groupId: string, folderId?: string): Promise<GetGroupFileListResponse>
 
   /**
    * 设置群备注
