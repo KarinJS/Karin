@@ -71,6 +71,15 @@ export interface TaskOptions {
   name?: string
   /** 是否启用日志 */
   log?: boolean
+  /** 生效的适配器 */
+  adapter?: CommandFnc['adapter']
+  /** 禁用的适配器 */
+  dsbAdapter?: CommandFnc['dsbAdapter']
+  /**
+   * 禁用的适配器
+   * @deprecated 已废弃 请使用`dsbAdapter`
+   */
+  notAdapter?: CommandFnc['dsbAdapter']
 }
 
 export interface ButtonOptions {
