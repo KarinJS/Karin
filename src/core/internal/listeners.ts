@@ -8,7 +8,6 @@ type NoticeTypes<T extends keyof NoticeEventMap> = Record<T, (event: NoticeEvent
 type RequesTypes<T extends keyof RequestEventMap> = Record<T, (event: RequestEventMap[T]) => void>
 
 type OtherTypes = {
-  exit: (data: { type: string, code: unknown }) => void
   warn: (warning: unknown) => void
   error: (error: unknown) => void
   'karin:count:send': (count: number) => void

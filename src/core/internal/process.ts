@@ -1,4 +1,3 @@
-import lodash from 'lodash'
 import { listeners } from './listeners'
 import { exec } from '@/utils/system/exec'
 import { getPid } from '@/utils/system/pid'
@@ -7,17 +6,17 @@ import { axios, sleep, uptime } from '@/utils/common/index'
 /** 处理基本信号 */
 export const processHandler = () => {
   /** 监听挂起信号 在终端关闭时触发 */
-  process.once('SIGHUP', code => listeners.emit('exit', { type: 'SIGHUP', code }))
+  process.once('SIGHUP', code => processExit(code))
   /** 监听中断信号 用户按下 Ctrl + C 时触发 */
-  process.once('SIGINT', code => listeners.emit('exit', { type: 'SIGINT', code }))
+  process.once('SIGINT', code => processExit(code))
   /** 监听终止信号 程序正常退出时触发 */
-  process.once('SIGTERM', code => listeners.emit('exit', { type: 'SIGTERM', code }))
+  process.once('SIGTERM', code => processExit(code))
   /** 监听退出信号 windows下程序正常退出时触发 */
-  process.once('SIGBREAK', code => listeners.emit('exit', { type: 'SIGBREAK', code }))
+  process.once('SIGBREAK', code => processExit(code))
   /** 监听退出信号 与 SIGINT 类似，但会生成核心转储 */
-  process.once('SIGQUIT', code => listeners.emit('exit', { type: 'SIGQUIT', code }))
+  process.once('SIGQUIT', code => processExit(code))
   /** 监听退出信号 Node.js进程退出时触发 */
-  process.once('exit', code => listeners.emit('exit', { type: 'exit', code }))
+  process.once('exit', code => processExit(code))
   /** 捕获警告 */
   process.on('warning', warning => listeners.emit('warn', warning))
   /** 捕获错误 */
@@ -67,7 +66,11 @@ export const checkProcess = async (port: number) => {
   processExit(1)
 }
 
-const processExitHandler = async (code: unknown) => {
+/**
+ * @description 处理退出事件
+ * @param code 退出码
+ */
+export const processExit = async (code: unknown) => {
   try {
     const { redis, level } = await import('../../main/index')
     await Promise.allSettled([redis.save(), level.close()])
@@ -78,13 +81,8 @@ const processExitHandler = async (code: unknown) => {
     if (process.env.pm_id) {
       await exec(`pm2 delete ${process.env.pm_id}`)
     }
+    process.exit()
   } finally {
     process.exit()
   }
 }
-
-/**
- * @description 处理退出事件
- * @param code 退出码
- */
-export const processExit = lodash.debounce(processExitHandler, 500)
