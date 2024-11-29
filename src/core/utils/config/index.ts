@@ -33,7 +33,7 @@ import { setPort, setVersion } from '@/env/env'
 import { save } from '@/utils/fs/yaml'
 
 /** node-karin的package */
-export const pkg = () => requireFileSync<PackageType>(karinDir + '/package.json'))
+export const pkg = () => requireFileSync<PackageType>(karinDir + '/package.json')
 /** http端口 */
 export const port = () => cache.file[configKey.SERVER].port
 /** host */
