@@ -13,6 +13,7 @@ import {
   filesByExt,
   requireFileSync,
   createPluginDir,
+  isExists,
 } from '@/utils'
 
 import type { Info } from '../list/types'
@@ -153,7 +154,10 @@ export const getPluginList = async () => {
     })
 
     if (pkg.main) {
-      load.main.push(loaderMain(info.name, path.join(info.dir, pkg.main)))
+      const file = path.join(info.dir, pkg.main)
+      if (isExists(file)) {
+        load.main.push(loaderMain(info.name, file))
+      }
     }
 
     return {
