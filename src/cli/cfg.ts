@@ -1,20 +1,31 @@
 #!/usr/bin/env node
 
 /**
+ * @description 初始化入口文件
+ */
+export const initIndex = async () => {
+  const fs = await import('fs').then((res) => res.default)
+  const root = process.env.INIT_CWD || process.cwd()
+  const indexPath = `${root}/index.js`
+
+  /** 创建入口 */
+  if (!fs.existsSync(indexPath)) {
+    fs.writeFileSync(indexPath, 'import(\'node-karin\').then(karin => karin.run())\n')
+  }
+}
+
+/**
  * @description 初始化基本配置
  */
 export const init = async () => {
   const fs = await import('fs').then((res) => res.default)
 
   const root = process.env.INIT_CWD || process.cwd()
-  const indexPath = `${root}/index.js`
   const pnpmPath = `${root}/pnpm-workspace.yaml`
   const npmrcPath = `${root}/.npmrc`
 
   /** 创建入口 */
-  if (!fs.existsSync(indexPath)) {
-    fs.writeFileSync(indexPath, 'import(\'node-karin\').then(karin => karin.run())\n')
-  }
+  initIndex()
 
   /** 创建pnpm工作区配置 */
   if (!fs.existsSync(pnpmPath)) {

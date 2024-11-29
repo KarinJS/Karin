@@ -8,6 +8,10 @@ async function main (
   program: typeof import('commander').program,
   karin: typeof import('./main')
 ) {
+  /** 每次启动都检查 */
+  const { initIndex } = await import('../cli/cfg')
+  await initIndex()
+
   const { version } = await import('./package').then((res) => res.pkg())
   program.version(version, '-v, --version', '显示版本号')
   program.command('.').description('前台启动').action(() => karin.runFork())
