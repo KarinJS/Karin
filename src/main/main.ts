@@ -19,7 +19,6 @@ export const runFork = () => {
   })
 
   child.on('exit', (code) => process.exit(code))
-  return child
 }
 
 /**
@@ -30,7 +29,7 @@ export const runFork = () => {
 export const runDev = (isWatch = false) => {
   setMode('dev')
   setWatch(isWatch)
-  return runFork()
+  runFork()
 }
 
 /**
@@ -62,7 +61,9 @@ export const command = async (command: string) => {
 /**
  * @description 检查是否安装了 `pm2`
  */
-export const checkPM2 = async () => command('pm2 -v')
+export const checkPM2 = async () => {
+  command('pm2 -v')
+}
 
 /**
  * @description `pm2` 启动成功打印信息
