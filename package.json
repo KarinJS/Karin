@@ -115,6 +115,8 @@
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "bin": {
+    "k": "lib/main/scripts.js",
+    "kr": "lib/main/scripts.js",
     "karin": "lib/main/scripts.js"
   },
   "files": [

@@ -17,6 +17,7 @@ async function main (
   program.command('rs').description('重启pm2服务').action(() => { karin.restartPM2() })
   program.command('dev').description('JavaScript开发模式').action(() => { karin.runDev() })
   program.command('ts').description('TypeScript开发模式').action(() => { karin.runTsx() })
+  program.command('ts -w').description('TypeScript 监察者模式').action(() => { karin.runTsx(true) })
   program.command('log').description('查看日志').action(() => { karin.logPM2() })
   program.command('up').description('更新插件').action(() => up())
   program.command('init').description('初始化karin').action(() => init())
