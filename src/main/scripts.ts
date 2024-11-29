@@ -12,7 +12,7 @@ async function main (
   program.version(version, '-v, --version', '显示版本号')
   program.command('.').description('前台启动').action(() => karin.runFork())
   program.command('start').description('前台启动').action(() => karin.runFork())
-  program.command('pm2').description('后台运行').action(() => karin.checkPM2())
+  program.command('pm2').description('后台运行').action(() => karin.runPM2())
   program.command('stop').description('停止后台运行').action(() => karin.stopPM2())
   program.command('rs').description('重启pm2服务').action(() => karin.restartPM2())
   program.command('dev').description('JavaScript开发模式').action(() => karin.runDev())
