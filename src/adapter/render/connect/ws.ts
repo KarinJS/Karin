@@ -29,17 +29,17 @@ export abstract class WebSocketRender {
       const raw = event.toString()
       const { echo, action, status, data } = JSON.parse(raw)
       logger.debug(`[WebSocket] ${echo} ${action} ${status}`)
-      logger.trace(`[WebSocket] ${echo} ${data}`)
+      logger.trace(`[WebSocket] ${echo} ${raw}`)
 
       if (action === 'response') {
         this.socket.emit(echo, { action, status, data })
       } else if (action === 'close') {
-        logger.debug(`[WebSocket] 收到断开连接请求: ${echo} ${action} ${data}`)
+        logger.error(`[WebSocket] 收到断开连接请求: ${raw}`)
         this.socket.close()
       } else if (action === 'static') {
         return this.static(echo, data)
       } else {
-        logger.error(`[WebSocket] 未知的请求: ${echo} ${action} ${status} ${data}`)
+        logger.error(`[WebSocket] 未知的请求: ${raw}`)
       }
     })
 
