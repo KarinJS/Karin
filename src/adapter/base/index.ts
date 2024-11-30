@@ -33,6 +33,7 @@ import {
 export abstract class AdapterBase implements AdapterType {
   account: AdapterType['account']
   adapter: AdapterType['adapter']
+  super: any
 
   constructor () {
     this.account = { uin: '', uid: '', selfId: '', subId: '', name: '', avatar: '' }
@@ -551,7 +552,7 @@ export abstract class AdapterBase implements AdapterType {
    * 获取 QQ 相关接口凭证
    * @param domain The domain to get credentials from
    */
-  getCredentials (domain: string): Promise<{ bkn: string, cookie: string }> {
+  getCredentials (domain: string): Promise<{ cookies: string, csrf_token: number }> {
     throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
   }
 
@@ -559,7 +560,7 @@ export abstract class AdapterBase implements AdapterType {
    * 获取 CSRF Token
    * @param domain The domain to get the CSRF token from
    */
-  getCSRFToken (domain: string): Promise<{ token: string }> {
+  getCSRFToken (domain: string): Promise<{ token: number }> {
     throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
   }
 

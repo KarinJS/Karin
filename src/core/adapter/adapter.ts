@@ -16,6 +16,7 @@ import type {
   QQGroupHonorInfo,
   UserInfo,
 } from './types'
+import type { Params, Request } from '@adapter/onebot/types'
 
 /** 适配器平台枚举 */
 export const enum AdapterPlatform {
@@ -112,6 +113,15 @@ export interface ForwardOptions {
 
 /** 适配器类型 */
 export interface AdapterType {
+  /** 原生方法 请自行as为对应的适配器类型 */
+  super: any
+  /**
+   * onebot专属方法
+   * @param action 请求的方法
+   * @param params 请求的参数
+   * @param time 超时时间 默认为120s
+   */
+  sendApi?: <T extends keyof Params>(action: `${T}`, params: Params[T], time?: number) => Promise<Request[T]>
   /** 适配器信息 */
   adapter: {
     /** 适配器索引 默认为-1 在注册适配器时会自动更改为对应的索引 */
