@@ -622,7 +622,7 @@ class ElementBuilder {
    * 构建单行按钮元素
    * @param data - 按钮数组
    */
-  button (data: Array<KarinButton>): ButtonElementType {
+  button (data: KarinButton | Array<KarinButton>): ButtonElementType {
     return { type: ElementTypeEnum.BUTTON, data: Array.isArray(data) ? data : [data] }
   }
 
