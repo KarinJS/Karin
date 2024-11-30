@@ -507,7 +507,7 @@ export abstract class AdapterBase implements AdapterType {
    * 获取陌生群信息
    * @param groupId 群号
    */
-  getNotJoinedGroupInfo (groupId: string): Promise<GroupInfo[]> {
+  getNotJoinedGroupInfo (groupId: string): Promise<GroupInfo> {
     throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
   }
 
@@ -559,7 +559,7 @@ export abstract class AdapterBase implements AdapterType {
    * 获取 CSRF Token
    * @param domain The domain to get the CSRF token from
    */
-  getCSRFToken (domain: string): Promise<{ bkn: string }> {
+  getCSRFToken (domain: string): Promise<{ token: string }> {
     throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
   }
 
