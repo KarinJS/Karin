@@ -63,4 +63,19 @@ export const init = async () => {
 
     fs.writeFileSync(`${process.cwd()}/.npmrc`, list.join('\n'))
   }
+
+  /** 检查是否安装pm2 */
+  const { promisify } = await import('util')
+  const { exec } = await import('child_process')
+  const execAsync = promisify(exec)
+  const { stderr } = await execAsync('pm2 -v')
+  if (stderr) {
+    console.log('[pm2] 未安装pm2 开始安装...')
+    const result = await execAsync('npm install -g pm2')
+    if (result.stderr) {
+      console.log('[pm2] 安装失败 请手动安装pm2后再次运行: npm install -g pm2')
+    } else {
+      console.log('[pm2] 安装成功')
+    }
+  }
 }

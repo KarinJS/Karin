@@ -102,7 +102,7 @@ export interface MiddlewareOptions {
 }
 
 type Fnc<T extends keyof MessageEventMap> = FncElement | ((e: MessageEventMap[T]) => Promise<boolean> | boolean)
-type ElemAndEvent<T extends keyof MessageEventMap> = FncElemOptions & { event: T }
+type ElemAndEvent<T extends keyof MessageEventMap> = FncElemOptions & { event?: T }
 type commandOptions<T extends keyof MessageEventMap> = (FncOptions & { event?: T }) | ElemAndEvent<T>
 
 export class Karin extends TypedListeners {
@@ -142,10 +142,7 @@ export class Karin extends TypedListeners {
   command<T extends keyof MessageEventMap = keyof MessageEventMap> (
     reg: string | RegExp,
     fnc: (e: MessageEventMap[T]) => Promise<boolean> | boolean,
-    options?: FncOptions & {
-      /** 监听事件 */
-      event?: T
-    }): CommandFnc<T>
+    options?: ElemAndEvent<T>): CommandFnc<T>
   /**
    * @param reg 正则表达式
    * @param element 字符串或者KarinElement、KarinElement数组
