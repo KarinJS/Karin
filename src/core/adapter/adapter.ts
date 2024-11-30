@@ -240,6 +240,7 @@ export interface AdapterType {
    * @param resId 资源ID
    * @returns 包含MessageResponse对象的数组
    */
+  // TODO: 此处返回类型错误
   getForwardMsg (resId: string): Promise<Array<MessageResponse>>
 
   /**
@@ -521,7 +522,7 @@ export interface AdapterType {
    * 获取陌生群信息
    * @param groupId 群号
    */
-  getNotJoinedGroupInfo?(groupId: string): Promise<GroupInfo[]>
+  getNotJoinedGroupInfo?(groupId: string): Promise<GroupInfo>
 
   /**
    * 获取艾特全体成员剩余次数
@@ -561,7 +562,7 @@ export interface AdapterType {
    * 获取 CSRF Token
    * @param domain The domain to get the CSRF token from
    */
-  getCSRFToken (domain: string): Promise<{ bkn: string }>
+  getCSRFToken (domain: string): Promise<{ token: string }>
 
   /**
    * 获取 HTTP Cookies
