@@ -556,13 +556,13 @@ export interface AdapterType {
    * 获取 QQ 相关接口凭证
    * @param domain The domain to get credentials from
    */
-  getCredentials (domain: string): Promise<{ bkn: string, cookie: string }>
+  getCredentials (domain: string): Promise<{ cookies: string, csrf_token: number }>
 
   /**
    * 获取 CSRF Token
    * @param domain The domain to get the CSRF token from
    */
-  getCSRFToken (domain: string): Promise<{ token: string }>
+  getCSRFToken (domain: string): Promise<{ token: number }>
 
   /**
    * 获取 HTTP Cookies
