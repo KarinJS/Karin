@@ -39,7 +39,7 @@ export const runDev = (isWatch = false) => {
 export const runTsx = async (isWatch = false) => {
   setMode('dev')
   setLang('ts')
-  const cmd = 'watch --exclude "./@karinjs/**/*" --exclude "./lib/**/*" index.js'
+  const cmd = 'watch --include "./src/**/*" --exclude "./@karinjs/**/*" --exclude "./lib/**/*" index.js'
   const { spawn } = await import('child_process')
   setWatch(isWatch)
   spawn('tsx', isWatch ? cmd.split(' ') : ['index.js'], { stdio: 'inherit', shell: true })
