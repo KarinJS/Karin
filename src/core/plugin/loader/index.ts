@@ -138,7 +138,8 @@ export const getPluginList = async () => {
 
     const pkg = requireFileSync<PkgData>(path.join(info.dir, 'package.json'))
     /** 创建插件文件夹 */
-    load.createDir.push(createPluginDir(info.name, pkg?.karin?.files))
+    const name = (pkg?.name || info.name).replace(/\//g, '-')
+    load.createDir.push(createPluginDir(name, pkg?.karin?.files))
 
     if (pkg?.karin?.static) {
       const list = Array.isArray(pkg.karin.static) ? pkg.karin.static : [pkg.karin.static]

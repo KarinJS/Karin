@@ -141,6 +141,9 @@ export const getYaml = <
         }
 
         for (let { selfId, api, token } of data.onebotHttp) {
+          if (selfId === 'default') {
+            continue
+          }
           selfId = String(selfId)
           token = String(token)
           if (!selfId || !api || !api.startsWith('http')) {
