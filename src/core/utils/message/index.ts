@@ -68,7 +68,7 @@ export const makeMessage = (
  * @param fakeName 转发用户显示的昵称 必填
  */
 export const makeForward = (
-  elements: string | ElementTypes | Array<string | SendElementTypes> | Array<NodeElementType>,
+  elements: string | ElementTypes | Array<string | SendElementTypes> | Array<NodeElementType[]>,
   fakeId: string,
   fakeName: string
 ): Array<CustomNodeElementType> => {
