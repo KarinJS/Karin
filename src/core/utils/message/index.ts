@@ -1,11 +1,12 @@
-import { ElementTypeEnum, ElementTypes, CustomNodeElementType, segment } from '@/adapter/segment'
+import lodash from 'lodash'
+import { ElementTypeEnum, ElementTypes, CustomNodeElementType, segment, SendElementTypes, NodeElementType } from '@/adapter/segment'
 
 /**
  * 将消息元素转换为字符串
  * @param data 消息元素
  * @returns 消息字符串和原始字符串
  */
-export const createRawMessage = (data: Array<ElementTypes>) => {
+export const createRawMessage = (data: Array<SendElementTypes>) => {
   if (!Array.isArray(data)) data = [data]
   const msg: string[] = []
 
@@ -42,7 +43,7 @@ export const createRawMessage = (data: Array<ElementTypes>) => {
       case ElementTypeEnum.LONG_MSG: return `[longmsg:${v.id}]`
       case ElementTypeEnum.PASMSG: return `[pasmsg:${v.id}]`
       case ElementTypeEnum.MARKDOWN_TPL: return `[markdowntpl:${JSON.stringify({ templateId: v.templateId, ...v.params })}]`
-      default: return `[未知:${JSON.stringify(v)}]`
+      default: return `[未知:${lodash.truncate(JSON.stringify(v), { length: 200 })}]`
     }
   }).join('')
   return { msg: msg.join('').trim(), raw: rawStr }
@@ -52,7 +53,9 @@ export const createRawMessage = (data: Array<ElementTypes>) => {
  * 消息元素归一化 主要处理字符串文本
  * @param elements 消息
  */
-export const makeMessage = (elements: string | ElementTypes | Array<string | ElementTypes>): Array<ElementTypes> => {
+export const makeMessage = (
+  elements: string | ElementTypes | SendElementTypes | Array<string | SendElementTypes>
+): Array<SendElementTypes> => {
   if (typeof elements === 'string') return [segment.text(elements)]
   if (!Array.isArray(elements)) return [elements]
   return elements.map(v => typeof v === 'string' ? segment.text(v) : v)
@@ -65,7 +68,7 @@ export const makeMessage = (elements: string | ElementTypes | Array<string | Ele
  * @param fakeName 转发用户显示的昵称 必填
  */
 export const makeForward = (
-  elements: string | ElementTypes | Array<string | ElementTypes>,
+  elements: string | ElementTypes | Array<string | SendElementTypes> | Array<NodeElementType>,
   fakeId: string,
   fakeName: string
 ): Array<CustomNodeElementType> => {

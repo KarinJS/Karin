@@ -163,22 +163,20 @@ export function KarinConvertAdapter (data: Array<SendElementTypes>, url: string)
         elements.push(i.data)
         break
       case 'node': {
-        if ('resId' in i) {
-          elements.push({ type: 'node', data: { id: i.resId } })
+        if (i.subType === 'messageID') {
+          elements.push({ type: 'forward', data: { id: i.messageId } })
         } else {
-          if (i.message) {
-            elements.push({
-              type: 'node',
-              data: {
-                user_id: i.userId,
-                nickname: i.nickname,
-                content: KarinConvertAdapter(i.message, url),
-                prompt: i?.options?.prompt,
-                summary: i?.options?.summary,
-                source: i?.options?.source,
-              },
-            })
-          }
+          elements.push({
+            type: 'node',
+            data: {
+              user_id: i.userId,
+              nickname: i.nickname,
+              content: KarinConvertAdapter(i.message, url),
+              prompt: i?.options?.prompt,
+              summary: i?.options?.summary,
+              source: i?.options?.source,
+            },
+          })
         }
         break
       }

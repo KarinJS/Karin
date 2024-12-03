@@ -1,6 +1,6 @@
 import type { Contact } from './contact'
 import type { LoggerLevel } from '@/utils/config/types'
-import type { ElementTypes, NodeElementType } from './segment'
+import type { NodeElementType, SendElementTypes } from './segment'
 import type {
   CreateGroupFolderResponse,
   DownloadFileOptions,
@@ -186,7 +186,7 @@ export interface AdapterType {
    * @param elements 消息元素
    * @param retryCount 重试次数 默认为0
    */
-  sendMsg (contact: Contact, elements: Array<ElementTypes>, retryCount?: number): Promise<SendMsgResults>
+  sendMsg (contact: Contact, elements: Array<SendElementTypes>, retryCount?: number): Promise<SendMsgResults>
 
   /**
    * 发送长消息

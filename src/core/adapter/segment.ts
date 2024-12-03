@@ -404,31 +404,29 @@ export type ElementTypes =
 /** 发送的消息元素类型 多了一个转发 */
 export type SendElementTypes = ElementTypes | NodeElementType
 
-const enum NodeTypeEnum {
-  /** 节点 */
-  NODE = 'node',
-}
-
 interface NodeType {
-  type: NodeTypeEnum.NODE
+  type: 'node'
+  subType: 'messageID' | 'fake'
 }
 
 /** 常规合并转发节点 */
 export interface DirectNodeElementType extends NodeType {
-  /** 节点ID */
-  resId: string
-  /** @deprecated 即将废弃 请使用 `resId` */
-  res_id: string
+  subType: 'messageID'
+  /** 消息ID */
+  messageId: string
+  /** @deprecated 即将废弃 请使用 `messageId` */
+  message_id: string
 }
 
 /** 自定义节点 */
 export interface CustomNodeElementType extends NodeType {
+  subType: 'fake'
   /** 目标ID */
   userId: string
   /** 目标名称 */
   nickname: string
   /** 转发的元素节点 */
-  message: Array<ElementTypes>
+  message: Array<SendElementTypes>
   /** 外显设置 */
   options?: ForwardOptions
 }
@@ -734,9 +732,9 @@ class ElementBuilder {
 
   /**
    * 构建常规转发节点元素
-   * @param resId resId - 资源ID
+   * @param messageID 消息ID
    */
-  node (resId: DirectNodeElementType['resId']): DirectNodeElementType
+  node (messageID: DirectNodeElementType['messageId']): DirectNodeElementType
   /**
    * 构建自定义转发节点元素
    * @param userId - 目标ID
@@ -751,22 +749,22 @@ class ElementBuilder {
   ): CustomNodeElementType
   /**
    * 构建转发节点元素
-   * @param resIdOrUserId - 资源ID或目标ID
+   * @param msgIdOrUserId - 资源ID或目标ID
    * @param nickname - 目标名称
    * @param message - 转发的消息元素结构
    */
   node (
-    resIdOrUserId: CustomNodeElementType['userId'] | DirectNodeElementType['resId'],
+    msgIdOrUserId: CustomNodeElementType['userId'] | DirectNodeElementType['messageId'],
     nickname?: CustomNodeElementType['nickname'],
     message?: CustomNodeElementType['message'],
     options?: CustomNodeElementType['options']
   ): NodeElementType {
-    if (resIdOrUserId && nickname && message) {
+    if (msgIdOrUserId && nickname && message) {
       /** 自定义 */
-      return { type: NodeTypeEnum.NODE, userId: resIdOrUserId, nickname, message, options }
+      return { type: 'node', subType: 'fake', userId: msgIdOrUserId, nickname, message, options }
     } else {
       /** 常规 */
-      return { type: NodeTypeEnum.NODE, resId: resIdOrUserId, res_id: resIdOrUserId }
+      return { type: 'node', subType: 'messageID', messageId: msgIdOrUserId, message_id: msgIdOrUserId }
     }
   }
 }

@@ -8,7 +8,7 @@ import { GetGroupHighlightsResponse, QQGroupHonorInfo } from '@/adapter/types'
 import { Action, CustomNodeSegments, OB11NodeSegment, OB11Segment, Params, Request } from './types'
 import type { Contact } from '@/adapter/contact'
 import type { OB11AllEvent } from './types/event'
-import type { ElementTypes, NodeElementType } from '@/adapter/segment'
+import type { ElementTypes, NodeElementType, SendElementTypes } from '@/adapter/segment'
 import type { ForwardOptions, SendMsgResults } from '@/adapter/adapter'
 
 export abstract class AdapterOneBot extends AdapterBase {
@@ -84,7 +84,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * karin转onebot11
    * @param data karin格式消息
    */
-  KarinConvertAdapter (data: Array<ElementTypes>) {
+  KarinConvertAdapter (data: Array<SendElementTypes>) {
     return KarinConvertAdapter(data, this.adapter.address)
   }
 
@@ -1200,8 +1200,8 @@ export abstract class AdapterOneBot extends AdapterBase {
   forwardKarinConvertAdapter (elements: Array<NodeElementType>): Array<OB11NodeSegment> {
     const messages: OB11NodeSegment[] = []
     for (const elem of elements) {
-      if ('resId' in elem) {
-        messages.push({ type: 'node', data: { id: elem.resId } })
+      if (elem.subType === 'messageID') {
+        messages.push({ type: 'node', data: { id: elem.messageId } })
       } else {
         const node: CustomNodeSegments = {
           type: 'node',
@@ -1212,11 +1212,11 @@ export abstract class AdapterOneBot extends AdapterBase {
           },
         }
 
-        // if (typeof elem.options === 'object') {
-        //   if (elem.options.prompt) node.data.prompt = elem.options.prompt
-        //   if (elem.options.summary) node.data.summary = elem.options.summary
-        //   if (elem.options.source) node.data.source = elem.options.source
-        // }
+        if (typeof elem.options === 'object') {
+          if (elem.options.prompt) node.data.prompt = elem.options.prompt
+          if (elem.options.summary) node.data.summary = elem.options.summary
+          if (elem.options.source) node.data.source = elem.options.source
+        }
 
         messages.push(node)
       }
