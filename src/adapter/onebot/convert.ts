@@ -12,7 +12,7 @@ import type { AdapterOneBot } from './base'
  */
 export const buildError = (selfId: string, action: string, request: string, error?: unknown) => {
   if (error) {
-    const err = JSON.stringify(error, null, 2)
+    const err = JSON.stringify(error, null, 2).replace(/\\n/g, '\n')
     return new Error(`[${selfId}][sendApi] 请求错误:\n  action: ${action}\n  params: ${request}\n  error: ${err}}`)
   }
 
