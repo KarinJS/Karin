@@ -52,7 +52,7 @@ export class OB11Event {
     const message = {
       event: EventType.Message as EventType.Message,
       event_id: data.message_id + '',
-      sub_event: data.sub_type === 'friend' ? MessageSubType.PrivateMessage : MessageSubType.GroupMessage,
+      sub_event: data.message_type === 'private' ? MessageSubType.PrivateMessage : MessageSubType.GroupMessage,
       raw_event: data,
       self_id: data.self_id + '',
       user_id: data.sender.user_id + '',
