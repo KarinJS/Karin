@@ -85,7 +85,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param data karin格式消息
    */
   KarinConvertAdapter (data: Array<SendElementTypes>) {
-    return KarinConvertAdapter(data, this.adapter.address)
+    return KarinConvertAdapter(data, this)
   }
 
   /**

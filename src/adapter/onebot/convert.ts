@@ -1,6 +1,7 @@
-import fs from 'fs'
-import { OB11Segment } from './types'
+import fs from 'node:fs'
 import { ElementTypes, MusicPlatform, segment, SendElementTypes } from '@/adapter/segment'
+import type { OB11Segment } from './types'
+import type { AdapterOneBot } from './base'
 
 /**
  * 构建错误信息
@@ -90,7 +91,7 @@ export const fileToBase64 = (file: string, url: string): string => {
    * karin转onebot11
    * @param data karin格式消息
    */
-export function KarinConvertAdapter (data: Array<SendElementTypes>, url: string): Array<OB11Segment> {
+export const KarinConvertAdapter = (data: Array<SendElementTypes>, onebot: AdapterOneBot): Array<OB11Segment> => {
   const elements = []
 
   for (const i of data) {
@@ -110,7 +111,7 @@ export function KarinConvertAdapter (data: Array<SendElementTypes>, url: string)
         break
       case 'image':
       case 'video': {
-        elements.push({ type, data: { file: fileToBase64(i.file, url) } })
+        elements.push({ type, data: { file: fileToBase64(i.file, onebot.adapter.address) } })
         break
       }
       case 'json':
@@ -119,7 +120,7 @@ export function KarinConvertAdapter (data: Array<SendElementTypes>, url: string)
         break
       }
       case 'record': {
-        elements.push({ type, data: { file: fileToBase64(i.file, url), magic: i.magic || false } })
+        elements.push({ type, data: { file: fileToBase64(i.file, onebot.adapter.address), magic: i.magic || false } })
         break
       }
       case 'music': {
@@ -169,9 +170,9 @@ export function KarinConvertAdapter (data: Array<SendElementTypes>, url: string)
           elements.push({
             type: 'node',
             data: {
-              user_id: i.userId,
-              nickname: i.nickname,
-              content: KarinConvertAdapter(i.message, url),
+              user_id: i.userId || onebot.selfId,
+              nickname: i.nickname || onebot.selfName,
+              content: KarinConvertAdapter(i.message, onebot),
               prompt: i?.options?.prompt,
               summary: i?.options?.summary,
               source: i?.options?.source,

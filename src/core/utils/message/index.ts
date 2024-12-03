@@ -69,9 +69,9 @@ export const makeMessage = (
  */
 export const makeForward = (
   elements: string | ElementTypes | Array<string | SendElementTypes> | Array<NodeElementType[]>,
-  fakeId: string,
-  fakeName: string
+  fakeId?: string,
+  fakeName?: string
 ): Array<CustomNodeElementType> => {
   if (!Array.isArray(elements)) elements = [elements]
-  return elements.map(v => segment.node(fakeId, fakeName, makeMessage(v)))
+  return elements.map(v => segment.node(fakeId || '', fakeName || '', makeMessage(v)))
 }
