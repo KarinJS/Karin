@@ -759,9 +759,9 @@ class ElementBuilder {
     message?: CustomNodeElementType['message'],
     options?: CustomNodeElementType['options']
   ): NodeElementType {
-    if (msgIdOrUserId && nickname && message) {
+    if (typeof nickname !== 'undefined') {
       /** 自定义 */
-      return { type: 'node', subType: 'fake', userId: msgIdOrUserId, nickname, message, options }
+      return { type: 'node', subType: 'fake', userId: msgIdOrUserId, nickname, message: message!, options }
     } else {
       /** 常规 */
       return { type: 'node', subType: 'messageID', messageId: msgIdOrUserId, message_id: msgIdOrUserId }
