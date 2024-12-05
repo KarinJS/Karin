@@ -1,27 +1,30 @@
 import { getBot } from '@/service'
 import { cache } from '@/plugin/cache/cache'
+import { master, admin } from '@/utils/config'
 import { makeMessageLog } from '@/utils/common'
 import { listeners } from '@/internal/listeners'
 import { makeMessage, MiddlewareHandler } from '@/utils'
 import type { Contact, ElementTypes, SendMsgResults } from '@/adapter'
 
-/**
- * 发送主动消息
- * @param uid - Bot的uid
- * @param contact - 目标信息
- * @param elements - 消息内容
- * @param options - 消息选项
- * @param options.recallMsg - 发送成功后撤回消息时间
- * @param options.retryCount - 重试次数
- */
-export const sendMsg = async (selfId: string, contact: Contact, elements: string | ElementTypes | Array<ElementTypes>, options: {
+type Message = string | ElementTypes | Array<ElementTypes>
+
+interface SendMsgOptions {
   /** 发送成功后撤回消息时间 */
   recallMsg?: number
   /** @deprecated 已废弃 请使用 `retryCount` */
   retry_count?: number
   /** 重试次数 */
   retryCount?: number
-} = { recallMsg: 0, retryCount: 1, retry_count: 1 }): Promise<SendMsgResults> => {
+}
+
+/**
+ * 发送主动消息
+ * @param uid Bot的uid
+ * @param contact 目标信息
+ * @param elements 消息内容
+ * @param options 消息选项
+ */
+export const sendMsg = async (selfId: string, contact: Contact, elements: Message, options: SendMsgOptions = { recallMsg: 0, retryCount: 1, retry_count: 1 }): Promise<SendMsgResults> => {
   /** 结果 */
   let result: any = {}
   /** 标准化 */
@@ -61,4 +64,74 @@ export const sendMsg = async (selfId: string, contact: Contact, elements: string
     setTimeout(() => bot.recallMsg(contact, result.messageId), recallMsg * 1000)
   }
   return result as SendMsgResults
+}
+
+interface SendMasterOptions extends SendMsgOptions {
+  /** 是否必须为Bot对应的主人/管理员 默认false */
+  mustMaster?: boolean
+}
+
+interface SendAdminOptions extends SendMsgOptions {
+  /** 是否必须为Bot对应的主人/管理员 默认false */
+  mustAdmin?: boolean
+}
+
+/**
+ * 给主人发消息
+ * @param selfId Bot的ID
+ * @param targetId 主人ID
+ * @param elements 消息内容
+ * @param options 消息选项
+ */
+export const sendMaster = async (
+  selfId: string,
+  targetId: string,
+  elements: Message,
+  options: SendMasterOptions = { recallMsg: 0, retryCount: 1, mustMaster: false }
+) => {
+  /** 检查目标是否为主人 */
+  const mustMaster = options?.mustMaster ?? false
+  const lsit = master()
+  if (mustMaster) {
+    if (!lsit.includes(`${selfId}@${targetId}`)) {
+      throw new Error('发送消息失败: 目标不是Bot的专属主人')
+    }
+  } else {
+    if (!lsit.includes(targetId)) {
+      throw new Error('发送消息失败: 目标不是主人')
+    }
+  }
+
+  const contact = { peer: targetId, scene: 'friend' } as Contact<'friend'>
+  return sendMsg(selfId, contact, elements, options)
+}
+
+/**
+ * 给管理员发消息
+ * @param selfId Bot的ID
+ * @param targetId 管理员ID
+ * @param elements 消息内容
+ * @param options 消息选项
+ */
+export const sendAdmin = async (
+  selfId: string,
+  targetId: string,
+  elements: Message,
+  options: SendAdminOptions = { recallMsg: 0, retryCount: 1, mustAdmin: false }
+) => {
+  /** 检查目标是否为管理员 */
+  const mustAdmin = options?.mustAdmin ?? false
+  const lsit = admin()
+  if (mustAdmin) {
+    if (!lsit.includes(`${selfId}@${targetId}`)) {
+      throw new Error('发送消息失败: 目标不是Bot的专属管理员')
+    }
+  } else {
+    if (!lsit.includes(targetId)) {
+      throw new Error('发送消息失败: 目标不是管理员')
+    }
+  }
+
+  const contact = { peer: targetId, scene: 'friend' } as Contact<'friend'>
+  return sendMsg(selfId, contact, elements, options)
 }

@@ -1,8 +1,8 @@
 import path from 'node:path'
 import { Message } from '@/event'
-import { sendMsg } from './sendMsg'
 import { lock } from '@/utils/data/lock'
 import { TypedListeners } from '@/internal/listeners'
+import { sendMsg, sendMaster, sendAdmin } from './sendMsg'
 import { context } from '@/event/handler/message/context'
 import { cache, createLogger } from '@/plugin/cache/cache'
 import { getAllBot, getAllBotList, getBot, getBotCount } from '@/service'
@@ -114,11 +114,29 @@ export class Karin extends TypedListeners {
    * @param options.retryCount - 重试次数
    */
   public sendMsg: typeof sendMsg
+  /**
+   * 给主人发消息
+   * @param selfId Bot的ID
+   * @param targetId 主人ID
+   * @param elements 消息内容
+   * @param options 消息选项
+   */
+  public sendMaster: typeof sendMaster
+  /**
+   * 给管理员发消息
+   * @param selfId Bot的ID
+   * @param targetId 管理员ID
+   * @param elements 消息内容
+   * @param options 消息选项
+   */
+  public sendAdmin: typeof sendAdmin
 
   constructor () {
     super()
     this.getBot = getBot
     this.sendMsg = sendMsg
+    this.sendMaster = sendMaster
+    this.sendAdmin = sendAdmin
     lock(this, 'getBot')
     lock(this, 'sendMsg')
   }

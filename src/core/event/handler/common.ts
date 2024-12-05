@@ -91,10 +91,10 @@ export const alias = (event: Message, alias: string[]): boolean => {
 export const setEventRole = (event: GroupEvent | FriendEvent) => {
   const config = cfg.config()
   /** 主人 */
-  if (config.master.includes(event.userId)) {
+  if (config.master.includes(`${event.selfId}@${event.userId}`) || config.master.includes(event.userId)) {
     event.isMaster = true
     event.isAdmin = true
-  } else if (config.admin.includes(event.userId)) {
+  } else if (config.admin.includes(`${event.selfId}@${event.userId}`) || config.admin.includes(event.userId)) {
     /** 管理员 */
     event.isAdmin = true
   }
