@@ -11,6 +11,7 @@ import {
   configPath,
   defaultConfigPath,
   commentPath,
+  htmlPath,
 } from '@/utils/fs/root'
 
 import type {
@@ -31,6 +32,7 @@ import {
 import { updateHttpBotToken } from '@/service/server'
 import { setPort, setVersion } from '@/env/env'
 import { save } from '@/utils/fs/yaml'
+import { mkdir } from '@/utils/fs/mkdir'
 
 /** node-karin的package */
 export const pkg = () => requireFileSync<PackageType>(karinDir + '/package.json')
@@ -280,6 +282,7 @@ export const init = () => {
   server()
   setPort(port())
   setVersion(pkg().version)
+  mkdir(htmlPath)
   const list = [basePath, configPath, dataPath, tempPath]
   list.map(v => isExists(v))
 }

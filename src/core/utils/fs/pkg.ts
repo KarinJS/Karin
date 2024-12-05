@@ -13,6 +13,8 @@ export interface PkgData {
   /** 插件入口 */
   main: string
   karin?: {
+    /** ts入口 */
+    main?: string
     /** 插件app列表 */
     apps?: string | string[]
     /** ts插件app列表 ts专属 仅在ts开发模式下生效 */

@@ -161,6 +161,13 @@ export const getPluginList = async () => {
       }
     }
 
+    if (process.env.karin_app_lang === 'ts' && pkg?.karin?.main) {
+      const file = path.join(info.dir, pkg.karin.main)
+      if (isExists(file)) {
+        load.main.push(loaderMain(info.name, file))
+      }
+    }
+
     return {
       index,
       info,
