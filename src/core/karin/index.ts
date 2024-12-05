@@ -504,13 +504,13 @@ export class Karin extends TypedListeners {
     reply?: boolean
     /** 超时回复文本 默认为'操作超时已取消' */
     replyMsg?: string
-  }): Promise<Message | null> {
+  }): Promise<Message> {
     const time = options?.time || 120
     const userId = options?.userId || e.userId || e.user_id
     const key = e.contact.subPeer ? `${e.contact.peer}:${e.contact.subPeer}:${userId}` : `${e.contact.peer}:${userId}`
     context.set(key, e)
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         const data = context.get(key)
         if (data?.eventId === e.eventId) {
@@ -518,8 +518,7 @@ export class Karin extends TypedListeners {
           if (options?.reply) e.reply(options.replyMsg || '操作超时已取消')
           /** 移除监听器 */
           this.removeAllListeners(`ctx:${key}`)
-          logger.bot('error', e.selfId, `接收下文事件超时，已取消下文监听: ${key}`)
-          resolve(null)
+          reject(new Error(`接收下文事件超时，已取消下文监听: ${key}`))
           return true
         }
       }, time * 1000)
