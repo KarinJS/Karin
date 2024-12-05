@@ -377,10 +377,10 @@ export const loadFncApp = (val: FncType | FncType[], index: number, dirname: str
         const fn = fnc as Task
         fn.schedule = schedule.scheduleJob(fn.cron, async () => {
           try {
-            fn.log(`[定时任务][${fnc.name}][${fn.name}]: 开始执行`)
+            fn.log(`[定时任务][${fnc.name}][${fn.cron}]: 开始执行`)
             const result = fn.fnc()
             if (util.types.isPromise(result)) await result
-            fn.log(`[定时任务][${fn.name}][${fn.name}]: 执行完成`)
+            fn.log(`[定时任务][${fn.name}][${fn.cron}]: 执行完成`)
           } catch (error) {
             handleError('taskStart', { name: fnc.name, task: fn.name, error })
           }
