@@ -75,7 +75,7 @@ const getOutputPath = (file: string, data: string, name?: string) => {
   /** 保存文件的目录 */
   const fileDir = path.join(htmlPath, name || 'render')
   /** 保存文件的绝对路径 */
-  const filePath = path.join(fileDir, `${Date.now()}${basename}${extname}`)
+  const filePath = path.join(fileDir, `${basename}-${Date.now()}${extname}`)
 
   mkdirSync(fileDir)
   fs.writeFileSync(filePath, data)
