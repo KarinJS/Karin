@@ -27,9 +27,35 @@ export const init = async () => {
   /** 创建入口 */
   initIndex()
 
-  /** 创建pnpm工作区配置 */
-  if (!fs.existsSync(pnpmPath)) {
-    fs.writeFileSync(pnpmPath, 'packages:\n  - \'plugins/**\'\n')
+  const { init } = await import('@/utils/config/index')
+  init()
+
+  const list = [
+    '.vscode',
+    '.idea',
+    '.github',
+    'src',
+    'dist',
+    'tsconfig.json',
+    'jsconfig.json',
+    'LICENSE',
+    'README.md',
+    '.gitignore',
+    'CHANGELOG.md',
+  ]
+
+  /** 只要有任何一项文件存在 则代表是插件开发环境 不作为正式环境 */
+  if (!list.some((item) => fs.existsSync(`${root}/${item}`))) {
+    /** 创建pnpm工作区配置 */
+    if (!fs.existsSync(pnpmPath)) {
+      fs.writeFileSync(pnpmPath, 'packages:\n  - \'plugins/**\'\n')
+    }
+
+    /** 创建plugins文件夹 */
+    const pluginsFolder = `${root}/plugins/karin-plugin-example`
+    if (!fs.existsSync(pluginsFolder)) {
+      fs.mkdirSync(pluginsFolder, { recursive: true })
+    }
   }
 
   /** 修改当前环境为esm */
@@ -78,7 +104,4 @@ export const init = async () => {
       console.log('[pm2] 安装成功')
     }
   }
-
-  const { init } = await import('@/utils/config/index')
-  init()
 }
