@@ -7,10 +7,13 @@ let ffplayPath = 'ffplay'
 
 const isFfmpegInstalled = await exec('ffmpeg -version', { booleanResult: true })
 if (!isFfmpegInstalled) {
-  const cfg = config()
-  ffmpegPath = `"${cfg.ffmpegPath}"`
-  ffprobePath = `"${cfg.ffprobePath}"`
-  ffplayPath = `"${cfg.ffplayPath}"`
+  /** 延迟1秒 */
+  setTimeout(() => {
+    const cfg = config()
+    ffmpegPath = `"${cfg.ffmpegPath}"`
+    ffprobePath = `"${cfg.ffprobePath}"`
+    ffplayPath = `"${cfg.ffplayPath}"`
+  }, 1000)
 }
 
 /**

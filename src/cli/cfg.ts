@@ -78,4 +78,7 @@ export const init = async () => {
       console.log('[pm2] 安装成功')
     }
   }
+
+  const { init } = await import('@/utils/config/index')
+  init()
 }
