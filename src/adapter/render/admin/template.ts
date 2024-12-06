@@ -21,6 +21,7 @@ export const renderTpl = (options: Omit<Options, 'name'> & { name?: string }) =>
     if (options.file.startsWith('http')) {
       throw TypeError('他喵的 不会真的有笨比传个http来当做模板吧...')
     }
+
     const file = path.resolve(options.file)
     const tplData = getCacheData(file)
     const renderData = template.render(tplData, options.data)
@@ -31,9 +32,8 @@ export const renderTpl = (options: Omit<Options, 'name'> & { name?: string }) =>
 
     delete options.data
     delete options.name
-    if (!options.file.startsWith('file')) {
-      options.file = `file://${options.file}`
-    }
+    options.file = `file://${outputPath}`
+
     return options
   }
 
