@@ -1,4 +1,4 @@
-export * from '@/event/types'
+export * from '@/event/types/types'
 import type { DirectMessage } from '@/event/create/message/direct'
 import type { FriendMessage } from '@/event/create/message/friend'
 import type { GroupMessage } from '@/event/create/message/group'

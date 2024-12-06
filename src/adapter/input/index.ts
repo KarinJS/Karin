@@ -20,7 +20,7 @@ export class AdapterInput extends AdapterBase implements AdapterType {
     listeners.on('karin:adapter:open', () => process.stdin.on('data', data => this.createEvent(data)))
     listeners.on('karin:adapter:close', () => process.stdin.removeAllListeners('data'))
 
-    this.adapter.name = 'input'
+    this.adapter.name = '@karinjs/input'
     this.adapter.communication = 'internal'
     this.adapter.platform = 'shell'
     this.adapter.version = '1.0.0'
