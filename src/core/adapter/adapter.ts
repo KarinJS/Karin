@@ -72,6 +72,8 @@ export const enum AdapterProtocol {
   WSPlugin = 'ws-plugin',
   /** @link https://justundertaker.github.io/ComWeChatBotClient/ */
   ComWeChat = 'comwechat',
+  /** 官方机器人 */
+  QQBot = 'qqbot',
 }
 
 /** 适配器通信方式 */
