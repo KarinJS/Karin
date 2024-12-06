@@ -1,4 +1,4 @@
-import * as common from '../common'
+import * as common from '@/event/handler/common'
 import { config } from '@/utils'
 import { cache } from '@/plugin/cache/cache'
 import { FriendNoticeEventMap, GroupNoticeEventMap } from '@/event/types/types'

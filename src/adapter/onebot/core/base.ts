@@ -1,15 +1,16 @@
-import { AdapterBase } from '../base'
-import { OB11Event } from './types/event'
-import { createMessage } from './create/message'
+import { AdapterBase } from '@adapter/base'
+import { Action } from '@adapter/onebot/types/api'
+import { OB11Event } from '@adapter/onebot/types/event'
+import { createMessage } from '@adapter/onebot/create/message'
 import { RoleEnum, SexEnum } from '@/adapter/sender'
-import { createNotice, createRequest } from './create/notice'
-import { AdapterConvertKarin, KarinConvertAdapter } from './convert'
-import { GetGroupHighlightsResponse, QQGroupHonorInfo } from '@/adapter/types'
-import { Action, CustomNodeSegments, OB11NodeSegment, OB11Segment, Params, Request } from './types'
+import { createNotice, createRequest } from '@adapter/onebot/create/notice'
+import { AdapterConvertKarin, KarinConvertAdapter } from '@adapter/onebot/core/convert'
+
 import type { Contact } from '@/adapter/contact'
-import type { OB11AllEvent } from './types/event'
-import type { ElementTypes, NodeElementType, SendElementTypes } from '@/adapter/segment'
 import type { ForwardOptions, SendMsgResults } from '@/adapter/adapter'
+import type { ElementTypes, NodeElementType, SendElementTypes } from '@/adapter/segment'
+import type { GetGroupHighlightsResponse, QQGroupHonorInfo } from '@/adapter/types'
+import type { CustomNodeSegments, OB11NodeSegment, OB11Segment, Params, Request, OB11AllEvent } from '@adapter/onebot/types'
 
 export abstract class AdapterOneBot extends AdapterBase {
   constructor () {

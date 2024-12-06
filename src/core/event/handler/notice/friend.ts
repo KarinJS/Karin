@@ -1,6 +1,6 @@
-import * as common from '../common'
+import * as common from '@/event/handler/common'
 import { config } from '@/utils'
-import { BaseNoticeHandler } from './base'
+import { BaseNoticeHandler } from '@/event/handler/notice/base'
 import type { FriendDirectFileCfg } from '@/utils/config/types'
 import { type FriendNoticeEventMap, NoticeEventSubEnum } from '@/event/types/types'
 

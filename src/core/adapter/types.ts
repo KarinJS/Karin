@@ -1,6 +1,6 @@
-import { Contact } from './contact'
-import { ElementTypes } from './segment'
-import { RoleEnum, GroupSender, SexEnum } from './sender'
+import { Contact } from '@/adapter/contact'
+import { ElementTypes } from '@/adapter/segment'
+import { RoleEnum, GroupSender, SexEnum } from '@/adapter/sender'
 
 /** 基本消息返回值结构 */
 export interface MessageResponse {

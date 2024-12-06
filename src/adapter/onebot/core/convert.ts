@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import { ElementTypes, MusicPlatform, segment, SendElementTypes } from '@/adapter/segment'
-import type { OB11Segment } from './types'
+import type { OB11Segment } from '../types'
 import type { AdapterOneBot } from './base'
 
 /**

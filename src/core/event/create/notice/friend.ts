@@ -1,5 +1,5 @@
-import { NoticeBase, NoticeOptions } from './base'
-import { NoticeEventSubEnum } from '../../types/types'
+import { NoticeBase, NoticeOptions } from '@/event/create/notice/base'
+import { NoticeEventSubEnum } from '@/event/types/types'
 import { FriendNoticeHandler } from '@/event/handler/notice/friend'
 
 /** 私聊通知事件 */

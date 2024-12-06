@@ -1,6 +1,6 @@
-import type { Contact } from './contact'
+import type { Contact } from '@/adapter/contact'
 import type { LoggerLevel } from '@/utils/config/types'
-import type { NodeElementType, SendElementTypes } from './segment'
+import type { NodeElementType, SendElementTypes } from '@/adapter/segment'
 import type {
   CreateGroupFolderResponse,
   DownloadFileOptions,
@@ -15,7 +15,7 @@ import type {
   MessageResponse,
   QQGroupHonorInfo,
   UserInfo,
-} from './types'
+} from '@/adapter/types'
 import type { Params, Request } from '@adapter/onebot/types'
 
 /** 适配器平台枚举 */

@@ -1,6 +1,6 @@
-import { BaseMessageEventType, MessageBase, MessageOptions } from './base'
 import { FriendHandler } from '@/event/handler/message/friend'
-import { MessageEventSubEnum } from '../../types/types'
+import { MessageEventSubEnum } from '@/event/types/types'
+import { BaseMessageEventType, MessageBase, MessageOptions } from '@/event/create/message/base'
 import type { Contact } from '@/adapter/contact'
 import type { FriendSender } from '@/adapter/sender'
 

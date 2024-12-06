@@ -1,5 +1,5 @@
-import { RequestBase, RequestOptions } from './base'
-import { RequestEventSubEnum } from '../../types/types'
+import { RequestEventSubEnum } from '@/event/types/types'
+import { RequestBase, RequestOptions } from '@/event/create/request/base'
 import { GroupRequestHandler } from '@/event/handler/request/group'
 
 export type GroupRequest = GroupApplyRequest | GroupInviteRequest

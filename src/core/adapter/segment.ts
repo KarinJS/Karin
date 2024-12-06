@@ -1,5 +1,5 @@
 import { KarinButton } from '@/utils/button/types'
-import { ForwardOptions } from './adapter'
+import { ForwardOptions } from '@/adapter/adapter'
 
 /** 元素类型枚举 */
 export const enum ElementTypeEnum {

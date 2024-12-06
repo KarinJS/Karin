@@ -6,12 +6,12 @@ import { sendMsg, sendMaster, sendAdmin } from './sendMsg'
 import { context } from '@/event/handler/message/context'
 import { cache, createLogger } from '@/plugin/cache/cache'
 import { getAllBot, getAllBotList, getBot, getBotCount } from '@/service'
-import { callRender, renderHtml, renderMultiHtml } from '@adapter/render/cache'
+import { callRender, renderHtml, renderMultiHtml } from '@adapter/render/admin/cache'
 import { Contact, ContactWithoutSubPeer, ContactWithSubPeer, Scene } from '@/adapter/contact'
 import type { ElementTypes } from '@/adapter/segment'
 import type { MessageEventMap } from '@/event/types/types'
 import type { GroupSender, FriendSender } from '@/adapter/sender'
-import type { Options, RenderResult } from '@adapter/render/types'
+import type { Options, RenderResult } from '@adapter/render/admin/types'
 import type {
   Accept,
   Task,

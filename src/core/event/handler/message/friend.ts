@@ -1,12 +1,13 @@
 import lodash from 'lodash'
-import * as common from '../common'
+import * as common from '@/event/handler/common'
 import { cache } from '@/plugin/cache/cache'
 import { config as cfg } from '@/utils'
 import { createRawMessage } from '@/utils/message'
 import { PermissionEnum } from '@/adapter/sender'
+import { MiddlewareHandler } from '@/utils/message/middleware'
+
 import type { FriendMessage } from '@/event/create/message/friend'
 import type { ConfigType, FriendDirectFileCfg } from '@/utils/config/types'
-import { MiddlewareHandler } from '../../../utils/message/middleware'
 
 /** 用户个人CD */
 const userCD: Record<string, NodeJS.Timeout> = {}

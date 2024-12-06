@@ -1,7 +1,7 @@
-import type { FriendSender, GroupSender, NoticeAndRequestSender } from '../../adapter/sender'
-import type { Contact } from '../../adapter/contact'
-import type { ElementTypes } from '../../adapter/segment'
-import type { AdapterType, SendMsgResults } from '../../adapter/adapter'
+import type { Contact } from '@/adapter/contact'
+import type { ElementTypes } from '@/adapter/segment'
+import type { AdapterType, SendMsgResults } from '@/adapter/adapter'
+import type { FriendSender, GroupSender, NoticeAndRequestSender } from '@/adapter/sender'
 import type {
   Message,
   Notice,
@@ -34,7 +34,7 @@ import type {
   FriendDecreaseNotice,
   GroupLuckKingNotice,
   GroupHonorChangedNotice,
-} from '..'
+} from '@/event/index'
 
 /** 事件父类型枚举 */
 export const enum EventParentEnum {

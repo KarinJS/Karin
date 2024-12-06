@@ -1,5 +1,5 @@
 import os from 'os'
-import { RedisClient } from './mock'
+import { RedisClient } from '@/db/redis/mock'
 import { config, exec, isWin } from '@/utils'
 import { createClient, RedisClientOptions, RedisClientType } from 'redis'
 

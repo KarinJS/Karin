@@ -1,7 +1,7 @@
 import { karin } from '@/karin'
-import { AdapterConvertKarin } from '../convert'
+import { AdapterConvertKarin } from '../core/convert'
 import { createFriendMessage, createGroupMessage } from '@/event'
-import type { AdapterOneBot } from '../base'
+import type { AdapterOneBot } from '../core/base'
 import type { OB11Message } from '../types/event'
 
 /**

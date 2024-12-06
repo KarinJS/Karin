@@ -4,8 +4,8 @@ import {
   BaseEventType,
   EventParentEnum,
   RequestEventSubEnum,
-} from '../../types/types'
-import { BaseEvent } from '../base'
+} from '@/event/types/types'
+import { BaseEvent } from '@/event/create/base'
 
 /** 请求事件基类定义 */
 export interface BaseRequestEventType extends BaseEventType {

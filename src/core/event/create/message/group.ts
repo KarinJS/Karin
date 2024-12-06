@@ -1,8 +1,8 @@
-import { MessageEventSubEnum } from '../../types/types'
-import { Contact } from '@/adapter/contact'
-import { BaseMessageEventType, MessageBase, MessageOptions } from './base'
-import { GroupMessageHandler } from '@/event/handler/message/group'
 import { GroupSender } from '@/adapter/sender'
+import { Contact } from '@/adapter/contact'
+import { MessageEventSubEnum } from '@/event/types/types'
+import { GroupMessageHandler } from '@/event/handler/message/group'
+import { BaseMessageEventType, MessageBase, MessageOptions } from '@/event/create/message/base'
 
 /** new 群消息事件所需参数 */
 export interface GroupMessageOptions extends MessageOptions {

@@ -1,5 +1,5 @@
 import { karin } from '@/karin'
-import type { AdapterOneBot } from '../base'
+import type { AdapterOneBot } from '../core/base'
 import { OB11RequestType, type OB11Request } from '../types/event'
 import { createGroupApplyRequest, createGroupInviteRequest, createPrivateApplyRequest } from '@/event'
 

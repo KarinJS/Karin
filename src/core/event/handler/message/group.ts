@@ -1,12 +1,12 @@
 import lodash from 'lodash'
-import * as common from '../common'
+import * as common from '@/event/handler/common'
 import { config as cfg } from '@/utils'
 import { cache } from '@/plugin/cache/cache'
 import { PermissionEnum } from '@/adapter/sender'
 import { createRawMessage } from '@/utils/message'
 import type { ConfigType, GroupGuildFileCfg } from '@/utils/config/types'
 import type { GroupMessage } from '@/event/create/message/group'
-import { MiddlewareHandler } from '../../../utils/message/middleware'
+import { MiddlewareHandler } from '@/utils/message/middleware'
 
 /** 群CD */
 const groupCD: Record<string, NodeJS.Timeout> = {}

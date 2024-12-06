@@ -1,8 +1,8 @@
 import { segment } from '@/adapter/segment'
 import { cache } from '@/plugin/cache/cache'
-import { BaseEventHandle, BaseEventOptions } from '../../types/types'
 import { MiddlewareHandler } from '@/utils'
 import { makeMessageLog } from '@/utils/common'
+import { BaseEventHandle, BaseEventOptions } from '@/event/types/types'
 
 /** 事件实现基类 */
 export abstract class BaseEvent implements BaseEventHandle {

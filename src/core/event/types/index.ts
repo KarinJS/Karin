@@ -1,12 +1,12 @@
-export * from './types'
-import type { DirectMessage } from '../create/message/direct'
-import type { FriendMessage } from '../create/message/friend'
-import type { GroupMessage } from '../create/message/group'
-import type { GuildMessage } from '../create/message/guild'
-import type { PrivateNotice } from '../create/notice/friend'
-import type { GroupNotice } from '../create/notice/group'
-import type { PrivateApplyRequest } from '../create/request/friend'
-import type { GroupApplyRequest, GroupInviteRequest } from '../create/request/group'
+export * from '@/event/types'
+import type { DirectMessage } from '@/event/create/message/direct'
+import type { FriendMessage } from '@/event/create/message/friend'
+import type { GroupMessage } from '@/event/create/message/group'
+import type { GuildMessage } from '@/event/create/message/guild'
+import type { PrivateNotice } from '@/event/create/notice/friend'
+import type { GroupNotice } from '@/event/create/notice/group'
+import type { PrivateApplyRequest } from '@/event/create/request/friend'
+import type { GroupApplyRequest, GroupInviteRequest } from '@/event/create/request/group'
 
 /** 消息事件 */
 export type Message = FriendMessage | DirectMessage | GroupMessage | GuildMessage

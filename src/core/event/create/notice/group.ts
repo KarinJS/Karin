@@ -1,6 +1,6 @@
 import { GroupNoticeHandler } from '@/event/handler/notice/group'
-import { NoticeBase, NoticeOptions } from './base'
-import { NoticeEventSubEnum } from '../../types/types'
+import { NoticeBase, NoticeOptions } from '@/event/create/notice/base'
+import { NoticeEventSubEnum } from '@/event/types/types'
 
 /** 群聊通知事件联合类型 */
 export type GroupNotice =

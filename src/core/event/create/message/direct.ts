@@ -1,6 +1,6 @@
-import { MessageEventSubEnum } from '../../types/types'
 import { Contact } from '@/adapter/contact'
-import { BaseMessageEventType, MessageBase, MessageOptions } from './base'
+import { MessageEventSubEnum } from '@/event/types/types'
+import { BaseMessageEventType, MessageBase, MessageOptions } from '@/event/create/message/base'
 
 /** new 频道私信消息事件所需参数 */
 export type DirectMessageOptions = MessageOptions & {

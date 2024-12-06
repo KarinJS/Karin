@@ -4,8 +4,8 @@ import {
   BaseEventType,
   EventParentEnum,
   MessageEventSubEnum,
-} from '../../types/types'
-import { BaseEvent } from '../base'
+} from '@/event/types/types'
+import { BaseEvent } from '@/event/create/base'
 
 /** 消息事件基类定义 */
 export interface BaseMessageEventType extends BaseEventType {

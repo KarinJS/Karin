@@ -3,10 +3,10 @@ import path from 'node:path'
 import util from 'node:util'
 import chokidar from 'chokidar'
 import schedule from 'node-schedule'
-import { gitAllPlugin } from '../list'
-import { Middleware } from '../cache/types'
+import { gitAllPlugin } from '@/plugin/list'
+import { Middleware } from '@/plugin/cache/types'
 import { handleError } from '@/internal/error'
-import { cache, createLogger } from '../cache/cache'
+import { cache, createLogger } from '@/plugin/cache/cache'
 import {
   isDir,
   isClass,
@@ -16,9 +16,9 @@ import {
   isExists,
 } from '@/utils'
 
-import type { Info } from '../list/types'
+import type { Info } from '@/plugin/list/types'
 import type { PkgData } from '@/utils/fs/pkg'
-import type { Plugin } from '../class'
+import type { Plugin } from '@/plugin/class'
 import type {
   Accept,
   CommandClass,
@@ -26,7 +26,7 @@ import type {
   Task,
   Button,
   Handler,
-} from '../cache/types'
+} from '@/plugin/cache/types'
 
 type FncType = Accept
   | CommandClass

@@ -1,5 +1,5 @@
-import { RequestBase, RequestOptions } from './base'
-import { RequestEventSubEnum } from '../../types/types'
+import { RequestBase, RequestOptions } from '@/event/create/request/base'
+import { RequestEventSubEnum } from '@/event/types/types'
 import { FriendRequestHandler } from '@/event/handler/request/friend'
 
 export type FriendRequest = PrivateApplyRequest

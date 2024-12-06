@@ -1,5 +1,5 @@
 import { karin } from '@/karin'
-import { AdapterOneBot } from '../base'
+import { AdapterOneBot } from '../core/base'
 import { OB11NoticeType } from '../types/event'
 import type { OB11Message, OB11Notice, OB11Request } from '../types/event'
 import {
