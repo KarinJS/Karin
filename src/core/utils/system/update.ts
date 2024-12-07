@@ -27,10 +27,16 @@ export const getPkgVersion = async (name: string): Promise<string | null> => {
 /**
  * @description 获取指定包的远程版本号
  * @param name 包名
+ * @param tag 标签，默认为 `latest`
  */
-export const getRemotePkgVersion = async (name: string): Promise<string | null> => {
-  const { stdout } = await exec(`npm show ${name} version`)
-  return stdout.toString().trim() || null
+export const getRemotePkgVersion = async (name: string, tag = 'latest') => {
+  if (tag === 'latest') {
+    const { stdout } = await exec(`npm show ${name} version`)
+    return stdout.toString().trim() || null
+  } else {
+    const { stdout } = await exec(`npm show ${name} dist-tags.${tag}`)
+    return stdout.toString().trim() || null
+  }
 }
 
 type UpdatePkgReturn<T extends 'ok' | 'failed' = 'ok' | 'failed'> = T extends 'ok'
@@ -40,10 +46,11 @@ type UpdatePkgReturn<T extends 'ok' | 'failed' = 'ok' | 'failed'> = T extends 'o
 /**
  * @description 更新指定的npm插件
  * @param name 包名
+ * @param tag 标签 默认 `latest`
  */
-export const updatePkg = async <T extends 'ok' | 'failed' = 'ok' | 'failed'> (name: string): Promise<UpdatePkgReturn<T>> => {
+export const updatePkg = async <T extends 'ok' | 'failed' = 'ok' | 'failed'> (name: string, tag = 'latest'): Promise<UpdatePkgReturn<T>> => {
   const local = await getPkgVersion(name)
-  const remote = await getRemotePkgVersion(name)
+  const remote = await getRemotePkgVersion(name, tag)
 
   if (local === remote) {
     return { status: 'failed', data: `[${name}][无更新] ${local} => ${remote}` } as UpdatePkgReturn<T>
