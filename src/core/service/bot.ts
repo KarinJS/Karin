@@ -1,8 +1,9 @@
-import { Contact, NodeElementType } from '@/adapter'
-import { AdapterCommunication, AdapterProtocol, AdapterType, ForwardOptions } from '@/adapter/adapter'
-import { cache } from '@/plugin/cache/cache'
+import { sendMsg } from '@/karin/sendMsg'
 import { MiddlewareHandler } from '@/utils'
 import { AdapterBase } from '@adapter/base'
+import { cache } from '@/plugin/cache/cache'
+import { Contact, NodeElementType, segment } from '@/adapter'
+import { AdapterCommunication, AdapterProtocol, AdapterType, ForwardOptions } from '@/adapter/adapter'
 
 let index = 0
 const list: { index: number, bot: AdapterType }[] = []
@@ -168,6 +169,31 @@ export const registerBot = (type: `${AdapterCommunication}`, bot: AdapterBase) =
     }
     return sendForwardMsg.call(bot, contact, elements, options)
   }
+
+  setTimeout(async () => {
+    const { level } = await import('../../main/index')
+    const key = `karin:restart:${bot.selfId}`
+    const options = await level.get(key)
+    if (!options) return
+
+    try {
+      const { selfId, contact, messageId, time } = options
+      /** 重启花费时间 保留2位小数 */
+      const restartTime = ((Date.now() - time) / 1000).toFixed(2)
+      /** 超过2分钟不发 */
+      if (Number(restartTime) > 120) {
+        return false
+      }
+
+      const element = [
+        segment.reply(messageId),
+        segment.text(`\n重启成功：${restartTime}秒`),
+      ]
+      await sendMsg(selfId, contact, element)
+    } finally {
+      await level.del(key)
+    }
+  }, 10)
 
   return id
 }

@@ -3,9 +3,11 @@ import { Level } from 'level'
 
 export class LevelDB extends Level {
   id: string
+  get: ((key: string) => Promise<any>) & typeof Level.prototype.get
   constructor (path: string) {
     super(path, { valueEncoding: 'json' })
     this.id = 'Level'
+    this.get = super.get.bind(this)
   }
 
   /**
