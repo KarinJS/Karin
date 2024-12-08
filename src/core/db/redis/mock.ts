@@ -82,7 +82,7 @@ export class RedisClient extends EventEmitter {
 
     const list = await this.#level.keys().all()
     await Promise.all(list.map(async (key) => {
-      const data = await this.#level.get(key)
+      const data = await this.#level.get(key).catch(() => null)
       if (!data) return
       const { type, expire, value } = JSON.parse(data)
 

@@ -23,7 +23,7 @@ export class LevelDB extends Level {
    * 和get方法一样 但是不抛出错误
    * @param key 键
    */
-  async has (key: string) {
+  async has (key: string): Promise<any | null> {
     try {
       return await super.get(key)
     } catch {

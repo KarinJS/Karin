@@ -173,7 +173,7 @@ export const registerBot = (type: `${AdapterCommunication}`, bot: AdapterBase) =
   setTimeout(async () => {
     const { level } = await import('../../main/index')
     const key = `karin:restart:${bot.selfId}`
-    const options = await level.get(key)
+    const options = await level.has(key)
     if (!options) return
 
     try {
