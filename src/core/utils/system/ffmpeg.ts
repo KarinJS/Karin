@@ -17,7 +17,7 @@ if (!isFfmpegInstalled) {
     const cfg = config()
     ffmpegPath = cfg.ffmpegPath ? `"${cfg.ffmpegPath}"` : ffmpegPath
     ffprobePath = cfg.ffprobePath ? `"${cfg.ffprobePath}"` : ffprobePath
-    ffplayPath = ffplayPath ? `"${cfg.ffplayPath}"` : ffplayPath
+    ffplayPath = cfg.ffplayPath ? `"${cfg.ffplayPath}"` : ffplayPath
   }, 1000)
 }
 
