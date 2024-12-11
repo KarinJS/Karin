@@ -2,13 +2,15 @@ import express, { type Express } from 'express'
 import { createServer } from 'http'
 import { WebSocketServer } from 'ws'
 
+/** express 服务 */
+export const app: Express = express()
+
 /**
  * @description 创建 express、WebSocketServer 服务
  * @param port 端口号
  * @param list `/` 路由返回的随机消息列表
  */
 export const createExpressWebSocketServer = (port: number, list?: string[]) => {
-  const app: Express = express()
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
   if (!list || list.length === 0) {

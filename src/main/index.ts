@@ -6,6 +6,7 @@ export * from '@/service'
 export * from '@/plugin'
 export * from '@adapter/index'
 export * from '@/internal/error'
+export { app } from '@/server/app'
 export { karin as default } from '@/karin'
 export { TypedListeners } from '@/internal/listeners'
 export { default as axios } from 'axios'
@@ -30,8 +31,6 @@ import type { LevelDB, Client } from '@/db'
 
 /** 日志管理器 */
 export let logger: ReturnType<typeof createLogger>
-/** express服务 */
-export let app: ReturnType<typeof createExpressWebSocketServer>['app']
 /** redis服务 */
 export let redis: Client
 /** level服务 */
@@ -80,7 +79,6 @@ export const run = async () => {
     wss: wssServe,
     server: httpServe,
   } = createExpressWebSocketServer(port, config.rootMsg())
-  app = appServe
   createWebSocketServer(wssServe)
   await startServer(httpServe, appServe, config.host(), port)
   registerBot('internal', new AdapterInput())

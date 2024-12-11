@@ -9,7 +9,7 @@ apps:
     autorestart: true
     # 重启次数
     max_restarts: 60
-    # 最大重启次数
+    # 最大内存限制
     max_memory_restart: 1G
     # 重启延迟
     restart_delay: 2000
