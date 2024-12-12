@@ -50,7 +50,7 @@ export const exec = <K extends boolean = false> (
       }
 
       if (options?.booleanResult) {
-        return resolve((!!error) as ExecReturn<K>)
+        return resolve((!error) as ExecReturn<K>)
       }
 
       const value = {
