@@ -92,7 +92,7 @@ export abstract class BaseEvent implements BaseEventHandle {
       }
 
       /** 先发 提升速度 */
-      const request = this.bot.sendMsg(this.contact, message)
+      const request = this.#srcReply(message)
       const { raw } = makeMessageLog(message)
       if (this.isGroup) {
         logger.bot('info', this.selfId, `${logger.green(`Send Group ${this.contact.peer}: `)}${raw.replace(/\n/g, '\\n')}`)
