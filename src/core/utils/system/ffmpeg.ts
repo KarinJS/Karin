@@ -1,38 +1,34 @@
 import { config } from '@/utils/config'
 import { exec } from '@/utils/system/exec'
+import type { ExecReturn } from '@/utils/system/exec'
 
 let ffmpegPath = 'ffmpeg'
 let ffprobePath = 'ffprobe'
 let ffplayPath = 'ffplay'
 
-const checkFfmpeg = async () => {
-  const logs = await exec('ffmpeg -version')
-  return logs.stdout && logs.stdout.includes('ffmpeg version')
-}
-
-const isFfmpegInstalled = await checkFfmpeg()
-if (!isFfmpegInstalled) {
-  /** 延迟1秒 */
-  setTimeout(() => {
+/** 延迟1秒 不然会阻塞 */
+setTimeout(async () => {
+  const env = await exec('ffmpeg -version', { booleanResult: true })
+  if (!env) {
     const cfg = config()
     ffmpegPath = cfg.ffmpegPath ? `"${cfg.ffmpegPath}"` : ffmpegPath
     ffprobePath = cfg.ffprobePath ? `"${cfg.ffprobePath}"` : ffprobePath
     ffplayPath = cfg.ffplayPath ? `"${cfg.ffplayPath}"` : ffplayPath
-  }, 1000)
-}
+  }
+}, 1000)
 
 /**
  * @description ffmpeg命令
  * @param cmd 命令
  * @param options 参数
  */
-export const ffmpeg = async <K extends boolean = false>(
+export const ffmpeg = async <T extends boolean = false> (
   cmd: string,
-  options?: Parameters<typeof exec>[1] & { booleanResult?: K }
-) => {
+  options?: Parameters<typeof exec>[1] & { booleanResult?: T }
+): Promise<ExecReturn<T>> => {
   cmd = cmd.replace(/^ffmpeg/, '').trim()
   cmd = `${ffmpegPath} ${cmd}`
-  return await exec<K>(cmd, options)
+  return await exec(cmd, options)
 }
 
 /**
@@ -40,10 +36,10 @@ export const ffmpeg = async <K extends boolean = false>(
  * @param cmd 命令
  * @param options 参数
  */
-export const ffprobe = async <K extends boolean = false>(
+export const ffprobe = async <T extends boolean = false> (
   cmd: string,
-  options?: Parameters<typeof exec>[1] & { booleanResult?: K }
-) => {
+  options?: Parameters<typeof exec>[1] & { booleanResult?: T }
+): Promise<ExecReturn<T>> => {
   cmd = cmd.replace(/^ffprobe/, '').trim()
   cmd = `${ffprobePath} ${cmd}`
   return await exec(cmd, options)
@@ -54,10 +50,10 @@ export const ffprobe = async <K extends boolean = false>(
  * @param cmd 命令
  * @param options 参数
  */
-export const ffplay = async <K extends boolean = false>(
+export const ffplay = async <T extends boolean = false> (
   cmd: string,
-  options?: Parameters<typeof exec>[1] & { booleanResult?: K }
-) => {
+  options?: Parameters<typeof exec>[1] & { booleanResult?: T }
+): Promise<ExecReturn<T>> => {
   cmd = cmd.replace(/^ffplay/, '').trim()
   cmd = `${ffplayPath} ${cmd}`
   return await exec(cmd, options)

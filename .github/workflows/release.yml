@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # 使用 release-please-action 动作来自动创建发布 PR
-      - uses: google-github-actions/release-please-action@v3
+      - uses: googleapis/release-please-action@v4
         id: release
         with:
           # 设置发布类型为 node
@@ -33,7 +33,7 @@ jobs:
           # 设置 npm 源
           registry-url: "https://registry.npmjs.org"
       # 安装依赖 不安装对等依赖
-      - run: npm install --config.auto-install-peers=false --ignore-scripts
+      - run: npm install --config.auto-install-peers=false --ignore-scripts --omit=peer
         env:
           NODE_AUTH_TOKEN: ${{ secrets.RELEASE }}
         if: ${{ steps.release.outputs.release_created }}
@@ -41,7 +41,7 @@ jobs:
       - run: npm run build
         if: ${{ steps.release.outputs.release_created }}
       # 删除开发依赖、对等依赖
-      - run: npm run pr --clean
+      - run: npm run pr clean
         if: ${{ steps.release.outputs.release_created }}
       # 发布到 npm
       - run: pnpm run pub

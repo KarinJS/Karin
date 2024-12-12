@@ -1,5 +1,9 @@
+import fs from 'node:fs'
 import Axios from 'axios'
+import path from 'node:path'
+import { tempPath } from '@/utils/fs/root'
 import { YamlEditor } from '@/utils/fs/yaml'
+import { ffprobe, ffmpeg } from '@/utils/system/ffmpeg'
 import { formatTime as FormatTime } from '@/utils/system/time'
 import type { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { getAppPlugins, getNpmPlugins as GetNpmPlugins, getGitPlugins as GetGitPlugins } from '@/plugin/index'
@@ -176,4 +180,131 @@ export const getGitPlugins = async (isPack = false) => {
   const app = await getAppPlugins()
   const git = await GetGitPlugins()
   return app.concat(git)
+}
+
+/**
+ * 传入图片数组，拼接成一个图片
+ * @param images - 图片数组 支持路径和带前缀base64字符串`(base64://...)`
+ * @param perRow - 每行图片数量 默认3
+ * @returns 返回base64 不含`data:image/png;base64` `base64://`等前缀
+ */
+export const mergeImage = async (images: string[], perRow = 3) => {
+  /** 函数临时目录 */
+  const root = path.join(tempPath, 'mergeImage')
+  /** 本次任务的临时目录 */
+  const rootTemp = path.join(root, Date.now().toString())
+  /** 图片文件路径合集 */
+  const files = getAbsPath(images, rootTemp)
+
+  /** 构建filter_complex */
+  const filterComplex = buildFilterComplex(files, perRow)
+  /** 构建图片路径 */
+  const inputImages = files.map((file) => `-i "${file}"`).join(' ')
+
+  /** 输出图片路径 */
+  const output = path.join(rootTemp, 'output.png')
+  /** 最终的 ffmpeg 命令 */
+  const ffmpegCmd = `${inputImages} -filter_complex "${filterComplex}" -map "[out]" ${output}`
+  const result = await ffmpeg(ffmpegCmd)
+  if (!result.status) {
+    logger.error('[common] 合并图片失败:')
+    throw result.error
+  }
+
+  const { height, width } = await getImageSize(output)
+  const base64 = await fs.promises.readFile(output, 'base64')
+
+  /** 异步清理临时目录 */
+  setTimeout(() => fs.promises.rm(rootTemp, { recursive: true, force: true }), 100)
+  return { base64, height, width }
+}
+
+/**
+ * 将全部图片转为绝对路径
+ * @param images - 图片数组
+ * @param root - 根目录
+ * @returns 返回绝对路径数组
+ */
+export const getAbsPath = (images: string[], root: string) => {
+  const files: string[] = []
+  images.forEach((image, index) => {
+    if (typeof image !== 'string') throw TypeError('传入的图片只支持本地路径 或 带前缀base64://字符串')
+
+    /** base64保存到本地 */
+    if (image.startsWith('base64://')) {
+      const base64 = image.replace(/^base64:\/\//, '')
+      const buffer = Buffer.from(base64, 'base64')
+      const file = path.join(root, `${index}.png`)
+      fs.writeFileSync(file, buffer)
+      files.push(file)
+      return
+    }
+
+    /** 复制过来 不然删除的时候会把源文件一起删了 */
+    if (!fs.existsSync(image)) throw Error(`图片路径不存在: ${image}`)
+    const file = path.join(root, path.basename(image))
+    fs.copyFileSync(image, file)
+    files.push(file)
+  })
+
+  return files
+}
+
+/**
+ * 传入图片路径，返回图片尺寸
+ * @param file - 图片路径
+ */
+const getImageSize = async (file: string) => {
+  const { stdout } = await ffprobe(`-v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 "${file}"`)
+  const [width, height] = stdout.trim().split(',').map(Number)
+  return { width, height }
+}
+
+/**
+ * 为 xstack 生成布局
+ * @param dimensions - 图片尺寸
+ * @param perRow - 每行图片数量
+ * @param maxWidth - 最大宽度
+ * @param maxHeight - 最大高度
+ */
+const generateLayout = (dimensions: { width: number, height: number }[], perRow: number, maxWidth: number, maxHeight: number) => {
+  const layouts = dimensions.map((_, index) => {
+    const row = Math.floor(index / perRow)
+    const col = index % perRow
+    return `${col * maxWidth}_${row * maxHeight}`
+  }).join('|')
+  return layouts
+}
+
+/**
+ * 构建filterComplex
+ * @param dimensions - 图片尺寸
+ * @param perRow - 每行图片数量
+ * @param maxWidth - 最大宽度
+ * @param maxHeight - 最大高度
+ * @param output - 输出路径
+ * @returns ffmpeg命令
+ */
+const buildFilterComplex = async (files: string[], perRow: number) => {
+  /** 读取每张图片的尺寸 */
+  const list = await Promise.all(
+    files.map(async (file) => {
+      const { width, height } = await getImageSize(file)
+      return { file, width, height }
+    })
+  )
+
+  const maxWidth = Math.max(...list.map((d) => d.width))
+  const maxHeight = Math.max(...list.map((d) => d.height))
+
+  let cmd = ''
+  list.forEach((dim, index) => {
+    // 将每个图像填充到最大宽度和高度 居中图像
+    cmd += `[${index}:v]pad=${maxWidth}:${maxHeight}:(ow-iw)/2:(oh-ih)/2[p${index}]; `
+  })
+
+  /** 为 xstack 生成布局 */
+  const layouts = generateLayout(list, perRow, maxWidth, maxHeight)
+  cmd += `${list.map((_, index) => `[p${index}]`).join('')}xstack=inputs=${list.length}:layout=${layouts}[out]`
+  return cmd
 }

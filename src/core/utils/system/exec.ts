@@ -3,12 +3,13 @@ import { stringifyError } from './error'
 
 const logger = global?.logger || console
 
-type ExecError = {
+export type ExecType = {
+  status: boolean
   error: ExecException | null
   stderr: string
   stdout: string
 }
-type ExecReturn<K extends boolean> = K extends true ? boolean : ExecError
+export type ExecReturn<K extends boolean> = K extends true ? boolean : ExecType
 
 /**
  * 执行 shell 命令
@@ -35,6 +36,7 @@ export const exec = <K extends boolean = false> (
         `options: ${JSON.stringify(options)}`,
       ].join('\n'))
     }
+
     execCmd(cmd, options, (error, stdout, stderr) => {
       if (options?.log) {
         const info = stringifyError(error)
@@ -52,6 +54,7 @@ export const exec = <K extends boolean = false> (
       }
 
       const value = {
+        status: !error,
         error,
         stdout: stdout.toString().trim(),
         stderr: stderr.toString().trim(),
