@@ -189,15 +189,18 @@ export const getGitPlugins = async (isPack = false) => {
  * @returns 返回base64 不含`data:image/png;base64` `base64://`等前缀
  */
 export const mergeImage = async (images: string[], perRow = 3) => {
+  if (images.length < 2) throw Error('图片数量必须大于1')
+
   /** 函数临时目录 */
   const root = path.join(tempPath, 'mergeImage')
   /** 本次任务的临时目录 */
   const rootTemp = path.join(root, Date.now().toString())
+  fs.mkdirSync(rootTemp, { recursive: true })
+
   /** 图片文件路径合集 */
   const files = getAbsPath(images, rootTemp)
-
   /** 构建filter_complex */
-  const filterComplex = buildFilterComplex(files, perRow)
+  const filterComplex = await buildFilterComplex(files, perRow)
   /** 构建图片路径 */
   const inputImages = files.map((file) => `-i "${file}"`).join(' ')
 
