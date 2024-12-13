@@ -99,7 +99,7 @@ export interface SendMsgResults {
   /** 消息发送时间戳 */
   messageTime: number
   /** 原始结果 一般是Object、Array */
-  rawData: object | Array<any>
+  rawData: any
 }
 
 export interface ForwardOptions {
