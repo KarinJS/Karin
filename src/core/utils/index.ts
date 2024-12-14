@@ -29,6 +29,7 @@ export * from '@/utils/system/time'
 export * from '@/utils/system/update'
 export * from '@/utils/system/ffmpeg'
 export * from '@/utils/system/restart'
+export * from '@/utils/system/fileToUrl'
 
 export * as common from '@/utils/common'
 export * as config from '@/utils/config/index'
