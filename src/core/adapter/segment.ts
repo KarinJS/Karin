@@ -537,10 +537,10 @@ class ElementBuilder {
   /**
    * 构建语音元素
    * @param file - 语音文件url、路径或者base64
-   * @param magic - 是否为魔法语音
+   * @param magic - 是否为魔法语音 默认不是
    * @param options - 其他可选参数
    */
-  record (file: string, magic: boolean, options?: Partial<Omit<RecordElementType, 'type' | 'file' | 'magic'>>): RecordElementType {
+  record (file: string, magic = false, options?: Partial<Omit<RecordElementType, 'type' | 'file' | 'magic'>>): RecordElementType {
     return {
       type: ElementTypeEnum.RECORD,
       file,
