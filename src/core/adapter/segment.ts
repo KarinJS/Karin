@@ -63,9 +63,38 @@ export const enum ElementTypeEnum {
   CONTACT = 'contact',
 }
 
+// 将所有值单独提取出来定义
+export type messageType = 'text'
+  | 'image'
+  | 'at'
+  | 'face'
+  | 'reply'
+  | 'video'
+  | 'record'
+  | 'music'
+  | 'json'
+  | 'xml'
+  | 'markdown'
+  | 'markdownTpl'
+  | 'pasmsg'
+  | 'keyboard'
+  | 'button'
+  | 'longMsg'
+  | 'raw'
+  | 'basketball'
+  | 'dice'
+  | 'rps'
+  | 'bubbleFace'
+  | 'weather'
+  | 'location'
+  | 'share'
+  | 'gift'
+  | 'marketFace'
+  | 'contact'
+
 interface Element {
   /** 元素类型 */
-  type: ElementTypeEnum
+  type: messageType | ElementTypeEnum
 }
 
 /** 文本元素 */

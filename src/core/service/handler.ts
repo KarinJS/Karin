@@ -1,12 +1,32 @@
 import util from 'node:util'
 import { cache } from '@/plugin/cache/cache'
+import type { Event } from '@/event'
+export interface HandlerType<T = any> {
+  /**
+   * 调用事件处理器
+   * @param key - 事件键
+   * @param args 自定义参数 如果传递e需要传递标准事件对象
+   */
+  (key: string, args: { [key: string]: any, e?: Event }): Promise<T>
+  /**
+   * 调用事件处理器
+   * @param key - 事件键
+   * @param args 自定义参数 如果传递e需要传递标准事件对象
+   */
+  call<K = any> (key: string, args: { [key: string]: any, e?: Event }): Promise<K>
+  /**
+   * 检查是否存在指定键的事件处理器
+   * @param key 事件键
+   */
+  has (key: string): boolean
+}
 
 /**
  * 调用事件处理器
  * @param key 事件键
  * @param args 自定义参数 一般用来传递e之类的
  */
-export const call = async <T = any> (key: string, args: { [key: string]: any, e?: any }): Promise<T> => {
+const call = async <T = any> (key: string, args: { [key: string]: any, e?: Event }): Promise<T> => {
   let result
   for (const info of cache.handler[key] || []) {
     try {
@@ -33,4 +53,9 @@ export const call = async <T = any> (key: string, args: { [key: string]: any, e?
 /**
  * 检查是否存在指定键的事件处理器
  */
-export const has = (key: string) => !!cache.handler[key]
+const has = (key: string) => !!cache.handler[key]
+
+/**
+ * 事件处理器
+ */
+export const handler: HandlerType = Object.assign(call, { call, has })
