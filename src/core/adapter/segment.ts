@@ -63,7 +63,7 @@ export const enum ElementTypeEnum {
   CONTACT = 'contact',
 }
 
-// 将所有值单独提取出来定义
+// 将所有值单独提取出来定义 你问为什么？ tsx不支持导入枚举...我c了
 export type messageType = 'text'
   | 'image'
   | 'at'
@@ -99,14 +99,14 @@ interface Element {
 
 /** 文本元素 */
 export interface TextElementType extends Element {
-  type: ElementTypeEnum.TEXT
+  type: 'text' | ElementTypeEnum.TEXT
   /** 文本内容 */
   text: string
 }
 
 /** At元素 */
 export interface AtElementType extends Element {
-  type: ElementTypeEnum.AT
+  type: 'at' | ElementTypeEnum.AT
   /** 目标id atall=all at在线成员=online */
   targetId: string
   /** At的名称 */
@@ -115,7 +115,7 @@ export interface AtElementType extends Element {
 
 /** 表情元素 */
 export interface FaceElementType extends Element {
-  type: ElementTypeEnum.FACE
+  type: 'face' | ElementTypeEnum.FACE
   /** 表情ID */
   id: number
   /** 是否大表情，默认不是 */
@@ -124,14 +124,14 @@ export interface FaceElementType extends Element {
 
 /** 回复元素 */
 export interface ReplyElementType extends Element {
-  type: ElementTypeEnum.REPLY
+  type: 'reply' | ElementTypeEnum.REPLY
   /** 回复的消息ID */
   messageId: string
 }
 
 /** 图片元素 */
 export interface ImageElementType extends Element {
-  type: ElementTypeEnum.IMAGE
+  type: 'image' | ElementTypeEnum.IMAGE
   /** 图片url、路径或者base64 */
   file: string
   /** 图片名称 */
@@ -156,7 +156,7 @@ export interface ImageElementType extends Element {
 
 /** 视频元素 */
 export interface VideoElementType extends Element {
-  type: ElementTypeEnum.VIDEO
+  type: 'video' | ElementTypeEnum.VIDEO
   /** 视频url、路径或者base64 */
   file: string
   /** 视频名称 */
@@ -171,7 +171,7 @@ export interface VideoElementType extends Element {
 
 /** 语音元素 */
 export interface RecordElementType extends Element {
-  type: ElementTypeEnum.RECORD
+  type: 'record' | ElementTypeEnum.RECORD
   /** 语音文件url、路径或者base64 */
   file: string
   /** 是否为魔法语音 */
@@ -203,7 +203,7 @@ export const enum MusicPlatform {
 
 /** 自定义音乐元素 */
 interface MusicElementCustom<T extends MusicPlatform.CUSTOM> extends Element {
-  type: ElementTypeEnum.MUSIC
+  type: 'music' | ElementTypeEnum.MUSIC
   /** 音乐平台 */
   platform: T
   /** 跳转链接 */
@@ -219,7 +219,7 @@ interface MusicElementCustom<T extends MusicPlatform.CUSTOM> extends Element {
 }
 
 interface MusicElementReady<T extends Exclude<MusicPlatform, MusicPlatform.CUSTOM>> extends Element {
-  type: ElementTypeEnum.MUSIC
+  type: 'music' | ElementTypeEnum.MUSIC
   /** 音乐平台 */
   platform: T
   /** 歌曲ID */
@@ -236,21 +236,21 @@ export type MusicElement = MusicElementReadyType | MusicElementCustomType
 
 /** JSON元素 */
 export interface JsonElementType extends Element {
-  type: ElementTypeEnum.JSON
+  type: 'json' | ElementTypeEnum.JSON
   /** JSON内容 未反序 */
   data: string
 }
 
 /** XML元素 */
 export interface XmlElementType extends Element {
-  type: ElementTypeEnum.XML
+  type: 'xml' | ElementTypeEnum.XML
   /** XML内容 未反序 */
   data: string
 }
 
 /** Markdown元素 */
 export interface MarkdownElementType extends Element {
-  type: ElementTypeEnum.MARKDOWN
+  type: 'markdown' | ElementTypeEnum.MARKDOWN
   /** Markdown内容 */
   markdown: string
   config?: {
@@ -263,7 +263,7 @@ export interface MarkdownElementType extends Element {
 
 /** Markdown模板元素 */
 export interface MarkdownTplElementType extends Element {
-  type: ElementTypeEnum.MARKDOWN_TPL
+  type: 'markdownTpl' | ElementTypeEnum.MARKDOWN_TPL
   /** 模板ID */
   templateId: string
   /** 模板参数 */
@@ -277,63 +277,63 @@ export interface MarkdownTplElementType extends Element {
 
 /** 被动事件元素 */
 export interface PasmsgElementType extends Element {
-  type: ElementTypeEnum.PASMSG
+  type: 'pasmsg' | ElementTypeEnum.PASMSG
   /** 被动事件ID */
   id: string
 }
 
 /** 多行按钮 */
 export interface KeyboardElementType extends Element {
-  type: ElementTypeEnum.KEYBOARD
+  type: 'keyboard' | ElementTypeEnum.KEYBOARD
   /** 按钮行数组 */
   rows: Array<Array<KarinButton>>
 }
 
 /** 单行按钮 */
 export interface ButtonElementType extends Element {
-  type: ElementTypeEnum.BUTTON
+  type: 'button' | ElementTypeEnum.BUTTON
   /** 按钮数组 */
   data: Array<KarinButton>
 }
 
 /** 长消息元素 */
 export interface LongMsgElementType extends Element {
-  type: ElementTypeEnum.LONG_MSG
+  type: 'longMsg' | ElementTypeEnum.LONG_MSG
   /** 消息ID */
   id: string
 }
 
 /** 原始元素 */
 export interface RawElementType extends Element {
-  type: ElementTypeEnum.RAW
+  type: 'raw' | ElementTypeEnum.RAW
   /** 原始数据 */
   data: any
 }
 
 /** 篮球元素 */
 export interface BasketballElementType extends Element {
-  type: ElementTypeEnum.BASKETBALL
+  type: 'basketball' | ElementTypeEnum.BASKETBALL
   /** 篮球ID */
   id: number
 }
 
 /** 骰子元素 */
 export interface DiceElementType extends Element {
-  type: ElementTypeEnum.DICE
+  type: 'dice' | ElementTypeEnum.DICE
   /** 骰子ID */
   id: number
 }
 
 /** 猜拳元素 */
 export interface RpsElementType extends Element {
-  type: ElementTypeEnum.RPS
+  type: 'rps' | ElementTypeEnum.RPS
   /** 猜拳ID */
   id: number
 }
 
 /** 弹射表情元素 */
 export interface BubbleFaceElementType extends Element {
-  type: ElementTypeEnum.BUBBLE_FACE
+  type: 'bubbleFace' | ElementTypeEnum.BUBBLE_FACE
   /** 表情ID */
   id: number
   /** 表情数量 */
@@ -342,7 +342,7 @@ export interface BubbleFaceElementType extends Element {
 
 /** 天气元素 */
 export interface WeatherElementType extends Element {
-  type: ElementTypeEnum.WEATHER
+  type: 'weather' | ElementTypeEnum.WEATHER
   /** 城市名称 */
   city: string
   /** 城市代码 */
@@ -351,7 +351,7 @@ export interface WeatherElementType extends Element {
 
 /** 位置元素 */
 export interface LocationElementType extends Element {
-  type: ElementTypeEnum.LOCATION
+  type: 'location' | ElementTypeEnum.LOCATION
   /** 纬度 */
   lat: number
   /** 经度 */
@@ -364,7 +364,7 @@ export interface LocationElementType extends Element {
 
 /** 分享元素 */
 export interface ShareElementType extends Element {
-  type: ElementTypeEnum.SHARE
+  type: 'share' | ElementTypeEnum.SHARE
   /** 分享链接 */
   url: string
   /** 分享标题 */
@@ -377,7 +377,7 @@ export interface ShareElementType extends Element {
 
 /** 礼物元素 */
 export interface GiftElementType extends Element {
-  type: ElementTypeEnum.GIFT
+  type: 'gift' | ElementTypeEnum.GIFT
   /** QQ 号 */
   qq: number
   /** 礼物ID */
@@ -386,14 +386,14 @@ export interface GiftElementType extends Element {
 
 /** 商城表情元素 */
 export interface MarketFaceElementType extends Element {
-  type: ElementTypeEnum.MARKET_FACE
+  type: 'marketFace' | ElementTypeEnum.MARKET_FACE
   /** 表情ID */
   id: string
 }
 
 /** 分享名片元素 */
 export interface ContactElementType extends Element {
-  type: ElementTypeEnum.CONTACT
+  type: 'contact' | ElementTypeEnum.CONTACT
   /** 分享类型 */
   scene: 'group' | 'friend'
   /** 被推荐人的QQ号或者被推荐群的群号 */
