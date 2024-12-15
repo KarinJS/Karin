@@ -64,6 +64,30 @@ export class DirectMessage extends MessageBase implements DirectMessageEventType
   get sender () {
     return this.#sender
   }
+
+  get isPrivate (): false {
+    return false
+  }
+
+  get isFriend (): false {
+    return false
+  }
+
+  get isGroup (): false {
+    return false
+  }
+
+  get isGuild (): false {
+    return false
+  }
+
+  get isGroupTemp (): false {
+    return false
+  }
+
+  get isDirect (): true {
+    return true
+  }
 }
 
 /**

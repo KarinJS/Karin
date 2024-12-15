@@ -44,6 +44,30 @@ export class FriendMessage extends MessageBase implements FriendMessageEventType
   get sender () {
     return this.#sender
   }
+
+  get isPrivate (): true {
+    return true
+  }
+
+  get isFriend (): true {
+    return true
+  }
+
+  get isGroup (): false {
+    return false
+  }
+
+  get isGuild (): false {
+    return false
+  }
+
+  get isGroupTemp (): false {
+    return false
+  }
+
+  get isDirect (): false {
+    return false
+  }
 }
 
 /**

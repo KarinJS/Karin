@@ -178,7 +178,11 @@ export abstract class BaseEvent implements BaseEventHandle {
   }
 
   get isPrivate () {
-    return this.#contact.scene === 'friend' || this.#contact.scene === 'direct'
+    return this.#contact.scene === 'friend'
+  }
+
+  get isFriend () {
+    return this.isPrivate
   }
 
   get isGroup () {

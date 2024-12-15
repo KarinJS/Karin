@@ -1,7 +1,3 @@
-import { karin } from '@/karin'
-import { config as cfg } from '@/utils'
-import { context as ctx } from '@/event/handler/message/context'
-import type { AdapterProtocol } from '@/adapter/adapter'
 import type { Accept, CommandClass, CommandFnc } from '@/plugin/cache/types'
 import type { FriendDirectFileCfg, GroupGuildFileCfg } from '@/utils/config/types'
 import type {
@@ -11,17 +7,6 @@ import type {
   GroupRequestEventMap,
   MessageEventMap,
 } from '@/event/types/types'
-import type {
-  Message,
-  GroupMessage,
-  FriendMessage,
-  Event,
-  FriendNotice,
-  GroupNotice,
-  GroupRequest,
-  FriendRequest,
-  GuildMessage,
-} from '@/event'
 
 export type PluginTypes = CommandClass | CommandFnc | Accept
 export type EventCfg = FriendDirectFileCfg | GroupGuildFileCfg

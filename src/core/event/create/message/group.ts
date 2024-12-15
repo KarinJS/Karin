@@ -65,6 +65,30 @@ export class GroupMessage extends MessageBase implements GroupMessageEventType {
   get sender () {
     return this.#sender
   }
+
+  get isPrivate (): false {
+    return false
+  }
+
+  get isFriend (): false {
+    return false
+  }
+
+  get isGroup (): true {
+    return true
+  }
+
+  get isGuild (): false {
+    return false
+  }
+
+  get isGroupTemp (): false {
+    return false
+  }
+
+  get isDirect (): false {
+    return false
+  }
 }
 
 /**

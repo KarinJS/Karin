@@ -65,6 +65,30 @@ export class GuildMessage extends MessageBase implements GuildMessageEventType {
   get sender () {
     return this.#sender
   }
+
+  get isPrivate (): false {
+    return false
+  }
+
+  get isFriend (): false {
+    return false
+  }
+
+  get isGroup (): false {
+    return false
+  }
+
+  get isGuild (): true {
+    return true
+  }
+
+  get isGroupTemp (): false {
+    return false
+  }
+
+  get isDirect (): false {
+    return false
+  }
 }
 
 /**
