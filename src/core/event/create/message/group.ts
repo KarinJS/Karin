@@ -71,7 +71,7 @@ export class GroupMessage extends MessageBase implements GroupMessageEventType {
  * @description 创建群消息事件实例
  * @param options 群消息事件所需参数
  */
-export const createGroupMessage = (options: GroupMessageOptions) => {
-  const event = new GroupMessage(options)
+export const createGroupMessage = (options: Omit<GroupMessageOptions, 'subEvent'>) => {
+  const event = new GroupMessage({ ...options, subEvent: MessageEventSubEnum.GROUP_MESSAGE })
   return new GroupMessageHandler(event).init()
 }

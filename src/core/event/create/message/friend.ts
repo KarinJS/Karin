@@ -50,7 +50,7 @@ export class FriendMessage extends MessageBase implements FriendMessageEventType
  * @description 创建好友消息事件
  * @param options 好友消息事件所需参数
  */
-export const createFriendMessage = (options: FriendMessageOptions) => {
-  const event = new FriendMessage(options)
+export const createFriendMessage = (options: Omit<FriendMessageOptions, 'subEvent'>) => {
+  const event = new FriendMessage({ ...options, subEvent: MessageEventSubEnum.FRIEND_MESSAGE })
   return new FriendHandler(event).init()
 }

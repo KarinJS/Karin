@@ -1,5 +1,5 @@
-import * as common from '@/event/handler/common'
 import { config } from '@/utils'
+import * as filter from '@/event/handler/filterList'
 import { BaseNoticeHandler } from '@/event/handler/notice/base'
 import type { FriendDirectFileCfg } from '@/utils/config/types'
 import { type FriendNoticeEventMap, NoticeEventSubEnum } from '@/event/types/types'
@@ -48,26 +48,8 @@ export class FriendNoticeHandler extends BaseNoticeHandler {
   }
 
   isLimitEvent () {
-    if (this.isCD) {
-      common.log(`[${this.event.userId}] 正在冷却中: ${this.event.eventId}`)
-      return false
-    }
-
-    if (!common.isLimitedFriendEnable(this.event)) {
-      common.log(`[${this.event.userId}] 未通过好友白名单: ${this.event.eventId}`)
-      return false
-    }
-
-    if (!common.isLimitedFriendDisable(this.event)) {
-      common.log(`[${this.event.userId}] 未通过好友黑名单: ${this.event.eventId}`)
-      return false
-    }
-
-    if (!common.isLimitedFriendModeNoticeAndRequest(this.event, this.eventCfg)) {
-      return false
-    }
-
-    return false
+    const tips = `[${this.event.userId}]`
+    return filter.allFriendSwarmFilter(this.event, this.eventCfg, this.isCD, tips)
   }
 
   print () {

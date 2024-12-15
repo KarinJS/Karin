@@ -3,7 +3,7 @@ import { NoticeEventSubEnum } from '@/event/types/types'
 import { FriendNoticeHandler } from '@/event/handler/notice/friend'
 
 /** 私聊通知事件 */
-export type PrivateNotice = ReceiveLikeNotice
+export type FriendNotice = ReceiveLikeNotice
   | FriendIncreaseNotice
   | FriendDecreaseNotice
   | PrivatePokeNotice

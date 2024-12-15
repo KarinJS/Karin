@@ -5,25 +5,25 @@ import { PermissionEnum } from '@/adapter/sender'
 import { createRawMessage } from '@/utils/message'
 import { groupAndGuild } from '@/event/handler/message/fnc'
 import { MiddlewareHandler } from '@/utils/message/middleware'
+import type { GuildMessage } from '@/event/create/message/guild'
 import type { ConfigType, GroupGuildFileCfg } from '@/utils/config/types'
-import type { GroupMessage } from '@/event/create/message/group'
 
 /**
- * @description 群消息处理器
- * @class GroupMessageHandler
+ * @description 频道消息处理器
+ * @class GuildMessageHandler
  */
-export class GroupMessageHandler {
+export class GuildMessageHandler {
   ctx!: boolean
-  event: GroupMessage
+  event: GuildMessage
   config: ConfigType
   eventCfg: GroupGuildFileCfg
   isPrint: boolean
 
-  constructor (event: GroupMessage) {
+  constructor (event: GuildMessage) {
     this.event = event
     this.config = cfg.config()
-    this.eventCfg = cfg.getGroupCfg(this.event.groupId, this.event.selfId)
-    this.isPrint = filter.disableViaLogWhitelist(this.event) && filter.disableViaLogBlacklist(this.event)
+    this.eventCfg = cfg.getGuildCfg(this.event.guildId, this.event.channelId, this.event.selfId)
+    this.isPrint = filter.disableViaChannelLogWhitelist(this.event) && filter.disableViaChannelLogBlacklist(this.event)
   }
 
   async init () {
@@ -54,19 +54,19 @@ export class GroupMessageHandler {
    * @returns `true` 表示没有在CD中
    */
   get isCD (): boolean {
-    const groupKey = this.event.groupId
-    const userKey = `${groupKey}.${this.event.userId}`
-    return filter.groupAndGuildCD(this.eventCfg, groupKey, userKey)
+    const guildKey = `${this.event.guildId}.${this.event.channelId}`
+    const userKey = `${guildKey}.${this.event.userId}`
+    return filter.groupAndGuildCD(this.eventCfg, guildKey, userKey)
   }
 
   /**
-   * 打印群消息日志
+   * 打印频道消息日志
    * @returns 无返回值
    */
   print () {
-    this.event.logText = `[Group:${this.event.groupId}-${this.event.userId}(${this.event.sender.nick || ''})]`
+    this.event.logText = `[Guild:${this.event.guildId}-${this.event.channelId}-${this.event.userId}(${this.event.sender.nick || ''})]`
     const level = this.isPrint ? 'info' : 'debug'
-    logger.bot(level, this.event.selfId, `群消息：[${this.event.groupId}-${this.event.userId}(${this.event.sender.nick || ''})] ${this.event.rawMessage}`)
+    logger.bot(level, this.event.selfId, `频道消息：[${this.event.guildId}-${this.event.channelId}-${this.event.userId}(${this.event.sender.nick || ''})] ${this.event.rawMessage}`)
   }
 
   /**
@@ -74,8 +74,8 @@ export class GroupMessageHandler {
    * @returns `true` 表示通过
    */
   isLimitEvent () {
-    const tips = `[${this.event.groupId}][${this.event.userId}]`
-    return filter.allGroupFilter(this.event, this.eventCfg, this.isCD, tips)
+    const tips = `[${this.event.guildId}-${this.event.channelId}][${this.event.userId}]`
+    return filter.allGuildFilter(this.event, this.eventCfg, this.isCD, tips)
   }
 
   /**
@@ -102,15 +102,15 @@ export class GroupMessageHandler {
       return true
     }
 
-    if (this.event.isGroup) {
+    if (this.event.isGuild) {
       const list = {
-        'group.owner': {
+        'guild.owner': {
           role: 'owner',
-          name: '群主',
+          name: '频道主',
         },
-        'group.admin': {
+        'guild.admin': {
           role: 'admin',
-          name: '群管理员',
+          name: '频道超管',
         },
       } as const
 
@@ -132,15 +132,14 @@ export class GroupMessageHandler {
    */
   async deal () {
     for (const plugin of cache.command) {
-      if (plugin.event !== 'message' && plugin.event !== 'message.group') continue
+      if (plugin.event !== 'message' && plugin.event !== 'message.guild') continue
       if (plugin.perm === 'guild.admin' || plugin.perm === 'guild.owner') continue
-
       const result = await groupAndGuild(this, plugin)
       if (!result) return
     }
 
     /** 未找到匹配插件 */
-    filter.log(`[${this.event.groupId}-${this.event.userId}] 未找到匹配到相应插件: ${this.event.eventId}`)
+    filter.log(`[${this.event.guildId}-${this.event.channelId}-${this.event.userId}] 未找到匹配到相应插件: ${this.event.eventId}`)
     MiddlewareHandler(cache.middleware.notFoundMsg, this.event)
   }
 }

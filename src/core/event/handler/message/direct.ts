@@ -5,20 +5,21 @@ import { createRawMessage } from '@/utils/message'
 import { PermissionEnum } from '@/adapter/sender'
 import { MiddlewareHandler } from '@/utils/message/middleware'
 import { friendAndDirect } from '@/event/handler/message/fnc'
-import type { FriendMessage } from '@/event/create/message/friend'
+
+import type { DirectMessage } from '@/event/create/message/direct'
 import type { ConfigType, FriendDirectFileCfg } from '@/utils/config/types'
 
 /**
- * @description 好友消息处理器
+ * @description 频道私信消息处理器
  * @class FriendHandler
  */
-export class FriendHandler {
+export class DirectHandler {
   ctx!: boolean
-  event: FriendMessage
+  event: DirectMessage
   config: ConfigType
   eventCfg: FriendDirectFileCfg
 
-  constructor (event: FriendMessage) {
+  constructor (event: DirectMessage) {
     this.event = event
     this.config = cfg.config()
     this.eventCfg = cfg.getFriendCfg(this.event.userId, this.event.selfId)
@@ -57,12 +58,12 @@ export class FriendHandler {
   }
 
   /**
-   * 打印好友消息日志
+   * 打印频道私信消息日志
    * @returns 无返回值
    */
   print () {
     this.event.logText = `[friend:${this.event.userId}(${this.event.sender.nick || ''})]`
-    logger.bot('info', this.event.selfId, `好友消息: [${this.event.userId}(${this.event.sender.nick || ''})] ${this.event.rawMessage}`)
+    logger.bot('info', this.event.selfId, `频道私信: [${this.event.userId}(${this.event.sender.nick || ''})] ${this.event.rawMessage}`)
   }
 
   /**
@@ -71,7 +72,7 @@ export class FriendHandler {
    */
   isLimitEvent () {
     const tips = `[${this.event.userId}]`
-    return filter.allFriendFilter(this.event, this.eventCfg, this.isCD, tips)
+    return filter.allChannelFilter(this.event, this.eventCfg, this.isCD, tips)
   }
 
   /**
@@ -108,7 +109,7 @@ export class FriendHandler {
   async deal () {
     for (const plugin of cache.command) {
       if (plugin.event !== 'message' && plugin.event !== 'message.friend') continue
-      /** 好友场景只有这三种权限 非这三种一律跳过 */
+      /** 频道私信场景只有这三种权限 非这三种一律跳过 */
       if (plugin.perm !== 'all' && plugin.perm !== 'master' && plugin.perm !== 'admin') continue
       return await friendAndDirect(this, plugin)
     }

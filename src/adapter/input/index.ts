@@ -56,7 +56,6 @@ export class AdapterInput extends AdapterBase implements AdapterType {
         sender: karin.groupSender('input', '神秘的群成员'),
         time,
         srcReply: (elements) => this.sendMsg(contact, elements),
-        subEvent: 'group',
         userId: 'input',
       })
       return
@@ -75,7 +74,6 @@ export class AdapterInput extends AdapterBase implements AdapterType {
       sender: karin.friendSender('input', '未知的好友'),
       time,
       srcReply: (elements) => this.sendMsg(contact, elements),
-      subEvent: 'friend',
       userId: 'input',
     })
   }

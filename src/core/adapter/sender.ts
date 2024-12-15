@@ -1,10 +1,10 @@
-/** 群身份枚举 值不存在时为unknown */
+/** 用户身份枚举 值不存在时为unknown */
 export const enum RoleEnum {
-  /** 群主 */
+  /** 群主、频道 */
   OWNER = 'owner',
-  /** 群管理员 */
+  /** 管理员、超管 */
   ADMIN = 'admin',
-  /** 群成员 */
+  /** 群成员、频道成员 */
   MEMBER = 'member',
   /** 未知身份 */
   UNKNOWN = 'unknown',
@@ -88,5 +88,23 @@ export interface GroupSender extends FriendSender {
   uin?: number
 }
 
+/** 频道发送者信息 */
+export interface GuildSender extends GroupSender {
+  /** 发送者QQ号 */
+  userId: string
+  /** 发送者昵称 */
+  nick: string
+  /** 发送者在频道的角色身份 非群、频道场景为`unknown` */
+  role: `${RoleEnum}`
+}
+
+/** 频道私信发送者信息 */
+export interface DirectSender extends FriendSender {
+  /** 发送者QQ号 */
+  userId: string
+  /** 发送者昵称 */
+  nick: string
+}
+
 /** 发送者 */
-export type Sender = FriendSender | GroupSender | NoticeAndRequestSender
+export type Sender = FriendSender | GroupSender | GuildSender | DirectSender | NoticeAndRequestSender

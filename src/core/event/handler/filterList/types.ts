@@ -23,16 +23,16 @@ import type {
   GuildMessage,
 } from '@/event'
 
-type PluginTypes = CommandClass | CommandFnc | Accept
-type EventCfg = FriendDirectFileCfg | GroupGuildFileCfg
+export type PluginTypes = CommandClass | CommandFnc | Accept
+export type EventCfg = FriendDirectFileCfg | GroupGuildFileCfg
 
-type GroupEvent = GroupRequestEventMap[keyof GroupRequestEventMap]
+export type GroupEvent = GroupRequestEventMap[keyof GroupRequestEventMap]
   | GroupNoticeEventMap[keyof GroupNoticeEventMap]
   | MessageEventMap['message.group']
 
-type FriendEvent = FriendRequestEventMap[keyof FriendRequestEventMap]
+export type FriendEvent = FriendRequestEventMap[keyof FriendRequestEventMap]
   | FriendNoticeEventMap[keyof FriendNoticeEventMap]
   | MessageEventMap['message.friend']
 
-type GuildEvent = MessageEventMap['message.guild']
-type DirectEvent = MessageEventMap['message.direct']
+export type GuildEvent = MessageEventMap['message.guild']
+export type DirectEvent = MessageEventMap['message.direct']

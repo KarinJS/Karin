@@ -1,6 +1,6 @@
-import * as common from '../common'
 import { config } from '@/utils'
 import { BaseRequestHandler } from './base'
+import * as filter from '@/event/handler/filterList'
 import { FriendRequestEventMap, RequestEventSubEnum } from '@/event/types/types'
 import type { FriendDirectFileCfg } from '@/utils/config/types'
 
@@ -19,21 +19,8 @@ export class FriendRequestHandler extends BaseRequestHandler {
   }
 
   isLimitEvent () {
-    if (!common.isLimitedFriendEnable(this.event)) {
-      common.log(`[${this.event.userId}] 未通过好友白名单: ${this.event.eventId}`)
-      return false
-    }
-
-    if (!common.isLimitedFriendDisable(this.event)) {
-      common.log(`[${this.event.userId}] 未通过好友黑名单: ${this.event.eventId}`)
-      return false
-    }
-
-    if (!common.isLimitedFriendModeNoticeAndRequest(this.event, this.eventCfg)) {
-      return false
-    }
-
-    return false
+    const tips = `[${this.event.userId}]`
+    return filter.allFriendSwarmFilter(this.event, this.eventCfg, false, tips)
   }
 
   tips () {

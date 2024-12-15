@@ -1,6 +1,6 @@
-import * as common from '../common'
 import { config } from '@/utils'
 import { BaseRequestHandler } from './base'
+import * as filter from '@/event/handler/filterList'
 import { GroupRequestEventMap, RequestEventSubEnum } from '@/event/types/types'
 import type { GroupGuildFileCfg } from '@/utils/config/types'
 
@@ -45,30 +45,7 @@ export class GroupRequestHandler extends BaseRequestHandler {
   }
 
   isLimitEvent () {
-    if (!common.isLimitedGroupEnable(this.event)) {
-      common.log(`[${this.event.groupId}][${this.event.userId}] 未通过群白名单: ${this.event.eventId}`)
-      return false
-    }
-
-    if (!common.isLimitedGroupDisable(this.event)) {
-      common.log(`[${this.event.groupId}][${this.event.userId}] 未通过群黑名单: ${this.event.eventId}`)
-      return false
-    }
-
-    if (!common.isLimitedMemberEnable(this.event, this.eventCfg)) {
-      common.log(`[${this.event.groupId}][${this.event.userId}] 未通过群成员白名单: ${this.event.eventId}`)
-      return false
-    }
-
-    if (!common.isLimitedMemberDisable(this.event, this.eventCfg)) {
-      common.log(`[${this.event.groupId}][${this.event.userId}] 未通过群成员黑名单: ${this.event.eventId}`)
-      return false
-    }
-
-    if (!common.isLimitedGroupModeNoticeAndRequest(this.event, this.eventCfg)) {
-      return false
-    }
-
-    return false
+    const tips = `[${this.event.groupId}][${this.event.userId}]`
+    return filter.allGroupSwarmFilter(this.event, this.eventCfg, false, tips)
   }
 }

@@ -25,7 +25,6 @@ export const createMessage = (event: OB11Message, bot: AdapterOneBot) => {
       sender,
       userId,
       rawEvent: event,
-      subEvent: 'friend',
       messageId: event.message_id + '',
       messageSeq: event.message_id,
       eventId: `message:${event.message_id}`,
@@ -54,7 +53,6 @@ export const createMessage = (event: OB11Message, bot: AdapterOneBot) => {
       selfId,
       sender,
       time,
-      subEvent: 'group',
       userId,
       srcReply: (elements) => bot.sendMsg(contact, elements),
     })

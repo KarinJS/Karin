@@ -1,6 +1,6 @@
-import * as common from '../common'
 import { config as cfg } from '@/utils'
 import { cache } from '@/plugin/cache/cache'
+import * as filter from '@/event/handler/filterList'
 import { FriendRequestEventMap, GroupRequestEventMap } from '@/event/types/types'
 import type { ConfigType, FriendDirectFileCfg, GroupGuildFileCfg } from '@/utils/config/types'
 
@@ -19,8 +19,8 @@ export abstract class BaseRequestHandler {
   init () {
     this.tips()
     this.print()
-    common.setEventRole(this.event)
-    common.emit(this.event)
+    filter.setEventRole(this.event)
+    filter.emit(this.event)
     this.isLimitEvent() && this.deal()
     return this
   }
@@ -55,9 +55,9 @@ export abstract class BaseRequestHandler {
         continue
       }
 
-      if (!common.adapterLimited(plugin, this.event.bot.adapter.protocol)) continue
-      if (!common.isLimitedPluginEnable(plugin, this.eventCfg)) continue
-      if (!common.isLimitedPluginDisable(plugin, this.eventCfg)) continue
+      if (!filter.disableViaAdapter(plugin, this.event.bot.adapter.protocol)) continue
+      if (!filter.disableViaPluginWhitelist(plugin, this.eventCfg)) continue
+      if (!filter.disableViaPluginBlacklist(plugin, this.eventCfg)) continue
 
       this.event.logFnc = `[${plugin.name}][${plugin.file.method}]`
       const logFnc = logger.fnc(this.event.logFnc)
@@ -65,7 +65,7 @@ export abstract class BaseRequestHandler {
 
       /** 计算插件处理时间 */
       const start = Date.now()
-      common.addEventCount(plugin, this.event)
+      filter.addEventCount(plugin, this.event)
 
       try {
         const result = await plugin.fnc(this.event)
@@ -78,13 +78,13 @@ export abstract class BaseRequestHandler {
         return
       } catch (error: any) {
         logger.error(`${this.event.logFnc}`)
-        common.emitError(error)
+        filter.emitError(error)
         return
       } finally {
         plugin.log(this.event.selfId, `${logFnc} 处理完成 ${logger.green(Date.now() - start + 'ms')}`)
       }
     }
 
-    common.log(`[${this.event.userId}] 未找到匹配到相应插件: ${this.event.eventId}`)
+    filter.log(`[${this.event.userId}] 未找到匹配到相应插件: ${this.event.eventId}`)
   }
 }

@@ -1,11 +1,19 @@
 import { MessageEventSubEnum } from '@/event/types/types'
-import { Contact } from '@/adapter/contact'
-import { BaseMessageEventType, MessageBase, MessageOptions } from '@/event/create/message/base'
+import type { Contact } from '@/adapter/contact'
+import type { GuildSender } from '@/adapter'
+import {
+  BaseMessageEventType,
+  MessageBase,
+  MessageOptions,
+} from '@/event/create/message/base'
+import { GuildMessageHandler } from '@/event/handler/message/guild'
 
 /** new 频道消息事件所需参数 */
 export type GuildMessageOptions = MessageOptions & {
   /** 事件联系人信息 */
   contact: Contact<'guild'>
+  /** 发送者信息 */
+  sender: GuildSender
 }
 
 /** 频道消息事件定义 */
@@ -17,6 +25,8 @@ export interface GuildMessageEventType extends BaseMessageEventType {
   guildId: string
   /** 子频道ID */
   channelId: string
+  /** 发送者信息 */
+  sender: GuildSender
 }
 
 /**
@@ -24,14 +34,16 @@ export interface GuildMessageEventType extends BaseMessageEventType {
  * @class GuildMessage
  */
 export class GuildMessage extends MessageBase implements GuildMessageEventType {
-  #subEvent: `${MessageEventSubEnum.GUILD_MESSAGE}`
+  #sender: GuildSender
   #contact: GuildMessageOptions['contact']
+  #subEvent: `${MessageEventSubEnum.GUILD_MESSAGE}`
 
   constructor (options: GuildMessageOptions) {
     super(Object.assign(options, { subEvent: MessageEventSubEnum.GUILD_MESSAGE }))
 
-    this.#subEvent = MessageEventSubEnum.GUILD_MESSAGE
+    this.#sender = options.sender
     this.#contact = options.contact
+    this.#subEvent = MessageEventSubEnum.GUILD_MESSAGE
   }
 
   get contact () {
@@ -49,4 +61,17 @@ export class GuildMessage extends MessageBase implements GuildMessageEventType {
   get subEvent () {
     return this.#subEvent
   }
+
+  get sender () {
+    return this.#sender
+  }
+}
+
+/**
+ * @description 创建频道消息事件实例
+ * @param options 频道消息事件所需参数
+ */
+export const createGuildMessage = (options: Omit<GuildMessageOptions, 'subEvent'>) => {
+  const event = new GuildMessage({ ...options, subEvent: MessageEventSubEnum.GUILD_MESSAGE })
+  return new GuildMessageHandler(event).init()
 }
