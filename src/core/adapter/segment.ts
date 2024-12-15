@@ -147,9 +147,9 @@ export interface ImageElementType extends Element {
   /** 图片子类型 */
   subType?: string
   /**
-   * - show: 展示图片
-   * - flash: 闪照
-   * - original: 原图
+   * show: 展示图片
+   * flash: 闪照
+   * original: 原图
    */
   fileType?: 'show' | 'flash' | 'original'
 }
@@ -278,6 +278,8 @@ export interface MarkdownTplElementType extends Element {
 /** 被动事件元素 */
 export interface PasmsgElementType extends Element {
   type: 'pasmsg' | ElementTypeEnum.PASMSG
+  /** 事件id来源 */
+  source: 'msg' | 'event'
   /** 被动事件ID */
   id: string
 }
@@ -467,7 +469,7 @@ export type NodeElementType = DirectNodeElementType | CustomNodeElementType
 class ElementBuilder {
   /**
    * 构建文本元素
-   * @param text - 文本内容
+   * @param text 文本内容
    */
   text (text: string): TextElementType {
     return { type: ElementTypeEnum.TEXT, text }
@@ -475,8 +477,8 @@ class ElementBuilder {
 
   /**
    * 构建At元素
-   * @param targetId - 目标id atall=all at在线成员=online
-   * @param name - At的名称
+   * @param targetId 目标id atall=all at在线成员=online
+   * @param name At的名称
    */
   at (targetId: string, name?: string): AtElementType {
     return { type: ElementTypeEnum.AT, targetId, name }
@@ -484,8 +486,8 @@ class ElementBuilder {
 
   /**
    * 构建表情元素
-   * @param id - 表情ID
-   * @param isBig - 是否大表情，默认不是
+   * @param id 表情ID
+   * @param isBig 是否大表情，默认不是
    */
   face (id: number, isBig?: boolean): FaceElementType {
     return { type: ElementTypeEnum.FACE, id: Number(id), isBig }
@@ -493,7 +495,7 @@ class ElementBuilder {
 
   /**
    * 构建回复元素
-   * @param messageId - 回复的消息ID
+   * @param messageId 回复的消息ID
    */
   reply (messageId: string): ReplyElementType {
     return { type: ElementTypeEnum.REPLY, messageId: String(messageId) }
@@ -501,9 +503,9 @@ class ElementBuilder {
 
   /**
    * 构建图片元素
-   * @param file - 图片url、路径或者base64
-   * @param fileType - 图片类型
-   * @param options - 其他可选参数
+   * @param file 图片url、路径或者base64
+   * @param fileType 图片类型
+   * @param options 其他可选参数
    */
   image (file: string, options: Partial<ImageElementType> = {}): ImageElementType {
     return {
@@ -520,8 +522,8 @@ class ElementBuilder {
 
   /**
    * 构建视频元素
-   * @param file - 视频url、路径或者base64
-   * @param options - 其他可选参数
+   * @param file 视频url、路径或者base64
+   * @param options 其他可选参数
    */
   video (file: string, options?: Partial<Omit<VideoElementType, 'type' | 'file'>>): VideoElementType {
     return {
@@ -536,9 +538,9 @@ class ElementBuilder {
 
   /**
    * 构建语音元素
-   * @param file - 语音文件url、路径或者base64
-   * @param magic - 是否为魔法语音 默认不是
-   * @param options - 其他可选参数
+   * @param file 语音文件url、路径或者base64
+   * @param magic 是否为魔法语音 默认不是
+   * @param options 其他可选参数
    */
   record (file: string, magic = false, options?: Partial<Omit<RecordElementType, 'type' | 'file' | 'magic'>>): RecordElementType {
     return {
@@ -552,20 +554,20 @@ class ElementBuilder {
 
   /**
    * 构建常规音乐元素
-   * @param id - 歌曲ID
-   * @param platform - 音乐平台
+   * @param id 歌曲ID
+   * @param platform 音乐平台
    */
   music (id: MusicElementReadyType['id'], platform: MusicElementReadyType['platform']): MusicElementReadyType
 
   /**
    * 构建自定义音乐元素
-   * @param options - 自定义音乐选项
+   * @param options 自定义音乐选项
    */
   music (options: MusicElementCustomType): MusicElementCustomType
   /**
    * 构建音乐元素
-   * @param idOrOptions - 歌曲ID或自定义音乐选项
-   * @param platform - 音乐平台
+   * @param idOrOptions 歌曲ID或自定义音乐选项
+   * @param platform 音乐平台
    */
   music (
     idOrOptions: string | MusicElementCustomType,
@@ -582,7 +584,7 @@ class ElementBuilder {
 
   /**
    * 构建JSON元素
-   * @param data - JSON内容
+   * @param data JSON内容
    */
   json (data: string): JsonElementType {
     return { type: ElementTypeEnum.JSON, data }
@@ -590,7 +592,7 @@ class ElementBuilder {
 
   /**
    * 构建XML元素
-   * @param data - XML内容
+   * @param data XML内容
    */
   xml (data: string): XmlElementType {
     return { type: ElementTypeEnum.XML, data }
@@ -598,8 +600,8 @@ class ElementBuilder {
 
   /**
    * 构建Markdown元素
-   * @param markdown - Markdown内容
-   * @param config - 配置参数
+   * @param markdown Markdown内容
+   * @param config 配置参数
    */
   markdown (markdown: string, config?: MarkdownElementType['config']): MarkdownElementType {
     return { type: ElementTypeEnum.MARKDOWN, markdown, config }
@@ -607,8 +609,8 @@ class ElementBuilder {
 
   /**
    * 构建Markdown模板元素
-   * @param templateId - 模板ID
-   * @param params - 模板参数
+   * @param templateId 模板ID
+   * @param params 模板参数
    */
   markdownTpl (templateId: string, params: MarkdownTplElementType['params']): MarkdownTplElementType {
     return { type: ElementTypeEnum.MARKDOWN_TPL, templateId, params }
@@ -616,15 +618,16 @@ class ElementBuilder {
 
   /**
    * 构建被动事件元素
-   * @param id - 被动事件ID
+   * @param id 被动事件ID
+   * @param source 事件id来源 默认为msg
    */
-  pasmsg (id: string): PasmsgElementType {
-    return { type: ElementTypeEnum.PASMSG, id }
+  pasmsg (id: string, source: PasmsgElementType['source'] = 'msg'): PasmsgElementType {
+    return { type: ElementTypeEnum.PASMSG, id, source }
   }
 
   /**
    * 构建多行按钮元素
-   * @param data - 按钮行数组
+   * @param data 按钮行数组
    */
   keyboard (data: Array<Array<KarinButton>>): KeyboardElementType {
     /** 每一个元素为一行按钮 每一行按钮存在多个 */
@@ -647,7 +650,7 @@ class ElementBuilder {
 
   /**
    * 构建单行按钮元素
-   * @param data - 按钮数组
+   * @param data 按钮数组
    */
   button (data: KarinButton | Array<KarinButton>): ButtonElementType {
     return { type: ElementTypeEnum.BUTTON, data: Array.isArray(data) ? data : [data] }
@@ -655,7 +658,7 @@ class ElementBuilder {
 
   /**
    * 构建长消息元素
-   * @param id - 消息ID
+   * @param id 消息ID
    */
   longMsg (id: string): LongMsgElementType {
     return { type: ElementTypeEnum.LONG_MSG, id }
@@ -663,7 +666,7 @@ class ElementBuilder {
 
   /**
    * 构建原始元素
-   * @param data - 原始数据
+   * @param data 原始数据
    */
   raw (data: any): RawElementType {
     return { type: ElementTypeEnum.RAW, data }
@@ -671,7 +674,7 @@ class ElementBuilder {
 
   /**
    * 构建篮球元素
-   * @param id - 篮球ID
+   * @param id 篮球ID
    */
   basketball (id: number): BasketballElementType {
     return { type: ElementTypeEnum.BASKETBALL, id: Number(id) }
@@ -679,7 +682,7 @@ class ElementBuilder {
 
   /**
    * 构建骰子元素
-   * @param id - 骰子ID
+   * @param id 骰子ID
    */
   dice (id: number): DiceElementType {
     return { type: ElementTypeEnum.DICE, id: Number(id) }
@@ -687,7 +690,7 @@ class ElementBuilder {
 
   /**
    * 构建猜拳元素
-   * @param id - 猜拳ID
+   * @param id 猜拳ID
    */
   rps (id: number): RpsElementType {
     return { type: ElementTypeEnum.RPS, id: Number(id) }
@@ -695,8 +698,8 @@ class ElementBuilder {
 
   /**
    * 构建弹射表情元素
-   * @param id - 表情ID
-   * @param count - 表情数量
+   * @param id 表情ID
+   * @param count 表情数量
    */
   bubbleFace (id: number, count: number): BubbleFaceElementType {
     return { type: ElementTypeEnum.BUBBLE_FACE, id: Number(id), count: Number(count) }
@@ -704,8 +707,8 @@ class ElementBuilder {
 
   /**
    * 构建天气元素
-   * @param city - 城市名称
-   * @param code - 城市代码
+   * @param city 城市名称
+   * @param code 城市代码
    */
   weather (city: string, code: string): WeatherElementType {
     return { type: ElementTypeEnum.WEATHER, city, code }
@@ -713,10 +716,10 @@ class ElementBuilder {
 
   /**
    * 构建位置元素
-   * @param lat - 纬度
-   * @param lon - 经度
-   * @param title - 标题
-   * @param address - 地址
+   * @param lat 纬度
+   * @param lon 经度
+   * @param title 标题
+   * @param address 地址
    */
   location (lat: number, lon: number, title: string, address: string): LocationElementType {
     return { type: ElementTypeEnum.LOCATION, lat, lon, title, address }
@@ -724,10 +727,10 @@ class ElementBuilder {
 
   /**
    * 构建分享元素
-   * @param url - 分享链接
-   * @param title - 分享标题
-   * @param content - 分享内容
-   * @param image - 分享图片
+   * @param url 分享链接
+   * @param title 分享标题
+   * @param content 分享内容
+   * @param image 分享图片
    */
   share (url: string, title: string, content: string, image: string): ShareElementType {
     return { type: ElementTypeEnum.SHARE, url, title, content, image }
@@ -735,8 +738,8 @@ class ElementBuilder {
 
   /**
    * 构建礼物元素
-   * @param qq - QQ号
-   * @param id - 礼物ID
+   * @param qq QQ号
+   * @param id 礼物ID
    */
   gift (qq: number, id: number): GiftElementType {
     return { type: ElementTypeEnum.GIFT, qq, id }
@@ -744,7 +747,7 @@ class ElementBuilder {
 
   /**
    * 构建商城表情元素
-   * @param id - 表情ID
+   * @param id 表情ID
    */
   marketFace (id: string): MarketFaceElementType {
     return { type: ElementTypeEnum.MARKET_FACE, id }
@@ -752,8 +755,8 @@ class ElementBuilder {
 
   /**
    * 构建分享名片元素
-   * @param scene - 分享类型
-   * @param peer - 被推荐人的QQ号或者被推荐群的群号
+   * @param scene 分享类型
+   * @param peer 被推荐人的QQ号或者被推荐群的群号
    */
   contact (scene: 'group' | 'friend', peer: string): ContactElementType {
     return { type: ElementTypeEnum.CONTACT, scene, peer }
@@ -766,9 +769,9 @@ class ElementBuilder {
   node (messageID: DirectNodeElementType['messageId']): DirectNodeElementType
   /**
    * 构建自定义转发节点元素
-   * @param userId - 目标ID
-   * @param nickname - 目标名称
-   * @param message - 转发的消息元素结构
+   * @param userId 目标ID
+   * @param nickname 目标名称
+   * @param message 转发的消息元素结构
    */
   node (
     userId: CustomNodeElementType['userId'],
@@ -778,9 +781,9 @@ class ElementBuilder {
   ): CustomNodeElementType
   /**
    * 构建转发节点元素
-   * @param msgIdOrUserId - 资源ID或目标ID
-   * @param nickname - 目标名称
-   * @param message - 转发的消息元素结构
+   * @param msgIdOrUserId 资源ID或目标ID
+   * @param nickname 目标名称
+   * @param message 转发的消息元素结构
    */
   node (
     msgIdOrUserId: CustomNodeElementType['userId'] | DirectNodeElementType['messageId'],
