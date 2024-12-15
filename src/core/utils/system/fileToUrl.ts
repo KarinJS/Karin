@@ -9,19 +9,19 @@ type FileToUrlResult<T> = T extends 'image' ? { url: string, width: number, heig
 
 export type FileToUrlHandler = {
   <T extends 'image' | 'video' | 'record' | 'file'> (
+    /** 文件类型 */
     type: T,
-    file: string,
+    /** 文件数据 */
+    file: string | Buffer | Uint8Array,
+    /** 文件名名称: `image.jpg` */
     filename: string,
+    /** 自定义参数 如果传e记得符合规范 */
     args?: Args
   ): Promise<FileToUrlResult<T>>
 }
 
 /**
  * 文件转换为url
- * @param file 文件路径
- * @param type 文件类型
- * @param filename 文件名名称: `image.jpg`
- * @param args 自定义参数
  */
 export const fileToUrl: FileToUrlHandler = async (type, file, filename, args) => {
   if (!handler.has(fileToUrlHandlerKey)) throw new Error('[Handler][Error]: 没有配置文件转换为url的处理器')
