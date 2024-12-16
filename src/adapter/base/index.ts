@@ -36,7 +36,7 @@ export abstract class AdapterBase implements AdapterType {
   super: any
 
   constructor () {
-    this.account = { uin: '', uid: '', selfId: '', subId: '', name: '', avatar: '' }
+    this.account = { uin: '', uid: '', selfId: '', subId: {}, name: '', avatar: '' }
     this.adapter = {
       index: -1,
       name: '',
@@ -58,8 +58,8 @@ export abstract class AdapterBase implements AdapterType {
     return this.account.name
   }
 
-  get selfSubId (): string {
-    return this.account.subId
+  selfSubId (key: string): string {
+    return this.account.subId[key]
   }
 
   /**

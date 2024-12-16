@@ -160,20 +160,37 @@ export interface AdapterType {
     uid: string
     /** Bot的selfId 一般使用此参数即可 */
     selfId: string
-    /** Bot的子ID 比如在QQ频道下Bot拥有一个和普通用户一样的ID */
-    subId: string
     /** 账号名 不存在则是空字符串 */
     name: string
     /** Bot的头像链接 */
     avatar: string
+    /**
+     * - Bot的子账号键值对
+     * - 结构约定: key=场景 value=id
+     * - 此部分由适配器自行实现
+     * @example
+     * ```json
+     * {
+     *   "group": "123456",
+     *   "guild": "123456",
+     *   "friend": "123456",
+     *   "direct": "123456"
+     * }
+     * ```
+     */
+    subId: Record<string, string>
   }
 
   /** 获取Bot的id */
   get selfId (): string
   /** 获取Bot的name */
   get selfName (): string
-  /** 获取Bot的subId */
-  get selfSubId (): string
+
+  /**
+   * 获取Bot的subId
+   * @param key 子ID的key
+   */
+  selfSubId (key: string): string
 
   /**
    * 打印当前Bot的专属日志
