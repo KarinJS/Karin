@@ -49,6 +49,7 @@ export class DirectMessage extends MessageBase implements DirectMessageEventType
     return this.#contact
   }
 
+  /** 源频道id */
   get guildId () {
     return this.#srcGuildId
   }

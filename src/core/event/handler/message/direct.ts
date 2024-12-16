@@ -111,7 +111,8 @@ export class DirectHandler {
       if (plugin.event !== 'message' && plugin.event !== 'message.friend') continue
       /** 频道私信场景只有这三种权限 非这三种一律跳过 */
       if (plugin.perm !== 'all' && plugin.perm !== 'master' && plugin.perm !== 'admin') continue
-      return await friendAndDirect(this, plugin)
+      const result = await friendAndDirect(this, plugin)
+      if (!result) return
     }
 
     /** 未找到匹配插件 */
