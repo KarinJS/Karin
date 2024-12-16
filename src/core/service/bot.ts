@@ -112,7 +112,7 @@ export const unregisterBot: UnregisterBot = (type, idOrIndex, address?) => {
     const index = list.findIndex(predicate)
     if (index !== -1) {
       const [removed] = list.splice(index, 1)
-      logger.bot('info', removed.bot.selfId, `[service][卸载Bot] ${removed.bot.adapter.name} 卸载成功`)
+      logger.bot('info', removed.bot.selfId, `${logger.red('[service][卸载Bot]')} ${removed.bot.adapter.name}`)
       return true
     }
 
@@ -143,17 +143,18 @@ export const unregisterBot: UnregisterBot = (type, idOrIndex, address?) => {
  */
 export const registerBot = (type: `${AdapterCommunication}`, bot: AdapterBase) => {
   const id = ++index
+  const tips = (str: string) => logger.green(`[service][注册Bot][${str}]`)
   if (type === AdapterCommunication.REVERSE_WEBSOCKET) {
-    logger.bot('info', bot.selfId, `[service][注册Bot][正向webSocket] ${bot.adapter.name}: ${bot.adapter.address}`)
+    logger.bot('info', bot.selfId, `${tips('正向webSocket')} ${bot.adapter.name}: ${bot.adapter.address}`)
   } else if (type === AdapterCommunication.INTERNAL) {
     bot.adapter.address = 'internal://127.0.0.1'
-    logger.bot('info', bot.selfId, `[service][注册Bot][internal] ${bot.adapter.name}`)
+    logger.bot('info', bot.selfId, `${tips('internal')} ${bot.adapter.name}`)
   } else if (type === AdapterCommunication.HTTP) {
-    logger.bot('info', bot.selfId, `[service][注册Bot][HTTP] ${bot.adapter.name}: ${bot.adapter.address}`)
+    logger.bot('info', bot.selfId, `${tips('HTTP')} ${bot.adapter.name}: ${bot.adapter.address}`)
   } else if (type === AdapterCommunication.WEBSOCKET) {
-    logger.bot('info', bot.selfId, `[service][注册Bot][反向WebSocket] ${bot.adapter.name}: ${bot.adapter.address}`)
+    logger.bot('info', bot.selfId, `${tips('反向WebSocket')} ${bot.adapter.name}: ${bot.adapter.address}`)
   } else if (type === AdapterCommunication.GRPC) {
-    logger.bot('info', bot.selfId, `[service][注册Bot][gRPC] ${bot.adapter.name}: ${bot.adapter.address}`)
+    logger.bot('info', bot.selfId, `${tips('gRPC')} ${bot.adapter.name}: ${bot.adapter.address}`)
   }
 
   list.push({ index: id, bot })

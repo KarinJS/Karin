@@ -22,7 +22,7 @@ const cache: {
 export const registerRender = (id: string, render: Render) => {
   const i = ++index
   cache.push({ index: i, id, render })
-  logger.mark(`[render:${index}] 注册成功: ${id}`)
+  logger.mark(`[render:${index}] ${logger.green('注册成功')}: ${id}`)
   return i
 }
 
@@ -39,7 +39,7 @@ export const unregisterRender = (index: number) => {
   }
 
   cache.splice(cache.findIndex(app => app.index === index), 1)
-  logger.mark(`[render] 卸载成功: ${app.id}`)
+  logger.mark(`[render] ${logger.yellow('卸载成功')}: ${app.id}`)
   return true
 }
 
