@@ -49,7 +49,7 @@ export class FriendHandler {
 
   /**
    * 检查是否存在cd中
-   * @returns `true` 表示没有在CD中
+   * @returns `true` 表示通过 没有在CD中
    */
   get isCD (): boolean {
     const userKey = this.event.userId

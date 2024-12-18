@@ -26,18 +26,18 @@ import type { FriendNoticeEventMap, FriendRequestEventMap, GroupNoticeEventMap, 
  * 群消息过滤器
  * @param event 群事件对象
  * @param eventCfg 当前群的配置对象
- * @param isCD 是否通过CD
+ * @param cd 是否通过CD
  * @param tips 日志提示
  * @returns `true` 表示通过
  */
 export const allGroupFilter = (
   event: GroupMessage,
   eventCfg: GroupGuildFileCfg,
-  isCD: boolean,
+  cd: boolean,
   tips: string
 ): boolean => {
   const name = '群'
-  if (!isCD) {
+  if (!cd) {
     log(`${tips} 正在冷却中: ${event.eventId}`)
     return false
   }
@@ -73,18 +73,18 @@ export const allGroupFilter = (
  * 频道消息过滤器
  * @param event 群事件对象
  * @param eventCfg 当前群的配置对象
- * @param isCD 是否通过CD
+ * @param cd 是否通过CD
  * @param tips 日志提示
  * @returns `true` 表示通过
  */
 export const allGuildFilter = (
   event: GuildMessage,
   eventCfg: GroupGuildFileCfg,
-  isCD: boolean,
+  cd: boolean,
   tips: string
 ): boolean => {
   const name = '频道'
-  if (!isCD) {
+  if (!cd) {
     log(`${tips} 正在冷却中: ${event.eventId}`)
     return false
   }
@@ -120,17 +120,17 @@ export const allGuildFilter = (
  * 好友消息过滤器
  * @param event 好友事件对象
  * @param eventCfg 当前好友的配置对象
- * @param isCD 是否通过CD
+ * @param cd 是否通过CD
  * @param tips 日志提示
  * @returns `true` 表示通过
  */
 export const allFriendFilter = (
   event: FriendMessage,
   eventCfg: FriendDirectFileCfg,
-  isCD: boolean,
+  cd: boolean,
   tips: string
 ): boolean => {
-  if (!isCD) {
+  if (!cd) {
     log(`${tips} 正在冷却中: ${event.messageId}`)
     return false
   }
@@ -156,17 +156,17 @@ export const allFriendFilter = (
  * 频道私信过滤器
  * @param event 频道私信事件对象
  * @param eventCfg 当前频道私信的配置对象
- * @param isCD 是否通过CD
+ * @param cd 是否通过CD
  * @param tips 日志提示
  * @returns `true` 表示通过
  */
 export const allChannelFilter = (
   event: DirectMessage,
   eventCfg: FriendDirectFileCfg,
-  isCD: boolean,
+  cd: boolean,
   tips: string
 ): boolean => {
-  if (!isCD) {
+  if (!cd) {
     log(`${tips} 正在冷却中: ${event.messageId}`)
     return false
   }
@@ -192,19 +192,19 @@ export const allChannelFilter = (
  * 群通知、请求事件过滤器
  * @param event 通知、请求事件对象
  * @param eventCfg 当前事件的配置对象
- * @param isCD 是否通过CD
+ * @param cd 是否通过CD
  * @param tips 日志提示
  * @returns `true` 表示通过
  */
 export const allGroupSwarmFilter = (
   event: GroupNoticeEventMap[keyof GroupNoticeEventMap] | GroupRequestEventMap[keyof GroupRequestEventMap],
   eventCfg: GroupGuildFileCfg,
-  isCD: boolean,
+  cd: boolean,
   tips: string
 ): boolean => {
   const name = '群'
 
-  if (isCD) {
+  if (!cd) {
     log(`${tips} 正在冷却中: ${event.eventId}`)
     return false
   }
@@ -240,19 +240,19 @@ export const allGroupSwarmFilter = (
  * 好友通知、请求事件过滤器
  * @param event 通知、请求事件对象
  * @param eventCfg 当前事件的配置对象
- * @param isCD 是否通过CD
+ * @param cd 是否通过CD
  * @param tips 日志提示
  * @returns `true` 表示通过
  */
 export const allFriendSwarmFilter = (
   event: FriendNoticeEventMap[keyof FriendNoticeEventMap] | FriendRequestEventMap[keyof FriendRequestEventMap],
   eventCfg: FriendDirectFileCfg,
-  isCD: boolean,
+  cd: boolean,
   tips: string
 ): boolean => {
   const name = '好友'
 
-  if (isCD) {
+  if (!cd) {
     log(`${tips} 正在冷却中: ${event.eventId}`)
     return false
   }

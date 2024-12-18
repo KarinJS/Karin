@@ -37,7 +37,6 @@ export abstract class BaseEvent implements BaseEventHandle {
     bot,
   }: BaseEventOptions) {
     this.#selfId = selfId
-    this.#selfId = selfId
     this.#event = event
     this.#subEvent = subEvent
     this.#eventId = eventId

@@ -50,9 +50,9 @@ export class DirectHandler {
 
   /**
    * 检查是否存在cd中
-   * @returns `true` 表示没有在CD中
+   * @returns `true` 表示通过 没有在CD中
    */
-  get isCD (): boolean {
+  get cd (): boolean {
     const userKey = this.event.userId
     return filter.friendAndDirectCD(this.eventCfg, userKey)
   }
@@ -72,7 +72,7 @@ export class DirectHandler {
    */
   isLimitEvent () {
     const tips = `[${this.event.userId}]`
-    return filter.allChannelFilter(this.event, this.eventCfg, this.isCD, tips)
+    return filter.allChannelFilter(this.event, this.eventCfg, this.cd, tips)
   }
 
   /**

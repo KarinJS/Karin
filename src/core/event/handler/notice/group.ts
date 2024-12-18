@@ -16,7 +16,11 @@ export class GroupNoticeHandler extends BaseNoticeHandler {
     this.eventCfg = config.getGroupCfg(this.event.groupId, this.event.selfId)
   }
 
-  get isCD (): boolean {
+  /**
+   * 检查是否存在cd中
+   * @returns `true` 表示通过 没有在CD中
+   */
+  get cd (): boolean {
     /** 并非所有事件都需要cd */
     const list: string[] = [
       NoticeEventSubEnum.GROUP_POKE,
@@ -24,7 +28,7 @@ export class GroupNoticeHandler extends BaseNoticeHandler {
     ]
 
     if (!list.includes(this.event.subEvent)) {
-      return true
+      return false
     }
 
     const userKey = this.event.userId
@@ -43,7 +47,7 @@ export class GroupNoticeHandler extends BaseNoticeHandler {
 
   isLimitEvent () {
     const tips = `[${this.event.groupId}][${this.event.userId}]`
-    return filter.allGroupSwarmFilter(this.event, this.eventCfg, this.isCD, tips)
+    return filter.allGroupSwarmFilter(this.event, this.eventCfg, this.cd, tips)
   }
 
   print () {

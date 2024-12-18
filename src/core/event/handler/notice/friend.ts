@@ -18,9 +18,9 @@ export class FriendNoticeHandler extends BaseNoticeHandler {
 
   /**
    * 检查是否存在cd中
-   * @returns `true` 表示没有在CD中
+   * @returns `true` 表示通过 没有在CD中
    */
-  get isCD (): boolean {
+  get cd (): boolean {
     /** 并非所有事件都需要cd */
     const list: string[] = [
       NoticeEventSubEnum.FRIENT_POKE,
@@ -34,7 +34,7 @@ export class FriendNoticeHandler extends BaseNoticeHandler {
     const userKey = this.event.userId
     /** 计时器存在直接返回即可 */
     if (userCD[userKey]) {
-      return true
+      return false
     }
 
     /** 用户个人CD */
@@ -44,12 +44,12 @@ export class FriendNoticeHandler extends BaseNoticeHandler {
       }, this.eventCfg.cd * 1000)
     }
 
-    return false
+    return true
   }
 
   isLimitEvent () {
     const tips = `[${this.event.userId}]`
-    return filter.allFriendSwarmFilter(this.event, this.eventCfg, this.isCD, tips)
+    return filter.allFriendSwarmFilter(this.event, this.eventCfg, this.cd, tips)
   }
 
   print () {
