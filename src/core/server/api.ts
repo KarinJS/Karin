@@ -4,6 +4,7 @@ import { listeners } from '@/internal/listeners'
 import { OB11AllEvent } from '@adapter/onebot/types/event'
 import { getHttpBotToken } from '@/service/server'
 import { type Request, type Response } from 'express'
+export { restart } from '@/server/restart'
 
 /**
  * @description Ping接口返回信息
