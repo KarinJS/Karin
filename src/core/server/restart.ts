@@ -1,5 +1,5 @@
-import { isLocalRequest } from '../utils'
-import { exec } from '@/utils/system/exec'
+import { isLocalRequest } from '@/utils/system/ip'
+import { restartDirect } from '@/utils/system/restart'
 import type { Request, Response } from 'express'
 
 /**
@@ -15,18 +15,5 @@ export const restart = async (req: Request, res: Response) => {
 
   res.status(200).end()
 
-  logger.mark('收到重启请求，正在重启...')
-  if (process.env.karin_app_runner === 'pm2') {
-    await exec(`pm2 restart ${process.env.pm_id}`)
-    return
-  }
-
-  if (process.env.karin_app_runner === 'tsx') {
-    throw new Error('tsx 不支持重启')
-  }
-
-  if (process?.send) {
-    process.send('restart')
-    logger.mark('发送重启信号成功')
-  }
+  restartDirect()
 }

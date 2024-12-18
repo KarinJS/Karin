@@ -44,7 +44,7 @@ jobs:
       - run: npm run pr clean
         if: ${{ steps.release.outputs.release_created }}
       # 发布到 npm
-      - run: pnpm run pub
+      - run: npm run pub
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         if: ${{ steps.release.outputs.release_created }}

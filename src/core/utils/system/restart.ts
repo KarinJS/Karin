@@ -1,6 +1,5 @@
 import { Contact } from '@/adapter'
 import { exec } from '@/utils/system/exec'
-import { config } from '../config'
 
 /**
  * 重启Bot
@@ -26,6 +25,7 @@ export const restart = async (selfId: string, contact: Contact, messageId: strin
     process.send('restart')
   }
 
+  const { config } = await import('@/utils/config')
   if (!config().pm2Restart) process.exit()
 
   if (process.env.pm_id) {
@@ -38,4 +38,24 @@ export const restart = async (selfId: string, contact: Contact, messageId: strin
   const { error } = await exec('npx karin pm2')
   if (error) return { status: 'failed', data: error }
   process.exit()
+}
+
+/**
+ * 直接重启
+ */
+export const restartDirect = async () => {
+  logger.mark('收到重启请求，正在重启...')
+  if (process.env.karin_app_runner === 'pm2') {
+    await exec(`pm2 restart ${process.env.pm_id}`)
+    return
+  }
+
+  if (process.env.karin_app_runner === 'tsx') {
+    throw new Error('tsx 不支持重启')
+  }
+
+  if (process?.send) {
+    process.send('restart')
+    logger.mark('发送重启信号成功')
+  }
 }
