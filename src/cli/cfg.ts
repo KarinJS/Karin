@@ -36,7 +36,6 @@ export const init = async () => {
       '.idea',
       '.github',
       'src',
-      'dist',
       'tsconfig.json',
       'jsconfig.json',
       'LICENSE',
