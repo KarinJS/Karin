@@ -26,7 +26,7 @@ export class FriendRequestHandler extends BaseRequestHandler {
   tips () {
     switch (this.event.subEvent) {
       case RequestEventSubEnum.FRIEND:
-        this.event.tips = `好友申请: [申请者:${this.event.content.applierId}][${this.event.content.flag}] ${this.event.content.message}`
+        this.event.tips = `好友申请: [申请者:${this.event.content.applierId}] [${this.event.content.flag}] ${this.event.content.message}`
         break
       default:
       // this.event.tips = `未知子事件: ${JSON.stringify(this.event)}`

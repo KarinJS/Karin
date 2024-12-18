@@ -28,12 +28,12 @@ export class GroupNoticeHandler extends BaseNoticeHandler {
     ]
 
     if (!list.includes(this.event.subEvent)) {
-      return false
+      return true
     }
 
     const userKey = this.event.userId
     if (userCD[userKey]) {
-      return true
+      return false
     }
 
     if (this.eventCfg.cd > 0) {
@@ -42,7 +42,7 @@ export class GroupNoticeHandler extends BaseNoticeHandler {
       }, this.eventCfg.cd * 1000)
     }
 
-    return false
+    return true
   }
 
   isLimitEvent () {
@@ -68,16 +68,16 @@ export class GroupNoticeHandler extends BaseNoticeHandler {
         this.event.tips = `撤回消息: ${this.event.content.messageId}`
         break
       case NoticeEventSubEnum.GROUP_FILE_UPLOADED:
-        this.event.tips = `文件上传: [fid:${this.event.content.fid}][url:${this.event.content.url}][name:${this.event.content.name}]`
+        this.event.tips = `文件上传: [fid:${this.event.content.fid}] [url:${this.event.content.url}] [name:${this.event.content.name}]`
         break
       case NoticeEventSubEnum.GROUP_MEMBER_ADD:
-        this.event.tips = `新增成员: [操作者:${this.event.content.operatorId}][目标成员:${this.event.content.targetId}]`
+        this.event.tips = `新增成员: [操作者:${this.event.content.operatorId}] [目标成员:${this.event.content.targetId}]`
         break
       case NoticeEventSubEnum.GROUP_MEMBER_REMOVE:
-        this.event.tips = `移除成员: [操作者:${this.event.content.operatorId}][目标成员:${this.event.content.targetId}]`
+        this.event.tips = `移除成员: [操作者:${this.event.content.operatorId}] [目标成员:${this.event.content.targetId}]`
         break
       case NoticeEventSubEnum.GROUP_CARD_CHANGED:
-        this.event.tips = `名片变动: [操作者:${this.event.content.operatorId}][目标成员:${this.event.content.targetId}]`
+        this.event.tips = `名片变动: [操作者:${this.event.content.operatorId}] [目标成员:${this.event.content.targetId}]`
         break
       case NoticeEventSubEnum.GROUP_ADMIN_CHANGED:
         this.event.tips = `管理员变动: ${this.event.content.targetId} 被${this.event.content.isAdmin ? '设置' : '取消'}管理员`

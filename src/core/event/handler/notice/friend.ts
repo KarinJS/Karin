@@ -70,7 +70,7 @@ export class FriendNoticeHandler extends BaseNoticeHandler {
         this.event.tips = `撤回消息: ${this.event.content.messageId}`
         break
       case NoticeEventSubEnum.FRIEND_FILE_UPLOADED:
-        this.event.tips = `文件上传: [fid:${this.event.content.fid}][url:${this.event.content.url}][name:${this.event.content.name}]`
+        this.event.tips = `文件上传: [fid:${this.event.content.fid}] [url:${this.event.content.url}] [name:${this.event.content.name}]`
         break
       case NoticeEventSubEnum.FRIEND_INCREASE:
         this.event.tips = `新增好友: ${this.event.content.targetId}`
