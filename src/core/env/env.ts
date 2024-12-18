@@ -31,18 +31,18 @@ export const setLang = (lang: 'js' | 'ts') => setProcessEnv('karin_app_lang', la
  * @description 设置运行器
  * @param runner 运行器
  */
-export const setRunner = (runner: 'node' | 'tsx' | 'pm2') => setProcessEnv('karin_app_runn', runner)
+export const setRunner = (runner: 'node' | 'tsx' | 'pm2') => setProcessEnv('karin_app_runner', runner)
 /**
  * @description 设置监听模式
  * @param watch 是否监听
  */
-export const setWatch = (watch: boolean) => setProcessEnv('karin_app_watc', watch ? 'true' : 'false')
+export const setWatch = (watch: boolean) => setProcessEnv('karin_app_watch', watch ? 'true' : 'false')
 
 /**
  * @description 设置启动次数
  * @param count 次数
  */
-export const setStartCount = (count: number) => setProcessEnv('karin_app_star', count)
+export const setStartCount = (count: number) => setProcessEnv('karin_app_start_count', count)
 
 /**
  * @description 设置默认参数

@@ -38,7 +38,7 @@ export const createExpressWebSocketServer = (port: number, list?: string[]) => {
    * // => 命名空间“"./node_modules/.pnpm/@types+ws@8.5.13/node_modules/@types/ws/index"”没有已导出的成员“Server”。
    * ```
    */
-  const wss: import('ws').WebSocketServer = new WebSocketServer({ server })
+  const wss: WebSocketServer = new WebSocketServer({ server })
 
   wss.on('error', (error: NodeJS.ErrnoException) => {
     if (error.code === 'EADDRINUSE') {
