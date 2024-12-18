@@ -1,6 +1,6 @@
 import { segment } from '@/adapter/segment'
 import { cache } from '@/plugin/cache/cache'
-import { MiddlewareHandler } from '@/utils'
+import { MiddlewareHandler } from '@/utils/message/middleware'
 import { makeMessageLog } from '@/utils/common'
 import { BaseEventHandle, BaseEventOptions } from '@/event/types/types'
 

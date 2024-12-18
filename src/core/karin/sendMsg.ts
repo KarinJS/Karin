@@ -3,7 +3,9 @@ import { cache } from '@/plugin/cache/cache'
 import { master, admin } from '@/utils/config'
 import { makeMessageLog } from '@/utils/common'
 import { listeners } from '@/internal/listeners'
-import { makeMessage, MiddlewareHandler } from '@/utils'
+import { SEND_MSG } from '@/utils/data/key'
+import { makeMessage } from '@/utils/common'
+import { MiddlewareHandler } from '@/utils/message/middleware'
 import type { Contact, ElementTypes, SendMsgResults } from '@/adapter'
 
 type Message = string | ElementTypes | Array<ElementTypes>
@@ -48,7 +50,7 @@ export const sendMsg = async (selfId: string, contact: Contact, elements: Messag
   }
 
   try {
-    listeners.emit('karin:count:send', 1)
+    listeners.emit(SEND_MSG, contact)
     /** 取结果 */
     result = await bot.sendMsg(contact, NewElements, retryCount)
     logger.bot('debug', selfId, `主动消息结果:${JSON.stringify(result, null, 2)}`)

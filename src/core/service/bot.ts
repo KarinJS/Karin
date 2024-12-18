@@ -1,5 +1,5 @@
 import { sendMsg } from '@/karin/sendMsg'
-import { MiddlewareHandler } from '@/utils'
+import { MiddlewareHandler } from '@/utils/message/middleware'
 import { AdapterBase } from '@adapter/base'
 import { cache } from '@/plugin/cache/cache'
 import { Contact, NodeElementType, segment } from '@/adapter'
