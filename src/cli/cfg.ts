@@ -45,6 +45,13 @@ export const init = async () => {
       'CHANGELOG.md',
     ]
 
+    /** 创建.pnpmfile.cjs */
+    const pnpmfile = `${root}/.pnpmfile.cjs`
+    if (!fs.existsSync(pnpmfile)) {
+      const { karinDir } = await import('@/utils/fs/root')
+      fs.copyFileSync(`${karinDir}/pnpmfile.cjs`, pnpmfile)
+    }
+
     /** 只要有任何一项文件存在 则代表是插件开发环境 不作为正式环境 */
     if (!list.some((item) => fs.existsSync(`${root}/${item}`))) {
       /** 创建pnpm工作区配置 */
