@@ -12,8 +12,8 @@ async function main (
   const { initIndex } = await import('../cli/cfg')
   await initIndex()
 
-  const { version } = await import('./package').then((res) => res.pkg())
-  program.version(version, '-v, --version', '显示版本号')
+  const pkg = await import('./package').then((res) => res.pkg())
+  program.version(pkg.version, '-v, --version', '显示版本号')
   program.command('.').description('前台启动').action(() => karin.runFork())
   program.command('start').description('前台启动').action(() => karin.runFork())
   program.command('pm2').description('后台运行').action(() => karin.runPM2())
@@ -27,7 +27,7 @@ async function main (
     .command('ts')
     .description('TypeScript开发模式')
     .option('-w, --watch', '监察者模式')
-    .action((options) => karin.runTsx(options.watch))
+    .action((options) => karin.runTsx(pkg, options.watch))
   program.parse(process.argv)
 }
 

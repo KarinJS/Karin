@@ -1,3 +1,5 @@
 #!/usr/bin/env node
 
-import('./main').then(({ runTsx }) => runTsx())
+import('./package').then(({ pkg }) => {
+  import('./main').then(({ runTsx }) => runTsx(pkg()))
+})

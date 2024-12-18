@@ -34,12 +34,24 @@ export const runDev = (isWatch = false) => {
 
 /**
  * @description `tsx` 启动
+ * @param pkg 包信息
  * @param isWatch 是否监听文件变化并重启
  */
-export const runTsx = async (isWatch = false) => {
+export const runTsx = async (pkg: Record<string, any>, isWatch = false) => {
   setMode('dev')
   setLang('ts')
-  const cmd = 'watch --include "./src/**/*" --exclude "./@karinjs/**/*" --exclude "./lib/**/*" index.js'
+
+  const list = ['watch']
+  if (pkg?.karin?.include) {
+    pkg.karin.include.forEach((item: string) => list.push(`--include "${item}"`))
+  }
+
+  if (pkg?.karin?.exclude) {
+    pkg.karin.exclude.forEach((item: string) => list.push(`--exclude "${item}"`))
+  }
+
+  const cmd = `${list.join(' ')} index.js`
+
   const { spawn } = await import('child_process')
   setWatch(isWatch)
   spawn('tsx', isWatch ? cmd.split(' ') : ['index.js'], { stdio: 'inherit', shell: true })
