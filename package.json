@@ -123,6 +123,7 @@
     "/lib/**/*.js",
     "/lib/**/*.d.ts",
     "/default/**",
+    "CHANGELOG.md",
     "LICENSE",
     "package.json",
     "README.md"
