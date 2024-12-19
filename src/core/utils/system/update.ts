@@ -15,21 +15,30 @@ const getPkg = (isForcibly = false): Promise<PackageType> => {
  * @param name 包名
  * @returns 是否存在更新 true: 存在更新 false: 无更新
  */
-export const checkPkgUpdate = async (name: string): Promise<{
-  /** 是否存在更新 */
-  status: boolean
-  /** 本地版本号 */
-  local: string
-  /** 远程版本号 */
-  remote: string
-}> => {
-  const local = await getPkgVersion(name)
-  const remote = await getRemotePkgVersion(name)
+export const checkPkgUpdate = async (name: string): Promise<
+  {
+    status: true,
+    local: string,
+    remote: string
+  } | {
+    status: false,
+    error?: unknown
+  }> => {
+  try {
+    const local = await getPkgVersion(name)
+    const remote = await getRemotePkgVersion(name)
 
-  return {
-    status: local !== remote,
-    local,
-    remote,
+    return {
+      status: local !== remote,
+      local,
+      remote,
+    }
+  } catch (error) {
+    logger.error(error)
+    return {
+      status: false,
+      error,
+    }
   }
 }
 
@@ -180,7 +189,7 @@ export const updateAllPkg = async (): Promise<string> => {
 
 type CheckGitPluginUpdateReturn<T> = T extends 'ok'
   ? { status: 'ok', data: string, count: number }
-  : { status: 'failed', data: string | ExecException }
+  : { status: 'failed', data: string | Error }
 
 /**
  * @description 检查git插件是否有更新
@@ -198,30 +207,35 @@ export const checkGitPluginUpdate = async (
   filePath: string,
   time = 120
 ): Promise<CheckGitPluginUpdateReturn<'ok' | 'failed'>> => {
-  /** 检查一下路径是否存在 */
-  if (!isExists(filePath)) return { status: 'failed', data: '路径不存在' }
-  /** 检查是否有.git文件夹 */
-  if (!isExists(`${filePath}/.git`)) return { status: 'failed', data: '该路径不是一个git仓库' }
+  try {
+    /** 检查一下路径是否存在 */
+    if (!isExists(filePath)) return { status: 'failed', data: '路径不存在' }
+    /** 检查是否有.git文件夹 */
+    if (!isExists(`${filePath}/.git`)) return { status: 'failed', data: '该路径不是一个git仓库' }
 
-  /** 设置超时时间 */
-  const timer = setTimeout(() => {
-    return { status: 'failed', data: '执行超时' }
-  }, time * 1000)
+    /** 设置超时时间 */
+    const timer = setTimeout(() => {
+      return { status: 'failed', data: '执行超时' }
+    }, time * 1000)
 
-  const options = { cwd: filePath }
-  /** git fetch origin */
-  const { error } = await exec('git fetch origin', options)
-  if (error) return { status: 'failed', data: error }
-  /** git status -uno */
-  const { stdout } = await exec('git status -uno', options)
-  clearTimeout(timer)
-  /** 检查是否有更新 没更新直接返回 */
-  if (stdout.includes('Your branch is up to date with')) return { status: 'failed', data: '当前已经是最新版本' }
-  /** 获取落后几次更新 */
-  const count = Number(stdout.match(/Your branch is behind '.*' by (\d+) commits/)?.[1]) || 1
-  const data = await getCommit({ path: filePath, count, branch: 'origin' })
-  clearTimeout(timer)
-  return { status: 'ok', data, count }
+    const options = { cwd: filePath }
+    /** git fetch origin */
+    const { error } = await exec('git fetch origin', options)
+    if (error) return { status: 'failed', data: error }
+    /** git status -uno */
+    const { stdout } = await exec('git status -uno', options)
+    clearTimeout(timer)
+    /** 检查是否有更新 没更新直接返回 */
+    if (stdout.includes('Your branch is up to date with')) return { status: 'failed', data: '当前已经是最新版本' }
+    /** 获取落后几次更新 */
+    const count = Number(stdout.match(/Your branch is behind '.*' by (\d+) commits/)?.[1]) || 1
+    const data = await getCommit({ path: filePath, count, branch: 'origin' })
+    clearTimeout(timer)
+    return { status: 'ok', data, count }
+  } catch (error) {
+    logger.error(error)
+    return { status: 'failed', data: error as Error }
+  }
 }
 
 /**
