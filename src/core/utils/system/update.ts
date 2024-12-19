@@ -13,16 +13,13 @@ const getPkg = (isForcibly = false): Promise<PackageType> => {
 /**
  * @description 传入npm包名 检查是否存在更新
  * @param name 包名
+ * @returns 是否存在更新 true: 存在更新 false: 无更新
  */
-export const checkPkgUpdate = async (name: string): Promise<string> => {
+export const checkPkgUpdate = async (name: string): Promise<boolean> => {
   const local = await getPkgVersion(name)
   const remote = await getRemotePkgVersion(name)
 
-  if (local === remote) {
-    return `[${name}][无更新] ${local} => ${remote}`
-  }
-
-  return `[${name}][有更新] ${local} => ${remote}`
+  return local !== remote
 }
 
 /**
@@ -178,6 +175,13 @@ type CheckGitPluginUpdateReturn<T> = T extends 'ok'
  * @description 检查git插件是否有更新
  * @param filePath 插件路径
  * @param time 任务执行超时时间 默认120s
+ * @returns
+ * ```json
+ * {
+ *  "status": "ok", // 状态
+ *  "data": "更新日志", // 更新日志
+ *  "count": 1  // 落后几次更新
+ * }
  */
 export const checkGitPluginUpdate = async (
   filePath: string,
