@@ -57,8 +57,8 @@ jobs:
             gh pr comment ${{ env.PR_NUMBER }} --body $'❌ 构建失败！以下是错误日志：\n\n<details>\n<summary>展开查看错误日志</summary>\n\n```\n'"${ERROR_MESSAGE}"$'\n```\n\n</details>'
           else
             # 构建成功评论
-            INSTALL_COMMAND_1="pnpm rm ${{ env.PKG_NAME }} && pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -w"           
-            INSTALL_COMMAND_2="pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -D"
+            INSTALL_COMMAND_1="pnpm rm ${{ env.PKG_NAME }} && pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -D"           
+            INSTALL_COMMAND_2="pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -w"
             gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 构建完成！您可以通过以下命令安装此版本：\n\n```\n'"${INSTALL_COMMAND_1}"$'\n```\n\n```\n'"${INSTALL_COMMAND_2}"$'\n```'
           fi
         env:
