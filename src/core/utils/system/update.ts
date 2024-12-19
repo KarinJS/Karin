@@ -17,28 +17,32 @@ const getPkg = (isForcibly = false): Promise<PackageType> => {
  */
 export const checkPkgUpdate = async (name: string): Promise<
   {
-    status: true,
+    /** 存在更新 */
+    status: 'yes',
+    /** 本地版本号 */
     local: string,
+    /** 远程版本号 */
     remote: string
   } | {
-    status: false,
-    error?: unknown
+    /** 无更新 */
+    status: 'no'
+    /** 本地版本号 */
+    local: string
+  } | {
+    /** 检查发生错误 */
+    status: 'error',
+    /** 错误信息 */
+    error: unknown
   }> => {
   try {
     const local = await getPkgVersion(name)
     const remote = await getRemotePkgVersion(name)
 
-    return {
-      status: local !== remote,
-      local,
-      remote,
-    }
+    if (local === remote) return { status: 'no', local }
+    return { status: 'yes', local, remote }
   } catch (error) {
     logger.error(error)
-    return {
-      status: false,
-      error,
-    }
+    return { status: 'error', error }
   }
 }
 
@@ -187,31 +191,36 @@ export const updateAllPkg = async (): Promise<string> => {
   return result.join('\n')
 }
 
-type CheckGitPluginUpdateReturn<T> = T extends 'ok'
-  ? { status: 'ok', data: string, count: number }
-  : { status: 'failed', data: string | Error }
-
 /**
  * @description 检查git插件是否有更新
  * @param filePath 插件路径
  * @param time 任务执行超时时间 默认120s
- * @returns
- * ```json
- * {
- *  "status": "ok", // 状态
- *  "data": "更新日志", // 更新日志
- *  "count": 1  // 落后几次更新
- * }
  */
 export const checkGitPluginUpdate = async (
   filePath: string,
   time = 120
-): Promise<CheckGitPluginUpdateReturn<'ok' | 'failed'>> => {
+): Promise<{
+  /** 存在更新 */
+  status: 'yes',
+  /** 更新内容 */
+  data: string,
+  /** 落后次数 */
+  count: number
+} | {
+  /** 无更新 */
+  status: 'no'
+  /** 最后更新时间描述 */
+  data: string
+} | {
+  /** 检查发生错误 */
+  status: 'error',
+  data: Error
+}> => {
   try {
     /** 检查一下路径是否存在 */
-    if (!isExists(filePath)) return { status: 'failed', data: '路径不存在' }
+    if (!isExists(filePath)) return { status: 'error', data: new Error('路径不存在') }
     /** 检查是否有.git文件夹 */
-    if (!isExists(`${filePath}/.git`)) return { status: 'failed', data: '该路径不是一个git仓库' }
+    if (!isExists(`${filePath}/.git`)) return { status: 'error', data: new Error('该路径不是一个git仓库') }
 
     /** 设置超时时间 */
     const timer = setTimeout(() => {
@@ -219,22 +228,30 @@ export const checkGitPluginUpdate = async (
     }, time * 1000)
 
     const options = { cwd: filePath }
+
     /** git fetch origin */
     const { error } = await exec('git fetch origin', options)
-    if (error) return { status: 'failed', data: error }
+    if (error) return { status: 'error', data: error }
+
     /** git status -uno */
     const { stdout } = await exec('git status -uno', options)
     clearTimeout(timer)
+
     /** 检查是否有更新 没更新直接返回 */
-    if (stdout.includes('Your branch is up to date with')) return { status: 'failed', data: '当前已经是最新版本' }
+    if (stdout.includes('Your branch is up to date with')) {
+      /** 获取最后一次提交时间 */
+      const time = await getTime(filePath)
+      return { status: 'no', data: `当前版本已是最新版本\n最后更新时间：${time}` }
+    }
+
     /** 获取落后几次更新 */
     const count = Number(stdout.match(/Your branch is behind '.*' by (\d+) commits/)?.[1]) || 1
     const data = await getCommit({ path: filePath, count, branch: 'origin' })
     clearTimeout(timer)
-    return { status: 'ok', data, count }
+    return { status: 'yes', data, count }
   } catch (error) {
     logger.error(error)
-    return { status: 'failed', data: error as Error }
+    return { status: 'error', data: error as Error }
   }
 }
 
