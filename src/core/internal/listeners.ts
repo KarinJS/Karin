@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events'
 import { RECV_MSG, SEND_MSG, EVENT_COUNT } from '@/utils/data/key'
 import type { Contact } from '@/adapter'
-import type { Event, Message } from '@/event'
+import type { Event, Message, PluginTypes } from '@/event'
 import type { OB11AllEvent } from '@adapter/onebot/types/event'
 import type { MessageEventMap, NoticeEventMap, RequestEventMap } from '@/event/types/types'
 
@@ -14,7 +14,7 @@ type OtherTypes = {
   error: (error: unknown) => void
   [SEND_MSG]: (contact: Contact) => void
   [RECV_MSG]: (contact: Contact) => void
-  [EVENT_COUNT]: (options: { name: string, file: object, event: Event }) => void
+  [EVENT_COUNT]: (options: { plugin: PluginTypes, event: Event }) => void
   'karin:adapter:open': () => void
   'karin:adapter:close': () => void
   'update:logger:level': () => void

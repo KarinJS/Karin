@@ -17,7 +17,7 @@ export const emit = (event: any) => {
  * @param event 事件对象
  */
 export const addEventCount = (plugin: PluginTypes, event: Event) => {
-  karin.emit(EVENT_COUNT, { name: plugin.info.name, file: plugin.file, event })
+  karin.emit(EVENT_COUNT, { plugin, event })
 }
 
 /**
