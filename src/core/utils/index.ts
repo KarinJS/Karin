@@ -34,4 +34,4 @@ export * from '@/utils/system/fileToUrl'
 
 export * as common from '@/utils/common'
 export * as config from '@/utils/config/index'
-export * as parseLog from '@/utils/data/parseLog'
+export * as changelog from '@/utils/data/changelog'
