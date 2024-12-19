@@ -1,7 +1,11 @@
+import util from 'node:util'
+import { karin } from '@/karin'
+import { SEND_MSG } from '@/utils/data/key'
+import { SendMsgResults } from '@/adapter'
 import { segment } from '@/adapter/segment'
 import { cache } from '@/plugin/cache/cache'
-import { MiddlewareHandler } from '@/utils/message/middleware'
 import { makeMessageLog } from '@/utils/common'
+import { MiddlewareHandler } from '@/utils/message/middleware'
 import { BaseEventHandle, BaseEventOptions } from '@/event/types/types'
 
 /** 事件实现基类 */
@@ -73,16 +77,14 @@ export abstract class BaseEvent implements BaseEventHandle {
         message.unshift(segment.reply(this.message_id as string))
       }
 
-      let result: any = {
+      karin.emit(SEND_MSG, this.contact)
+
+      let result: SendMsgResults = {
         messageId: '',
         messageTime: 0,
         rawData: {},
         /** @deprecated 已废弃，请使用 messageId */
         message_id: '',
-        /** @deprecated 已废弃，请使用 messageTime */
-        message_time: 0,
-        /** @deprecated 已废弃，请使用 rawData */
-        raw_data: undefined,
       }
 
       /** 先调用中间件 */
@@ -100,10 +102,8 @@ export abstract class BaseEvent implements BaseEventHandle {
       }
 
       /** 发送消息 */
-      result = await request
+      result = util.types.isPromise(request) ? await request : request
       result.message_id = result.messageId
-      result.message_time = result.messageTime
-      result.raw_data = result.rawData
 
       /** 快速撤回 */
       if (recallMsg > 0 && result.messageId) {
