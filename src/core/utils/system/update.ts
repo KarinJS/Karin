@@ -32,7 +32,7 @@ export const checkPkgUpdate = async (name: string): Promise<
     /** 检查发生错误 */
     status: 'error',
     /** 错误信息 */
-    error: unknown
+    error: Error
   }> => {
   try {
     const local = await getPkgVersion(name)
@@ -42,7 +42,7 @@ export const checkPkgUpdate = async (name: string): Promise<
     return { status: 'yes', local, remote }
   } catch (error) {
     logger.error(error)
-    return { status: 'error', error }
+    return { status: 'error', error: error as Error }
   }
 }
 
