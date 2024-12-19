@@ -406,7 +406,7 @@ export const updateGitPlugin = async (
  * @description 更新所有git插件
  * @param time 任务执行超时时间 默认120s
  */
-export const updateAllGitPlugin = async (time = 120): Promise<string> => {
+export const updateAllGitPlugin = async (cmd = 'git pull', time = 120): Promise<string> => {
   try {
     const logger = global?.logger || console
     const list = await getGitPlugins(false)
@@ -420,7 +420,7 @@ export const updateAllGitPlugin = async (time = 120): Promise<string> => {
     const result: string[] = []
     await Promise.allSettled(list.map(async (name) => {
       const filePath = `./plugins/${name}`
-      const { status, data } = await updateGitPlugin(filePath, 'git pull', time)
+      const { status, data } = await updateGitPlugin(filePath, cmd, time)
       if (status === 'ok') {
         tips.push(`[${name}][更新成功] ${data}`)
         result.push(`[${name}][更新成功] ${data}`)
