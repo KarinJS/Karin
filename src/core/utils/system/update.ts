@@ -11,11 +11,33 @@ const getPkg = (isForcibly = false): Promise<PackageType> => {
 }
 
 /**
+ * @description 传入npm包名 检查是否存在更新
+ * @param name 包名
+ */
+export const checkPkgUpdate = async (name: string): Promise<string> => {
+  const local = await getPkgVersion(name)
+  const remote = await getRemotePkgVersion(name)
+
+  if (local === remote) {
+    return `[${name}][无更新] ${local} => ${remote}`
+  }
+
+  return `[${name}][有更新] ${local} => ${remote}`
+}
+
+/**
  * @description 获取指定包的本地版本号 如果获取失败则会获取package.json中的版本号
  * @param name 包名
  */
 export const getPkgVersion = async (name: string): Promise<string | null> => {
-  const { stdout } = await exec(`npm list ${name} --depth=0`)
+  const { status, stdout, error } = await exec(`npm list ${name} --depth=0`)
+  if (status) {
+    if (error?.stack?.toString().includes('empty')) {
+      logger.error(`获取失败，${name} 未安装`)
+    }
+    throw error
+  }
+
   const reg = new RegExp(`${name}@(\\d+\\.\\d+\\.\\d+)`, 'gm')
   const result = reg.exec(stdout.toString())
   if (result?.[1]) return result[1]
@@ -30,13 +52,16 @@ export const getPkgVersion = async (name: string): Promise<string | null> => {
  * @param tag 标签，默认为 `latest`
  */
 export const getRemotePkgVersion = async (name: string, tag = 'latest') => {
-  if (tag === 'latest') {
-    const { stdout } = await exec(`npm show ${name} version`)
-    return stdout.toString().trim() || null
-  } else {
-    const { stdout } = await exec(`npm show ${name} dist-tags.${tag}`)
-    return stdout.toString().trim() || null
+  const cmd = tag === 'latest' ? `npm show ${name} version` : `npm show ${name} dist-tags.${tag}`
+
+  const { status, stdout, error } = await exec(cmd)
+  if (status) {
+    if (error?.stack?.toString().includes('empty')) {
+      logger.error(`获取失败，${name} 未安装`)
+    }
+    throw error
   }
+  return stdout.toString().trim() || null
 }
 
 type UpdatePkgReturn<T extends 'ok' | 'failed' = 'ok' | 'failed'> = T extends 'ok'
