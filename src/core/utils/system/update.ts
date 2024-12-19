@@ -15,18 +15,29 @@ const getPkg = (isForcibly = false): Promise<PackageType> => {
  * @param name 包名
  * @returns 是否存在更新 true: 存在更新 false: 无更新
  */
-export const checkPkgUpdate = async (name: string): Promise<boolean> => {
+export const checkPkgUpdate = async (name: string): Promise<{
+  /** 是否存在更新 */
+  status: boolean
+  /** 本地版本号 */
+  local: string
+  /** 远程版本号 */
+  remote: string
+}> => {
   const local = await getPkgVersion(name)
   const remote = await getRemotePkgVersion(name)
 
-  return local !== remote
+  return {
+    status: local !== remote,
+    local,
+    remote,
+  }
 }
 
 /**
  * @description 获取指定包的本地版本号 如果获取失败则会获取package.json中的版本号
  * @param name 包名
  */
-export const getPkgVersion = async (name: string): Promise<string | null> => {
+export const getPkgVersion = async (name: string): Promise<string> => {
   const { status, stdout, error } = await exec(`npm list ${name} --depth=0`)
   if (status) {
     if (error?.stack?.toString().includes('empty')) {
@@ -40,7 +51,7 @@ export const getPkgVersion = async (name: string): Promise<string | null> => {
   if (result?.[1]) return result[1]
 
   const pkg = await getPkg()
-  return pkg?.dependencies?.[name] || pkg?.devDependencies?.[name] || pkg?.peerDependencies?.[name] || null
+  return pkg?.dependencies?.[name] || pkg?.devDependencies?.[name] || pkg?.peerDependencies?.[name]
 }
 
 /**
@@ -58,7 +69,7 @@ export const getRemotePkgVersion = async (name: string, tag = 'latest') => {
     }
     throw error
   }
-  return stdout.toString().trim() || null
+  return stdout.toString().trim()
 }
 
 type UpdatePkgReturn<T extends 'ok' | 'failed' = 'ok' | 'failed'> = T extends 'ok'
