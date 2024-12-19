@@ -33,6 +33,31 @@ export const logs = (version: string, data: string, length = 1, reverse = false)
 }
 
 /**
+ * 提取指定版本号之间的更新日志
+ * @param data `CHANGELOG.md`文件内容
+ * @param startVersion 起始版本号
+ * @param endVersion 结束版本号
+ * @description
+ * - `CHANGELOG.md`的版本号排序约定为从新到旧
+ * - 也就是说 结束版本号应该比起始版本号新
+ * - 举例: `range(data, '1.0.0', '2.0.0')` 提取`1.0.0`到`2.0.0`之间的更新日志
+ */
+export const range = (data: string, startVersion: string, endVersion: string): string => {
+  const list = parseChangelog(data)
+  const keys = Object.keys(list)
+  const start = keys.indexOf(startVersion)
+  const end = keys.indexOf(endVersion)
+
+  if (start > end) {
+    const versions = keys.slice(end, start).map((key) => list[key] ? list[key] : '')
+    return versions.join('')
+  }
+
+  const versions = keys.slice(start, end).map((key) => list[key] ? list[key] : '')
+  return versions.join('')
+}
+
+/**
  * 对更新日志进行解析并形成对象
  * @param data 更新日志内容
  * @returns 以版本号为键的更新日志对象
