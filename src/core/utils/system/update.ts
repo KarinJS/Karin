@@ -85,39 +85,49 @@ export const getRemotePkgVersion = async (name: string, tag = 'latest') => {
   return stdout.toString().trim()
 }
 
-type UpdatePkgReturn<T extends 'ok' | 'failed' = 'ok' | 'failed'> = T extends 'ok'
-  ? { status: 'ok', data: string }
-  : { status: 'failed', data: ExecException | string }
-
 /**
  * @description 更新指定的npm插件
  * @param name 包名
  * @param tag 标签 默认 `latest`
  */
-export const updatePkg = async <T extends 'ok' | 'failed' = 'ok' | 'failed'> (name: string, tag = 'latest'): Promise<UpdatePkgReturn<T>> => {
+export const updatePkg = async (name: string, tag = 'latest'): Promise<{
+  /** 更新失败 */
+  status: 'failed',
+  /** 更新失败信息 */
+  data: string | ExecException
+} | {
+  /** 更新成功 */
+  status: 'ok',
+  /** 更新成功信息 */
+  data: string,
+  /** 本地版本号 */
+  local: string,
+  /** 远程版本号 */
+  remote: string
+}> => {
   try {
     const local = await getPkgVersion(name)
     const remote = await getRemotePkgVersion(name, tag)
 
     if (local === remote) {
-      return { status: 'failed', data: `[${name}][无更新] ${local} => ${remote}` } as UpdatePkgReturn<T>
+      return { status: 'failed', data: `[${name}][无更新] ${local} => ${remote}` }
     }
 
     const shell = `pnpm up ${name}@${remote}`
     const { error } = await exec(shell)
     if (error) {
-      return { status: 'failed', data: error } as UpdatePkgReturn<T>
+      return { status: 'failed', data: error }
     }
 
     const updatedVersion = await getPkgVersion(name)
     if (updatedVersion !== remote) {
-      return { status: 'failed', data: `[${name}][更新失败] 请尝试手动更新 pnpm up ${name}@${remote}` } as UpdatePkgReturn<T>
+      return { status: 'failed', data: `[${name}][更新失败] 请尝试手动更新 pnpm up ${name}@${remote}` }
     }
 
-    return { status: 'ok', data: `[${name}][更新成功] ${local} => ${remote}` } as UpdatePkgReturn<T>
+    return { status: 'ok', data: `[${name}][更新成功] ${local} => ${remote}`, local, remote }
   } catch (error) {
     logger.error(error)
-    return { status: 'failed', data: error } as UpdatePkgReturn<T>
+    return { status: 'failed', data: error as ExecException }
   }
 }
 
@@ -331,16 +341,32 @@ export const getTime = async (filePath: string) => {
  * @param cmd 执行命令 默认`git pull`
  * @param time 任务执行超时时间 默认120s
  */
-export const updateGitPlugin = async<T extends 'ok' | 'failed' = 'ok' | 'failed'> (
+export const updateGitPlugin = async (
   filePath: string,
   cmd = 'git pull',
   time = 120
-): Promise<UpdatePkgReturn<T>> => {
+): Promise<{
+  /** 更新失败 */
+  status: 'failed',
+  /** 更新失败信息 */
+  data: string | ExecException
+} | {
+  /** 更新成功 */
+  status: 'ok',
+  /** 更新成功信息 */
+  data: string
+  /** 更新详情 */
+  commit: string
+} | {
+  /** 检查发生错误 */
+  status: 'error',
+  data: Error
+}> => {
   try {
     /** 检查一下路径是否存在 */
-    if (!isExists(filePath)) return { status: 'failed', data: '路径不存在' } as UpdatePkgReturn<T>
+    if (!isExists(filePath)) return { status: 'failed', data: '路径不存在' }
     /** 检查是否有.git文件夹 */
-    if (!isExists(`${filePath}/.git`)) return { status: 'failed', data: '该路径不是一个git仓库' } as UpdatePkgReturn<T>
+    if (!isExists(`${filePath}/.git`)) return { status: 'failed', data: '该路径不是一个git仓库' }
 
     /** 设置超时时间 */
     const timer = setTimeout(() => {
@@ -356,21 +382,23 @@ export const updateGitPlugin = async<T extends 'ok' | 'failed' = 'ok' | 'failed'
     if (error) {
       const data = `\n更新失败\n错误信息：${error?.stack || error?.message}\n请解决错误后重试或执行【#强制更新】`
       clearTimeout(timer)
-      return { status: 'failed', data } as UpdatePkgReturn<T>
+      return { status: 'failed', data }
     }
 
     /** 获取更新后的短哈希 */
     const updatedHash = await getHash(filePath)
     if (hash === updatedHash) {
       clearTimeout(timer)
-      return { status: 'failed', data: `\n当前版本已是最新版本\n最后更新时间：${time}\n更新详情：${getCommit({ path: filePath, count: 1 })}` } as UpdatePkgReturn<T>
+      const commit = await getCommit({ path: filePath, count: 1 })
+      return { status: 'failed', data: `\n当前版本已是最新版本\n最后更新时间：${time}\n更新详情：${commit}` }
     }
 
     clearTimeout(timer)
-    return { status: 'ok', data: `\n更新成功\n更新日志：${getCommit({ path: filePath, count: 1 })}` } as UpdatePkgReturn<T>
+    const commit = await getCommit({ path: filePath, count: 1 })
+    return { status: 'ok', data: `\n更新成功\n更新日志：${getCommit({ path: filePath, count: 1 })}`, commit }
   } catch (error) {
     logger.error(error)
-    return { status: 'failed', data: error } as UpdatePkgReturn<T>
+    return { status: 'failed', data: error as Error }
   }
 }
 
