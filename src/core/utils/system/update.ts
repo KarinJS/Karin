@@ -95,100 +95,110 @@ type UpdatePkgReturn<T extends 'ok' | 'failed' = 'ok' | 'failed'> = T extends 'o
  * @param tag 标签 默认 `latest`
  */
 export const updatePkg = async <T extends 'ok' | 'failed' = 'ok' | 'failed'> (name: string, tag = 'latest'): Promise<UpdatePkgReturn<T>> => {
-  const local = await getPkgVersion(name)
-  const remote = await getRemotePkgVersion(name, tag)
+  try {
+    const local = await getPkgVersion(name)
+    const remote = await getRemotePkgVersion(name, tag)
 
-  if (local === remote) {
-    return { status: 'failed', data: `[${name}][无更新] ${local} => ${remote}` } as UpdatePkgReturn<T>
-  }
+    if (local === remote) {
+      return { status: 'failed', data: `[${name}][无更新] ${local} => ${remote}` } as UpdatePkgReturn<T>
+    }
 
-  const shell = `pnpm up ${name}@${remote}`
-  const { error } = await exec(shell)
-  if (error) {
+    const shell = `pnpm up ${name}@${remote}`
+    const { error } = await exec(shell)
+    if (error) {
+      return { status: 'failed', data: error } as UpdatePkgReturn<T>
+    }
+
+    const updatedVersion = await getPkgVersion(name)
+    if (updatedVersion !== remote) {
+      return { status: 'failed', data: `[${name}][更新失败] 请尝试手动更新 pnpm up ${name}@${remote}` } as UpdatePkgReturn<T>
+    }
+
+    return { status: 'ok', data: `[${name}][更新成功] ${local} => ${remote}` } as UpdatePkgReturn<T>
+  } catch (error) {
+    logger.error(error)
     return { status: 'failed', data: error } as UpdatePkgReturn<T>
   }
-
-  const updatedVersion = await getPkgVersion(name)
-  if (updatedVersion !== remote) {
-    return { status: 'failed', data: `[${name}][更新失败] 请尝试手动更新 pnpm up ${name}@${remote}` } as UpdatePkgReturn<T>
-  }
-
-  return { status: 'ok', data: `[${name}][更新成功] ${local} => ${remote}` } as UpdatePkgReturn<T>
 }
 
 /**
  * @description 更新全部npm插件
  */
 export const updateAllPkg = async (): Promise<string> => {
-  const logger = global?.logger || console
-  const list = await getNpmPlugins()
-  list.push('node-karin')
+  try {
+    const logger = global?.logger || console
+    const list = await getNpmPlugins()
+    list.push('node-karin')
 
-  const state: Record<string, {
-    local: string | null
-    remote: string
-  }> = {}
-  const tips = ['\n------- 更新npm插件 --------']
-  const cmd = ['pnpm up']
-  const pkg = await getPkg()
-  const result: string[] = []
+    const state: Record<string, {
+      local: string | null
+      remote: string
+    }> = {}
+    const tips = ['\n------- 更新npm插件 --------']
+    const cmd = ['pnpm up']
+    const pkg = await getPkg()
+    const result: string[] = []
 
-  await Promise.all(list.map(async (name) => {
-    /** 本地版本号 */
-    const local = await getPkgVersion(name)
-    /** 远程版本号 */
-    const remote = await getRemotePkgVersion(name) || pkg.dependencies[name]
-    /** 无更新 */
-    if (local === remote) {
-      tips.push(`[${name}][无更新] ${local} => ${remote}`)
-      return
+    await Promise.all(list.map(async (name) => {
+      /** 本地版本号 */
+      const local = await getPkgVersion(name)
+      /** 远程版本号 */
+      const remote = await getRemotePkgVersion(name) || pkg.dependencies[name]
+      /** 无更新 */
+      if (local === remote) {
+        tips.push(`[${name}][无更新] ${local} => ${remote}`)
+        return
+      }
+
+      tips.push(`更新${name} ${local} => ${remote}`)
+      cmd.push(`${name}@${remote}`)
+      state[name] = { local, remote }
+    }))
+
+    if (cmd.length === 1) {
+      tips.push('没有可更新的插件~')
+      tips.push('---------------------------')
+      logger.info(tips.join('\n'))
+      return '没有可更新的插件~'
+    } else {
+      tips.push('----------------------------')
+      logger.info(tips.join('\n'))
     }
 
-    tips.push(`更新${name} ${local} => ${remote}`)
-    cmd.push(`${name}@${remote}`)
-    state[name] = { local, remote }
-  }))
+    const shell = cmd.join(' ')
+    logger.info(`开始更新: ${shell}`)
 
-  if (cmd.length === 1) {
-    tips.push('没有可更新的插件~')
-    tips.push('---------------------------')
-    logger.info(tips.join('\n'))
-    return '没有可更新的插件~'
-  } else {
-    tips.push('----------------------------')
-    logger.info(tips.join('\n'))
-  }
+    const { error } = await exec(shell)
+    if (error) {
+      Object.keys(state).forEach(name => {
+        result.push(`[${name}][更新失败] 请尝试手动更新 pnpm up ${name}@${state[name].remote}`)
+      })
 
-  const shell = cmd.join(' ')
-  logger.info(`开始更新: ${shell}`)
+      result.unshift(`[更新失败] 更新数量: ${result.length}`)
+      logger.error(result.join('\n'))
+      logger.error(error)
+      return result.join('\n')
+    }
 
-  const { error } = await exec(shell)
-  if (error) {
+    const updatedPkg = await getPkg(true)
+
     Object.keys(state).forEach(name => {
-      result.push(`[${name}][更新失败] 请尝试手动更新 pnpm up ${name}@${state[name].remote}`)
+      const updatedVersion = updatedPkg.dependencies?.[name] || updatedPkg.devDependencies?.[name] || updatedPkg.peerDependencies?.[name]
+      if (updatedVersion !== state[name].remote) {
+        result.push(`[${name}][更新失败] 请尝试手动更新 pnpm up ${name}@${state[name].remote}`)
+      } else {
+        result.push(`[${name}][更新成功] ${state[name].local} => ${state[name].remote}`)
+      }
     })
 
-    result.unshift(`[更新失败] 更新数量: ${result.length}`)
-    logger.error(result.join('\n'))
-    logger.error(error)
+    /** 排序 成功在上 */
+    result.sort((a, b) => a.includes('成功') ? -1 : 1)
+    logger.info(result.join('\n'))
     return result.join('\n')
+  } catch (error) {
+    logger.error(error)
+    return (error as Error).message || '更新失败，请查看日志'
   }
-
-  const updatedPkg = await getPkg(true)
-
-  Object.keys(state).forEach(name => {
-    const updatedVersion = updatedPkg.dependencies?.[name] || updatedPkg.devDependencies?.[name] || updatedPkg.peerDependencies?.[name]
-    if (updatedVersion !== state[name].remote) {
-      result.push(`[${name}][更新失败] 请尝试手动更新 pnpm up ${name}@${state[name].remote}`)
-    } else {
-      result.push(`[${name}][更新成功] ${state[name].local} => ${state[name].remote}`)
-    }
-  })
-
-  /** 排序 成功在上 */
-  result.sort((a, b) => a.includes('成功') ? -1 : 1)
-  logger.info(result.join('\n'))
-  return result.join('\n')
 }
 
 /**
@@ -326,37 +336,42 @@ export const updateGitPlugin = async<T extends 'ok' | 'failed' = 'ok' | 'failed'
   cmd = 'git pull',
   time = 120
 ): Promise<UpdatePkgReturn<T>> => {
-  /** 检查一下路径是否存在 */
-  if (!isExists(filePath)) return { status: 'failed', data: '路径不存在' } as UpdatePkgReturn<T>
-  /** 检查是否有.git文件夹 */
-  if (!isExists(`${filePath}/.git`)) return { status: 'failed', data: '该路径不是一个git仓库' } as UpdatePkgReturn<T>
+  try {
+    /** 检查一下路径是否存在 */
+    if (!isExists(filePath)) return { status: 'failed', data: '路径不存在' } as UpdatePkgReturn<T>
+    /** 检查是否有.git文件夹 */
+    if (!isExists(`${filePath}/.git`)) return { status: 'failed', data: '该路径不是一个git仓库' } as UpdatePkgReturn<T>
 
-  /** 设置超时时间 */
-  const timer = setTimeout(() => {
-    return { status: 'failed', data: '执行超时' }
-  }, time * 1000)
+    /** 设置超时时间 */
+    const timer = setTimeout(() => {
+      return { status: 'failed', data: '执行超时' }
+    }, time * 1000)
 
-  /** 记录当前短哈希 */
-  const hash = await getHash(filePath)
+    /** 记录当前短哈希 */
+    const hash = await getHash(filePath)
 
-  cmd = cmd || 'git pull'
-  const { error } = await exec(cmd, { cwd: filePath })
+    cmd = cmd || 'git pull'
+    const { error } = await exec(cmd, { cwd: filePath })
 
-  if (error) {
-    const data = `\n更新失败\n错误信息：${error?.stack || error?.message}\n请解决错误后重试或执行【#强制更新】`
+    if (error) {
+      const data = `\n更新失败\n错误信息：${error?.stack || error?.message}\n请解决错误后重试或执行【#强制更新】`
+      clearTimeout(timer)
+      return { status: 'failed', data } as UpdatePkgReturn<T>
+    }
+
+    /** 获取更新后的短哈希 */
+    const updatedHash = await getHash(filePath)
+    if (hash === updatedHash) {
+      clearTimeout(timer)
+      return { status: 'failed', data: `\n当前版本已是最新版本\n最后更新时间：${time}\n更新详情：${getCommit({ path: filePath, count: 1 })}` } as UpdatePkgReturn<T>
+    }
+
     clearTimeout(timer)
-    return { status: 'failed', data } as UpdatePkgReturn<T>
+    return { status: 'ok', data: `\n更新成功\n更新日志：${getCommit({ path: filePath, count: 1 })}` } as UpdatePkgReturn<T>
+  } catch (error) {
+    logger.error(error)
+    return { status: 'failed', data: error } as UpdatePkgReturn<T>
   }
-
-  /** 获取更新后的短哈希 */
-  const updatedHash = await getHash(filePath)
-  if (hash === updatedHash) {
-    clearTimeout(timer)
-    return { status: 'failed', data: `\n当前版本已是最新版本\n最后更新时间：${time}\n更新详情：${getCommit({ path: filePath, count: 1 })}` } as UpdatePkgReturn<T>
-  }
-
-  clearTimeout(timer)
-  return { status: 'ok', data: `\n更新成功\n更新日志：${getCommit({ path: filePath, count: 1 })}` } as UpdatePkgReturn<T>
 }
 
 /**
@@ -364,29 +379,34 @@ export const updateGitPlugin = async<T extends 'ok' | 'failed' = 'ok' | 'failed'
  * @param time 任务执行超时时间 默认120s
  */
 export const updateAllGitPlugin = async (time = 120): Promise<string> => {
-  const logger = global?.logger || console
-  const list = await getGitPlugins(false)
-  const tips = ['\n------- 更新git插件 --------']
-  if (!list.length) {
-    tips.push('没有可更新的插件~')
+  try {
+    const logger = global?.logger || console
+    const list = await getGitPlugins(false)
+    const tips = ['\n------- 更新git插件 --------']
+    if (!list.length) {
+      tips.push('没有可更新的插件~')
+      tips.push('----------------------------')
+      logger.info(tips.join('\n'))
+      return '没有可更新的插件~'
+    }
+    const result: string[] = []
+    await Promise.allSettled(list.map(async (name) => {
+      const filePath = `./plugins/${name}`
+      const { status, data } = await updateGitPlugin(filePath, 'git pull', time)
+      if (status === 'ok') {
+        tips.push(`[${name}][更新成功] ${data}`)
+        result.push(`[${name}][更新成功] ${data}`)
+      } else {
+        tips.push(`[${name}][更新失败] ${data}`)
+        result.push(`[${name}][更新失败] ${data}`)
+      }
+    }))
+
     tips.push('----------------------------')
     logger.info(tips.join('\n'))
-    return '没有可更新的插件~'
+    return result.join('\n')
+  } catch (error) {
+    logger.error(error)
+    return (error as Error).message || '更新失败，请查看日志'
   }
-  const result: string[] = []
-  await Promise.allSettled(list.map(async (name) => {
-    const filePath = `./plugins/${name}`
-    const { status, data } = await updateGitPlugin(filePath, 'git pull', time)
-    if (status === 'ok') {
-      tips.push(`[${name}][更新成功] ${data}`)
-      result.push(`[${name}][更新成功] ${data}`)
-    } else {
-      tips.push(`[${name}][更新失败] ${data}`)
-      result.push(`[${name}][更新失败] ${data}`)
-    }
-  }))
-
-  tips.push('----------------------------')
-  logger.info(tips.join('\n'))
-  return result.join('\n')
 }
