@@ -1,6 +1,7 @@
+import fs from 'node:fs/promises'
 import { watch, type Watch } from './watch'
 import { configKey } from './types'
-import { isExists } from '@/utils/fs/exists'
+import { existsSync } from '@/utils/fs/exists'
 import { requireFileSync } from '@/utils/fs/require'
 import { copyConfigSync } from './initCfg'
 import {
@@ -12,6 +13,7 @@ import {
   defaultConfigPath,
   commentPath,
   htmlPath,
+  consolePath,
 } from '@/utils/fs/root'
 
 import type {
@@ -138,7 +140,7 @@ export const getYaml = <
     if (name === 'server') {
       return (old: any, data: any) => {
         if (!data.onebotHttp || !Array.isArray(data.onebotHttp)) {
-          logger.error('请配置onebotHttp')
+          logger.debug('没有配置onebotHttp 已跳过')
           return true
         }
 
@@ -257,18 +259,27 @@ export const setYaml = <T extends keyof ConfigMap> (name: T, data: Record<string
   const file = `${configPath}/${name}.yaml`
   const comment = `${commentPath}/${name}.json`
 
-  if (!isExists(file)) {
+  if (!existsSync(file)) {
     return false
   }
 
   const cfg = requireFileSync<ConfigMap[T]>(file)
 
-  if (isExists(comment)) {
+  if (existsSync(comment)) {
     save(file, Object.assign(cfg, data), comment)
   } else {
     save(file, Object.assign(cfg, data))
   }
   return true
+}
+
+/** 每次启动清空临时文件夹 */
+const clearTemp = () => {
+  const list = [htmlPath, consolePath]
+  list.forEach(async (path) => {
+    const files = await fs.readdir(path)
+    for (const file of files) fs.unlink(`${path}/${file}`)
+  })
 }
 
 /**
@@ -283,6 +294,8 @@ export const init = () => {
   setPort(port())
   setVersion(pkg().version)
   mkdir(htmlPath)
+  mkdir(consolePath)
+  clearTemp()
   const list = [basePath, configPath, dataPath, tempPath]
-  list.map(v => isExists(v))
+  list.map(v => existsSync(v))
 }

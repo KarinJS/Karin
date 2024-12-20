@@ -13,7 +13,7 @@ import {
   filesByExt,
   requireFileSync,
   createPluginDir,
-  isExists,
+  existsSync,
 } from '@/utils'
 
 import type { Info } from '@/plugin/list/types'
@@ -156,14 +156,14 @@ export const getPluginList = async () => {
 
     if (pkg.main) {
       const file = path.join(info.dir, pkg.main)
-      if (isExists(file)) {
+      if (existsSync(file)) {
         load.main.push(loaderMain(info.name, file))
       }
     }
 
     if (process.env.karin_app_lang === 'ts' && pkg?.karin?.main) {
       const file = path.join(info.dir, pkg.karin.main)
-      if (isExists(file)) {
+      if (existsSync(file)) {
         load.main.push(loaderMain(info.name, file))
       }
     }

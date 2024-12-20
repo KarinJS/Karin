@@ -96,9 +96,9 @@ export abstract class BaseEvent implements BaseEventHandle {
       const request = this.#srcReply(message)
       const { raw } = makeMessageLog(message)
       if (this.isGroup) {
-        logger.bot('info', this.selfId, `${logger.green(`Send Group ${this.contact.peer}: `)}${raw.replace(/\n/g, '\\n')}`)
+        this.selfId !== 'console' && logger.bot('info', this.selfId, `${logger.green(`Send Group ${this.contact.peer}: `)}${raw.replace(/\n/g, '\\n')}`)
       } else {
-        this.selfId !== 'input' && logger.bot('info', this.selfId, `${logger.green(`Send private ${this.contact.peer}: `)}${raw.replace(/\n/g, '\\n')}`)
+        this.selfId !== 'console' && logger.bot('info', this.selfId, `${logger.green(`Send private ${this.contact.peer}: `)}${raw.replace(/\n/g, '\\n')}`)
       }
 
       /** 发送消息 */

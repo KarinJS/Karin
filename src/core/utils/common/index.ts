@@ -8,7 +8,7 @@ import { formatTime as FormatTime } from '@/utils/system/time'
 import type { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { getAppPlugins, getNpmPlugins as GetNpmPlugins, getGitPlugins as GetGitPlugins } from '@/plugin/index'
 
-export { isDir, exists } from '@/utils/fs/exists'
+export { isDir, existToMkdir as exists } from '@/utils/fs/exists'
 export { downFile, absPath } from '@/utils/fs/file'
 export { mkdirSync as mkdir } from '@/utils/fs/mkdir'
 export { base64, buffer, stream } from '@/utils/fs/data'

@@ -1,7 +1,7 @@
-import { Readable } from 'node:stream'
-import { sep } from './file'
-import axios from 'axios'
 import fs from 'node:fs'
+import axios from 'axios'
+import { sep } from './file'
+import { Readable } from 'node:stream'
 
 /**
  * 将数据转换为不带前缀的base64字符串
@@ -93,3 +93,18 @@ export const stream = (stream: Readable) => new Promise<Buffer>((resolve, reject
   stream.on('end', () => resolve(Buffer.concat(chunks)))
   stream.on('error', error => reject(error))
 })
+
+/**
+ * 传入文件路径 转为buffer
+ * @param path - 文件路径
+ * @returns 返回Buffer对象 如果发生错误则返回null
+ */
+export const readFile = async (path: string): Promise<Buffer | null> => {
+  try {
+    const data = await fs.promises.readFile(path)
+    return data
+  } catch (error) {
+    logger.error(error)
+    return null
+  }
+}

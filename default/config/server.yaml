@@ -27,6 +27,15 @@ renderWs: []
 # http渲染器地址
 renderHttp: []
 
+# console控制台适配器api配置
+console:
+  # 只允许本地访问
+  isLocal: true
+  # 如果 isLocal 为 false 则需要配置 token
+  token: ""
+  # 自定义host
+  host:
+
 # http根路由随机返回的文案
 rootMsg:
   - 雪霁银妆素，桔高映琼枝。

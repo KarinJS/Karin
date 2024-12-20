@@ -119,7 +119,16 @@ export interface ServerType {
     api: string
     /** 鉴权token */
     token: string
-  }>
+  }>,
+  /** console控制台适配器配置 */
+  console: {
+    /** 只允许本地访问 */
+    isLocal: boolean
+    /** 如果 isLocal 为 false 则需要配置 token */
+    token: string
+    /** 自定义host */
+    host: string
+  }
 }
 
 /** package.json */

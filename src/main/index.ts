@@ -59,7 +59,7 @@ export const run = async () => {
   level = levelClient
   processHandler()
   const [
-    { AdapterInput },
+    { AdapterConsole },
     { registerBot },
   ] = await Promise.all([
     import('@adapter/input'),
@@ -81,6 +81,6 @@ export const run = async () => {
   } = createExpressWebSocketServer(port, config.rootMsg())
   createWebSocketServer(wssServe)
   await startServer(httpServe, appServe, config.host(), port)
-  registerBot('internal', new AdapterInput())
+  registerBot('internal', new AdapterConsole())
   logger.info(`Karin启动完成：耗时 ${logger.green(process.uptime().toFixed(2))} 秒...`)
 }

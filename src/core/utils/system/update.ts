@@ -1,6 +1,6 @@
 import { exec } from './exec'
 import { requireFile } from '../fs/require'
-import { isExists } from '@/utils/fs/exists'
+import { existsSync } from '@/utils/fs/exists'
 import { getGitPlugins } from '@/plugin/list/git'
 import { getNpmPlugins } from '@/plugin/list/npm'
 import type { PackageType } from '@/utils/config/types'
@@ -238,9 +238,9 @@ export const checkGitPluginUpdate = async (
 }> => {
   try {
     /** 检查一下路径是否存在 */
-    if (!isExists(filePath)) return { status: 'error', data: new Error('路径不存在') }
+    if (!existsSync(filePath)) return { status: 'error', data: new Error('路径不存在') }
     /** 检查是否有.git文件夹 */
-    if (!isExists(`${filePath}/.git`)) return { status: 'error', data: new Error('该路径不是一个git仓库') }
+    if (!existsSync(`${filePath}/.git`)) return { status: 'error', data: new Error('该路径不是一个git仓库') }
 
     /** 设置超时时间 */
     const timer = setTimeout(() => {
@@ -364,9 +364,9 @@ export const updateGitPlugin = async (
 }> => {
   try {
     /** 检查一下路径是否存在 */
-    if (!isExists(filePath)) return { status: 'failed', data: '路径不存在' }
+    if (!existsSync(filePath)) return { status: 'failed', data: '路径不存在' }
     /** 检查是否有.git文件夹 */
-    if (!isExists(`${filePath}/.git`)) return { status: 'failed', data: '该路径不是一个git仓库' }
+    if (!existsSync(`${filePath}/.git`)) return { status: 'failed', data: '该路径不是一个git仓库' }
 
     /** 设置超时时间 */
     const timer = setTimeout(() => {

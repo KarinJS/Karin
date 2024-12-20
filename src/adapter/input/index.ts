@@ -1,34 +1,38 @@
-// import fs from 'node:fs'
+import fs from 'node:fs'
+import { randomUUID } from 'node:crypto'
 import { AdapterBase } from '../base'
 import { createFriendMessage, createGroupMessage } from '@/event'
 import { karin } from '@/karin'
 import { listeners } from '@/internal/listeners'
-import { randomUUID } from 'crypto'
+import { buffer } from '@/utils/fs/data'
+import { server } from '@/utils/config'
+import { consolePath } from '@/utils/fs/root'
 import { type ElementTypes, segment } from '@/adapter/segment'
 import type { AdapterType, SendMsgResults } from '@/adapter/adapter'
 import type { Contact } from '@/adapter/contact'
+import path from 'node:path'
 
-// const { enable, msgToFile, token: oldToken, ip } = config.Config.AdapterInput
+const botID = 'console'
 
 /**
  * 控制台交互适配器
- * @class AdapterInput
+ * @class AdapterConsole
  */
-export class AdapterInput extends AdapterBase implements AdapterType {
+export class AdapterConsole extends AdapterBase implements AdapterType {
   constructor () {
     super()
     listeners.on('karin:adapter:open', () => process.stdin.on('data', data => this.createEvent(data)))
     listeners.on('karin:adapter:close', () => process.stdin.removeAllListeners('data'))
 
-    this.adapter.name = '@karinjs/input'
+    this.adapter.name = '@karinjs/console'
     this.adapter.communication = 'internal'
     this.adapter.platform = 'shell'
-    this.adapter.version = '1.0.0'
+    this.adapter.version = process.env.karin_app_version
     this.adapter.standard = 'karin'
-    this.account.name = 'input'
-    this.account.uid = 'input'
-    this.account.uin = 'input'
-    this.account.selfId = 'input'
+    this.account.name = botID
+    this.account.uid = botID
+    this.account.uin = botID
+    this.account.selfId = botID
     this.account.avatar = 'https://p.qlogo.cn/gh/967068507/967068507/0'
     listeners.emit('karin:adapter:open')
   }
@@ -48,33 +52,33 @@ export class AdapterInput extends AdapterBase implements AdapterType {
         bot: this,
         contact,
         elements: [segment.text(text.replace(/^group/, '').trim())],
-        eventId: `input.${time}`,
-        messageId: `input.${time}`,
+        eventId: `${botID}${time}`,
+        messageId: `${botID}${time}`,
         messageSeq: seq,
         rawEvent: { data },
-        selfId: 'input',
-        sender: karin.groupSender('input', '神秘的群成员'),
+        selfId: botID,
+        sender: karin.groupSender(botID, ''),
         time,
         srcReply: (elements) => this.sendMsg(contact, elements),
-        userId: 'input',
+        userId: botID,
       })
       return
     }
 
-    const contact = karin.contactFriend('input')
+    const contact = karin.contactFriend(botID)
     createFriendMessage({
       bot: this,
       contact,
       elements: [segment.text(text.replace(/^group/, '').trim())],
-      eventId: `input.${time}`,
-      messageId: `input.${time}`,
+      eventId: `${botID}.${time}`,
+      messageId: `${botID}.${time}`,
       messageSeq: seq,
       rawEvent: { data },
-      selfId: 'input',
-      sender: karin.friendSender('input', '未知的好友'),
+      selfId: botID,
+      sender: karin.friendSender(botID, ''),
       time,
       srcReply: (elements) => this.sendMsg(contact, elements),
-      userId: 'input',
+      userId: botID,
     })
   }
 
@@ -87,12 +91,81 @@ export class AdapterInput extends AdapterBase implements AdapterType {
       rawData: {},
     }
 
+    const msg: string[] = []
+
+    for (const v of elements) {
+      if (v.type === 'at') {
+        msg.push(`[at:${v.targetId}]`)
+        continue
+      }
+
+      if (v.type === 'text') {
+        msg.push(v.text)
+        continue
+      }
+
+      if (v.type === 'image') {
+        let url = ''
+        if (v.file.startsWith('http')) {
+          url = v.file
+        } else {
+          url = await this.getUrl(v.file, '.png')
+        }
+        msg.push(`[image: ${url} ]`)
+        continue
+      }
+
+      if (v.type === 'record') {
+        let url = ''
+        if (v.file.startsWith('http')) {
+          url = v.file
+        } else {
+          url = await this.getUrl(v.file, '.mp3')
+        }
+
+        msg.push(`[record: ${url} ]`)
+        continue
+      }
+
+      if (v.type === 'video') {
+        let url = ''
+        if (v.file.startsWith('http')) {
+          url = v.file
+        } else {
+          url = await this.getUrl(v.file, '.mp4')
+        }
+        msg.push(`[video: ${url} ]`)
+        continue
+      }
+
+      msg.push(JSON.stringify(v))
+    }
+
     if (contact.scene === 'group') {
-      logger.info(`Send group message: ${JSON.stringify(elements)}`)
+      msg.unshift(logger.green('Send group message: '))
+      logger.info(msg.join(''))
     } else {
-      logger.info(`Send private message: ${JSON.stringify(elements)}`)
+      msg.unshift(logger.green('Send private message: '))
+      logger.info(msg.join(''))
     }
 
     return result
+  }
+
+  async getUrl (data: string | Buffer, ext: string) {
+    const cfg = server()
+    const name = randomUUID()
+    const file = path.join(consolePath, `${name}${ext}`)
+    await fs.promises.writeFile(file, await buffer(data))
+
+    if (cfg.console.isLocal) {
+      return `http://127.0.0.1:${cfg.port}/console/${name}${ext}`
+    }
+
+    if (cfg.console.host) {
+      return `${cfg.console.host}/console/${name}${ext}?token=${cfg.console.token}`
+    }
+
+    return `http://127.0.0.1:${cfg.port}/console/${name}${ext}?token=${cfg.console.token}`
   }
 }

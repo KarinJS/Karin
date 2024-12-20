@@ -35,3 +35,5 @@ export const logsPath = Object.freeze(path.join(process.cwd(), 'logs'))
 export const htmlPath = Object.freeze(path.join(tempPath, 'html'))
 /** pm2配置路径 */
 export const pm2Path = Object.freeze(path.join(configPath, 'pm2.yaml'))
+/** console适配器目录 */
+export const consolePath = Object.freeze(path.join(tempPath, 'console'))

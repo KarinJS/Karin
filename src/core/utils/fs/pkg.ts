@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { isExists } from './exists'
+import { existsSync } from './exists'
 import { createRequire } from 'module'
 import { cache } from '@/plugin/cache/cache'
 import { requireFileSync } from './require'
@@ -41,7 +41,7 @@ export const pkgRoot = (name: string, rootPath?: string) => {
   let dir = require.resolve(name)
 
   try {
-    if (isExists(path.join(dir, 'package.json'))) {
+    if (existsSync(path.join(dir, 'package.json'))) {
       return path.resolve(dir)
     }
 
@@ -50,7 +50,7 @@ export const pkgRoot = (name: string, rootPath?: string) => {
       /** 向上 */
       dir = path.dirname(dir)
 
-      if (isExists(path.join(dir, 'package.json'))) {
+      if (existsSync(path.join(dir, 'package.json'))) {
         return path.resolve(dir)
       }
       /** 加个处理 防止无线递归 */
