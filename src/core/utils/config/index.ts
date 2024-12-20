@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import { watch, type Watch } from './watch'
 import { configKey } from './types'
-import { existsSync } from '@/utils/fs/exists'
+import { exists, existsSync } from '@/utils/fs'
 import { requireFileSync } from '@/utils/fs/require'
 import { copyConfigSync } from './initCfg'
 import {
@@ -277,8 +277,10 @@ export const setYaml = <T extends keyof ConfigMap> (name: T, data: Record<string
 const clearTemp = () => {
   const list = [htmlPath, consolePath]
   list.forEach(async (path) => {
-    const files = await fs.readdir(path)
-    for (const file of files) fs.unlink(`${path}/${file}`)
+    if (await exists(path)) {
+      const files = await fs.readdir(path)
+      for (const file of files) fs.unlink(`${path}/${file}`)
+    }
   })
 }
 
