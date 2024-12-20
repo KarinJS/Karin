@@ -47,8 +47,22 @@ export const init = async () => {
     /** 创建.pnpmfile.cjs */
     const pnpmfile = `${root}/.pnpmfile.cjs`
     if (!fs.existsSync(pnpmfile)) {
-      const { karinDir } = await import('@/utils/fs/root')
-      fs.copyFileSync(`${karinDir}/pnpmfile.cjs`, pnpmfile)
+      const data = `
+// 清空对等依赖中的node-karin
+function readPackage (pkg, context) {
+  if (pkg?.['peerDependencies']?.['node-karin'] && pkg['peerDependencies']['node-karin'] !== 'file:./lib') {
+    delete pkg['peerDependencies']['node-karin']
+  }
+  return pkg
+}
+
+module.exports = {
+  hooks: {
+    readPackage,
+  },
+}
+`
+      fs.writeFileSync(pnpmfile, data.trim())
     }
 
     /** 只要有任何一项文件存在 则代表是插件开发环境 不作为正式环境 */
