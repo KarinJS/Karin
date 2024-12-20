@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { Message } from '@/event'
 import { lock } from '@/utils/data/lock'
-import { TypedListeners } from '@/internal/listeners'
+import { EventEmitter } from 'events'
 import { sendMsg, sendMaster, sendAdmin } from './sendMsg'
 import { context } from '@/event/handler/message/context'
 import { cache, createLogger } from '@/plugin/cache/cache'
@@ -94,7 +94,7 @@ type Fnc<T extends keyof MessageEventMap> = FncElement | ((e: MessageEventMap[T]
 type ElemAndEvent<T extends keyof MessageEventMap> = FncElemOptions & { event?: T }
 type commandOptions<T extends keyof MessageEventMap> = (FncOptions & { event?: T }) | ElemAndEvent<T>
 
-export class Karin extends TypedListeners {
+export class Karin extends EventEmitter {
   /** 框架名称 */
   public name: 'karin' = 'karin'
   /**
@@ -466,6 +466,31 @@ export class Karin extends TypedListeners {
     return { userId: String(userId), nick, sex, age, uid, uin }
   }
 
+  groupSender (
+    /** 发送者QQ号 */
+    userId: number | string,
+    /** 发送者昵称 */
+    nick?: string,
+    /** 发送者在群的角色身份 非群、频道场景为`unknown` */
+    role?: GroupSender['role'],
+    /** 发送者性别 */
+    sex?: GroupSender['sex'],
+    /** 发送者年龄 */
+    age?: number,
+    /** 群名片/备注 */
+    card?: string,
+    /** 地区 */
+    area?: string,
+    /** 成员等级 */
+    level?: number,
+    /** 专属头衔 */
+    title?: string,
+    /** 发送者uid */
+    uid?: string,
+    /** 发送者uin */
+    uin?: number
+  ): GroupSender
+
   /**
    * 构建消息事件群聊发送者信息
    * @param userId 发送者ID
@@ -484,9 +509,9 @@ export class Karin extends TypedListeners {
     /** 发送者QQ号 */
     userId: number | string,
     /** 发送者昵称 */
-    nick: string,
+    nick?: string,
     /** 发送者在群的角色身份 非群、频道场景为`unknown` */
-    role: GroupSender['role'] = 'unknown',
+    role?: GroupSender['role'],
     /** 发送者性别 */
     sex?: GroupSender['sex'],
     /** 发送者年龄 */
@@ -504,7 +529,19 @@ export class Karin extends TypedListeners {
     /** 发送者uin */
     uin?: number
   ): GroupSender {
-    return { userId: String(userId), nick, role, sex, age, card, area, level, title, uid, uin }
+    return {
+      userId: String(userId),
+      nick: nick || '',
+      role: role || 'unknown',
+      sex,
+      age,
+      card,
+      area,
+      level,
+      title,
+      uid,
+      uin,
+    }
   }
 
   /**

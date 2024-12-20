@@ -1,8 +1,9 @@
+import { karin } from '@/karin/index'
 import { AdapterBase } from '@adapter/base'
 import { Action } from '@adapter/onebot/types/api'
 import { OB11Event } from '@adapter/onebot/types/event'
 import { createMessage } from '@adapter/onebot/create/message'
-import { RoleEnum, SexEnum } from '@/adapter/sender'
+import { GroupSender, RoleEnum, SexEnum } from '@/adapter/sender'
 import { createNotice, createRequest } from '@adapter/onebot/create/notice'
 import { AdapterConvertKarin, KarinConvertAdapter } from '@adapter/onebot/core/convert'
 
@@ -796,17 +797,29 @@ export abstract class AdapterOneBot extends AdapterBase {
       nick: info.nickname,
       role: info.role as RoleEnum,
       age: info.age,
-      unique_title: info.title,
-      unique_title_expire_time: info.title_expire_time,
+      uniqueTitle: info.title,
       card: info.card,
-      join_time: info.join_time,
-      last_active_time: info.last_sent_time,
+      joinTime: info.join_time,
+      lastActiveTime: info.last_sent_time,
       level: Number(info.level) || 0,
-      shut_up_time: 0,
+      shutUpTime: 0,
       distance: undefined,
       honors: [],
       unfriendly: info.unfriendly,
-      card_changeable: info.card_changeable,
+      sex: info.sex as SexEnum,
+      get sender (): GroupSender {
+        return karin.groupSender(
+          this.userId,
+          this.nick,
+          this.role as RoleEnum,
+          this.sex,
+          this.age,
+          this.card,
+          this.area,
+          this.level,
+          this.title
+        )
+      },
     }
   }
 
@@ -826,26 +839,38 @@ export abstract class AdapterOneBot extends AdapterBase {
   async getGroupMemberList (groupId: string, refresh?: boolean) {
     const list = await this.sendApi(Action.getGroupMemberList, { group_id: Number(groupId), no_cache: refresh })
     return list.map(v => {
-      const userId = v.user_id + ''
+      const targetId = v.user_id + ''
       return {
         ...v,
-        userId,
-        uid: userId,
-        uin: userId,
+        userId: targetId,
+        uid: targetId,
+        uin: targetId,
         nick: v.nickname,
         role: v.role as RoleEnum,
         age: v.age,
-        unique_title: v.title,
-        unique_title_expire_time: v.title_expire_time,
+        uniqueTitle: v.title,
         card: v.card,
-        join_time: v.join_time,
-        last_active_time: v.last_sent_time,
+        joinTime: v.join_time,
+        lastActiveTime: v.last_sent_time,
         level: Number(v.level) || 0,
-        shut_up_time: 0,
+        shutUpTime: 0,
         distance: undefined,
         honors: [],
         unfriendly: v.unfriendly,
-        card_changeable: v.card_changeable,
+        sex: v.sex as SexEnum,
+        get sender (): GroupSender {
+          return karin.groupSender(
+            targetId,
+            v.nickname,
+            v.role as RoleEnum,
+            v.sex as SexEnum,
+            v.age,
+            v.card,
+            v.area,
+            Number(v.level),
+            v.title
+          )
+        },
       }
     })
   }

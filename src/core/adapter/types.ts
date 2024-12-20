@@ -148,6 +148,10 @@ export interface GroupMemberInfo {
   honors?: Array<number>
   /** 是否好友 */
   unfriendly?: boolean
+  /** 性别 */
+  sex?: SexEnum
+  /** 构建成发送者 方便使用 */
+  get sender (): GroupSender
 }
 
 /**

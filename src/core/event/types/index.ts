@@ -1,8 +1,10 @@
-export * from '@/event/types/types'
-import type { DirectMessage } from '@/event/create/message/direct'
-import type { FriendMessage } from '@/event/create/message/friend'
-import type { GroupMessage } from '@/event/create/message/group'
-import type { GuildMessage } from '@/event/create/message/guild'
+import type {
+  GroupMessage,
+  FriendMessage,
+  GuildMessage,
+  DirectMessage,
+} from '@/event/create/message/index'
+
 import type { FriendNotice } from '@/event/create/notice/friend'
 import type { GroupNotice } from '@/event/create/notice/group'
 import type { PrivateApplyRequest } from '@/event/create/request/friend'

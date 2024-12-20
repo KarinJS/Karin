@@ -6,10 +6,16 @@ import type {
   Message,
   Notice,
   Request,
+} from '@/event/types/index'
+
+import type {
   GroupMessage,
   FriendMessage,
   GuildMessage,
   DirectMessage,
+} from '@/event/create/message/index'
+
+import type {
   PrivatePokeNotice,
   PrivateRecallNotice,
   PrivateFileUploadedNotice,
@@ -27,14 +33,17 @@ import type {
   GroupWholeBanNotice,
   GroupMessageReactionNotice,
   FriendIncreaseNotice,
-  PrivateApplyRequest,
-  GroupApplyRequest,
-  GroupInviteRequest,
   ReceiveLikeNotice,
   FriendDecreaseNotice,
   GroupLuckKingNotice,
   GroupHonorChangedNotice,
-} from '@/event/index'
+} from '@/event/create/notice/index'
+
+import type {
+  PrivateApplyRequest,
+  GroupApplyRequest,
+  GroupInviteRequest,
+} from '@/event/create/request/index'
 
 /** 事件父类型枚举 */
 export const enum EventParentEnum {
