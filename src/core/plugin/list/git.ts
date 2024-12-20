@@ -13,9 +13,11 @@ const key = {
   info: 'git:list:info',
 }
 
+const PLUGINS_DIR = './plugins'
+
 const getPkg = (name: string): PkgData | null => {
   try {
-    const data = requireFileSync(path.join(process.cwd(), 'pluhins', name, 'package.json'))
+    const data = requireFileSync(path.join(process.cwd(), PLUGINS_DIR, name, 'package.json'))
     return data
   } catch (error) {
     const data = requireFileSync(path.join(process.cwd(), 'package.json'))
@@ -54,7 +56,7 @@ export const getGitPlugins = async (includeRoot = true): Promise<GitPluginName[]
     await Promise.all(files.map(async v => {
       if (!v.isDirectory()) return
       if (!v.name.startsWith('karin-plugin-')) return
-      if (!fs.existsSync(`${dir + v.name}/package.json`)) return
+      if (!fs.existsSync(path.join(dir, v.name, 'package.json'))) return
       list.push(v.name)
     }))
   }
@@ -96,8 +98,8 @@ export const getGitPluginsInfo = async (): Promise<Info[]> => {
     await Promise.all(files.map(async v => {
       if (!v.isDirectory()) return
       if (!v.name.startsWith('karin-plugin-')) return
-      if (!fs.existsSync(`${dir}${v.name}/package.json`)) return
-      list.push({ filePath: `${dir}/${v.name}`, name: v.name })
+      if (!fs.existsSync(path.join(dir, v.name, 'package.json'))) return
+      list.push({ filePath: path.join(dir, v.name), name: v.name })
     }))
   }
 
