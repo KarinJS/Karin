@@ -143,18 +143,18 @@ export const unregisterBot: UnregisterBot = (type, idOrIndex, address?) => {
  */
 export const registerBot = (type: `${AdapterCommunication}`, bot: AdapterBase) => {
   const id = ++index
-  const tips = (str: string) => logger.green(`[service][注册Bot][${str}]`)
+  const tips = (str: string) => logger.green(`[注册Bot][${str}]`)
   if (type === AdapterCommunication.REVERSE_WEBSOCKET) {
-    logger.bot('info', bot.selfId, `${tips('正向webSocket')} ${bot.adapter.name}: ${bot.adapter.address}`)
+    logger.bot('info', bot.selfId, `${tips('正向webSocket')} ${bot.account.name}: ${bot.adapter.address}`)
   } else if (type === AdapterCommunication.INTERNAL) {
     bot.adapter.address = 'internal://127.0.0.1'
-    logger.bot('info', bot.selfId, `${tips('internal')} ${bot.adapter.name}`)
+    logger.bot('info', bot.selfId, `${tips('internal')} ${bot.account.name}`)
   } else if (type === AdapterCommunication.HTTP) {
-    logger.bot('info', bot.selfId, `${tips('HTTP')} ${bot.adapter.name}: ${bot.adapter.address}`)
+    logger.bot('info', bot.selfId, `${tips('HTTP')} ${bot.account.name}: ${bot.adapter.address}`)
   } else if (type === AdapterCommunication.WEBSOCKET) {
-    logger.bot('info', bot.selfId, `${tips('反向WebSocket')} ${bot.adapter.name}: ${bot.adapter.address}`)
+    logger.bot('info', bot.selfId, `${tips('反向WebSocket')} ${bot.account.name}: ${bot.adapter.address}`)
   } else if (type === AdapterCommunication.GRPC) {
-    logger.bot('info', bot.selfId, `${tips('gRPC')} ${bot.adapter.name}: ${bot.adapter.address}`)
+    logger.bot('info', bot.selfId, `${tips('gRPC')} ${bot.account.name}: ${bot.adapter.address}`)
   }
 
   list.push({ index: id, bot })
