@@ -1,6 +1,6 @@
 import { MessageEventSubEnum } from '@/event/types/types'
 import type { Contact } from '@/adapter/contact'
-import type { GuildSender } from '@/adapter'
+import type { GuildSender } from '@/adapter/sender'
 import {
   BaseMessageEventType,
   MessageBase,

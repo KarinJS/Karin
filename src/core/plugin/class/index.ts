@@ -1,5 +1,5 @@
 import { AdapterProtocol } from '@/adapter/adapter'
-import type { Message } from '@/event'
+import type { Message } from '@/event/types/index'
 import type { NodeElementType } from '@/adapter/segment'
 import type { BaseEventHandle, MessageEventMap } from '@/event/types/types'
 import { PermissionEnum } from '@/adapter/sender'

@@ -1,7 +1,7 @@
 import util from 'node:util'
 import { karin } from '@/karin'
 import { SEND_MSG } from '@/utils/data/key'
-import { SendMsgResults } from '@/adapter'
+import { SendMsgResults } from '@/adapter/adapter'
 import { segment } from '@/adapter/segment'
 import { cache } from '@/plugin/cache/cache'
 import { makeMessageLog } from '@/utils/common'

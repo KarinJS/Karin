@@ -1,6 +1,6 @@
 import { karin } from '@/karin'
 import { AdapterConvertKarin } from '../core/convert'
-import { createFriendMessage, createGroupMessage } from '@/event'
+import { createFriendMessage, createGroupMessage } from '@/event/create/message'
 import type { AdapterOneBot } from '../core/base'
 import type { OB11Message } from '../types/event'
 

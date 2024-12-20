@@ -1,13 +1,17 @@
 import type {
   GroupMessage,
   FriendMessage,
-  FriendNotice,
-  GroupNotice,
-  GroupRequest,
-  FriendRequest,
   GuildMessage,
   DirectMessage,
-} from '@/event'
+} from '@/event/create/message'
+import type {
+  GroupNotice,
+  FriendNotice,
+} from '@/event/create/notice'
+import type {
+  GroupRequest,
+  FriendRequest,
+} from '@/event/create/request'
 
 import type { FriendDirectFileCfg, GroupGuildFileCfg } from '@/utils/config/types'
 

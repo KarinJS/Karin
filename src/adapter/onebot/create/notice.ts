@@ -17,7 +17,7 @@ import {
   createGroupRecallNotice,
   createPrivatePokeNotice,
   createPrivateRecallNotice,
-} from '@/event'
+} from '@/event/create/notice'
 
 /**
  * 创建通知事件

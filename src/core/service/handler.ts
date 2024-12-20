@@ -1,6 +1,6 @@
 import util from 'node:util'
 import { cache } from '@/plugin/cache/cache'
-import type { Event } from '@/event'
+import type { Event } from '@/event/types/index'
 export interface HandlerType<T = any> {
   /**
    * 调用事件处理器

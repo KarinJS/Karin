@@ -1,5 +1,5 @@
 import { handler } from '@/service/handler'
-import type { Event } from '@/event'
+import type { Event } from '@/event/types/index'
 
 /** fileToUrl Handler键 */
 export const fileToUrlHandlerKey = 'fileToUrl'

@@ -1,7 +1,7 @@
 import { config } from '@/utils'
 import { AdapterOneBot } from '../core/base'
 import { Action, Params, Request } from '../types'
-import { AdapterCommunication } from '@/adapter'
+import { AdapterCommunication } from '@/adapter/adapter'
 import { OB11Event, type OB11AllEvent } from '../types/event'
 import { registerBot, unregisterBot } from '@/service/bot'
 import type { WebSocket } from 'ws'

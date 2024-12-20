@@ -1,4 +1,4 @@
-import type { Message } from '@/event'
+import type { Message } from '@/event/types/index'
 
 /**
  * 处理Bot别名

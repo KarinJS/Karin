@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { Message } from '@/event'
+import { Message } from '@/event/types/index'
 import { lock } from '@/utils/data/lock'
 import { EventEmitter } from 'events'
 import { sendMsg, sendMaster, sendAdmin } from './sendMsg'

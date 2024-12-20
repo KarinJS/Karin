@@ -1,8 +1,8 @@
 import { Contact } from '@/adapter/contact'
 import { MessageEventSubEnum } from '@/event/types/types'
 import { BaseMessageEventType, MessageBase, MessageOptions } from '@/event/create/message/base'
-import type { DirectSender } from '@/adapter'
 import { DirectHandler } from '@/event/handler/message/direct'
+import type { DirectSender } from '@/adapter/sender'
 
 /** new 频道私信消息事件所需参数 */
 export type DirectMessageOptions = MessageOptions & {

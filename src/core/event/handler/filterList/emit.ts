@@ -1,6 +1,6 @@
 import { karin } from '@/karin'
 import { EVENT_COUNT, RECV_MSG } from '@/utils/data/key'
-import type { Event } from '@/event'
+import type { Event } from '@/event/types/index'
 import type { PluginTypes } from '@/event/handler/filterList/types'
 
 /**

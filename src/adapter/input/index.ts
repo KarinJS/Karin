@@ -1,16 +1,17 @@
 import fs from 'node:fs'
+import path from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { AdapterBase } from '../base'
-import { createFriendMessage, createGroupMessage } from '@/event'
 import { karin } from '@/karin'
 import { listeners } from '@/internal/listeners'
 import { buffer } from '@/utils/fs/data'
 import { server } from '@/utils/config'
 import { consolePath } from '@/utils/fs/root'
+import { createFriendMessage, createGroupMessage } from '@/event/create/message'
+
 import { type ElementTypes, segment } from '@/adapter/segment'
 import type { AdapterType, SendMsgResults } from '@/adapter/adapter'
 import type { Contact } from '@/adapter/contact'
-import path from 'node:path'
 
 const botID = 'console'
 

@@ -1,6 +1,6 @@
 import { karin } from '@/karin'
 import { context as ctx } from '@/event/handler/message/context'
-import type { Message } from '@/event'
+import type { Message } from '@/event/types/index'
 
 /**
  * 处理事件上下文

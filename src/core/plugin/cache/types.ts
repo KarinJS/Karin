@@ -1,5 +1,5 @@
 import type { FSWatcher } from 'chokidar'
-import type { Message } from '@/event'
+import type { Message } from '@/event/types/index'
 import type schedule from 'node-schedule'
 import type { AppsType } from '../list/types'
 import type { Contact } from '@/adapter/contact'

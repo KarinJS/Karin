@@ -19,7 +19,7 @@ import {
   disableViaPrivateModeOther,
 } from '@/event/handler/filterList/mode'
 import type { FriendDirectFileCfg, GroupGuildFileCfg } from '@/utils/config/types'
-import type { DirectMessage, FriendMessage, GroupMessage, GuildMessage } from '@/event'
+import type { DirectMessage, FriendMessage, GroupMessage, GuildMessage } from '@/event/create/message'
 import type { FriendNoticeEventMap, FriendRequestEventMap, GroupNoticeEventMap, GroupRequestEventMap } from '@/event/types/types'
 
 /**
