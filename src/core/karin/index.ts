@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { Message } from '@/event/types/index'
+import { Event, Message } from '@/event/types/index'
 import { lock } from '@/utils/data/lock'
 import { EventEmitter } from 'events'
 import { sendMsg, sendMaster, sendAdmin } from './sendMsg'
@@ -550,7 +550,7 @@ export class Karin extends EventEmitter {
    * @param options - 上下文选项
    * @returns 返回下文消息事件 如果超时则返回null
    */
-  async ctx (e: Message, options?: {
+  async ctx<T = Message> (e: Event, options?: {
     /** 指定用户id触发下文 不指定则使用默认e.user_id */
     userId?: string
     /** 超时时间 默认120秒 */
@@ -559,7 +559,7 @@ export class Karin extends EventEmitter {
     reply?: boolean
     /** 超时回复文本 默认为'操作超时已取消' */
     replyMsg?: string
-  }): Promise<Message> {
+  }): Promise<T> {
     const time = options?.time || 120
     const userId = options?.userId || e.userId || e.user_id
     const key = e.contact.subPeer ? `${e.contact.peer}:${e.contact.subPeer}:${userId}` : `${e.contact.peer}:${userId}`
@@ -580,7 +580,7 @@ export class Karin extends EventEmitter {
 
       this.once(`ctx:${key}`, (e: Message) => {
         clearTimeout(timeout)
-        resolve(e)
+        resolve(e as T)
       })
     })
   }
@@ -634,9 +634,9 @@ export class Karin extends EventEmitter {
 
   /**
    * 获取所有Bot列表
-   * @param isIndex - 是否返回包含的索引列表 默认返回Bot实例列表
+   * @param isIndex - 是否返回包含的索引列表 默认`false` 返回Bot列表
    */
-  getBotAll<T extends boolean> (isIndex?: T): T extends true ? ReturnType<typeof getAllBotList> : ReturnType<typeof getAllBot> {
+  getBotAll<T extends boolean = false> (isIndex?: T): T extends true ? ReturnType<typeof getAllBotList> : ReturnType<typeof getAllBot> {
     if (isIndex) return getAllBotList() as any
     return getAllBot().map((item) => item) as any
   }
