@@ -11,7 +11,16 @@ export const cache: CacheType = {
   watcher: new Map(),
   groupGuild: {},
   friendDirect: {},
-  friendCfgDef: { cd: 0, mode: 0, alias: [], enable: [], disable: [] },
+  friendCfgDef: {
+    cd: 0,
+    mode: 0,
+    alias: [],
+    enable: [],
+    disable: [],
+    get value () {
+      return 'default'
+    },
+  },
   groupCfgDef: {
     cd: 0,
     userCD: 0,
@@ -21,6 +30,7 @@ export const cache: CacheType = {
     disable: [],
     memberDisable: [],
     memberEnable: [],
+    get value () { return 'default' },
   },
 }
 
@@ -80,6 +90,19 @@ export const initGroupOrGuildCfg = (config: GroupGuildFileCfg) => {
 }
 
 /**
+ * 加上get value属性
+ * @param data 数据
+ * @param key 键
+ */
+export const addValue = (data: any, key: string) => {
+  Object.defineProperty(data, 'value', {
+    get () { return key },
+    enumerable: false,
+    configurable: false,
+  })
+}
+
+/**
  * 缓存并返回群、频道配置文件
  * @param keys 键组
  * @param data 配置
@@ -89,10 +112,12 @@ export const setGroupOrGuildCache = (keys: string[], data: Record<string, GroupG
     if (cache.groupGuild[key]) {
       if (!data[key]) continue
       const config = initGroupOrGuildCfg(data[key])
+      addValue(config, key)
       cache.groupGuild[key] = { start: 0, count: 1, config }
       return config
     }
   }
+
   const config = initGroupOrGuildCfg(data['default'] || cache.groupCfgDef)
   cache.groupGuild['default'] = { start: 0, count: 1, config }
   return config
@@ -140,10 +165,12 @@ export const setFriendOrDirectCache = (keys: string[], data: Record<string, Frie
     if (cache.friendDirect[key]) {
       if (!data[key]) continue
       const config = initFriendDirectCfg(data[key])
+      addValue(config, key)
       cache.friendDirect[key] = { start: 0, count: 1, config }
       return config
     }
   }
+
   const config = initFriendDirectCfg(data['default'] || cache.friendCfgDef)
   cache.friendDirect['default'] = { start: 0, count: 1, config }
   return config

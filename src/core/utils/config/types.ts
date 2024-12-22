@@ -48,6 +48,8 @@ export interface GroupGuildFileCfg {
   memberDisable: string[]
   /** 群、频道成员单独白名单 */
   memberEnable: string[]
+  /** 配置键 */
+  get value (): string
 }
 
 /** 好友、频道私信消息配置文件类型 */
@@ -62,6 +64,8 @@ export interface FriendDirectFileCfg {
   enable: string[]
   /** 黑名单插件、功能，黑名单中的插件、功能不会响应 `karin-plugin-test:app.js` `karin-plugin-test:测试转发` */
   disable: string[]
+  /** 配置键 */
+  get value (): string
 }
 
 /** pm2服务配置 */
