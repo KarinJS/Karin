@@ -259,17 +259,13 @@ export const setYaml = <T extends keyof ConfigMap> (name: T, data: Record<string
   const file = `${configPath}/${name}.yaml`
   const comment = `${commentPath}/${name}.json`
 
-  if (!existsSync(file)) {
-    return false
-  }
-
-  const cfg = requireFileSync<ConfigMap[T]>(file)
-
+  if (!existsSync(file)) return false
   if (existsSync(comment)) {
-    save(file, Object.assign(cfg, data), comment)
-  } else {
-    save(file, Object.assign(cfg, data))
+    save(file, data, comment)
+    return
   }
+
+  save(file, data)
   return true
 }
 
