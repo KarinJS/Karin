@@ -17,7 +17,7 @@ export const cache: CacheType = {
     alias: [],
     enable: [],
     disable: [],
-    get value () {
+    get key () {
       return 'default'
     },
   },
@@ -30,7 +30,7 @@ export const cache: CacheType = {
     disable: [],
     memberDisable: [],
     memberEnable: [],
-    get value () { return 'default' },
+    get key () { return 'default' },
   },
 }
 
@@ -95,7 +95,7 @@ export const initGroupOrGuildCfg = (config: GroupGuildFileCfg) => {
  * @param key 键
  */
 export const addValue = (data: any, key: string) => {
-  Object.defineProperty(data, 'value', {
+  Object.defineProperty(data, 'key', {
     get () { return key },
     enumerable: false,
     configurable: false,
