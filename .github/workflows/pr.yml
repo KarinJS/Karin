@@ -50,45 +50,35 @@ jobs:
       # 在 PR 上发布构建完成或失败信息
       - name: 发布评论
         run: |
-          # 获取当前PR的所有评论（此时应该是一个JSON格式的字符串）
-          comments=$(gh pr view ${{ env.PR_NUMBER }} --json comments --jq '.comments')
-
-          # 打印所有评论，检查是否是合法的JSON字符串
-          echo "$comments"
-
-          # 将获取的字符串反序列化为JSON格式
-          comment_data=$(echo "$comments" | jq 'fromjson')
-
-          # 如果从json解析失败，退出
-          if [ $? -ne 0 ]; then
-            echo "无法解析评论数据为JSON格式，退出！"
-            exit 1
-          fi
-
-          # 获取当前PR所有评论的ID和内容
-          comment_data=$(echo "$comment_data" | jq -r '.[] | {id: .id, body: .body}')
-
-          # 构建失败或成功的评论内容
           if [ "${{ steps.build.outcome }}" = "failure" ]; then
             # 捕获构建失败日志
             ERROR_MESSAGE=$(cat build.log || echo "未找到详细的构建日志。")
-            comment_body=$'❌ 构建失败！以下是错误日志：\n\n<details>\n<summary>展开查看错误日志</summary>\n\n```\n'"${ERROR_MESSAGE}"$'\n```\n\n</details>'
+            # 发布构建失败评论
+            gh pr comment ${{ env.PR_NUMBER }} --body $'❌ 构建失败！以下是错误日志：\n\n<details>\n<summary>展开查看错误日志</summary>\n\n```\n'"${ERROR_MESSAGE}"$'\n```\n\n</details>'
           else
+            # 构建成功评论
             INSTALL_COMMAND_1="pnpm rm ${{ env.PKG_NAME }} && pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -D"           
             INSTALL_COMMAND_2="pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -w"
-            comment_body=$'🎉 构建完成！您可以通过以下命令安装此版本：\n\n```\n'"${INSTALL_COMMAND_1}"$'\n```\n\n```\n'"${INSTALL_COMMAND_2}"$'\n```'
+            gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 构建完成！您可以通过以下命令安装此版本：\n\n```\n'"${INSTALL_COMMAND_1}"$'\n```\n\n```\n'"${INSTALL_COMMAND_2}"$'\n```'
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE }}
+      # 撤回历史评论 保留最新的3条评论
+      - name: 撤回历史评论
+        run: |
+          # 获取当前PR的所有评论
+          comments=$(gh pr view ${{ env.PR_NUMBER }} --json comments --jq '.comments')
 
-          # 发布新的评论
-          gh pr comment ${{ env.PR_NUMBER }} --body "$comment_body"
+          # 获取当前PR所有评论的ID和内容
+          comment_data=$(echo "$comments" | jq -r '.[] | {id: .id, body: .body}')
 
           # 获取所有目标评论的ID
-          target_comment_ids=$(echo "$comment_data" | grep -E "构建完成|构建失败" | jq -r '.[].id')
+          target_comment_ids=$(echo "$comments" | jq -r '.[] | select(.body | test("🎉 构建完成！|❌ 构建失败！")) | .id')
 
-          # 如果评论数足够多且有目标评论，则删除多余评论
+          # 如果评论数足够多且有目标评论 则删除多余评论
           comment_count=$(echo "$target_comment_ids" | wc -l)
 
-          # 如果评论数超过3条，删除超过的评论
+          # 如果评论数超过3条 删除超过的评论
           if [ "$comment_count" -ge 3 ]; then
             comment_ids_to_delete=$(echo "$target_comment_ids" | tail -n +4) # 获取超过3条评论的ID
             for id in $comment_ids_to_delete; do
