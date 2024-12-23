@@ -66,6 +66,9 @@ jobs:
       # 撤回历史评论 保留最新的3条评论
       - name: 撤回历史评论
         run: |
+          # 调试信息
+          echo "Repository: ${{ github.repository }}"
+
           # 获取当前PR的所有评论
           comments=$(gh pr view ${{ env.PR_NUMBER }} --json comments)
 
@@ -79,6 +82,9 @@ jobs:
           if [ ! -z "$comment_ids_to_delete" ]; then
             for id in $comment_ids_to_delete; do
               echo "正在删除评论 $id..."
+              # 调试信息
+              echo "删除请求URL: /repos/${{ github.repository }}/issues/comments/$id"
+              
               if gh api \
                 --method DELETE \
                 -H "Accept: application/vnd.github+json" \
