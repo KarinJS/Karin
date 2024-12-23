@@ -50,14 +50,23 @@ jobs:
       # 在 PR 上发布构建完成或失败信息
       - name: 发布评论
         run: |
-          # 获取当前PR的所有评论
+          # 获取当前PR的所有评论（此时应该是一个JSON格式的字符串）
           comments=$(gh pr view ${{ env.PR_NUMBER }} --json comments --jq '.comments')
 
           # 打印所有评论
           echo "$comments"
 
-          # 获取当前PR所有评论的ID和内容
-          comment_data=$(echo "$comments" | jq -r '.[] | {id: .id, body: .body}')
+          # 将获取的字符串反序列化为JSON格式，确保它是数组格式
+          comment_data=$(echo "$comments" | jq -r 'if type == "string" then fromjson else . end')
+
+          # 确保comments是一个有效的JSON数组
+          if echo "$comment_data" | jq -e . >/dev/null 2>&1; then
+            # 获取当前PR所有评论的ID和内容
+            comment_data=$(echo "$comment_data" | jq -r '.[] | {id: .id, body: .body}')
+          else
+            echo "评论数据无效，无法处理"
+            exit 1
+          fi
 
           # 构建失败或成功的评论内容
           if [ "${{ steps.build.outcome }}" = "failure" ]; then
