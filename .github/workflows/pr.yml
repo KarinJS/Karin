@@ -53,6 +53,9 @@ jobs:
           # 获取当前PR的所有评论
           comments=$(gh pr view ${{ env.PR_NUMBER }} --json comments --jq '.comments')
 
+          # 打印所有评论
+          echo "$comments"
+
           # 获取当前PR所有评论的ID和内容
           comment_data=$(echo "$comments" | jq -r '.[] | {id: .id, body: .body}')
 
