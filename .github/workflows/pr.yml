@@ -85,12 +85,12 @@ jobs:
               # 调试信息
               echo "删除请求URL: /repos/${{ github.repository }}/pulls/comments/$id"
               
-              if gh api \
-                --method DELETE \
+              if curl -L \
+                -X DELETE \
                 -H "Accept: application/vnd.github+json" \
-                -H "X-GitHub-Api-Version: 2022-11-28" \
                 -H "Authorization: Bearer ${{ secrets.RELEASE }}" \
-                "/repos/${{ github.repository }}/pulls/comments/$id"; then
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "https://api.github.com/repos/${{ github.repository }}/pulls/comments/$id"; then
                 echo "✓ 成功删除评论 $id"
               else
                 echo "❌ 删除评论 $id 失败"
