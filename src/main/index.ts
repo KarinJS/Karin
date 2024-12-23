@@ -10,7 +10,6 @@ export { app } from '@/server/app'
 export { karin as default } from '@/karin'
 export { default as axios } from 'axios'
 export { default as moment } from 'moment'
-export { default as yaml } from 'yaml'
 export { default as schedule } from 'node-schedule'
 
 import * as config from '@/utils/config'
