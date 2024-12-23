@@ -475,7 +475,7 @@ export const applyComments = (editor: YamlEditor, comments: YamlComment) => {
 }
 
 /** YAML 工具 */
-export const yaml = () => Object.assign(YAML, {
+export const yaml = Object.assign(YAML, {
   /** 读取并解析 YAML 文件 */
   read,
   /** 保存数据并写入注释 */
