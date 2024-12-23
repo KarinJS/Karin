@@ -70,19 +70,24 @@ jobs:
           comments=$(gh pr view ${{ env.PR_NUMBER }} --json comments --jq '.comments')
 
           # 获取当前PR所有评论的ID和内容
-          comment_data=$(echo "$comments" | jq -r '.[] | {id: .id, body: .body}')
+          comment_data=$(echo "$comments" | jq -r '.[] | {id: .id, body: .body, createdAt: .createdAt}')
 
-          # 获取所有目标评论的ID
-          target_comment_ids=$(echo "$comments" | jq -r '.[] | select(.body | test("🎉 构建完成！|❌ 构建失败！")) | .id')
+          # 获取所有目标评论的ID和内容 并按时间排序(降序)
+          target_comment_data=$(echo "$comment_data" | jq -r 'select(.body | test("🎉 构建完成！|❌ 构建失败！")) | {id: .id, body: .body, createdAt: .createdAt}' | sort -t: -k2,2 -r)
+
+          # 获取目标评论的ID列表
+          target_comment_ids=$(echo "$target_comment_data" | jq -r '.id')
 
           # 如果评论数足够多且有目标评论 则删除多余评论
           comment_count=$(echo "$target_comment_ids" | wc -l)
 
           # 如果评论数超过3条 删除超过的评论
-          if [ "$comment_count" -ge 3 ]; then
-            comment_ids_to_delete=$(echo "$target_comment_ids" | tail -n +4) # 获取超过3条评论的ID
+          if [ "$comment_count" -gt 3 ]; then
+            # 获取超过3条评论的ID
+            comment_ids_to_delete=$(echo "$target_comment_ids" | tail -n +4)  # 获取超过3条评论的ID
             for id in $comment_ids_to_delete; do
-              gh pr comment ${{ env.PR_NUMBER }} --delete --comment-id $id
+              # 使用评论ID进行删除操作
+              gh api --method DELETE "repos/${{ github.repository }}/issues/comments/$id"
             done
           fi
         env:
