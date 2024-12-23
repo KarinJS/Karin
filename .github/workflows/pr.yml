@@ -63,24 +63,3 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE }}
-      # 撤回历史评论 保留最新的3条评论
-      - name: 撤回历史评论
-        run: |
-          # 获取当前PR的所有评论
-          comments=$(gh pr view ${{ env.PR_NUMBER }} --json comments)
-
-          # 过滤目标评论并按时间排序
-          target_comments=$(echo "$comments" | jq -r '.comments[] | select(.body | test("🎉 构建完成！|❌ 构建失败！")) | {id: .id, created_at: .createdAt}' | jq -s '. | sort_by(.created_at) | reverse')
-
-          # 获取需要删除的评论ID (保留最新的3条)
-          comment_ids_to_delete=$(echo "$target_comments" | jq -r 'if length > 3 then .[3:][].id else empty end')
-
-          # 删除旧评论
-          if [ ! -z "$comment_ids_to_delete" ]; then
-            for id in $comment_ids_to_delete; do
-              gh api --method DELETE "repos/${{ github.repository }}/issues/comments/$id"
-              echo "Deleted comment $id"
-            done
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE }}
