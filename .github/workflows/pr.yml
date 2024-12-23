@@ -78,7 +78,6 @@ jobs:
           # 删除旧评论
           if [ ! -z "$comment_ids_to_delete" ]; then
             for id in $comment_ids_to_delete; do
-              echo "正在删除评论 $id..."
               # 调试信息
               echo "删除请求URL: /repos/${{ github.repository }}/issues/comments/$id"
                 response=$(curl -L \
