@@ -53,20 +53,20 @@ jobs:
           # 获取当前PR的所有评论（此时应该是一个JSON格式的字符串）
           comments=$(gh pr view ${{ env.PR_NUMBER }} --json comments --jq '.comments')
 
-          # 打印所有评论
+          # 打印所有评论，检查是否是合法的JSON字符串
           echo "$comments"
 
-          # 将获取的字符串反序列化为JSON格式，确保它是数组格式
-          comment_data=$(echo "$comments" | jq -r 'if type == "string" then fromjson else . end')
+          # 将获取的字符串反序列化为JSON格式
+          comment_data=$(echo "$comments" | jq 'fromjson')
 
-          # 确保comments是一个有效的JSON数组
-          if echo "$comment_data" | jq -e . >/dev/null 2>&1; then
-            # 获取当前PR所有评论的ID和内容
-            comment_data=$(echo "$comment_data" | jq -r '.[] | {id: .id, body: .body}')
-          else
-            echo "评论数据无效，无法处理"
+          # 如果从json解析失败，退出
+          if [ $? -ne 0 ]; then
+            echo "无法解析评论数据为JSON格式，退出！"
             exit 1
           fi
+
+          # 获取当前PR所有评论的ID和内容
+          comment_data=$(echo "$comment_data" | jq -r '.[] | {id: .id, body: .body}')
 
           # 构建失败或成功的评论内容
           if [ "${{ steps.build.outcome }}" = "failure" ]; then
