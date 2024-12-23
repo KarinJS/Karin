@@ -125,7 +125,7 @@ export interface GroupMemberInfo {
   /** 用户ID */
   userId: string
   /** 用户角色 */
-  role?: RoleEnum
+  role: RoleEnum
   /** 用户昵称 */
   nick?: string
   /** 年龄 */
