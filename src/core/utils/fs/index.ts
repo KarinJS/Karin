@@ -9,3 +9,5 @@ export * from '@/utils/fs/require'
 export * from '@/utils/fs/root'
 export * from '@/utils/fs/yaml'
 export * from '@/utils/fs/static'
+
+export * as root from '@/utils/fs/root'

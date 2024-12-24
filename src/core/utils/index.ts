@@ -13,6 +13,7 @@ export * from '@/utils/message'
 export * from '@/utils/message/middleware'
 export * from '@/utils/system/index'
 
+export * as fs from '@/utils/fs/index'
 export * as common from '@/utils/common'
 export * as config from '@/utils/config/index'
 export * as changelog from '@/utils/data/changelog'

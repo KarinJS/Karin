@@ -7,6 +7,7 @@ import { cache } from '@/plugin/cache/cache'
  * @returns 是否是静态资源中的文件
  */
 export const isStatic = (filePath: string) => {
+  // TODO: 待完善
   try {
     for (const item of cache.static) {
       if (isSubPath(item, filePath)) {
