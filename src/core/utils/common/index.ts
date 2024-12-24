@@ -17,7 +17,7 @@ export { read as readYaml, write as writeYaml } from '@/utils/fs/yaml'
 export { readJsonSync as readJson, writeJsonSync as writeJson } from '@/utils/fs/json'
 export { pkgRoot as pkgroot, getPluginInfo as pkgJson, isPlugin } from '@/utils/fs/pkg'
 export { karinToQQBot as buttonToQQBot, karinToQQBot, qqbotToKarin } from '@/utils/button/convert'
-export { createRawMessage, createRawMessage as makeMessageLog, makeMessage, makeForward } from '@/utils/message'
+export { createRawMessage, createRawMessage as makeMessageLog, makeMessage, makeForward } from '@/utils/message/message'
 
 export type AxiosFn = {
   /**

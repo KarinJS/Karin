@@ -1,7 +1,7 @@
 import * as filter from '@/event/handler/filterList'
 import { cache } from '@/plugin/cache/cache'
 import { config as cfg } from '@/utils'
-import { createRawMessage } from '@/utils/message'
+import { createRawMessage } from '@/utils/message/message'
 import { PermissionEnum } from '@/adapter/sender'
 import { MiddlewareHandler } from '@/utils/message/middleware'
 import { friendAndDirect } from '@/event/handler/message/fnc'
