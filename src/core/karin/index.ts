@@ -600,11 +600,21 @@ export class Karin extends EventEmitter {
    * @param options - 渲染参数
    */
   render<T extends Options> (options: T, id?: string): Promise<RenderResult<T>>
+  /**
+   * 如果第三个重载没有类型 请使用这个重载
+   * @param options - 渲染参数
+   */
+  render<T extends Options> (type: 'opt', options: T, id?: string): Promise<RenderResult<T>>
 
   render<T extends Options> (
     options: string | T,
-    multiPageOrId?: string | number | boolean
+    multiPageOrId?: string | number | boolean | T,
+    id?: string
   ): Promise<RenderResult<T>> {
+    if (options === 'opt') {
+      return callRender(multiPageOrId as T, id) as any
+    }
+
     if (typeof options === 'string') {
       if (!multiPageOrId) {
         return renderHtml(options) as any
