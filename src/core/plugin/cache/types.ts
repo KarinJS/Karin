@@ -1,5 +1,5 @@
 import type { FSWatcher } from 'chokidar'
-import type { Message } from '@/event/types/index'
+import type { Event, Message } from '@/event/types/index'
 import type schedule from 'node-schedule'
 import type { AppsType } from '../list/types'
 import type { Contact } from '@/adapter/contact'
@@ -142,10 +142,8 @@ export interface Button extends Base {
   fnc: (
     /** 是否继续匹配下一个按钮 默认否 调用后则继续 */
     next: () => void,
-    /** 消息事件 可能不存在~ */
-    e?: Message,
-    /** 自定义参数 */
-    ...args: any[]
+    /** 自定义参数 如果传e需要符合标准 */
+    args?: { e?: Event, [key: string]: any }
   ) => Promise<ButtonType> | ButtonType
 }
 
