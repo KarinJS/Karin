@@ -28,7 +28,7 @@ import { createHttpRenderClient } from '@adapter/render/connect/http'
 import type { LevelDB, Client } from '@/db'
 
 /** 日志管理器 */
-export let logger: ReturnType<typeof createLogger>
+export let logger = createLogger()
 /** redis服务 */
 export let redis: Client
 /** level服务 */
