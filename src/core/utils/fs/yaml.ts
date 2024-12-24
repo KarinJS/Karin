@@ -294,7 +294,7 @@ export class YamlEditor {
    * 设置指定键的注释
    * @param path - 路径，多个路径使用`.`连接，例如：`a.b.c`
    * @param comment - 要设置的注释
-   * @param prepend - 如果为 true，则添加到注释的开头，否则添加到同一行的末尾
+   * @param prepend - 如果为 true，则添加注释到开头，否则添加到同一行的末尾
    * @param isSplit - 是否使用分割路径路径，默认为 `true`
    */
   comment (path: string, comment: string, prepend: boolean = true, isSplit = true) {
@@ -463,11 +463,12 @@ export const applyComments = (editor: YamlEditor, comments: YamlComment) => {
   for (const key of Object.keys(comments)) {
     try {
       const value = comments[key]
-      editor.comment(
-        key,
-        typeof value === 'string' ? value : value.comment,
-        typeof value === 'object' && value.type === 'top'
-      )
+      const comment = typeof value === 'string' ? value : value.comment
+      const prepend = typeof value === 'string'
+        ? true // 默认添加到开头
+        : typeof value === 'object' && value.type === 'top'
+
+      editor.comment(key, comment, prepend)
     } catch (error: any) {
       logger.error(`[YamlEditor] 添加注释时出错，已跳过：${error.stack || error.message || error}`)
     }
