@@ -2,6 +2,7 @@
 
 export * from '@/utils/button/convert'
 export * from '@/utils/button/types'
+export * from '@/utils/button/handle'
 export * from '@/utils/config/watch'
 export * from '@/utils/config/types'
 export * from '@/utils/config/initCfg'
