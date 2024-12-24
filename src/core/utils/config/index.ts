@@ -122,7 +122,10 @@ export const getYaml = <
 
   const fnc = (name: T) => {
     if (name === 'config') {
-      return (old: any, data: any) => updateLevel(data?.log4jsCfg?.level || 'info')
+      return (old: any, data: any) => {
+        updateLevel(data?.log4jsCfg?.level || 'info')
+        cache.file[configKey.CONFIG] = data
+      }
     }
 
     if (name === 'groupGuild') {
@@ -156,6 +159,8 @@ export const getYaml = <
           }
           updateHttpBotToken(selfId, token)
         }
+
+        cache.file[configKey.SERVER] = data
       }
     }
 
