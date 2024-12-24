@@ -97,5 +97,6 @@ export class DirectMessage extends MessageBase implements DirectMessageEventType
  */
 export const createDirectMessage = (options: Omit<DirectMessageOptions, 'subEvent'>) => {
   const event = new DirectMessage({ ...options, subEvent: MessageEventSubEnum.GUILD_DIRECT })
-  return new DirectHandler(event).init()
+  new DirectHandler(event).init()
+  return event
 }

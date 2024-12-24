@@ -97,5 +97,6 @@ export class GroupMessage extends MessageBase implements GroupMessageEventType {
  */
 export const createGroupMessage = (options: Omit<GroupMessageOptions, 'subEvent'>) => {
   const event = new GroupMessage({ ...options, subEvent: MessageEventSubEnum.GROUP_MESSAGE })
-  return new GroupMessageHandler(event).init()
+  new GroupMessageHandler(event).init()
+  return event
 }

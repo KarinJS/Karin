@@ -76,5 +76,6 @@ export class FriendMessage extends MessageBase implements FriendMessageEventType
  */
 export const createFriendMessage = (options: Omit<FriendMessageOptions, 'subEvent'>) => {
   const event = new FriendMessage({ ...options, subEvent: MessageEventSubEnum.FRIEND_MESSAGE })
-  return new FriendHandler(event).init()
+  new FriendHandler(event).init()
+  return event
 }

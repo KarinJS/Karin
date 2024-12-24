@@ -97,5 +97,6 @@ export class GuildMessage extends MessageBase implements GuildMessageEventType {
  */
 export const createGuildMessage = (options: Omit<GuildMessageOptions, 'subEvent'>) => {
   const event = new GuildMessage({ ...options, subEvent: MessageEventSubEnum.GUILD_MESSAGE })
-  return new GuildMessageHandler(event).init()
+  new GuildMessageHandler(event).init()
+  return event
 }

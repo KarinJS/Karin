@@ -42,7 +42,8 @@ export class PrivateApplyRequest extends RequestBase {
  */
 export const createPrivateApplyRequest = (options: RequestOptions, content: PrivateApplyType) => {
   const event = new PrivateApplyRequest(options, content)
-  return new FriendRequestHandler(event).init()
+  new FriendRequestHandler(event).init()
+  return event
 }
 
 interface CreateFriendRequestOptions {

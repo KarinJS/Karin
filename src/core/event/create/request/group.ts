@@ -93,7 +93,8 @@ export const createGroupApplyRequest = (options: RequestOptions, content: GroupA
  */
 export const createGroupInviteRequest = (options: RequestOptions, content: GroupInvite) => {
   const event = new GroupInviteRequest(options, content)
-  return new GroupRequestHandler(event).init()
+  new GroupRequestHandler(event).init()
+  return event
 }
 
 interface CreateGroupRequestOptions {

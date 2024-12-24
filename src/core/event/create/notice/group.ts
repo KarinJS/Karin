@@ -488,7 +488,8 @@ export class GroupHonorChangedNotice extends GroupNoticeBase {
  */
 export const createGroupPokeNotice = (options: NoticeOptions, content: GroupPokeType) => {
   const event = new GroupPokeNotice(options, content)
-  return new GroupNoticeHandler(event).init()
+  new GroupNoticeHandler(event).init()
+  return event
 }
 
 /**
@@ -499,7 +500,8 @@ export const createGroupPokeNotice = (options: NoticeOptions, content: GroupPoke
  */
 export const createGroupRecallNotice = (options: NoticeOptions, content: GroupRecallType) => {
   const event = new GroupRecallNotice(options, content)
-  return new GroupNoticeHandler(event).init()
+  new GroupNoticeHandler(event).init()
+  return event
 }
 
 /**
@@ -510,7 +512,8 @@ export const createGroupRecallNotice = (options: NoticeOptions, content: GroupRe
  */
 export const createGroupFileUploadedNotice = (options: NoticeOptions, content: GroupFileUploadedType) => {
   const event = new GroupFileUploadedNotice(options, content)
-  return new GroupNoticeHandler(event).init()
+  new GroupNoticeHandler(event).init()
+  return event
 }
 
 /**
@@ -521,7 +524,8 @@ export const createGroupFileUploadedNotice = (options: NoticeOptions, content: G
  */
 export const createGroupCardChangedNotice = (options: NoticeOptions, content: GroupCardChangedType) => {
   const event = new GroupCardChangedNotice(options, content)
-  return new GroupNoticeHandler(event).init()
+  new GroupNoticeHandler(event).init()
+  return event
 }
 
 /**
@@ -532,7 +536,8 @@ export const createGroupCardChangedNotice = (options: NoticeOptions, content: Gr
  */
 export const createGroupMemberTitleUpdatedNotice = (options: NoticeOptions, content: GroupMemberUniqueTitleChangedType) => {
   const event = new GroupMemberTitleUpdatedNotice(options, content)
-  return new GroupNoticeHandler(event).init()
+  new GroupNoticeHandler(event).init()
+  return event
 }
 
 /**
@@ -543,7 +548,8 @@ export const createGroupMemberTitleUpdatedNotice = (options: NoticeOptions, cont
  */
 export const createGroupHlightsChangedNotice = (options: NoticeOptions, content: GroupHlightsChangedType) => {
   const event = new GroupHlightsChangedNotice(options, content)
-  return new GroupNoticeHandler(event).init()
+  new GroupNoticeHandler(event).init()
+  return event
 }
 
 /**
@@ -554,7 +560,8 @@ export const createGroupHlightsChangedNotice = (options: NoticeOptions, content:
  */
 export const createGroupMemberAddNotice = (options: NoticeOptions, content: GroupMemberIncreaseType) => {
   const event = new GroupMemberIncreaseNotice(options, content)
-  return new GroupNoticeHandler(event).init()
+  new GroupNoticeHandler(event).init()
+  return event
 }
 
 /**
@@ -565,7 +572,8 @@ export const createGroupMemberAddNotice = (options: NoticeOptions, content: Grou
  */
 export const createGroupMemberDelNotice = (options: NoticeOptions, content: GroupMemberDecreaseType) => {
   const event = new GroupMemberDecreaseNotice(options, content)
-  return new GroupNoticeHandler(event).init()
+  new GroupNoticeHandler(event).init()
+  return event
 }
 
 /**
@@ -576,7 +584,8 @@ export const createGroupMemberDelNotice = (options: NoticeOptions, content: Grou
  */
 export const createGroupAdminChangedNotice = (options: NoticeOptions, content: GroupAdminChangedType) => {
   const event = new GroupAdminChangedNotice(options, content)
-  return new GroupNoticeHandler(event).init()
+  new GroupNoticeHandler(event).init()
+  return event
 }
 
 /**
@@ -587,7 +596,8 @@ export const createGroupAdminChangedNotice = (options: NoticeOptions, content: G
  */
 export const createGroupSignInNotice = (options: NoticeOptions, content: GroupSignInType) => {
   const event = new GroupSignInNotice(options, content)
-  return new GroupNoticeHandler(event).init()
+  new GroupNoticeHandler(event).init()
+  return event
 }
 
 /**
@@ -598,7 +608,8 @@ export const createGroupSignInNotice = (options: NoticeOptions, content: GroupSi
  */
 export const createGroupMemberBanNotice = (options: NoticeOptions, content: GroupMemberBanType) => {
   const event = new GroupMemberBanNotice(options, content)
-  return new GroupNoticeHandler(event).init()
+  new GroupNoticeHandler(event).init()
+  return event
 }
 
 /**
@@ -609,7 +620,8 @@ export const createGroupMemberBanNotice = (options: NoticeOptions, content: Grou
  */
 export const createGroupWholeBanNotice = (options: NoticeOptions, content: GroupWholeBanType) => {
   const event = new GroupWholeBanNotice(options, content)
-  return new GroupNoticeHandler(event).init()
+  new GroupNoticeHandler(event).init()
+  return event
 }
 
 /**
@@ -620,7 +632,8 @@ export const createGroupWholeBanNotice = (options: NoticeOptions, content: Group
  */
 export const createGroupMessageReactionNotice = (options: NoticeOptions, content: GroupMessageReactionType) => {
   const event = new GroupMessageReactionNotice(options, content)
-  return new GroupNoticeHandler(event).init()
+  new GroupNoticeHandler(event).init()
+  return event
 }
 
 /**
@@ -631,7 +644,8 @@ export const createGroupMessageReactionNotice = (options: NoticeOptions, content
  */
 export const createGroupLuckKingNotice = (options: NoticeOptions, content: GroupLuckKingType) => {
   const event = new GroupLuckKingNotice(options, content)
-  return new GroupNoticeHandler(event).init()
+  new GroupNoticeHandler(event).init()
+  return event
 }
 
 /**
@@ -642,187 +656,203 @@ export const createGroupLuckKingNotice = (options: NoticeOptions, content: Group
  */
 export const createGroupHonorChangedNotice = (options: NoticeOptions, content: GroupHonorChangedType) => {
   const event = new GroupHonorChangedNotice(options, content)
-  return new GroupNoticeHandler(event).init()
+  new GroupNoticeHandler(event).init()
+  return event
 }
 
-export interface CreateGroupNoticeOptions {
-  /**
-   * @description 创建群聊戳一戳事件
-   * @param type 事件子类型
-   * @param content 事件内容
-   * @param options 事件参数
-   */
-  (type: `${NoticeEventSubEnum.GROUP_POKE}`, options: NoticeOptions, content: GroupPokeType): GroupNoticeHandler
-  /**
-   * @description 创建群聊撤回消息事件
-   * @param type 事件子类型
-   * @param content 事件内容
-   * @param options 事件参数
-   */
-  (type: `${NoticeEventSubEnum.GROUP_RECALL}`, options: NoticeOptions, content: GroupRecallType): GroupNoticeHandler
-  /**
-   * @description 创建群文件上传事件
-   * @param type 事件子类型
-   * @param content 事件内容
-   * @param options 事件参数
-   */
-  (type: `${NoticeEventSubEnum.GROUP_FILE_UPLOADED}`, options: NoticeOptions, content: GroupFileUploadedType): GroupNoticeHandler
-  /**
-   * @description 创建群名片变动事件
-   * @param type 事件子类型
-   * @param content 事件内容
-   * @param options 事件参数
-   */
-  (type: `${NoticeEventSubEnum.GROUP_CARD_CHANGED}`, options: NoticeOptions, content: GroupCardChangedType): GroupNoticeHandler
-  /**
-   * @description 创建群成员头衔变动事件
-   * @param type 事件子类型
-   * @param content 事件内容
-   * @param options 事件参数
-   */
-  (type: `${NoticeEventSubEnum.GROUP_MEMBER_TITLE_UPDATED}`, options: NoticeOptions, content: GroupMemberUniqueTitleChangedType): GroupNoticeHandler
-  /**
-   * @description 创建群精华消息变动事件
-   * @param type 事件子类型
-   * @param content 事件内容
-   * @param options 事件参数
-   */
-  (type: `${NoticeEventSubEnum.GROUP_HIGHLIGHTS_CHANGED}`, options: NoticeOptions, content: GroupHlightsChangedType): GroupNoticeHandler
-  /**
-   * @description 创建群成员增加事件
-   * @param type 事件子类型
-   * @param content 事件内容
-   * @param options 事件参数
-   */
-  (type: `${NoticeEventSubEnum.GROUP_MEMBER_ADD}`, options: NoticeOptions, content: GroupMemberIncreaseType): GroupNoticeHandler
-  /**
-   * @description 创建群成员减少事件
-   * @param type 事件子类型
-   * @param content 事件内容
-   * @param options 事件参数
-   */
-  (type: `${NoticeEventSubEnum.GROUP_MEMBER_REMOVE}`, options: NoticeOptions, content: GroupMemberDecreaseType): GroupNoticeHandler
-  /**
-   * @description 创建群管理员变动事件
-   * @param type 事件子类型
-   * @param content 事件内容
-   * @param options 事件参数
-   */
-  (type: `${NoticeEventSubEnum.GROUP_ADMIN_CHANGED}`, options: NoticeOptions, content: GroupAdminChangedType): GroupNoticeHandler
-  /**
-   * @description 创建群打卡事件
-   * @param type 事件子类型
-   * @param content 事件内容
-   * @param options 事件参数
-   */
-  (type: `${NoticeEventSubEnum.GROUP_SIGN_IN}`, options: NoticeOptions, content: GroupSignInType): GroupNoticeHandler
-  /**
-   * @description 创建群成员被禁言事件
-   * @param type 事件子类型
-   * @param content 事件内容
-   * @param options 事件参数
-   */
-  (type: `${NoticeEventSubEnum.GROUP_MEMBER_BAN}`, options: NoticeOptions, content: GroupMemberBanType): GroupNoticeHandler
-  /**
-   * @description 创建群全员禁言事件
-   * @param type 事件子类型
-   * @param content 事件内容
-   * @param options 事件参数
-   */
-  (type: `${NoticeEventSubEnum.GROUP_WHOLE_BAN}`, options: NoticeOptions, content: GroupWholeBanType): GroupNoticeHandler
-  /**
-   * @description 创建群表情动态事件
-   * @param type 事件子类型
-   * @param content 事件内容
-   * @param options 事件参数
-   */
-  (type: `${NoticeEventSubEnum.GROUP_MESSAGE_REACTION}`, options: NoticeOptions, content: GroupMessageReactionType): GroupNoticeHandler
-  /**
-   * @description 创建群聊运气王事件
-   * @param type 事件子类型
-   * @param content 事件内容
-   * @param options 事件参数
-   */
-  (type: `${NoticeEventSubEnum.GROUP_LUCKY_KING}`, options: NoticeOptions, content: GroupLuckKingType): GroupNoticeHandler
-  /**
-   * @description 创建群聊荣誉变更事件
-   * @param type 事件子类型
-   * @param content 事件内容
-   * @param options 事件参数
-   */
-  (type: `${NoticeEventSubEnum.GROUP_HONOR_CHANGE}`, options: NoticeOptions, content: GroupHonorChangedType): GroupNoticeHandler
-}
+// export interface CreateGroupNoticeOptions {
+//   /**
+//    * @description 创建群聊戳一戳事件
+//    * @param type 事件子类型
+//    * @param content 事件内容
+//    * @param options 事件参数
+//    */
+//   (type: `${NoticeEventSubEnum.GROUP_POKE}`, options: NoticeOptions, content: GroupPokeType): GroupNoticeHandler
+//   /**
+//    * @description 创建群聊撤回消息事件
+//    * @param type 事件子类型
+//    * @param content 事件内容
+//    * @param options 事件参数
+//    */
+//   (type: `${NoticeEventSubEnum.GROUP_RECALL}`, options: NoticeOptions, content: GroupRecallType): GroupNoticeHandler
+//   /**
+//    * @description 创建群文件上传事件
+//    * @param type 事件子类型
+//    * @param content 事件内容
+//    * @param options 事件参数
+//    */
+//   (type: `${NoticeEventSubEnum.GROUP_FILE_UPLOADED}`, options: NoticeOptions, content: GroupFileUploadedType): GroupNoticeHandler
+//   /**
+//    * @description 创建群名片变动事件
+//    * @param type 事件子类型
+//    * @param content 事件内容
+//    * @param options 事件参数
+//    */
+//   (type: `${NoticeEventSubEnum.GROUP_CARD_CHANGED}`, options: NoticeOptions, content: GroupCardChangedType): GroupNoticeHandler
+//   /**
+//    * @description 创建群成员头衔变动事件
+//    * @param type 事件子类型
+//    * @param content 事件内容
+//    * @param options 事件参数
+//    */
+//   (type: `${NoticeEventSubEnum.GROUP_MEMBER_TITLE_UPDATED}`, options: NoticeOptions, content: GroupMemberUniqueTitleChangedType): GroupNoticeHandler
+//   /**
+//    * @description 创建群精华消息变动事件
+//    * @param type 事件子类型
+//    * @param content 事件内容
+//    * @param options 事件参数
+//    */
+//   (type: `${NoticeEventSubEnum.GROUP_HIGHLIGHTS_CHANGED}`, options: NoticeOptions, content: GroupHlightsChangedType): GroupNoticeHandler
+//   /**
+//    * @description 创建群成员增加事件
+//    * @param type 事件子类型
+//    * @param content 事件内容
+//    * @param options 事件参数
+//    */
+//   (type: `${NoticeEventSubEnum.GROUP_MEMBER_ADD}`, options: NoticeOptions, content: GroupMemberIncreaseType): GroupNoticeHandler
+//   /**
+//    * @description 创建群成员减少事件
+//    * @param type 事件子类型
+//    * @param content 事件内容
+//    * @param options 事件参数
+//    */
+//   (type: `${NoticeEventSubEnum.GROUP_MEMBER_REMOVE}`, options: NoticeOptions, content: GroupMemberDecreaseType): GroupNoticeHandler
+//   /**
+//    * @description 创建群管理员变动事件
+//    * @param type 事件子类型
+//    * @param content 事件内容
+//    * @param options 事件参数
+//    */
+//   (type: `${NoticeEventSubEnum.GROUP_ADMIN_CHANGED}`, options: NoticeOptions, content: GroupAdminChangedType): GroupNoticeHandler
+//   /**
+//    * @description 创建群打卡事件
+//    * @param type 事件子类型
+//    * @param content 事件内容
+//    * @param options 事件参数
+//    */
+//   (type: `${NoticeEventSubEnum.GROUP_SIGN_IN}`, options: NoticeOptions, content: GroupSignInType): GroupNoticeHandler
+//   /**
+//    * @description 创建群成员被禁言事件
+//    * @param type 事件子类型
+//    * @param content 事件内容
+//    * @param options 事件参数
+//    */
+//   (type: `${NoticeEventSubEnum.GROUP_MEMBER_BAN}`, options: NoticeOptions, content: GroupMemberBanType): GroupNoticeHandler
+//   /**
+//    * @description 创建群全员禁言事件
+//    * @param type 事件子类型
+//    * @param content 事件内容
+//    * @param options 事件参数
+//    */
+//   (type: `${NoticeEventSubEnum.GROUP_WHOLE_BAN}`, options: NoticeOptions, content: GroupWholeBanType): GroupNoticeHandler
+//   /**
+//    * @description 创建群表情动态事件
+//    * @param type 事件子类型
+//    * @param content 事件内容
+//    * @param options 事件参数
+//    */
+//   (type: `${NoticeEventSubEnum.GROUP_MESSAGE_REACTION}`, options: NoticeOptions, content: GroupMessageReactionType): GroupNoticeHandler
+//   /**
+//    * @description 创建群聊运气王事件
+//    * @param type 事件子类型
+//    * @param content 事件内容
+//    * @param options 事件参数
+//    */
+//   (type: `${NoticeEventSubEnum.GROUP_LUCKY_KING}`, options: NoticeOptions, content: GroupLuckKingType): GroupNoticeHandler
+//   /**
+//    * @description 创建群聊荣誉变更事件
+//    * @param type 事件子类型
+//    * @param content 事件内容
+//    * @param options 事件参数
+//    */
+//   (type: `${NoticeEventSubEnum.GROUP_HONOR_CHANGE}`, options: NoticeOptions, content: GroupHonorChangedType): GroupNoticeHandler
+// }
 
-/**
- * @description 创建群聊通知事件
- * @param type 事件子类型
- * @param options 事件所需参数
- * @param content 事件内容
- */
-export const createGroupNotice: CreateGroupNoticeOptions = (type, options, content) => {
-  switch (type) {
-    case `${NoticeEventSubEnum.GROUP_POKE}`: {
-      const event = new GroupPokeNotice(options, content as GroupPokeType)
-      return new GroupNoticeHandler(event).init()
-    }
-    case `${NoticeEventSubEnum.GROUP_RECALL}`: {
-      const event = new GroupRecallNotice(options, content as GroupRecallType)
-      return new GroupNoticeHandler(event).init()
-    }
-    case `${NoticeEventSubEnum.GROUP_FILE_UPLOADED}`: {
-      const event = new GroupFileUploadedNotice(options, content as GroupFileUploadedType)
-      return new GroupNoticeHandler(event).init()
-    }
-    case `${NoticeEventSubEnum.GROUP_CARD_CHANGED}`: {
-      const event = new GroupCardChangedNotice(options, content as GroupCardChangedType)
-      return new GroupNoticeHandler(event).init()
-    }
-    case `${NoticeEventSubEnum.GROUP_MEMBER_TITLE_UPDATED}`: {
-      const event = new GroupMemberTitleUpdatedNotice(options, content as GroupMemberUniqueTitleChangedType)
-      return new GroupNoticeHandler(event).init()
-    }
-    case `${NoticeEventSubEnum.GROUP_HIGHLIGHTS_CHANGED}`: {
-      const event = new GroupHlightsChangedNotice(options, content as GroupHlightsChangedType)
-      return new GroupNoticeHandler(event).init()
-    }
-    case `${NoticeEventSubEnum.GROUP_MEMBER_ADD}`: {
-      const event = new GroupMemberIncreaseNotice(options, content as GroupMemberIncreaseType)
-      return new GroupNoticeHandler(event).init()
-    }
-    case `${NoticeEventSubEnum.GROUP_MEMBER_REMOVE}`: {
-      const event = new GroupMemberDecreaseNotice(options, content as GroupMemberDecreaseType)
-      return new GroupNoticeHandler(event).init()
-    }
-    case `${NoticeEventSubEnum.GROUP_ADMIN_CHANGED}`: {
-      const event = new GroupAdminChangedNotice(options, content as GroupAdminChangedType)
-      return new GroupNoticeHandler(event).init()
-    }
-    case `${NoticeEventSubEnum.GROUP_SIGN_IN}`: {
-      const event = new GroupSignInNotice(options, content as GroupSignInType)
-      return new GroupNoticeHandler(event).init()
-    }
-    case `${NoticeEventSubEnum.GROUP_MEMBER_BAN}`: {
-      const event = new GroupMemberBanNotice(options, content as GroupMemberBanType)
-      return new GroupNoticeHandler(event).init()
-    }
-    case `${NoticeEventSubEnum.GROUP_WHOLE_BAN}`: {
-      const event = new GroupWholeBanNotice(options, content as GroupWholeBanType)
-      return new GroupNoticeHandler(event).init()
-    }
-    case `${NoticeEventSubEnum.GROUP_MESSAGE_REACTION}`: {
-      const event = new GroupMessageReactionNotice(options, content as GroupMessageReactionType)
-      return new GroupNoticeHandler(event).init()
-    }
-    case `${NoticeEventSubEnum.GROUP_LUCKY_KING}`: {
-      const event = new GroupLuckKingNotice(options, content as GroupLuckKingType)
-      return new GroupNoticeHandler(event).init()
-    }
-    case `${NoticeEventSubEnum.GROUP_HONOR_CHANGE}`: {
-      const event = new GroupHonorChangedNotice(options, content as GroupHonorChangedType)
-      return new GroupNoticeHandler(event).init()
-    }
-    default: {
-      throw new Error(`[createGroupNotice]: 未知的事件子类型: ${JSON.stringify({ type, options, content })}`)
-    }
-  }
-}
+// /**
+//  * @description 创建群聊通知事件
+//  * @param type 事件子类型
+//  * @param options 事件所需参数
+//  * @param content 事件内容
+//  */
+// export const createGroupNotice: CreateGroupNoticeOptions = (type, options, content) => {
+//   switch (type) {
+//     case `${NoticeEventSubEnum.GROUP_POKE}`: {
+//       const event = new GroupPokeNotice(options, content as GroupPokeType)
+//       new GroupNoticeHandler(event).init()
+//       return event
+//     }
+//     case `${NoticeEventSubEnum.GROUP_RECALL}`: {
+//       const event = new GroupRecallNotice(options, content as GroupRecallType)
+//       new GroupNoticeHandler(event).init()
+//       return event
+//     }
+//     case `${NoticeEventSubEnum.GROUP_FILE_UPLOADED}`: {
+//       const event = new GroupFileUploadedNotice(options, content as GroupFileUploadedType)
+//       new GroupNoticeHandler(event).init()
+//       return event
+//     }
+//     case `${NoticeEventSubEnum.GROUP_CARD_CHANGED}`: {
+//       const event = new GroupCardChangedNotice(options, content as GroupCardChangedType)
+//       new GroupNoticeHandler(event).init()
+//       return event
+//     }
+//     case `${NoticeEventSubEnum.GROUP_MEMBER_TITLE_UPDATED}`: {
+//       const event = new GroupMemberTitleUpdatedNotice(options, content as GroupMemberUniqueTitleChangedType)
+//       new GroupNoticeHandler(event).init()
+//       return event
+//     }
+//     case `${NoticeEventSubEnum.GROUP_HIGHLIGHTS_CHANGED}`: {
+//       const event = new GroupHlightsChangedNotice(options, content as GroupHlightsChangedType)
+//       new GroupNoticeHandler(event).init()
+//       return event
+//     }
+//     case `${NoticeEventSubEnum.GROUP_MEMBER_ADD}`: {
+//       const event = new GroupMemberIncreaseNotice(options, content as GroupMemberIncreaseType)
+//       new GroupNoticeHandler(event).init()
+//       return event
+//     }
+//     case `${NoticeEventSubEnum.GROUP_MEMBER_REMOVE}`: {
+//       const event = new GroupMemberDecreaseNotice(options, content as GroupMemberDecreaseType)
+//       new GroupNoticeHandler(event).init()
+//       return event
+//     }
+//     case `${NoticeEventSubEnum.GROUP_ADMIN_CHANGED}`: {
+//       const event = new GroupAdminChangedNotice(options, content as GroupAdminChangedType)
+//       new GroupNoticeHandler(event).init()
+//       return event
+//     }
+//     case `${NoticeEventSubEnum.GROUP_SIGN_IN}`: {
+//       const event = new GroupSignInNotice(options, content as GroupSignInType)
+//       new GroupNoticeHandler(event).init()
+//       return event
+//     }
+//     case `${NoticeEventSubEnum.GROUP_MEMBER_BAN}`: {
+//       const event = new GroupMemberBanNotice(options, content as GroupMemberBanType)
+//       new GroupNoticeHandler(event).init()
+//       return event
+//     }
+//     case `${NoticeEventSubEnum.GROUP_WHOLE_BAN}`: {
+//       const event = new GroupWholeBanNotice(options, content as GroupWholeBanType)
+//       new GroupNoticeHandler(event).init()
+//       return event
+//     }
+//     case `${NoticeEventSubEnum.GROUP_MESSAGE_REACTION}`: {
+//       const event = new GroupMessageReactionNotice(options, content as GroupMessageReactionType)
+//       new GroupNoticeHandler(event).init()
+//       return event
+//     }
+//     case `${NoticeEventSubEnum.GROUP_LUCKY_KING}`: {
+//       const event = new GroupLuckKingNotice(options, content as GroupLuckKingType)
+//       new GroupNoticeHandler(event).init()
+//       return event
+//     }
+//     case `${NoticeEventSubEnum.GROUP_HONOR_CHANGE}`: {
+//       const event = new GroupHonorChangedNotice(options, content as GroupHonorChangedType)
+//       new GroupNoticeHandler(event).init()
+//       return event
+//     }
+//     default: {
+//       throw new Error(`[createGroupNotice]: 未知的事件子类型: ${JSON.stringify({ type, options, content })}`)
+//     }
+//   }
+// }
