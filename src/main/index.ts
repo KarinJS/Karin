@@ -38,6 +38,7 @@ export let level: LevelDB
  * 初始化karin
  */
 export const run = async () => {
+  processHandler()
   config.init()
   logger = createLogger({ log4jsCfg: config.config().log4jsCfg })
   listeners.on('error', (error: unknown) => logger.error(error))
@@ -55,7 +56,6 @@ export const run = async () => {
 
   redis = redisClient
   level = levelClient
-  processHandler()
   const [
     { AdapterConsole },
     { registerBot },

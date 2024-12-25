@@ -1,7 +1,7 @@
-import fs from 'node:fs/promises'
+import fs from 'node:fs'
 import { watch, type Watch } from './watch'
 import { configKey } from './types'
-import { exists, existsSync } from '@/utils/fs'
+import { existsSync } from '@/utils/fs'
 import { requireFileSync } from '@/utils/fs/require'
 import { copyConfigSync } from './initCfg'
 import {
@@ -277,10 +277,9 @@ export const setYaml = <T extends keyof ConfigMap> (name: T, data: Record<string
 /** 每次启动清空临时文件夹 */
 const clearTemp = () => {
   const list = [htmlPath, consolePath]
-  list.forEach(async (path) => {
-    if (await exists(path)) {
-      const files = await fs.readdir(path)
-      for (const file of files) fs.unlink(`${path}/${file}`)
+  list.forEach((file) => {
+    if (existsSync(file)) {
+      fs.rmSync(file, { recursive: true, force: true })
     }
   })
 }
@@ -296,9 +295,9 @@ export const init = () => {
   server()
   setPort(port())
   setVersion(pkg().version)
+  clearTemp()
   mkdir(htmlPath)
   mkdir(consolePath)
-  clearTemp()
   const list = [basePath, configPath, dataPath, tempPath]
   list.map(v => existsSync(v))
 }

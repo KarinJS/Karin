@@ -51,7 +51,7 @@ export const copyFilesSync = (files: string[], defaulPath: string, userPath: str
  * @param defaulPath 模板配置文件路径
  * @param userPath 用户配置文件路径
  */
-export const copyFilesAsync = async (files: string[], defaulPath: string, userPath: string): Promise<void> => {
+export const copyFiles = async (files: string[], defaulPath: string, userPath: string): Promise<void> => {
   await Promise.all(files.map(async file => {
     const defaulFile = path.join(defaulPath, file)
     const userFile = path.join(userPath, file)
@@ -120,7 +120,7 @@ export const copyConfig = async (
   try {
     const files = getFiles(defaulPath, suffixs)
     await Promise.all([mkdir(userPath), mkdir(defaulPath)])
-    await copyFilesAsync(files, defaulPath, userPath)
+    await copyFiles(files, defaulPath, userPath)
     return true
   } catch (error) {
     if (isThrow) throw error
