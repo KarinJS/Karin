@@ -8,6 +8,11 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "always"
   },
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "tsconfig.json": "tsconfig.*.json, env.d.ts",
+    "package.json": "package-lock.json, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .prettier*, prettier*, .editorconfig, CHANGELOG.md, CODE_OF_CONDUCT.md"
+  },
   "files.autoSave": "onFocusChange",
   // 单引号
   "javascript.preferences.quoteStyle": "single",
