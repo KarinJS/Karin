@@ -29,12 +29,6 @@ lerna-debug.log*
 # 依赖
 node_modules/
 config/config/pm2.yaml
-
-# 子模块 历史版本遗留
-lib/adapter/kritor/kritor
-lib/adapter/kritor/kritorGitee
-
-# 编译后的文件
 lib/
 dist/
 build/
