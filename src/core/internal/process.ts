@@ -72,8 +72,8 @@ export const checkProcess = async (port: number) => {
  */
 export const processExit = async (code: unknown) => {
   try {
-    const { redis, level } = await import('../../main/index')
-    await Promise.allSettled([redis.save(), level.close()])
+    // const { redis, level } = await import('../../main/index')
+    // await Promise.allSettled([redis.save(), level.close()])
 
     logger.mark(`运行结束 运行时间：${uptime()} 退出码：${code ?? '未知'}`)
 

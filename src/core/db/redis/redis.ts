@@ -1,7 +1,9 @@
 import os from 'os'
-import { RedisClient } from '@/db/redis/mock'
-import { config, exec, isWin } from '@/utils'
+import { RedisClient } from '@/core/db/redis/mock'
 import { createClient, RedisClientOptions, RedisClientType } from 'redis'
+import { isWin } from '@/env'
+import { exec } from '@/utils/system/exec'
+import { redis } from '@/utils/config'
 
 /** Redis 客户端类型 */
 export type Client = RedisClientType & { id: 'redis' | 'mock' }
@@ -30,7 +32,7 @@ const create = async (options: RedisClientOptions) => {
 const start = async () => {
   logger.debug('[service][redis] 正在尝试启动 Redis...')
 
-  if (isWin) {
+  if (isWin()) {
     // tips: windows仅适配 https://github.com/redis-windows/redis-windows 项目
     const result = await exec('redis-server.exe redis.conf', { booleanResult: true })
     if (result) return result
@@ -49,7 +51,7 @@ const start = async () => {
  * @returns Redis 客户端
  */
 export const createRedis = async (): Promise<Client> => {
-  const options = config.redis()
+  const options = redis()
   let client = await create(options)
   if (client) {
     logger.info(`[service][redis] ${logger.green('Redis 连接成功')}`)

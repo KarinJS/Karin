@@ -1,7 +1,0 @@
-export * from '@/plugin/list'
-export * from '@/plugin/list/npm'
-export * from '@/plugin/list/git'
-export * from '@/plugin/list/app'
-export * from '@/plugin/list/types'
-export * from '@/plugin/cache/types'
-export * from '@/plugin/class/index'

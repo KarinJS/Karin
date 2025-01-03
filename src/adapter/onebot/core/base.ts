@@ -1,20 +1,31 @@
-import { karin } from '@/karin/index'
-import { AdapterBase } from '@adapter/base'
-import { Action } from '@adapter/onebot/types/api'
-import { OB11Event } from '@adapter/onebot/types/event'
-import { createMessage } from '@adapter/onebot/create/message'
-import { GroupSender, RoleEnum, SexEnum } from '@/adapter/sender'
-import { createNotice, createRequest } from '@adapter/onebot/create/notice'
-import { AdapterConvertKarin, KarinConvertAdapter } from '@adapter/onebot/core/convert'
+import { AdapterBase } from '@/adapter/base'
+import { Action } from '@/adapter/onebot/types/api'
+import { OB11Event } from '@/adapter/onebot/types/event'
+import { createMessage } from '@/adapter/onebot/create/message'
+import {
+  createNotice,
+  createRequest,
+} from '@/adapter/onebot/create/notice'
+import {
+  AdapterConvertKarin,
+  KarinConvertAdapter,
+} from '@/adapter/onebot/core/convert'
 
-import type { Contact } from '@/adapter/contact'
-import type { ForwardOptions, SendMsgResults } from '@/adapter/adapter'
-import type { ElementTypes, NodeElementType, SendElementTypes } from '@/adapter/segment'
-import type { GetGroupHighlightsResponse, QQGroupHonorInfo } from '@/adapter/types'
-import type { CustomNodeSegments, OB11NodeSegment, OB11Segment, Params, Request, OB11AllEvent } from '@adapter/onebot/types'
+import type {
+  CustomNodeSegments,
+  OB11NodeSegment,
+  OB11Segment,
+  Params,
+  Request,
+  OB11AllEvent,
+} from '@/adapter/onebot/types'
+import { Contact, GroupSender } from '@/types/event'
+import { Elements, ForwardOptions, NodeElement, SendElement } from '@/types/segment'
+import { GetGroupHighlightsResponse, QQGroupHonorInfo, SendMsgResults } from '@/types/adapter'
+import { senderGroup } from '@/event'
 
 export abstract class AdapterOneBot extends AdapterBase {
-  constructor () {
+  protected constructor () {
     super()
     this.adapter.platform = 'qq'
     this.adapter.standard = 'onebot11'
@@ -86,14 +97,14 @@ export abstract class AdapterOneBot extends AdapterBase {
    * karin转onebot11
    * @param data karin格式消息
    */
-  KarinConvertAdapter (data: Array<SendElementTypes>) {
+  KarinConvertAdapter (data: Array<SendElement>) {
     return KarinConvertAdapter(data, this)
   }
 
   /**
    * 获取头像url
-   * @param 头像大小，默认`0`
-   * @param 用户qq，默认为机器人QQ
+   * @param userId 头像大小，默认`0`
+   * @param size 头像大小，默认`0`
    * @returns 头像的url地址
    */
   async getAvatarUrl (userId = this.account.selfId, size = 0) {
@@ -120,7 +131,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @returns 消息ID
    */
   async sendMsg (
-    contact: Contact, elements: Array<ElementTypes>, retryCount?: number
+    contact: Contact, elements: Array<SendElement>, retryCount?: number
   ): Promise<SendMsgResults> {
     try {
       const { scene, peer } = contact
@@ -143,7 +154,7 @@ export abstract class AdapterOneBot extends AdapterBase {
       const messageTime = Date.now()
       const rawData = res
 
-      return { messageId, messageTime, rawData, message_id: messageId }
+      return { messageId, messageTime, rawData, message_id: messageId, time: messageTime }
     } catch (error) {
       if (retryCount && retryCount > 0) {
         return this.sendMsg(contact, elements, retryCount - 1)
@@ -156,7 +167,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * 发送消息
    * @deprecated 已废弃，请使用`sendMsg`
    */
-  async SendMessage (contact: Contact, elements: Array<ElementTypes>, retryCount?: number) {
+  async SendMessage (contact: Contact, elements: Array<Elements>, retryCount?: number) {
     return this.sendMsg(contact, elements, retryCount)
   }
 
@@ -223,6 +234,7 @@ export abstract class AdapterOneBot extends AdapterBase {
       rawData: result,
       message_id: messageId,
       message_time: messageTime,
+      time: messageTime,
     }
   }
 
@@ -275,13 +287,15 @@ export abstract class AdapterOneBot extends AdapterBase {
         scene: result.message_type === 'group' ? 'group' as const : 'friend' as const,
         peer: contact.peer, // 这里可能不准确 传入是什么就返回什么
         sub_peer: null,
+        name: '',
       },
       sender: {
         userId,
         uid: userId,
         uin: result.sender.user_id,
         nick: result.sender.nickname,
-        role: RoleEnum.UNKNOWN,
+        role: 'unknown' as const,
+        name: result.sender.nickname,
       },
       elements: this.AdapterConvertKarin(result.message),
     }
@@ -340,7 +354,8 @@ export abstract class AdapterOneBot extends AdapterBase {
           uid: userId,
           uin: v.sender.user_id,
           nick: v?.sender?.nickname || '',
-          role: v?.sender?.role as RoleEnum || RoleEnum.UNKNOWN,
+          name: v?.sender?.nickname || '',
+          role: v?.sender?.role || 'unknown',
           card: contact.scene === 'group' ? v?.sender?.card || '' : '',
         },
         elements: this.AdapterConvertKarin(v.message),
@@ -625,7 +640,7 @@ export abstract class AdapterOneBot extends AdapterBase {
      * 性别
      * 拓展字段
      */
-      sex: result.sex as SexEnum || SexEnum.UNKNOWN,
+      sex: result.sex || 'unknown',
       /** 大会员 */
       big_vip: undefined,
       /** 好莱坞/腾讯视频会员 */
@@ -681,7 +696,7 @@ export abstract class AdapterOneBot extends AdapterBase {
          * 性别
          * 拓展字段
          */
-        sex: v.sex as SexEnum || SexEnum.UNKNOWN,
+        sex: v.sex || 'unknown',
         /** 大会员 */
         big_vip: undefined,
         /** 好莱坞/腾讯视频会员 */
@@ -795,7 +810,7 @@ export abstract class AdapterOneBot extends AdapterBase {
       uid: targetId,
       uin: targetId,
       nick: info.nickname,
-      role: info.role as RoleEnum,
+      role: info.role,
       age: info.age,
       uniqueTitle: info.title,
       card: info.card,
@@ -806,12 +821,12 @@ export abstract class AdapterOneBot extends AdapterBase {
       distance: undefined,
       honors: [],
       unfriendly: info.unfriendly,
-      sex: info.sex as SexEnum,
+      sex: info.sex,
       get sender (): GroupSender {
-        return karin.groupSender(
+        return senderGroup(
           this.userId,
+          this.role,
           this.nick,
-          this.role as RoleEnum,
           this.sex,
           this.age,
           this.card,
@@ -846,7 +861,7 @@ export abstract class AdapterOneBot extends AdapterBase {
         uid: targetId,
         uin: targetId,
         nick: v.nickname,
-        role: v.role as RoleEnum,
+        role: v.role,
         age: v.age,
         uniqueTitle: v.title,
         card: v.card,
@@ -857,13 +872,13 @@ export abstract class AdapterOneBot extends AdapterBase {
         distance: undefined,
         honors: [],
         unfriendly: v.unfriendly,
-        sex: v.sex as SexEnum,
+        sex: v.sex,
         get sender (): GroupSender {
-          return karin.groupSender(
+          return senderGroup(
             targetId,
+            v.role,
             v.nickname,
-            v.role as RoleEnum,
-            v.sex as SexEnum,
+            v.sex,
             v.age,
             v.card,
             v.area,
@@ -1022,7 +1037,11 @@ export abstract class AdapterOneBot extends AdapterBase {
     }> = []
     const res = await this.sendApi(Action.getEssenceMsgList, { group_id: Number(groupId) })
     for (const v of res) {
-      const { message_seq: messageSeq, elements } = await this.getMsg({ scene: 'group', peer: groupId, sub_peer: null }, v.message_id + '')
+      const { message_seq: messageSeq, elements } = await this.getMsg({
+        scene: 'group',
+        peer: groupId,
+        name: '',
+      }, v.message_id + '')
       const senderId = v.sender_id + ''
       const operatorId = v.operator_id + ''
       list.push({
@@ -1101,14 +1120,14 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @deprecated 已废弃，请使用`uploadFile`
    */
   async UploadGroupFile (groupId: string, file: string, name: string, folder?: string) {
-    return this.uploadFile({ scene: 'group', peer: groupId, sub_peer: null }, file, name, folder)
+    return this.uploadFile({ scene: 'group', peer: groupId, name: '' }, file, name, folder)
   }
 
   /**
    * @deprecated 已废弃，请使用`uploadFile`
    */
   async UploadPrivateFile (userId: string, file: string, name: string) {
-    return this.uploadFile({ scene: 'friend', peer: userId, sub_peer: null }, file, name)
+    return this.uploadFile({ scene: 'friend', peer: userId, name: '' }, file, name)
   }
 
   /**
@@ -1223,7 +1242,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param elements 消息元素
    * @returns 适配器消息元素
    */
-  forwardKarinConvertAdapter (elements: Array<NodeElementType>): Array<OB11NodeSegment> {
+  forwardKarinConvertAdapter (elements: Array<NodeElement>): Array<OB11NodeSegment> {
     const messages: OB11NodeSegment[] = []
     for (const elem of elements) {
       if (elem.subType === 'messageID') {
@@ -1257,7 +1276,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param elements 消息元素
    * @param options 首层小卡片外显参数
    */
-  async sendForwardMsg (contact: Contact, elements: NodeElementType[], options?: ForwardOptions) {
+  async sendForwardMsg (contact: Contact, elements: NodeElement[], options?: ForwardOptions) {
     if (contact.scene === 'group') {
       const result = await this.sendApi(Action.sendGroupForwardMsg, {
         group_id: Number(contact.peer),
@@ -1285,7 +1304,7 @@ export abstract class AdapterOneBot extends AdapterBase {
   /**
    * @deprecated 已废弃，请使用`sendForwardMsg`
    */
-  async sendForwardMessage (contact: Contact, elements: NodeElementType[]) {
+  async sendForwardMessage (contact: Contact, elements: NodeElement[]) {
     return this.sendForwardMsg(contact, elements)
   }
 

@@ -1,7 +1,7 @@
 import { config } from '@/utils'
 import { unregisterBot } from '@/service/bot'
 import { WsAdapterOneBot11 } from './ws'
-import { registerWSPath } from '@/service/server'
+import { registerWSPath } from '@/core/service/server'
 import type { WebSocket } from 'ws'
 import type { IncomingMessage } from 'node:http'
 

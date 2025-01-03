@@ -1,4 +1,4 @@
-import { levelPath } from '@/utils'
+import { levelPath } from '@root'
 import { Level } from 'level'
 
 export class LevelDB extends Level {
@@ -36,6 +36,6 @@ export class LevelDB extends Level {
  * @description 创建 LevelDB 数据库客户端
  * @returns LevelDB 数据库实例
  */
-export const createLevelDB = async () => {
+export const createLevelDB = () => {
   return new LevelDB(levelPath)
 }

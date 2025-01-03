@@ -1,17 +1,11 @@
-import type { LoggerLevel } from '@/utils/config/types'
-import type { AdapterType, ForwardOptions, SendMsgResults } from '@/adapter/adapter'
+import type { LoggerLevel } from '@/types/system'
 import {
-  AdapterCommunication,
-  AdapterPlatform,
-  AdapterProtocol,
-  AdapterStandard,
-} from '@/adapter/adapter'
-import { Contact } from '@/adapter/contact'
+  Elements,
+  ForwardOptions,
+  NodeElement,
+} from '@/types/segment'
 import {
-  ElementTypes,
-  NodeElementType,
-} from '@/adapter/segment'
-import {
+  AdapterType,
   CreateGroupFolderResponse,
   DownloadFileOptions,
   DownloadFileResponse,
@@ -23,8 +17,9 @@ import {
   GroupInfo,
   GroupMemberInfo,
   MessageResponse,
-  QQGroupHonorInfo, UserInfo,
-} from '@/adapter/types'
+  QQGroupHonorInfo, SendMsgResults, UserInfo,
+} from '@/types/adapter'
+import { Contact } from '@/types/event'
 
 /**
  * 适配器基类 一个示例
@@ -41,12 +36,13 @@ export abstract class AdapterBase implements AdapterType {
       index: -1,
       name: '',
       version: '',
-      platform: AdapterPlatform.QQ,
-      standard: AdapterStandard.ICQQ,
-      protocol: AdapterProtocol.ICQQ,
-      communication: AdapterCommunication.INTERNAL,
+      platform: 'qq',
+      standard: 'other',
+      protocol: 'console',
+      communication: 'other',
       address: '',
       secret: null,
+      connectTime: -1,
     }
   }
 
@@ -77,7 +73,7 @@ export abstract class AdapterBase implements AdapterType {
    * @param elements 消息元素
    * @param retryCount 重试次数 默认为0
    */
-  sendMsg (contact: Contact, elements: Array<ElementTypes>, retryCount?: number): Promise<SendMsgResults> {
+  sendMsg (contact: Contact, elements: Array<Elements>, retryCount?: number): Promise<SendMsgResults> {
     throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
   }
 
@@ -96,7 +92,7 @@ export abstract class AdapterBase implements AdapterType {
    * @param elements 消息元素
    * @param options 首层小卡片外显参数
    */
-  sendForwardMsg (contact: Contact, elements: Array<NodeElementType>, options?: ForwardOptions): Promise<{ messageId: string, forwardId: string }> {
+  sendForwardMsg (contact: Contact, elements: Array<NodeElement>, options?: ForwardOptions): Promise<{ messageId: string, forwardId: string }> {
     throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
   }
 
@@ -178,7 +174,7 @@ export abstract class AdapterBase implements AdapterType {
    * @param elements 转发消息元素
    * @description 此接口并不是所有协议端都支持的，因此在使用时请注意
    */
-  createResId (contact: Contact, elements: Array<NodeElementType>): Promise<string> {
+  createResId (contact: Contact, elements: Array<NodeElement>): Promise<string> {
     throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
   }
 

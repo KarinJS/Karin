@@ -2,9 +2,9 @@ import { Level } from 'level'
 import lodash from 'lodash'
 import moment from 'moment'
 import EventEmitter from 'node:events'
-import { redisLevelPath } from '@/utils/fs/root'
+import { redisLevelPath } from '@root'
 import type { SetOptions } from 'redis'
-import { existToMkdir } from '@/utils'
+import { existToMkdirSync } from '@/utils/fs/fsSync'
 
 /**
  * @description 键类型枚举
@@ -69,7 +69,7 @@ export class RedisClient extends EventEmitter {
   }
 
   async init () {
-    existToMkdir(redisLevelPath)
+    existToMkdirSync(redisLevelPath)
     this.#level = new Level(redisLevelPath)
     /** 每30秒检查过期 */
     setInterval(() => {

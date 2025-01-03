@@ -1,10 +1,10 @@
 import fs from 'node:fs'
 import crypto from 'node:crypto'
-import { isStatic } from '@/utils'
 import { renderTpl } from '../admin/template'
 import { registerRender, unregisterRender } from '../admin/cache'
 import type { WebSocket } from 'ws'
 import type { Options, RenderResult } from '../admin/types'
+import { isStatic } from '@/utils/fs/static'
 
 export abstract class WebSocketRender {
   /** websocket实例 */

@@ -3,8 +3,8 @@ import path from 'node:path'
 import chokidar from 'chokidar'
 import template from 'art-template'
 import { Options } from './types'
-import { htmlPath } from '@/utils'
-import { existToMkdir } from '@/utils'
+import { htmlPath } from '@root'
+import { existToMkdirSync } from '@/utils/fs/fsSync'
 
 /** 模板缓存 */
 const cache = new Map<string, string>()
@@ -77,7 +77,7 @@ const getOutputPath = (file: string, data: string, name?: string) => {
   /** 保存文件的绝对路径 */
   const filePath = path.join(fileDir, `${basename}-${Date.now()}${extname}`)
 
-  existToMkdir(fileDir)
+  existToMkdirSync(fileDir)
   fs.writeFileSync(filePath, data)
   return filePath
 }

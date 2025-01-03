@@ -1,6 +1,6 @@
 import { promisify } from 'util'
 import { fork, exec as execCallback } from 'child_process'
-import { setLang, setMode, setWatch } from '@/env/env'
+import { setLang, setMode, setWatch } from '@/env'
 
 const exec = promisify(execCallback)
 
@@ -80,7 +80,7 @@ export const checkPM2 = async () => command('pm2 -v')
  * @description `pm2` 启动成功打印信息
  */
 export const printPM2 = async () => {
-  const { pm2Path } = await import('@/utils/fs/root')
+  const { pm2Path } = await import('@root')
   await command(`pm2 start ${pm2Path}`)
   console.log('[pm2] 启动成功')
   console.log('[pm2] 重启服务: npx karin rs')
@@ -109,7 +109,7 @@ export const runPM2 = async () => {
 const readConfig = async (configFile: string) => {
   const fs = await import('fs').then((res) => res.default)
   const yaml = await import('yaml').then((res) => res.default)
-  const { configPath } = await import('@/utils/fs/root')
+  const { configPath } = await import('@root')
 
   return yaml.parse(fs.readFileSync(`${configPath}/${configFile}`, 'utf-8'))
 }

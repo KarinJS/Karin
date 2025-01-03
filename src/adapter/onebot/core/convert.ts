@@ -1,7 +1,8 @@
 import fs from 'node:fs'
-import { ElementTypes, MusicPlatform, segment, SendElementTypes } from '@/adapter/segment'
 import type { OB11Segment } from '../types'
 import type { AdapterOneBot } from './base'
+import { Elements, SendElement } from '@/types/segment'
+import { segment } from '@/utils/message'
 
 /**
  * 构建错误信息
@@ -23,7 +24,7 @@ export const buildError = (selfId: string, action: string, request: string, erro
    * onebot11转karin
    * @return karin格式消息
    */
-export function AdapterConvertKarin (data: Array<OB11Segment>): Array<ElementTypes> {
+export function AdapterConvertKarin (data: Array<OB11Segment>): Array<Elements> {
   const elements = []
   for (const i of data) {
     switch (i.type) {
@@ -91,7 +92,7 @@ export const fileToBase64 = (file: string, url: string): string => {
    * karin转onebot11
    * @param data karin格式消息
    */
-export const KarinConvertAdapter = (data: Array<SendElementTypes>, onebot: AdapterOneBot): Array<OB11Segment> => {
+export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOneBot): Array<OB11Segment> => {
   const elements = []
 
   for (const i of data) {
@@ -124,7 +125,7 @@ export const KarinConvertAdapter = (data: Array<SendElementTypes>, onebot: Adapt
         break
       }
       case 'music': {
-        if (i.platform === MusicPlatform.CUSTOM) {
+        if (i.platform === 'custom') {
           const { url, audio, title, author, pic } = i
           elements.push({ type: 'music', data: { type: 'custom', url, audio, title, content: author, image: pic } })
         } else {

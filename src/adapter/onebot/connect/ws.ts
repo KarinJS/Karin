@@ -1,11 +1,11 @@
 import { config } from '@/utils'
 import { AdapterOneBot } from '../core/base'
 import { Action, Params, Request } from '../types'
-import { AdapterCommunication } from '@/adapter/adapter'
 import { OB11Event, type OB11AllEvent } from '../types/event'
 import { registerBot, unregisterBot } from '@/service/bot'
-import type { WebSocket } from 'ws'
 import { buildError } from '../core/convert'
+import type { WebSocket } from 'ws'
+import type { AdapterCommunication } from '@/types/adapter'
 
 export abstract class WsAdapterOneBot11 extends AdapterOneBot {
   /** 请求id */
@@ -25,7 +25,7 @@ export abstract class WsAdapterOneBot11 extends AdapterOneBot {
    * @param url WebSocket地址
    * @param communication 通讯方式
    */
-  async init (selfId: string, url: string, communication: `${AdapterCommunication}`) {
+  async init (selfId: string, url: string, communication: AdapterCommunication) {
     this.account.uid = selfId
     this.account.uin = selfId
     this.account.selfId = selfId

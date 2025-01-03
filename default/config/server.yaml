@@ -1,6 +1,9 @@
 # 当前文件热更新是否重启http服务
 hmrToServer: false
 
+# 鉴权秘钥
+authKey: ""
+
 # http监听地址
 host: 0.0.0.0
 

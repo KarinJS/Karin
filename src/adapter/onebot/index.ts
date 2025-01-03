@@ -1,1 +1,1 @@
-export * from '@adapter/onebot/types'
+export * from '@/adapter/onebot/types'

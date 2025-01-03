@@ -1,6 +1,6 @@
-import { karin } from '@/karin'
 import { AdapterConvertKarin } from '../core/convert'
-import { createFriendMessage, createGroupMessage } from '@/event/create/message'
+import { createFriendMessage, createGroupMessage } from '@/event/create'
+import { contactFriend, contactGroup, senderFriend, senderGroup } from '@/event'
 import type { AdapterOneBot } from '../core/base'
 import type { OB11Message } from '../types/event'
 
@@ -11,19 +11,20 @@ import type { OB11Message } from '../types/event'
  */
 export const createMessage = (event: OB11Message, bot: AdapterOneBot) => {
   const time = event.time
-  const selfId = event.self_id + ''
   if (event.message_type === 'private') {
     const userId = event.sender.user_id + ''
-    const contact = karin.contactFriend(userId)
-    const sender = karin.friendSender(userId, event.sender.nickname, event.sender.sex, event.sender.age)
+    const contact = contactFriend(userId)
+    const sender = senderFriend(userId,
+      event.sender.nickname,
+      event.sender.sex,
+      event.sender.age
+    )
 
     createFriendMessage({
       bot,
-      selfId,
       time,
       contact,
       sender,
-      userId,
       rawEvent: event,
       messageId: event.message_id + '',
       messageSeq: event.message_id,
@@ -40,8 +41,8 @@ export const createMessage = (event: OB11Message, bot: AdapterOneBot) => {
     const userId = event.sender.user_id + ''
     const { nickname, role, sex, age, card, area, level, title } = event.sender
 
-    const contact = karin.contactGroup(groupId)
-    const sender = karin.groupSender(userId, nickname, role, sex, age, card, area, level, title)
+    const contact = contactGroup(groupId)
+    const sender = senderGroup(userId, role, nickname, sex, age, card, area, level, title)
     createGroupMessage({
       bot,
       contact,
@@ -50,10 +51,8 @@ export const createMessage = (event: OB11Message, bot: AdapterOneBot) => {
       messageId: event.message_id + '',
       messageSeq: event.message_id,
       rawEvent: event,
-      selfId,
       sender,
       time,
-      userId,
       srcReply: (elements) => bot.sendMsg(contact, elements),
     })
     return

@@ -2,6 +2,7 @@
   "name": "node-karin",
   "version": "0.12.24",
   "private": false,
+  "type": "module",
   "description": "Lightweight, efficient, concise, and stable robot framework.",
   "keywords": [
     "node",
@@ -24,15 +25,14 @@
   },
   "license": "MIT",
   "author": "shijin",
-  "type": "module",
   "exports": {
     ".": {
-      "types": "./lib/index.d.ts",
+      "types": "./lib/types/index.d.ts",
       "import": "./lib/index.js",
-      "require": "./lib/index.js"
+      "require": "./lib/index.cjs"
     },
     "./template": {
-      "types": "./lib/modules/art-template.d.ts",
+      "types": "./lib/types/modules/art-template.d.ts",
       "import": "./lib/modules/art-template.js",
       "require": "./lib/modules/art-template.js"
     },
@@ -112,12 +112,13 @@
       "require": "./lib/modules/yaml.js"
     }
   },
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "./lib/types/index.d.ts",
   "bin": {
     "k": "lib/main/scripts.js",
-    "kr": "lib/main/scripts.js",
-    "karin": "lib/main/scripts.js"
+    "karin": "lib/main/scripts.js",
+    "kr": "lib/main/scripts.js"
   },
   "files": [
     "/lib/**/*.js",
@@ -134,20 +135,21 @@
   "scripts": {
     ".": "node lib/cli/start.js .",
     "alias": "tsc-alias -p tsconfig.json",
-    "build": "tsc --project tsconfig.json && npm run alias && npm run cp",
+    "app": "node index.js",
+    "build": "tsup --config tsup.config.ts",
+    "build:pkg": "tsc --project tsconfig.pkg.mjs.json && tsc --project tsconfig.pkg.cjs.json",
     "cp": "node lib/cli/cp.js",
-    "dev": "node lib/main/scripts.js dev",
+    "dev": "tsup --watch",
     "init": "node lib/main/scripts.js init",
     "lint": "eslint src/**/*.ts --fix",
     "pr": "node lib/cli/pr.js",
     "pub": "npm publish --access public",
     "pub-beta": "npm publish --tag beta",
     "sort": "npx sort-package-json && sort-json tsconfig.json",
-    "start": "node lib/cli/start.js start",
-    "app": "node index.js"
+    "start": "node lib/cli/start.js start"
   },
   "dependencies": {
-    "@types/express": "^4.17.21",
+    "@types/express": "^5.0.0",
     "@types/lodash": "^4.17.10",
     "@types/node": "^22.5.0",
     "@types/node-schedule": "^2.1.7",
@@ -157,7 +159,7 @@
     "chalk": "5.3.0",
     "chokidar": "3.6.0",
     "commander": "^12.1.0",
-    "express": "4.21.1",
+    "express": "4.21.2",
     "level": "8.0.1",
     "lodash": "4.17.21",
     "log4js": "6.9.1",
@@ -174,7 +176,8 @@
     "sort-package-json": "^2.10.0",
     "tsc-alias": "^1.8.10",
     "tsx": "^4.19.1",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "tsup": "^8.0.2"
   },
   "peerDependencies": {
     "node-karin": "file:./lib"

@@ -1,6 +1,6 @@
 import { config } from '@/utils'
 import { WebSocketRender } from './ws'
-import { registerWSPath } from '@/service/server'
+import { registerWSPath } from '@/core/service/server'
 import type { WebSocket } from 'ws'
 import type { IncomingMessage } from 'node:http'
 

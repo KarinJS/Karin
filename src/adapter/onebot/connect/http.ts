@@ -2,10 +2,10 @@ import axios from 'axios'
 import { config } from '@/utils'
 import { buildError } from '../core/convert'
 import { AdapterOneBot } from '../core/base'
-import { listeners } from '@/internal/listeners'
-import { Action, Params, Request } from '../types'
+import { listeners } from '@/core/internal/listeners'
+import { Action, OB11AllEvent, Params, Request } from '../types'
 import { registerBot, unregisterBot } from '@/service/bot'
-import { registerHttpBot, unregisterHttpBot } from '@/service/server'
+import { registerHttpBot, unregisterHttpBot } from '../post/register'
 
 export class HttpAdapterOneBot11 extends AdapterOneBot {
   #token?: string
@@ -40,7 +40,7 @@ export class HttpAdapterOneBot11 extends AdapterOneBot {
     }, 60 * 1000)
 
     // tips: ??? 为什么这里会导致整个vscode都卡掉。。。
-    listeners.on(`onebot:${this.selfId}`, (event) => {
+    listeners.on(`onebot:${this.selfId}`, (event: OB11AllEvent) => {
       const str = JSON.stringify(event)
       this.eventHandlers(event, str)
     })

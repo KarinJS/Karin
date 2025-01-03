@@ -1,5 +1,6 @@
-import { IncomingMessage } from 'http'
-import { WebSocketServer, WebSocket } from 'ws'
+import { WebSocketServer } from 'ws'
+import type { WebSocket } from 'ws'
+import type { IncomingMessage } from 'http'
 
 type Request = new (socket: WebSocket, request: IncomingMessage) => any
 /** ws路由和class的映射 */

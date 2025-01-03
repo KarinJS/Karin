@@ -1,5 +1,0 @@
-export * from '@/adapter/adapter'
-export * from '@/adapter/contact'
-export * from '@/adapter/segment'
-export * from '@/adapter/sender'
-export * from '@/adapter/types'

@@ -10,10 +10,13 @@
     "noImplicitAny": true,
     "paths": {
       "@/*": [
-        "src/core/*"
+        "src/*"
       ],
-      "@adapter/*": [
-        "src/adapter/*"
+      "@fs": [
+        "src/core/utils/fs/main"
+      ],
+      "@root": [
+        "src/core/root/index"
       ]
     },
     "resolveJsonModule": true,
@@ -31,7 +34,7 @@
     "lib",
     "plugins",
     "node_modules",
-    "logs",
+    "logs"
   ],
   "include": [
     "src/**/*"

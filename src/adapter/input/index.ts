@@ -2,16 +2,16 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { AdapterBase } from '../base'
-import { karin } from '@/karin'
-import { listeners } from '@/internal/listeners'
+import { listeners } from '@/core/internal/listeners'
 import { buffer } from '@/utils/fs/data'
 import { server } from '@/utils/config'
-import { consolePath } from '@/utils/fs/root'
-import { createFriendMessage, createGroupMessage } from '@/event/create/message'
-
-import { type ElementTypes, segment } from '@/adapter/segment'
-import type { AdapterType, SendMsgResults } from '@/adapter/adapter'
-import type { Contact } from '@/adapter/contact'
+import { consolePath } from '@root'
+import { segment } from '@/utils/message'
+import { createFriendMessage, createGroupMessage } from '@/event/create'
+import type { AdapterType, SendMsgResults } from '@/types/adapter'
+import type { Contact } from '@/types/event'
+import type { Elements } from '@/types/segment'
+import { contactFriend, contactGroup, senderFriend, senderGroup } from '@/event'
 
 const botID = 'console'
 
@@ -26,10 +26,10 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
     listeners.on('karin:adapter:close', () => process.stdin.removeAllListeners('data'))
 
     this.adapter.name = '@karinjs/console'
-    this.adapter.communication = 'internal'
-    this.adapter.platform = 'shell'
-    this.adapter.version = process.env.karin_app_version
-    this.adapter.standard = 'karin'
+    this.adapter.communication = 'other'
+    this.adapter.platform = 'other'
+    this.adapter.standard = 'other'
+    this.adapter.version = process.env.karin_version
     this.account.name = botID
     this.account.uid = botID
     this.account.uin = botID
@@ -48,7 +48,7 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
     const time = Date.now()
     /** 如果带`group`前缀 则视为群环境 */
     if (text.startsWith('group')) {
-      const contact = karin.contactGroup('10010')
+      const contact = contactGroup('10010')
       createGroupMessage({
         bot: this,
         contact,
@@ -57,16 +57,14 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
         messageId: `${botID}${time}`,
         messageSeq: seq,
         rawEvent: { data },
-        selfId: botID,
-        sender: karin.groupSender(botID, ''),
+        sender: senderGroup(botID, 'member'),
         time,
         srcReply: (elements) => this.sendMsg(contact, elements),
-        userId: botID,
       })
       return
     }
 
-    const contact = karin.contactFriend(botID)
+    const contact = contactFriend(botID)
     createFriendMessage({
       bot: this,
       contact,
@@ -75,20 +73,20 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
       messageId: `${botID}.${time}`,
       messageSeq: seq,
       rawEvent: { data },
-      selfId: botID,
-      sender: karin.friendSender(botID, ''),
+      sender: senderFriend(botID, ''),
       time,
       srcReply: (elements) => this.sendMsg(contact, elements),
-      userId: botID,
     })
   }
 
-  async sendMsg (contact: Contact, elements: Array<ElementTypes>, retryCount?: number): Promise<SendMsgResults> {
+  async sendMsg (contact: Contact, elements: Array<Elements>, retryCount?: number): Promise<SendMsgResults> {
+    const time = Date.now()
     const messageId = randomUUID()
     const result: SendMsgResults = {
       message_id: messageId,
       messageId,
-      messageTime: Date.now(),
+      time,
+      messageTime: time,
       rawData: {},
     }
 

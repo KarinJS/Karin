@@ -1,4 +1,4 @@
-import { karin } from '@/karin'
+import { contactFriend, contactGroup, senderFriend, senderGroup } from '@/event'
 import { AdapterOneBot } from '../core/base'
 import { OB11NoticeType } from '../types/event'
 import type { OB11Message, OB11Notice, OB11Request } from '../types/event'
@@ -17,7 +17,7 @@ import {
   createGroupRecallNotice,
   createPrivatePokeNotice,
   createPrivateRecallNotice,
-} from '@/event/create/notice'
+} from '@/event/create'
 
 /**
  * 创建通知事件
@@ -26,26 +26,24 @@ import {
  */
 export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
   const time = event.time
-  const selfId = event.self_id + ''
   // 私聊撤回
   if (event.notice_type === OB11NoticeType.FriendRecall) {
     const userId = event.user_id + ''
     const messageId = event.message_id + ''
-    const contact = karin.contactFriend(userId)
+    const contact = contactFriend(userId)
     createPrivateRecallNotice({
       bot,
       eventId: `notice:${userId}.${event.time}`,
       rawEvent: event,
-      selfId,
       time,
-      userId,
       contact,
-      sender: karin.friendSender(userId, ''),
+      sender: senderFriend(userId),
       srcReply: (elements) => bot.sendMsg(contact, elements),
-    }, {
-      messageId,
-      operatorId: userId,
-      tips: '',
+      content: {
+        messageId,
+        operatorId: userId,
+        tips: '',
+      },
     })
     return
   }
@@ -53,19 +51,18 @@ export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
   // 新增好友
   if (event.notice_type === OB11NoticeType.FriendAdd) {
     const userId = event.user_id + ''
-    const contact = karin.contactFriend(userId)
+    const contact = contactFriend(userId)
     createFriendIncreaseNotice({
       bot,
       eventId: `notice:${userId}.${event.time}`,
       rawEvent: event,
-      selfId,
       time,
-      userId,
       contact,
-      sender: karin.friendSender(userId, ''),
+      sender: senderFriend(userId),
       srcReply: (elements) => bot.sendMsg(contact, elements),
-    }, {
-      targetId: userId,
+      content: {
+        targetId: userId,
+      },
     })
     return
   }
@@ -74,23 +71,22 @@ export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
   if (event.notice_type === OB11NoticeType.Notify && event.sub_type === 'poke' && event.group_id) {
     const userId = event.user_id + ''
     const groupId = event.group_id + ''
-    const contact = karin.contactGroup(groupId)
+    const contact = contactGroup(groupId)
     createGroupPokeNotice({
       bot,
       eventId: `notice:${groupId}.${event.time}`,
       rawEvent: event,
-      selfId,
       time,
-      userId,
       contact,
-      sender: karin.groupSender(userId, ''),
+      sender: senderGroup(userId),
       srcReply: (elements) => bot.sendMsg(contact, elements),
-    }, {
-      operatorId: userId,
-      targetId: event.target_id + '',
-      action: '',
-      actionImage: '',
-      suffix: '',
+      content: {
+        operatorId: userId,
+        targetId: event.target_id + '',
+        action: '',
+        actionImage: '',
+        suffix: '',
+      },
     })
     return
   }
@@ -98,23 +94,22 @@ export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
   // 私聊戳一戳
   if (event.notice_type === OB11NoticeType.Notify && event.sub_type === 'poke') {
     const userId = event.user_id + ''
-    const contact = karin.contactFriend(userId)
+    const contact = contactFriend(userId)
     createPrivatePokeNotice({
       bot,
       eventId: `notice:${userId}.${event.time}`,
       rawEvent: event,
-      selfId,
       time,
-      userId,
       contact,
-      sender: karin.friendSender(userId, ''),
+      sender: senderFriend(userId),
       srcReply: (elements) => bot.sendMsg(contact, elements),
-    }, {
-      operatorId: userId,
-      targetId: event.target_id + '',
-      action: '',
-      actionImage: '',
-      suffix: '',
+      content: {
+        operatorId: userId,
+        targetId: event.target_id + '',
+        action: '',
+        actionImage: '',
+        suffix: '',
+      },
     })
     return
   }
@@ -123,20 +118,19 @@ export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
   if (event.notice_type === OB11NoticeType.Notify && event.sub_type === 'lucky_king') {
     const userId = event.user_id + ''
     const groupId = event.group_id + ''
-    const contact = karin.contactGroup(groupId)
+    const contact = contactGroup(groupId)
     createGroupLuckKingNotice({
       bot,
       eventId: `notice:${groupId}.${event.time}`,
       rawEvent: event,
-      selfId,
       time,
-      userId,
       contact,
-      sender: karin.groupSender(userId, ''),
+      sender: senderGroup(userId),
       srcReply: (elements) => bot.sendMsg(contact, elements),
-    }, {
-      userId,
-      targetId: event.target_id + '',
+      content: {
+        userId,
+        targetId: event.target_id + '',
+      },
     })
     return
   }
@@ -145,19 +139,18 @@ export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
   if (event.notice_type === OB11NoticeType.Notify && event.sub_type === 'honor') {
     const userId = event.user_id + ''
     const groupId = event.group_id + ''
-    const contact = karin.contactGroup(groupId)
+    const contact = contactGroup(groupId)
     createGroupHonorChangedNotice({
       bot,
       eventId: `notice:${groupId}.${event.time}`,
       rawEvent: event,
-      selfId,
       time,
-      userId,
       contact,
-      sender: karin.groupSender(userId, ''),
+      sender: senderGroup(userId),
       srcReply: (elements) => bot.sendMsg(contact, elements),
-    }, {
-      honorType: event.honor_type,
+      content: {
+        honorType: event.honor_type,
+      },
     })
     return
   }
@@ -168,22 +161,21 @@ export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
     const groupId = event.group_id + ''
     const messageId = event.message_id + ''
     const operatorId = event.operator_id + ''
-    const contact = karin.contactGroup(groupId)
+    const contact = contactGroup(groupId)
     createGroupRecallNotice({
       bot,
       eventId: `notice:${groupId}.${event.time}`,
       rawEvent: event,
-      selfId,
       time,
-      userId,
       contact,
-      sender: karin.groupSender(userId, ''),
+      sender: senderGroup(userId),
       srcReply: (elements) => bot.sendMsg(contact, elements),
-    }, {
-      messageId,
-      operatorId,
-      targetId: userId,
-      tip: '',
+      content: {
+        messageId,
+        operatorId,
+        targetId: userId,
+        tip: '',
+      },
     })
     return
   }
@@ -192,21 +184,20 @@ export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
   if (event.notice_type === OB11NoticeType.GroupIncrease) {
     const userId = event.user_id + ''
     const groupId = event.group_id + ''
-    const contact = karin.contactGroup(groupId)
+    const contact = contactGroup(groupId)
     createGroupMemberAddNotice({
       bot,
       eventId: `notice:${groupId}.${event.time}`,
       rawEvent: event,
-      selfId,
       time,
-      userId,
       contact,
-      sender: karin.groupSender(userId, ''),
+      sender: senderGroup(userId),
       srcReply: (elements) => bot.sendMsg(contact, elements),
-    }, {
-      operatorId: event.operator_id + '',
-      targetId: userId,
-      type: event.sub_type,
+      content: {
+        operatorId: event.operator_id + '',
+        targetId: userId,
+        type: event.sub_type,
+      },
     })
     return
   }
@@ -215,21 +206,20 @@ export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
   if (event.notice_type === OB11NoticeType.GroupDecrease) {
     const userId = event.user_id + ''
     const groupId = event.group_id + ''
-    const contact = karin.contactGroup(groupId)
+    const contact = contactGroup(groupId)
     createGroupMemberDelNotice({
       bot,
       eventId: `notice:${groupId}.${event.time}`,
       rawEvent: event,
-      selfId,
       time,
-      userId,
       contact,
-      sender: karin.groupSender(userId, ''),
+      sender: senderGroup(userId),
       srcReply: (elements) => bot.sendMsg(contact, elements),
-    }, {
-      operatorId: event.operator_id + '',
-      targetId: userId,
-      type: event.sub_type === 'kick_me' ? 'kickBot' : event.sub_type,
+      content: {
+        operatorId: event.operator_id + '',
+        targetId: userId,
+        type: event.sub_type === 'kick_me' ? 'kickBot' : event.sub_type,
+      },
     })
     return
   }
@@ -238,22 +228,21 @@ export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
   if (event.notice_type === OB11NoticeType.GroupUpload) {
     const userId = event.user_id + ''
     const groupId = event.group_id + ''
-    const contact = karin.contactGroup(groupId)
+    const contact = contactGroup(groupId)
     createGroupFileUploadedNotice({
       bot,
       eventId: `notice:${groupId}.${event.time}`,
       rawEvent: event,
-      selfId,
       time,
-      userId,
       contact,
-      sender: karin.groupSender(userId, ''),
+      sender: senderGroup(userId),
       srcReply: (elements) => bot.sendMsg(contact, elements),
-    }, {
-      fid: event.file.id,
-      name: event.file.name,
-      size: event.file.size,
-      subId: event.file.busid,
+      content: {
+        fid: event.file.id,
+        name: event.file.name,
+        size: event.file.size,
+        subId: event.file.busid,
+      },
     })
     return
   }
@@ -262,20 +251,19 @@ export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
   if (event.notice_type === OB11NoticeType.GroupAdmin) {
     const userId = event.user_id + ''
     const groupId = event.group_id + ''
-    const contact = karin.contactGroup(groupId)
+    const contact = contactGroup(groupId)
     createGroupAdminChangedNotice({
       bot,
       eventId: `notice:${groupId}.${event.time}`,
       rawEvent: event,
-      selfId,
       time,
-      userId,
       contact,
-      sender: karin.groupSender(userId, ''),
+      sender: senderGroup(userId),
       srcReply: (elements) => bot.sendMsg(contact, elements),
-    }, {
-      targetId: userId,
-      isAdmin: event.sub_type === 'set',
+      content: {
+        targetId: userId,
+        isAdmin: event.sub_type === 'set',
+      },
     })
     return
   }
@@ -284,22 +272,21 @@ export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
   if (event.notice_type === OB11NoticeType.GroupBan) {
     const userId = event.user_id + ''
     const groupId = event.group_id + ''
-    const contact = karin.contactGroup(groupId)
+    const contact = contactGroup(groupId)
     createGroupMemberBanNotice({
       bot,
       eventId: `notice:${groupId}.${event.time}`,
       rawEvent: event,
-      selfId,
       time,
-      userId,
       contact,
-      sender: karin.groupSender(userId, ''),
+      sender: senderGroup(userId),
       srcReply: (elements) => bot.sendMsg(contact, elements),
-    }, {
-      operatorId: event.operator_id + '',
-      targetId: userId,
-      duration: event.duration,
-      isBan: event.sub_type === 'ban',
+      content: {
+        operatorId: event.operator_id + '',
+        targetId: userId,
+        duration: event.duration,
+        isBan: event.sub_type === 'ban',
+      },
     })
     return
   }
@@ -308,22 +295,21 @@ export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
   if (event.notice_type === OB11NoticeType.GroupMsgEmojiLike) {
     const userId = event.user_id + ''
     const groupId = event.group_id + ''
-    const contact = karin.contactGroup(groupId)
+    const contact = contactGroup(groupId)
     createGroupMessageReactionNotice({
       bot,
       eventId: `notice:${groupId}.${event.time}`,
       rawEvent: event,
-      selfId,
       time,
-      userId,
       contact,
-      sender: karin.groupSender(userId, ''),
+      sender: senderGroup(userId),
       srcReply: (elements) => bot.sendMsg(contact, elements),
-    }, {
-      count: event.likes[0].count,
-      faceId: event.likes[0].emoji_id,
-      isSet: true,
-      messageId: event.message_id + '',
+      content: {
+        count: event.likes[0].count,
+        faceId: event.likes[0].emoji_id,
+        isSet: true,
+        messageId: event.message_id + '',
+      },
     })
     return
   }
@@ -332,22 +318,21 @@ export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
   if (event.notice_type === OB11NoticeType.GroupMsgEmojiLikeLagrange) {
     const userId = event.operator_id + ''
     const groupId = event.group_id + ''
-    const contact = karin.contactGroup(groupId)
+    const contact = contactGroup(groupId)
     createGroupMessageReactionNotice({
       bot,
       eventId: `notice:${groupId}.${event.time}`,
       rawEvent: event,
-      selfId,
       time,
-      userId,
       contact,
-      sender: karin.groupSender(userId, ''),
+      sender: senderGroup(userId),
       srcReply: (elements) => bot.sendMsg(contact, elements),
-    }, {
-      count: event.count,
-      faceId: Number(event.code),
-      isSet: event.sub_type === 'add',
-      messageId: event.message_id + '',
+      content: {
+        count: event.count,
+        faceId: Number(event.code),
+        isSet: event.sub_type === 'add',
+        messageId: event.message_id + '',
+      },
     })
     return
   }
@@ -356,22 +341,21 @@ export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
   if (event.notice_type === OB11NoticeType.GroupEssence) {
     const userId = event.sender_id + ''
     const groupId = event.group_id + ''
-    const contact = karin.contactGroup(groupId)
+    const contact = contactGroup(groupId)
     createGroupHlightsChangedNotice({
       bot,
       eventId: `notice:${groupId}.${event.time}`,
       rawEvent: event,
-      selfId,
       time,
-      userId,
       contact,
-      sender: karin.groupSender(userId, ''),
+      sender: senderGroup(userId),
       srcReply: (elements) => bot.sendMsg(contact, elements),
-    }, {
-      isSet: event.sub_type === 'add',
-      messageId: event.message_id + '',
-      operatorId: event.operator_id + '',
-      senderId: userId,
+      content: {
+        isSet: event.sub_type === 'add',
+        messageId: event.message_id + '',
+        operatorId: event.operator_id + '',
+        senderId: userId,
+      },
     })
     return
   }
