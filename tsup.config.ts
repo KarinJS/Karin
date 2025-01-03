@@ -5,14 +5,14 @@ import { rm } from 'fs/promises'
 await rm('./lib', { recursive: true, force: true }).catch(() => null)
 
 export default defineConfig({
-  entry: ['src/index.ts'],
+  entry: ['src/modules/*.ts'],
   format: ['cjs', 'esm'],
   target: 'node16',
   splitting: false,
   sourcemap: false,
   clean: true,
   dts: true,
-  outDir: 'lib',
+  outDir: 'lib/modules',
   treeshake: true,
   external: [
     'art-template',
@@ -30,5 +30,4 @@ export default defineConfig({
     'ws',
     'yaml',
   ],
-
 })

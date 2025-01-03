@@ -1,6 +1,47 @@
 {
-  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./lib"
+    "allowSyntheticDefaultImports": true,
+    "alwaysStrict": true,
+    "baseUrl": ".",
+    "declaration": true,
+    "esModuleInterop": true,
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "noImplicitAny": true,
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "@fs": [
+        "src/core/utils/fs/main"
+      ],
+      "@root": [
+        "src/core/root/index"
+      ]
+    },
+    "resolveJsonModule": true,
+    "rootDir": "./src",
+    "outDir": "./lib",
+    "sourceMap": false,
+    "strict": true,
+    "target": "ES2022",
+    "types": [
+      "@types/node"
+    ]
+  },
+  "exclude": [
+    "@karinjs",
+    "default",
+    "lib",
+    "plugins",
+    "node_modules",
+    "logs"
+  ],
+  "include": [
+    "src/**/*"
+  ],
+  "tsc-alias": {
+    "resolveFullExtension": ".js",
+    "resolveFullPaths": true
   }
 }

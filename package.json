@@ -2,7 +2,6 @@
   "name": "node-karin",
   "version": "0.12.24",
   "private": false,
-  "type": "module",
   "description": "Lightweight, efficient, concise, and stable robot framework.",
   "keywords": [
     "node",
@@ -25,96 +24,96 @@
   },
   "license": "MIT",
   "author": "shijin",
+  "type": "module",
   "exports": {
     ".": {
-      "types": "./lib/types/index.d.ts",
+      "types": "./lib/index.d.ts",
       "import": "./lib/index.js",
       "require": "./lib/index.cjs"
     },
     "./template": {
-      "types": "./lib/types/modules/art-template.d.ts",
+      "types": "./lib/modules/art-template.d.ts",
       "import": "./lib/modules/art-template.js",
-      "require": "./lib/modules/art-template.js"
+      "require": "./lib/modules/art-template.cjs"
     },
     "./art-template": {
       "types": "./lib/modules/art-template.d.ts",
       "import": "./lib/modules/art-template.js",
-      "require": "./lib/modules/art-template.js"
+      "require": "./lib/modules/art-template.cjs"
     },
     "./axios": {
       "types": "./lib/modules/axios.d.ts",
       "import": "./lib/modules/axios.js",
-      "require": "./lib/modules/axios.js"
+      "require": "./lib/modules/axios.cjs"
     },
     "./chalk": {
       "types": "./lib/modules/chalk.d.ts",
       "import": "./lib/modules/chalk.js",
-      "require": "./lib/modules/chalk.js"
+      "require": "./lib/modules/chalk.cjs"
     },
     "./chokidar": {
       "types": "./lib/modules/chokidar.d.ts",
       "import": "./lib/modules/chokidar.js",
-      "require": "./lib/modules/chokidar.js"
+      "require": "./lib/modules/chokidar.cjs"
     },
     "./commander": {
       "types": "./lib/modules/commander.d.ts",
       "import": "./lib/modules/commander.js",
-      "require": "./lib/modules/commander.js"
+      "require": "./lib/modules/commander.cjs"
     },
     "./express": {
       "types": "./lib/modules/express.d.ts",
       "import": "./lib/modules/express.js",
-      "require": "./lib/modules/express.js"
+      "require": "./lib/modules/express.cjs"
     },
     "./level": {
       "types": "./lib/modules/level.d.ts",
       "import": "./lib/modules/level.js",
-      "require": "./lib/modules/level.js"
+      "require": "./lib/modules/level.cjs"
     },
     "./lodash": {
       "types": "./lib/modules/lodash.d.ts",
       "import": "./lib/modules/lodash.js",
-      "require": "./lib/modules/lodash.js"
+      "require": "./lib/modules/lodash.cjs"
     },
     "./log4js": {
       "types": "./lib/modules/log4js.d.ts",
       "import": "./lib/modules/log4js.js",
-      "require": "./lib/modules/log4js.js"
+      "require": "./lib/modules/log4js.cjs"
     },
     "./moment": {
       "types": "./lib/modules/moment.d.ts",
       "import": "./lib/modules/moment.js",
-      "require": "./lib/modules/moment.js"
+      "require": "./lib/modules/moment.cjs"
     },
     "./schedule": {
       "types": "./lib/modules/node-schedule.d.ts",
       "import": "./lib/modules/node-schedule.js",
-      "require": "./lib/modules/node-schedule.js"
+      "require": "./lib/modules/node-schedule.cjs"
     },
     "./node-schedule": {
       "types": "./lib/modules/node-schedule.d.ts",
       "import": "./lib/modules/node-schedule.js",
-      "require": "./lib/modules/node-schedule.js"
+      "require": "./lib/modules/node-schedule.cjs"
     },
     "./redis": {
       "types": "./lib/modules/redis.d.ts",
       "import": "./lib/modules/redis.js",
-      "require": "./lib/modules/redis.js"
+      "require": "./lib/modules/redis.cjs"
     },
     "./ws": {
       "types": "./lib/modules/ws.d.ts",
       "import": "./lib/modules/ws.js",
-      "require": "./lib/modules/ws.js"
+      "require": "./lib/modules/ws.cjs"
     },
     "./yaml": {
       "types": "./lib/modules/yaml.d.ts",
       "import": "./lib/modules/yaml.js",
-      "require": "./lib/modules/yaml.js"
+      "require": "./lib/modules/yaml.cjs"
     }
   },
-  "main": "./lib/cjs/index.js",
-  "module": "./lib/esm/index.js",
-  "types": "./lib/types/index.d.ts",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "bin": {
     "k": "lib/main/scripts.js",
     "karin": "lib/main/scripts.js",
@@ -136,10 +135,9 @@
     ".": "node lib/cli/start.js .",
     "alias": "tsc-alias -p tsconfig.json",
     "app": "node index.js",
-    "build": "tsup --config tsup.config.ts",
-    "build:pkg": "tsc --project tsconfig.pkg.mjs.json && tsc --project tsconfig.pkg.cjs.json",
+    "build": "tsc --project tsconfig.json && npm run alias && npm run cp",
     "cp": "node lib/cli/cp.js",
-    "dev": "tsup --watch",
+    "dev": "node lib/main/scripts.js dev",
     "init": "node lib/main/scripts.js init",
     "lint": "eslint src/**/*.ts --fix",
     "pr": "node lib/cli/pr.js",
@@ -176,8 +174,7 @@
     "sort-package-json": "^2.10.0",
     "tsc-alias": "^1.8.10",
     "tsx": "^4.19.1",
-    "typescript": "^5.6.3",
-    "tsup": "^8.0.2"
+    "typescript": "^5.6.3"
   },
   "peerDependencies": {
     "node-karin": "file:./lib"

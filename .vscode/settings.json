@@ -10,7 +10,7 @@
   },
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
-    "tsconfig.json": "tsconfig.*.json, env.d.ts",
+    "tsconfig.json": "tsconfig.*.json, env.d.ts, tsup.config.ts",
     "package.json": "package-lock.json, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .prettier*, prettier*, .editorconfig, CHANGELOG.md, CODE_OF_CONDUCT.md"
   },
   "files.autoSave": "onFocusChange",

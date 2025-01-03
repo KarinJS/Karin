@@ -9,7 +9,7 @@ async function main (
   karin: typeof import('./main')
 ) {
   /** 每次启动都检查 */
-  const { initIndex } = await import('../../packages/cli/cfg')
+  const { initIndex } = await import('../cli/cfg')
   await initIndex()
 
   const pkg = await import('./package').then((res) => res.pkg())
@@ -35,7 +35,7 @@ async function main (
  * @description 初始化基本配置
  */
 async function init () {
-  const { init } = await import('../../packages/cli/cfg')
+  const { init } = await import('../cli/cfg')
   await init()
 }
 
@@ -43,7 +43,7 @@ async function init () {
  * @description 更新插件
  */
 async function up () {
-  const { up } = await import('../../packages/cli/up')
+  const { up } = await import('./up')
   await up()
 }
 
