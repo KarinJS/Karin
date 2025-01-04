@@ -45,13 +45,13 @@ export interface PkgInfo {
    */
   dir: string
   /**
-   * 获取`package.json`绝对路径
-   */
-  pkgPath: string
-  /**
    * apps绝对路径列表
-   */
+  */
   apps: string[]
+  /**
+  * 获取`package.json`绝对路径
+  */
+  get pkgPath (): string
   /**
    * 读取`package.json`文件
    */

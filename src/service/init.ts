@@ -1,17 +1,28 @@
-import { init, port } from '@/utils/config'
+import { init, port, host } from '@/utils/config'
+import { processHandler, checkProcess } from '@/core/internal/process'
+
+/** 初始化config */
+init()
+
+/** 初始化进程 */
+processHandler()
+await checkProcess(port())
 
 const main = async () => {
-  /** 初始化config */
-  init()
-
-  /** 初始化进程 */
-  const { processHandler, checkProcess } = await import('@/core/internal/process')
-  processHandler()
-  await checkProcess(port())
-
   /** 加载插件 */
-  const { LoaderPlugin } = await import('@/plugin/loader')
-  await new LoaderPlugin().init()
+  const [
+    { LoaderPlugin },
+    { listen },
+  ] = await Promise.all([
+    import('@/plugin/loader'),
+    import('@/server'),
+    import('@/adapter'),
+  ])
+
+  await Promise.all([
+    new LoaderPlugin().init(),
+    listen(port(), host()),
+  ])
 }
 
-await main()
+main()

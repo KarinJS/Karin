@@ -7,9 +7,9 @@ export const wss: WebSocketServer = new WebSocketServer({ server })
 
 wss.on('error', (error: NodeJS.ErrnoException) => {
   if (error.code === 'EADDRINUSE') {
-    logger.fatal(`[websocket] 端口 ${process.env.karin_port} 已被占用，无法启动 WebSocket 服务`)
+    logger.fatal(`[server] 端口 ${process.env.karin_port} 已被占用，无法启动 http WebSocket 服务`)
   } else {
-    logger.fatal(`[websocket] WebSocket服务启动失败: ${error.message}`)
+    logger.fatal(`[server] http服务启动失败: ${error.message}`)
   }
 
   throw error

@@ -3,11 +3,12 @@
     "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
     "baseUrl": ".",
-    "declaration": true,
+    "declaration": false,
     "esModuleInterop": true,
     "module": "ES2022",
     "moduleResolution": "Bundler",
     "noImplicitAny": true,
+    "skipLibCheck": true,
     "paths": {
       "@/*": ["src/*"],
       "@fs": ["src/core/utils/fs/main"]

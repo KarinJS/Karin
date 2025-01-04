@@ -23,10 +23,4 @@ declare global {
   }
 }
 
-import { Debugger } from 'debug'
-
-declare global {
-  var debug: Debugger
-}
-
 export { }

@@ -1,6 +1,5 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { randomUUID } from 'node:crypto'
 import { AdapterBase } from '../base'
 import { listeners } from '@/core/internal/listeners'
 import { buffer } from '@/utils/fs/data'
@@ -8,11 +7,13 @@ import { server } from '@/utils/config'
 import { consolePath } from '@/root'
 import { segment } from '@/utils/message'
 import { createFriendMessage, createGroupMessage } from '@/event/create'
+import { contactFriend, contactGroup, senderFriend, senderGroup } from '@/event'
+
 import type { AdapterType, SendMsgResults } from '@/types/adapter'
 import type { Contact } from '@/types/event'
 import type { Elements } from '@/types/segment'
-import { contactFriend, contactGroup, senderFriend, senderGroup } from '@/event'
 
+let index = 0
 const botID = 'console'
 
 /**
@@ -81,7 +82,7 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
 
   async sendMsg (contact: Contact, elements: Array<Elements>, retryCount?: number): Promise<SendMsgResults> {
     const time = Date.now()
-    const messageId = randomUUID()
+    const messageId = (++index).toString()
     const result: SendMsgResults = {
       message_id: messageId,
       messageId,
@@ -103,37 +104,10 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
         continue
       }
 
-      if (v.type === 'image') {
-        let url = ''
-        if (v.file.startsWith('http')) {
-          url = v.file
-        } else {
-          url = await this.getUrl(v.file, '.png')
-        }
-        msg.push(`[image: ${url} ]`)
-        continue
-      }
-
-      if (v.type === 'record') {
-        let url = ''
-        if (v.file.startsWith('http')) {
-          url = v.file
-        } else {
-          url = await this.getUrl(v.file, '.mp3')
-        }
-
-        msg.push(`[record: ${url} ]`)
-        continue
-      }
-
-      if (v.type === 'video') {
-        let url = ''
-        if (v.file.startsWith('http')) {
-          url = v.file
-        } else {
-          url = await this.getUrl(v.file, '.mp4')
-        }
-        msg.push(`[video: ${url} ]`)
+      // if (['image', 'record', 'video'].includes(v.type)) {
+      if (v.type === 'image' || v.type === 'record' || v.type === 'video') {
+        const url = v.file.startsWith('http') ? v.file : await this.getUrl(v.file, '.png')
+        msg.push(`[${v.type}: ${logger.blue(url)} ]`)
         continue
       }
 
@@ -153,7 +127,7 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
 
   async getUrl (data: string | Buffer, ext: string) {
     const cfg = server()
-    const name = randomUUID()
+    const name = (++index).toString()
     const file = path.join(consolePath, `${name}${ext}`)
     await fs.promises.writeFile(file, await buffer(data))
 
@@ -168,3 +142,5 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
     return `http://127.0.0.1:${cfg.port}/console/${name}${ext}?token=${cfg.console.token}`
   }
 }
+
+export const adapter = new AdapterConsole()

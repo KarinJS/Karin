@@ -94,7 +94,7 @@ export const command: CommandType = <T extends keyof MessageEventMap = keyof Mes
     type: 'fnc',
     event: options.event || ('message' as T),
     fnc,
-    log: createLogger(options.log),
+    log: createLogger(options.log, true),
     permission: options.perm || options.permission || 'all',
     priority: isNaN(rank) ? 10000 : rank,
     reg,

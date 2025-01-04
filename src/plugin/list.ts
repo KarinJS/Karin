@@ -92,6 +92,30 @@ const getPluginsInfo = async (list: string[]): Promise<PkgInfo[]> => {
   return info
 }
 
+const createPkg = (
+  type: PkgInfo['type'],
+  name: string,
+  dir: string,
+  apps: string[]
+): PkgInfo => {
+  return {
+    type,
+    name,
+    apps,
+    dir,
+    id: -1,
+    get pkgPath () {
+      const file = path.join(this.dir, 'package.json')
+      if (!fs.existsSync(file)) return ''
+      return file
+    },
+    get pkgData () {
+      if (!this.pkgPath) return {}
+      return requireFileSync(this.pkgPath)
+    },
+  }
+}
+
 /**
  * 获取app插件信息
  * @param dir 插件目录
@@ -100,17 +124,7 @@ const getPluginsInfo = async (list: string[]): Promise<PkgInfo[]> => {
  */
 const getAppInfo = async (info: PkgInfo[], dir: string, name: string, ext: string[]) => {
   const apps = filesByExt(dir, ext, 'abs')
-  info.push({
-    type: 'app',
-    name,
-    apps,
-    dir,
-    id: -1,
-    pkgPath: path.join(dir, 'package.json'),
-    get pkgData () {
-      return requireFileSync(this.pkgPath)
-    },
-  })
+  info.push(createPkg('app', name, dir, apps))
 }
 
 /**
@@ -122,17 +136,7 @@ const getAppInfo = async (info: PkgInfo[], dir: string, name: string, ext: strin
 const getGitInfo = async (info: PkgInfo[], dir: string, name: string, ext: string[]) => {
   const pkg = await requireFile(path.join(dir, 'package.json'))
   if (!pkg || !pkg.karin) {
-    info.push({
-      type: 'git',
-      name,
-      apps: [],
-      dir,
-      id: -1,
-      pkgPath: path.join(dir, 'package.json'),
-      get pkgData () {
-        return requireFileSync(this.pkgPath)
-      },
-    })
+    info.push(createPkg('git', name, dir, []))
     return
   }
 
@@ -161,17 +165,7 @@ const getGitInfo = async (info: PkgInfo[], dir: string, name: string, ext: strin
     apps.push(...filesByExt(appPath, ext, 'abs'))
   }))
 
-  info.push({
-    type: 'git',
-    name,
-    apps,
-    dir,
-    id: -1,
-    pkgPath: path.join(dir, 'package.json'),
-    get pkgData () {
-      return requireFileSync(this.pkgPath)
-    },
-  })
+  info.push(createPkg('git', name, dir, apps))
 }
 
 /**
@@ -185,17 +179,7 @@ const getNpmInfo = async (info: PkgInfo[], dir: string, name: string) => {
   const pkg = await requireFile(path.join(dir, 'package.json'))
 
   if (!pkg.karin?.apps?.length) {
-    info.push({
-      type: 'npm',
-      name,
-      apps,
-      dir,
-      id: -1,
-      pkgPath: path.join(dir, 'package.json'),
-      get pkgData () {
-        return requireFileSync(this.pkgPath)
-      },
-    })
+    info.push(createPkg('npm', name, dir, []))
     return
   }
 
@@ -212,17 +196,7 @@ const getNpmInfo = async (info: PkgInfo[], dir: string, name: string) => {
     apps.push(...filesByExt(appPath, ext, 'abs'))
   }))
 
-  info.push({
-    type: 'npm',
-    name,
-    apps,
-    dir,
-    id: -1,
-    pkgPath: path.join(dir, 'package.json'),
-    get pkgData () {
-      return requireFileSync(this.pkgPath)
-    },
-  })
+  info.push(createPkg('npm', name, dir, apps))
 }
 
 /**

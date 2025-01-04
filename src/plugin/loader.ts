@@ -70,19 +70,19 @@ export class LoaderPlugin {
       debug('debug: cache', cache)
 
       /** ts入口 */
-      if (isTsx() && pkg.pkgData.karin?.main) {
+      if (pkg.type !== 'app' && isTsx() && pkg?.pkgData?.karin?.main) {
         const file = path.join(pkg.dir, pkg.pkgData.karin.main)
         this.loaderMain(pkg.name, file)
       }
 
       /** js入口 */
-      if (pkg.pkgData.main) {
+      if (pkg.type !== 'app' && pkg?.pkgData?.main) {
         const file = path.join(pkg.dir, pkg.pkgData.main)
         this.loaderMain(pkg.name, file)
       }
 
       /** 静态资源目录 */
-      if (pkg.pkgData?.karin?.static) {
+      if (pkg.type !== 'app' && pkg?.pkgData?.karin?.static) {
         const list = Array.isArray(pkg.pkgData.karin.static) ? pkg.pkgData.karin.static : [pkg.pkgData.karin.static]
         cache.static.push(...list.map(file => path.resolve(pkg.dir, file)))
       }
@@ -92,7 +92,22 @@ export class LoaderPlugin {
     this.sort()
     errorHandler.printMissing()
     logger.info('插件加载完成')
+
+    const color = (text: string) => logger.chalk.magentaBright(text)
+    logger.info(`${color('plugin')}: ${Object.keys(cache.index).length}`)
+    Object.keys(cache.count).forEach((v) => {
+      if (v === 'handler') {
+        const { key, fnc } = cache.count.handler
+        logger.info(`${color(v + '.key')} ${key}`)
+        logger.info(`${color(v + '.fnc')} ${fnc}`)
+        return
+      }
+      logger.info(`${color(v)}: ${cache.count[v as keyof typeof cache.count]}`)
+    })
+
     logger.info(logger.green('-----------'))
+    logger.mark(`karin 启动完成: 耗时 ${logger.green(process.uptime().toFixed(2))} 秒...`)
+    debug('debug: 插件加载完成')
   }
 
   /**

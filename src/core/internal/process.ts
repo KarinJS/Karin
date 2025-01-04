@@ -23,6 +23,12 @@ export const processHandler = () => {
   process.on('uncaughtException', error => listeners.emit('error', error))
   /** 捕获未处理的Promise错误 */
   process.on('unhandledRejection', error => listeners.emit('error', error))
+  /** 捕获Promise错误 */
+  process.on('rejectionHandled', error => listeners.emit('error', error))
+  /** 捕获未处理的Promise错误 */
+  process.on('multipleResolves', error => listeners.emit('error', error))
+
+  listeners.on('error', (error: unknown) => logger.error(error))
 }
 
 /**

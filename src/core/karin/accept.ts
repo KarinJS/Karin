@@ -20,7 +20,7 @@ export const accept = <T extends keyof NoticeAndRequest> (
   return {
     event,
     fnc,
-    log: createLogger(options.log),
+    log: createLogger(options.log, true),
     adapter: Array.isArray(options.adapter) ? options.adapter : [],
     dsbAdapter: Array.isArray(dsbAdapter) ? dsbAdapter : [],
     file: createFile('accept', options.name || 'accept'),
