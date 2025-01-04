@@ -30,7 +30,7 @@ const create = async (options: RedisClientOptions) => {
  * @returns 是否成功
  */
 const start = async () => {
-  logger.debug('[service][redis] 正在尝试启动 Redis...')
+  logger.debug('[redis] 正在尝试启动 Redis...')
 
   if (isWin()) {
     // tips: windows仅适配 https://github.com/redis-windows/redis-windows 项目
@@ -54,22 +54,22 @@ export const createRedis = async (): Promise<Client> => {
   const options = redis()
   let client = await create(options)
   if (client) {
-    logger.info(`[service][redis] ${logger.green('Redis 连接成功')}`)
+    logger.info(`[redis] ${logger.green('Redis 连接成功')}`)
     return client as Client
   }
 
   /** 第一次启动失败 */
   const result = await start()
   if (result) {
-    logger.debug(logger.green('[service][redis] 主动拉起 Redis 成功'))
+    logger.debug(logger.green('[redis] 主动拉起 Redis 成功'))
     client = await create(options)
   } else {
-    logger.debug(logger.red('[service][redis] 主动拉起 Redis 失败'))
+    logger.debug(logger.red('[redis] 主动拉起 Redis 失败'))
   }
 
   if (client) return client as Client
 
-  logger.debug(logger.yellow('[service][redis] 将降级为 redis-mock 实现'))
+  logger.debug(logger.yellow('[redis] 将降级为 redis-mock 实现'))
   return mock()
 }
 

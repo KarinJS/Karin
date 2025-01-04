@@ -10,8 +10,8 @@
   },
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
-    "tsconfig.json": "tsconfig.*.json, env.d.ts, tsup.config.ts",
-    "package.json": "package-lock.json, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .prettier*, prettier*, .editorconfig, CHANGELOG.md, CODE_OF_CONDUCT.md"
+    "tsconfig.json": "tsconfig.*.json, env.d.ts, tsup.*.ts",
+    "package.json": "package-lock.json, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .prettier*, prettier*, .editorconfig, CHANGELOG.md, CODE_OF_CONDUCT.md, .env"
   },
   "files.autoSave": "onFocusChange",
   "javascript.preferences.quoteStyle": "single",

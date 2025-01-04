@@ -39,20 +39,35 @@ export class LoaderPlugin {
    * @description 初始化插件
    */
   public async init () {
+    debug('debug: init loader')
+
     logger.info(logger.green('-----------'))
     logger.info('加载插件中...')
 
     const list = await getPlugins('all', true)
+    debug('debug: getPlugins', list)
+
     for (const pkg of list) {
       pkg.id = ++seq
       cache.index[pkg.id] = pkg
+
+      const files: string[] = []
+      if (pkg.type === 'app') {
+        files.push('config', 'data', 'resources')
+      } else if (Array.isArray(pkg.pkgData.karin?.files)) {
+        files.push(...pkg.pkgData.karin.files)
+      }
+
       /** 创建插件基本文件夹 */
-      await createPluginDir(pkg.name, pkg.pkgData.karin?.files)
+      await createPluginDir(pkg.name, files)
+      debug('debug: createPluginDir', pkg.name, files)
 
       for (const app of pkg.apps) {
         const result = await this.importApp(pkg.name, app)
         this.cachePlugin(result, pkg, app)
       }
+
+      debug('debug: cache', cache)
 
       /** ts入口 */
       if (isTsx() && pkg.pkgData.karin?.main) {
@@ -73,6 +88,7 @@ export class LoaderPlugin {
       }
     }
 
+    debug('debug: cache', cache)
     this.sort()
     errorHandler.printMissing()
     logger.info('插件加载完成')

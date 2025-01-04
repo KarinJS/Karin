@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url'
 /** 当前文件的绝对路径 cjs */
 const filename = fileURLToPath(import.meta.url)
 /** 以node-karin为根目录的绝对路径 */
-export const karinDir = Object.freeze(path.join(filename, '../../../..').replace(/\\/g, '/'))
+export const karinDir = Object.freeze(path.join(filename, '../..').replace(/\\/g, '/'))
 /** 插件跟目录 */
 export const pluginDir = Object.freeze(path.join(process.cwd(), 'plugins'))
 

@@ -1,7 +1,8 @@
 // tips: 请先调用
-import './config'
 import { config } from '@/utils/config'
 import { createLogger } from '@/utils/logger'
+
+debug('debug: init logger')
 
 /**
  * @public

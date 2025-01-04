@@ -1,5 +1,5 @@
 import fs from '@/utils/fs/main'
-import * as root from '@root'
+import * as root from '@/root'
 import { setPort, setVersion } from '@/env'
 import { updateHttpBotToken } from '@/core/service/server'
 import {
@@ -17,6 +17,8 @@ import type {
   GroupGuild,
   Package,
 } from '@/types/config'
+
+debug('debug: init config')
 
 /** node-karin的package */
 export const pkg = () => fs.requireFileSync<Package>(root.karinDir + '/package.json')

@@ -3,6 +3,8 @@ import { exec } from '@/utils/system/exec'
 import { getPid } from '@/utils/system/pid'
 import { axios, sleep, uptime } from '@/utils/common/index'
 
+let exitStatus = false
+
 /** 处理基本信号 */
 export const processHandler = () => {
   /** 监听挂起信号 在终端关闭时触发 */
@@ -15,8 +17,6 @@ export const processHandler = () => {
   process.once('SIGBREAK', code => processExit(code))
   /** 监听退出信号 与 SIGINT 类似，但会生成核心转储 */
   process.once('SIGQUIT', code => processExit(code))
-  /** 监听退出信号 Node.js进程退出时触发 */
-  process.once('exit', code => processExit(code))
   /** 捕获警告 */
   process.on('warning', warning => listeners.emit('warn', warning))
   /** 捕获错误 */
@@ -72,8 +72,11 @@ export const checkProcess = async (port: number) => {
  */
 export const processExit = async (code: unknown) => {
   try {
-    // const { redis, level } = await import('../../main/index')
-    // await Promise.allSettled([redis.save(), level.close()])
+    if (exitStatus) return
+    exitStatus = true
+
+    const { redis, level } = await import('@/service/db')
+    await Promise.allSettled([redis.save(), level.close()])
 
     logger.mark(`运行结束 运行时间：${uptime()} 退出码：${code ?? '未知'}`)
 
@@ -81,8 +84,11 @@ export const processExit = async (code: unknown) => {
     if (process.env.pm_id) {
       await exec(`pm2 delete ${process.env.pm_id}`)
     }
-    process.exit()
   } finally {
+    /** exit还会再触发一次事件  */
+    setTimeout(() => {
+      exitStatus = true
+    }, 200)
     process.exit()
   }
 }

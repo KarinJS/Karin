@@ -1,4 +1,4 @@
-import { levelPath } from '@root'
+import { levelPath } from '@/root'
 import { Level } from 'level'
 
 export class LevelDB extends Level {

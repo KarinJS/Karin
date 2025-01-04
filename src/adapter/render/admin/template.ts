@@ -3,7 +3,7 @@ import path from 'node:path'
 import chokidar from 'chokidar'
 import template from 'art-template'
 import { Options } from './types'
-import { htmlPath } from '@root'
+import { htmlPath } from '@/root'
 import { existToMkdirSync } from '@/utils/fs/fsSync'
 
 /** 模板缓存 */

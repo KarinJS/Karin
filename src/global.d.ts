@@ -1,6 +1,7 @@
+/* eslint-disable no-var */
 declare global {
-  // eslint-disable-next-line no-var
   var logger: import('@/types/system').Logger
+  var debug: ReturnType<typeof import('@/utils/debug/debug').createDebug>
 }
 
 declare global {
@@ -20,6 +21,12 @@ declare global {
       karin_port: string
     }
   }
+}
+
+import { Debugger } from 'debug'
+
+declare global {
+  var debug: Debugger
 }
 
 export { }

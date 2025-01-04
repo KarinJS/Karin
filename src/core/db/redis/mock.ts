@@ -2,7 +2,7 @@ import { Level } from 'level'
 import lodash from 'lodash'
 import moment from 'moment'
 import EventEmitter from 'node:events'
-import { redisLevelPath } from '@root'
+import { redisLevelPath } from '@/root'
 import type { SetOptions } from 'redis'
 import { existToMkdirSync } from '@/utils/fs/fsSync'
 

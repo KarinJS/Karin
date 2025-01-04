@@ -3,7 +3,7 @@ import { app } from '../app'
 import path from 'node:path'
 import { server } from '@/utils/config'
 import { isLocalRequest } from '@/utils/system/ip'
-import { consolePath } from '@root'
+import { consolePath } from '@/root'
 
 app.get('/console/*', async (req, res) => {
   const cfg = server()

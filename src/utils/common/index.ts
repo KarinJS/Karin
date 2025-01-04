@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import Axios from 'axios'
 import path from 'node:path'
-import { tempPath } from '@root'
+import { tempPath } from '@/root'
 import { YamlEditor } from '@/utils/fs/yaml'
 import { ffprobe, ffmpeg } from '@/utils/system/ffmpeg'
 import { formatTime as FormatTime } from '@/utils/system/time'
@@ -76,7 +76,7 @@ export const axios: AxiosFn = async (
     const config = typeof paramOrUrl === 'string' ? { ...param, url: paramOrUrl, method: type } : paramOrUrl
     return await Axios(config)
   } catch (error) {
-    logger.trace(error)
+    logger.trace((error as Error).stack || error)
     return null
   }
 }

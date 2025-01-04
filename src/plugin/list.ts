@@ -1,11 +1,11 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { isTsx } from '@/env'
-import { pluginDir as dir, karinDir } from '@root'
+import { filesByExt } from '@/utils/fs/path'
+import { pluginDir as dir, karinDir } from '@/root'
 import { requireFile, requireFileSync } from '@/utils/fs/require'
 
 import type { GetPluginType, PkgInfo, GetPluginReturn } from '@/types/plugin'
-import { filesByExt } from '@/utils/fs/path'
 
 /**
  * 缓存
@@ -99,7 +99,7 @@ const getPluginsInfo = async (list: string[]): Promise<PkgInfo[]> => {
  * @param ext 文件后缀
  */
 const getAppInfo = async (info: PkgInfo[], dir: string, name: string, ext: string[]) => {
-  const apps = filesByExt(dir, ext, 'abs').map(v => path.join(dir, v))
+  const apps = filesByExt(dir, ext, 'abs')
   info.push({
     type: 'app',
     name,
@@ -158,7 +158,7 @@ const getGitInfo = async (info: PkgInfo[], dir: string, name: string, ext: strin
   await Promise.allSettled(files.map(async app => {
     const appPath = path.join(dir, app)
     if (!fs.existsSync(appPath)) return
-    apps.push(...filesByExt(appPath, ext, 'abs').map(v => path.join(appPath, v)))
+    apps.push(...filesByExt(appPath, ext, 'abs'))
   }))
 
   info.push({
@@ -209,7 +209,7 @@ const getNpmInfo = async (info: PkgInfo[], dir: string, name: string) => {
   await Promise.allSettled(files.map(async app => {
     const appPath = path.join(dir, app)
     if (!fs.existsSync(appPath)) return
-    apps.push(...filesByExt(appPath, ext, 'abs').map(v => path.join(appPath, v)))
+    apps.push(...filesByExt(appPath, ext, 'abs'))
   }))
 
   info.push({

@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import chalk from 'chalk'
-import { logsPath } from '@root'
+import { logsPath } from '@/root'
 import log4js, { type Configuration } from 'log4js'
 import type { Logger, LoggerOptions } from '@/types/system'
 

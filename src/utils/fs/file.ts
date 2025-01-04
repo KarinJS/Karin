@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { basePath } from '@root'
+import { basePath } from '@/root'
 import { promisify } from 'node:util'
 import { pipeline } from 'node:stream'
 import axios, { AxiosError } from 'axios'
