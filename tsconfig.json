@@ -8,18 +8,18 @@
     "module": "ES2022",
     "moduleResolution": "Bundler",
     "noImplicitAny": true,
-    "skipLibCheck": true,
+    "outDir": "./lib",
     "paths": {
       "@/*": ["src/*"],
       "@fs": ["src/core/utils/fs/main"]
     },
     "resolveJsonModule": true,
     "rootDir": "./src",
-    "outDir": "./lib",
+    "skipLibCheck": true,
     "sourceMap": false,
     "strict": true,
     "target": "ES2022",
-    "types": ["@types/node"]
+    "types": ["@types/node", "@karinjs/karin-types"]
   },
   "exclude": ["@karinjs", "default", "lib", "plugins", "node_modules", "logs"],
   "include": ["src/**/*", "src/global.d.ts"],

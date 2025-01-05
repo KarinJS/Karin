@@ -1,4 +1,4 @@
-import { sendMsg } from '../service'
+import { sendMsg } from '@/service/bot'
 import { master, admin } from '@/utils/config'
 import type { Elements } from '@/types/segment'
 import type { Contact } from '@/types/event'

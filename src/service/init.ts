@@ -9,7 +9,6 @@ processHandler()
 await checkProcess(port())
 
 const main = async () => {
-  /** 加载插件 */
   const [
     { LoaderPlugin },
     { listen },
@@ -20,7 +19,9 @@ const main = async () => {
   ])
 
   await Promise.all([
+    /** 加载插件 */
     new LoaderPlugin().init(),
+    /** 启动服务 */
     listen(port(), host()),
   ])
 }

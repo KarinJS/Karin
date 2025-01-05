@@ -25,95 +25,7 @@
   "license": "MIT",
   "author": "shijin",
   "type": "module",
-  "exports": {
-    ".": {
-      "types": "./lib/index.d.ts",
-      "import": "./lib/index.js",
-      "require": "./lib/index.cjs"
-    },
-    "./template": {
-      "types": "./lib/modules/art-template.d.ts",
-      "import": "./lib/modules/art-template.js",
-      "require": "./lib/modules/art-template.cjs"
-    },
-    "./art-template": {
-      "types": "./lib/modules/art-template.d.ts",
-      "import": "./lib/modules/art-template.js",
-      "require": "./lib/modules/art-template.cjs"
-    },
-    "./axios": {
-      "types": "./lib/modules/axios.d.ts",
-      "import": "./lib/modules/axios.js",
-      "require": "./lib/modules/axios.cjs"
-    },
-    "./chalk": {
-      "types": "./lib/modules/chalk.d.ts",
-      "import": "./lib/modules/chalk.js",
-      "require": "./lib/modules/chalk.cjs"
-    },
-    "./chokidar": {
-      "types": "./lib/modules/chokidar.d.ts",
-      "import": "./lib/modules/chokidar.js",
-      "require": "./lib/modules/chokidar.cjs"
-    },
-    "./commander": {
-      "types": "./lib/modules/commander.d.ts",
-      "import": "./lib/modules/commander.js",
-      "require": "./lib/modules/commander.cjs"
-    },
-    "./express": {
-      "types": "./lib/modules/express.d.ts",
-      "import": "./lib/modules/express.js",
-      "require": "./lib/modules/express.cjs"
-    },
-    "./level": {
-      "types": "./lib/modules/level.d.ts",
-      "import": "./lib/modules/level.js",
-      "require": "./lib/modules/level.cjs"
-    },
-    "./lodash": {
-      "types": "./lib/modules/lodash.d.ts",
-      "import": "./lib/modules/lodash.js",
-      "require": "./lib/modules/lodash.cjs"
-    },
-    "./log4js": {
-      "types": "./lib/modules/log4js.d.ts",
-      "import": "./lib/modules/log4js.js",
-      "require": "./lib/modules/log4js.cjs"
-    },
-    "./moment": {
-      "types": "./lib/modules/moment.d.ts",
-      "import": "./lib/modules/moment.js",
-      "require": "./lib/modules/moment.cjs"
-    },
-    "./schedule": {
-      "types": "./lib/modules/node-schedule.d.ts",
-      "import": "./lib/modules/node-schedule.js",
-      "require": "./lib/modules/node-schedule.cjs"
-    },
-    "./node-schedule": {
-      "types": "./lib/modules/node-schedule.d.ts",
-      "import": "./lib/modules/node-schedule.js",
-      "require": "./lib/modules/node-schedule.cjs"
-    },
-    "./redis": {
-      "types": "./lib/modules/redis.d.ts",
-      "import": "./lib/modules/redis.js",
-      "require": "./lib/modules/redis.cjs"
-    },
-    "./ws": {
-      "types": "./lib/modules/ws.d.ts",
-      "import": "./lib/modules/ws.js",
-      "require": "./lib/modules/ws.cjs"
-    },
-    "./yaml": {
-      "types": "./lib/modules/yaml.d.ts",
-      "import": "./lib/modules/yaml.js",
-      "require": "./lib/modules/yaml.cjs"
-    }
-  },
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
+  "main": "./src/index.ts",
   "bin": {
     "k": "lib/main/scripts.js",
     "karin": "lib/main/scripts.js",
@@ -123,6 +35,7 @@
     "/lib/**/*.js",
     "/lib/**/*.d.ts",
     "/default/**",
+    "/packages/module",
     "CHANGELOG.md",
     "LICENSE",
     "package.json",
@@ -132,20 +45,26 @@
     "plugins/**"
   ],
   "scripts": {
-    ".": "node lib/cli/start.js .",
+    ".": "tsx index.ts",
     "alias": "tsc-alias -p tsconfig.json",
-    "app": "node index.js",
-    "build": "tsc --project tsconfig.json && npm run alias && npm run cp",
-    "build:prod": "tsup --config tsup.config.ts",
-    "cp": "node lib/cli/cp.js",
-    "dev": "node lib/main/scripts.js dev",
-    "init": "node lib/main/scripts.js init",
-    "lint": "eslint src/**/*.ts --fix",
+    "app": "tsx index.ts",
+    "app:w": "tsx watch --include \"./src/**/*.ts\" index.ts",
+    "app:watch": "tsx watch --include \"./src/**/*.ts\" index.ts",
+    "build": "pnpm build:pkg && pnpm build:prod",
+    "build:pkg": "tsup --config tsup.pkg.ts && node packages/cli/rm.mjs",
+    "build:prod": "tsup --config tsup.config.ts && pnpm cli:types -prod",
+    "build:types": "tsup --config tsup.types.ts",
+    "build:dev": "pnpm build:types && pnpm cli:types",
+    "cli:pkg": "node packages/cli/build.mjs",
+    "cli:prod": "node packages/cli/build.prod.mjs",
+    "cli:types": "node packages/cli/types.mjs",
+    "debug": "tsx index.ts --debug",
+    "debug:w": "tsx watch --include \"./src/**/*.ts\"  --debug",
+    "debug:watch": "tsx watch --include \"./src/**/*.ts\"  --debug",
     "pr": "node lib/cli/pr.js",
     "pub": "npm publish --access public",
     "pub-beta": "npm publish --tag beta",
-    "sort": "npx sort-package-json && sort-json tsconfig.json",
-    "start": "node lib/cli/start.js start"
+    "sort": "npx sort-package-json && sort-json tsconfig.json"
   },
   "dependencies": {
     "@types/express": "^5.0.0",
@@ -173,13 +92,12 @@
     "neostandard": "^0.11.6",
     "sort-json": "^2.0.1",
     "sort-package-json": "^2.10.0",
-    "tsc-alias": "^1.8.10",
     "tsup": "^8.3.5",
-    "tsx": "^4.19.1",
-    "typescript": "^5.7.2"
+    "tsx": "^4.19.1"
   },
   "peerDependencies": {
-    "node-karin": "file:./lib"
+    "node-karin": "workspace:*",
+    "@karinjs/karin-types": "workspace:*"
   },
   "engines": {
     "node": ">=18"
@@ -187,5 +105,90 @@
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    },
+    "./template": {
+      "import": "./src/packages/module/art-template.ts",
+      "types": "./packages/module/art-template.d.ts",
+      "require": "./src/packages/module/art-template.ts"
+    },
+    "./art-template": {
+      "import": "./src/packages/module/art-template.ts",
+      "types": "./packages/module/art-template.d.ts",
+      "require": "./src/packages/module/art-template.ts"
+    },
+    "./axios": {
+      "import": "./src/packages/module/axios.ts",
+      "types": "./packages/module/axios.d.ts",
+      "require": "./src/packages/module/axios.ts"
+    },
+    "./chalk": {
+      "import": "./src/packages/module/chalk.ts",
+      "types": "./packages/module/chalk.d.ts",
+      "require": "./src/packages/module/chalk.ts"
+    },
+    "./chokidar": {
+      "import": "./src/packages/module/chokidar.ts",
+      "types": "./packages/module/chokidar.d.ts",
+      "require": "./src/packages/module/chokidar.ts"
+    },
+    "./commander": {
+      "import": "./src/packages/module/commander.ts",
+      "types": "./packages/module/commander.d.ts",
+      "require": "./src/packages/module/commander.ts"
+    },
+    "./express": {
+      "import": "./src/packages/module/express.ts",
+      "types": "./packages/module/express.d.ts",
+      "require": "./src/packages/module/express.ts"
+    },
+    "./level": {
+      "import": "./src/packages/module/level.ts",
+      "types": "./packages/module/level.d.ts",
+      "require": "./src/packages/module/level.ts"
+    },
+    "./lodash": {
+      "import": "./src/packages/module/lodash.ts",
+      "types": "./packages/module/lodash.d.ts",
+      "require": "./src/packages/module/lodash.ts"
+    },
+    "./log4js": {
+      "import": "./src/packages/module/log4js.ts",
+      "types": "./packages/module/log4js.d.ts",
+      "require": "./src/packages/module/log4js.ts"
+    },
+    "./moment": {
+      "import": "./src/packages/module/moment.ts",
+      "types": "./packages/module/moment.d.ts",
+      "require": "./src/packages/module/moment.ts"
+    },
+    "./schedule": {
+      "import": "./src/packages/module/node-schedule.ts",
+      "types": "./packages/module/node-schedule.d.ts",
+      "require": "./src/packages/module/node-schedule.ts"
+    },
+    "./node-schedule": {
+      "import": "./src/packages/module/node-schedule.ts",
+      "types": "./packages/module/node-schedule.d.ts",
+      "require": "./src/packages/module/node-schedule.ts"
+    },
+    "./redis": {
+      "import": "./src/packages/module/redis.ts",
+      "types": "./packages/module/redis.d.ts",
+      "require": "./src/packages/module/redis.ts"
+    },
+    "./ws": {
+      "import": "./src/packages/module/ws.ts",
+      "types": "./packages/module/ws.d.ts",
+      "require": "./src/packages/module/ws.ts"
+    },
+    "./yaml": {
+      "import": "./src/packages/module/yaml.ts",
+      "types": "./packages/module/yaml.d.ts",
+      "require": "./src/packages/module/yaml.ts"
+    }
   }
 }

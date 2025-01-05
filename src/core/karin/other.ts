@@ -1,6 +1,11 @@
 import { EventEmitter } from 'events'
-import { getAllBot, getAllBotList, getBot, getBotCount } from '@/core/service'
+import { listeners } from '../internal'
+import { getAllBot, getAllBotList, getBot, getBotCount } from '@/service/bot'
+
+import type { WebSocket } from 'ws'
+import type { IncomingMessage } from 'http'
 import type { Contact, FriendSender, GroupSender, Scene } from '@/types/event'
+import type { ConfigMap } from '@/types/config'
 
 class Other extends EventEmitter {
   /** 框架名称 */
@@ -221,4 +226,30 @@ class Other extends EventEmitter {
   }
 }
 
+/**
+ * 将部分事件暴露到外部
+ */
+const events = () => {
+  /** ws建立新链接 */
+  listeners.on('ws:connection', (socket: WebSocket, request: IncomingMessage) => {
+    const key = `ws:connection:${request.url || '/'}`
+    debug(`on ws:connection host: ${request.headers.host} url: ${request.url}`)
+
+    /** 查询是否有对应的监听器在监听此key */
+    if (!other.listenerCount(key)) {
+      socket.close()
+      logger.warn(`[server][webSocket] 连接断开 未找到绑定的路由: ${request.url || '/'}`)
+      return
+    }
+
+    other.emit(key, socket, request)
+  })
+
+  /** 文件发送变动 */
+  listeners.on('watch:file', (type: keyof ConfigMap, old: any, data: any) => {
+    other.emit('file:change', type, old, data)
+  })
+}
+
 export const other = new Other()
+events()

@@ -174,7 +174,7 @@ const fnc = async (
     }
     return false
   } catch (cause) {
-    listeners.emit('error', new Error(ctx.logFnc))
+    listeners.emit('error', new Error(ctx.logFnc, { cause }))
     return false
   } finally {
     plugin.log(ctx.selfId, `${logFnc} 处理完成 ${logger.green(Date.now() - start + 'ms')}`)

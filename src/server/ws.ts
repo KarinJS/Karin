@@ -17,6 +17,12 @@ wss.on('error', (error: NodeJS.ErrnoException) => {
 
 /** 监听 ws 连接 */
 wss.on('connection', (socket, request) => {
-  listeners.emit('ws:connection', { socket, request })
-  listeners.emit(`ws:connection:${socket.url}`, { socket, request })
+  debug(`wss:connection host: ${request.headers.host} url: ${request.url}`)
+
+  if (request.url === '/' || request.url === '/onebot/v11/ws/' || request.url === '/onebot/v11/ws/index') {
+    listeners.emit('ws:connection:onebot', socket, request)
+    return
+  }
+
+  listeners.emit('ws:connection', socket, request)
 })

@@ -179,7 +179,7 @@ const privateCmd = async (
     }
     return false
   } catch (cause) {
-    listeners.emit('error', new Error(ctx.logFnc))
+    listeners.emit('error', new Error(ctx.logFnc, { cause }))
     return false
   } finally {
     const time = logger.green(Date.now() - start + 'ms')

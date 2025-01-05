@@ -121,7 +121,7 @@ export const unregisterBot: UnregisterBot = (type, idOrIndex, address?) => {
       return true
     }
 
-    logger.bot('warn', '', `[service][卸载Bot] 未找到指定Bot: ${JSON.stringify({ type, idOrIndex, address })}`)
+    logger.warn(`[service][卸载Bot] 未找到指定Bot: ${JSON.stringify({ type, idOrIndex, address })}`)
     return false
   }
 
@@ -137,7 +137,7 @@ export const unregisterBot: UnregisterBot = (type, idOrIndex, address?) => {
     return findIndexAndRemove(({ bot }) => bot.selfId === idOrIndex && bot.adapter.address === address)
   }
 
-  logger.bot('warn', '', `[service][卸载Bot] 未知的卸载方式: ${type}`)
+  logger.warn(`[service][卸载Bot] 未知的卸载方式: ${type}`)
   return false
 }
 
@@ -148,21 +148,9 @@ export const unregisterBot: UnregisterBot = (type, idOrIndex, address?) => {
  */
 export const registerBot = (type: AdapterCommunication, bot: AdapterBase) => {
   const id = ++index
-  const tips = (str: string) => logger.green(`[注册Bot][${str}]`)
-  if (type === 'webSocketClient') {
-    logger.bot('info', bot.selfId, `${tips('正向webSocket')} ${bot.account.name}: ${bot.adapter.address}`)
-  } else if (type === 'other') {
-    bot.adapter.address = 'internal://127.0.0.1'
-    logger.bot('info', bot.selfId, `${tips('internal')} ${bot.account.name}`)
-  } else if (type === 'http') {
-    logger.bot('info', bot.selfId, `${tips('HTTP')} ${bot.account.name}: ${bot.adapter.address}`)
-  } else if (type === 'webSocketServer') {
-    logger.bot('info', bot.selfId, `${tips('反向WebSocket')} ${bot.account.name}: ${bot.adapter.address}`)
-  } else if (type === 'grpc') {
-    logger.bot('info', bot.selfId, `${tips('gRPC')} ${bot.account.name}: ${bot.adapter.address}`)
-  }
-
   list.push({ index: id, bot })
+
+  const tips = (str: string) => logger.green(`[注册Bot][${str}]`)
 
   /**
    * @description 重写转发消息方法 添加中间件
@@ -201,6 +189,21 @@ export const registerBot = (type: AdapterCommunication, bot: AdapterBase) => {
       await level.del(key)
     }
   }, 10)
+
+  listeners.once('online', () => {
+    if (type === 'webSocketClient') {
+      logger.bot('info', bot.selfId, `${tips('正向webSocket')} ${bot.account.name}: ${bot.adapter.address}`)
+    } else if (type === 'other') {
+      bot.adapter.address = 'internal://127.0.0.1'
+      logger.bot('info', bot.selfId, `${tips('internal')} ${bot.account.name}`)
+    } else if (type === 'http') {
+      logger.bot('info', bot.selfId, `${tips('HTTP')} ${bot.account.name}: ${bot.adapter.address}`)
+    } else if (type === 'webSocketServer') {
+      logger.bot('info', bot.selfId, `${tips('反向WebSocket')} ${bot.account.name}: ${bot.adapter.address}`)
+    } else if (type === 'grpc') {
+      logger.bot('info', bot.selfId, `${tips('gRPC')} ${bot.account.name}: ${bot.adapter.address}`)
+    }
+  })
 
   return id
 }

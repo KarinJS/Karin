@@ -19,11 +19,21 @@ import type {
   SendMsgResults,
   UserInfo,
 } from './apiResponse'
+import type { Params, Request } from '@/packages/onebot'
 
 /** 适配器类型 */
 export interface AdapterType {
   /** 原生方法 请自行as为对应的适配器类型 */
   super: any
+  /** 原生方法 请自行as为对应的适配器类型 */
+  raw: any
+  /**
+   * onebot专属方法
+   * @param action 请求的方法
+   * @param params 请求的参数
+   * @param time 超时时间 默认为120s
+   */
+  sendApi?: <T extends keyof Params>(action: `${T}`, params: Params[T], time?: number) => Promise<Request[T]>
   /** 适配器信息 */
   adapter: AdapterInfo
 

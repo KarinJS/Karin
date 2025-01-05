@@ -18,7 +18,7 @@ export abstract class RequestBase extends BaseEvent<'request'> {
   /** 通知内容str */
   tips: string
   /** 事件内容 */
-  content: any
+  content: unknown
 
   constructor ({
     subEvent,
@@ -65,6 +65,7 @@ export class PrivateApplyRequest extends RequestBase {
   #subEvent: 'friendApply'
   #contact: PrivateApplyRequestOptions['contact']
   #sender: PrivateApplyRequestOptions['sender']
+  content: PrivateApplyRequestOptions['content']
 
   constructor (options: PrivateApplyRequestOptions) {
     super(Object.assign(options, { subEvent: 'friendApply' as const }))
@@ -72,6 +73,7 @@ export class PrivateApplyRequest extends RequestBase {
     this.#subEvent = 'friendApply'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -119,6 +121,7 @@ export class GroupApplyRequest extends RequestBase {
   #subEvent: 'groupApply'
   #contact: GroupApplyRequestOptions['contact']
   #sender: GroupApplyRequestOptions['sender']
+  content: GroupApplyRequestOptions['content']
 
   constructor (options: GroupApplyRequestOptions) {
     super(Object.assign(options, { subEvent: 'groupApply' as const }))
@@ -126,6 +129,7 @@ export class GroupApplyRequest extends RequestBase {
     this.#subEvent = 'groupApply'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   /**
@@ -184,6 +188,7 @@ export class GroupInviteRequest extends RequestBase {
   #subEvent: 'groupInvite'
   #contact: GroupInviteRequestOptions['contact']
   #sender: GroupInviteRequestOptions['sender']
+  content: GroupInviteRequestOptions['content']
 
   constructor (options: GroupInviteRequestOptions) {
     super(Object.assign(options, { subEvent: 'groupInvite' as const }))
@@ -191,6 +196,7 @@ export class GroupInviteRequest extends RequestBase {
     this.#subEvent = 'groupInvite'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   /**

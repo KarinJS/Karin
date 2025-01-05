@@ -29,6 +29,7 @@ export abstract class AdapterBase implements AdapterType {
   account: AdapterType['account']
   adapter: AdapterType['adapter']
   super: any
+  raw: any
 
   constructor () {
     this.account = { uin: '', uid: '', selfId: '', subId: {}, name: '', avatar: '' }

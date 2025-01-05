@@ -17,7 +17,7 @@ export const ctx = async <T = Message> (e: Event, options?: {
   reply?: boolean
   /** 超时回复文本 默认为'操作超时已取消' */
   replyMsg?: string
-}) => {
+}): Promise<T> => {
   const time = options?.time || 120
   const userId = options?.userId || e.userId || e.user_id
   const key = e.contact.subPeer ? `${e.contact.peer}:${e.contact.subPeer}:${userId}` : `${e.contact.peer}:${userId}`

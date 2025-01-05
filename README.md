@@ -4,9 +4,25 @@
 
 [点击跳转文档](https://karin.fun/)
 
+### 开发
+
+tsx 开发步骤
+
+```bash
+build:dev && pnpm app
+build:dev && pnpm app:w
+build:dev && pnpm app:w --debug
+```
+
+正式发版
+
+```bash
+pnpm build
+```
+
 ### 贡献者
 
-> 🌟星光闪烁，你们的智慧如同璀璨的夜空。感谢所有为**Karin**做出贡献的人！
+> 🌟 星光闪烁，你们的智慧如同璀璨的夜空。感谢所有为**Karin**做出贡献的人！
 
 [![贡献者](https://contributors-img.web.app/image?repo=KarinJS/Karin)](https://github.com/KarinJS/Karin/graphs/contributors)
 

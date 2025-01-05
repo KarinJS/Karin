@@ -38,7 +38,7 @@ export const groupHandler = async (ctx: GroupMessage) => {
   initRole(ctx, config)
   initAlias(ctx, group.alias)
   initEmit(ctx)
-  initPrint(ctx, 'group', '群聊', isPrint ? 'info' : 'debug')
+  initPrint(ctx, 'group', '群消息', isPrint ? 'info' : 'debug')
 
   const context = CTX(ctx)
   if (context) return ctx
@@ -78,7 +78,7 @@ export const groupTempHandler = async (ctx: GroupTempMessage) => {
   initRole(ctx, config)
   initAlias(ctx, group.alias)
   initEmit(ctx)
-  initPrint(ctx, 'groupTemp', '群聊临时消息')
+  initPrint(ctx, 'groupTemp', '群临时消息')
 
   const context = CTX(ctx)
   if (context) return ctx
@@ -230,7 +230,7 @@ const groupsCmd = async (
     }
     return false
   } catch (cause) {
-    listeners.emit('error', new Error(ctx.logFnc))
+    listeners.emit('error', new Error(ctx.logFnc, { cause }))
     return false
   } finally {
     const time = logger.green(Date.now() - start + 'ms')

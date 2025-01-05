@@ -1,7 +1,6 @@
 import fs from '@/utils/fs/main'
 import * as root from '@/root'
 import { setPort, setVersion } from '@/env'
-import { updateHttpBotToken } from '@/core/service/server'
 import {
   cache,
   setStr,
@@ -12,11 +11,14 @@ import {
 } from './cache'
 
 import type {
+  Config,
   ConfigMap,
   FriendDirect,
   GroupGuild,
   Package,
+  Server,
 } from '@/types/config'
+import { listeners } from '@/core/internal'
 
 debug('debug: init config')
 
@@ -109,49 +111,40 @@ export const getYaml = <
 
   const fnc = (name: T) => {
     if (name === 'config') {
-      return (old: any, data: any) => {
-        updateLevel(data?.log4jsCfg?.level || 'info')
-        cache.file.config = data
+      return (old: unknown, data: unknown) => {
+        listeners.emit('watch:file', name, old, data)
+
+        /** 不能直接使用新的文件内容 需要走另外一个获取函数单独获取 */
+        cache.file.config = {} as Config
+        updateLevel((data as Config)?.log4jsCfg?.level || 'info')
       }
     }
 
     if (name === 'groupGuild') {
-      return () => {
+      return (old: unknown, data: unknown) => {
+        listeners.emit('watch:file', name, old, data)
         cache.groupGuild = {}
       }
     }
 
     if (name === 'friendDirect') {
-      return () => {
+      return (old: unknown, data: unknown) => {
+        listeners.emit('watch:file', name, old, data)
         cache.friendDirect = {}
       }
     }
 
     if (name === 'server') {
-      return (old: any, data: any) => {
-        if (!data.onebotHttp || !Array.isArray(data.onebotHttp)) {
-          logger.debug('没有配置onebotHttp 已跳过')
-          return true
-        }
-
-        for (let { selfId, api, token } of data.onebotHttp) {
-          if (selfId === 'default') {
-            continue
-          }
-          selfId = String(selfId)
-          token = String(token)
-          if (!selfId || !api || !api.startsWith('http')) {
-            logger.bot('error', selfId, '请配置正确的 onebot http 信息')
-            continue
-          }
-          updateHttpBotToken(selfId, token)
-        }
-
-        cache.file.server = data
+      return (old: unknown, data: unknown) => {
+        listeners.emit('watch:file', name, old, data)
+        cache.file.server = {} as Server
       }
     }
 
-    return () => true
+    return (old: unknown, data: unknown) => {
+      listeners.emit('watch:file', name, old, data)
+      return true
+    }
   }
 
   return fs.watch<ConfigMap[T]>(
@@ -165,7 +158,7 @@ export const getYaml = <
  * @param isRefresh 是否刷新缓存
  */
 export const config = (isRefresh = false) => {
-  if (!isRefresh && cache.file.config) {
+  if (!isRefresh && cache.file.config?.master) {
     return cache.file.config
   }
   const data = getMergeYaml('config', isRefresh)
@@ -184,7 +177,7 @@ export const config = (isRefresh = false) => {
  * @param isRefresh 是否刷新缓存
  */
 export const server = (isRefresh = false) => {
-  if (!isRefresh && cache.file.server) {
+  if (!isRefresh && cache.file.server?.port) {
     return cache.file.server
   }
 

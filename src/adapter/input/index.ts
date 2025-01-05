@@ -5,6 +5,7 @@ import { listeners } from '@/core/internal/listeners'
 import { buffer } from '@/utils/fs/data'
 import { server } from '@/utils/config'
 import { consolePath } from '@/root'
+import { registerBot } from '@/service'
 import { segment } from '@/utils/message'
 import { createFriendMessage, createGroupMessage } from '@/event/create'
 import { contactFriend, contactGroup, senderFriend, senderGroup } from '@/event'
@@ -144,3 +145,4 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
 }
 
 export const adapter = new AdapterConsole()
+registerBot('other', adapter)

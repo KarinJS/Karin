@@ -59,7 +59,7 @@ export const getGroupOrGuildCache = (groupOrGuildId: string, selfIdOrChannelId?:
   }
 
   for (const key of keys) {
-    if (cache.groupGuild[key]) {
+    if (cache?.groupGuild?.[key]) {
       cache.groupGuild[key].count++
       return { ok: true, config: cache.groupGuild[key].config }
     }
@@ -111,7 +111,7 @@ export const addValue = (data: any, key: string) => {
  */
 export const setGroupOrGuildCache = (keys: string[], data: Record<string, GroupGuild>) => {
   for (const key of keys) {
-    if (cache.groupGuild[key]) {
+    if (cache?.groupGuild?.[key]) {
       if (!data[key]) continue
       const config = initGroupOrGuildCfg(data[key])
       addValue(config, key)

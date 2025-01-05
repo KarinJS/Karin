@@ -36,7 +36,7 @@ export abstract class NoticeBase extends BaseEvent<'notice'> {
   /** 通知内容str */
   tips: string
   /** 事件内容 */
-  content: any
+  content: unknown
 
   constructor ({
     subEvent,
@@ -83,6 +83,7 @@ export class ReceiveLikeNotice extends NoticeBase {
   #subEvent: 'receiveLike'
   #contact: ReceiveLikeOptions['contact']
   #sender: ReceiveLikeOptions['sender']
+  content: ReceiveLikeOptions['content']
 
   constructor (options: ReceiveLikeOptions) {
     super(Object.assign(options, { subEvent: 'receiveLike' as const }))
@@ -90,6 +91,7 @@ export class ReceiveLikeNotice extends NoticeBase {
     this.#subEvent = 'receiveLike'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -137,6 +139,7 @@ export class FriendIncreaseNotice extends NoticeBase {
   #subEvent: 'friendIncrease'
   #contact: FriendIncreaseOptions['contact']
   #sender: FriendIncreaseOptions['sender']
+  content: FriendIncreaseOptions['content']
 
   constructor (options: FriendIncreaseOptions) {
     super(Object.assign(options, { subEvent: 'friendIncrease' as const }))
@@ -144,6 +147,7 @@ export class FriendIncreaseNotice extends NoticeBase {
     this.#subEvent = 'friendIncrease'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -191,6 +195,7 @@ export class FriendDecreaseNotice extends NoticeBase {
   #subEvent: 'friendDecrease'
   #contact: FriendDecreaseOptions['contact']
   #sender: FriendDecreaseOptions['sender']
+  content: FriendDecreaseOptions['content']
 
   constructor (options: FriendDecreaseOptions) {
     super(Object.assign(options, { subEvent: 'friendDecrease' as const }))
@@ -198,6 +203,7 @@ export class FriendDecreaseNotice extends NoticeBase {
     this.#subEvent = 'friendDecrease'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -245,6 +251,7 @@ export class PrivatePokeNotice extends NoticeBase {
   #subEvent: 'friendPoke'
   #contact: PrivatePokeOptions['contact']
   #sender: PrivatePokeOptions['sender']
+  content: PrivatePokeOptions['content']
 
   constructor (options: PrivatePokeOptions) {
     super(Object.assign(options, { subEvent: 'friendPoke' as const }))
@@ -252,6 +259,7 @@ export class PrivatePokeNotice extends NoticeBase {
     this.#subEvent = 'friendPoke'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -299,6 +307,7 @@ export class PrivateRecallNotice extends NoticeBase {
   #subEvent: 'friendRecall'
   #contact: PrivateRecallOptions['contact']
   #sender: PrivateRecallOptions['sender']
+  content: PrivateRecallOptions['content']
 
   constructor (options: PrivateRecallOptions) {
     super(Object.assign(options, { subEvent: 'friendRecall' as const }))
@@ -306,6 +315,7 @@ export class PrivateRecallNotice extends NoticeBase {
     this.#subEvent = 'friendRecall'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -353,6 +363,7 @@ export class PrivateFileUploadedNotice extends NoticeBase {
   #subEvent: 'friendFileUploaded'
   #contact: PrivateFileUploadedOptions['contact']
   #sender: PrivateFileUploadedOptions['sender']
+  content: PrivateFileUploadedOptions['content']
 
   constructor (options: PrivateFileUploadedOptions) {
     super(Object.assign(options, { subEvent: 'friendFileUploaded' as const }))
@@ -360,6 +371,7 @@ export class PrivateFileUploadedNotice extends NoticeBase {
     this.#subEvent = 'friendFileUploaded'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -420,6 +432,7 @@ export class GroupPokeNotice extends GroupNotice {
   #subEvent: 'groupPoke'
   #contact: GroupPokeOptions['contact']
   #sender: GroupPokeOptions['sender']
+  content: GroupPokeOptions['content']
 
   constructor (options: GroupPokeOptions) {
     super(Object.assign(options, { subEvent: 'groupPoke' as const }))
@@ -427,6 +440,7 @@ export class GroupPokeNotice extends GroupNotice {
     this.#subEvent = 'groupPoke'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -474,6 +488,7 @@ export class GroupRecallNotice extends GroupNotice {
   #subEvent: 'groupRecall'
   #contact: GroupRecallOptions['contact']
   #sender: GroupRecallOptions['sender']
+  content: GroupRecallOptions['content']
 
   constructor (options: GroupRecallOptions) {
     super(Object.assign(options, { subEvent: 'groupRecall' as const }))
@@ -481,6 +496,7 @@ export class GroupRecallNotice extends GroupNotice {
     this.#subEvent = 'groupRecall'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -528,6 +544,7 @@ export class GroupFileUploadedNotice extends GroupNotice {
   #subEvent: 'groupFileUploaded'
   #contact: GroupFileUploadedOptions['contact']
   #sender: GroupFileUploadedOptions['sender']
+  content: GroupFileUploadedOptions['content']
 
   constructor (options: GroupFileUploadedOptions) {
     super(Object.assign(options, { subEvent: 'groupFileUploaded' as const }))
@@ -535,6 +552,7 @@ export class GroupFileUploadedNotice extends GroupNotice {
     this.#subEvent = 'groupFileUploaded'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -582,6 +600,7 @@ export class GroupCardChangedNotice extends GroupNotice {
   #subEvent: 'groupCardChanged'
   #contact: GroupCardChangedOptions['contact']
   #sender: GroupCardChangedOptions['sender']
+  content: GroupCardChangedOptions['content']
 
   constructor (options: GroupCardChangedOptions) {
     super(Object.assign(options, { subEvent: 'groupCardChanged' as const }))
@@ -589,6 +608,7 @@ export class GroupCardChangedNotice extends GroupNotice {
     this.#subEvent = 'groupCardChanged'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -636,6 +656,7 @@ export class GroupMemberTitleUpdatedNotice extends GroupNotice {
   #subEvent: 'groupMemberTitleUpdate'
   #contact: GroupMemberUniqueTitleChangedOptions['contact']
   #sender: GroupMemberUniqueTitleChangedOptions['sender']
+  content: GroupMemberUniqueTitleChangedOptions['content']
 
   constructor (options: GroupMemberUniqueTitleChangedOptions) {
     super(Object.assign(options, { subEvent: 'groupMemberTitleUpdate' as const }))
@@ -643,6 +664,7 @@ export class GroupMemberTitleUpdatedNotice extends GroupNotice {
     this.#subEvent = 'groupMemberTitleUpdate'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -690,6 +712,7 @@ export class GroupHlightsChangedNotice extends GroupNotice {
   #subEvent: 'groupHighlightsChange'
   #contact: GroupHlightsChangedOptions['contact']
   #sender: GroupHlightsChangedOptions['sender']
+  content: GroupHlightsChangedOptions['content']
 
   constructor (options: GroupHlightsChangedOptions) {
     super(Object.assign(options, { subEvent: 'groupHighlightsChange' as const }))
@@ -697,6 +720,7 @@ export class GroupHlightsChangedNotice extends GroupNotice {
     this.#subEvent = 'groupHighlightsChange'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -744,6 +768,7 @@ export class GroupMemberIncreaseNotice extends GroupNotice {
   #subEvent: 'groupMemberAdd'
   #contact: GroupMemberIncreaseOptions['contact']
   #sender: GroupMemberIncreaseOptions['sender']
+  content: GroupMemberIncreaseOptions['content']
 
   constructor (options: GroupMemberIncreaseOptions) {
     super(Object.assign(options, { subEvent: 'groupMemberAdd' as const }))
@@ -751,6 +776,7 @@ export class GroupMemberIncreaseNotice extends GroupNotice {
     this.#subEvent = 'groupMemberAdd'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -798,6 +824,7 @@ export class GroupMemberDecreaseNotice extends GroupNotice {
   #subEvent: 'groupMemberRemove'
   #contact: GroupMemberDecreaseOptions['contact']
   #sender: GroupMemberDecreaseOptions['sender']
+  content: GroupMemberDecreaseOptions['content']
 
   constructor (options: GroupMemberDecreaseOptions) {
     super(Object.assign(options, { subEvent: 'groupMemberRemove' as const }))
@@ -805,6 +832,7 @@ export class GroupMemberDecreaseNotice extends GroupNotice {
     this.#subEvent = 'groupMemberRemove'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -852,6 +880,7 @@ export class GroupAdminChangedNotice extends GroupNotice {
   #subEvent: 'groupAdminChanged'
   #contact: GroupAdminChangedOptions['contact']
   #sender: GroupAdminChangedOptions['sender']
+  content: GroupAdminChangedOptions['content']
 
   constructor (options: GroupAdminChangedOptions) {
     super(Object.assign(options, { subEvent: 'groupAdminChanged' as const }))
@@ -859,6 +888,7 @@ export class GroupAdminChangedNotice extends GroupNotice {
     this.#subEvent = 'groupAdminChanged'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -906,6 +936,7 @@ export class GroupSignInNotice extends GroupNotice {
   #subEvent: 'groupSignIn'
   #contact: GroupSignInOptions['contact']
   #sender: GroupSignInOptions['sender']
+  content: GroupSignInOptions['content']
 
   constructor (options: GroupSignInOptions) {
     super(Object.assign(options, { subEvent: 'groupSignIn' as const }))
@@ -913,6 +944,7 @@ export class GroupSignInNotice extends GroupNotice {
     this.#subEvent = 'groupSignIn'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -960,6 +992,7 @@ export class GroupMemberBanNotice extends GroupNotice {
   #subEvent: 'groupMemberBan'
   #contact: GroupMemberBanOptions['contact']
   #sender: GroupMemberBanOptions['sender']
+  content: GroupMemberBanOptions['content']
 
   constructor (options: GroupMemberBanOptions) {
     super(Object.assign(options, { subEvent: 'groupMemberBan' as const }))
@@ -967,6 +1000,7 @@ export class GroupMemberBanNotice extends GroupNotice {
     this.#subEvent = 'groupMemberBan'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -1014,6 +1048,7 @@ export class GroupWholeBanNotice extends GroupNotice {
   #subEvent: 'groupWholeBan'
   #contact: GroupWholeBanOptions['contact']
   #sender: GroupWholeBanOptions['sender']
+  content: GroupWholeBanOptions['content']
 
   constructor (options: GroupWholeBanOptions) {
     super(Object.assign(options, { subEvent: 'groupWholeBan' as const }))
@@ -1021,6 +1056,7 @@ export class GroupWholeBanNotice extends GroupNotice {
     this.#subEvent = 'groupWholeBan'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -1068,6 +1104,7 @@ export class GroupMessageReactionNotice extends GroupNotice {
   #subEvent: 'groupMessageReaction'
   #contact: GroupMessageReactionOptions['contact']
   #sender: GroupMessageReactionOptions['sender']
+  content: GroupMessageReactionOptions['content']
 
   constructor (options: GroupMessageReactionOptions) {
     super(Object.assign(options, { subEvent: 'groupMessageReaction' as const }))
@@ -1075,6 +1112,7 @@ export class GroupMessageReactionNotice extends GroupNotice {
     this.#subEvent = 'groupMessageReaction'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -1122,6 +1160,7 @@ export class GroupLuckKingNotice extends GroupNotice {
   #subEvent: 'groupLuckyKing'
   #contact: GroupLuckKingOptions['contact']
   #sender: GroupLuckKingOptions['sender']
+  content: GroupLuckKingOptions['content']
 
   constructor (options: GroupLuckKingOptions) {
     super(Object.assign(options, { subEvent: 'groupLuckyKing' as const }))
@@ -1129,6 +1168,7 @@ export class GroupLuckKingNotice extends GroupNotice {
     this.#subEvent = 'groupLuckyKing'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {
@@ -1176,6 +1216,7 @@ export class GroupHonorChangedNotice extends GroupNotice {
   #subEvent: 'groupHonorChange'
   #contact: GroupHonorChangedOptions['contact']
   #sender: GroupHonorChangedOptions['sender']
+  content: GroupHonorChangedOptions['content']
 
   constructor (options: GroupHonorChangedOptions) {
     super(Object.assign(options, { subEvent: 'groupHonorChange' as const }))
@@ -1183,6 +1224,7 @@ export class GroupHonorChangedNotice extends GroupNotice {
     this.#subEvent = 'groupHonorChange'
     this.#contact = options.contact
     this.#sender = options.sender
+    this.content = options.content
   }
 
   get subEvent () {

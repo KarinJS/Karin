@@ -23,6 +23,7 @@ import type {
   PluginFncTypes,
   Task,
 } from '@/types/plugin'
+import { listeners } from '@/core/internal'
 
 let seq = 0
 
@@ -108,6 +109,7 @@ export class LoaderPlugin {
     logger.info(logger.green('-----------'))
     logger.mark(`karin 启动完成: 耗时 ${logger.green(process.uptime().toFixed(2))} 秒...`)
     debug('debug: 插件加载完成')
+    listeners.emit('online', {})
   }
 
   /**
