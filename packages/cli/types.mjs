@@ -7,7 +7,7 @@ const types = `${base}/index.d.ts`
 const pkg = `${base}/package.json`
 
 // 如果输出的命令中包含`prod` 则从`lib`中复制`index.d.ts`
-if (process.argv?.[2].includes('prod')) {
+if (process.argv?.[2]?.includes('prod')) {
   fs.copyFileSync(`${root}/lib/index.d.ts`, types)
 }
 

@@ -10,8 +10,12 @@
     "noImplicitAny": true,
     "outDir": "./lib",
     "paths": {
-      "@/*": ["src/*"],
-      "@fs": ["src/core/utils/fs/main"]
+      "@/*": [
+        "src/*"
+      ],
+      "@fs": [
+        "src/core/utils/fs/main"
+      ]
     },
     "resolveJsonModule": true,
     "rootDir": "./src",
@@ -19,10 +23,23 @@
     "sourceMap": false,
     "strict": true,
     "target": "ES2022",
-    "types": ["@types/node", "@karinjs/karin-types"]
+    "types": [
+      "@types/node",
+      "@karinjs/karin-types"
+    ]
   },
-  "exclude": ["@karinjs", "default", "lib", "plugins", "node_modules", "logs"],
-  "include": ["src/**/*", "src/global.d.ts"],
+  "exclude": [
+    "@karinjs",
+    "default",
+    "lib",
+    "plugins",
+    "node_modules",
+    "logs"
+  ],
+  "include": [
+    "src/**/*",
+    "src/global.d.ts"
+  ],
   "tsc-alias": {
     "resolveFullExtension": ".js",
     "resolveFullPaths": true

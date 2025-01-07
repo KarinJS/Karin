@@ -64,3 +64,9 @@ pkg.main = pkg.exports['.'].import
 pkg.types = pkg.exports['.'].types
 
 fs.writeFileSync(file, JSON.stringify(pkg, null, 2))
+
+if (fs.existsSync(`${root}/packages/types/index.d.ts`)) {
+  fs.writeFileSync(`${root}/packages/types/index.d.ts`, '')
+} else {
+  fs.writeFileSync(`${root}/packages/types/index.d.ts`, '')
+}

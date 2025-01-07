@@ -26,6 +26,7 @@
   "author": "shijin",
   "type": "module",
   "main": "./src/index.ts",
+  "types": "./lib/index.d.ts",
   "bin": {
     "k": "lib/main/scripts.js",
     "karin": "lib/main/scripts.js",
@@ -45,22 +46,19 @@
     "plugins/**"
   ],
   "scripts": {
-    ".": "tsx index.ts",
+    ".": "tsx src/index.ts",
     "alias": "tsc-alias -p tsconfig.json",
-    "app": "tsx index.ts",
+    "app": "tsx src/index.ts",
     "app:w": "tsx watch --include \"./src/**/*.ts\" index.ts",
     "app:watch": "tsx watch --include \"./src/**/*.ts\" index.ts",
-    "build": "pnpm build:pkg && pnpm build:prod",
-    "build:pkg": "tsup --config tsup.pkg.ts && node packages/cli/rm.mjs",
-    "build:prod": "tsup --config tsup.config.ts && pnpm cli:types -prod",
-    "build:types": "tsup --config tsup.types.ts",
-    "build:dev": "pnpm build:types && pnpm cli:types",
-    "cli:pkg": "node packages/cli/build.mjs",
-    "cli:prod": "node packages/cli/build.prod.mjs",
-    "cli:types": "node packages/cli/types.mjs",
-    "debug": "tsx index.ts --debug",
+    "build:dev": "pnpm build:types && node packages/cli/build.mjs",
+    "build:module": "tsup --config tsup.modules.ts && node packages/cli/module.mjs",
+    "build:prod": "tsup --config tsup.config.ts && node packages/cli/types.mjs -prod && node packages/cli/build.prod.mjs",
+    "build:types": "tsup --config tsup.types.ts && node packages/cli/types.mjs",
+    "debug": "tsx src/index.ts --debug",
     "debug:w": "tsx watch --include \"./src/**/*.ts\"  --debug",
     "debug:watch": "tsx watch --include \"./src/**/*.ts\"  --debug",
+    "dev": "tsx src/index.ts",
     "pr": "node lib/cli/pr.js",
     "pub": "npm publish --access public",
     "pub-beta": "npm publish --tag beta",
@@ -96,8 +94,8 @@
     "tsx": "^4.19.1"
   },
   "peerDependencies": {
-    "node-karin": "workspace:*",
-    "@karinjs/karin-types": "workspace:*"
+    "@karinjs/karin-types": "workspace:*",
+    "node-karin": "workspace:*"
   },
   "engines": {
     "node": ">=18"
@@ -108,7 +106,8 @@
   },
   "exports": {
     ".": {
-      "import": "./src/index.ts"
+      "import": "./src/index.ts",
+      "types": "./lib/index.d.ts"
     },
     "./template": {
       "import": "./src/packages/module/art-template.ts",
