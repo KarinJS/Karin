@@ -1,6 +1,6 @@
 import '@/service/debug'
-import '@/service/init'
 export * from '@/service/logger'
+import '@/service/init'
 export * from '@/service/index'
 export * from '@/core/karin/index'
 export * from '@/utils/message'

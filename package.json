@@ -27,11 +27,6 @@
   "type": "module",
   "main": "./src/index.ts",
   "types": "./lib/index.d.ts",
-  "bin": {
-    "k": "lib/main/scripts.js",
-    "karin": "lib/main/scripts.js",
-    "kr": "lib/main/scripts.js"
-  },
   "files": [
     "/lib/**/*.js",
     "/lib/**/*.d.ts",
@@ -58,7 +53,7 @@
     "debug": "tsx src/index.ts --debug",
     "debug:w": "tsx watch --include \"./src/**/*.ts\"  --debug",
     "debug:watch": "tsx watch --include \"./src/**/*.ts\"  --debug",
-    "dev": "tsx src/index.ts",
+    "dev": "node --import tsx --trace-deprecation src/index.ts",
     "pr": "node lib/cli/pr.js",
     "pub": "npm publish --access public",
     "pub-beta": "npm publish --tag beta",
@@ -71,7 +66,7 @@
     "@types/node-schedule": "^2.1.7",
     "@types/ws": "^8.5.12",
     "art-template": "4.13.2",
-    "axios": "1.7.5",
+    "axios": "1.7.9",
     "chalk": "5.3.0",
     "chokidar": "3.6.0",
     "commander": "^12.1.0",
@@ -91,7 +86,7 @@
     "sort-json": "^2.0.1",
     "sort-package-json": "^2.10.0",
     "tsup": "^8.3.5",
-    "tsx": "^4.19.1"
+    "tsx": "^4.19.2"
   },
   "peerDependencies": {
     "@karinjs/karin-types": "workspace:*",

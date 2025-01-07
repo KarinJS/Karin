@@ -20,15 +20,21 @@ export const processHandler = () => {
   /** 捕获警告 */
   process.on('warning', warning => listeners.emit('warn', warning))
   /** 捕获错误 */
-  process.on('uncaughtException', error => listeners.emit('error', error))
+  process.on('uncaughtException', (error, origin) => {
+    listeners.emit('error', error, origin)
+  })
   /** 捕获未处理的Promise错误 */
-  process.on('unhandledRejection', error => listeners.emit('error', error))
+  process.on('unhandledRejection', (error, promise) => {
+    listeners.emit('error', error, promise)
+  })
   /** 捕获Promise错误 */
-  process.on('rejectionHandled', error => listeners.emit('error', error))
-  /** 捕获未处理的Promise错误 */
-  process.on('multipleResolves', error => listeners.emit('error', error))
+  process.on('rejectionHandled', error => {
+    listeners.emit('error', error)
+  })
 
-  listeners.on('error', (error: unknown) => logger.error(error))
+  listeners.on('error', (...args: [unknown]) => {
+    logger.error(...args)
+  })
 }
 
 /**
@@ -37,8 +43,8 @@ export const processHandler = () => {
  */
 export const checkProcess = async (port: number) => {
   const host = `http://127.0.0.1:${port}`
-  const data = await axios({ url: `${host}/ping`, method: 'get', timeout: 500 })
-  if (!data || data.status !== 200) return
+  const data = await axios({ url: `${host}/ping`, method: 'get', timeout: 300 })
+  if (!data || data.status !== 200 || data.data.ping !== 'pong') return
 
   /** 端口被未知程序占用 获取对应的进程ID */
   if (data?.data?.name !== 'karin') {

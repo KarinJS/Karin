@@ -2,7 +2,10 @@ import { app } from '../app'
 import { auth } from '../auth'
 
 app.get('/ping', (req, res) => {
-  res.send('pong')
+  res.send({
+    ping: 'pong',
+    name: 'karin',
+  })
 })
 
 app.get('/status', (req, res) => {
