@@ -319,7 +319,7 @@ export class LoaderPlugin {
         event: v.event || command.event || 'message',
         priority: v.priority || 10000,
         file: this.createFile(app, 'command', key, command.name),
-        authFailMsg: v.authFailMsg,
+        authFailMsg: v.authFailMsg || true,
       })
     })
   }
