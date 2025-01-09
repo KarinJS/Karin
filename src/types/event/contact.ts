@@ -54,14 +54,12 @@ export interface DirectContact extends BaseContact {
   scene: 'direct'
   /** 频道ID 虚拟ID 用于请求Api使用 */
   peer: string
-  /** 子频道ID 虚拟ID */
-  subPeer: string
   /** 频道名称 */
   name: string
+  /** 子频道ID 虚拟ID */
+  subPeer: string
   /** 子频道名称 */
   subName?: string
-  /** 来源频道ID */
-  srcGuildId: string
 }
 
 /**

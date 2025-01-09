@@ -275,17 +275,19 @@ export class DirectMessage extends MessageBase {
   #subEvent: 'direct'
   #contact: DirectMessageOptions['contact']
   #sender: DirectMessageOptions['sender']
+  #srcGuildId: DirectMessageOptions['srcGuildId']
 
   constructor (options: DirectMessageOptions) {
     super(Object.assign(options, { subEvent: 'direct' as const }))
     this.#subEvent = 'direct'
     this.#sender = options.sender
     this.#contact = options.contact
+    this.#srcGuildId = options.srcGuildId
   }
 
   /** 来源频道id */
   get srcGuildId () {
-    return this.#contact.srcGuildId
+    return this.#srcGuildId
   }
 
   get contact () {

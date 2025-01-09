@@ -241,6 +241,8 @@ export type DirectMessageOptions = Omit<
   contact: Contact<'direct'>
   /** 频道私信发送者信息 */
   sender: Sender<'direct'>
+  /** 来源频道ID */
+  srcGuildId: string
 }
 
 /** 创建群临时会话消息事件所需参数类型 */
