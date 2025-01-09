@@ -34,12 +34,20 @@ export interface PkgData {
  * @returns - 包根目录的绝对路径
  * @example
  * pkgRoot('axios')
- * pkgRoot('axios', __filename)
+ * pkgRoot('axios', import.meta.url)
  * pkgRoot('axios', import.meta.url)
  */
 export const pkgRoot = (name: string, rootPath?: string) => {
-  const require = createRequire(rootPath || import.meta.url)
-  let dir = require.resolve(name)
+  let dir: string
+  if (import.meta.url) {
+    /** esm */
+    const require = createRequire(rootPath || import.meta.url)
+    dir = require.resolve(name)
+  } else {
+    /** cjs */
+    require.resolve(name)
+    dir = require.resolve(name)
+  }
 
   try {
     if (existsSync(path.join(dir, 'package.json'))) {

@@ -24,9 +24,9 @@
   },
   "license": "MIT",
   "author": "shijin",
-  "type": "module",
   "main": "./src/index.ts",
   "types": "./lib/index.d.ts",
+  "type": "module",
   "files": [
     "/lib/**/*.js",
     "/lib/**/*.d.ts",
@@ -46,6 +46,7 @@
     "app": "tsx src/index.ts",
     "app:w": "tsx watch --include \"./src/**/*.ts\" index.ts",
     "app:watch": "tsx watch --include \"./src/**/*.ts\" index.ts",
+    "build": "tsup --config tsup.config.ts",
     "build:dev": "pnpm build:types && node packages/cli/build.mjs",
     "build:module": "tsup --config tsup.modules.ts && node packages/cli/module.mjs",
     "build:prod": "tsup --config tsup.config.ts && node packages/cli/types.mjs -prod && node packages/cli/build.prod.mjs",

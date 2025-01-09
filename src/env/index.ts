@@ -54,8 +54,8 @@ export const setWatch = (watch?: boolean) => watch && setProcessEnv('karin_watch
  * @description 设置默认参数
  */
 export const setDefault = () => {
-  if (!process.env.karin_app_mode) setMode()
-  if (!process.env.karin_app_lang) setLang('js')
-  if (!process.env.karin_app_watch) setWatch(false)
+  if (!process.env.karin_dev) setMode()
+  if (!process.env.karin_lang) setLang('js')
+  if (!process.env.karin_watch) setWatch(false)
   process.env.pm_id ? setRunner('pm2') : setRunner('node')
 }

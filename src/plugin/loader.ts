@@ -1,7 +1,6 @@
 import lodash from 'lodash'
 import path from 'node:path'
 import util from 'node:util'
-import chokidar from 'chokidar'
 import schedule from 'node-schedule'
 import { errorHandler } from '@/core/internal/error'
 
@@ -24,6 +23,7 @@ import type {
   Task,
 } from '@/types/plugin'
 import { listeners } from '@/core/internal'
+import { WatcherPlugin } from './watcher'
 
 let seq = 0
 
@@ -36,6 +36,12 @@ type Result = Record<string,
  * @class LoaderPlugin
  */
 export class LoaderPlugin {
+  private watcher: WatcherPlugin
+
+  constructor () {
+    this.watcher = new WatcherPlugin(this)
+  }
+
   /**
    * @description 初始化插件
    */
@@ -45,10 +51,16 @@ export class LoaderPlugin {
     logger.info(logger.green('-----------'))
     logger.info('加载插件中...')
 
+    /** 收集所有插件加载的Promise */
+    const allPromises: Promise<any>[] = []
+    /** 收集入口文件加载的Promise */
+    const entryPromises: Promise<any>[] = []
+
+    /** 并发加载所有插件 */
     const list = await getPlugins('all', true)
     debug('debug: getPlugins', list)
 
-    for (const pkg of list) {
+    await Promise.all(list.map(async (pkg) => {
       pkg.id = ++seq
       cache.index[pkg.id] = pkg
 
@@ -59,35 +71,41 @@ export class LoaderPlugin {
         files.push(...pkg.pkgData.karin.files)
       }
 
-      /** 创建插件基本文件夹 */
+      /** 创建插件基本文件夹 - 这个需要立即执行 */
       await createPluginDir(pkg.name, files)
       debug('debug: createPluginDir', pkg.name, files)
 
-      for (const app of pkg.apps) {
-        const result = await this.importApp(pkg.name, app)
-        this.cachePlugin(result, pkg, app)
+      /** 收集所有app加载的Promise */
+      pkg.apps.forEach(app => {
+        const promise = this.importApp(pkg.name, app)
+          .then(result => this.cachePlugin(result, pkg, app))
+        allPromises.push(promise)
+      })
+
+      /** 收集入口文件加载的Promise */
+      if (pkg.type !== 'app') {
+        if (isTsx() && pkg?.pkgData?.karin?.main) {
+          const file = path.join(pkg.dir, pkg.pkgData.karin.main)
+          entryPromises.push(this.loaderMain(pkg.name, file))
+        }
+
+        if (pkg?.pkgData?.main) {
+          const file = path.join(pkg.dir, pkg.pkgData.main)
+          entryPromises.push(this.loaderMain(pkg.name, file))
+        }
       }
 
-      debug('debug: cache', cache)
-
-      /** ts入口 */
-      if (pkg.type !== 'app' && isTsx() && pkg?.pkgData?.karin?.main) {
-        const file = path.join(pkg.dir, pkg.pkgData.karin.main)
-        this.loaderMain(pkg.name, file)
-      }
-
-      /** js入口 */
-      if (pkg.type !== 'app' && pkg?.pkgData?.main) {
-        const file = path.join(pkg.dir, pkg.pkgData.main)
-        this.loaderMain(pkg.name, file)
-      }
-
-      /** 静态资源目录 */
+      /** 静态资源目录处理 */
       if (pkg.type !== 'app' && pkg?.pkgData?.karin?.static) {
-        const list = Array.isArray(pkg.pkgData.karin.static) ? pkg.pkgData.karin.static : [pkg.pkgData.karin.static]
+        const list = Array.isArray(pkg.pkgData.karin.static)
+          ? pkg.pkgData.karin.static
+          : [pkg.pkgData.karin.static]
         cache.static.push(...list.map(file => path.resolve(pkg.dir, file)))
       }
-    }
+    }))
+
+    /** 等待所有Promise完成 */
+    await Promise.all([...allPromises, ...entryPromises])
 
     debug('debug: cache', cache)
     this.sort()
@@ -110,6 +128,9 @@ export class LoaderPlugin {
     logger.mark(`karin 启动完成: 耗时 ${logger.green(process.uptime().toFixed(2))} 秒...`)
     debug('debug: 插件加载完成')
     listeners.emit('online', {})
+
+    // 初始化热更新
+    this.watcher.init()
   }
 
   /**
@@ -148,7 +169,7 @@ export class LoaderPlugin {
    * @param app 插件文件绝对路径 `/root/karin/plugins/karin-plugin-example/index.js`
    * @param isRefresh 是否加载新模块
    */
-  private async importApp (name: string, app: string, isRefresh = false): Promise<Result> {
+  async importApp (name: string, app: string, isRefresh = false): Promise<Result> {
     try {
       const result = await import(`file://${app}${isRefresh ? `?t=${Date.now()}` : ''}`)
       return result
@@ -186,7 +207,7 @@ export class LoaderPlugin {
    * @param result 插件导入结果
    * @param info 插件信息
    */
-  private cachePlugin (result: Result, pkg: PkgInfo, app: string) {
+  public cachePlugin (result: Result, pkg: PkgInfo, app: string) {
     for (const key of Object.keys(result)) {
       /** 跳过默认导出 */
       if (key === 'default') continue
@@ -306,7 +327,7 @@ export class LoaderPlugin {
   /**
    * 排序
    */
-  private sort () {
+  public sort () {
     cache.accept = lodash.sortBy(cache.accept, ['rank'], ['asc'])
     cache.command = lodash.sortBy(cache.command, ['rank'], ['asc'])
     cache.task = lodash.sortBy(cache.task, ['rank'], ['asc'])

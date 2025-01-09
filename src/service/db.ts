@@ -1,4 +1,4 @@
-import { createLevelDB, createRedis } from '@/core/db'
+import { Client, createLevelDB, createRedis } from '@/core/db'
 
 /**
  * @public
@@ -10,4 +10,8 @@ export const level = createLevelDB()
  * @public
  * @description redis 数据库
  */
-export const redis = await createRedis()
+export let redis: Client
+
+(async () => {
+  redis = await createRedis()
+})()

@@ -46,8 +46,12 @@ export interface PkgInfo {
   dir: string
   /**
    * apps绝对路径列表
-  */
+   */
   apps: string[]
+  /**
+   * 所有可能包含apps的目录列表
+   */
+  allApps: string[]
   /**
   * 获取`package.json`绝对路径
   */

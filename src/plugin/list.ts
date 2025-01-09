@@ -96,12 +96,14 @@ const createPkg = (
   type: PkgInfo['type'],
   name: string,
   dir: string,
-  apps: string[]
+  apps: string[],
+  allApps: string[]
 ): PkgInfo => {
   return {
     type,
     name,
     apps,
+    allApps,
     dir,
     id: -1,
     get pkgPath () {
@@ -124,7 +126,7 @@ const createPkg = (
  */
 const getAppInfo = async (info: PkgInfo[], dir: string, name: string, ext: string[]) => {
   const apps = filesByExt(dir, ext, 'abs')
-  info.push(createPkg('app', name, dir, apps))
+  info.push(createPkg('app', name, dir, apps, [dir]))
 }
 
 /**
@@ -136,7 +138,7 @@ const getAppInfo = async (info: PkgInfo[], dir: string, name: string, ext: strin
 const getGitInfo = async (info: PkgInfo[], dir: string, name: string, ext: string[]) => {
   const pkg = await requireFile(path.join(dir, 'package.json'))
   if (!pkg || !pkg.karin) {
-    info.push(createPkg('git', name, dir, []))
+    info.push(createPkg('git', name, dir, [], []))
     return
   }
 
@@ -144,6 +146,8 @@ const getGitInfo = async (info: PkgInfo[], dir: string, name: string, ext: strin
   const apps: string[] = []
   /** apps目录列表 */
   const files: string[] = []
+  /** 所有可能包含apps的目录 */
+  const allApps: string[] = []
 
   const pushApps = (app: string | string[]) => {
     if (typeof app === 'string') {
@@ -163,9 +167,10 @@ const getGitInfo = async (info: PkgInfo[], dir: string, name: string, ext: strin
     const appPath = path.join(dir, app)
     if (!fs.existsSync(appPath)) return
     apps.push(...filesByExt(appPath, ext, 'abs'))
+    allApps.push(appPath)
   }))
 
-  info.push(createPkg('git', name, dir, apps))
+  info.push(createPkg('git', name, dir, apps, allApps))
 }
 
 /**
@@ -176,10 +181,11 @@ const getGitInfo = async (info: PkgInfo[], dir: string, name: string, ext: strin
 const getNpmInfo = async (info: PkgInfo[], dir: string, name: string) => {
   const ext = '.js'
   const apps: string[] = []
+  const allApps: string[] = []
   const pkg = await requireFile(path.join(dir, 'package.json'))
 
   if (!pkg.karin?.apps?.length) {
-    info.push(createPkg('npm', name, dir, []))
+    info.push(createPkg('npm', name, dir, [], []))
     return
   }
 
@@ -194,9 +200,10 @@ const getNpmInfo = async (info: PkgInfo[], dir: string, name: string) => {
     const appPath = path.join(dir, app)
     if (!fs.existsSync(appPath)) return
     apps.push(...filesByExt(appPath, ext, 'abs'))
+    allApps.push(appPath)
   }))
 
-  info.push(createPkg('npm', name, dir, apps))
+  info.push(createPkg('npm', name, dir, apps, allApps))
 }
 
 /**
