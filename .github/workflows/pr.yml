@@ -18,6 +18,11 @@ jobs:
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
+      # 设置 pnpm
+      - name: 设置 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
       # 设置 Node.js 环境
       - name: 设置 Node.js 环境
         uses: actions/setup-node@v4
@@ -26,24 +31,26 @@ jobs:
           node-version: 20
           # 设置 npm 源
           registry-url: "https://registry.npmjs.org"
-      # 安装依赖 不安装对等依赖
+          # 添加 pnpm 缓存支持
+          cache: pnpm
+      # 使用 pnpm 安装依赖
       - name: 安装依赖
-        run: npm install --config.auto-install-peers=false --ignore-scripts --omit=peer
+        run: pnpm install --no-frozen-lockfile
       # 构建输出
       - name: 构建输出
         id: build
-        run: npm run build > build.log 2>&1
+        run: pnpm run build:prod > build.log 2>&1
         continue-on-error: true # 捕获失败并允许后续步骤运行
       # 获取当前 PR 编号并设置环境变量
       - name: 获取 PR 编号
         run: echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
       # 自动修改 package.json 的版本号、删除开发、对等依赖
       - name: 修订版本号
-        run: npm run pr all
+        run: pnpm run pr all
         if: success()
       # 发布到 npm
       - name: 发布到 npm
-        run: npm run pub-beta
+        run: pnpm run pub-beta
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         if: success()
@@ -59,7 +66,7 @@ jobs:
             # 构建成功评论
             INSTALL_COMMAND_1="pnpm rm ${{ env.PKG_NAME }} && pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -D"           
             INSTALL_COMMAND_2="pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -w"
-            gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 构建完成！您可以通过以下命令安装此版本：\n\n```\n'"${INSTALL_COMMAND_1}"$'\n```\n\n```\n'"${INSTALL_COMMAND_2}"$'\n```'
+            gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 构建完成！请不要使用此版本，正在重构中：\n\n```\n'"${INSTALL_COMMAND_1}"$'\n```\n\n```\n'"${INSTALL_COMMAND_2}"$'\n```'
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE }}

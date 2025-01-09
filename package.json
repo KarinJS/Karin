@@ -55,7 +55,7 @@
     "debug:w": "tsx watch --include \"./src/**/*.ts\"  --debug",
     "debug:watch": "tsx watch --include \"./src/**/*.ts\"  --debug",
     "dev": "node --import tsx --trace-deprecation src/index.ts",
-    "pr": "node lib/cli/pr.js",
+    "pr": "node packages/cli/pr.mjs all",
     "pub": "npm publish --access public",
     "pub-beta": "npm publish --tag beta",
     "sort": "npx sort-package-json && sort-json tsconfig.json"
