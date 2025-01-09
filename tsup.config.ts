@@ -5,6 +5,12 @@ import { defineConfig } from 'tsup'
 
 const pkg = JSON.parse(fs.readFileSync(new URL('package.json', import.meta.url), 'utf-8'))
 
+/** 兼容@karinjs/karin-types */
+const packagesDir = new URL('packages', import.meta.url)
+const typesDir = new URL('types', packagesDir)
+const indexDts = new URL('index.d.ts', typesDir)
+if (!fs.existsSync(indexDts)) fs.writeFileSync(indexDts, '')
+
 /**
  * @description `tsup` configuration options
  */
