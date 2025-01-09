@@ -1,6 +1,6 @@
 import { createFile, createLogger, createPkg } from '@/plugin/tools'
 import type { MessageEventMap } from '@/types/event'
-import type { Command } from '@/types/plugin'
+import type { CmdFnc, Command } from '@/types/plugin'
 import type { Elements } from '@/types/segment'
 import type { Options } from './base'
 
@@ -47,7 +47,7 @@ export interface CommandType {
   */
   <T extends keyof MessageEventMap = keyof MessageEventMap> (
     reg: string | RegExp,
-    fnc: (e: MessageEventMap[T]) => Promise<boolean> | boolean,
+    fnc: CmdFnc<T>,
     options?: CommandOptions<T>
   ): Command<T>
   /**
@@ -71,7 +71,7 @@ export interface CommandType {
  */
 export const command: CommandType = <T extends keyof MessageEventMap = keyof MessageEventMap> (
   reg: string | RegExp,
-  second: string | Elements | Elements[] | ((e: MessageEventMap[T]) => Promise<unknown> | unknown),
+  second: string | Elements | Elements[] | CmdFnc<T>,
   options: CommandOptions<T> | StrCommandOptions<T> = {}
 ): Command<T> => {
   reg = typeof reg === 'string' ? new RegExp(reg) : reg
