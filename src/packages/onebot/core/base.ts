@@ -1,5 +1,5 @@
 import { AdapterBase } from '@/adapter/base'
-import { Action } from '@/packages/onebot/types/api'
+import { OB11ApiAction } from '@/packages/onebot/types/api'
 import { OB11Event } from '@/packages/onebot/types/event'
 import { createMessage } from '@/packages/onebot/create/message'
 import {
@@ -15,8 +15,8 @@ import type {
   CustomNodeSegments,
   OB11NodeSegment,
   OB11Segment,
-  Params,
-  Request,
+  OB11ApiParams,
+  OB11ApiRequest,
   OB11AllEvent,
 } from '@/packages/onebot/types'
 import { Contact, GroupSender } from '@/types/event'
@@ -145,19 +145,19 @@ export abstract class AdapterOneBot extends AdapterBase {
       const { scene, peer } = contact
       let res
       if (scene === 'group') {
-        res = await this.sendApi(Action.sendMsg, {
+        res = await this.sendApi(OB11ApiAction.sendMsg, {
           message_type: 'group',
           group_id: Number(peer),
           message: this.KarinConvertAdapter(elements),
         })
       } else if (scene === 'groupTemp') {
-        res = await this.sendApi(Action.sendPrivateMsg, {
+        res = await this.sendApi(OB11ApiAction.sendPrivateMsg, {
           user_id: Number(contact.subPeer),
           group_id: Number(peer),
           message: this.KarinConvertAdapter(elements),
         })
       } else {
-        res = await this.sendApi(Action.sendMsg, {
+        res = await this.sendApi(OB11ApiAction.sendMsg, {
           message_type: 'private',
           user_id: Number(peer),
           message: this.KarinConvertAdapter(elements),
@@ -228,12 +228,12 @@ export abstract class AdapterOneBot extends AdapterBase {
     const { scene, peer } = contact
 
     if (scene === 'group') {
-      result = await this.sendApi(Action.sendGroupMsg, {
+      result = await this.sendApi(OB11ApiAction.sendGroupMsg, {
         group_id: Number(peer),
         message: [{ type: 'forward', data: { id: resId } }],
       })
     } else {
-      result = await this.sendApi(Action.sendPrivateMsg, {
+      result = await this.sendApi(OB11ApiAction.sendPrivateMsg, {
         user_id: Number(peer),
         message: [{ type: 'forward', data: { id: resId } }],
       })
@@ -266,7 +266,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async recallMsg (contact: Contact, messageId: string) {
     try {
-      await this.sendApi(Action.deleteMsg, { message_id: Number(messageId) })
+      await this.sendApi(OB11ApiAction.deleteMsg, { message_id: Number(messageId) })
       return true
     } catch {
       return false
@@ -286,7 +286,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param messageId 消息ID
    */
   async getMsg (contact: Contact, messageId: string) {
-    const result = await this.sendApi(Action.getMsg, { message_id: Number(messageId) })
+    const result = await this.sendApi(OB11ApiAction.getMsg, { message_id: Number(messageId) })
     const userId = result.sender.user_id + ''
     const messageSeq = result.message_seq || result.message_id
     const messageID = result.message_id + ''
@@ -343,10 +343,10 @@ export abstract class AdapterOneBot extends AdapterBase {
     let res
     if (contact.scene === 'group') {
       options.group_id = Number(contact.peer)
-      res = await this.sendApi(Action.getGroupMsgHistory, options)
+      res = await this.sendApi(OB11ApiAction.getGroupMsgHistory, options)
     } else {
       options.user_id = Number(contact.peer)
-      res = await this.sendApi(Action.getFriendMsgHistory, options)
+      res = await this.sendApi(OB11ApiAction.getFriendMsgHistory, options)
     }
 
     const all = []
@@ -397,7 +397,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async sendLike (targetId: string, count: number) {
     try {
-      await this.sendApi(Action.sendLike, { user_id: Number(targetId), times: count })
+      await this.sendApi(OB11ApiAction.sendLike, { user_id: Number(targetId), times: count })
       return true
     } catch {
       return false
@@ -421,7 +421,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async groupKickMember (groupId: string, targetId: string, rejectAddRequest?: boolean, kickReason?: string) {
     try {
-      await this.sendApi(Action.setGroupKick, {
+      await this.sendApi(OB11ApiAction.setGroupKick, {
         group_id: Number(groupId),
         user_id: Number(targetId),
         reject_add_request: rejectAddRequest,
@@ -448,7 +448,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGroupMute (groupId: string, targetId: string, duration: number) {
     try {
-      await this.sendApi(Action.setGroupBan, { group_id: Number(groupId), user_id: Number(targetId), duration })
+      await this.sendApi(OB11ApiAction.setGroupBan, { group_id: Number(groupId), user_id: Number(targetId), duration })
       return true
     } catch {
       return false
@@ -470,7 +470,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGroupAllMute (groupId: string, isBan: boolean) {
     try {
-      await this.sendApi(Action.setGroupWholeBan, { group_id: Number(groupId), enable: isBan })
+      await this.sendApi(OB11ApiAction.setGroupWholeBan, { group_id: Number(groupId), enable: isBan })
       return true
     } catch {
       return false
@@ -493,7 +493,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGroupAdmin (groupId: string, targetId: string, isAdmin: boolean) {
     try {
-      await this.sendApi(Action.setGroupAdmin, { group_id: Number(groupId), user_id: Number(targetId), enable: isAdmin })
+      await this.sendApi(OB11ApiAction.setGroupAdmin, { group_id: Number(groupId), user_id: Number(targetId), enable: isAdmin })
       return true
     } catch {
       return false
@@ -516,7 +516,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGroupMemberCard (groupId: string, targetId: string, card: string) {
     try {
-      await this.sendApi(Action.setGroupCard, { group_id: Number(groupId), user_id: Number(targetId), card })
+      await this.sendApi(OB11ApiAction.setGroupCard, { group_id: Number(groupId), user_id: Number(targetId), card })
       return true
     } catch {
       return false
@@ -538,7 +538,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGroupName (groupId: string, groupName: string) {
     try {
-      await this.sendApi(Action.setGroupName, { group_id: Number(groupId), group_name: groupName })
+      await this.sendApi(OB11ApiAction.setGroupName, { group_id: Number(groupId), group_name: groupName })
       return true
     } catch {
       return false
@@ -560,7 +560,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGroupQuit (groupId: string, isDismiss: boolean) {
     try {
-      await this.sendApi(Action.setGroupLeave, { group_id: Number(groupId), is_dismiss: isDismiss })
+      await this.sendApi(OB11ApiAction.setGroupLeave, { group_id: Number(groupId), is_dismiss: isDismiss })
       return true
     } catch {
       return false
@@ -583,7 +583,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGroupMemberTitle (groupId: string, targetId: string, title: string) {
     try {
-      await this.sendApi(Action.setGroupSpecialTitle, { group_id: Number(groupId), user_id: Number(targetId), special_title: title })
+      await this.sendApi(OB11ApiAction.setGroupSpecialTitle, { group_id: Number(groupId), user_id: Number(targetId), special_title: title })
       return true
     } catch {
       return false
@@ -606,7 +606,7 @@ export abstract class AdapterOneBot extends AdapterBase {
     account_uin: string
     account_name: string
   }> {
-    const res = await this.sendApi(Action.getLoginInfo, {})
+    const res = await this.sendApi(OB11ApiAction.getLoginInfo, {})
     return {
       account_uid: res.user_id + '',
       account_uin: res.user_id + '',
@@ -620,7 +620,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @returns 陌生人信息数组
    */
   async getStrangerInfo (targetId: string) {
-    const result = await this.sendApi(Action.getStrangerInfo, { user_id: Number(targetId[0]), no_cache: true })
+    const result = await this.sendApi(OB11ApiAction.getStrangerInfo, { user_id: Number(targetId[0]), no_cache: true })
     return {
       ...result,
       userId: targetId,
@@ -674,7 +674,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @returns 好友列表数组
    */
   async getFriendList (refresh?: boolean) {
-    const friendList = await this.sendApi(Action.getFriendList, {})
+    const friendList = await this.sendApi(OB11ApiAction.getFriendList, {})
     return friendList.map(v => {
       const userId = v.user_id + ''
       return {
@@ -744,7 +744,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @returns 群信息
    */
   async getGroupInfo (groupId: string, noCache?: boolean) {
-    const info = await this.sendApi(Action.getGroupInfo, { group_id: Number(groupId), no_cache: noCache })
+    const info = await this.sendApi(OB11ApiAction.getGroupInfo, { group_id: Number(groupId), no_cache: noCache })
     const groupName = info.group_name
     // todo 可以走群成员列表获取群主
     return {
@@ -777,7 +777,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @returns 群列表数组
    */
   async getGroupList (refresh?: boolean) {
-    const groupList = await this.sendApi(Action.getGroupList, { no_cache: refresh })
+    const groupList = await this.sendApi(OB11ApiAction.getGroupList, { no_cache: refresh })
     return groupList.map(info => {
       const groupId = info.group_id + ''
       const groupName = info.group_name
@@ -817,7 +817,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async getGroupMemberInfo (groupId: string, targetId: string, refresh?: boolean) {
     const userId = Number(targetId)
-    const info = await this.sendApi(Action.getGroupMemberInfo, { group_id: Number(groupId), user_id: userId, no_cache: refresh })
+    const info = await this.sendApi(OB11ApiAction.getGroupMemberInfo, { group_id: Number(groupId), user_id: userId, no_cache: refresh })
     return {
       ...info,
       userId: targetId,
@@ -866,7 +866,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @returns 群成员列表数组
    */
   async getGroupMemberList (groupId: string, refresh?: boolean) {
-    const list = await this.sendApi(Action.getGroupMemberList, { group_id: Number(groupId), no_cache: refresh })
+    const list = await this.sendApi(OB11ApiAction.getGroupMemberList, { group_id: Number(groupId), no_cache: refresh })
     return list.map(v => {
       const targetId = v.user_id + ''
       return {
@@ -918,7 +918,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @returns 群荣誉信息数组
    */
   async getGroupHonor (groupId: string) {
-    const groupHonor = await this.sendApi(Action.getGroupHonorInfo, { group_id: Number(groupId), type: 'all' })
+    const groupHonor = await this.sendApi(OB11ApiAction.getGroupHonorInfo, { group_id: Number(groupId), type: 'all' })
 
     const result: QQGroupHonorInfo[] = []
     groupHonor.talkative_list.forEach(honor => {
@@ -995,7 +995,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setMsgReaction (contact: Contact, messageId: string, faceId: number, isSet: boolean) {
     try {
-      await this.sendApi(Action.setMsgEmojiLike, { message_id: messageId, emoji_id: faceId, is_set: isSet })
+      await this.sendApi(OB11ApiAction.setMsgEmojiLike, { message_id: messageId, emoji_id: faceId, is_set: isSet })
       return true
     } catch {
       return false
@@ -1014,7 +1014,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @deprecated 已废弃，请使用`setMsgReaction`
    */
   async GetVersion () {
-    const res = await this.sendApi(Action.getVersionInfo, {})
+    const res = await this.sendApi(OB11ApiAction.getVersionInfo, {})
     return {
       name: res.app_name,
       app_name: res.app_name,
@@ -1049,7 +1049,7 @@ export abstract class AdapterOneBot extends AdapterBase {
       message_seq: number
       json_elements: string
     }> = []
-    const res = await this.sendApi(Action.getEssenceMsgList, { group_id: Number(groupId) })
+    const res = await this.sendApi(OB11ApiAction.getEssenceMsgList, { group_id: Number(groupId) })
     for (const v of res) {
       const { message_seq: messageSeq, elements } = await this.getMsg({
         scene: 'group',
@@ -1120,9 +1120,9 @@ export abstract class AdapterOneBot extends AdapterBase {
   async uploadFile (contact: Contact, file: string, name: string, folder?: string) {
     try {
       if (contact.scene === 'group') {
-        await this.sendApi(Action.uploadGroupFile, { group_id: Number(contact.peer), file, name, folder })
+        await this.sendApi(OB11ApiAction.uploadGroupFile, { group_id: Number(contact.peer), file, name, folder })
       } else {
-        await this.sendApi(Action.uploadPrivateFile, { user_id: Number(contact.peer), file, name })
+        await this.sendApi(OB11ApiAction.uploadPrivateFile, { user_id: Number(contact.peer), file, name })
       }
       return true
     } catch {
@@ -1152,7 +1152,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGgroupHighlights (groupId: string, messageId: string, create: boolean) {
     try {
-      await this.sendApi(create ? Action.setEssenceMsg : Action.deleteEssenceMsg, { message_id: Number(messageId) })
+      await this.sendApi(create ? OB11ApiAction.setEssenceMsg : OB11ApiAction.deleteEssenceMsg, { message_id: Number(messageId) })
       return true
     } catch {
       return false
@@ -1187,7 +1187,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setFriendApplyResult (requestId: string, isApprove: boolean, remark?: string) {
     try {
-      await this.sendApi(Action.setFriendAddRequest, { flag: requestId, approve: isApprove, remark })
+      await this.sendApi(OB11ApiAction.setFriendAddRequest, { flag: requestId, approve: isApprove, remark })
       return true
     } catch {
       return false
@@ -1210,7 +1210,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGroupApplyResult (requestId: string, isApprove: boolean, denyReason?: string) {
     try {
-      await this.sendApi(Action.setGroupAddRequest, { flag: requestId, approve: isApprove, sub_type: 'add', reason: denyReason })
+      await this.sendApi(OB11ApiAction.setGroupAddRequest, { flag: requestId, approve: isApprove, sub_type: 'add', reason: denyReason })
       return true
     } catch {
       return false
@@ -1222,7 +1222,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async SetGroupApplyResult (requestId: string, isApprove: boolean, denyReason?: string) {
     try {
-      await this.sendApi(Action.setGroupAddRequest, { flag: requestId, approve: isApprove, sub_type: 'add', reason: denyReason })
+      await this.sendApi(OB11ApiAction.setGroupAddRequest, { flag: requestId, approve: isApprove, sub_type: 'add', reason: denyReason })
       return true
     } catch {
       return false
@@ -1237,7 +1237,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setInvitedJoinGroupResult (requestId: string, isApprove: boolean) {
     try {
-      await this.sendApi(Action.setGroupAddRequest, { flag: requestId, approve: isApprove, sub_type: 'invite' })
+      await this.sendApi(OB11ApiAction.setGroupAddRequest, { flag: requestId, approve: isApprove, sub_type: 'invite' })
       return true
     } catch {
       return false
@@ -1292,7 +1292,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async sendForwardMsg (contact: Contact, elements: NodeElement[], options?: ForwardOptions) {
     if (contact.scene === 'group') {
-      const result = await this.sendApi(Action.sendGroupForwardMsg, {
+      const result = await this.sendApi(OB11ApiAction.sendGroupForwardMsg, {
         group_id: Number(contact.peer),
         messages: this.forwardKarinConvertAdapter(elements),
         ...options,
@@ -1302,7 +1302,7 @@ export abstract class AdapterOneBot extends AdapterBase {
     }
 
     if (contact.scene === 'friend') {
-      const result = await this.sendApi(Action.sendPrivateForwardMsg, {
+      const result = await this.sendApi(OB11ApiAction.sendPrivateForwardMsg, {
         user_id: Number(contact.peer),
         messages: this.forwardKarinConvertAdapter(elements),
         ...options,
@@ -1327,11 +1327,11 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param action API端点
    * @param params API参数
    */
-  async sendApi<T extends keyof Params> (
+  async sendApi<T extends keyof OB11ApiParams> (
     action: T | `${T}`,
-    params: Params[T],
+    params: OB11ApiParams[T],
     time = 120
-  ): Promise<Request[T]> {
+  ): Promise<OB11ApiRequest[T]> {
     throw new Error('tips: 请在子类中实现此方法')
   }
 
@@ -1339,11 +1339,11 @@ export abstract class AdapterOneBot extends AdapterBase {
    * 发送API请求
    * @deprecated 已废弃，请使用`sendApi`
    */
-  async SendApi<T extends keyof Params> (
+  async SendApi<T extends keyof OB11ApiParams> (
     action: T,
-    params: Params[T],
+    params: OB11ApiParams[T],
     time = 0
-  ): Promise<Request[T]> {
+  ): Promise<OB11ApiRequest[T]> {
     return this.sendApi(action, params, time)
   }
 }

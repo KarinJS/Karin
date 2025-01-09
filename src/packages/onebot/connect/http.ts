@@ -3,7 +3,7 @@ import { config } from '@/utils'
 import { buildError } from '@/packages/onebot/core/convert'
 import { AdapterOneBot } from '@/packages/onebot/core/base'
 import { listeners } from '@/core/internal/listeners'
-import { Action, OB11AllEvent, Params, Request } from '../types'
+import { OB11ApiAction, OB11AllEvent, OB11ApiParams, OB11ApiRequest } from '../types'
 import { registerBot, unregisterBot } from '@/service/bot'
 import { unregisterHttpBot } from '@/packages/onebot/post/register'
 
@@ -58,24 +58,24 @@ export class HttpAdapterOneBot11 extends AdapterOneBot {
 
   /** 获取登录号信息 */
   private async setAdapterInfo () {
-    const info = await this.sendApi(Action.getVersionInfo, {})
+    const info = await this.sendApi(OB11ApiAction.getVersionInfo, {})
     this.adapter.name = info.app_name
     this.adapter.version = info.app_version
   }
 
   /** 设置登录号详细信息 */
   private async setBotInfo () {
-    const info = await this.sendApi(Action.getLoginInfo, {})
+    const info = await this.sendApi(OB11ApiAction.getLoginInfo, {})
     this.account.name = info.nickname
     this.account.selfId = info.user_id + ''
     this.account.avatar = `https://q1.qlogo.cn/g?b=qq&s=0&nk=${info.user_id}`
   }
 
-  async sendApi<T extends keyof Params> (
+  async sendApi<T extends keyof OB11ApiParams> (
     action: T | `${T}`,
-    params: Params[T],
+    params: OB11ApiParams[T],
     time = 120
-  ): Promise<Request[T]> {
+  ): Promise<OB11ApiRequest[T]> {
     if (!time) time = config.timeout()
     const request = JSON.stringify(params)
     logger.bot('debug', this.selfId, `发送Api请求 ${action}: ${request}`)

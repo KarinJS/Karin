@@ -69,7 +69,7 @@ export const enum OB11RequestType {
   Group = 'group',
 }
 
-export interface FriendSender {
+export interface OB11FriendSender {
   /** 发送者 QQ 号 */
   user_id: number
   /** 昵称 不存在则为空字符串 */
@@ -82,7 +82,7 @@ export interface FriendSender {
   group_id?: number
 }
 
-export interface GroupSender {
+export interface OB11GroupSender {
   /** 发送者 QQ 号 */
   user_id: number
   /** 昵称 不存在则为空字符串 */
@@ -144,7 +144,7 @@ export interface OB11PrivateMessage extends MessageBase {
   /** 临时会话来源 */
   temp_source?: number
   /** 发送人信息 */
-  sender: FriendSender
+  sender: OB11FriendSender
 }
 
 /** 群临时消息事件 */
@@ -166,7 +166,7 @@ export interface OB11GroupTempMessage extends MessageBase {
   /** 临时会话来源 */
   temp_source?: number
   /** 发送人信息 */
-  sender: FriendSender
+  sender: OB11FriendSender
 }
 
 /** 群消息事件 */
@@ -187,7 +187,7 @@ export interface OB11GroupMessage extends MessageBase {
   //   flag: string
   // }
   /** 发送人信息 */
-  sender: GroupSender
+  sender: OB11GroupSender
 }
 
 /** 消息事件 */

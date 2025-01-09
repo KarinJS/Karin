@@ -1,6 +1,6 @@
 import type { OB11NodeSegment, OB11Segment } from './segment'
 
-export const enum Action {
+export const enum OB11ApiAction {
   /** 发送私聊消息 */
   sendPrivateMsg = 'send_private_msg',
   /** 发送群消息 */
@@ -104,9 +104,9 @@ export const enum Action {
 }
 
 /** Api请求参数 */
-export interface Params {
+export interface OB11ApiParams {
   /** 发送私聊消息 */
-  [Action.sendPrivateMsg]: {
+  [OB11ApiAction.sendPrivateMsg]: {
     /** 对方 QQ 号 */
     user_id: number
     /** 主动发起临时会话时的来源群号(可选, 机器人本身必须是管理员/群主) */
@@ -117,7 +117,7 @@ export interface Params {
     auto_escape?: boolean
   }
   /** 发送群消息 */
-  [Action.sendGroupMsg]: {
+  [OB11ApiAction.sendGroupMsg]: {
     /** 群号 */
     group_id: number
     /** 要发送的内容 */
@@ -126,7 +126,7 @@ export interface Params {
     auto_escape?: boolean
   }
   /** 发送消息 */
-  [Action.sendMsg]: {
+  [OB11ApiAction.sendMsg]: {
     /** 消息类型 */
     message_type: 'private' | 'group'
     /** 对方 QQ 号，当消息类型为 "private" 时有效 */
@@ -139,29 +139,29 @@ export interface Params {
     auto_escape?: boolean
   }
   /** 撤回消息 */
-  [Action.deleteMsg]: {
+  [OB11ApiAction.deleteMsg]: {
     /** 消息 ID */
     message_id: number
   }
   /** 获取消息 */
-  [Action.getMsg]: {
+  [OB11ApiAction.getMsg]: {
     /** 消息 ID */
     message_id: number
   }
   /** 获取转发消息 */
-  [Action.getForwardMsg]: {
+  [OB11ApiAction.getForwardMsg]: {
     /** 转发消息 ID */
     id: string
   }
   /** 发送好友赞 */
-  [Action.sendLike]: {
+  [OB11ApiAction.sendLike]: {
     /** 对方 QQ 号 */
     user_id: number
     /** 赞的次数，每个赞为一个好友赞，每个用户每天最多赞 10 次 */
     times?: number
   }
   /** 群组踢人 */
-  [Action.setGroupKick]: {
+  [OB11ApiAction.setGroupKick]: {
     /** 群号 */
     group_id: number
     /** 要踢的 QQ 号 */
@@ -170,7 +170,7 @@ export interface Params {
     reject_add_request?: boolean
   }
   /** 群组禁言 */
-  [Action.setGroupBan]: {
+  [OB11ApiAction.setGroupBan]: {
     /** 群号 */
     group_id: number
     /** 要禁言的 QQ 号 */
@@ -179,7 +179,7 @@ export interface Params {
     duration?: number
   }
   /** 群组匿名用户禁言 */
-  [Action.setGroupAnonymousBan]: {
+  [OB11ApiAction.setGroupAnonymousBan]: {
     /** 群号 */
     group_id: number
     /** 匿名用户对象 */
@@ -190,14 +190,14 @@ export interface Params {
     duration?: number
   }
   /** 群组全员禁言 */
-  [Action.setGroupWholeBan]: {
+  [OB11ApiAction.setGroupWholeBan]: {
     /** 群号 */
     group_id: number
     /** 是否禁言，true 为开启，false 为关闭 */
     enable?: boolean
   }
   /** 设置群管理员 */
-  [Action.setGroupAdmin]: {
+  [OB11ApiAction.setGroupAdmin]: {
     /** 群号 */
     group_id: number
     /** 要设置管理员的 QQ 号 */
@@ -206,14 +206,14 @@ export interface Params {
     enable?: boolean
   }
   /** 设置群匿名聊天 */
-  [Action.setGroupAnonymous]: {
+  [OB11ApiAction.setGroupAnonymous]: {
     /** 群号 */
     group_id: number
     /** 是否允许匿名聊天，true 为开启，false 为关闭 */
     enable?: boolean
   }
   /** 设置群名片（群备注） */
-  [Action.setGroupCard]: {
+  [OB11ApiAction.setGroupCard]: {
     /** 群号 */
     group_id: number
     /** 要设置的 QQ 号 */
@@ -222,21 +222,21 @@ export interface Params {
     card?: string
   }
   /** 设置群名 */
-  [Action.setGroupName]: {
+  [OB11ApiAction.setGroupName]: {
     /** 群号 */
     group_id: number
     /** 新群名 */
     group_name: string
   }
   /** 退出群组 */
-  [Action.setGroupLeave]: {
+  [OB11ApiAction.setGroupLeave]: {
     /** 群号 */
     group_id: number
     /** 是否解散，如果登录号是群主，则仅在此项为 true 时能够解散 */
     is_dismiss?: boolean
   }
   /** 设置群成员专属头衔 */
-  [Action.setGroupSpecialTitle]: {
+  [OB11ApiAction.setGroupSpecialTitle]: {
     /** 群号 */
     group_id: number
     /** 要设置的 QQ 号 */
@@ -247,7 +247,7 @@ export interface Params {
     duration?: number
   }
   /** 处理好友添加请求 */
-  [Action.setFriendAddRequest]: {
+  [OB11ApiAction.setFriendAddRequest]: {
     /** 请求 flag，在调用处理请求的事件中返回 */
     flag: string
     /** 是否同意请求 */
@@ -256,7 +256,7 @@ export interface Params {
     remark?: string
   }
   /** 处理群添加请求／邀请 */
-  [Action.setGroupAddRequest]: {
+  [OB11ApiAction.setGroupAddRequest]: {
     /** 请求 flag，在调用处理请求的事件中返回 */
     flag: string
     /** 请求子类型，add 或 invite，请求子类型为 invite 时为邀请 */
@@ -267,27 +267,27 @@ export interface Params {
     reason?: string
   }
   /** 获取登录号信息 */
-  [Action.getLoginInfo]: {}
+  [OB11ApiAction.getLoginInfo]: {}
   /** 获取陌生人信息 */
-  [Action.getStrangerInfo]: {
+  [OB11ApiAction.getStrangerInfo]: {
     /** QQ 号 */
     user_id: number
     /** 是否不使用缓存，true 表示不使用缓存，false 或留空表示使用缓存 */
     no_cache?: boolean
   }
   /** 获取好友列表 */
-  [Action.getFriendList]: {}
+  [OB11ApiAction.getFriendList]: {}
   /** 获取群信息 */
-  [Action.getGroupInfo]: {
+  [OB11ApiAction.getGroupInfo]: {
     /** 群号 */
     group_id: number
     /** 是否不使用缓存，true 表示不使用缓存，false 或留空表示使用缓存 */
     no_cache?: boolean
   }
   /** 获取群列表 */
-  [Action.getGroupList]: {}
+  [OB11ApiAction.getGroupList]: {}
   /** 获取群成员信息 */
-  [Action.getGroupMemberInfo]: {
+  [OB11ApiAction.getGroupMemberInfo]: {
     /** 群号 */
     group_id: number
     /** QQ 号 */
@@ -296,63 +296,63 @@ export interface Params {
     no_cache?: boolean
   }
   /** 获取群成员列表 */
-  [Action.getGroupMemberList]: {
+  [OB11ApiAction.getGroupMemberList]: {
     /** 群号 */
     group_id: number
     /** 是否不使用缓存，true 表示不使用缓存，false 或留空表示使用缓存 */
     no_cache?: boolean
   }
   /** 获取群荣誉信息 */
-  [Action.getGroupHonorInfo]: {
+  [OB11ApiAction.getGroupHonorInfo]: {
     /** 群号 */
     group_id: number
     /** 荣誉类型，可选值为 "talkative"（龙王）、"performer"（群聊之火）、"legend"（群聊炽焰）、"strong_newbie"（新人王）、"emotion"（快乐源泉）、"all"（所有类型） */
     type: 'talkative' | 'performer' | 'legend' | 'strong_newbie' | 'emotion' | 'all'
   }
   /** 获取 Cookies */
-  [Action.getCookies]: {
+  [OB11ApiAction.getCookies]: {
     /** 指定域名，不填或空字符串表示获取当前域名下的 Cookies */
     domain?: string
   }
   /** 获取 CSRF Token */
-  [Action.getCsrfToken]: {}
+  [OB11ApiAction.getCsrfToken]: {}
   /** 获取 QQ 相关接口凭证 */
-  [Action.getCredentials]: {
+  [OB11ApiAction.getCredentials]: {
     /** 指定域名，不填或空字符串表示获取当前域名下的凭证 */
     domain?: string
   }
   /** 获取语音 */
-  [Action.getRecord]: {
+  [OB11ApiAction.getRecord]: {
     /** 文件路径 */
     file: string
     /** 输出格式，可选值为 "amr"、"silk"、"mp3"、"wav"，默认为 "amr" */
     out_format: string
   }
   /** 获取图片 */
-  [Action.getImage]: {
+  [OB11ApiAction.getImage]: {
     /** 文件路径 */
     file: string
   }
   /** 是否可以发送图片 */
-  [Action.canSendImage]: {}
+  [OB11ApiAction.canSendImage]: {}
   /** 是否可以发送语音 */
-  [Action.canSendRecord]: {}
+  [OB11ApiAction.canSendRecord]: {}
   /** 获取插件运行状态 */
-  [Action.getStatus]: {}
+  [OB11ApiAction.getStatus]: {}
   /** 获取版本信息 */
-  [Action.getVersionInfo]: {}
+  [OB11ApiAction.getVersionInfo]: {}
   /** 获取版本信息 */
-  [Action.getVersion]: {}
+  [OB11ApiAction.getVersion]: {}
   /** 重启插件 */
-  [Action.setRestart]: {
+  [OB11ApiAction.setRestart]: {
     /** 延迟重启时间，单位毫秒，不填或留空表示立即重启 */
     delay?: number
   }
   /** 清理数据缓存 */
-  [Action.cleanCache]: {}
+  [OB11ApiAction.cleanCache]: {}
 
   /** 发送合并转发消息 */
-  [Action.sendForwardMsg]: {
+  [OB11ApiAction.sendForwardMsg]: {
     /** 对方 QQ 号，当消息类型为 "private" 时有效 */
     user_id?: number
     /** 群号，当消息类型为 "group" 时有效 */
@@ -362,7 +362,7 @@ export interface Params {
   }
 
   /** 发送群聊合并转发消息 */
-  [Action.sendGroupForwardMsg]: {
+  [OB11ApiAction.sendGroupForwardMsg]: {
     /** 群号 */
     group_id: number
     /** 要发送的内容 */
@@ -370,7 +370,7 @@ export interface Params {
   }
 
   /** 发送好友合并转发消息 */
-  [Action.sendPrivateForwardMsg]: {
+  [OB11ApiAction.sendPrivateForwardMsg]: {
     /** 对方 QQ 号 */
     user_id: number
     /** 要发送的内容 */
@@ -378,7 +378,7 @@ export interface Params {
   }
 
   /** 获取好友历史消息记录 */
-  [Action.getFriendMsgHistory]: {
+  [OB11ApiAction.getFriendMsgHistory]: {
     /** 对方 QQ 号 */
     user_id: number
     /** 起始消息序号 */
@@ -390,7 +390,7 @@ export interface Params {
   }
 
   /** 获取群组历史消息记录 */
-  [Action.getGroupMsgHistory]: {
+  [OB11ApiAction.getGroupMsgHistory]: {
     /** 群号 */
     group_id: number
     /** 起始消息序号 */
@@ -401,7 +401,7 @@ export interface Params {
     count: number
   }
   /** 对消息进行表情回应 */
-  [Action.setMsgEmojiLike]: {
+  [OB11ApiAction.setMsgEmojiLike]: {
     /** 需要回应的消息 ID */
     message_id: string
     /** 回应的表情 ID */
@@ -412,7 +412,7 @@ export interface Params {
   /**
    * 上传群文件
    */
-  [Action.uploadGroupFile]: {
+  [OB11ApiAction.uploadGroupFile]: {
     /** 群号 */
     group_id: number
     /** 文件路径 需要提供绝对路径 */
@@ -425,7 +425,7 @@ export interface Params {
   /**
    * 上传私聊文件
    */
-  [Action.uploadPrivateFile]: {
+  [OB11ApiAction.uploadPrivateFile]: {
     /** 对方 QQ 号 */
     user_id: number
     /** 文件路径 需要提供绝对路径 */
@@ -436,21 +436,21 @@ export interface Params {
   /**
    * 获取精华消息列表
    */
-  [Action.getEssenceMsgList]: {
+  [OB11ApiAction.getEssenceMsgList]: {
     /** 群号 */
     group_id: number
   }
   /**
    * 设置精华消息
    */
-  [Action.setEssenceMsg]: {
+  [OB11ApiAction.setEssenceMsg]: {
     /** 消息ID */
     message_id: number
   }
   /**
    * 移除精华消息
    */
-  [Action.deleteEssenceMsg]: {
+  [OB11ApiAction.deleteEssenceMsg]: {
     /** 消息ID */
     message_id: number
   }
@@ -542,7 +542,7 @@ export interface GetMsg {
   message: OB11Segment[]
 }
 
-export interface UserInfo {
+export interface OB11serInfo {
   /** QQ 号 */
   uid?: string
   /** QQ 号 */
@@ -681,80 +681,80 @@ export interface UserInfo {
 }
 
 /** Api返回参数 */
-export interface Request {
+export interface OB11ApiRequest {
   /** 发送私聊消息 */
-  [Action.sendPrivateMsg]: {
+  [OB11ApiAction.sendPrivateMsg]: {
     /** 消息 ID */
     message_id: number
   }
 
   /** 发送群消息 */
-  [Action.sendGroupMsg]: {
+  [OB11ApiAction.sendGroupMsg]: {
     /** 消息 ID */
     message_id: number
   }
 
   /** 发送消息 */
-  [Action.sendMsg]: {
+  [OB11ApiAction.sendMsg]: {
     /** 消息 ID */
     message_id: number
   }
 
   /** 撤回消息 */
-  [Action.deleteMsg]: {
+  [OB11ApiAction.deleteMsg]: {
     /** 消息 ID */
     message_id: number
   }
 
   /** 获取消息 */
-  [Action.getMsg]: GetMsg
+  [OB11ApiAction.getMsg]: GetMsg
 
   /** 获取转发消息 */
-  [Action.getForwardMsg]: {
+  [OB11ApiAction.getForwardMsg]: {
     message: Array<OB11NodeSegment>
   }
 
   /** 发送好友赞 */
-  [Action.sendLike]: {}
+  [OB11ApiAction.sendLike]: {}
 
   /** 群组踢人 */
-  [Action.setGroupKick]: {}
+  [OB11ApiAction.setGroupKick]: {}
 
   /** 群组禁言 */
-  [Action.setGroupBan]: {}
+  [OB11ApiAction.setGroupBan]: {}
 
   /** 群组匿名用户禁言 */
-  [Action.setGroupAnonymousBan]: {}
+  [OB11ApiAction.setGroupAnonymousBan]: {}
 
   /** 群组全员禁言 */
-  [Action.setGroupWholeBan]: {}
+  [OB11ApiAction.setGroupWholeBan]: {}
 
   /** 设置群管理员 */
-  [Action.setGroupAdmin]: {}
+  [OB11ApiAction.setGroupAdmin]: {}
 
   /** 设置群匿名聊天 */
-  [Action.setGroupAnonymous]: {}
+  [OB11ApiAction.setGroupAnonymous]: {}
 
   /** 设置群名片（群备注） */
-  [Action.setGroupCard]: {}
+  [OB11ApiAction.setGroupCard]: {}
 
   /** 设置群名 */
-  [Action.setGroupName]: {}
+  [OB11ApiAction.setGroupName]: {}
 
   /** 退出群组 */
-  [Action.setGroupLeave]: {}
+  [OB11ApiAction.setGroupLeave]: {}
 
   /** 设置群成员专属头衔 */
-  [Action.setGroupSpecialTitle]: {}
+  [OB11ApiAction.setGroupSpecialTitle]: {}
 
   /** 处理好友添加请求 */
-  [Action.setFriendAddRequest]: {}
+  [OB11ApiAction.setFriendAddRequest]: {}
 
   /** 处理群添加请求／邀请 */
-  [Action.setGroupAddRequest]: {}
+  [OB11ApiAction.setGroupAddRequest]: {}
 
   /** 获取登录号信息 */
-  [Action.getLoginInfo]: {
+  [OB11ApiAction.getLoginInfo]: {
     /** QQ 号 */
     user_id: number
     /** QQ 昵称 */
@@ -762,25 +762,25 @@ export interface Request {
   }
 
   /** 获取陌生人信息 */
-  [Action.getStrangerInfo]: UserInfo
+  [OB11ApiAction.getStrangerInfo]: OB11serInfo
 
   /** 获取好友列表 */
-  [Action.getFriendList]: Array<UserInfo>
+  [OB11ApiAction.getFriendList]: Array<OB11serInfo>
 
   /** 获取群信息 */
-  [Action.getGroupInfo]: GetGroupInfo
+  [OB11ApiAction.getGroupInfo]: GetGroupInfo
 
   /** 获取群列表 */
-  [Action.getGroupList]: Array<GetGroupInfo>
+  [OB11ApiAction.getGroupList]: Array<GetGroupInfo>
 
   /** 获取群成员信息 */
-  [Action.getGroupMemberInfo]: GetGroupMemberInfo
+  [OB11ApiAction.getGroupMemberInfo]: GetGroupMemberInfo
 
   /** 获取群成员列表 */
-  [Action.getGroupMemberList]: Array<GetGroupMemberInfo>
+  [OB11ApiAction.getGroupMemberList]: Array<GetGroupMemberInfo>
 
   /** 获取群荣誉信息 */
-  [Action.getGroupHonorInfo]: {
+  [OB11ApiAction.getGroupHonorInfo]: {
     /** 群号 */
     group_id: number
     /**
@@ -809,45 +809,45 @@ export interface Request {
   }
 
   /** 获取 Cookies */
-  [Action.getCookies]: {
+  [OB11ApiAction.getCookies]: {
     cookies: string
   }
 
   /** 获取 CSRF Token */
-  [Action.getCsrfToken]: {
+  [OB11ApiAction.getCsrfToken]: {
     token: number
   }
 
   /** 获取 QQ 相关接口凭证 */
-  [Action.getCredentials]: {
+  [OB11ApiAction.getCredentials]: {
     cookies: string
     csrf_token: number
   }
 
   /** 获取语音 */
-  [Action.getRecord]: {
+  [OB11ApiAction.getRecord]: {
     /** 转换后的语音文件绝对路径 如 /home/somebody/cqhttp/data/record/0B38145AA44505000B38145AA4450500.mp3 */
     file: string
   }
 
   /** 获取图片 */
-  [Action.getImage]: {
+  [OB11ApiAction.getImage]: {
     /** 下载后的图片文件路径，如 /home/somebody/cqhttp/data/image/6B4DE3DFD1BD271E3297859D41C530F5.jpg */
     file: string
   }
 
   /** 是否可以发送图片 */
-  [Action.canSendImage]: {
+  [OB11ApiAction.canSendImage]: {
     yes: boolean
   }
 
   /** 是否可以发送语音 */
-  [Action.canSendRecord]: {
+  [OB11ApiAction.canSendRecord]: {
     yes: boolean
   }
 
   /** 获取插件运行状态 */
-  [Action.getStatus]: {
+  [OB11ApiAction.getStatus]: {
     /** 当前 QQ 在线，null 表示无法查询到在线状态 */
     online: boolean
     /** 状态符合预期，意味着各模块正常运行、功能正常，且 QQ 在线 */
@@ -856,7 +856,7 @@ export interface Request {
   }
 
   /** 获取版本信息 */
-  [Action.getVersionInfo]: {
+  [OB11ApiAction.getVersionInfo]: {
     /** 应用标识，如 mirai-native */
     app_name: string
     /** 应用版本，如 1.2.3 */
@@ -867,7 +867,7 @@ export interface Request {
   }
 
   /** 获取版本信息 */
-  [Action.getVersion]: {
+  [OB11ApiAction.getVersion]: {
     /** 应用标识，如 mirai-native */
     app_name: string
     /** 应用版本，如 1.2.3 */
@@ -878,16 +878,16 @@ export interface Request {
   }
 
   /** 重启插件 */
-  [Action.setRestart]: {
+  [OB11ApiAction.setRestart]: {
     /** 延迟重启时间，单位毫秒，不填或留空表示立即重启 */
     delay?: number
   }
 
   /** 清理数据缓存 */
-  [Action.cleanCache]: {}
+  [OB11ApiAction.cleanCache]: {}
 
   /** 发送合并转发消息 */
-  [Action.sendForwardMsg]: {
+  [OB11ApiAction.sendForwardMsg]: {
     /** 消息 ID */
     message_id: number
     /** res_id 可通过长消息接口发送 */
@@ -895,7 +895,7 @@ export interface Request {
   }
 
   /** 发送群聊合并转发消息 */
-  [Action.sendGroupForwardMsg]: {
+  [OB11ApiAction.sendGroupForwardMsg]: {
     /** 消息 ID */
     message_id: number
     /** res_id 可通过长消息接口发送 */
@@ -903,7 +903,7 @@ export interface Request {
   }
 
   /** 发送好友合并转发消息 */
-  [Action.sendPrivateForwardMsg]: {
+  [OB11ApiAction.sendPrivateForwardMsg]: {
     /** 消息 ID */
     message_id: number
     /** res_id 可通过长消息接口发送 */
@@ -911,28 +911,28 @@ export interface Request {
   }
 
   /** 获取好友历史消息记录 */
-  [Action.getFriendMsgHistory]: { messages: GetMsg[] }
+  [OB11ApiAction.getFriendMsgHistory]: { messages: GetMsg[] }
 
   /** 获取群组历史消息记录 */
-  [Action.getGroupMsgHistory]: { messages: GetMsg[] }
+  [OB11ApiAction.getGroupMsgHistory]: { messages: GetMsg[] }
 
   /** 对消息进行表情回应 */
-  [Action.setMsgEmojiLike]: {}
+  [OB11ApiAction.setMsgEmojiLike]: {}
 
   /**
    * 上传群文件
    */
-  [Action.uploadGroupFile]: {}
+  [OB11ApiAction.uploadGroupFile]: {}
 
   /**
    * 上传私聊文件
    */
-  [Action.uploadPrivateFile]: {}
+  [OB11ApiAction.uploadPrivateFile]: {}
 
   /**
    * 获取精华消息列表
    */
-  [Action.getEssenceMsgList]: Array<{
+  [OB11ApiAction.getEssenceMsgList]: Array<{
     /** 发送者QQ号 */
     sender_id: number
     /** 发送者昵称 */
@@ -952,9 +952,9 @@ export interface Request {
   /**
  * 设置精华消息
  */
-  [Action.setEssenceMsg]: {}
+  [OB11ApiAction.setEssenceMsg]: {}
   /**
    * 移除精华消息
    */
-  [Action.deleteEssenceMsg]: {}
+  [OB11ApiAction.deleteEssenceMsg]: {}
 }

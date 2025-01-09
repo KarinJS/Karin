@@ -19,7 +19,7 @@ import type {
   SendMsgResults,
   UserInfo,
 } from './apiResponse'
-import type { Params, Request } from '@/packages/onebot'
+import type { OB11ApiParams, OB11ApiRequest } from '@/packages/onebot'
 
 /** 适配器类型 */
 export interface AdapterType {
@@ -33,7 +33,7 @@ export interface AdapterType {
    * @param params 请求的参数
    * @param time 超时时间 默认为120s
    */
-  sendApi?: <T extends keyof Params>(action: `${T}`, params: Params[T], time?: number) => Promise<Request[T]>
+  sendApi?: <T extends keyof OB11ApiParams>(action: `${T}`, params: OB11ApiParams[T], time?: number) => Promise<OB11ApiRequest[T]>
   /** 适配器信息 */
   adapter: AdapterInfo
 

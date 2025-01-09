@@ -1,6 +1,6 @@
 import { config } from '@/utils'
 import { AdapterOneBot } from '@/packages/onebot/core/base'
-import { Action, Params, Request } from '../types'
+import { OB11ApiAction, OB11ApiParams, OB11ApiRequest } from '../types'
 import { OB11Event, type OB11AllEvent } from '@/packages/onebot/types/event'
 import { registerBot } from '@/service/bot'
 import { buildError } from '@/packages/onebot/core/convert'
@@ -68,24 +68,24 @@ export abstract class WsAdapterOneBot11 extends AdapterOneBot {
 
   /** 获取登录号信息 */
   private async setAdapterInfo () {
-    const info = await this.sendApi(Action.getVersionInfo, {})
+    const info = await this.sendApi(OB11ApiAction.getVersionInfo, {})
     this.adapter.name = info.app_name
     this.adapter.version = info.app_version
   }
 
   /** 设置登录号详细信息 */
   private async setBotInfo () {
-    const info = await this.sendApi(Action.getLoginInfo, {})
+    const info = await this.sendApi(OB11ApiAction.getLoginInfo, {})
     this.account.name = info.nickname
     this.account.selfId = info.user_id + ''
     this.account.avatar = `https://q1.qlogo.cn/g?b=qq&s=0&nk=${info.user_id}`
   }
 
-  async sendApi<T extends keyof Params> (
+  async sendApi<T extends keyof OB11ApiParams> (
     action: T | `${T}`,
-    params: Params[T],
+    params: OB11ApiParams[T],
     time = 120
-  ): Promise<Request[T]> {
+  ): Promise<OB11ApiRequest[T]> {
     if (!time) time = config.timeout()
     const echo = ++this.seq + ''
     const request = JSON.stringify({ echo, action, params })

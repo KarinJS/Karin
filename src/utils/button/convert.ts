@@ -1,5 +1,9 @@
-import type { QQBotButton, QQButtonTextType } from './types'
-import type { ButtonElement, KeyboardElement } from '@/types/segment'
+import type {
+  QQBotButton,
+  QQButtonTextType,
+  ButtonElement,
+  KeyboardElement,
+} from '@/types/segment'
 
 /**
  * 将karin标准格式的按钮转换为QQ官方按钮
