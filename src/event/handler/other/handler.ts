@@ -192,13 +192,13 @@ export const privateFilterEvent = (
   }
 
   /** 用户白名单 */
-  if (config.enable.users?.length && !config.enable.users.includes(ctx.userId)) {
+  if (config?.user?.enable_list?.length && !config?.user?.enable_list.includes(ctx.userId)) {
     log(ctx.userId, `用户未处于白名单: ${ctx.eventId}`)
     return false
   }
 
   /** 用户黑名单 */
-  if (config.disable.users?.length && config.disable.users.includes(ctx.userId)) {
+  if (config?.user?.disable_list?.length && config?.user?.disable_list.includes(ctx.userId)) {
     log(ctx.userId, `用户处于黑名单: ${ctx.eventId}`)
     return false
   }
@@ -264,16 +264,16 @@ export const groupFilterEvent = (
   }
 
   /** 用户白名单 */
-  if (config.enable.users.length) {
-    if (!config.enable.users.includes(ctx.userId)) {
+  if (config?.user?.enable_list?.length) {
+    if (!config?.user?.enable_list.includes(ctx.userId)) {
       log(ctx.userId, `用户未处于白名单: ${ctx.eventId}`)
       return false
     }
   }
 
   /** 用户黑名单 */
-  if (config.disable.users.length) {
-    if (config.disable.users.includes(ctx.userId)) {
+  if (config?.user?.disable_list?.length) {
+    if (config?.user?.disable_list.includes(ctx.userId)) {
       log(ctx.userId, `用户处于黑名单: ${ctx.eventId}`)
       return false
     }
@@ -281,13 +281,13 @@ export const groupFilterEvent = (
 
   if (ctx.isGroup) {
     /** 群白名单 */
-    if (config.enable.groups?.length && !config.enable.groups.includes(ctx.groupId)) {
+    if (config?.group?.enable_list?.length && !config?.group?.enable_list.includes(ctx.groupId)) {
       log(ctx.groupId, `群未处于白名单: ${ctx.eventId}`)
       return false
     }
 
     /** 群黑名单 */
-    if (config.disable.groups?.length && config.disable.groups.includes(ctx.groupId)) {
+    if (config?.group?.disable_list?.length && config?.group?.disable_list.includes(ctx.groupId)) {
       log(ctx.groupId, `群处于黑名单: ${ctx.eventId}`)
       return false
     }
@@ -303,23 +303,23 @@ export const groupFilterEvent = (
     }
   } if (ctx.isGuild) {
     /** 频道白名单 */
-    if (config.enable.guilds?.length && !config.enable.guilds.includes(ctx.guildId)) {
+    if (config?.guilds?.enable_list?.length && !config?.guilds?.enable_list.includes(ctx.guildId)) {
       log(ctx.guildId, `频道未处于白名单: ${ctx.eventId}`)
       return false
     }
 
     /** 频道黑名单 */
-    if (config.disable.guilds?.length && config.disable.guilds.includes(ctx.guildId)) {
+    if (config?.guilds?.disable_list?.length && config?.guilds?.disable_list.includes(ctx.guildId)) {
       log(ctx.guildId, `频道处于黑名单: ${ctx.eventId}`)
       return false
     }
 
-    if (config.enable.channels?.length && !config.enable.channels.includes(ctx.channelId)) {
+    if (config?.channels?.enable_list?.length && !config?.channels?.enable_list.includes(ctx.channelId)) {
       log(ctx.channelId, `子频道未处于白名单: ${ctx.eventId}`)
       return false
     }
 
-    if (config.disable.channels?.length && config.disable.channels.includes(ctx.channelId)) {
+    if (config?.channels?.disable_list?.length && config?.channels?.disable_list.includes(ctx.channelId)) {
       log(ctx.channelId, `子频道处于黑名单: ${ctx.eventId}`)
       return false
     }
@@ -401,12 +401,12 @@ export const groupPrint = (
   ctx: GroupMessage | GroupTempMessage,
   config: ReturnType<typeof cfg>
 ): boolean => {
-  if (config.enable?.groupLog?.length && !config.enable.groupLog.includes(ctx.groupId)) {
+  if (config?.group?.log_enable_list?.length && !config?.group?.log_enable_list.includes(ctx.groupId)) {
     log(ctx.groupId, `群未处于白名单: ${ctx.eventId}`)
     return false
   }
 
-  if (config.disable?.groupLog?.length && config.disable.groupLog.includes(ctx.groupId)) {
+  if (config?.group?.log_disable_list?.length && config?.group?.log_disable_list.includes(ctx.groupId)) {
     log(ctx.groupId, `群处于黑名单: ${ctx.eventId}`)
     return false
   }
@@ -424,22 +424,22 @@ export const guildPrint = (
   ctx: GuildMessage,
   config: ReturnType<typeof cfg>
 ): boolean => {
-  if (config.enable?.guildLog?.length && !config.enable.guildLog.includes(ctx.guildId)) {
+  if (config?.guilds?.log_enable_list?.length && !config?.guilds?.log_enable_list.includes(ctx.guildId)) {
     log(ctx.guildId, `频道日志未处于白名单: ${ctx.eventId}`)
     return false
   }
 
-  if (config.disable?.guildLog?.length && config.disable.guildLog.includes(ctx.guildId)) {
+  if (config?.guilds?.log_disable_list?.length && config?.guilds?.log_disable_list.includes(ctx.guildId)) {
     log(ctx.guildId, `频道日志处于黑名单: ${ctx.eventId}`)
     return false
   }
 
-  if (config.enable?.channelLog?.length && !config.enable.channelLog.includes(ctx.channelId)) {
+  if (config?.channels?.log_enable_list?.length && !config?.channels?.log_enable_list.includes(ctx.channelId)) {
     log(ctx.channelId, `子频道日志未处于白名单: ${ctx.eventId}`)
     return false
   }
 
-  if (config.disable?.channelLog?.length && config.disable.channelLog.includes(ctx.channelId)) {
+  if (config?.channels?.log_disable_list?.length && config?.channels?.log_disable_list.includes(ctx.channelId)) {
     log(ctx.channelId, `子频道日志处于黑名单: ${ctx.eventId}`)
     return false
   }
