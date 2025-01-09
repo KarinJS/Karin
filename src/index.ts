@@ -7,6 +7,7 @@ export * from '@/utils'
 export * from '@/server'
 export * from '@/packages/onebot'
 export * from '@/event/create'
+export * from '@/adapter/index'
 
 export * from '@/types/adapter'
 export * from '@/types/config'
