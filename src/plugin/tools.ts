@@ -52,5 +52,6 @@ export const createPkg = (): PkgInfo => {
     pkgData: {} as PkgData,
     pkgPath: '',
     type: 'app',
+    allApps: [],
   }
 }

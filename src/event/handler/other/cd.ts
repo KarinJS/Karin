@@ -15,17 +15,17 @@ const groupUserCD: Record<string, NodeJS.Timeout> = {}
  * @returns `true` 表示通过 没有在CD中
  */
 export const privateCD = (
-  eventCfg: Privates,
+  eventCfg: Privates[number],
   key: string
 ): boolean => {
   if (userCD[key]) {
     return false
   }
 
-  if (eventCfg.cd > 0) {
+  if (eventCfg?.cd > 0) {
     userCD[key] = setTimeout(() => {
       delete userCD[key]
-    }, eventCfg.cd * 1000)
+    }, eventCfg?.cd * 1000)
   }
 
   return true
@@ -39,7 +39,7 @@ export const privateCD = (
  * @returns `true` 表示通过 没有在CD中
  */
 export const groupsCD = (
-  eventCfg: Groups,
+  eventCfg: Groups[number],
   groupKey: string,
   userKey: string
 ): boolean => {
@@ -48,16 +48,16 @@ export const groupsCD = (
     return false
   }
 
-  if (eventCfg.cd > 0) {
+  if (eventCfg?.cd > 0) {
     groupCD[groupKey] = setTimeout(() => {
       delete groupCD[groupKey]
-    }, eventCfg.cd * 1000)
+    }, eventCfg?.cd * 1000)
   }
 
-  if (eventCfg.userCD > 0) {
+  if (eventCfg?.userCD > 0) {
     groupUserCD[userKey] = setTimeout(() => {
       delete groupUserCD[userKey]
-    }, eventCfg.userCD * 1000)
+    }, eventCfg?.userCD * 1000)
   }
 
   return true
@@ -70,7 +70,7 @@ export const groupsCD = (
  */
 export const noticeRequestCD = (
   ctx: Notice | Request,
-  config: Privates | Groups,
+  config: Privates[number] | Groups[number],
   key: string
 ): boolean => {
   /** 并非所有事件都需要cd */
@@ -88,10 +88,10 @@ export const noticeRequestCD = (
     return false
   }
 
-  if (config.cd > 0) {
+  if (config?.cd > 0) {
     userCD[key] = setTimeout(() => {
       delete userCD[key]
-    }, config.cd * 1000)
+    }, config?.cd * 1000)
   }
 
   return true

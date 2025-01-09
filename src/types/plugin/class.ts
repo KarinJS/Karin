@@ -25,7 +25,7 @@ export interface PluginRule {
   * - `false`: ``
   * - `string`: `自定义提示`
   */
-  authFailMsg: boolean | string
+  authFailMsg?: boolean | string
 }
 
 export interface PluginOptions<T extends keyof MessageEventMap> {
