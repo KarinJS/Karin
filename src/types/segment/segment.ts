@@ -399,3 +399,8 @@ export type Elements = TextElement
  * 发送消息段类型
  */
 export type SendMessage = string | Elements | Array<string | Elements>
+
+/**
+ * 全部消息段元素
+ */
+export type ElementTypes = Elements
