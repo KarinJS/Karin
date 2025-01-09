@@ -1,7 +1,6 @@
 # 包管理器文件
 .npmrc
 yarn.lock
-pnpm-lock.yaml
 package-lock.json
 
 # 包管理器日志
