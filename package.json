@@ -79,7 +79,8 @@
     "node-schedule": "2.1.1",
     "redis": "4.7.0",
     "ws": "8.18.0",
-    "yaml": "2.5.0"
+    "yaml": "2.5.0",
+    "dotenv": "^16.0.0"
   },
   "devDependencies": {
     "eslint": "^9.12.0",

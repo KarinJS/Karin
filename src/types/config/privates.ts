@@ -1,7 +1,7 @@
 /**
- * `friendDirect.yaml` 类型
+ * `private.json` 类型
  */
-export interface FriendDirect {
+export type Privates = Record<string, {
   /** 好友消息冷却时间，单位秒，0则无限制 */
   cd: number
   /** 机器人响应模式，0-所有 2-仅回应管理员 3-仅回应别名 5-管理员无限制，非管理员别名 6-仅回应主人 */
@@ -14,4 +14,4 @@ export interface FriendDirect {
   disable: string[]
   /** 配置键 `Bot:selfId:userId` */
   get key (): string
-}
+}>

@@ -70,7 +70,7 @@ export const buffer = async <T extends { http: boolean }> (data: unknown, option
   if (data.startsWith('http')) {
     if (options?.http) return data as ResultType
     const response = await axios.get(data, { responseType: 'arraybuffer' })
-    return Buffer.from(response.data) as ResultType
+    return Buffer.from(response.data, 'binary') as ResultType
   }
 
   const files = data.replace(sep, '')
@@ -107,4 +107,14 @@ export const readFile = async (path: string): Promise<Buffer | null> => {
     logger.error(error)
     return null
   }
+}
+
+/**
+ * 生成随机字符串 包含字母和数字
+ * @param length 长度
+ * @returns 返回随机字符串
+ */
+export const randomStr = (length = 8) => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
 }

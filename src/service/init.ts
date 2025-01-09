@@ -1,4 +1,5 @@
-import { init, port, host } from '@/utils/config'
+import { init } from '@/utils/config/init'
+import { port, host } from '@/utils/config/config'
 import { processHandler, checkProcess } from '@/core/internal/process'
 
 /** 初始化config */

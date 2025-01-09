@@ -1,20 +1,21 @@
 import axios, { AxiosError } from 'axios'
 import crypto from 'node:crypto'
-import { config } from '@/utils'
 import { registerRender, unregisterRender } from '../admin/cache'
+import { render } from '@/utils/config/render'
 
 /**
  * @description 创建http渲染器
  */
 export const createHttpRenderClient = () => {
-  const { renderHttp } = config.server()
-  if (!renderHttp || !Array.isArray(renderHttp) || renderHttp.length === 0) {
+  const cfg = render()
+  if (!cfg.http_server || !Array.isArray(cfg.http_server) || cfg.http_server.length === 0) {
     logger.trace('[render][http] 未配置任何正向HTTP 已跳过创建')
     return
   }
 
-  return Promise.allSettled(renderHttp.map(async (item) => {
-    let { url, token } = item
+  return Promise.allSettled(cfg.http_server.map(async (item) => {
+    let { url, token, enable } = item
+    if (!enable) return
     url = url.replace('/puppeteer', '')
     /** 初次鉴权 */
     const headers = { authorization: crypto.createHash('md5').update(`Bearer ${token}`).digest('hex') }

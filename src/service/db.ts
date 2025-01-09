@@ -10,8 +10,4 @@ export const level = createLevelDB()
  * @public
  * @description redis 数据库
  */
-export let redis: Client
-
-(async () => {
-  redis = await createRedis()
-})()
+export const redis: Client = await createRedis()

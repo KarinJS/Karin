@@ -22,16 +22,15 @@ export const restart = async (
   }
 
   const key = `karin:restart:${selfId}`
-  // const { level } = await import('../../main/index')
-  // await level.set(key, options)
+  const { level } = await import('@/service/db')
+  await level.set(key, options)
 
   if (isFront && process.send) {
     process.send('restart')
     return { status: 'success', data: '已发送重启信号' }
   }
 
-  const { config } = await import('@/utils/config')
-  if (!config().pm2Restart) process.exit()
+  if (process.env.PM2_RESTART === 'true') process.exit()
 
   if (process.env.pm_id) {
     const { error } = await exec('npx karin rs')

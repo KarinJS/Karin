@@ -24,5 +24,10 @@ wss.on('connection', (socket, request) => {
     return
   }
 
+  if (request.url === '/puppeteer') {
+    listeners.emit('ws:connection:puppeteer', socket, request)
+    return
+  }
+
   listeners.emit('ws:connection', socket, request)
 })

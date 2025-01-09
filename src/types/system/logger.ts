@@ -1,5 +1,4 @@
 import type chalk from 'chalk'
-import type { Config } from '../config'
 import type { Configuration, Logger as LoggerType } from 'log4js'
 
 /**
@@ -27,7 +26,15 @@ export type LoggerLevel = 'all'
 /**
  * 创建日志模块配置
  */
-export type LoggerOptions = { config?: Configuration, log4jsCfg?: Config['log4jsCfg'] }
+export type LoggerOptions = {
+  config?: Configuration,
+  log4jsCfg?: {
+    level: LoggerLevel,
+    daysToKeep: number,
+    maxLogSize: number,
+    logColor: string,
+  }
+}
 
 /**
  * 拓展日志模块

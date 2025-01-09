@@ -1,12 +1,12 @@
 import fs from 'node:fs'
 import { app } from '../app'
 import path from 'node:path'
-import { server } from '@/utils/config'
+import { adapter } from '@/utils/config/adapter'
 import { isLocalRequest } from '@/utils/system/ip'
 import { consolePath } from '@/root'
 
 app.get('/console/*', async (req, res) => {
-  const cfg = server()
+  const cfg = adapter()
 
   let name = req.path.split('/').pop()
   if (!name) {

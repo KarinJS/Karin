@@ -1,5 +1,5 @@
 import { listeners } from '@/core/internal'
-import { server } from '@/utils/config/index'
+import { adapter } from '@/utils/config/adapter'
 import { registerHttpBot } from './post/register'
 import { AdapterServerOneBot11, HttpAdapterOneBot11 } from './connect'
 import { AdapterClientOneBot11 } from '@/packages/onebot/connect/client'
@@ -19,34 +19,29 @@ const createServer = async () => {
 }
 
 const createClient = async () => {
-  const cfg = server()
-  if (!cfg.forwardWs) return
+  const cfg = adapter()
+  if (!cfg.onebot.ws_client || !Array.isArray(cfg.onebot.ws_client)) return
 
-  for (const item of cfg.forwardWs) {
-    if (typeof item === 'string') {
-      AdapterClientOneBot11.init(item)
-    } else {
-      AdapterClientOneBot11.init(item.url, item.token)
-    }
+  for (const item of cfg.onebot.ws_client) {
+    if (!item?.enable || !item?.url || !item?.token) continue
+    AdapterClientOneBot11.init(item.url, item.token)
   }
 }
 
 const createHttp = async () => {
-  const cfg = server()
-  if (!cfg.onebotHttp || !Array.isArray(cfg.onebotHttp)) return
+  const cfg = adapter()
+  if (!cfg.onebot.http_server || !Array.isArray(cfg.onebot.http_server)) return
 
-  for (let { selfId, api, token } of cfg.onebotHttp) {
+  for (const data of cfg.onebot.http_server) {
     try {
-      if (selfId === 'default') continue
-      selfId = String(selfId)
-      token = String(token)
-      if (!selfId || !api || !api.startsWith('http')) {
-        logger.bot('error', selfId, '请配置正确的 onebot http 信息')
+      if (!data?.enable || !data?.url || !data?.token || !data?.self_id) continue
+      if (!data?.self_id || !data?.url || !data?.url.startsWith('http')) {
+        logger.bot('error', data.self_id, '请配置正确的 onebot http 信息')
         continue
       }
 
-      registerHttpBot(selfId, token)
-      const adapter = new HttpAdapterOneBot11(selfId, api, token)
+      registerHttpBot(data.self_id, data.token)
+      const adapter = new HttpAdapterOneBot11(data.self_id, data.url, data.token)
       await adapter.init()
     } catch (error) {
       logger.error(error)

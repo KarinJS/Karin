@@ -1,7 +1,7 @@
 /**
- * `groupGuild.yaml` 类型
+ * `groups.json` 类型
  */
-export interface GroupGuild {
+export type Groups = Record<string, {
   /** 群聊、频道中所有消息冷却时间，单位秒，0则无限制 */
   cd: number
   /** 群聊、频道中 每个人的消息冷却时间，单位秒，0则无限制。注意，开启后所有消息都会进CD，无论是否触发插件。 */
@@ -20,4 +20,4 @@ export interface GroupGuild {
   memberEnable: string[]
   /** 配置键: `Bot:selfId:groupId` */
   get key (): string
-}
+}>

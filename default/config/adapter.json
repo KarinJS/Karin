@@ -1,0 +1,28 @@
+{
+  "console": {
+    "isLocal": true,
+    "token": "",
+    "host": ""
+  },
+  "onebot": {
+    "ws_server": {
+      "enable": true,
+      "timeout": 120
+    },
+    "ws_client": [
+      {
+        "enable": false,
+        "url": "ws://127.0.0.1:7778",
+        "token": ""
+      }
+    ],
+    "http_server": [
+      {
+        "enable": false,
+        "self_id": "default",
+        "url": "http://127.0.0.1:6099",
+        "token": ""
+      }
+    ]
+  }
+}

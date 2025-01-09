@@ -33,7 +33,7 @@ export const watch = <T> (
     logger.info(`[配置文件变动] ${path.relative(process.cwd(), file).replace(/\\/g, '/')}`)
     const oldData = requireFileSync<T>(file)
     clearRequireFile(file)
-    const newData = requireFileSync<T>(file)
+    const newData = requireFileSync<T>(file, { force: true })
     typeof fnc === 'function' && fnc(oldData, newData)
   })
 

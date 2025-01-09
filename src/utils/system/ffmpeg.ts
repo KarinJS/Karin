@@ -9,11 +9,14 @@ let ffplayPath = 'ffplay'
 setTimeout(async () => {
   const env = await exec('ffmpeg -version', { booleanResult: true })
   if (!env) {
-    const { config } = await import('@/utils/config')
-    const cfg = config()
-    ffmpegPath = cfg.ffmpegPath ? `"${cfg.ffmpegPath}"` : ffmpegPath
-    ffprobePath = cfg.ffprobePath ? `"${cfg.ffprobePath}"` : ffprobePath
-    ffplayPath = cfg.ffplayPath ? `"${cfg.ffplayPath}"` : ffplayPath
+    const cfg = await import('@/utils/config')
+    const ffmpeg = cfg.ffmpegPath()
+    const ffprobe = cfg.ffprobePath()
+    const ffplay = cfg.ffplayPath()
+
+    ffmpegPath = ffmpeg ? `"${ffmpeg}"` : ffmpegPath
+    ffprobePath = ffprobe ? `"${ffprobe}"` : ffprobePath
+    ffplayPath = ffplay ? `"${ffplay}"` : ffplayPath
   }
 }, 1000)
 

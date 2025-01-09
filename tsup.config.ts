@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import { URL, fileURLToPath } from 'node:url'
-import { Options } from 'tsup'
 import { defineConfig } from 'tsup'
+import type { Options } from 'tsup'
 
 const pkg = JSON.parse(fs.readFileSync(new URL('package.json', import.meta.url), 'utf-8'))
 

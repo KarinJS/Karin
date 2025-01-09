@@ -1,4 +1,6 @@
-/** `pm2.yaml` 类型 */
+/**
+ * `pm2.json` 类型
+ */
 export interface PM2 {
   /** 日志最多显示多少行 */
   lines: number

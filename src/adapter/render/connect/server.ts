@@ -1,10 +1,8 @@
-import { config } from '@/utils'
 import { WebSocketRender } from './ws'
-import { registerWSPath } from '@/core/service/server'
+import { render } from '@/utils/config/render'
+import { listeners } from '@/core/internal'
 import type { WebSocket } from 'ws'
 import type { IncomingMessage } from 'node:http'
-
-const { reverseWsToken } = config.server()
 
 /**
  * @description WebSocket服务端渲染
@@ -17,11 +15,18 @@ export class WebSocketServerRenderer extends WebSocketRender {
     super(socket)
     this.request = request
 
+    const cfg = render()
+    if (!cfg.ws_server.enable) {
+      logger.warn('[WebSocket] 反向ws未启用')
+      this.socket.close()
+      return
+    }
+
     const url = `ws://${request.headers.host}${request.url}`
 
-    if (reverseWsToken) {
+    if (process.env.WS_SERVER_AUTH_KEY) {
       const token = request.headers['authorization']
-      if (!token || !this.auth(reverseWsToken, token)) {
+      if (!token || !this.auth(process.env.WS_SERVER_AUTH_KEY, token)) {
         logger.error(`[WebSocket] 鉴权失败: token: ${token} url: ${url}`)
         this.socket.close()
         return
@@ -32,4 +37,6 @@ export class WebSocketServerRenderer extends WebSocketRender {
   }
 }
 
-registerWSPath('/puppeteer', WebSocketServerRenderer)
+listeners.on('ws:connection:puppeteer', (socket: WebSocket, request: IncomingMessage) => {
+  new WebSocketServerRenderer(socket, request).init()
+})

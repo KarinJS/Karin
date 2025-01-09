@@ -16,10 +16,8 @@ const initLogger = (options: LoggerOptions = {}) => {
 
   const {
     level = 'info',
-    daysToKeep = 7,
-    overall = true,
-    fragments = false,
-    maxLogSize = 30,
+    daysToKeep = 14,
+    maxLogSize = 0,
   } = options.log4jsCfg || {}
 
   const config: Configuration = {
@@ -31,37 +29,40 @@ const initLogger = (options: LoggerOptions = {}) => {
           pattern: `%[[Karin][%d{hh:mm:ss.SSS}][%4.4p]%] ${process.env.karin_dev === 'dev' ? '[%f{3}:%l] ' : ''}%m`,
         },
       },
+      overall: {
+        /** 输出到文件 */
+        type: 'file',
+        /** 日志文件名 */
+        filename: 'logs/logger',
+        /** 日期后缀 */
+        pattern: 'yyyy-MM-dd.log',
+        /** 日期后缀 */
+        keepFileExt: true,
+        /** 日志文件名中包含日期模式 */
+        alwaysIncludePattern: true,
+        /** 日志文件保留天数 */
+        daysToKeep: daysToKeep || 14,
+        /** 日志输出格式 */
+        layout: {
+          type: 'pattern',
+          pattern: '[%d{hh:mm:ss.SSS}][%4.4p] %m',
+        },
+      },
     },
-    categories: { default: { appenders: ['console'], level, enableCallStack: process.env.karin_dev === 'dev' } },
+    categories: {
+      default: {
+        appenders: ['overall', 'console'],
+        level,
+        enableCallStack: process.env.karin_dev === 'dev',
+      },
+    },
     levels: {
       handler: { value: 15000, colour: 'cyan' },
     },
   }
 
-  /** 整体化: 将日志输出到一个文件(一天为一个文件) 日志较多的情况下不建议与碎片化同时开启 */
-  if (overall) {
-    config.categories.default.appenders.unshift('overall')
-    config.appenders.overall = {
-      /** 输出到文件 */
-      type: 'file',
-      filename: 'logs/logger',
-      pattern: 'yyyy-MM-dd.log',
-      /** 日期后缀 */
-      keepFileExt: true,
-      /** 日志文件名中包含日期模式 */
-      alwaysIncludePattern: true,
-      /** 日志文件保留天数 */
-      daysToKeep: overall || 7,
-      /** 日志输出格式 */
-      layout: {
-        type: 'pattern',
-        pattern: '[%d{hh:mm:ss.SSS}][%4.4p] %m',
-      },
-    }
-  }
-
   /** 碎片化: 将日志分片，达到指定大小后自动切割 日志较多的情况下不建议与整体化同时开启 */
-  if (fragments) {
+  if (maxLogSize > 0) {
     config.categories.default.appenders.unshift('fragments')
     config.appenders.fragments = {
       type: 'file',
@@ -69,7 +70,7 @@ const initLogger = (options: LoggerOptions = {}) => {
       pattern: 'MM-dd.log',
       keepFileExt: true,
       alwaysIncludePattern: true,
-      daysToKeep: daysToKeep || 7,
+      daysToKeep: daysToKeep || 14,
       maxLogSize: (maxLogSize || 30) * 1024 * 1024,
       /** 最大文件数 */
       numBackups: 9999999,

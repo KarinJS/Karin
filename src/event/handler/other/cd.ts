@@ -1,4 +1,4 @@
-import { FriendDirect, GroupGuild } from '@/types/config'
+import { Privates, Groups } from '@/types/config'
 import { Notice, Request } from '@/types/event'
 
 /** 用户个人CD */
@@ -15,7 +15,7 @@ const groupUserCD: Record<string, NodeJS.Timeout> = {}
  * @returns `true` 表示通过 没有在CD中
  */
 export const privateCD = (
-  eventCfg: FriendDirect,
+  eventCfg: Privates,
   key: string
 ): boolean => {
   if (userCD[key]) {
@@ -39,7 +39,7 @@ export const privateCD = (
  * @returns `true` 表示通过 没有在CD中
  */
 export const groupsCD = (
-  eventCfg: GroupGuild,
+  eventCfg: Groups,
   groupKey: string,
   userKey: string
 ): boolean => {
@@ -70,7 +70,7 @@ export const groupsCD = (
  */
 export const noticeRequestCD = (
   ctx: Notice | Request,
-  config: FriendDirect | GroupGuild,
+  config: Privates | Groups,
   key: string
 ): boolean => {
   /** 并非所有事件都需要cd */

@@ -3,10 +3,10 @@ import path from 'node:path'
 import { AdapterBase } from '../base'
 import { listeners } from '@/core/internal/listeners'
 import { buffer } from '@/utils/fs/data'
-import { server } from '@/utils/config'
 import { consolePath } from '@/root'
 import { registerBot } from '@/service'
 import { segment } from '@/utils/message'
+import { adapter as adapterConfig } from '@/utils/config'
 import { createFriendMessage, createGroupMessage } from '@/event/create'
 import { contactFriend, contactGroup, senderFriend, senderGroup } from '@/event'
 
@@ -31,7 +31,7 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
     this.adapter.communication = 'other'
     this.adapter.platform = 'other'
     this.adapter.standard = 'other'
-    this.adapter.version = process.env.karin_version
+    this.adapter.version = process.env.KARIN_VERSION
     this.account.name = botID
     this.account.uid = botID
     this.account.uin = botID
@@ -127,20 +127,20 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
   }
 
   async getUrl (data: string | Buffer, ext: string) {
-    const cfg = server()
+    const cfg = adapterConfig()
     const name = (++index).toString()
     const file = path.join(consolePath, `${name}${ext}`)
     await fs.promises.writeFile(file, await buffer(data))
 
     if (cfg.console.isLocal) {
-      return `http://127.0.0.1:${cfg.port}/console/${name}${ext}`
+      return `http://127.0.0.1:${process.env.HTTP_PORT}/console/${name}${ext}`
     }
 
     if (cfg.console.host) {
       return `${cfg.console.host}/console/${name}${ext}?token=${cfg.console.token}`
     }
 
-    return `http://127.0.0.1:${cfg.port}/console/${name}${ext}?token=${cfg.console.token}`
+    return `http://127.0.0.1:${process.env.HTTP_PORT}/console/${name}${ext}?token=${cfg.console.token}`
   }
 }
 
