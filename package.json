@@ -49,7 +49,7 @@
     "build": "tsup --config tsup.config.ts",
     "build:dev": "pnpm build:types && node packages/cli/build.mjs",
     "build:module": "tsup --config tsup.modules.ts && node packages/cli/module.mjs",
-    "build:prod": "tsup --config tsup.config.ts && node packages/cli/types.mjs -prod && node packages/cli/build.prod.mjs",
+    "build:prod": "tsup --config tsup.config.ts && node packages/cli/build.prod.mjs",
     "build:types": "tsup --config tsup.types.ts && node packages/cli/types.mjs",
     "debug": "tsx src/index.ts --debug",
     "debug:w": "tsx watch --include \"./src/**/*.ts\"  --debug",
