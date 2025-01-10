@@ -1,8 +1,9 @@
-import { app } from '../app'
+import { router } from './router'
 import { auth } from '../auth'
 import { restartDirect } from '@/utils/system/restart'
+import type { RequestHandler } from 'express'
 
-app.get('/restart', async (req, res) => {
+const restartRouter: RequestHandler = async (req, res) => {
   if (!auth.getAuth(req)) {
     res.status(401).json({ message: '无效的token' })
     return
@@ -10,4 +11,6 @@ app.get('/restart', async (req, res) => {
 
   res.status(200).end()
   restartDirect()
-})
+}
+
+router.get('/restart', restartRouter)

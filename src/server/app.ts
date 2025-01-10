@@ -1,11 +1,20 @@
 import express from 'express'
-import type { Express } from 'express'
 import { createServer } from 'node:http'
+import { router } from './api/router'
+import { router as webRouter } from './api/web/router'
+import path from 'path'
+import type { Express } from 'express'
 
 /** express 服务 */
 export const app: Express = express()
 /** http 服务 */
 export const server = createServer(app)
+
+// 静态文件服务
+app.use('/web', express.static(path.join(process.cwd(), 'web')))
+
+app.use('/v1', router)
+app.use('/api/web', webRouter)
 
 /**
  * 监听端口

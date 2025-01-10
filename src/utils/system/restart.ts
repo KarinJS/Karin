@@ -49,12 +49,12 @@ export const restart = async (
  */
 export const restartDirect = async () => {
   logger.mark('收到重启请求，正在重启...')
-  if (process.env.karin_runtime === 'pm2') {
+  if (process.env.RUNTIME === 'pm2') {
     await exec(`pm2 restart ${process.env.pm_id}`)
     return
   }
 
-  if (process.env.karin_runtime === 'tsx') {
+  if (process.env.RUNTIME === 'tsx') {
     throw new Error('tsx 不支持重启')
   }
 

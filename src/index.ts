@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import '@/service/debug'
 export * from '@/service/logger'
 import '@/service/init'

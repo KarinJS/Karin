@@ -1,11 +1,13 @@
 import fs from 'node:fs'
-import { app } from '../app'
 import path from 'node:path'
+import { router } from './router'
+import { consolePath } from '@/root'
 import { adapter } from '@/utils/config/adapter'
 import { isLocalRequest } from '@/utils/system/ip'
-import { consolePath } from '@/root'
 
-app.get('/console/*', async (req, res) => {
+import type { RequestHandler } from 'express'
+
+const consoleRouter: RequestHandler = async (req, res) => {
   const cfg = adapter()
 
   let name = req.path.split('/').pop()
@@ -67,4 +69,6 @@ app.get('/console/*', async (req, res) => {
       res.setHeader('Content-Type', 'application/octet-stream')
   }
   res.send(data)
-})
+}
+
+router.get('/console/*', consoleRouter)

@@ -1,7 +1,8 @@
-import { app } from '../app'
+import { router } from './router'
 import { auth } from '../auth'
+import type { RequestHandler } from 'express'
 
-app.get('/exit', async (req, res) => {
+const exitRouter: RequestHandler = async (req, res) => {
   if (!auth.getAuth(req)) {
     res.status(401).json({ message: '无效的token' })
     return
@@ -11,4 +12,6 @@ app.get('/exit', async (req, res) => {
   res.json({ message: '退出成功' })
   const { processExit } = await import('@/core/internal/process')
   await processExit(0)
-})
+}
+
+router.get('/exit', exitRouter)

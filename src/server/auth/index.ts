@@ -14,7 +14,8 @@ export const auth = {
   getAuth: (req: Request) => {
     const token = req?.headers?.authorization || req?.query?.token
     if (!token) return false
-    return token === authKey()
+    const value = authKey()
+    return token === `Bearer ${value}` || token === value
   },
   /**
    * post请求鉴权
@@ -23,6 +24,7 @@ export const auth = {
   postAuth: (req: Request) => {
     const token = req?.headers?.authorization
     if (!token) return false
-    return token === authKey()
+    const value = authKey()
+    return token === `Bearer ${value}` || token === value
   },
 }

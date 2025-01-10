@@ -42,12 +42,18 @@ export const processHandler = () => {
  * @param port - 端口号
  */
 export const checkProcess = async (port: number) => {
-  const host = `http://127.0.0.1:${port}`
-  const data = await axios({ url: `${host}/ping`, method: 'get', timeout: 300 })
-  if (!data || data.status !== 200 || data.data.ping !== 'pong') return
+  const host = `http://127.0.0.1:${port}/v1`
+  const data = await axios({
+    url: `${host}/ping`,
+    method: 'get',
+    timeout: 300,
+    headers: { Authorization: `Bearer ${process.env.HTTP_AUTH_KEY}` },
+  })
+
+  if (!data || data.status !== 200) return
 
   /** 端口被未知程序占用 获取对应的进程ID */
-  if (data?.data?.name !== 'karin') {
+  if (data?.data?.ping !== 'pong') {
     const pid = await getPid(port).catch(() => -0)
     logger.fatal(`端口 ${port} 被进程占用，进程ID：${pid}，请手动关闭对应进程或解除端口占用`)
     return
