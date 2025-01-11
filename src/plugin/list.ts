@@ -33,7 +33,9 @@ export const getPlugins = async<T extends boolean = false> (
   if (!['npm', 'all', 'git', 'app'].includes(type)) return []
 
   const list: string[] = []
-  const files = type === 'npm' ? [] : await fs.promises.readdir(dir, { withFileTypes: true })
+  const files = type === 'npm'
+    ? []
+    : fs.existsSync(dir) ? await fs.promises.readdir(dir, { withFileTypes: true }) : []
 
   const pluginHandlers: Record<GetPluginType, () => Promise<void>> = {
     app: () => filterApp(files, list),
@@ -245,7 +247,7 @@ const filterGit = async (files: fs.Dirent[], list: string[]) => {
 
 const filterPkg = async (list: string[]) => {
   const karinPkg = await requireFile(path.join(karinDir, 'package.json'))
-  const exclude = [...Object.keys(karinPkg.dependencies), ...Object.keys(karinPkg.devDependencies)]
+  const exclude = [...Object.keys(karinPkg.dependencies || {}), ...Object.keys(karinPkg.devDependencies || {})]
 
   const pkg = await requireFile('./package.json')
   const dependencies = Object.keys(pkg.dependencies || {}).filter((name) => !exclude.includes(name) && !name.startsWith('@types'))

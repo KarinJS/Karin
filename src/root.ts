@@ -26,6 +26,8 @@ export const configPath = Object.freeze(path.join(basePath, 'config'))
 export const dataPath = Object.freeze(path.join(basePath, 'data'))
 /** 临时文件存储 `@karinjs/temp` */
 export const tempPath = Object.freeze(path.join(basePath, 'temp'))
+/** resource目录 `@karinjs/resource` */
+export const resourcePath = Object.freeze(path.join(basePath, 'resource'))
 /** db根目录 `@karinjs/data/db` */
 export const dbPath = Object.freeze(path.join(dataPath, 'db'))
 /** level目录 `@karinjs/data/db/level` */

@@ -1,9 +1,5 @@
-import { init } from '@/utils/config/init'
 import { port, host } from '@/utils/config/config'
 import { processHandler, checkProcess } from '@/core/internal/process'
-
-/** 初始化config */
-init()
 
 /** 初始化进程 */
 processHandler()

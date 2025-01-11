@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import '@/service/debug'
 export * from '@/service/logger'
+import '@/utils/config/init'
 import '@/service/init'
 export * from '@/service/index'
 export * from '@/core/karin/index'
