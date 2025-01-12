@@ -17,7 +17,6 @@
     "tsx": "^4.19.2"
   },
   "peerDependencies": {
-    "@karinjs/karin-types": "workspace:*",
     "node-karin": "workspace:*"
   },
   "keywords": [],
