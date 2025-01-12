@@ -52,7 +52,7 @@
     "dev:watch": "pnpm dev:w",
     "pr": "node cli/pr.js all",
     "pub": "npm publish --access public",
-    "pub-beta": "npm publish --tag beta",
+    "pub-beta": "npm publish --access public --tag beta",
     "sort": "npx sort-package-json && sort-json tsconfig.json"
   },
   "dependencies": {

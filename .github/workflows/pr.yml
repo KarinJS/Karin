@@ -72,6 +72,14 @@ jobs:
       - name: 发布到 npm
         id: publish
         run: |
+          # 检查 NPM_TOKEN 是否存在
+          if [ -z "${{ secrets.NPM_TOKEN }}" ]; then
+            echo "错误: NPM_TOKEN 未设置"
+            exit 1
+          fi
+          
+          echo "NPM_TOKEN 长度: ${#NODE_AUTH_TOKEN}"
+          
           pnpm run pub-beta || {
             echo "发布到 npm 失败"
             exit 1
@@ -122,7 +130,7 @@ jobs:
           comments=$(gh pr view ${{ env.PR_NUMBER }} --json comments)
 
           # 过滤目标评论并按时间排序
-          target_comments=$(echo "$comments" | jq -r '.comments[] | select(.body | test("🎉 构建完成！|❌ 构建失败！")) | {url: .url, created_at: .createdAt}' | jq -s '. | sort_by(.created_at) | reverse')
+          target_comments=$(echo "$comments" | jq -r '.comments[] | select(.body | test("🎉 构建完成！|❌ 构建失败！|构建过程中出现错误")) | {url: .url, created_at: .createdAt}' | jq -s '. | sort_by(.created_at) | reverse')
 
           # 获取需要删除的评论ID (保留最新的3条)
           comment_ids_to_delete=$(echo "$target_comments" | jq -r 'if length > 3 then .[3:][] | .url | capture("#issuecomment-(?<id>\\d+)$").id else empty end')
