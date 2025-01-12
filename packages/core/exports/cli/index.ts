@@ -7,8 +7,8 @@ import { updateAll } from './up'
 import { program } from 'commander'
 
 program.version(process.env.npm_package_version!, '-v, --version', '显示版本号')
-program.command('.').description('前台启动').action(start)
-program.command('start').description('前台启动').action(start)
+program.command('.').description('前台启动').action(() => start())
+program.command('start').description('前台启动').action(() => start())
 program.command('pm2').description('后台运行').action(pm2.start)
 program.command('stop').description('停止后台运行').action(pm2.stop)
 program.command('rs').description('重启pm2服务').action(pm2.restart)
