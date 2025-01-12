@@ -1,86 +1,11 @@
 {
-  "name": "node-karin",
-  "version": "0.12.24",
-  "private": false,
-  "description": "Lightweight, efficient, concise, and stable robot framework.",
-  "keywords": [
-    "node",
-    "nodejs",
-    "karin",
-    "bot",
-    "robot",
-    "icqq",
-    "onebot",
-    "kritor",
-    "node-karin"
-  ],
-  "homepage": "https://github.com/KarinJS/Karin",
-  "bugs": {
-    "url": "https://github.com/KarinJS/Karin/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/KarinJS/Karin.git"
-  },
-  "license": "MIT",
-  "author": "shijin",
-  "main": "./src/index.ts",
-  "types": "./lib/index.d.ts",
+  "name": "@karinjs/project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
   "type": "module",
-  "files": [
-    "/lib/**/*.js",
-    "/lib/**/*.d.ts",
-    "/default/**",
-    "/packages/module",
-    "CHANGELOG.md",
-    "LICENSE",
-    "package.json",
-    "README.md"
-  ],
-  "workspaces": [
-    "plugins/**"
-  ],
   "scripts": {
-    ".": "tsx src/index.ts",
-    "alias": "tsc-alias -p tsconfig.json",
-    "app": "tsx src/index.ts",
-    "app:w": "tsx watch --include \"./src/**/*.ts\" index.ts",
-    "app:watch": "tsx watch --include \"./src/**/*.ts\" index.ts",
-    "build": "tsup --config tsup.config.ts",
-    "build:dev": "pnpm build:types && node packages/cli/build.mjs",
-    "build:module": "tsup --config tsup.modules.ts && node packages/cli/module.mjs",
-    "build:prod": "tsup --config tsup.config.ts && node packages/cli/build.prod.mjs",
-    "build:types": "tsup --config tsup.types.ts && node packages/cli/types.mjs",
-    "debug": "tsx src/index.ts --debug",
-    "debug:w": "tsx watch --include \"./src/**/*.ts\"  --debug",
-    "debug:watch": "tsx watch --include \"./src/**/*.ts\"  --debug",
-    "dev": "node --import tsx --trace-deprecation src/index.ts",
-    "pr": "node packages/cli/pr.mjs all",
-    "pub": "npm publish --access public",
-    "pub-beta": "npm publish --tag beta",
-    "sort": "npx sort-package-json && sort-json tsconfig.json"
-  },
-  "dependencies": {
-    "@types/express": "^5.0.0",
-    "@types/lodash": "^4.17.10",
-    "@types/node": "^22.5.0",
-    "@types/node-schedule": "^2.1.7",
-    "@types/ws": "^8.5.12",
-    "art-template": "4.13.2",
-    "axios": "1.7.9",
-    "chalk": "5.3.0",
-    "chokidar": "3.6.0",
-    "commander": "^12.1.0",
-    "express": "4.21.2",
-    "level": "8.0.1",
-    "lodash": "4.17.21",
-    "log4js": "6.9.1",
-    "moment": "2.30.1",
-    "node-schedule": "2.1.1",
-    "redis": "4.7.0",
-    "ws": "8.18.0",
-    "yaml": "2.5.0",
-    "dotenv": "^16.0.0"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
     "eslint": "^9.12.0",
@@ -88,103 +13,14 @@
     "sort-json": "^2.0.1",
     "sort-package-json": "^2.10.0",
     "tsup": "^8.3.5",
+    "typescript": "^5.7.3",
     "tsx": "^4.19.2"
   },
   "peerDependencies": {
     "@karinjs/karin-types": "workspace:*",
     "node-karin": "workspace:*"
   },
-  "engines": {
-    "node": ">=18"
-  },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
-  },
-  "exports": {
-    ".": {
-      "import": "./src/index.ts",
-      "types": "./lib/index.d.ts"
-    },
-    "./template": {
-      "import": "./src/packages/module/art-template.ts",
-      "types": "./packages/module/art-template.d.ts",
-      "require": "./src/packages/module/art-template.ts"
-    },
-    "./art-template": {
-      "import": "./src/packages/module/art-template.ts",
-      "types": "./packages/module/art-template.d.ts",
-      "require": "./src/packages/module/art-template.ts"
-    },
-    "./axios": {
-      "import": "./src/packages/module/axios.ts",
-      "types": "./packages/module/axios.d.ts",
-      "require": "./src/packages/module/axios.ts"
-    },
-    "./chalk": {
-      "import": "./src/packages/module/chalk.ts",
-      "types": "./packages/module/chalk.d.ts",
-      "require": "./src/packages/module/chalk.ts"
-    },
-    "./chokidar": {
-      "import": "./src/packages/module/chokidar.ts",
-      "types": "./packages/module/chokidar.d.ts",
-      "require": "./src/packages/module/chokidar.ts"
-    },
-    "./commander": {
-      "import": "./src/packages/module/commander.ts",
-      "types": "./packages/module/commander.d.ts",
-      "require": "./src/packages/module/commander.ts"
-    },
-    "./express": {
-      "import": "./src/packages/module/express.ts",
-      "types": "./packages/module/express.d.ts",
-      "require": "./src/packages/module/express.ts"
-    },
-    "./level": {
-      "import": "./src/packages/module/level.ts",
-      "types": "./packages/module/level.d.ts",
-      "require": "./src/packages/module/level.ts"
-    },
-    "./lodash": {
-      "import": "./src/packages/module/lodash.ts",
-      "types": "./packages/module/lodash.d.ts",
-      "require": "./src/packages/module/lodash.ts"
-    },
-    "./log4js": {
-      "import": "./src/packages/module/log4js.ts",
-      "types": "./packages/module/log4js.d.ts",
-      "require": "./src/packages/module/log4js.ts"
-    },
-    "./moment": {
-      "import": "./src/packages/module/moment.ts",
-      "types": "./packages/module/moment.d.ts",
-      "require": "./src/packages/module/moment.ts"
-    },
-    "./schedule": {
-      "import": "./src/packages/module/node-schedule.ts",
-      "types": "./packages/module/node-schedule.d.ts",
-      "require": "./src/packages/module/node-schedule.ts"
-    },
-    "./node-schedule": {
-      "import": "./src/packages/module/node-schedule.ts",
-      "types": "./packages/module/node-schedule.d.ts",
-      "require": "./src/packages/module/node-schedule.ts"
-    },
-    "./redis": {
-      "import": "./src/packages/module/redis.ts",
-      "types": "./packages/module/redis.d.ts",
-      "require": "./src/packages/module/redis.ts"
-    },
-    "./ws": {
-      "import": "./src/packages/module/ws.ts",
-      "types": "./packages/module/ws.d.ts",
-      "require": "./src/packages/module/ws.ts"
-    },
-    "./yaml": {
-      "import": "./src/packages/module/yaml.ts",
-      "types": "./packages/module/yaml.d.ts",
-      "require": "./src/packages/module/yaml.ts"
-    }
-  }
+  "keywords": [],
+  "author": "shijin",
+  "license": "MIT"
 }

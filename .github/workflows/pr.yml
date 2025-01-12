@@ -33,6 +33,9 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           # 添加 pnpm 缓存支持
           cache: pnpm
+      # 切换到 packages/core 目录
+      - name: 切换到 packages/core 目录
+        run: cd packages/core
       # 使用 pnpm 安装依赖
       - name: 安装依赖
         run: pnpm install --no-frozen-lockfile

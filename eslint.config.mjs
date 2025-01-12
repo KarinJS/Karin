@@ -1,10 +1,7 @@
 import neostandard from 'neostandard'
 
-export default neostandard({
-  ts: true,
-  globals: ['logger'],
-  ignores: ['node_modules', 'temp', 'logs', 'data', 'lib', 'packages/module'],
-}).map(val => {
+/** 尾随逗号 */
+const commaDangle = (val) => {
   if (val?.rules?.['@stylistic/comma-dangle']?.[0] === 'warn') {
     val.rules['@stylistic/comma-dangle'] = [
       'warn',
@@ -19,4 +16,23 @@ export default neostandard({
     return val
   }
   return val
-})
+}
+
+/** 忽略的文件 */
+const ignores = [
+  'node_modules',
+  'temp',
+  'logs',
+  'data',
+  'lib',
+  'packages/module',
+  'packages/core/dist',
+]
+
+const options = neostandard({
+  ts: true,
+  ignores,
+  globals: ['logger'],
+}).map(commaDangle)
+
+export default options

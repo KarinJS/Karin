@@ -1,0 +1,24 @@
+{
+  "name": "karin-plugin",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "karin",
+    "plugin"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3",
+    "tsup": "^8.0.1"
+  }
+}

@@ -15,11 +15,11 @@ lerna-debug.log*
 .vscode/
 
 # 临时文件
-/logs/
+logs/
 /temp/
 
 # 配置
-/plugins/
+plugins/
 /data/
 /config/
 /resources

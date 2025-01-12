@@ -1,0 +1,34 @@
+{
+  "name": "create-karin",
+  "version": "1.0.0",
+  "description": "CLI tool for creating Karin projects",
+  "type": "module",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "bin": {
+    "create-karin": "./lib/index.js"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsup --config tsup.config.ts"
+  },
+  "keywords": [
+    "karin",
+    "cli",
+    "create-karin"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0",
+    "prompts": "^2.4.2",
+    "kolorist": "^1.8.0",
+    "tasuku": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/prompts": "^2.4.9",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  }
+}

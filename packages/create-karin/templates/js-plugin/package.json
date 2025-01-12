@@ -1,0 +1,16 @@
+{
+  "name": "karin-plugin",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "keywords": [
+    "karin",
+    "plugin"
+  ],
+  "author": "",
+  "license": "MIT"
+}

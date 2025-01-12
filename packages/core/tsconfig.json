@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "alwaysStrict": true,
+    "baseUrl": ".",
+    "declaration": false,
+    "esModuleInterop": true,
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "noImplicitAny": true,
+    "outDir": "./lib",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@fs": [
+        "./src/utils/fs/main"
+      ]
+    },
+    "resolveJsonModule": true,
+    "rootDir": "./src",
+    "skipLibCheck": true,
+    "sourceMap": false,
+    "strict": true,
+    "target": "ES2022",
+    "types": [
+      "@types/node",
+      "@karinjs/karin-types"
+    ]
+  },
+  "exclude": [
+    "@karinjs",
+    "default",
+    "lib",
+    "plugins",
+    "node_modules",
+    "logs"
+  ],
+  "include": [
+    "./src/**/*",
+    "./src/global.d.ts"
+  ],
+  "tsc-alias": {
+    "resolveFullExtension": ".js",
+    "resolveFullPaths": true
+  }
+}
