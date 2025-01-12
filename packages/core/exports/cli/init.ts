@@ -27,38 +27,49 @@ export const createDir = () => {
 }
 
 /**
- * 生成一些其他文件
+ * 创建 .pnpmfile.cjs 文件
+ * @param dir - 目标目录
  */
-export const createOtherFile = async () => {
-  /** 创建.pnpmfile.cjs */
+const createPnpmFile = (dir: string) => {
   const pnpmfile = path.join(dir, '.pnpmfile.cjs')
-  if (!fs.existsSync(pnpmfile)) {
-    fs.writeFileSync(pnpmfile, [
-      '// 清空对等依赖中的node-karin',
-      'function readPackage (pkg, context) {',
-      '  if (pkg?.[\'peerDependencies\']?.[\'node-karin\'] && pkg[\'peerDependencies\'][\'node-karin\'] !== \'file:./lib\') {',
-      '    delete pkg[\'peerDependencies\'][\'node-karin\']',
-      '  }',
-      '  return pkg',
-      '}',
-      'module.exports = {',
-      '  hooks: {',
-      '    readPackage',
-      '  },',
-      '}',
-    ].join('\n'))
-  }
+  if (fs.existsSync(pnpmfile)) return
 
-  /** 根据当前镜像源 创建.npmrc */
+  const content = [
+    '// 清空对等依赖中的node-karin',
+    'function readPackage (pkg, context) {',
+    '  if (pkg?.[\'peerDependencies\']?.[\'node-karin\'] && pkg[\'peerDependencies\'][\'node-karin\'] !== \'file:./lib\') {',
+    '    delete pkg[\'peerDependencies\'][\'node-karin\']',
+    '  }',
+    '  return pkg',
+    '}',
+    'module.exports = {',
+    '  hooks: {',
+    '    readPackage',
+    '  },',
+    '}',
+  ].join('\n')
+
+  fs.writeFileSync(pnpmfile, content)
+}
+
+/**
+ * 检查是否需要创建 .npmrc
+ * @returns 如果不需要创建返回 true
+ */
+const shouldSkipNpmrc = () => {
   const { stdout } = execSync('npm config get registry')
-  /** 如果是官方源 则直接退出 */
-  if (stdout.includes('registry.npmjs.org')) return
+  if (stdout.includes('registry.npmjs.org')) return true
 
-  /** 继续检查是否存在代理 存在也退出 */
   const { stdout: proxy } = execSync('npm config get proxy')
-  if (proxy) return
+  return !!proxy
+}
 
-  // TODO: 后续统一修改为使用远程api统一管理
+/**
+ * 创建或更新 .npmrc 文件
+ * @param dir - 目标目录
+ */
+const createOrUpdateNpmrc = (dir: string) => {
+  // TODO: 后续改为远程api拉取 动态更新
   const list = [
     'node_sqlite3_binary_host_mirror=https://registry.npmmirror.com/-/binary/sqlite3',
     'better_sqlite3_binary_host_mirror=https://registry.npmmirror.com/-/binary/better-sqlite3',
@@ -73,21 +84,27 @@ export const createOtherFile = async () => {
   ]
 
   const npmrc = path.join(dir, '.npmrc')
-  /** 不存在直接创建 */
   if (!fs.existsSync(npmrc)) {
     fs.writeFileSync(npmrc, list.join('\n'))
     return
   }
 
-  /** 存在则循环每一项 如果存在则跳过 */
   const data = fs.readFileSync(npmrc, 'utf-8')
-  list.forEach((item) => {
-    if (data.includes(item.split('=')[0])) return
-    fs.appendFileSync(npmrc, `\n${item}`)
+  const newEntries = list.filter(item => {
+    const key = item.split('=')[0]
+    return !data.includes(key)
   })
 
-  /** 创建.env */
-  const env = path.join(dir, '.env')
+  if (newEntries.length > 0) {
+    fs.appendFileSync(npmrc, '\n' + newEntries.join('\n'))
+  }
+}
+
+/**
+ * 创建或更新 .env 文件
+ * @param dir - 目标目录
+ */
+const createOrUpdateEnv = (dir: string) => {
   const envData = [
     '# 是否启用HTTP',
     'HTTP_ENABLE=true',
@@ -125,19 +142,66 @@ export const createOtherFile = async () => {
     'RUNTIME=node',
   ]
 
+  const env = path.join(dir, '.env')
   if (!fs.existsSync(env)) {
     fs.writeFileSync(env, envData.join('\n'))
     return
   }
 
-  /** 存在则循环每一项 如果存在则跳过 */
   const value = fs.readFileSync(env, 'utf-8')
-  envData.forEach((item) => {
-    /** 屏蔽带注释的 */
-    if (item.includes('#')) return
-    if (value.includes(item.split('=')[0])) return
-    fs.appendFileSync(env, `\n${item}`)
+  const newEntries = envData.filter(item => {
+    if (item.includes('#')) return false
+    const key = item.split('=')[0]
+    return !value.includes(key)
   })
+
+  if (newEntries.length > 0) {
+    fs.appendFileSync(env, '\n' + newEntries.join('\n'))
+  }
+}
+
+/**
+ * 创建或更新 .env.dev 文件
+ * @param dir - 目标目录
+ */
+const createOrUpdateEnvDev = (dir: string) => {
+  const envDevData = [
+    '# 是否为开发环境',
+    'NODE_ENV=development',
+    '# 运行器',
+    'RUNTIME=tsx',
+  ]
+
+  const envDev = path.join(dir, '.env.dev')
+  if (!fs.existsSync(envDev)) {
+    fs.writeFileSync(envDev, envDevData.join('\n'))
+    return
+  }
+
+  const value = fs.readFileSync(envDev, 'utf-8')
+  const newEntries = envDevData.filter(item => {
+    if (item.includes('#')) return false
+    const key = item.split('=')[0]
+    return !value.includes(key)
+  })
+
+  if (newEntries.length > 0) {
+    fs.appendFileSync(envDev, '\n' + newEntries.join('\n'))
+  }
+}
+
+/**
+ * 生成一些其他文件
+ */
+export const createOtherFile = async () => {
+  createPnpmFile(dir)
+
+  if (!shouldSkipNpmrc()) {
+    createOrUpdateNpmrc(dir)
+  }
+
+  createOrUpdateEnv(dir)
+  createOrUpdateEnvDev(dir)
 }
 
 /**
