@@ -191,10 +191,23 @@ const createOrUpdateEnvDev = (dir: string) => {
 }
 
 /**
+ * 创建 pnpm-workspace.yaml 文件
+ * @param dir - 目标目录
+ */
+const createWorkspace = (dir: string) => {
+  const workspace = path.join(dir, 'pnpm-workspace.yaml')
+  if (fs.existsSync(workspace)) return
+
+  const content = 'packages:\n  - \'plugins/**\'\n'
+  fs.writeFileSync(workspace, content)
+}
+
+/**
  * 生成一些其他文件
  */
 export const createOtherFile = async () => {
   createPnpmFile(dir)
+  createWorkspace(dir)
 
   if (!shouldSkipNpmrc()) {
     createOrUpdateNpmrc(dir)
