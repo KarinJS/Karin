@@ -42,29 +42,70 @@ jobs:
       # 构建输出
       - name: 构建输出
         id: build
-        run: pnpm run build:prod > build.log 2>&1
+        run: |
+          pnpm run build:prod > build.log 2>&1 || {
+            echo "构建失败，错误日志："
+            cat build.log
+            exit 1
+          }
         continue-on-error: true # 捕获失败并允许后续步骤运行
       # 获取当前 PR 编号并设置环境变量
       - name: 获取 PR 编号
-        run: echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+        id: get_pr
+        run: |
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV || {
+            echo "获取 PR 编号失败"
+            exit 1
+          }
+        continue-on-error: true
       # 自动修改 package.json 的版本号、删除开发、对等依赖
       - name: 修订版本号
-        run: pnpm run pr all
-        if: success()
+        id: version
+        run: |
+          pnpm run pr all || {
+            echo "修订版本号失败"
+            exit 1
+          }
+        continue-on-error: true
       # 发布到 npm
       - name: 发布到 npm
-        run: pnpm run pub-beta
+        id: publish
+        run: |
+          pnpm run pub-beta || {
+            echo "发布到 npm 失败"
+            exit 1
+          }
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        if: success()
+        continue-on-error: true
       # 在 PR 上发布构建完成或失败信息
       - name: 发布评论
         run: |
-          if [ "${{ steps.build.outcome }}" = "failure" ]; then
-            # 捕获构建失败日志
-            ERROR_MESSAGE=$(cat build.log || echo "未找到详细的构建日志。")
-            # 发布构建失败评论
-            gh pr comment ${{ env.PR_NUMBER }} --body $'❌ 构建失败！以下是错误日志：\n\n<details>\n<summary>展开查看错误日志</summary>\n\n```\n'"${ERROR_MESSAGE}"$'\n```\n\n</details>'
+          # 收集所有步骤的状态
+          BUILD_STATUS="${{ steps.build.outcome }}"
+          PR_STATUS="${{ steps.get_pr.outcome }}"
+          VERSION_STATUS="${{ steps.version.outcome }}"
+          PUBLISH_STATUS="${{ steps.publish.outcome }}"
+
+          # 构建错误消息
+          ERROR_MESSAGE=""
+          if [ "$BUILD_STATUS" = "failure" ]; then
+            ERROR_MESSAGE+=$'构建步骤失败！\n'
+            ERROR_MESSAGE+=$(cat build.log || echo "未找到构建日志。")$'\n\n'
+          fi
+          if [ "$PR_STATUS" = "failure" ]; then
+            ERROR_MESSAGE+=$'获取 PR 编号失败！\n\n'
+          fi
+          if [ "$VERSION_STATUS" = "failure" ]; then
+            ERROR_MESSAGE+=$'修订版本号失败！\n\n'
+          fi
+          if [ "$PUBLISH_STATUS" = "failure" ]; then
+            ERROR_MESSAGE+=$'发布到 npm 失败！\n\n'
+          fi
+
+          if [ ! -z "$ERROR_MESSAGE" ]; then
+            # 发布错误信息评论
+            gh pr comment ${{ env.PR_NUMBER }} --body $'❌ 构建过程中出现错误！\n\n<details>\n<summary>展开查看错误日志</summary>\n\n```\n'"${ERROR_MESSAGE}"$'\n```\n\n</details>'
           else
             # 构建成功评论
             INSTALL_COMMAND_1="pnpm rm ${{ env.PKG_NAME }} && pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -D"           
