@@ -45,7 +45,7 @@
     "build:cli": "tsup --tsconfig tsconfig.cli.json --config tsup.cli.ts",
     "build:dev": "pnpm build && node cli/build.js -dev",
     "build:module": "tsup --tsconfig tsconfig.module.json --config tsup.modules.ts && node cli/module.js",
-    "build:prod": "build:module && pnpm build && node cli/build.js",
+    "build:prod": "pnpm build:module && pnpm build && node cli/build.js",
     "debug": "node lib/index.js --debug",
     "dev": "tsx src/index.ts",
     "dev:w": "tsx watch --include \"./src/**/*.ts\" src/index.ts",
