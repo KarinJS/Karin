@@ -82,7 +82,7 @@
   },
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npjs.org"
+    "registry": "https://registry.npmjs.org"
   },
   "exports": {
     ".": {
