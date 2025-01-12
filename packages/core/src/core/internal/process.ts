@@ -64,8 +64,8 @@ export const checkProcess = async (port: number) => {
     return
   }
 
+  logger.error('检测到后台进程 正在关闭...')
   await axios({ url: `${host}/exit`, method: 'get', timeout: 500 })
-  logger.mark(logger.red('检测到后台进程 正在关闭...'))
 
   for (let i = 0; i < 100; i++) {
     const result = await axios({ url: `${host}/ping`, method: 'get', timeout: 100 })
@@ -74,13 +74,14 @@ export const checkProcess = async (port: number) => {
       await sleep(50)
       continue
     }
+
     /** 请求异常即代表后台进程已关闭 */
     logger.mark(logger.green('后台进程已关闭'))
     return
   }
 
   /** 走到这里说明后台关闭失败 */
-  logger.error(`后台进程关闭失败，请检查是否有进程正在占用端口${port}`)
+  logger.error(logger.red(`后台进程关闭失败，请检查是否有进程正在占用端口 ${port} `))
   processExit(1)
 }
 

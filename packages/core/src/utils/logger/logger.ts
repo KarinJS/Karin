@@ -26,7 +26,7 @@ const initLogger = (options: LoggerOptions = {}) => {
         type: 'console',
         layout: {
           type: 'pattern',
-          pattern: `%[[Karin][%d{hh:mm:ss.SSS}][%4.4p]%] ${process.env.karin_dev === 'dev' ? '[%f{3}:%l] ' : ''}%m`,
+          pattern: `%[[Karin][%d{hh:mm:ss.SSS}][%4.4p]%] ${process.env.RUNTIME === 'tsx' ? '[%f{3}:%l] ' : ''}%m`,
         },
       },
       overall: {
@@ -53,7 +53,7 @@ const initLogger = (options: LoggerOptions = {}) => {
       default: {
         appenders: ['overall', 'console'],
         level,
-        enableCallStack: process.env.karin_dev === 'dev',
+        enableCallStack: process.env.RUNTIME === 'tsx',
       },
     },
     levels: {

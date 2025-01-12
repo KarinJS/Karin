@@ -76,7 +76,8 @@ export const axios: AxiosFn = async (
     const config = typeof paramOrUrl === 'string' ? { ...param, url: paramOrUrl, method: type } : paramOrUrl
     return await Axios(config)
   } catch (error) {
-    logger.trace((error as Error).stack || error)
+    logger.debug('[common] axios请求失败:')
+    logger.debug((error as Error).stack || error)
     return null
   }
 }

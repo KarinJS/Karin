@@ -105,6 +105,12 @@ const createOrUpdateNpmrc = (dir: string) => {
  * @param dir - 目标目录
  */
 const createOrUpdateEnv = (dir: string) => {
+  /** 生成随机6位字母key */
+  const generateRandomKey = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+    return Array.from({ length: 6 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('')
+  }
+
   const envData = [
     '# 是否启用HTTP',
     'HTTP_ENABLE=true',
@@ -113,9 +119,9 @@ const createOrUpdateEnv = (dir: string) => {
     '# HTTP监听地址',
     'HTTP_HOST=0.0.0.0',
     '# HTTP鉴权秘钥 仅用于karin自身Api',
-    'HTTP_AUTH_KEY=default',
+    `HTTP_AUTH_KEY=${generateRandomKey()}`,
     '# ws_server鉴权秘钥',
-    'WS_SERVER_AUTH_KEY=',
+    `WS_SERVER_AUTH_KEY=${generateRandomKey()}`,
     '\n',
     '# 是否启用Redis 关闭后将使用内部虚拟Redis',
     'REDIS_ENABLE=true',

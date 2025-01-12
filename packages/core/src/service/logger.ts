@@ -13,6 +13,6 @@ export const logger = createLogger({
     level: process.env.LOG_LEVEL as LoggerLevel || 'info',
     daysToKeep: Number(process.env.LOG_DAYS_TO_KEEP) || 30,
     maxLogSize: Number(process.env.LOG_MAX_LOG_SIZE) || 0,
-    logColor: process.env.LOG_FORMAT || '#E1D919',
+    logColor: process.env.LOG_FNC_COLOR || '#E1D919',
   },
 })
