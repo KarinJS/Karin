@@ -4,9 +4,7 @@
   ],
   "admin": [],
   "user": {
-    "enable_list": [
-      1
-    ],
+    "enable_list": [],
     "disable_list": []
   },
   "friend": {
