@@ -212,6 +212,8 @@ export const createConfig = () => {
   /** 读取默认目录下的所有json文件 遍历复制到目标目录 */
   const files = fs.readdirSync(defCfg)
   files.forEach((file) => {
+    /** 忽略非json文件 */
+    if (!file.endsWith('.json')) return
     /** 默认配置文件路径 */
     const filePath = path.join(defCfg, file)
     /** 目标配置目录 */
