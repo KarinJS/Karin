@@ -39,7 +39,6 @@ addEnvOption(program.command('dev').description('JavaScript开发模式'))
 addEnvOption(
   program.command('ts')
     .description('TypeScript开发模式')
-    .option('-e, --env <files>', '指定环境变量文件，多个文件用逗号分隔，例如：.env.dev,.env.local')
     .addHelpText('after', `
 示例:
   $ karin ts                     # 使用默认 .env 文件启动
