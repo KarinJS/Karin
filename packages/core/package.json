@@ -49,6 +49,7 @@
     "build:prod": "pnpm build:module && pnpm build:cli && pnpm build && node cli/build.js",
     "debug": "node lib/index.js --debug",
     "dev": "tsx src/index.ts",
+    "dev:cli": "tsx exports/cli/index.ts",
     "dev:w": "tsx watch --include \"./src/**/*.ts\" src/index.ts",
     "dev:watch": "pnpm dev:w",
     "pr": "node cli/pr.js all",
@@ -64,19 +65,19 @@
     "@types/ws": "^8.5.12",
     "art-template": "4.13.2",
     "axios": "1.7.9",
-    "chalk": "5.3.0",
+    "chalk": "5.4.1",
     "chokidar": "3.6.0",
-    "commander": "^12.1.0",
-    "dotenv": "^16.0.0",
+    "commander": "^13.0.0",
+    "dotenv": "^16.4.7",
     "express": "4.21.2",
-    "level": "8.0.1",
+    "level": "9.0.0",
     "lodash": "4.17.21",
     "log4js": "6.9.1",
     "moment": "2.30.1",
     "node-schedule": "2.1.1",
     "redis": "4.7.0",
     "ws": "8.18.0",
-    "yaml": "2.5.0"
+    "yaml": "2.7.0"
   },
   "engines": {
     "node": ">=18"

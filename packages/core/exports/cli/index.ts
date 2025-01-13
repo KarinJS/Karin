@@ -3,7 +3,7 @@
 import { pm2 } from './pm2'
 import { init } from './init'
 import { start } from './start'
-import { updateAll } from './up'
+import { updateAll } from './update'
 import { program } from 'commander'
 
 program.version(process.env.npm_package_version!, '-v, --version', '显示版本号')
