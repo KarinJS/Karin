@@ -11,7 +11,7 @@ let debugEnabled = false
  * 检查是否开启debug模式
  */
 const isDebugMode = () => {
-  return debugEnabled || process.env.NODE_ENV === 'development' || process.argv.some(arg => arg.includes('debug'))
+  return debugEnabled || typeof process.env.DEBUG === 'string' || process.argv.some(arg => arg.includes('debug'))
 }
 
 /**

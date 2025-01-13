@@ -25,7 +25,7 @@ export const listen = (port: number, host: string) => {
   server.listen(port, host, () => {
     logger.info(`[server] express 已启动 正在监听: http://${host}:${port}`)
     /** logger会记录到日志文件中 */
-    console.log(logger.green(`[server] http鉴权token: ${process.env.HTTP_AUTH_KEY}`))
-    console.log(logger.green(`[server] ws鉴权token: ${process.env.WS_SERVER_AUTH_KEY}`))
+    console.log(`[server] http鉴权token: ${logger.green(process.env.HTTP_AUTH_KEY)}`)
+    console.log(`[server] ws鉴权token: ${logger.green(process.env.WS_SERVER_AUTH_KEY)}`)
   })
 }

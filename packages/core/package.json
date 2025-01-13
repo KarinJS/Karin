@@ -17,11 +17,6 @@
   "bugs": {
     "url": "https://github.com/KarinJS/Karin/issues"
   },
-  "bin": {
-    "k": "./dist/cli/index.cjs",
-    "kr": "./dist/cli/index.cjs",
-    "karin": "./dist/cli/index.js"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/KarinJS/Karin.git"
@@ -31,6 +26,11 @@
   "type": "module",
   "main": "./src/index.ts",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "k": "./dist/cli/index.cjs",
+    "karin": "./dist/cli/index.js",
+    "kr": "./dist/cli/index.cjs"
+  },
   "files": [
     "/dist/**/*.js",
     "/dist/**/*.cjs",
@@ -52,6 +52,7 @@
     "build:dev": "pnpm build && node cli/build.js -dev",
     "build:module": "tsup --tsconfig tsconfig.module.json --config tsup.modules.ts && node cli/module.js",
     "build:prod": "pnpm build:module && pnpm build:cli && pnpm build && node cli/build.js",
+    "cli": "node dist/cli/index.cjs",
     "debug": "node lib/index.js --debug",
     "dev": "tsx src/index.ts",
     "dev:cli": "tsx exports/cli/index.ts",
