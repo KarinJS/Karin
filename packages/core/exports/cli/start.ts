@@ -85,18 +85,13 @@ export const tsStart = async (env?: string) => {
   const index = '../root.js'
   const { karinMain } = await import(index)
 
-  // 使用 NODE_OPTIONS 设置 tsx 导入
-  const nodeOptions = process.env.NODE_OPTIONS
-    ? `${process.env.NODE_OPTIONS} --import tsx`
-    : '--import tsx'
-
-  const child = spawn('node', [karinMain], {
+  const child = spawn('npx', ['tsx', karinMain], {
     env: {
       ...process.env,
-      NODE_OPTIONS: nodeOptions,
       RUNTIME: 'tsx',
     },
     stdio: 'inherit',
+    shell: true,
   })
 
   child.on('exit', (code) => process.exit(code ?? 0))
@@ -122,7 +117,6 @@ export const tsWatch = async (options: {
   const index = '../root.js'
   const { karinMain } = await import(index)
 
-  // 构建 tsx watch 的参数
   const args = ['tsx', 'watch']
 
   if (options.include) {
@@ -147,8 +141,10 @@ export const tsWatch = async (options: {
     env: {
       ...process.env,
       RUNTIME: 'tsx',
+      TSX_WATCH: 'true',
     },
     stdio: 'inherit',
+    shell: true,
   })
 
   child.on('exit', (code) => process.exit(code ?? 0))
