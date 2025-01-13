@@ -167,36 +167,6 @@ const createOrUpdateEnv = (dir: string) => {
 }
 
 /**
- * 创建或更新 .env.dev 文件
- * @param dir - 目标目录
- */
-const createOrUpdateEnvDev = (dir: string) => {
-  const envDevData = [
-    '# 是否为开发环境',
-    'NODE_ENV=development',
-    '# 运行器',
-    'RUNTIME=tsx',
-  ]
-
-  const envDev = path.join(dir, '.env.dev')
-  if (!fs.existsSync(envDev)) {
-    fs.writeFileSync(envDev, envDevData.join('\n'))
-    return
-  }
-
-  const value = fs.readFileSync(envDev, 'utf-8')
-  const newEntries = envDevData.filter(item => {
-    if (item.includes('#')) return false
-    const key = item.split('=')[0]
-    return !value.includes(key)
-  })
-
-  if (newEntries.length > 0) {
-    fs.appendFileSync(envDev, '\n' + newEntries.join('\n'))
-  }
-}
-
-/**
  * 创建 pnpm-workspace.yaml 文件
  * @param dir - 目标目录
  */
@@ -220,7 +190,6 @@ export const createOtherFile = async () => {
   }
 
   createOrUpdateEnv(dir)
-  createOrUpdateEnvDev(dir)
 }
 
 /**

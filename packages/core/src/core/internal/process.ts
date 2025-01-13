@@ -35,6 +35,9 @@ export const processHandler = () => {
   listeners.on('error', (...args: [unknown]) => {
     logger.error(...args)
   })
+
+  /** 如果是pm2环境 设置运行器为pm2 */
+  if (process.env.pm_id) process.env.RUNTIME = 'pm2'
 }
 
 /**
