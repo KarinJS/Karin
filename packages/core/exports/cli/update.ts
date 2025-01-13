@@ -1,6 +1,5 @@
-import { join } from 'path'
-import { readFileSync, existsSync } from 'fs'
-import { readdir, stat } from 'fs/promises'
+import fs from 'node:fs'
+import { join } from 'node:path'
 import { exec } from './exec'
 
 /**
@@ -22,7 +21,7 @@ const checkGitInstalled = async () => {
  */
 export const updateDependencies = async (packagePath: string) => {
   try {
-    const packageJson = JSON.parse(readFileSync(packagePath, 'utf-8'))
+    const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf-8'))
     const dependencies = packageJson.dependencies || {}
 
     /** 需要更新的包 */
@@ -105,19 +104,19 @@ export const updatePlugins = async (pluginsPath: string) => {
   }
 
   /** 检查plugins目录是否存在 */
-  if (!existsSync(pluginsPath)) {
+  if (!fs.existsSync(pluginsPath)) {
     console.error('[git] plugins目录不存在')
     return
   }
 
-  const isDirectory = (await stat(pluginsPath)).isDirectory()
+  const isDirectory = (await fs.promises.stat(pluginsPath)).isDirectory()
   if (!isDirectory) {
     console.error('[git] plugins路径不是一个目录')
     return
   }
 
   /** 获取所有插件目录 */
-  const dirs = await readdir(pluginsPath)
+  const dirs = await fs.promises.readdir(pluginsPath)
 
   /** 并发更新所有插件 */
   const updateTasks = dirs.map(async (dir) => {
@@ -126,19 +125,19 @@ export const updatePlugins = async (pluginsPath: string) => {
     const packageJsonPath = join(pluginPath, 'package.json')
 
     /** 检查是否是目录且以karin-plugin-开头 */
-    if (!dir.startsWith('karin-plugin-') || !(await stat(pluginPath)).isDirectory()) {
+    if (!dir.startsWith('karin-plugin-') || !(await fs.promises.stat(pluginPath)).isDirectory()) {
       return
     }
 
     /** 检查.git目录是否存在 */
-    if (!existsSync(gitPath)) {
+    if (!fs.existsSync(gitPath)) {
       console.log(`[git] ${dir} 不是git仓库，跳过`)
       return
     }
 
     /** 检查package.json是否存在karin字段 */
     try {
-      const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'))
+      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
       if (!packageJson.karin) {
         console.log(`[git] ${dir} 的package.json中没有karin字段，跳过`)
         return

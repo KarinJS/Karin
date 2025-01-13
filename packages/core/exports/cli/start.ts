@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import dotenv from 'dotenv'
+import { pathToFileURL } from 'node:url'
 import { fork, spawn } from 'node:child_process'
 
 /**
@@ -70,7 +71,7 @@ export const dev = async (env?: string) => {
   const index = '../root.js'
   process.env.NODE_ENV = 'development'
   const { karinMain } = await import(index)
-  await import(karinMain)
+  await import(pathToFileURL(karinMain).toString())
 }
 
 /**
