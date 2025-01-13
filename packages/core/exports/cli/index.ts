@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import fs from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { pm2 } from './pm2'
 import { init } from './init'
 import { dev, start, tsStart, tsWatch } from './start'
@@ -22,7 +24,20 @@ const addEnvOption = (command: Command) => {
   return command.option('-e, --env <files>', '指定环境变量文件，多个文件用逗号分隔')
 }
 
-program.version(process.env.npm_package_version!, '-v, --version', '显示版本号')
+/** 获取版本号 */
+const getVersion = () => {
+  if (process.env.npm_package_version) return process.env.npm_package_version
+
+  try {
+    const file = fileURLToPath(new URL('../../package.json', import.meta.url))
+    const packageJson = JSON.parse(fs.readFileSync(file, 'utf-8'))
+    return packageJson.version
+  } catch {
+    return 'unknown'
+  }
+}
+
+program.version(getVersion(), '-v, --version', '显示版本号')
 program.command('pm2').description('后台运行').action(pm2.start)
 program.command('stop').description('停止后台运行').action(pm2.stop)
 program.command('rs').description('重启pm2服务').action(pm2.restart)
