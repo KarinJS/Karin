@@ -26,8 +26,6 @@ const addEnvOption = (command: Command) => {
 
 /** 获取版本号 */
 const getVersion = () => {
-  if (process.env.npm_package_version) return process.env.npm_package_version
-
   try {
     const file = fileURLToPath(new URL('../../package.json', import.meta.url))
     const packageJson = JSON.parse(fs.readFileSync(file, 'utf-8'))
