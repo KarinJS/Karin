@@ -259,11 +259,27 @@ export const createConfig = () => {
 export const modifyPackageJson = () => {
   /** 将type设置为module */
   const pkg = fs.readFileSync(path.join(dir, 'package.json'), 'utf-8')
-  const pkgData = JSON.parse(pkg)
-  if (pkgData.type === 'module') return pkgData
-  pkgData.type = 'module'
-  fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify(pkgData, null, 2))
-  return pkgData
+  const data = JSON.parse(pkg)
+  data.type = 'module'
+  data.scripts.karin = 'karin'
+
+  const list = [
+    'app',
+    'start',
+    'pm2',
+    'stop',
+    'rs',
+    'log',
+    'up',
+    'init',
+  ]
+
+  list.forEach(v => {
+    data.scripts[v] = `karin ${v}`
+  })
+
+  fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify(data, null, 2))
+  return data
 }
 
 /**

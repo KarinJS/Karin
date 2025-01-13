@@ -8,6 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
+    "@types/node": "^22.5.0",
     "eslint": "^9.12.0",
     "neostandard": "^0.11.6",
     "sort-json": "^2.0.1",

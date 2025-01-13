@@ -17,6 +17,11 @@
   "bugs": {
     "url": "https://github.com/KarinJS/Karin/issues"
   },
+  "bin": {
+    "k": "./dist/cli/index.cjs",
+    "kr": "./dist/cli/index.cjs",
+    "karin": "./dist/cli/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/KarinJS/Karin.git"
@@ -60,7 +65,6 @@
   "dependencies": {
     "@types/express": "^5.0.0",
     "@types/lodash": "^4.17.10",
-    "@types/node": "^22.5.0",
     "@types/node-schedule": "^2.1.7",
     "@types/ws": "^8.5.12",
     "art-template": "4.13.2",

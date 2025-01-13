@@ -12,6 +12,9 @@ importers:
         specifier: workspace:*
         version: link:packages/core
     devDependencies:
+      '@types/node':
+        specifier: ^22.5.0
+        version: 22.8.4
       eslint:
         specifier: ^9.12.0
         version: 9.13.0
@@ -42,9 +45,6 @@ importers:
       '@types/lodash':
         specifier: ^4.17.10
         version: 4.17.13
-      '@types/node':
-        specifier: ^22.5.0
-        version: 22.8.4
       '@types/node-schedule':
         specifier: ^2.1.7
         version: 2.1.7
