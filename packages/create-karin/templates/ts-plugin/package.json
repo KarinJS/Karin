@@ -1,24 +1,67 @@
 {
-  "name": "karin-plugin",
+  "name": "karin-plugin-template-ts",
   "version": "1.0.0",
-  "description": "",
+  "author": "shijin",
   "type": "module",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "scripts": {
-    "dev": "tsup --watch",
-    "build": "tsup",
-    "lint": "eslint ."
+  "description": "karin plugin template",
+  "homepage": "https://github.com/KarinJS/karin-plugin-template-ts",
+  "bugs": {
+    "url": "https://github.com/KarinJS/karin-plugin-template-ts/issues"
   },
-  "keywords": [
-    "karin",
-    "plugin"
-  ],
-  "author": "",
-  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarinJS/karin-plugin-template-ts.git"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "pub": "npm publish --access public",
+    "karin": "karin",
+    "app": "karin app",
+    "start": "karin start",
+    "pm2": "karin pm2",
+    "stop": "karin stop",
+    "rs": "karin rs",
+    "log": "karin log",
+    "up": "karin up"
+  },
+  "main": "lib/index.js",
   "devDependencies": {
-    "@types/node": "^20.11.0",
-    "typescript": "^5.3.3",
-    "tsup": "^8.0.1"
+    "@types/node": "^20.17.8",
+    "eslint": "^9.7.0",
+    "neostandard": "^0.11.9",
+    "node-karin": "0.12.25.pr.206.62c1986",
+    "tsc-alias": "^1.8.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.5.3"
+  },
+  "karin": {
+    "main": "src/index.ts",
+    "apps": [
+      "lib/apps"
+    ],
+    "ts-apps": [
+      "src/apps"
+    ],
+    "static": [
+      "resources"
+    ],
+    "files": [
+      "config",
+      "data",
+      "resources"
+    ]
+  },
+  "files": [
+    "/lib/**/*.js",
+    "/lib/**/*.d.ts",
+    "/config/*.yaml",
+    "resources",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   }
 }

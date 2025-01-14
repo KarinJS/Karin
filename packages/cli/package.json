@@ -1,0 +1,21 @@
+{
+  "name": "@karinjs/cli",
+  "version": "1.0.0",
+  "description": "Karin CLI tool",
+  "main": "index.js",
+  "bin": {
+    "karin": "index.js"
+  },
+  "scripts": {
+    "pub": "npm publish --access public"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "cli",
+    "karin"
+  ],
+  "author": "",
+  "license": "MIT"
+}

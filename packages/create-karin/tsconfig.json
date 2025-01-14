@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "alwaysStrict": true,
+    "baseUrl": ".",
+    "declaration": false,
+    "esModuleInterop": true,
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "noImplicitAny": true,
+    "outDir": "./lib",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "resolveJsonModule": true,
+    "rootDir": "./src",
+    "skipLibCheck": true,
+    "sourceMap": false,
+    "strict": true,
+    "target": "ES2022",
+    "types": [
+      "@types/node"
+    ]
+  },
+  "include": [
+    "./src/**/*",
+    "./src/global.d.ts"
+  ]
+}

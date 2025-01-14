@@ -240,7 +240,6 @@ export const modifyPackageJson = () => {
     'rs',
     'log',
     'up',
-    'init',
     'dev',
     'ts',
     'watch',

@@ -5,10 +5,23 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "node index.js",
-    "start": "node index.js"
+    "karin": "karin",
+    "app": "karin app",
+    "start": "karin start",
+    "pm2": "karin pm2",
+    "stop": "karin stop",
+    "rs": "karin rs",
+    "log": "karin log",
+    "up": "karin up",
+    "dev": "karin dev",
+    "ts": "karin ts",
+    "watch": "karin watch",
+    "init": "karin init"
   },
   "keywords": [],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "node-karin": "0.12.2-5.pr.206.fd03f9f"
+  }
 }

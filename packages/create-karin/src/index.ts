@@ -5,7 +5,6 @@ import path from 'node:path'
 import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
-import task from 'tasuku'
 import prompts from 'prompts'
 import { getStr } from './tools'
 import { green, red, yellow, magenta } from 'kolorist'
@@ -63,119 +62,73 @@ const createProject = async () => {
   const template = response.template
   const targetDir = path.join(process.cwd(), response.projectName)
 
-  const { result } = await task('检查网络环境', async ({ setTitle }) => {
-    const result = await pingUrls()
-    if (result.ping) {
-      setTitle(green('网络环境极佳 ^_^'))
-    } else {
-      setTitle(red('网络环境较差~'))
-    }
-    return result
-  })
-
-  await task.group(task => [
-    task('检查 pnpm', async ({ setTitle }) => {
-      const pnpm = await checkPnpm()
-      if (pnpm) return setTitle('pnpm 已安装')
-      await installPnpm(result.suffix)
-      setTitle('pnpm 安装成功')
-    }),
-
-    task('正在创建项目', async ({ setTitle }) => {
-      setTitle('正在创建项目')
-      const templateDir = path.join(
-        fileURLToPath(import.meta.url),
-        '../../templates',
-        template
-      )
-
-      await fs.promises.mkdir(targetDir, { recursive: true })
-      await fs.promises.cp(templateDir, targetDir, { recursive: true })
-
-      const projectName = response.projectName
-      const main = template === 'production' ? 'pnpm app' : 'pnpm dev'
-
-      setTitle([
-        '\n✨ 项目创建成功！',
-        yellow('👇 请执行以下命令：\n'),
-        green(`  cd ${projectName}`),
-        green('  pnpm install -P'),
-        green(`  ${main}\n`),
-        '  快捷指令(上下任选其一):',
-        magenta(`  cd ${projectName} && pnpm install -P && ${main}\n`),
-        template === 'production'
-          ? '🚀 开始愉快的使用吧！'
-          : '🚀 开始愉快的开发吧！',
-      ].join('\n'))
-    }),
-  ])
-}
-
-/**
- * 重新初始化当前目录
- */
-const reinitProject = async () => {
-  const response = await prompts([
-    {
-      type: 'select',
-      name: 'template',
-      message: '选择项目模板:',
-      initial: 0,
-      choices: [
-        {
-          title: `${yellow('生产环境')} ${green('(推荐)')}`,
-          value: 'production',
-          description: '适用于大多数用户的标准环境',
-        },
-        {
-          title: 'TypeScript 开发环境',
-          value: 'ts-plugin',
-          description: '用于开发 TypeScript 插件',
-        },
-        {
-          title: 'JavaScript 开发环境',
-          value: 'js-plugin',
-          description: '用于开发 JavaScript 插件',
-        },
-      ],
-    },
-    {
-      type: 'confirm',
-      name: 'confirm',
-      message: '此操作将覆盖当前目录下的文件，是否继续？',
-      initial: false,
-    },
-  ])
-
-  // 如果用户取消操作，则抛出错误
-  if (!response.template || !response.confirm) {
-    throw new Error('操作已取消')
+  // 检查网络环境
+  console.log('检查网络环境...')
+  const networkResult = await pingUrls()
+  if (networkResult.ping) {
+    console.log(green('网络环境极佳 ^_^'))
+  } else {
+    console.log(red('网络环境较差~'))
   }
 
-  /** 删掉依赖 */
-  const files = ['node_modules', 'package-lock.json', 'pnpm-lock.yaml', 'pnpm-lock.yaml', 'pnpm-lock.yaml', 'pnpm-lock.yaml']
-  await Promise.all(files.map(file => fs.promises.rm(path.join(process.cwd(), file), { recursive: true, force: true })))
+  // 检查并安装 pnpm
+  console.log('检查 pnpm...')
+  const pnpm = await checkPnpm()
+  if (!pnpm) {
+    console.log('正在安装 pnpm...')
+    await installPnpm(networkResult.suffix)
+    console.log('pnpm 安装成功')
+  }
 
-  /** 重新复制 如果遇到冲突则直接覆盖 */
+  // 创建项目
+  console.log('正在创建项目...')
   const templateDir = path.join(
     fileURLToPath(import.meta.url),
     '../../templates',
-    response.template
+    template
   )
-  await fs.promises.cp(templateDir, process.cwd(), { recursive: true, force: true })
 
-  const main = response.template === 'production' ? 'pnpm app' : 'pnpm dev'
+  await fs.promises.mkdir(targetDir, { recursive: true })
+  await fs.promises.cp(templateDir, targetDir, { recursive: true })
+
+  const projectName = response.projectName
+  const main = template === 'production' ? 'pnpm app' : 'pnpm dev'
+
+  // 询问是否自动安装依赖
+  const { autoInstall } = await prompts({
+    type: 'confirm',
+    name: 'autoInstall',
+    message: '是否自动安装依赖并启动项目？',
+    initial: true,
+  })
+
+  if (autoInstall) {
+    console.log('\n📦 正在安装依赖...')
+    process.chdir(targetDir)
+    const { execSync } = await import('node:child_process')
+    try {
+      execSync('pnpm install -P', { stdio: 'inherit' })
+      console.log(green('\n✨ 依赖安装完成！'))
+
+      console.log('\n🚀 正在启动项目...')
+      execSync(main, { stdio: 'inherit' })
+    } catch (error) {
+      console.log(red('\n❌ 自动安装失败，请手动执行以下命令：'))
+    }
+  }
+
   console.log([
-    '\n✨ 项目重新初始化成功！',
-    yellow('👇 请重新执行以下命令：\n'),
-    green('  pnpm install -P'),
+    '\n✨ 项目创建成功！',
+    yellow('👇 请执行以下命令：\n'),
+    green(`  cd ${projectName}`),
+    !autoInstall ? green('  pnpm install -P') : '',
     green(`  ${main}\n`),
     '  快捷指令(上下任选其一):',
-    magenta(`  pnpm install -P && ${main}\n`),
-    response.template === 'production'
+    magenta(`  cd ${projectName} &&${!autoInstall ? 'pnpm install -P &&' : ''} ${main}\n`),
+    template === 'production'
       ? '🚀 开始愉快的使用吧！'
       : '🚀 开始愉快的开发吧！',
-  ].join('\n'))
+  ].map(Boolean).join('\n'))
 }
 
 /**
@@ -183,39 +136,7 @@ const reinitProject = async () => {
  */
 const main = async () => {
   try {
-    const { mode } = await prompts({
-      type: 'select',
-      name: 'mode',
-      message: '选择操作模式:',
-      initial: 0,
-      choices: [
-        {
-          title: `${green('新建项目')} ${green('(推荐)')}`,
-          value: 'new',
-          description: '在当前目录创建新的项目',
-        },
-        {
-          title: `${yellow('重新初始化')}`,
-          value: 'reinit',
-          description: '强制重新初始化当前目录',
-        },
-      ],
-    }, {
-      onCancel: () => {
-        process.exit(1)
-      },
-    })
-
-    if (!mode) {
-      throw new Error('操作已取消')
-    }
-
-    if (mode === 'new') {
-      await createProject()
-    } else {
-      await reinitProject()
-    }
-
+    await createProject()
     process.exit(0)
   } catch (err) {
     console.log(red('✖ ') + (err as Error).message)
