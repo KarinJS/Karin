@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import lodash from 'lodash'
 import path from 'node:path'
 import util from 'node:util'
@@ -86,12 +87,16 @@ export class LoaderPlugin {
       if (pkg.type !== 'app') {
         if (isTsx() && pkg?.pkgData?.karin?.main) {
           const file = path.join(pkg.dir, pkg.pkgData.karin.main)
-          entryPromises.push(this.loaderMain(pkg.name, file))
+          if (fs.existsSync(file)) {
+            entryPromises.push(this.loaderMain(pkg.name, file))
+          }
         }
 
         if (pkg?.pkgData?.main) {
           const file = path.join(pkg.dir, pkg.pkgData.main)
-          entryPromises.push(this.loaderMain(pkg.name, file))
+          if (fs.existsSync(file)) {
+            entryPromises.push(this.loaderMain(pkg.name, file))
+          }
         }
       }
 
