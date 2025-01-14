@@ -154,8 +154,8 @@ export const copyConfigSync = (
 ): boolean => {
   try {
     const files = getFiles(defaulPath, suffixs)
-    fs.mkdirSync(userPath)
-    fs.mkdirSync(defaulPath)
+    fs.mkdirSync(userPath, { recursive: true })
+    fs.mkdirSync(defaulPath, { recursive: true })
     copyFilesSync(files, defaulPath, userPath)
     return true
   } catch (error) {
