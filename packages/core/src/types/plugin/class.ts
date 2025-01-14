@@ -58,7 +58,7 @@ export class Plugin<T extends keyof MessageEventMap = keyof MessageEventMap> {
   /** 调用后将继续匹配下一个插件 */
   next!: () => unknown
   /** 快速回复 */
-  reply: Message['reply']
+  reply!: Message['reply']
   constructor (options: PluginOptions<T> & { event?: T }) {
     const { name, rule } = options
     this.name = name
@@ -66,7 +66,6 @@ export class Plugin<T extends keyof MessageEventMap = keyof MessageEventMap> {
     this.desc = options.desc || '无描述'
     this.event = (options.event || 'message') as T
     this.priority = options.priority || 10000
-    this.reply = this.e.reply.bind(this.e)
   }
 
   /**

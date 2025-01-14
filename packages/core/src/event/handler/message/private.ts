@@ -168,6 +168,7 @@ const privateCmd = async (
 
       App.e = ctx
       App.next = () => { next = true }
+      App.reply = App.e.reply.bind(App.e)
       const result = await (App as any)[plugin.file.method](App.e)
       if (next === false && result === false) next = true
     }
