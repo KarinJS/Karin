@@ -80,7 +80,7 @@ const getPluginsInfo = async (list: string[]): Promise<PkgInfo[]> => {
     }
 
     if (type === 'git' || type === 'root') {
-      const file = path.join(dir, name)
+      const file = type === 'root' ? process.cwd() : path.join(dir, name)
       await getGitInfo(info, file, name, ext)
       return
     }
