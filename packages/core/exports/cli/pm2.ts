@@ -16,6 +16,18 @@ const start = () => {
   }
 
   console.log('[pm2] 启动中...')
+
+  /**
+   * @time 2025年1月14日23:22:33
+   * 升级旧版本入口
+   */
+  const data = JSON.parse(fs.readFileSync(pm2Dir, 'utf-8'))
+  const script = './node_modules/node-karin/dist/cli/pm2.js'
+  if (data.apps[0].script !== script) {
+    data.apps[0].script = script
+    fs.writeFileSync(pm2Dir, JSON.stringify(data, null, 2))
+  }
+
   const { error } = execSync(`pm2 start ${pm2Dir}`, { cwd: process.cwd() })
   if (error) {
     console.log('[pm2] 启动失败')
@@ -46,7 +58,7 @@ const log = () => {
   try {
     /** 前缀 */
     const prefix = process.platform === 'win32' ? 'pm2.cmd' : 'pm2'
-    spawn(prefix, ['logs', data.name, '--lines', data.lines || 1000], { stdio: 'inherit', shell: true })
+    spawn(prefix, ['logs', data.apps[0].name, '--lines', data.lines || 1000], { stdio: 'inherit', shell: true })
   } catch (error) {
     console.error('[pm2] 发生未知错误: 请检查pm2是否安装 【npm install -g pm2】')
     console.error(error)
@@ -65,7 +77,7 @@ const stop = () => {
   }
 
   const data = JSON.parse(fs.readFileSync(pm2Dir, 'utf-8'))
-  execSync(`pm2 stop ${data.name}`, { cwd: process.cwd() })
+  execSync(`pm2 stop ${data.apps[0].name}`, { cwd: process.cwd() })
   console.log('[pm2] 停止成功')
   process.exit(0)
 }

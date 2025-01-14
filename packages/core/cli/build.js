@@ -68,6 +68,14 @@ const sort = (file) => {
 }
 
 /**
+ * 生成pm2入口文件
+ */
+export const pm2 = () => {
+  const file = process.cwd() + '/dist/cli/pm2.js'
+  fs.writeFileSync(file, 'import \'node-karin\'')
+}
+
+/**
  * @description 生成`exports`
  * @param {boolean} isDev - 是否是开发环境
  */
@@ -84,6 +92,7 @@ export const main = (isDev = false) => {
   execSync('npm run sort', { stdio: 'inherit', cwd })
 
   sort(file)
+  pm2()
 }
 
 const isDev = process.argv?.[2]?.includes('dev')

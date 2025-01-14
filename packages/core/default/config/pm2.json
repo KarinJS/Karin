@@ -3,7 +3,7 @@
   "apps": [
     {
       "name": "karin",
-      "script": "index.js",
+      "script": "./node_modules/node-karin/dist/cli/pm2.js",
       "autorestart": true,
       "max_restarts": 60,
       "max_memory_restart": "1G",

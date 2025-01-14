@@ -29,7 +29,7 @@ const loadEnv = (env?: string) => {
   files.forEach((file) => {
     if (!fs.existsSync(`${dir}/${file}`)) {
       if (file === '.env') {
-        console.error(`未找到${file}文件，请使用 pnpm init 进行初始化项目`)
+        console.error(`未找到${file}文件，请使用 npx karin init 进行初始化项目`)
       } else {
         console.error(`未找到${file}文件，请将其放置在项目根目录`)
       }
@@ -80,16 +80,13 @@ export const dev = async (env?: string) => {
  */
 export const tsStart = async (env?: string) => {
   loadEnv(env)
+  process.env.RUNTIME = 'tsx'
   process.env.NODE_ENV = 'development'
 
   const index = '../root.js'
   const { karinMain } = await import(index)
 
   const child = spawn('npx', ['tsx', karinMain], {
-    env: {
-      ...process.env,
-      RUNTIME: 'tsx',
-    },
     stdio: 'inherit',
     shell: true,
   })
@@ -137,12 +134,10 @@ export const tsWatch = async (options: {
 
   args.push(karinMain)
 
+  process.env.RUNTIME = 'tsx'
+  process.env.TSX_WATCH = 'true'
+
   const child = spawn('npx', args, {
-    env: {
-      ...process.env,
-      RUNTIME: 'tsx',
-      TSX_WATCH: 'true',
-    },
     stdio: 'inherit',
     shell: true,
   })
