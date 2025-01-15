@@ -86,11 +86,16 @@ const stop = () => {
  * pm2 restart
  */
 const restart = () => {
+  console.log('[pm2] 重启中...')
   if (!fs.existsSync(pm2Dir)) {
     console.log(`[pm2] 配置文件不存在 请检查 ${pm2Dir} 是否存在`)
     console.log('[pm2] 如果是新项目，请先前台启动生成配置文件: pnpm app')
     process.exit(1)
   }
+
+  execSync(`pm2 restart ${pm2Dir}`, { cwd: process.cwd() })
+  console.log('[pm2] 重启成功')
+  process.exit(0)
 }
 
 export const pm2 = {
