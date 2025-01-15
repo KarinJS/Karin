@@ -3,36 +3,26 @@ on:
   push:
     branches:
       - main
+
+# 赋予 release-please-action 权限
 permissions:
   contents: write
   pull-requests: write
-
 jobs:
+  # 设置 release-please 任务
   release-please:
+    # 设置任务运行环境为 ubuntu-latest
     runs-on: ubuntu-latest
     steps:
-      # 使用 release-please-action 处理版本发布
+      # 使用 release-please-action 动作来自动创建发布 PR
       - uses: googleapis/release-please-action@v4
         id: release
         with:
-          # 使用配置文件来管理发布
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
-
-      # 打印outputs
-      - name: 打印outputs
-        run: |
-          echo "============ Release Please Outputs ============"
-          echo "releases_created: ${{ steps.release.outputs.releases_created }}"
-          echo "node-karin release created: ${{ steps.release.outputs['node-karin--releases_created'] }}"
-          echo "cli release created: ${{ steps.release.outputs['cli--releases_created'] }}"
-          echo "============ All Outputs ============"
-          echo "${{ steps.release.outputs }}"
-
-      # 如果有新版本发布，执行发布流程
       - name: 检出代码
         uses: actions/checkout@v4
-        if: ${{ steps.release.outputs.releases_created }}
+        if: ${{ steps.release.outputs.release_created }}
 
       - name: 设置 node
         uses: actions/setup-node@v4
@@ -40,6 +30,21 @@ jobs:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
         if: ${{ steps.release.outputs.releases_created }}
+
+      # 打印 release-please-action 的输出
+      - name: 打印 release 输出
+        continue-on-error: true
+        run: |
+          {
+            echo "releases_created: ${{ steps.release.outputs.releases_created }}"
+            echo "release_created: ${{ steps.release.outputs.release_created }}"
+            echo "core包状态: ${{ steps.release.outputs['packages/core--release_created'] }}"
+            echo "cli包状态: ${{ steps.release.outputs['packages/cli--release_created'] }}"
+            echo "所有输出内容："
+            env | grep "RELEASE_" || echo "没有找到 RELEASE_ 相关的环境变量"
+          } || {
+            echo "::warning::打印输出时发生错误，但继续执行后续步骤"
+          }
 
       - name: 设置 pnpm
         uses: pnpm/action-setup@v2
@@ -54,16 +59,16 @@ jobs:
 
       # 发布 core 包
       - name: 发布 core 包
-        if: ${{ steps.release.outputs.releases_created && steps.release.outputs['packages/core--releases_created'] }}
+        if: ${{ steps.release.outputs.releases_created && steps.release.outputs['packages/core--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         working-directory: packages/core
-        run: cd packages/core && pnpm build:prod && pnpm pub
+        run: pnpm build:prod && pnpm pub
 
       # 发布 cli 包
       - name: 发布 cli 包
-        if: ${{ steps.release.outputs.releases_created && steps.release.outputs['packages/cli--releases_created'] }}
+        if: ${{ steps.release.outputs.releases_created && steps.release.outputs['packages/cli--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         working-directory: packages/cli
-        run: cd packages/cli && pnpm pub
+        run: pnpm pub
