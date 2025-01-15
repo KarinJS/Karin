@@ -46,7 +46,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile
         if: ${{ steps.release.outputs.release_created }}
       # 构建输出
-      - run: build:prod
+      - run: pnpm build:prod
         if: ${{ steps.release.outputs.release_created }}
       # 发布到 npm
       - run: npm run pub
