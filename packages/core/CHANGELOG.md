@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.0.10](https://github.com/KarinJS/Karin/compare/core-v1.0.9...core-v1.0.10) (2025-01-15)
+
+
+### 🐛 Bug Fixes
+
+* remove deprecated configuration files and enhance WebSocket client reconnection logic ([1ebec80](https://github.com/KarinJS/Karin/commit/1ebec80515fc6cc0a347b1ae06340db4c7da1054))
+
 ## [1.0.9](https://github.com/KarinJS/Karin/compare/core-v1.0.8...core-v1.0.9) (2025-01-15)
 
 
