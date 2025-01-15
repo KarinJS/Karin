@@ -29,33 +29,26 @@ jobs:
         with:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
-        if: ${{ steps.release.outputs.releases_created }}
+        if: ${{ steps.release.outputs.release_created }}
 
       # 打印 release-please-action 的输出
       - name: 打印 release 输出
         continue-on-error: true
         run: |
-          {
-            echo "releases_created: ${{ steps.release.outputs.releases_created }}"
-            echo "release_created: ${{ steps.release.outputs.release_created }}"
-            echo "core包状态: ${{ steps.release.outputs['packages/core--release_created'] }}"
-            echo "cli包状态: ${{ steps.release.outputs['packages/cli--release_created'] }}"
-            echo "所有输出内容："
-            env | grep "RELEASE_" || echo "没有找到 RELEASE_ 相关的环境变量"
-          } || {
-            echo "::warning::打印输出时发生错误，但继续执行后续步骤"
-          }
+          echo "release_created: ${{ steps.release.outputs.release_created }}"
+          echo "core包发布状态: ${{ steps.release.outputs['packages/core--release_created'] }}"
+          echo "cli包发布状态: ${{ steps.release.outputs['packages/cli--release_created'] }}"
 
       - name: 设置 pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 8
-        if: ${{ steps.release.outputs.releases_created }}
+        if: ${{ steps.release.outputs.release_created }}
 
       # 安装所有依赖
       - name: 安装依赖
         run: pnpm install
-        if: ${{ steps.release.outputs.releases_created }}
+        if: ${{ steps.release.outputs.release_created }}
 
       # 发布 core 包
       - name: 发布 core 包
