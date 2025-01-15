@@ -4,21 +4,13 @@
 
 [点击跳转文档](https://karin.fun/)
 
-### 开发
+当前文档可能存在滞后性，正在努力更新中。
 
-tsx 开发步骤
+有其他问题请加群讨论: 967068507
 
-```bash
-build:dev && pnpm app
-build:dev && pnpm app:w
-build:dev && pnpm app:w --debug
-```
+## 温馨提示
 
-正式发版
-
-```bash
-pnpm build
-```
+当前`1.0.0`仍处于测试阶段，欢迎大家提出宝贵意见，我们会尽快修复。
 
 ### 贡献者
 
