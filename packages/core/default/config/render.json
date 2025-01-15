@@ -1,0 +1,19 @@
+{
+  "ws_server": {
+    "enable": true
+  },
+  "ws_client": [
+    {
+      "enable": false,
+      "url": "ws://127.0.0.1:7005",
+      "token": "123456"
+    }
+  ],
+  "http_server": [
+    {
+      "enable": false,
+      "url": "http://127.0.0.1:7005",
+      "token": "123456"
+    }
+  ]
+}

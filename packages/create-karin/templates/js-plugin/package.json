@@ -1,0 +1,48 @@
+{
+  "name": "karin-plugin-template",
+  "version": "0.0.1",
+  "description": "karin plugin template",
+  "homepage": "https://github.com/KarinJS/karin-plugin-template",
+  "bugs": {
+    "url": "https://github.com/KarinJS/karin-plugin-template/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarinJS/karin-plugin-template.git"
+  },
+  "author": "Lain",
+  "type": "module",
+  "main": "lib/index.js",
+  "scripts": {
+    "app": "karin start",
+    "dev": "karin dev",
+    "init": "karin init",
+    "start": "karin start"
+  },
+  "devDependencies": {
+    "neostandard": "^0.12.0"
+  },
+  "peerDependencies": {
+    "node-karin": "0.12.2-5.pr.206.fd03f9f"
+  },
+  "karin": {
+    "apps": [
+      "lib/apps"
+    ],
+    "static": [
+      "resources"
+    ],
+    "files": [
+      "config",
+      "data",
+      "resources"
+    ],
+    "include": [
+      "src/**/*"
+    ],
+    "exclude": [
+      "lib/**/*",
+      "@karinjs/**/*"
+    ]
+  }
+}

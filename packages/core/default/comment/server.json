@@ -1,0 +1,17 @@
+{
+  "hmrToServer": "当前文件热更新是否重启http服务",
+  "host": "http监听地址",
+  "port": "http端口",
+  "timeout": "ws api请求超时时间，单位：秒",
+  "onebotHttp": "OneBot HTTP 配置列表",
+  "reverseWsToken": "反向WebSocket鉴权秘钥",
+  "forwardWs": "OneBot11正向WebSocket地址列表",
+  "renderWs": "WebSocket 渲染器地址 (例如 ws://127.0.0.1:7005/ws/render)",
+  "renderHttp": "HTTP 渲染器地址列表",
+  "rootMsg": "HTTP根路由随机返回的文案",
+  "console": "console控制台适配器",
+  "console.isLocal": "只允许本地访问",
+  "console.port": "console控制台端口",
+  "console.token": "如果 isLocal 为 false 则需要配置 token",
+  "console.host": "自定义host"
+}

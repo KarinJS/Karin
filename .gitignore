@@ -1,7 +1,6 @@
 # 包管理器文件
 .npmrc
 yarn.lock
-pnpm-lock.yaml
 package-lock.json
 
 # 包管理器日志
@@ -16,19 +15,28 @@ lerna-debug.log*
 .vscode/
 
 # 临时文件
-/logs/
+logs/
 /temp/
 
 # 配置
-/plugins/
+plugins/
 /data/
-/config/config
+/config/
 /resources
+@karinjs
 
 # 依赖
 node_modules/
 config/config/pm2.yaml
-
-# 子模块 历史版本遗留
-lib/adapter/kritor/kritor
-lib/adapter/kritor/kritorGitee
+lib/
+dist/
+build/
+modules.js
+modules.d.ts
+index.js
+1.js
+packages/types/index.js
+packages/types/index.mjs
+packages/types/index.d.mts
+packages/types/index.d.ts
+/web

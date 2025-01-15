@@ -1,0 +1,17 @@
+{
+  "name": "@karinjs/karin-types",
+  "version": "0.12.24",
+  "main": "",
+  "types": "index.d.ts",
+  "scripts": {
+    "pub": "npm publish --access public"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org",
+    "files": [
+      "index.d.ts",
+      "package.json"
+    ]
+  }
+}

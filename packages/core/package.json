@@ -1,0 +1,194 @@
+{
+  "name": "node-karin",
+  "version": "0.12.24",
+  "description": "Lightweight, efficient, concise, and stable robot framework.",
+  "keywords": [
+    "node",
+    "nodejs",
+    "karin",
+    "bot",
+    "robot",
+    "icqq",
+    "onebot",
+    "kritor",
+    "node-karin"
+  ],
+  "homepage": "https://github.com/KarinJS/Karin",
+  "bugs": {
+    "url": "https://github.com/KarinJS/Karin/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarinJS/Karin.git"
+  },
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "k": "./dist/cli/index.cjs",
+    "karin": "./dist/cli/index.js",
+    "kr": "./dist/cli/index.cjs"
+  },
+  "files": [
+    "/dist/**/*.js",
+    "/dist/**/*.cjs",
+    "/dist/**/*.d.ts",
+    "/default/**",
+    "CHANGELOG.md",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ],
+  "workspaces": [
+    "plugins/**"
+  ],
+  "scripts": {
+    ".": "node lib/index.js",
+    "app": "node lib/index.js",
+    "build": "tsc --noEmit && tsup --config tsup.config.ts",
+    "build:cli": "tsup --tsconfig tsconfig.cli.json --config tsup.cli.ts",
+    "build:dev": "pnpm build && node cli/build.js -dev",
+    "build:module": "tsup --tsconfig tsconfig.module.json --config tsup.modules.ts && node cli/module.js",
+    "build:prod": "pnpm build:module && pnpm build:cli && pnpm build && node cli/build.js",
+    "cli": "node dist/cli/index.cjs",
+    "debug": "node lib/index.js --debug",
+    "dev": "tsx src/index.ts",
+    "dev:cli": "tsx exports/cli/index.ts",
+    "dev:w": "tsx watch --include \"./src/**/*.ts\" src/index.ts",
+    "dev:watch": "pnpm dev:w",
+    "pr": "node cli/pr.js all",
+    "pub": "npm publish --access public",
+    "pub-beta": "npm publish --access public --tag beta",
+    "sort": "npx sort-package-json && sort-json tsconfig.json"
+  },
+  "dependencies": {
+    "@types/express": "^5.0.0",
+    "@types/lodash": "^4.17.10",
+    "@types/node-schedule": "^2.1.7",
+    "@types/ws": "^8.5.12",
+    "art-template": "4.13.2",
+    "axios": "1.7.9",
+    "chalk": "5.4.1",
+    "chokidar": "3.6.0",
+    "commander": "^13.0.0",
+    "dotenv": "^16.4.7",
+    "express": "4.21.2",
+    "level": "9.0.0",
+    "lodash": "4.17.21",
+    "log4js": "6.9.1",
+    "moment": "2.30.1",
+    "node-schedule": "2.1.1",
+    "redis": "4.7.0",
+    "ws": "8.18.0",
+    "yaml": "2.7.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./dist/index.d.ts"
+    },
+    "./dir": {
+      "import": "./dist/root.js",
+      "types": "./dist/root.d.ts"
+    },
+    "./cli": {
+      "import": "./dist/cli/index.js",
+      "types": "./dist/cli/index.d.ts",
+      "require": "./dist/cli/index.cjs"
+    },
+    "./template": {
+      "import": "./dist/module/art-template.js",
+      "types": "./dist/module/art-template.d.ts",
+      "require": "./dist/module/art-template.cjs"
+    },
+    "./art-template": {
+      "import": "./dist/module/art-template.js",
+      "types": "./dist/module/art-template.d.ts",
+      "require": "./dist/module/art-template.cjs"
+    },
+    "./axios": {
+      "import": "./dist/module/axios.js",
+      "types": "./dist/module/axios.d.ts",
+      "require": "./dist/module/axios.cjs"
+    },
+    "./chalk": {
+      "import": "./dist/module/chalk.js",
+      "types": "./dist/module/chalk.d.ts",
+      "require": "./dist/module/chalk.cjs"
+    },
+    "./chokidar": {
+      "import": "./dist/module/chokidar.js",
+      "types": "./dist/module/chokidar.d.ts",
+      "require": "./dist/module/chokidar.cjs"
+    },
+    "./commander": {
+      "import": "./dist/module/commander.js",
+      "types": "./dist/module/commander.d.ts",
+      "require": "./dist/module/commander.cjs"
+    },
+    "./dotenv": {
+      "import": "./dist/module/dotenv.js",
+      "types": "./dist/module/dotenv.d.ts",
+      "require": "./dist/module/dotenv.cjs"
+    },
+    "./express": {
+      "import": "./dist/module/express.js",
+      "types": "./dist/module/express.d.ts",
+      "require": "./dist/module/express.cjs"
+    },
+    "./level": {
+      "import": "./dist/module/level.js",
+      "types": "./dist/module/level.d.ts",
+      "require": "./dist/module/level.cjs"
+    },
+    "./lodash": {
+      "import": "./dist/module/lodash.js",
+      "types": "./dist/module/lodash.d.ts",
+      "require": "./dist/module/lodash.cjs"
+    },
+    "./log4js": {
+      "import": "./dist/module/log4js.js",
+      "types": "./dist/module/log4js.d.ts",
+      "require": "./dist/module/log4js.cjs"
+    },
+    "./moment": {
+      "import": "./dist/module/moment.js",
+      "types": "./dist/module/moment.d.ts",
+      "require": "./dist/module/moment.cjs"
+    },
+    "./schedule": {
+      "import": "./dist/module/node-schedule.js",
+      "types": "./dist/module/node-schedule.d.ts",
+      "require": "./dist/module/node-schedule.cjs"
+    },
+    "./node-schedule": {
+      "import": "./dist/module/node-schedule.js",
+      "types": "./dist/module/node-schedule.d.ts",
+      "require": "./dist/module/node-schedule.cjs"
+    },
+    "./redis": {
+      "import": "./dist/module/redis.js",
+      "types": "./dist/module/redis.d.ts",
+      "require": "./dist/module/redis.cjs"
+    },
+    "./ws": {
+      "import": "./dist/module/ws.js",
+      "types": "./dist/module/ws.d.ts",
+      "require": "./dist/module/ws.cjs"
+    },
+    "./yaml": {
+      "import": "./dist/module/yaml.js",
+      "types": "./dist/module/yaml.d.ts",
+      "require": "./dist/module/yaml.cjs"
+    }
+  }
+}

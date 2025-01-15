@@ -4,6 +4,12 @@
     "ldcf4.jumpprotobuf",
     "zxh404.vscode-proto3",
     "christian-kohler.path-intellisense",
-    "formulahendry.code-runner"
+    "formulahendry.code-runner",
+    "MS-CEINTL.vscode-language-pack-zh-hans",
+    "steoates.autoimport",
+    "Meezilla.json",
+    "yzhang.markdown-all-in-one",
+    "ChakrounAnas.turbo-console-log",
+    "Gruntfuggly.todo-tree"
   ]
 }

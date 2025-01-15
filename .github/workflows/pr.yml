@@ -1,0 +1,162 @@
+name: PR
+
+# 监听 PR 相关事件
+on:
+  pull_request:
+    # 监听 PR 被打开、重新打开和推送事件
+    types: [opened, reopened, synchronize]
+
+# 赋予 release-please-action 权限
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  # 设置 release-please 任务
+  release-please:
+    # 设置任务运行环境为 ubuntu-latest
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        # 为所有 run 步骤设置工作目录
+        working-directory: packages/core
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      # 设置 pnpm
+      - name: 设置 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      # 设置 Node.js 环境
+      - name: 设置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          # 设置 Node.js 版本
+          node-version: 20
+          # 设置 npm 源
+          registry-url: "https://registry.npmjs.org"
+          # 添加 pnpm 缓存支持
+          cache: pnpm
+      # 使用 pnpm 安装依赖
+      - name: 安装依赖
+        run: pnpm install --no-frozen-lockfile
+      # 构建输出
+      - name: 构建输出
+        id: build
+        run: |
+          pnpm run build:prod > build.log 2>&1 || {
+            echo "构建失败，错误日志："
+            cat build.log
+            exit 1
+          }
+        continue-on-error: true # 捕获失败并允许后续步骤运行
+      # 获取当前 PR 编号并设置环境变量
+      - name: 获取 PR 编号
+        id: get_pr
+        run: |
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV || {
+            echo "获取 PR 编号失败"
+            exit 1
+          }
+        continue-on-error: true
+      # 自动修改 package.json 的版本号、删除开发、对等依赖
+      - name: 修订版本号
+        id: version
+        run: |
+          pnpm run pr all || {
+            echo "修订版本号失败"
+            exit 1
+          }
+        continue-on-error: true
+      # 发布到 npm
+      - name: 发布到 npm
+        id: publish
+        run: |
+          # 检查 NPM_TOKEN 是否存在
+          if [ -z "${{ secrets.NPM_TOKEN }}" ]; then
+            echo "错误: NPM_TOKEN 未设置"
+            exit 1
+          fi
+          
+          echo "NPM_TOKEN 长度: ${#NODE_AUTH_TOKEN}"
+          
+          pnpm run pub-beta || {
+            echo "发布到 npm 失败"
+            exit 1
+          }
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        continue-on-error: true
+      # 在 PR 上发布构建完成或失败信息
+      - name: 发布评论
+        run: |
+          # 收集所有步骤的状态
+          BUILD_STATUS="${{ steps.build.outcome }}"
+          PR_STATUS="${{ steps.get_pr.outcome }}"
+          VERSION_STATUS="${{ steps.version.outcome }}"
+          PUBLISH_STATUS="${{ steps.publish.outcome }}"
+
+          # 构建错误消息
+          ERROR_MESSAGE=""
+          if [ "$BUILD_STATUS" = "failure" ]; then
+            ERROR_MESSAGE+=$'构建步骤失败！\n'
+            ERROR_MESSAGE+=$(cat build.log || echo "未找到构建日志。")$'\n\n'
+          fi
+          if [ "$PR_STATUS" = "failure" ]; then
+            ERROR_MESSAGE+=$'获取 PR 编号失败！\n\n'
+          fi
+          if [ "$VERSION_STATUS" = "failure" ]; then
+            ERROR_MESSAGE+=$'修订版本号失败！\n\n'
+          fi
+          if [ "$PUBLISH_STATUS" = "failure" ]; then
+            ERROR_MESSAGE+=$'发布到 npm 失败！\n\n'
+          fi
+
+          if [ ! -z "$ERROR_MESSAGE" ]; then
+            # 发布错误信息评论
+            gh pr comment ${{ env.PR_NUMBER }} --body $'❌ 构建过程中出现错误！\n\n<details>\n<summary>展开查看错误日志</summary>\n\n```\n'"${ERROR_MESSAGE}"$'\n```\n\n</details>'
+          else
+            # 构建成功评论
+            INSTALL_COMMAND_1="pnpm rm ${{ env.PKG_NAME }} && pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -D"           
+            INSTALL_COMMAND_2="pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -w"
+            gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 构建完成！请不要使用此版本，正在重构中：\n\n```\n'"${INSTALL_COMMAND_1}"$'\n```\n\n```\n'"${INSTALL_COMMAND_2}"$'\n```'
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE }}
+      # 撤回历史评论 保留最新的3条评论
+      - name: 撤回历史评论
+        run: |
+          # 获取当前PR的所有评论
+          comments=$(gh pr view ${{ env.PR_NUMBER }} --json comments)
+
+          # 过滤目标评论并按时间排序
+          target_comments=$(echo "$comments" | jq -r '.comments[] | select(.body | test("🎉 构建完成！|❌ 构建失败！|构建过程中出现错误")) | {url: .url, created_at: .createdAt}' | jq -s '. | sort_by(.created_at) | reverse')
+
+          # 获取需要删除的评论ID (保留最新的3条)
+          comment_ids_to_delete=$(echo "$target_comments" | jq -r 'if length > 3 then .[3:][] | .url | capture("#issuecomment-(?<id>\\d+)$").id else empty end')
+
+          # 删除旧评论
+          if [ ! -z "$comment_ids_to_delete" ]; then
+            for id in $comment_ids_to_delete; do
+              # 调试信息
+              echo "删除请求URL: /repos/${{ github.repository }}/issues/comments/$id"
+                response=$(curl -L \
+                -X DELETE \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer ${{ secrets.RELEASE }}" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                -w "%{http_code}" \
+                -o /dev/null \
+                "https://api.github.com/repos/${{ github.repository }}/issues/comments/$id")
+              if [ "$response" = "204" ]; then
+                echo "✓ 成功删除评论 $id"
+              else
+                echo "❌ 删除评论 $id 失败，HTTP状态码: $response"
+                exit 1
+                fi
+            done
+          else
+            echo "没有需要删除的历史评论"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE }}

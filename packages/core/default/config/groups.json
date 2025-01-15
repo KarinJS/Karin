@@ -1,0 +1,47 @@
+{
+  "default": {
+    "cd": 0,
+    "mode": 0,
+    "alias": [],
+    "enable": [],
+    "disable": [],
+    "member_enable": [],
+    "member_disable": []
+  },
+  "Bot:selfId": {
+    "cd": 0,
+    "mode": 0,
+    "alias": [],
+    "enable": [],
+    "disable": [],
+    "member_enable": [],
+    "member_disable": []
+  },
+  "Bot:selfId:groupId": {
+    "cd": 0,
+    "mode": 0,
+    "alias": [],
+    "enable": [],
+    "disable": [],
+    "member_enable": [],
+    "member_disable": []
+  },
+  "Bot:selfId:guildId": {
+    "cd": 0,
+    "mode": 0,
+    "alias": [],
+    "enable": [],
+    "disable": [],
+    "member_enable": [],
+    "member_disable": []
+  },
+  "Bot:selfId:guildId:channelId": {
+    "cd": 0,
+    "mode": 0,
+    "alias": [],
+    "enable": [],
+    "disable": [],
+    "member_enable": [],
+    "member_disable": []
+  }
+}

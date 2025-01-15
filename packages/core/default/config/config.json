@@ -1,0 +1,45 @@
+{
+  "master": [
+    "console"
+  ],
+  "admin": [],
+  "user": {
+    "enable_list": [],
+    "disable_list": []
+  },
+  "friend": {
+    "enable": true,
+    "enable_list": [],
+    "disable_list": [],
+    "log_enable_list": [],
+    "log_disable_list": []
+  },
+  "group": {
+    "enable": true,
+    "enable_list": [],
+    "disable_list": [],
+    "log_enable_list": [],
+    "log_disable_list": []
+  },
+  "directs": {
+    "enable": true,
+    "enable_list": [],
+    "disable_list": [],
+    "log_enable_list": [],
+    "log_disable_list": []
+  },
+  "guilds": {
+    "enable": true,
+    "enable_list": [],
+    "disable_list": [],
+    "log_enable_list": [],
+    "log_disable_list": []
+  },
+  "channels": {
+    "enable": true,
+    "enable_list": [],
+    "disable_list": [],
+    "log_enable_list": [],
+    "log_disable_list": []
+  }
+}

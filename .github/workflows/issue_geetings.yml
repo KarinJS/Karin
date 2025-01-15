@@ -1,0 +1,27 @@
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  create-comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create comment for enhancement
+        if: github.event.label.name == 'enhancement'
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'create-comment'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            你好 @${{ github.event.issue.user.login }}，我们已经记录了你的新功能提议。如果你有任何具体的实现想法或设计草图，欢迎随时分享给我们。
+          emoji: 'eyes'
+
+      - name: Create comment for bug
+        if: github.event.label.name == 'bug'
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'create-comment'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            你好 @${{ github.event.issue.user.login }}，看来我们的代码不小心打了个盹儿。别担心，我们已经唤醒了开发团队，他们正快马加鞭地赶来修复！🔨🐞
+          emoji: 'eyes'

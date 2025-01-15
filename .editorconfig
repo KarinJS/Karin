@@ -13,7 +13,7 @@ ij_any_space_before_colon = true
 ij_any_space_after_colon = true
 ij_any_keep_indents_on_empty_lines = false
 
-[{*.cjs,*.js}]
+[{*.cjs,*.js,*.ts}]
 ij_javascript_align_imports = false
 ij_javascript_use_semicolon_after_statement = false
 ij_javascript_use_double_quotes = false
@@ -33,3 +33,15 @@ ij_json_space_before_colon = false
 ij_json_space_before_comma = false
 ij_json_spaces_within_braces = false
 ij_json_spaces_within_brackets = false
+
+[{*.yaml,*.yml}]
+indent_size = 2
+indent_style = space
+tab_width = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+ij_yaml_indent_mapping_value = true
+ij_yaml_indent_sequence_value = true
+ij_yaml_space_before_colon = false
+ij_yaml_space_after_colon = true
+ij_yaml_keep_indents_on_empty_lines = false

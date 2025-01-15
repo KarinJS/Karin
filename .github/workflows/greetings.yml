@@ -1,0 +1,16 @@
+name: Greetings
+
+on: [pull_request_target, issues]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+    - uses: actions/first-interaction@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        issue-message: "👋 你好！感谢你提交了第一个问题！🔍 你的细心帮助我们发现了新的改进机会，我们会尽快处理。🚀 如果你有更多的想法或疑问，请继续分享，我们非常乐意听取你的声音！🌟 感谢你的支持！"
+        pr-message: "🙌 你好，贡献者！感谢你提交的第一个拉取请求！🛠️ 你正在帮助我们打造更好的项目，我们会认真审查并与你一起优化它。💡 如果你有任何问题或需要帮助，随时联系！✨ 很高兴与你合作，欢迎成为我们社区的一员！"

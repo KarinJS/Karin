@@ -1,0 +1,23 @@
+{
+  "default": {
+    "cd": 0,
+    "mode": 0,
+    "alias": [],
+    "enable": [],
+    "disable": []
+  },
+  "Bot:selfId": {
+    "cd": 0,
+    "mode": 0,
+    "alias": [],
+    "enable": [],
+    "disable": []
+  },
+  "Bot:selfId:userId": {
+    "cd": 0,
+    "mode": 0,
+    "alias": [],
+    "enable": [],
+    "disable": []
+  }
+}
