@@ -23,54 +23,29 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
         if: ${{ steps.release.outputs.release_created }}
-
-      - name: 设置 node
+      # 安装 pnpm
+      - uses: pnpm/action-setup@v2
+        if: ${{ steps.release.outputs.release_created }}
+        with:
+          version: 8
+      # 设置 Node.js 环境
+      - name: 设置 Node.js 环境
         uses: actions/setup-node@v4
+        if: ${{ steps.release.outputs.release_created }}
         with:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
-        if: ${{ steps.release.outputs.release_created }}
-
-      - name: 设置 pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-        if: ${{ steps.release.outputs['packages/core--release_created'] }}
-
-      # 安装所有依赖
+      # 安装依赖
       - name: 安装依赖
-        run: pnpm install
-        if: ${{ steps.release.outputs['packages/core--release_created'] }}
-        working-directory: packages/core
-
-      # # 发布 core 包
-      # - name: 发布 core 包
-      #   if: ${{ steps.release.outputs['packages/core--release_created'] }}
+        if: ${{ steps.release.outputs.release_created }}
+        run: pnpm install --no-frozen-lockfile
+      # # 构建输出
+      # - name: 构建输出
+      #   if: ${{ steps.release.outputs.release_created }}
+      #   run: pnpm build
+      # # 发布到 npm
+      # - name: 发布到 npm
+      #   if: ${{ steps.release.outputs.release_created }}
+      #   run: pnpm -r publish --access public --no-git-checks
       #   env:
-      #     NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      #   working-directory: packages/core
-      #   run: pnpm build:prod && pnpm pub
-
-      # # 发布 cli 包
-      # - name: 发布 cli 包
-      #   if: ${{ steps.release.outputs['packages/cli--release_created'] }}
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      #   working-directory: packages/cli
-      #   run: pnpm pub
-        
-      # 打印 release-please-action 的输出
-      - name: 保存 release 输出到文件
-        run: |
-          mkdir -p ./release-outputs
-          echo "release_created: ${{ steps.release.outputs.release_created }}" > ./release-outputs/outputs.txt
-          echo "core包发布状态: ${{ steps.release.outputs['packages/core--release_created'] }}" >> ./release-outputs/outputs.txt
-          echo "cli包发布状态: ${{ steps.release.outputs['packages/cli--release_created'] }}" >> ./release-outputs/outputs.txt
-          echo "outputs ${{ steps.release.outputs }}" >> ./release-outputs/outputs.txt
-
-      - name: 上传输出文件
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-outputs
-          path: ./release-outputs/outputs.txt
-          retention-days: 5
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
