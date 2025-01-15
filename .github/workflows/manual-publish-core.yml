@@ -1,0 +1,53 @@
+name: Manual Publish Core
+# 手动触发工作流
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '要发布的版本号 (例如: 1.0.0)'
+        required: true
+        type: string
+
+# 设置权限
+permissions:
+  contents: write
+
+jobs:
+  publish-core:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/core
+    steps:
+      # 检出代码
+      - uses: actions/checkout@v4
+      
+      # 配置Node环境
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+      
+      # 安装pnpm
+      - name: 配置pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      
+      # 安装项目依赖
+      - name: 安装依赖
+        run: pnpm install --no-frozen-lockfile
+      
+      # 构建项目
+      - name: 构建项目
+        run: pnpm build:prod
+      
+      # 更新版本号
+      - name: 更新版本号
+        run: npm version ${{ inputs.version }} --no-git-tag-version
+      
+      # 发布到npm
+      - name: 发布到NPM
+        run: pnpm pub
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
