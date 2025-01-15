@@ -41,9 +41,6 @@
     "package.json",
     "README.md"
   ],
-  "workspaces": [
-    "plugins/**"
-  ],
   "scripts": {
     ".": "node lib/index.js",
     "app": "node lib/index.js",
