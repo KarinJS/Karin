@@ -26,6 +26,11 @@ const init = (cwd, isDev = false) => {
     require: './dist/cli/index.cjs',
   }
 
+  exports['./root'] = {
+    import: './dist/root.js',
+    types: './dist/root.d.ts',
+  }
+
   const files = fs.readdirSync(`${cwd}/exports/module`)
 
   for (const file of files) {
@@ -93,6 +98,17 @@ export const main = (isDev = false) => {
 
   sort(file)
   pm2()
+  dts()
+}
+
+/**
+ * 编译后的d.ts头部插入`import { EventEmitter } from 'node:events'`
+ */
+export const dts = () => {
+  const file = 'dist/index.d.ts'
+  const content = fs.readFileSync(file, 'utf-8')
+  const newContent = `import { EventEmitter } from 'node:events';\n${content}`
+  fs.writeFileSync(file, newContent)
 }
 
 const isDev = process.argv?.[2]?.includes('dev')

@@ -11,7 +11,7 @@ export default defineConfig({
   target: 'node16',
   splitting: false,
   sourcemap: false,
-  clean: false,
+  clean: true,
   dts: true,
   outDir: 'dist/module',
   treeshake: true,

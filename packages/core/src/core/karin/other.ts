@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events'
+import { EventEmitter } from 'node:events'
 import { listeners } from '../internal'
 import { getAllBot, getAllBotList, getBot, getBotCount } from '@/service/bot'
 

@@ -2,7 +2,6 @@ import fs from 'node:fs'
 import { URL } from 'node:url'
 import { defineConfig } from 'tsup'
 
-fs.rmSync('dist/cli', { recursive: true, force: true })
 const pkg = JSON.parse(fs.readFileSync(new URL('package.json', import.meta.url), 'utf-8'))
 
 export default defineConfig({
@@ -11,7 +10,7 @@ export default defineConfig({
   target: 'node16',
   splitting: false,
   sourcemap: false,
-  clean: false,
+  clean: true,
   dts: true,
   outDir: 'dist/cli',
   treeshake: true,
