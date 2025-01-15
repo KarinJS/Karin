@@ -31,28 +31,21 @@ jobs:
           registry-url: "https://registry.npmjs.org"
         if: ${{ steps.release.outputs.release_created }}
 
-      # 打印 release-please-action 的输出
-      - name: 打印 release 输出
-        continue-on-error: true
-        run: |
-          echo "release_created: ${{ steps.release.outputs.release_created }}"
-          echo "core包发布状态: ${{ steps.release.outputs['packages/core--release_created'] }}"
-          echo "cli包发布状态: ${{ steps.release.outputs['packages/cli--release_created'] }}"
-
       - name: 设置 pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 8
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs['packages/core--release_created'] }}
 
       # 安装所有依赖
       - name: 安装依赖
         run: pnpm install
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs['packages/core--release_created'] }}
+        working-directory: packages/core
 
       # 发布 core 包
       - name: 发布 core 包
-        if: ${{ steps.release.outputs.release_created && steps.release.outputs['packages/core--release_created'] }}
+        if: ${{ steps.release.outputs['packages/core--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         working-directory: packages/core
@@ -60,8 +53,25 @@ jobs:
 
       # 发布 cli 包
       - name: 发布 cli 包
-        if: ${{ steps.release.outputs.release_created && steps.release.outputs['packages/cli--release_created'] }}
+        if: ${{ steps.release.outputs['packages/cli--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         working-directory: packages/cli
         run: pnpm pub
+        
+      # 打印 release-please-action 的输出
+      - name: 保存 release 输出到文件
+        run: |
+          mkdir -p ./release-outputs
+          echo "release_created: ${{ steps.release.outputs.release_created }}" > ./release-outputs/outputs.txt
+          echo "core包发布状态: ${{ steps.release.outputs['packages/core--release_created'] }}" >> ./release-outputs/outputs.txt
+          echo "cli包发布状态: ${{ steps.release.outputs['packages/cli--release_created'] }}" >> ./release-outputs/outputs.txt
+          echo "所有环境变量：" >> ./release-outputs/outputs.txt
+          env >> ./release-outputs/outputs.txt
+
+      - name: 上传输出文件
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-outputs
+          path: ./release-outputs/outputs.txt
+          retention-days: 5
