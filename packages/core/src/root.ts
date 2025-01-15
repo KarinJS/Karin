@@ -37,7 +37,7 @@ export const levelPath = Object.freeze(path.join(dbPath, 'level'))
 /** 伪redis save-level目录 `@karinjs/data/db/redis-level` */
 export const redisLevelPath = Object.freeze(path.join(dbPath, 'redis-level'))
 /** logs目录 `@karinjs/logs` */
-export const logsPath = Object.freeze(path.join(process.cwd(), 'logs'))
+export const logsPath = Object.freeze(path.join(basePath, 'logs'))
 /** html目录 `@karinjs/temp/html` */
 export const htmlPath = Object.freeze(path.join(tempPath, 'html'))
 /** pm2配置路径 `@karinjs/config/pm2.yaml` */

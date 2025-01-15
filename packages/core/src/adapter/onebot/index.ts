@@ -24,7 +24,7 @@ const createClient = async () => {
   if (!cfg.onebot.ws_client || !Array.isArray(cfg.onebot.ws_client)) return
 
   for (const item of cfg.onebot.ws_client) {
-    if (!item?.enable || !item?.url || !item?.token) continue
+    if (!item?.enable || !item?.url) continue
     AdapterClientOneBot11.init(item.url, item.token)
   }
 }
@@ -35,7 +35,7 @@ const createHttp = async () => {
 
   for (const data of cfg.onebot.http_server) {
     try {
-      if (!data?.enable || !data?.url || !data?.token || !data?.self_id) continue
+      if (!data?.enable || !data?.url || !data?.self_id) continue
       if (!data?.self_id || !data?.url || !data?.url.startsWith('http')) {
         logger.bot('error', data.self_id, '请配置正确的 onebot http 信息')
         continue

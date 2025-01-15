@@ -27,7 +27,7 @@ export class AdapterServerOneBot11 extends WsAdapterOneBot11 {
       /** 停止全部监听 */
       this.socket.removeAllListeners()
       unregisterBot('index', this.adapter.index)
-      logger.bot('info', this.selfId, '连接关闭')
+      logger.bot('info', this.selfId, `连接关闭: ${url}`)
     })
   }
 

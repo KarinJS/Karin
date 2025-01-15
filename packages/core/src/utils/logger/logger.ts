@@ -33,7 +33,7 @@ const initLogger = (options: LoggerOptions = {}) => {
         /** 输出到文件 */
         type: 'file',
         /** 日志文件名 */
-        filename: 'logs/logger',
+        filename: '@karinjs/logs/logger',
         /** 日期后缀 */
         pattern: 'yyyy-MM-dd.log',
         /** 日期后缀 */

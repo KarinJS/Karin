@@ -150,8 +150,6 @@ export const registerBot = (type: AdapterCommunication, bot: AdapterBase) => {
   const id = ++index
   list.push({ index: id, bot })
 
-  const tips = (str: string) => logger.green(`[注册Bot][${str}]`)
-
   /**
    * @description 重写转发消息方法 添加中间件
    */
@@ -190,20 +188,10 @@ export const registerBot = (type: AdapterCommunication, bot: AdapterBase) => {
     }
   }, 10)
 
-  listeners.once('online', () => {
-    if (type === 'webSocketClient') {
-      logger.bot('info', bot.selfId, `${tips('正向webSocket')} ${bot.account.name}: ${bot.adapter.address}`)
-    } else if (type === 'other') {
-      bot.adapter.address = 'internal://127.0.0.1'
-      logger.bot('info', bot.selfId, `${tips('internal')} ${bot.account.name}`)
-    } else if (type === 'http') {
-      logger.bot('info', bot.selfId, `${tips('HTTP')} ${bot.account.name}: ${bot.adapter.address}`)
-    } else if (type === 'webSocketServer') {
-      logger.bot('info', bot.selfId, `${tips('反向WebSocket')} ${bot.account.name}: ${bot.adapter.address}`)
-    } else if (type === 'grpc') {
-      logger.bot('info', bot.selfId, `${tips('gRPC')} ${bot.account.name}: ${bot.adapter.address}`)
-    }
-  })
+  /** 延迟执行 */
+  setTimeout(() => {
+    logger.bot('info', bot.selfId, `${logger.green('[registerBot]')}[${bot.adapter.name}]: ${bot.account.name} ${bot.adapter.address}`)
+  }, 1000)
 
   return id
 }
@@ -221,12 +209,13 @@ interface SendMsgOptions {
 
 /**
  * 发送主动消息
- * @param uid Bot的uid
+ * @param selfId Bot的id
  * @param contact 目标信息
  * @param elements 消息内容
  * @param options 消息选项
  */
-export const sendMsg = async (selfId: string,
+export const sendMsg = async (
+  selfId: string,
   contact: Contact,
   elements: Message,
   options: SendMsgOptions = { recallMsg: 0, retryCount: 1, retry_count: 1 }

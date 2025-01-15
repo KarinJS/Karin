@@ -12,8 +12,8 @@ const pkgDir = fileURLToPath(new URL('../..', import.meta.url))
  */
 export const createDir = () => {
   const list = [
-    path.join(dir, 'logs'),
     path.join(dir, 'plugins', 'karin-plugin-example'),
+    path.join(dir, '@karinjs', 'logs'),
     path.join(dir, '@karinjs', 'config'),
     path.join(dir, '@karinjs', 'data'),
     path.join(dir, '@karinjs', 'temp', 'console'),

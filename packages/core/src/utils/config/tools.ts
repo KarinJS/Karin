@@ -13,8 +13,14 @@ export const lint = async <T = Record<string, any>> (
   const list = {} as Record<string, any>
   await Promise.all(Object.keys(defData).map(async (key) => {
     if (Array.isArray(data?.[key])) {
-      list[key] = setStr(data?.[key] || defData[key])
-      return
+      /** 数组中必须非对象才可以setStr */
+      if (data?.[key].every((v: any) => typeof v !== 'object')) {
+        list[key] = setStr(data?.[key] || defData[key])
+        return
+      } else {
+        list[key] = data?.[key] || defData[key]
+        return
+      }
     }
 
     if (NODE_TYPES.includes(typeof data?.[key])) {
