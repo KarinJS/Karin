@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "node",
+  "include-component-in-tag": true,
+  "pull-request-title-pattern": "chore(release): ${component} ${version} [skip-ci]",
+  "pull-request-header": "Please run the release_notes action before releasing to generate release highlights",
+  "packages": {
+    "packages/core": {
+      "release-type": "node",
+      "package-name": "node-karin",
+      "component": "node-karin"
+    }
+  }
+}

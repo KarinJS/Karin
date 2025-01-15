@@ -22,8 +22,8 @@ jobs:
       - uses: googleapis/release-please-action@v4
         id: release
         with:
-          # 设置发布类型为 node
-          release-type: node
+          config-file: .release-please-config.json
+          manifest-file: .release-please-manifest.json
       # 检出代码
       - uses: actions/checkout@v4
         if: ${{ steps.release.outputs.release_created }}
