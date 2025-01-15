@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "node",
   "include-component-in-tag": true,
-  "pull-request-title-pattern": "chore(release): ${component} ${version} [skip-ci]",
+  "pull-request-title-pattern": "chore(${scope}): ${component} ${version} [skip-ci]",
   "changelog-sections": [
     {
       "type": "feat",
@@ -64,12 +64,16 @@
     "packages/core": {
       "release-type": "node",
       "package-name": "node-karin",
-      "component": "node-karin"
+      "component": "core",
+      "tag-separator": "-",
+      "scope": "core"
     },
     "packages/cli": {
       "release-type": "node",
       "package-name": "@karinjs/cli",
-      "component": "cli"
+      "component": "cli",
+      "tag-separator": "-",
+      "scope": "cli"
     }
   }
 }
