@@ -44,7 +44,7 @@ jobs:
       
       # 更新版本号
       - name: 更新版本号
-        run: npm version ${{ inputs.version }} --no-git-tag-version
+        run: npm pkg set version ${{ inputs.version }}
       
       # 发布到npm
       - name: 发布到NPM
