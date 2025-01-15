@@ -1,6 +1,6 @@
 {
   "name": "node-karin",
-  "version": "0.12.24",
+  "version": "1.0.0",
   "description": "Lightweight, efficient, concise, and stable robot framework.",
   "keywords": [
     "node",
@@ -41,11 +41,7 @@
     "package.json",
     "README.md"
   ],
-  "workspaces": [
-    "plugins/**"
-  ],
   "scripts": {
-    ".": "node lib/index.js",
     "app": "node lib/index.js",
     "build": "tsc --noEmit && tsup --config tsup.config.ts",
     "build:cli": "tsup --tsconfig tsconfig.cli.json --config tsup.cli.ts",
