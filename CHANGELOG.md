@@ -1,5 +1,35 @@
 # 更新日志
 
+## [1.0.0](https://github.com/KarinJS/Karin/compare/v0.0.3...v1.0.0) (2025-01-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* v1
+
+### Features
+
+* ✧magic✧ ([e5f0771](https://github.com/KarinJS/Karin/commit/e5f077110734487725a33f138c5a34f9dacfc2f2))
+* add QQGroup Discord ([2ffb6b2](https://github.com/KarinJS/Karin/commit/2ffb6b21838b6821b20efe8cbea15fc7fa8fe7ac))
+* v1 ([bd98d62](https://github.com/KarinJS/Karin/commit/bd98d62a674b3ea5728e9fa41c62101118a5c3e1))
+* 合并dev 支持ts版本 支持npm包 暂时保留对旧版本的模块兼容 ([408f9c7](https://github.com/KarinJS/Karin/commit/408f9c72c208473978d3dd07c604204bdb99a03b))
+* 新增 issues 模板 ([5eb6eca](https://github.com/KarinJS/Karin/commit/5eb6ecafec8b637d8aa636b511b12616349ea38d))
+* 新增群文件 私聊文件接口 移除SendMessageByResId接口 ([27910b4](https://github.com/KarinJS/Karin/commit/27910b45737b933c10b2e4d23a5769507efe9c7f))
+* 添加关联配置项 ([32049ae](https://github.com/KarinJS/Karin/commit/32049ae76eb4c74f67dddeed7852cc25492974d9))
+* 类型声明 这大概是main分支最后一个更新。 ([50fa237](https://github.com/KarinJS/Karin/commit/50fa237c2d5c299a2b4b37657578b560b8723377))
+
+
+### Bug Fixes
+
+* version ([1b15d0b](https://github.com/KarinJS/Karin/commit/1b15d0b6c1583a8abc674b97cd746aac97b918c1))
+* 修复已知问题 详情查看描述 ([17a1b4f](https://github.com/KarinJS/Karin/commit/17a1b4f1e5e13c93c999e803e2232b925d908d0a))
+* 修复机器人前缀配置视图路径错误 ([4e4096e](https://github.com/KarinJS/Karin/commit/4e4096e70d3e34818d3acfd967276c414696abba))
+* 修复视图中日志等级值错误 ([f745eab](https://github.com/KarinJS/Karin/commit/f745eabaffb9c2b11ef4e760ac6cc7a3be70fce5))
+* 修复转发和上下文 ([aab34eb](https://github.com/KarinJS/Karin/commit/aab34eb3b0fe145ed70ce0e8f06fe198d196f47a))
+* 统一模板小写 ([5a57d4e](https://github.com/KarinJS/Karin/commit/5a57d4e922a16a6493651046df57b1f7553a587a))
+* 补充基类方法 ([365afcb](https://github.com/KarinJS/Karin/commit/365afcb517eaf201c8dc2c54ed62d24a3c9e14b8))
+* 适配自定义节点转发id ([435f23a](https://github.com/KarinJS/Karin/commit/435f23a2f51bd8581b0cc2a22da5551222b9e1ab))
+
 ## [0.12.17](https://github.com/KarinJS/Karin/compare/v0.12.16...v0.12.17) (2024-10-07)
 
 
