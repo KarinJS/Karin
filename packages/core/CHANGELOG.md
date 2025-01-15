@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.0.4](https://github.com/KarinJS/Karin/compare/node-karin-v1.0.3...node-karin-v1.0.4) (2025-01-15)
+
+
+### 🐛 Bug Fixes
+
+* test ci ([437350f](https://github.com/KarinJS/Karin/commit/437350f3376af7bc7f3fca6e51e8c6d846f1d798))
+
 ## [1.0.3](https://github.com/KarinJS/Karin/compare/node-karin-v1.0.2...node-karin-v1.0.3) (2025-01-15)
 
 
