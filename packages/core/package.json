@@ -1,6 +1,6 @@
 {
   "name": "node-karin",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Lightweight, efficient, concise, and stable robot framework.",
   "keywords": [
     "node",
