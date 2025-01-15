@@ -68,7 +68,11 @@ export const checkProcess = async (port: number) => {
   }
 
   logger.error('检测到后台进程 正在关闭...')
-  await axios({ url: `${host}/exit`, method: 'get', timeout: 500 })
+  const result = await axios({ url: `${host}/exit`, method: 'get', timeout: 500 })
+  if (typeof result === 'undefined') {
+    logger.fatal(logger.red(`当前存在多开Bot占用 ${port}端口，请更换端口或者关闭对应Bot`))
+    processExit(1)
+  }
 
   for (let i = 0; i < 100; i++) {
     const result = await axios({ url: `${host}/ping`, method: 'get', timeout: 100 })

@@ -1,13 +1,13 @@
 import fs from 'node:fs'
-import Axios from 'axios'
 import path from 'node:path'
 import { tempPath } from '@/root'
+import Axios, { AxiosError } from 'axios'
 import { YamlEditor } from '@/utils/fs/yaml'
 import { ffprobe, ffmpeg } from '@/utils/system/ffmpeg'
 import { formatTime as FormatTime } from '@/utils/system/time'
 import { getPlugins as GetPlugin } from '@/plugin/list'
 
-import type { AxiosRequestConfig, AxiosResponse } from 'axios'
+import { AxiosRequestConfig, AxiosResponse } from 'axios'
 // import { getAppPlugins, getNpmPlugins as GetNpmPlugins, getGitPlugins as GetGitPlugins } from '@/plugin/index'
 
 export { isDir, existToMkdir as exists } from '@/utils/fs/fsPromises'
@@ -26,14 +26,14 @@ export type AxiosFn = {
    * 对axios进行简单封装，超时、错误后返回null，不会抛出异常
    * @param param axios参数
    */
-  (param: AxiosRequestConfig): Promise<AxiosResponse<any> | null>
+  (param: AxiosRequestConfig): Promise<AxiosResponse<any> | null | undefined>
   /**
    * 对axios进行简单封装，超时、错误后返回null，不会抛出异常
    * @param url 请求地址
    * @param type 请求类型
    * @param param axios参数
    */
-  (url: string, type: 'get' | 'post', param?: AxiosRequestConfig): Promise<AxiosResponse<any> | null>
+  (url: string, type: 'get' | 'post', param?: AxiosRequestConfig): Promise<AxiosResponse<any> | null | undefined>
 }
 
 export interface NpmInfo {
@@ -55,6 +55,7 @@ export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, 
 
 /**
  * axios请求
+ * @description 401时返回 `undefined`
  * @param paramOrUrl axios参数或url
  * @param type 请求类型 只有在传入url时有效
  * @param param axios参数 只有在传入url时有效
@@ -71,11 +72,14 @@ export const axios: AxiosFn = async (
   paramOrUrl: AxiosRequestConfig | string,
   type?: 'get' | 'post',
   param?: AxiosRequestConfig
-): Promise<AxiosResponse<any> | null> => {
+): Promise<AxiosResponse<any> | null | undefined> => {
   try {
     const config = typeof paramOrUrl === 'string' ? { ...param, url: paramOrUrl, method: type } : paramOrUrl
     return await Axios(config)
   } catch (error) {
+    if (error instanceof AxiosError) {
+      if (error.response?.status === 401) return undefined
+    }
     logger.debug('[common] axios请求失败:')
     logger.debug((error as Error).stack || error)
     return null
