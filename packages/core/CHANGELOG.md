@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.0.3](https://github.com/KarinJS/Karin/compare/node-karin-v1.0.2...node-karin-v1.0.3) (2025-01-15)
+
+
+### Bug Fixes
+
+* registerBot ws_client ([a9d7905](https://github.com/KarinJS/Karin/commit/a9d7905b5c0c739eb1e8c64beafb658a3c12c64d))
+
 ## [1.0.2](https://github.com/KarinJS/Karin/compare/node-karin-v1.0.1...node-karin-v1.0.2) (2025-01-15)
 
 
