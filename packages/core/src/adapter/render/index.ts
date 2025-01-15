@@ -5,4 +5,9 @@ import './connect/client'
 import './connect/server'
 
 import { createHttpRenderClient } from './connect/http'
-createHttpRenderClient()
+import { createWebSocketRenderClient } from './connect/client'
+
+setTimeout(() => {
+  createHttpRenderClient()
+  createWebSocketRenderClient()
+}, 1000)

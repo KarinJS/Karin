@@ -14,12 +14,12 @@ export class WebSocketClientRenderer extends WebSocketRender { }
  */
 export const createWebSocketRenderClient = () => {
   const cfg = render()
-  if (!cfg.ws_server || !Array.isArray(cfg.ws_server) || cfg.ws_server.length === 0) {
+  if (!cfg.ws_client || !Array.isArray(cfg.ws_client) || cfg.ws_client.length === 0) {
     logger.trace('[render][WebSocket] 未配置任何正向WebSocket 已跳过创建')
     return
   }
 
-  return Promise.allSettled(cfg.ws_server.map(async (item) => {
+  return Promise.allSettled(cfg.ws_client.map(async (item) => {
     const { url, token, enable } = item
     if (!enable) return
     const headers = { Authorization: crypto.createHash('md5').update(`Bearer ${token}`).digest('hex') }
