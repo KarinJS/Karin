@@ -1,5 +1,16 @@
 # 更新日志
 
+## [2.0.0](https://github.com/KarinJS/Karin/compare/v1.0.0...v2.0.0) (2025-01-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* v1
+
+### Features
+
+* v1 ([5718835](https://github.com/KarinJS/Karin/commit/571883591c2c25323da1523d9f845798043ec75d))
+
 ## [0.12.17](https://github.com/KarinJS/Karin/compare/v0.12.16...v0.12.17) (2024-10-07)
 
 
