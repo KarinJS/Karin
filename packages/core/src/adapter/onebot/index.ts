@@ -15,6 +15,7 @@ const createServer = async () => {
   listeners.once('online', () => {
     logger.info(`[server] onebot: ${logger.green(`ws://127.0.0.1:${process.env.HTTP_PORT}`)}`)
     logger.info(`[server] onebot: ${logger.green(`ws://127.0.0.1:${process.env.HTTP_PORT}/onebot/v11/ws`)}`)
+    logger.info(`[server] onebot: ${logger.green(`ws://127.0.0.1:${process.env.HTTP_PORT}/puppeteer`)}`)
   })
 }
 
