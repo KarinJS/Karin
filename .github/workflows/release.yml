@@ -1,84 +1,67 @@
 name: release
 on:
   push:
-    # 监听 main 分支的 push 事件
     branches:
       - main
-# 赋予 release-please-action 权限
 permissions:
   contents: write
   pull-requests: write
+
 jobs:
-  # 版本管理任务
   release-please:
-    # 设置任务运行环境为 ubuntu-latest
     runs-on: ubuntu-latest
     steps:
-      # 使用 release-please-action 自动创建版本更新PR
+      # 使用 release-please-action 处理版本发布
       - uses: googleapis/release-please-action@v4
         id: release
         with:
+          # 使用配置文件来管理发布
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
 
-  publish-core:
-    needs: release-please
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: packages/core
-    # 仅在core包有新版本时执行
-    if: ${{ needs.release-please.outputs['packages/core--release_created'] }}
-    steps:
-      # 检出代码
+      # 打印outputs
+      - name: 打印outputs
+        run: |
+          echo "============ Release Please Outputs ============"
+          echo "releases_created: ${{ steps.release.outputs.releases_created }}"
+          echo "node-karin release created: ${{ steps.release.outputs['node-karin--release_created'] }}"
+          echo "cli release created: ${{ steps.release.outputs['cli--release_created'] }}"
+          echo "============ All Outputs ============"
+          echo "${{ toJSON(steps.release.outputs) }}"
+
+      # 如果有新版本发布，执行发布流程
       - uses: actions/checkout@v4
-      
-      # 配置Node环境
+        if: ${{ steps.release.outputs.releases_created }}
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
-      
-      # 安装pnpm
-      - name: 配置pnpm
+        if: ${{ steps.release.outputs.releases_created }}
+
+      - name: 设置 pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 8
-      
-      # 安装项目依赖
-      - name: 安装依赖
-        run: pnpm install --no-frozen-lockfile
-      
-      # 构建项目
-      - name: 构建项目
-        run: pnpm build:prod
-      
-      # 发布到npm
-      - name: 发布到NPM
-        run: pnpm pub
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        if: ${{ steps.release.outputs.releases_created }}
 
-  publish-cli:
-    needs: release-please
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: packages/cli
-    # 仅在cli包有新版本时执行
-    if: ${{ needs.release-please.outputs['packages/cli--release_created'] }}
-    steps:
-      # 检出代码
-      - uses: actions/checkout@v4
-      
-      # 配置Node环境
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: "https://registry.npmjs.org"
-      
-      # 发布到npm
-      - name: 发布到NPM
-        run: npm run pub
+      # 安装所有依赖
+      - name: 安装依赖
+        run: pnpm install
+        if: ${{ steps.release.outputs.releases_created }}
+
+      # 发布 core 包
+      - name: 发布 core 包
+        if: ${{ steps.release.outputs.releases_created && steps.release.outputs['packages/core--release_created'] }}
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+        working-directory: packages/core
+        run: cd packages/core && pnpm build:prod && pnpm pub
+
+      # 发布 cli 包
+      - name: 发布 cli 包
+        if: ${{ steps.release.outputs.releases_created && steps.release.outputs['packages/cli--release_created'] }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+        working-directory: packages/cli
+        run: cd packages/cli && pnpm pub
