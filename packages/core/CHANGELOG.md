@@ -1,5 +1,32 @@
 # 更新日志
 
+## [1.0.7](https://github.com/KarinJS/Karin/compare/core-v1.0.6...core-v1.0.7) (2025-01-15)
+
+
+### 🐛 Bug Fixes
+
+* build types error ([f732ca3](https://github.com/KarinJS/Karin/commit/f732ca38155f08adefed7a9f8d42d373a9fc9cc7))
+* ci ([1d25234](https://github.com/KarinJS/Karin/commit/1d252344a1384314bab30e663be019c6d2536317))
+* ci ([56b3823](https://github.com/KarinJS/Karin/commit/56b382335d63577078e5aa8572d6238c63caf3e9))
+* registerBot ws_client ([a9d7905](https://github.com/KarinJS/Karin/commit/a9d7905b5c0c739eb1e8c64beafb658a3c12c64d))
+* test ci ([e998b9d](https://github.com/KarinJS/Karin/commit/e998b9de51941141d842c1e6032fdc6c721efdf8))
+* test ci ([d2c0771](https://github.com/KarinJS/Karin/commit/d2c077180e0f495dd5918a2cb2f0c51683192c0c))
+* test ci ([437350f](https://github.com/KarinJS/Karin/commit/437350f3376af7bc7f3fca6e51e8c6d846f1d798))
+* tips ([9f67525](https://github.com/KarinJS/Karin/commit/9f67525d592094532a3a29fe1f3de41bc1ec1936))
+* version ([1b15d0b](https://github.com/KarinJS/Karin/commit/1b15d0b6c1583a8abc674b97cd746aac97b918c1))
+* 导出 ([33b0683](https://github.com/KarinJS/Karin/commit/33b06831c3c4e6679edb3353962d88d7e2cb4d9b))
+
+
+### 🎫 Chores
+
+* release main ([#219](https://github.com/KarinJS/Karin/issues/219)) ([bfe073f](https://github.com/KarinJS/Karin/commit/bfe073fa5af28364f12e3143bf3aab612cd87c59))
+* release main ([#220](https://github.com/KarinJS/Karin/issues/220)) ([9cb7b59](https://github.com/KarinJS/Karin/commit/9cb7b59d003a1a3582d222413056af1d8ce5b13a))
+* release main ([#221](https://github.com/KarinJS/Karin/issues/221)) ([0c871c5](https://github.com/KarinJS/Karin/commit/0c871c58b3fc26d5cb66b0d2f6e33a0c3bef4bb9))
+* release main ([#224](https://github.com/KarinJS/Karin/issues/224)) ([abdf414](https://github.com/KarinJS/Karin/commit/abdf4149a171f8c9c58ea9f8d4cf7705690e1941))
+* release main ([#225](https://github.com/KarinJS/Karin/issues/225)) ([4343d8d](https://github.com/KarinJS/Karin/commit/4343d8dab7f58f5c913345ee818d19ad14ebac48))
+* release main ([#226](https://github.com/KarinJS/Karin/issues/226)) ([bedfe6a](https://github.com/KarinJS/Karin/commit/bedfe6a98d4637b59d0752565d353caf4a776251))
+* **release:** node-karin 1.0.1 [skip-ci] ([#218](https://github.com/KarinJS/Karin/issues/218)) ([f3ce8b7](https://github.com/KarinJS/Karin/commit/f3ce8b7d0e7ad19ebe96a97e818e8aa4c52130c7))
+
 ## [1.0.6](https://github.com/KarinJS/Karin/compare/node-karin-v1.0.5...node-karin-v1.0.6) (2025-01-15)
 
 
