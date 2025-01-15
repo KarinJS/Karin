@@ -8,7 +8,7 @@ export * from '@/core/karin/index'
 export * from '@/utils'
 export * from '@/server'
 export * from '@/adapter/onebot'
-export * from '@/event/create'
+export * from '@/event'
 export * from '@/adapter/index'
 export * from '@/root'
 

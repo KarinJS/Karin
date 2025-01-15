@@ -194,7 +194,7 @@ export interface OB11GroupMessage extends MessageBase {
 export type OB11Message = OB11PrivateMessage | OB11GroupMessage | OB11GroupTempMessage
 
 /** 通知事件基类 */
-export interface NoticeBase extends OB11EventBase {
+export interface OB11NoticeBaseType extends OB11EventBase {
   /** 事件类型 */
   post_type: OB11Event.Notice
   /** 通知类型 */
@@ -202,7 +202,7 @@ export interface NoticeBase extends OB11EventBase {
 }
 
 /** 群文件上传事件 */
-export interface OneBot11GroupUpload extends NoticeBase {
+export interface OneBot11GroupUpload extends OB11NoticeBaseType {
   /** 通知类型 */
   notice_type: | OB11NoticeType.GroupUpload
   /** 群号 */
@@ -223,7 +223,7 @@ export interface OneBot11GroupUpload extends NoticeBase {
 }
 
 /** 群管理员变动事件 */
-export interface OneBot11GroupAdmin extends NoticeBase {
+export interface OneBot11GroupAdmin extends OB11NoticeBaseType {
   /** 通知类型 */
   notice_type: OB11NoticeType.GroupAdmin
   /** 事件子类型，分别表示设置和取消管理员 */
@@ -235,7 +235,7 @@ export interface OneBot11GroupAdmin extends NoticeBase {
 }
 
 /** 群减少事件 */
-export interface OneBot11GroupDecrease extends NoticeBase {
+export interface OneBot11GroupDecrease extends OB11NoticeBaseType {
   /** 通知类型 */
   notice_type: OB11NoticeType.GroupDecrease
   /** 事件子类型，分别表示主动退群、成员被踢、登录号被踢 */
@@ -249,7 +249,7 @@ export interface OneBot11GroupDecrease extends NoticeBase {
 }
 
 /** 群增加事件 */
-export interface OneBot11GroupIncrease extends NoticeBase {
+export interface OneBot11GroupIncrease extends OB11NoticeBaseType {
   /** 通知类型 */
   notice_type: OB11NoticeType.GroupIncrease
   /** 事件子类型，分别表示管理员已同意入群、管理员邀请入群 */
@@ -263,7 +263,7 @@ export interface OneBot11GroupIncrease extends NoticeBase {
 }
 
 /** 群禁言事件 */
-export interface OneBot11GroupBan extends NoticeBase {
+export interface OneBot11GroupBan extends OB11NoticeBaseType {
   /** 通知类型 */
   notice_type: OB11NoticeType.GroupBan
   /** 事件子类型，分别表示禁言、解除禁言 */
@@ -279,7 +279,7 @@ export interface OneBot11GroupBan extends NoticeBase {
 }
 
 /** 新添加好友事件 */
-export interface OneBot11FriendAdd extends NoticeBase {
+export interface OneBot11FriendAdd extends OB11NoticeBaseType {
   /** 通知类型 */
   notice_type: OB11NoticeType.FriendAdd
   /** 新添加好友 QQ 号 */
@@ -287,7 +287,7 @@ export interface OneBot11FriendAdd extends NoticeBase {
 }
 
 /** 群撤回事件 */
-export interface OneBot11GroupRecall extends NoticeBase {
+export interface OneBot11GroupRecall extends OB11NoticeBaseType {
   /** 通知类型 */
   notice_type: OB11NoticeType.GroupRecall
   /** 群号 */
@@ -301,7 +301,7 @@ export interface OneBot11GroupRecall extends NoticeBase {
 }
 
 /** 好友消息撤回事件 */
-export interface OneBot11FriendRecall extends NoticeBase {
+export interface OneBot11FriendRecall extends OB11NoticeBaseType {
   /** 通知类型 */
   notice_type: OB11NoticeType.FriendRecall
   /** 好友 QQ 号 */
@@ -311,7 +311,7 @@ export interface OneBot11FriendRecall extends NoticeBase {
 }
 
 /** 戳一戳事件 */
-export interface OneBot11Poke extends NoticeBase {
+export interface OneBot11Poke extends OB11NoticeBaseType {
   /** 消息类型 */
   notice_type: OB11NoticeType.Notify
   /** 提示类型 */
@@ -325,7 +325,7 @@ export interface OneBot11Poke extends NoticeBase {
 }
 
 /** 运气王事件 */
-export interface OneBot11LuckyKing extends NoticeBase {
+export interface OneBot11LuckyKing extends OB11NoticeBaseType {
   /** 消息类型 */
   notice_type: OB11NoticeType.Notify
   /** 提示类型 */
@@ -339,7 +339,7 @@ export interface OneBot11LuckyKing extends NoticeBase {
 }
 
 /** 荣誉变更事件 */
-export interface OneBot11Honor extends NoticeBase {
+export interface OneBot11Honor extends OB11NoticeBaseType {
   /** 消息类型 */
   notice_type: OB11NoticeType.Notify
   /** 提示类型 */
@@ -353,7 +353,7 @@ export interface OneBot11Honor extends NoticeBase {
 }
 
 /** 群表情回应事件 napcat、llonebot */
-export interface OneBot11GroupMessageReaction extends NoticeBase {
+export interface OneBot11GroupMessageReaction extends OB11NoticeBaseType {
   /** 消息类型 */
   notice_type: OB11NoticeType.GroupMsgEmojiLike
   /** 群号 */
@@ -371,7 +371,7 @@ export interface OneBot11GroupMessageReaction extends NoticeBase {
 }
 
 /** 群表情回应事件 Lagrange */
-export interface OneBot11GroupMessageReactionLagrange extends NoticeBase {
+export interface OneBot11GroupMessageReactionLagrange extends OB11NoticeBaseType {
   /** 消息类型 */
   notice_type: OB11NoticeType.GroupMsgEmojiLikeLagrange
   /** 提示类型 */
@@ -389,7 +389,7 @@ export interface OneBot11GroupMessageReactionLagrange extends NoticeBase {
 }
 
 /** 群精华 */
-export interface OneBot11GroupEssence extends NoticeBase {
+export interface OneBot11GroupEssence extends OB11NoticeBaseType {
   /** 通知类型 */
   notice_type: OB11NoticeType.GroupEssence
   /** 操作类型 */
@@ -405,7 +405,7 @@ export interface OneBot11GroupEssence extends NoticeBase {
 }
 
 /** 群成员名片更新 */
-export interface OneBot11GroupCard extends NoticeBase {
+export interface OneBot11GroupCard extends OB11NoticeBaseType {
   /** 通知类型 */
   time: number,
   /** 事件类型 */
@@ -442,7 +442,7 @@ export type OB11Notice = OneBot11GroupUpload
   | OneBot11GroupCard
 
 /** 请求事件基类 */
-export interface RequestBase extends OB11EventBase {
+export interface OB11RequestBaseType extends OB11EventBase {
   /** 事件发生的时间戳 */
   time: number
   /** 事件类型 */
@@ -460,13 +460,13 @@ export interface RequestBase extends OB11EventBase {
 }
 
 /** 好友请求事件 */
-export interface OneBot11FriendRequest extends RequestBase {
+export interface OneBot11FriendRequest extends OB11RequestBaseType {
   /** 请求类型 */
   request_type: OB11RequestType.Friend
 }
 
 /** 群请求事件 */
-export interface OneBot11GroupRequest extends RequestBase {
+export interface OneBot11GroupRequest extends OB11RequestBaseType {
   /** 请求类型 */
   request_type: OB11RequestType.Group
   /** 请求子类型，分别表示加群请求、邀请登录号入群 */
