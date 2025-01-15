@@ -23,36 +23,38 @@ jobs:
       - name: 打印outputs
         run: |
           echo "============ Release Please Outputs ============"
-          echo "releases_created: ${{ steps.release.outputs.releases_created }}"
+          echo "release_created: ${{ steps.release.outputs.release_created }}"
           echo "node-karin release created: ${{ steps.release.outputs['node-karin--release_created'] }}"
           echo "cli release created: ${{ steps.release.outputs['cli--release_created'] }}"
           echo "============ All Outputs ============"
           echo "${{ toJSON(steps.release.outputs) }}"
 
       # 如果有新版本发布，执行发布流程
-      - uses: actions/checkout@v4
-        if: ${{ steps.release.outputs.releases_created }}
+      - name: 检出代码
+        uses: actions/checkout@v4
+        if: ${{ steps.release.outputs.release_created }}
 
-      - uses: actions/setup-node@v4
+      - name: 设置 node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
-        if: ${{ steps.release.outputs.releases_created }}
+        if: ${{ steps.release.outputs.release_created }}
 
       - name: 设置 pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 8
-        if: ${{ steps.release.outputs.releases_created }}
+        if: ${{ steps.release.outputs.release_created }}
 
       # 安装所有依赖
       - name: 安装依赖
         run: pnpm install
-        if: ${{ steps.release.outputs.releases_created }}
+        if: ${{ steps.release.outputs.release_created }}
 
       # 发布 core 包
       - name: 发布 core 包
-        if: ${{ steps.release.outputs.releases_created && steps.release.outputs['packages/core--release_created'] }}
+        if: ${{ steps.release.outputs.release_created && steps.release.outputs['packages/core--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         working-directory: packages/core
@@ -60,7 +62,7 @@ jobs:
 
       # 发布 cli 包
       - name: 发布 cli 包
-        if: ${{ steps.release.outputs.releases_created && steps.release.outputs['packages/cli--release_created'] }}
+        if: ${{ steps.release.outputs.release_created && steps.release.outputs['packages/cli--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         working-directory: packages/cli

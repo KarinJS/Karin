@@ -230,6 +230,8 @@ export const modifyPackageJson = () => {
   const pkg = fs.readFileSync(path.join(dir, 'package.json'), 'utf-8')
   const data = JSON.parse(pkg)
   data.type = 'module'
+  // 永恒是猪 scripts都为空
+  if (!data.scripts) data.scripts = {}
   data.scripts.karin = 'karin'
 
   const list = [
