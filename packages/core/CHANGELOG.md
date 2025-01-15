@@ -1,5 +1,16 @@
 # 更新日志
 
+## [1.0.2](https://github.com/KarinJS/Karin/compare/node-karin-v1.0.1...node-karin-v1.0.2) (2025-01-15)
+
+
+### Bug Fixes
+
+* build types error ([f732ca3](https://github.com/KarinJS/Karin/commit/f732ca38155f08adefed7a9f8d42d373a9fc9cc7))
+* ci ([56b3823](https://github.com/KarinJS/Karin/commit/56b382335d63577078e5aa8572d6238c63caf3e9))
+* tips ([9f67525](https://github.com/KarinJS/Karin/commit/9f67525d592094532a3a29fe1f3de41bc1ec1936))
+* version ([1b15d0b](https://github.com/KarinJS/Karin/commit/1b15d0b6c1583a8abc674b97cd746aac97b918c1))
+* 导出 ([33b0683](https://github.com/KarinJS/Karin/commit/33b06831c3c4e6679edb3353962d88d7e2cb4d9b))
+
 ## [1.0.1](https://github.com/KarinJS/Karin/compare/node-karin-v1.0.0...node-karin-v1.0.1) (2025-01-15)
 
 
