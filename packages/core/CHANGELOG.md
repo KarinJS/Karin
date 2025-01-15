@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.0.9](https://github.com/KarinJS/Karin/compare/core-v1.0.8...core-v1.0.9) (2025-01-15)
+
+
+### 🐛 Bug Fixes
+
+* 哦~该死 ([aee10ea](https://github.com/KarinJS/Karin/commit/aee10eaa6c6b383f9c8e8953a614e49d653970e4))
+
 ## [1.0.8](https://github.com/KarinJS/Karin/compare/core-v1.0.7...core-v1.0.8) (2025-01-15)
 
 
