@@ -9,6 +9,11 @@
       "release-type": "node",
       "package-name": "node-karin",
       "component": "node-karin"
+    },
+    "packages/cli": {
+      "release-type": "node",
+      "package-name": "@karinjs/cli",
+      "component": "cli"
     }
   }
 }
