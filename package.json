@@ -5,7 +5,7 @@
   "main": "",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev:": "cd packages/core && pnpm run dev"
   },
   "devDependencies": {
     "@types/node": "^22.5.0",
