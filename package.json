@@ -5,12 +5,14 @@
   "main": "",
   "type": "module",
   "scripts": {
-    "dev:": "cd packages/core && pnpm run dev"
+    "dev": "cd packages/core && pnpm run dev"
   },
   "devDependencies": {
     "@types/node": "^22.5.0",
     "eslint": "^9.12.0",
+    "eslint-plugin-prettier": "^5.2.2",
     "neostandard": "^0.11.6",
+    "prettier": "^3.4.2",
     "sort-json": "^2.0.1",
     "sort-package-json": "^2.10.0",
     "tsup": "^8.3.5",

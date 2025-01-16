@@ -1,18 +1,10 @@
 import { router } from './router'
-import { auth } from '../../auth'
 import { setYaml, getYaml } from '@/utils/config/config'
 import type { RequestHandler } from 'express'
 import type { FileList } from '@/types/config'
+import { createSuccessResponse } from '../utils/response'
 
-const list: FileList[] = [
-  'adapter',
-  'config',
-  'groups',
-  'pm2',
-  'privates',
-  'redis',
-  'render',
-]
+const list: FileList[] = ['adapter', 'config', 'groups', 'pm2', 'privates', 'redis', 'render']
 
 const nameMap = {
   adapter: '适配器配置',
@@ -29,19 +21,14 @@ const nameMap = {
  * @param req 请求
  * @param res 响应
  */
-const fileRouter: RequestHandler = async (req, res) => {
-  if (!auth.getAuth(req)) {
-    res.status(401).json({ message: '无效的token' })
-    return
-  }
-
+const fileRouter: RequestHandler = async (_req, res) => {
   // 组合文件列表
-  const files = list.map(name => ({
+  const files = list.map((name) => ({
     name,
     title: nameMap[name],
   }))
 
-  res.json(files)
+  createSuccessResponse(res, files)
 }
 
 /**
@@ -57,7 +44,7 @@ const setFileRouter: RequestHandler = async (req, res) => {
   }
 
   setYaml(name, data)
-  res.json({ message: '设置成功' })
+  createSuccessResponse(res, null, '设置成功')
 }
 
 /**
@@ -69,10 +56,10 @@ const getFileRouter: RequestHandler = async (req, res) => {
   const { name } = req.body
   if (!name || !list.includes(name)) {
     res.status(400).json({ message: '参数错误' })
-    return
+    return createSuccessResponse(res, null, '获取成功')
   }
 
-  res.json(getYaml(name, 'user'))
+  createSuccessResponse(res, getYaml(name, 'user'), '获取成功')
 }
 
 router.get('/file', fileRouter)

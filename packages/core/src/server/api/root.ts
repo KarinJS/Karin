@@ -1,8 +1,6 @@
 import { app } from '../app'
+import { createSuccessResponse } from '../utils/response'
 
-app.get('/', (req, res) => {
-  res.send({
-    code: 200,
-    msg: '雪霁银妆素，桔高映琼枝。',
-  })
+app.get('/', (_req, res) => {
+  createSuccessResponse(res, null, '雪霁银妆素，桔高映琼枝。')
 })

@@ -2,21 +2,24 @@ import path from 'node:path'
 import express from 'express'
 import { createServer } from 'node:http'
 import { router } from './api/router'
-import { router as webRouter } from './api/web/router'
 import { listeners } from '@/core/internal'
 
 import type { Express } from 'express'
+import { authMiddleware } from './middleware'
 
 /** express 服务 */
 export const app: Express = express()
 /** http 服务 */
 export const server = createServer(app)
 
+/** 中间件鉴权 */
+app.use(authMiddleware)
+
 // TODO: WEB
 app.use('/web', express.static(path.join(process.cwd(), 'web')))
-app.use('/api/web', webRouter)
+app.use('/web/*', express.static(path.join(process.cwd(), 'web')))
 
-app.use('/v1', router)
+app.use('/api/v1', router)
 
 /**
  * 监听端口

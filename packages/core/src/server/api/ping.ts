@@ -1,19 +1,18 @@
-import { auth } from '../auth'
+import { createSuccessResponse } from '../utils/response'
 import { router } from './router'
 import type { RequestHandler } from 'express'
 
-const pingRouter: RequestHandler = (req, res) => {
-  res.send({
-    ping: 'pong',
-  })
+const pingRouter: RequestHandler = (_req, res) => {
+  createSuccessResponse(
+    res,
+    {
+      ping: 'pong',
+    },
+    '成功',
+  )
 }
 
-const statusRouter: RequestHandler = (req, res) => {
-  if (!auth.getAuth(req)) {
-    res.status(401).json({ message: '无效的token' })
-    return
-  }
-
+const statusRouter: RequestHandler = (_req, res) => {
   const data = {
     name: 'karin',
     pid: process.pid,
@@ -25,7 +24,7 @@ const statusRouter: RequestHandler = (req, res) => {
     karin_runtime: process.env.RUNTIME,
   }
 
-  res.status(200).json(data)
+  createSuccessResponse(res, data, '成功')
 }
 
 router.get('/ping', pingRouter)

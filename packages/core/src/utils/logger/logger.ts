@@ -4,7 +4,10 @@ import { logsPath } from '@/root'
 import log4js, { type Configuration } from 'log4js'
 import type { Logger, LoggerOptions } from '@/types/system'
 
-if (!fs.existsSync(logsPath)) fs.mkdirSync(logsPath)
+if (!fs.existsSync(logsPath))
+  fs.mkdirSync(logsPath, {
+    recursive: true,
+  })
 
 /**
  * 创建日志记录器
@@ -14,11 +17,7 @@ const initLogger = (options: LoggerOptions = {}) => {
   /** 如果有传参直接用 无传参走默认 */
   if (options.config) return log4js.configure(options.config)
 
-  const {
-    level = 'info',
-    daysToKeep = 14,
-    maxLogSize = 0,
-  } = options.log4jsCfg || {}
+  const { level = 'info', daysToKeep = 14, maxLogSize = 0 } = options.log4jsCfg || {}
 
   const config: Configuration = {
     appenders: {
