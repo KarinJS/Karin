@@ -24,7 +24,9 @@ const botID = 'console'
 export class AdapterConsole extends AdapterBase implements AdapterType {
   constructor () {
     super()
-    listeners.on('karin:adapter:open', () => process.stdin.on('data', data => this.createEvent(data)))
+    listeners.on('karin:adapter:open', () =>
+      process.stdin.on('data', data => this.createEvent(data)),
+    )
     listeners.on('karin:adapter:close', () => process.stdin.removeAllListeners('data'))
 
     this.adapter.name = '@karinjs/console'
@@ -44,10 +46,25 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
     return this.account.selfId
   }
 
-  createEvent (data: Buffer) {
+  async createEvent (data: Buffer) {
     const text = data.toString().trim()
     const seq = Math.floor(Math.random() * 1000000000)
     const time = Date.now()
+
+    /** 如果是日志等级更新命令 */
+    if (text.startsWith('log')) {
+      const level = text.replace(/^log/, '').trim()
+      if (level) {
+        const list = ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
+        if (list.includes(level)) {
+          const { updateLevel } = await import('@/utils/config/config')
+          updateLevel(level)
+          logger.info(`日志等级已更新为: ${level}`)
+          return
+        }
+      }
+    }
+
     /** 如果带`group`前缀 则视为群环境 */
     if (text.startsWith('group')) {
       const contact = contactGroup('10010')
@@ -61,7 +78,7 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
         rawEvent: { data },
         sender: senderGroup(botID, 'member'),
         time,
-        srcReply: (elements) => this.sendMsg(contact, elements),
+        srcReply: elements => this.sendMsg(contact, elements),
       })
       return
     }
@@ -77,11 +94,15 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
       rawEvent: { data },
       sender: senderFriend(botID, ''),
       time,
-      srcReply: (elements) => this.sendMsg(contact, elements),
+      srcReply: elements => this.sendMsg(contact, elements),
     })
   }
 
-  async sendMsg (contact: Contact, elements: Array<Elements>, retryCount?: number): Promise<SendMsgResults> {
+  async sendMsg (
+    contact: Contact,
+    elements: Array<Elements>,
+    retryCount?: number,
+  ): Promise<SendMsgResults> {
     const time = Date.now()
     const messageId = (++index).toString()
     const result: SendMsgResults = {
@@ -105,7 +126,6 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
         continue
       }
 
-      // if (['image', 'record', 'video'].includes(v.type)) {
       if (v.type === 'image' || v.type === 'record' || v.type === 'video') {
         const url = v.file.startsWith('http') ? v.file : await this.getUrl(v.file, '.png')
         msg.push(`[${v.type}: ${logger.blue(url)} ]`)

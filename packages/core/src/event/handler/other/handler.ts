@@ -7,21 +7,14 @@ import { config as cfg, getFriendCfg, getGroupCfg } from '@/utils/config'
 
 import type { Message, Event } from '@/types/event'
 import type { AdapterProtocol } from '@/types/adapter'
-import type {
-  GroupMessage,
-  GroupTempMessage,
-  GuildMessage,
-} from '../../message'
+import type { GroupMessage, GroupTempMessage, GuildMessage } from '../../message'
 
 /**
  * @description 日志
  * @param userId 用户ID
  * @param text 日志内容
  */
-export const log = (
-  userId: string,
-  text: string
-) => logger.debug(`[消息过滤][${userId}] ${text}`)
+export const log = (userId: string, text: string) => logger.debug(`[消息过滤][${userId}] ${text}`)
 
 /**
  * @description 初始化`msg` `rawMessage`
@@ -38,15 +31,15 @@ export const initMsg = (ctx: Message) => {
  * @param ctx 事件对象
  * @param config 基本配置
  */
-export const initRole = (
-  ctx: Event,
-  config: ReturnType<typeof cfg>
-) => {
+export const initRole = (ctx: Event, config: ReturnType<typeof cfg>) => {
   /** 主人 */
   if (config.master.includes(`${ctx.selfId}@${ctx.userId}`) || config.master.includes(ctx.userId)) {
     ctx.isMaster = true
     ctx.isAdmin = true
-  } else if (config.admin.includes(`${ctx.selfId}@${ctx.userId}`) || config.admin.includes(ctx.userId)) {
+  } else if (
+    config.admin.includes(`${ctx.selfId}@${ctx.userId}`) ||
+    config.admin.includes(ctx.userId)
+  ) {
     /** 管理员 */
     ctx.isAdmin = true
     ctx.isMaster = false
@@ -91,8 +84,8 @@ export const initEmit = (ctx: Event) => {
  * @returns `true` 表示通过
  */
 export const disableViaAdapter = (
-  plugin: typeof cache.command[number] | typeof cache.accept[number],
-  protocol: AdapterProtocol
+  plugin: (typeof cache.command)[number] | (typeof cache.accept)[number],
+  protocol: AdapterProtocol,
 ): boolean => {
   /** 插件指定只允许特定适配器使用 */
   if (plugin.adapter.length && !plugin.adapter.includes(protocol)) {
@@ -114,8 +107,8 @@ export const disableViaAdapter = (
  * @returns `true` 表示通过
  */
 export const disableViaPluginWhitelist = (
-  plugin: typeof cache.command[number] | typeof cache.accept[number],
-  config: ReturnType<typeof getFriendCfg> | ReturnType<typeof getGroupCfg>
+  plugin: (typeof cache.command)[number] | (typeof cache.accept)[number],
+  config: ReturnType<typeof getFriendCfg> | ReturnType<typeof getGroupCfg>,
 ) => {
   /** 未设置白名单 */
   if (!config.enable.length) return true
@@ -148,8 +141,8 @@ export const disableViaPluginWhitelist = (
  * @returns `true` 表示通过
  */
 export const disableViaPluginBlacklist = (
-  plugin: typeof cache.command[number] | typeof cache.accept[number],
-  config: ReturnType<typeof getFriendCfg> | ReturnType<typeof getGroupCfg>
+  plugin: (typeof cache.command)[number] | (typeof cache.accept)[number],
+  config: ReturnType<typeof getFriendCfg> | ReturnType<typeof getGroupCfg>,
 ) => {
   /** 未设置黑名单 */
   if (!config.disable.length) return true
@@ -184,8 +177,20 @@ export const privateFilterEvent = (
   ctx: Event,
   config: ReturnType<typeof cfg>,
   friend: ReturnType<typeof getFriendCfg>,
-  cd: boolean
+  cd: boolean,
 ): boolean => {
+  if (ctx.isFriend) {
+    if (!config?.user?.enable) {
+      log(ctx.userId, `当前好友事件未启用: ${ctx.eventId}`)
+      return false
+    }
+  } else {
+    if (!config?.directs?.enable) {
+      log(ctx.userId, `当前频道私信事件未启用: ${ctx.eventId}`)
+      return false
+    }
+  }
+
   if (!cd) {
     log(ctx.userId, `当前处于CD中: ${ctx.eventId}`)
     return false
@@ -256,8 +261,20 @@ export const groupFilterEvent = (
   ctx: Event,
   config: ReturnType<typeof cfg>,
   group: ReturnType<typeof getGroupCfg>,
-  cd: boolean
+  cd: boolean,
 ): boolean => {
+  if (ctx.isGroup) {
+    if (!config?.group?.enable) {
+      log(ctx.groupId, `当前群事件未启用: ${ctx.eventId}`)
+      return false
+    }
+  } else if (ctx.isGuild) {
+    if (!config?.guilds?.enable) {
+      log(ctx.guildId, `当前频道事件未启用: ${ctx.eventId}`)
+      return false
+    }
+  }
+
   if (!cd) {
     log(ctx.userId, `当前处于CD中: ${ctx.eventId}`)
     return false
@@ -301,7 +318,8 @@ export const groupFilterEvent = (
       log(ctx.userId, `用户处于群成员黑名单: ${ctx.eventId}`)
       return false
     }
-  } if (ctx.isGuild) {
+  }
+  if (ctx.isGuild) {
     /** 频道白名单 */
     if (config?.guilds?.enable_list?.length && !config?.guilds?.enable_list.includes(ctx.guildId)) {
       log(ctx.guildId, `频道未处于白名单: ${ctx.eventId}`)
@@ -309,17 +327,26 @@ export const groupFilterEvent = (
     }
 
     /** 频道黑名单 */
-    if (config?.guilds?.disable_list?.length && config?.guilds?.disable_list.includes(ctx.guildId)) {
+    if (
+      config?.guilds?.disable_list?.length &&
+      config?.guilds?.disable_list.includes(ctx.guildId)
+    ) {
       log(ctx.guildId, `频道处于黑名单: ${ctx.eventId}`)
       return false
     }
 
-    if (config?.channels?.enable_list?.length && !config?.channels?.enable_list.includes(ctx.channelId)) {
+    if (
+      config?.channels?.enable_list?.length &&
+      !config?.channels?.enable_list.includes(ctx.channelId)
+    ) {
       log(ctx.channelId, `子频道未处于白名单: ${ctx.eventId}`)
       return false
     }
 
-    if (config?.channels?.disable_list?.length && config?.channels?.disable_list.includes(ctx.channelId)) {
+    if (
+      config?.channels?.disable_list?.length &&
+      config?.channels?.disable_list.includes(ctx.channelId)
+    ) {
       log(ctx.channelId, `子频道处于黑名单: ${ctx.eventId}`)
       return false
     }
@@ -399,14 +426,20 @@ export const groupFilterEvent = (
  */
 export const groupPrint = (
   ctx: GroupMessage | GroupTempMessage,
-  config: ReturnType<typeof cfg>
+  config: ReturnType<typeof cfg>,
 ): boolean => {
-  if (config?.group?.log_enable_list?.length && !config?.group?.log_enable_list.includes(ctx.groupId)) {
+  if (
+    config?.group?.log_enable_list?.length &&
+    !config?.group?.log_enable_list.includes(ctx.groupId)
+  ) {
     log(ctx.groupId, `群未处于白名单: ${ctx.eventId}`)
     return false
   }
 
-  if (config?.group?.log_disable_list?.length && config?.group?.log_disable_list.includes(ctx.groupId)) {
+  if (
+    config?.group?.log_disable_list?.length &&
+    config?.group?.log_disable_list.includes(ctx.groupId)
+  ) {
     log(ctx.groupId, `群处于黑名单: ${ctx.eventId}`)
     return false
   }
@@ -420,26 +453,35 @@ export const groupPrint = (
  * @param config 基本配置对象
  * @returns `true` 表示通过
  */
-export const guildPrint = (
-  ctx: GuildMessage,
-  config: ReturnType<typeof cfg>
-): boolean => {
-  if (config?.guilds?.log_enable_list?.length && !config?.guilds?.log_enable_list.includes(ctx.guildId)) {
+export const guildPrint = (ctx: GuildMessage, config: ReturnType<typeof cfg>): boolean => {
+  if (
+    config?.guilds?.log_enable_list?.length &&
+    !config?.guilds?.log_enable_list.includes(ctx.guildId)
+  ) {
     log(ctx.guildId, `频道日志未处于白名单: ${ctx.eventId}`)
     return false
   }
 
-  if (config?.guilds?.log_disable_list?.length && config?.guilds?.log_disable_list.includes(ctx.guildId)) {
+  if (
+    config?.guilds?.log_disable_list?.length &&
+    config?.guilds?.log_disable_list.includes(ctx.guildId)
+  ) {
     log(ctx.guildId, `频道日志处于黑名单: ${ctx.eventId}`)
     return false
   }
 
-  if (config?.channels?.log_enable_list?.length && !config?.channels?.log_enable_list.includes(ctx.channelId)) {
+  if (
+    config?.channels?.log_enable_list?.length &&
+    !config?.channels?.log_enable_list.includes(ctx.channelId)
+  ) {
     log(ctx.channelId, `子频道日志未处于白名单: ${ctx.eventId}`)
     return false
   }
 
-  if (config?.channels?.log_disable_list?.length && config?.channels?.log_disable_list.includes(ctx.channelId)) {
+  if (
+    config?.channels?.log_disable_list?.length &&
+    config?.channels?.log_disable_list.includes(ctx.channelId)
+  ) {
     log(ctx.channelId, `子频道日志处于黑名单: ${ctx.eventId}`)
     return false
   }

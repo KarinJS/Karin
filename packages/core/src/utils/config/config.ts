@@ -57,10 +57,10 @@ export const pkg = () => requireFileSync<Package>(root.karinDir + '/package.json
  * @param type 文件类型 用户配置/默认配置
  * @param isRefresh 是否刷新缓存
  */
-export const getYaml = <T extends keyof FileListMap> (
+export const getYaml = <T extends keyof FileListMap>(
   name: T,
   type: 'user' | 'default',
-  isRefresh?: boolean
+  isRefresh?: boolean,
 ): FileListMap[T] => {
   const file = `${type === 'user' ? root.configPath : root.defaultConfigPath}/${name}.json`
   if (!fs.existsSync(file)) {
@@ -75,7 +75,7 @@ export const getYaml = <T extends keyof FileListMap> (
  * @param name 文件名称
  * @param data 配置数据
  */
-export const setYaml = <T extends keyof FileListMap> (name: T, data: Record<string, any>) => {
+export const setYaml = <T extends keyof FileListMap>(name: T, data: Record<string, any>) => {
   const file = `${root.configPath}/${name}.json`
   if (!fs.existsSync(file)) return false
 
@@ -86,7 +86,7 @@ export const setYaml = <T extends keyof FileListMap> (name: T, data: Record<stri
 /** 每次启动清空临时文件夹 */
 export const clearTemp = () => {
   const list = [root.htmlPath, root.consolePath]
-  list.forEach((file) => {
+  list.forEach(file => {
     if (fs.existsSync(file)) {
       fs.rmSync(file, { recursive: true, force: true })
     }
@@ -96,14 +96,17 @@ export const clearTemp = () => {
 /**
  * 更新日志等级
  * @param level 日志等级
+ * @returns 返回更新后的日志等级
  */
-export const updateLevel = (level?: string) => {
+export const updateLevel = (level?: string): string => {
   if (level) {
     logger.level = level
-    return
+    return level
   }
 
-  logger.level = process.env.LOG_LEVEL || 'info'
+  const newLevel = process.env.LOG_LEVEL || 'info'
+  logger.level = newLevel
+  return newLevel
 }
 
 watch<Config>(FILE, async (_, data) => {
