@@ -6,6 +6,13 @@
   "bin": {
     "karin": "index.js"
   },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "scripts": {
     "pub": "npm publish --access public"
   },

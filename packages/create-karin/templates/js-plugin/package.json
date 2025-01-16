@@ -14,16 +14,14 @@
   "type": "module",
   "main": "lib/index.js",
   "scripts": {
-    "app": "karin start",
-    "dev": "karin dev",
-    "init": "karin init",
-    "start": "karin start"
+    "app": "karin app",
+    "dev": "karin dev"
   },
   "devDependencies": {
     "neostandard": "^0.12.0"
   },
   "peerDependencies": {
-    "node-karin": "0.12.2-5.pr.206.fd03f9f"
+    "node-karin": "latest"
   },
   "karin": {
     "apps": [
@@ -44,5 +42,8 @@
       "lib/**/*",
       "@karinjs/**/*"
     ]
+  },
+  "dependencies": {
+    "node-karin": "1.1.1"
   }
 }

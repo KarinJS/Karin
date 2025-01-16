@@ -44,10 +44,10 @@ const DEFAULT_URLS = [
  * @returns Promise<TestResult>
  */
 export const ping = (url: string): Promise<TestResult> => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const startTime = Date.now()
 
-    const req = https.get(url, (res) => {
+    const req = https.get(url, res => {
       const time = Date.now() - startTime
       resolve({ url, success: true, status: res.statusCode, time })
       res.destroy()
@@ -74,8 +74,8 @@ export const ping = (url: string): Promise<TestResult> => {
 const pingWithTimeout = (url: string, timeout: number): Promise<TestResult> => {
   return Promise.race([
     ping(url),
-    new Promise<TestResult>((resolve) =>
-      setTimeout(() => resolve({ url, success: false, time: timeout }), timeout)
+    new Promise<TestResult>(resolve =>
+      setTimeout(() => resolve({ url, success: false, time: timeout }), timeout),
     ),
   ])
 }
@@ -97,15 +97,13 @@ const formatResults = (results: TestResult[]) => {
  */
 export const testUrls = async (
   urls: string[] = DEFAULT_URLS,
-  options: TestOptions = {}
+  options: TestOptions = {},
 ): Promise<{ results: TestResult[]; succ: number; fail: number; count: number }> => {
   const { timeout = DEFAULT_TIMEOUT, silent = false } = options
 
   console.log(green(`开始测试网络连接... (超时时间: ${timeout}ms)`))
 
-  const results = await Promise.all(
-    urls.map((url) => pingWithTimeout(url, timeout))
-  )
+  const results = await Promise.all(urls.map(url => pingWithTimeout(url, timeout)))
 
   if (silent) {
     formatResults(results)
@@ -113,7 +111,7 @@ export const testUrls = async (
 
   /** 统计测试数量 成功数量 */
   let succ = 0
-  results.forEach((result) => {
+  results.forEach(result => {
     if (result.success) succ++
   })
 
@@ -124,13 +122,16 @@ export const testUrls = async (
  * 执行命令
  * @param command - 要执行的命令
  */
-export const exec = (command: string, options: ExecOptions = {}): Promise<{
+export const exec = (
+  command: string,
+  options: ExecOptions = {},
+): Promise<{
   status: boolean
   error?: Error | null
   stdout?: string
   stderr?: string
 }> => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     execCommand(command, options, (error, stdout, stderr) => {
       const status = !error
       resolve({ status, error, stdout, stderr })

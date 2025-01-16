@@ -74,6 +74,13 @@
       "component": "cli",
       "tag-separator": "-",
       "scope": "cli"
+    },
+    "packages/create-karin": {
+      "release-type": "node",
+      "package-name": "create-karin",
+      "component": "create-karin",
+      "tag-separator": "-",
+      "scope": "create-karin"
     }
   },
   "commit-search-depth": 50

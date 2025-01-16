@@ -42,7 +42,7 @@ export const createDir = () => {
     path.join(dir, '@karinjs', 'temp', 'html'),
   ]
 
-  isDev && list.push(path.join(dir, 'plugins', 'karin-plugin-example'))
+  !isDev && list.push(path.join(dir, 'plugins', 'karin-plugin-example'))
   list.forEach(item => {
     if (!fs.existsSync(item)) fs.mkdirSync(item, { recursive: true })
   })
@@ -206,8 +206,8 @@ const createWorkspace = (dir: string) => {
  * 生成一些其他文件
  */
 export const createOtherFile = async () => {
-  isDev && createPnpmFile(dir)
-  isDev && createWorkspace(dir)
+  !isDev && createPnpmFile(dir)
+  !isDev && createWorkspace(dir)
 
   if (!shouldSkipNpmrc()) {
     createOrUpdateNpmrc(dir)
@@ -259,9 +259,11 @@ export const modifyPackageJson = () => {
   data.scripts.karin = 'karin'
 
   const list = ['app', 'start', 'pm2', 'stop', 'rs', 'log']
-  list.forEach(v => {
-    data.scripts[v] = `karin ${v}`
-  })
+  if (!isDev) {
+    list.forEach(v => {
+      data.scripts[v] = `karin ${v}`
+    })
+  }
 
   fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify(data, null, 2))
   return data

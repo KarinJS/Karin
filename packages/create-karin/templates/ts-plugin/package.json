@@ -15,21 +15,14 @@
   "scripts": {
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "pub": "npm publish --access public",
-    "karin": "karin",
-    "app": "karin app",
-    "start": "karin start",
-    "pm2": "karin pm2",
-    "stop": "karin stop",
-    "rs": "karin rs",
-    "log": "karin log",
-    "up": "karin up"
+    "dev": "tsx watch --include \"src/**/*.ts\" src/index.ts"
   },
   "main": "lib/index.js",
   "devDependencies": {
     "@types/node": "^20.17.8",
     "eslint": "^9.7.0",
     "neostandard": "^0.11.9",
-    "node-karin": "0.12.25.pr.206.62c1986",
+    "node-karin": "latest",
     "tsc-alias": "^1.8.10",
     "tsx": "^4.19.2",
     "typescript": "^5.5.3"

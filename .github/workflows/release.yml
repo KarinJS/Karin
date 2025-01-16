@@ -22,25 +22,25 @@ jobs:
           manifest-file: .release-please-manifest.json
       - name: 检出代码
         uses: actions/checkout@v4
-        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/cli--release_created'] }}
+        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/cli--release_created'] || steps.release.outputs['packages/create-karin--release_created'] }}
 
       - name: 设置 node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          registry-url: "https://registry.npmjs.org"
-        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/cli--release_created'] }}
+          registry-url: 'https://registry.npmjs.org'
+        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/cli--release_created'] || steps.release.outputs['packages/create-karin--release_created'] }}
 
       - name: 设置 pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 8
-        if: ${{ steps.release.outputs['packages/core--release_created'] }}
+        if: ${{ steps.release.outputs['packages/core--release_created'] ||  steps.release.outputs['packages/create-karin--release_created'] }}
 
       # 安装所有依赖
       - name: 安装依赖
         run: pnpm install
-        if: ${{ steps.release.outputs['packages/core--release_created'] }}
+        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/create-karin--release_created'] }}
 
       # 发布 core 包
       - name: 发布 core 包
@@ -57,4 +57,11 @@ jobs:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         working-directory: packages/cli
         run: pnpm pub
-        
+
+      # 发布 create-karin 包
+      - name: 发布 create-karin 包
+        if: ${{ steps.release.outputs['packages/create-karin--release_created'] }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+        working-directory: packages/create-karin
+        run: pnpm build && pnpm pub

@@ -8,9 +8,17 @@
   "bin": {
     "create-karin": "./lib/index.js"
   },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "scripts": {
     "dev": "tsx src/index.ts",
-    "build": "tsup --config tsup.config.ts"
+    "build": "tsup --config tsup.config.ts",
+    "pub": "npm publish --access public"
   },
   "keywords": [
     "karin",
@@ -28,5 +36,9 @@
     "@types/prompts": "^2.4.9",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3"
-  }
+  },
+  "files": [
+    "lib",
+    "templates"
+  ]
 }
