@@ -19,7 +19,7 @@
     },
     "resolveJsonModule": true,
     "rootDir": "./src",
-    "skipLibCheck": true,
+    "skipLibCheck": false,
     "sourceMap": false,
     "strict": true,
     "target": "ES2022",

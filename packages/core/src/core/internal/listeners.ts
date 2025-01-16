@@ -1,5 +1,5 @@
 // TODO: 此文件存在内存泄漏 可能是无限循环引用导致的
-import { EventEmitter } from 'events'
+import { EventEmitter } from 'node:events'
 import type { MessageEventMap, NoticeEventMap, RequestEventMap } from '@/types/event'
 
 // type OtherTypes = {

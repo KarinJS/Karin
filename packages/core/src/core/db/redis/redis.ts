@@ -1,6 +1,6 @@
 import os from 'os'
 import { RedisClient } from '@/core/db/redis/mock'
-import { createClient, RedisClientOptions, RedisClientType } from 'redis'
+import { createClient, RedisClientType, RedisClientOptions } from 'redis'
 import { isWin } from '@/env'
 import { exec } from '@/utils/system/exec'
 import { redis } from '@/utils/config'

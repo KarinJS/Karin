@@ -4,7 +4,6 @@ import moment from 'moment'
 import { EventEmitter } from 'node:events'
 import { redisLevelPath } from '@/root'
 import { existToMkdirSync } from '@/utils/fs/fsSync'
-import type { SetOptions } from 'redis'
 
 /**
  * @description 键类型枚举
@@ -52,7 +51,7 @@ export class RedisClient extends EventEmitter {
   /** 位图 */
   #bit: Record<string, Buffer> = {}
   /** 持久化数据库 */
-  #level!: Level<string, string>
+  #level!: Level
 
   constructor () {
     super()
@@ -65,7 +64,6 @@ export class RedisClient extends EventEmitter {
     this.#zset = {}
     this.#pf = {}
     this.#bit = {}
-    process.once('exit', () => this.#level.close())
   }
 
   async init () {
@@ -81,7 +79,7 @@ export class RedisClient extends EventEmitter {
     setInterval(() => this.save(), 120000)
 
     const list = await this.#level.keys().all()
-    await Promise.all(list.map(async (key) => {
+    await Promise.all(list.map(async (key: string) => {
       const data = await this.#level.get(key).catch(() => null)
       if (!data) return
       const { type, expire, value } = JSON.parse(data)
@@ -220,7 +218,7 @@ export class RedisClient extends EventEmitter {
    * @param value 值
    * @param options 其他参数
    */
-  async set (key: string, value: string | Buffer, options: SetOptions = {}): Promise<string | Buffer | null> {
+  async set (key: string, value: string | Buffer, options: any = {}): Promise<string | Buffer | null> {
     /*
     | **参数**       | **对应 Redis 原生选项** | **作用**                            | **说明**                                 |
     |----------------|-------------------------|-------------------------------------|------------------------------------------|
@@ -929,11 +927,11 @@ export class RedisClient extends EventEmitter {
   async save (): Promise<string> {
     /** 读取keys 排除掉不是重复项的键 */
     const keys = await this.#level.keys().all()
-    const delKeys = keys.filter((key) => !this.#info[key])
+    const delKeys = keys.filter((key: string) => !this.#info[key])
     const list: Array<{ type: 'put', key: string, value: string } | { type: 'del', key: string }> = []
 
-    delKeys.forEach((key) => list.push({ type: 'del', key }))
-    Object.keys(this.#info).forEach((key) => {
+    delKeys.forEach((key: string) => list.push({ type: 'del', key }))
+    Object.keys(this.#info).forEach((key: string) => {
       const { type, expire } = this.#info[key]
       const value = this.#str[key]
       list.push({ type: 'put', key, value: JSON.stringify({ type, expire, value }) })
