@@ -1,5 +1,17 @@
 # 更新日志
 
+## [1.1.2](https://github.com/KarinJS/Karin/compare/core-v1.1.1...core-v1.1.2) (2025-01-16)
+
+
+### 🐛 Bug Fixes
+
+* create-karin ([758e20f](https://github.com/KarinJS/Karin/commit/758e20f2d824d23a998fe85c02883e1db53148f9))
+
+
+### 🎫 Chores
+
+* release main ([#238](https://github.com/KarinJS/Karin/issues/238)) ([0d68b7b](https://github.com/KarinJS/Karin/commit/0d68b7b9fdcb1857ece912b0c246273a4433567b))
+
 ## [1.1.1](https://github.com/KarinJS/Karin/compare/core-v1.1.0...core-v1.1.1) (2025-01-16)
 
 
