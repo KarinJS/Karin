@@ -19,7 +19,7 @@ wss.on('error', (error: NodeJS.ErrnoException) => {
 wss.on('connection', (socket, request) => {
   debug(`wss:connection host: ${request.headers.host} url: ${request.url}`)
 
-  if (request.url === '/' || request.url === '/onebot/v11/ws/' || request.url === '/onebot/v11/ws/index') {
+  if (request?.headers?.a || request.url === '/' || request.url === '/onebot/v11/ws' || request.url === '/onebot/v11/ws/') {
     listeners.emit('ws:connection:onebot', socket, request)
     return
   }
