@@ -15,7 +15,7 @@ export const options: Options = {
   splitting: false, // 是否拆分文件
   sourcemap: false, // 是否生成 sourcemap
   clean: false, // 是否清理输出目录
-  dts: true, // 是否生成 .d.ts 文件
+  dts: false, // 是否生成 .d.ts 文件
   outDir: 'lib', // 输出目录
   treeshake: false, // 树摇优化
   minify: false, // 压缩代码

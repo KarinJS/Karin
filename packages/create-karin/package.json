@@ -6,7 +6,7 @@
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "bin": {
-    "create-karin": "./lib/index.js"
+    "create-karin": "./lib/index.cjs"
   },
   "engines": {
     "node": ">=18"
