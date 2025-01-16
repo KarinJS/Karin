@@ -3,7 +3,8 @@
     "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
     "baseUrl": ".",
-    "declaration": false,
+    "declaration": true,
+    "declarationMap": true,
     "esModuleInterop": true,
     "module": "ES2022",
     "moduleResolution": "Bundler",
@@ -20,12 +21,13 @@
     "resolveJsonModule": true,
     "rootDir": "./src",
     "skipLibCheck": false,
-    "sourceMap": false,
+    "sourceMap": true,
     "strict": true,
     "target": "ES2022",
     "types": [
       "@types/node"
-    ]
+    ],
+    "declarationDir": "./lib/types"
   },
   "exclude": [
     "@karinjs",
