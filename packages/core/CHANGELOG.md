@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.1.1](https://github.com/KarinJS/Karin/compare/core-v1.1.0...core-v1.1.1) (2025-01-16)
+
+
+### 🐛 Bug Fixes
+
+* getPlugins ([5484dfa](https://github.com/KarinJS/Karin/commit/5484dfac88e404116c8e61b755d8ced02aecc576))
+
 ## [1.1.0](https://github.com/KarinJS/Karin/compare/core-v1.0.12...core-v1.1.0) (2025-01-16)
 
 
