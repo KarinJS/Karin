@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import dotenv from 'dotenv'
 import { pathToFileURL } from 'node:url'
-import { fork, spawn } from 'node:child_process'
+import { fork } from 'node:child_process'
 
 /**
  * 解析环境变量文件列表
@@ -26,7 +26,7 @@ const loadEnv = (env?: string) => {
     files.unshift('.env')
   }
 
-  files.forEach((file) => {
+  files.forEach(file => {
     if (!fs.existsSync(`${dir}/${file}`)) {
       if (file === '.env') {
         console.error(`未找到${file}文件，请使用 npx karin init 进行初始化项目`)
@@ -37,7 +37,7 @@ const loadEnv = (env?: string) => {
     }
   })
 
-  const paths = files.map((file) => `${dir}/${file}`)
+  const paths = files.map(file => `${dir}/${file}`)
   dotenv.config({ path: paths, override: true })
 }
 
@@ -51,7 +51,7 @@ export const start = async (env?: string) => {
   const { karinMain } = await import(index)
   const child = fork(karinMain)
 
-  child.on('message', (message) => {
+  child.on('message', message => {
     if (message === 'restart') {
       child.kill()
       child.removeAllListeners()
@@ -59,7 +59,7 @@ export const start = async (env?: string) => {
     }
   })
 
-  child.on('exit', (code) => process.exit(code))
+  child.on('exit', code => process.exit(code))
 }
 
 /**
@@ -72,75 +72,4 @@ export const dev = async (env?: string) => {
   process.env.NODE_ENV = 'development'
   const { karinMain } = await import(index)
   await import(pathToFileURL(karinMain).toString())
-}
-
-/**
- * TypeScript 开发模式
- * @param env - 环境变量文件名称，可以是单个文件名或用逗号分隔的多个文件名
- */
-export const tsStart = async (env?: string) => {
-  loadEnv(env)
-  process.env.RUNTIME = 'tsx'
-  process.env.NODE_ENV = 'development'
-
-  const index = '../root.js'
-  const { karinMain } = await import(index)
-
-  const child = spawn('npx', ['tsx', karinMain], {
-    stdio: 'inherit',
-    shell: true,
-  })
-
-  child.on('exit', (code) => process.exit(code ?? 0))
-}
-
-/**
- * TypeScript 监视模式
- * @param options - 配置选项
- * @param options.env - 环境变量文件名称，可以是单个文件名或用逗号分隔的多个文件名
- * @param options.include - 要监视的额外文件/目录，多个用逗号分隔
- * @param options.exclude - 要排除监视的文件/目录，多个用逗号分隔
- * @param options.clearScreen - 重新运行时是否清屏
- */
-export const tsWatch = async (options: {
-  env?: string
-  include?: string
-  exclude?: string
-  clearScreen: boolean
-}) => {
-  loadEnv(options.env)
-  process.env.NODE_ENV = 'development'
-
-  const index = '../root.js'
-  const { karinMain } = await import(index)
-
-  const args = ['tsx', 'watch']
-
-  if (options.include) {
-    options.include.split(',').forEach(pattern => {
-      args.push('--include', pattern.trim())
-    })
-  }
-
-  if (options.exclude) {
-    options.exclude.split(',').forEach(pattern => {
-      args.push('--exclude', pattern.trim())
-    })
-  }
-
-  if (!options.clearScreen) {
-    args.push('--clear-screen=false')
-  }
-
-  args.push(karinMain)
-
-  process.env.RUNTIME = 'tsx'
-  process.env.TSX_WATCH = 'true'
-
-  const child = spawn('npx', args, {
-    stdio: 'inherit',
-    shell: true,
-  })
-
-  child.on('exit', (code) => process.exit(code ?? 0))
 }

@@ -1,21 +1,15 @@
 import neostandard from 'neostandard'
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
+import prettier from 'eslint-plugin-prettier'
 
 /** 尾随逗号 */
-const commaDangle = (val) => {
-  if (val?.rules?.['@stylistic/comma-dangle']?.[0] === 'warn') {
-    val.rules['@stylistic/comma-dangle'] = [
-      'warn',
-      {
-        arrays: 'always-multiline',
-        enums: 'always-multiline',
-        exports: 'always-multiline',
-        imports: 'always-multiline',
-        objects: 'always-multiline',
-      },
-    ]
-    return val
+const commaDangle = val => {
+  if (typeof val?.rules?.['@stylistic/comma-dangle']?.[1] === 'object') {
+    val.rules['@stylistic/comma-dangle'][0] = 'off'
+    Object.keys(val?.rules?.['@stylistic/comma-dangle']?.[1]).forEach(key => {
+      val.rules['@stylistic/comma-dangle'][1][key] = 'always-multiline'
+    })
   }
+
   return val
 }
 
@@ -35,7 +29,10 @@ const options = neostandard({
   ignores,
   globals: ['logger'],
   plugins: {
-    ...eslintPluginPrettierRecommended.plugins,
+    prettier,
+  },
+  rules: {
+    'prettier/prettier': 'error',
   },
 }).map(commaDangle)
 

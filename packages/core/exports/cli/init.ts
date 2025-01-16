@@ -1,27 +1,49 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { execSync } from './exec.js'
 import { URL, fileURLToPath } from 'node:url'
 
-import { execSync } from './exec.js'
-
+let isDev = false
 const dir = process.env.INIT_CWD || process.cwd()
 const pkgDir = fileURLToPath(new URL('../..', import.meta.url))
+
+/**
+ * 判断是否处于插件开发环境
+ */
+const isPluginDev = () => {
+  /**
+   * 规则如下
+   * 1. 根目录的package.json中karin字段存在
+   * 2. 存在src目录
+   * 3. 存在tsconfig.json文件
+   * 4. 存在.prettierrc文件
+   * 5. 存在eslint.config.mjs文件
+   */
+  const pkg = fs.readFileSync(path.join(dir, 'package.json'), 'utf-8')
+  const data = JSON.parse(pkg)
+  if (data?.karin) return true
+  if (fs.existsSync(path.join(dir, 'src'))) return true
+  if (fs.existsSync(path.join(dir, 'tsconfig.json'))) return true
+  if (fs.existsSync(path.join(dir, '.prettierrc'))) return true
+  if (fs.existsSync(path.join(dir, 'eslint.config.mjs'))) return true
+  return false
+}
 
 /**
  * 创建基本目录
  */
 export const createDir = () => {
   const list = [
-    path.join(dir, 'plugins', 'karin-plugin-example'),
     path.join(dir, '@karinjs', 'logs'),
     path.join(dir, '@karinjs', 'config'),
     path.join(dir, '@karinjs', 'data'),
+    path.join(dir, '@karinjs', 'resource'),
     path.join(dir, '@karinjs', 'temp', 'console'),
     path.join(dir, '@karinjs', 'temp', 'html'),
-    path.join(dir, '@karinjs', 'resource'),
   ]
 
-  list.forEach((item) => {
+  isDev && list.push(path.join(dir, 'plugins', 'karin-plugin-example'))
+  list.forEach(item => {
     if (!fs.existsSync(item)) fs.mkdirSync(item, { recursive: true })
   })
 }
@@ -37,8 +59,8 @@ const createPnpmFile = (dir: string) => {
   const content = [
     '// 清空对等依赖中的node-karin',
     'function readPackage (pkg, context) {',
-    '  if (pkg?.[\'peerDependencies\']?.[\'node-karin\'] && pkg[\'peerDependencies\'][\'node-karin\'] !== \'file:./lib\') {',
-    '    delete pkg[\'peerDependencies\'][\'node-karin\']',
+    "  if (pkg?.['peerDependencies']?.['node-karin'] && pkg['peerDependencies']['node-karin'] !== 'file:./lib') {",
+    "    delete pkg['peerDependencies']['node-karin']",
     '  }',
     '  return pkg',
     '}',
@@ -108,7 +130,9 @@ const createOrUpdateEnv = (dir: string) => {
   /** 生成随机6位字母key */
   const generateRandomKey = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
-    return Array.from({ length: 6 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('')
+    return Array.from({ length: 6 }, () =>
+      chars.charAt(Math.floor(Math.random() * chars.length)),
+    ).join('')
   }
 
   const envData = [
@@ -174,7 +198,7 @@ const createWorkspace = (dir: string) => {
   const workspace = path.join(dir, 'pnpm-workspace.yaml')
   if (fs.existsSync(workspace)) return
 
-  const content = 'packages:\n  - \'plugins/**\'\n'
+  const content = "packages:\n  - 'plugins/**'\n"
   fs.writeFileSync(workspace, content)
 }
 
@@ -182,8 +206,8 @@ const createWorkspace = (dir: string) => {
  * 生成一些其他文件
  */
 export const createOtherFile = async () => {
-  createPnpmFile(dir)
-  createWorkspace(dir)
+  isDev && createPnpmFile(dir)
+  isDev && createWorkspace(dir)
 
   if (!shouldSkipNpmrc()) {
     createOrUpdateNpmrc(dir)
@@ -199,7 +223,7 @@ export const createConfig = () => {
   const defCfg = path.join(pkgDir, 'default', 'config')
   /** 读取默认目录下的所有json文件 遍历复制到目标目录 */
   const files = fs.readdirSync(defCfg)
-  files.forEach((file) => {
+  files.forEach(file => {
     /** 忽略非json文件 */
     if (!file.endsWith('.json')) return
     /** 默认配置文件路径 */
@@ -234,15 +258,7 @@ export const modifyPackageJson = () => {
   if (!data.scripts) data.scripts = {}
   data.scripts.karin = 'karin'
 
-  const list = [
-    'app',
-    'start',
-    'pm2',
-    'stop',
-    'rs',
-    'log',
-  ]
-
+  const list = ['app', 'start', 'pm2', 'stop', 'rs', 'log']
   list.forEach(v => {
     data.scripts[v] = `karin ${v}`
   })
@@ -255,6 +271,7 @@ export const modifyPackageJson = () => {
  * 入口函数
  */
 export const init = async () => {
+  isDev = isPluginDev()
   createDir()
   await createOtherFile()
   createConfig()
