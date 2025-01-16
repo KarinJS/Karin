@@ -5,6 +5,19 @@
 
 ### 🐛 Bug Fixes
 
+* create-karin ([758e20f](https://github.com/KarinJS/Karin/commit/758e20f2d824d23a998fe85c02883e1db53148f9))
+* getPlugins ([5484dfa](https://github.com/KarinJS/Karin/commit/5484dfac88e404116c8e61b755d8ced02aecc576))
+
+
+### 🎫 Chores
+
+* release main ([#237](https://github.com/KarinJS/Karin/issues/237)) ([f97e931](https://github.com/KarinJS/Karin/commit/f97e931e88c1fed0bb973ef06b7a33797a961c0a))
+
+## [1.1.1](https://github.com/KarinJS/Karin/compare/core-v1.1.0...core-v1.1.1) (2025-01-16)
+
+
+### 🐛 Bug Fixes
+
 * getPlugins ([5484dfa](https://github.com/KarinJS/Karin/commit/5484dfac88e404116c8e61b755d8ced02aecc576))
 
 ## [1.1.0](https://github.com/KarinJS/Karin/compare/core-v1.0.12...core-v1.1.0) (2025-01-16)
