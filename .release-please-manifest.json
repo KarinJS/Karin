@@ -1,5 +1,5 @@
 {
-  "packages/core": "1.1.0",
-  "packages/cli": "1.0.0",
-  "packages/create-karin": "1.0.0"
+  "packages/core": "1.1.1",
+  "packages/cli": "1.0.1",
+  "packages/create-karin": "1.0.1"
 }
