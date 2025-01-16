@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.1.3](https://github.com/KarinJS/Karin/compare/core-v1.1.2...core-v1.1.3) (2025-01-16)
+
+
+### 🐛 Bug Fixes
+
+* 热更新`.env` ([90c4eb8](https://github.com/KarinJS/Karin/commit/90c4eb86dbefd236b7a672a8c5a0c0a848964fff))
+
 ## [1.1.2](https://github.com/KarinJS/Karin/compare/core-v1.1.1...core-v1.1.2) (2025-01-16)
 
 
