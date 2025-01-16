@@ -11,6 +11,7 @@ export * from '@/adapter/onebot'
 export * from '@/event'
 export * from '@/adapter/index'
 export * from '@/root'
+export * from '@/plugin'
 
 export * from '@/types/adapter'
 export * from '@/types/config'
