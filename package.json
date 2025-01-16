@@ -5,7 +5,11 @@
   "main": "",
   "type": "module",
   "scripts": {
-    "dev": "cd packages/core && pnpm run dev"
+    "dev": "cd packages/core && pnpm run dev",
+    "dev:web": "cd packages/web && pnpm run dev",
+    "build": "cd packages/core && pnpm run build",
+    "build:web": "cd packages/web && pnpm run build",
+    "build:all": "pnpm run build && pnpm run build:web"
   },
   "devDependencies": {
     "@types/node": "^22.5.0",
