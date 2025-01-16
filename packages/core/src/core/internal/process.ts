@@ -68,14 +68,14 @@ export const checkProcess = async (port: number) => {
   }
 
   logger.error('检测到后台进程 正在关闭...')
-  const result = await axios({ url: `${host}/exit`, method: 'get', timeout: 500 })
+  const result = await axios({ url: `${host}/exit`, method: 'get', timeout: 500, headers: { Authorization: `Bearer ${process.env.HTTP_AUTH_KEY}` } })
   if (typeof result === 'undefined') {
     logger.fatal(logger.red(`当前存在多开Bot占用 ${port}端口，请更换端口或者关闭对应Bot`))
     processExit(1)
   }
 
   for (let i = 0; i < 100; i++) {
-    const result = await axios({ url: `${host}/ping`, method: 'get', timeout: 100 })
+    const result = await axios({ url: `${host}/ping`, method: 'get', timeout: 100, headers: { Authorization: `Bearer ${process.env.HTTP_AUTH_KEY}` } })
     /** 请求成功继续循环 */
     if (result) {
       await sleep(50)

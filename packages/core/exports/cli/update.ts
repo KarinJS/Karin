@@ -40,7 +40,7 @@ export const updateDependencies = async (packagePath: string) => {
         const pkgInfo = JSON.parse(pkgInfoStr.trim())
 
         /** 检查是否包含 karin 字段 */
-        if (!pkgInfo.karin) return
+        if (!pkgInfo.karin && pkg !== 'node-karin') return
 
         const currentVersion = (version as string).replace(/[\^~]/g, '')
 

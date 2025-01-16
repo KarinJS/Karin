@@ -241,10 +241,6 @@ export const modifyPackageJson = () => {
     'stop',
     'rs',
     'log',
-    'up',
-    'dev',
-    'ts',
-    'watch',
   ]
 
   list.forEach(v => {
