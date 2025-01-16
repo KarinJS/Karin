@@ -1,5 +1,24 @@
 # 更新日志
 
+## [1.1.0](https://github.com/KarinJS/Karin/compare/core-v1.0.12...core-v1.1.0) (2025-01-16)
+
+
+### ✨ Features
+
+* 中间件 ([baa34b3](https://github.com/KarinJS/Karin/commit/baa34b35681f665a556a3beb596eb418733840e0))
+
+
+### 🐛 Bug Fixes
+
+* scripts ([ac0be5f](https://github.com/KarinJS/Karin/commit/ac0be5f047f8be9da565f2ed1d77dc687a5619ad))
+* types ([5fda871](https://github.com/KarinJS/Karin/commit/5fda871ec5fece444914214822e833ad7b8afef8))
+* update TypeScript configuration and enhance console API for file handling ([b5d8d45](https://github.com/KarinJS/Karin/commit/b5d8d453182e67b5880c21d06c634a350eb9b2df))
+
+
+### 🎫 Chores
+
+* update configuration files and enhance CLI commands ([c01a8db](https://github.com/KarinJS/Karin/commit/c01a8dbc58ecaf308e6dde26c59be901efbab1a6))
+
 ## [1.0.12](https://github.com/KarinJS/Karin/compare/core-v1.0.11...core-v1.0.12) (2025-01-16)
 
 
