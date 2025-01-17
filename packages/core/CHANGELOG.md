@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.1.5](https://github.com/KarinJS/Karin/compare/core-v1.1.4...core-v1.1.5) (2025-01-17)
+
+
+### 🐛 Bug Fixes
+
+* 好友事件启用 ([7109f61](https://github.com/KarinJS/Karin/commit/7109f61cefe16bddc3f791b4e6bb13092d7d6757))
+
 ## [1.1.4](https://github.com/KarinJS/Karin/compare/core-v1.1.3...core-v1.1.4) (2025-01-16)
 
 
