@@ -2,14 +2,19 @@
   "name": "@karinjs/project",
   "version": "1.0.0",
   "description": "",
-  "main": "",
+  "keywords": [],
+  "license": "MIT",
+  "author": "shijin",
   "type": "module",
+  "main": "",
   "scripts": {
-    "dev": "cd packages/core && pnpm run dev",
-    "dev:web": "cd packages/web && pnpm run dev",
-    "build": "cd packages/core && pnpm run build",
+    "build": "pnpm --filter node-karin run build",
+    "build:all": "pnpm run build && pnpm run build:web",
+    "build:prod": "pnpm --filter node-karin run build:prod",
     "build:web": "cd packages/web && pnpm run build",
-    "build:all": "pnpm run build && pnpm run build:web"
+    "dev": "pnpm --filter node-karin run dev",
+    "dev:cli": "pnpm --filter node-karin run dev:cli",
+    "dev:web": "cd packages/web && pnpm run dev"
   },
   "devDependencies": {
     "@types/node": "^22.5.0",
@@ -25,8 +30,5 @@
   },
   "peerDependencies": {
     "node-karin": "workspace:*"
-  },
-  "keywords": [],
-  "author": "shijin",
-  "license": "MIT"
+  }
 }

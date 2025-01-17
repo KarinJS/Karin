@@ -8,8 +8,6 @@ export interface Config {
   admin: string[]
   /** 用户管理 */
   user: {
-    /** 是否启用用户事件 */
-    enable: boolean
     /** 用户白名单 */
     enable_list: string[]
     /** 用户黑名单 */

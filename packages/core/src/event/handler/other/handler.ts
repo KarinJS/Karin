@@ -180,7 +180,7 @@ export const privateFilterEvent = (
   cd: boolean,
 ): boolean => {
   if (ctx.isFriend) {
-    if (!config?.user?.enable) {
+    if (!config?.friend?.enable) {
       log(ctx.userId, `当前好友事件未启用: ${ctx.eventId}`)
       return false
     }
