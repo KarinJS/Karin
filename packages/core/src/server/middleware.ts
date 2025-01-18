@@ -2,6 +2,15 @@ import { Request, Response, NextFunction } from 'express'
 import { auth } from './auth'
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  logger.debug(
+    '[express] 收到请求: \n' +
+    `method: ${req.method}\n` +
+    `ip: ${req.ip}\n` +
+    `path: ${req.path}\n` +
+    `headers: ${JSON.stringify(req.headers)}\n` +
+    `body: ${JSON.stringify(req.body)}\n`
+  )
+
   if (req.path.startsWith('/api')) {
     if (req.path === '/api/v1/ping' || req.path.startsWith('/api/v1/console')) {
       next()

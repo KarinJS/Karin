@@ -2,13 +2,21 @@ import { Response } from 'express'
 
 /** HTTP状态码 */
 export enum HTTPStatusCode {
+  /** 成功 */
   OK = 200,
+  /** 请求错误 */
   BadRequest = 400,
+  /** 未授权 */
   Unauthorized = 401,
+  /** 禁止访问 */
   Forbidden = 403,
+  /** 未找到 */
   NotFound = 404,
+  /** 方法不允许 */
   MethodNotAllowed = 405,
+  /** 请求体过大 */
   PayloadTooLarge = 413,
+  /** 服务器错误 */
   InternalServerError = 500,
 }
 
@@ -24,7 +32,7 @@ export enum HTTPStatusCode {
  * @example createResponse(res, HTTPStatusCode.BadRequest, { message: '参数错误' })
  * @example createResponse(res, HTTPStatusCode.InternalServerError, { message: '服务器错误' })
  */
-export const createResponse = <T>(res: Response, code: HTTPStatusCode, data?: T, message = '') => {
+export const createResponse = <T> (res: Response, code: HTTPStatusCode, data?: T, message = '') => {
   res.status(code).json({
     code,
     data,
@@ -42,7 +50,7 @@ export const createResponse = <T>(res: Response, code: HTTPStatusCode, data?: T,
  * @example createSuccessResponse(res, null, '成功')
  * @example createSuccessResponse(res, data)
  */
-export const createSuccessResponse = <T>(res: Response, data?: T, message = '成功') => {
+export const createSuccessResponse = <T> (res: Response, data?: T, message = '成功') => {
   return createResponse(res, HTTPStatusCode.OK, data, message)
 }
 

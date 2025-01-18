@@ -7,8 +7,7 @@ import { randomStr } from '../fs/data'
 import { defaultConfig } from './default'
 import { requireFile, requireFileSync } from '../fs/require'
 
-import type { FileListMap, Package } from '@/types/config'
-import type { Config } from '@/types/config'
+import type { Config, Env, FileListMap, Package, PM2, Redis } from '@/types/config'
 
 const FILE = `${configPath}/config.json`
 let cache = await lint<Config>(defaultConfig.config, await requireFile(FILE))
@@ -24,9 +23,11 @@ export const master = (): string[] => config().master
 /** 管理员列表 */
 export const admin = (): string[] => config().admin
 /** redis配置 */
-export const redis = () => requireFileSync(`${configPath}/redis.json`, { ex: 30 })
+export const redis = () => requireFileSync<Redis>(`${configPath}/redis.json`, { ex: 30 })
 /** pm2配置 */
-export const pm2 = () => requireFileSync(`${configPath}/pm2.json`, { ex: 30 })
+export const pm2 = () => requireFileSync<PM2>(`${configPath}/pm2.json`, { ex: 30 })
+/** env配置 */
+export const env = () => requireFileSync<Env>(`${process.cwd()}/.env`, { ex: 30 })
 /** ffmpeg路径 */
 export const ffmpegPath = () => process.env.FFMPEG_PATH
 /** ffprobe路径 */
@@ -57,7 +58,7 @@ export const pkg = () => requireFileSync<Package>(root.karinDir + '/package.json
  * @param type 文件类型 用户配置/默认配置
  * @param isRefresh 是否刷新缓存
  */
-export const getYaml = <T extends keyof FileListMap>(
+export const getYaml = <T extends keyof FileListMap> (
   name: T,
   type: 'user' | 'default',
   isRefresh?: boolean,
@@ -75,7 +76,7 @@ export const getYaml = <T extends keyof FileListMap>(
  * @param name 文件名称
  * @param data 配置数据
  */
-export const setYaml = <T extends keyof FileListMap>(name: T, data: Record<string, any>) => {
+export const setYaml = <T extends keyof FileListMap> (name: T, data: Record<string, any>) => {
   const file = `${root.configPath}/${name}.json`
   if (!fs.existsSync(file)) return false
 

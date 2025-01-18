@@ -1,10 +1,12 @@
 import { router } from './router'
+import { getFileList } from '../utils/file'
 import { setYaml, getYaml } from '@/utils/config/config'
+import { createBadRequestResponse, createSuccessResponse } from '../utils/response'
+
 import type { RequestHandler } from 'express'
 import type { FileList } from '@/types/config'
-import { createSuccessResponse } from '../utils/response'
 
-const list: FileList[] = ['adapter', 'config', 'groups', 'pm2', 'privates', 'redis', 'render']
+const list: (FileList | 'env')[] = ['adapter', 'config', 'groups', 'pm2', 'privates', 'redis', 'render', 'env']
 
 const nameMap = {
   adapter: '适配器配置',
@@ -14,6 +16,7 @@ const nameMap = {
   privates: '好友和频道私信配置',
   redis: 'redis配置',
   render: '渲染器配置',
+  env: '环境变量配置',
 }
 
 /**
@@ -22,7 +25,6 @@ const nameMap = {
  * @param res 响应
  */
 const fileRouter: RequestHandler = async (_req, res) => {
-  // 组合文件列表
   const files = list.map((name) => ({
     name,
     title: nameMap[name],
@@ -39,8 +41,7 @@ const fileRouter: RequestHandler = async (_req, res) => {
 const setFileRouter: RequestHandler = async (req, res) => {
   const { name, data } = req.body
   if (!name || !data || !list.includes(name) || typeof data !== 'object') {
-    res.status(400).json({ message: '参数错误' })
-    return
+    return createBadRequestResponse(res, '参数错误')
   }
 
   setYaml(name, data)
@@ -55,13 +56,25 @@ const setFileRouter: RequestHandler = async (req, res) => {
 const getFileRouter: RequestHandler = async (req, res) => {
   const { name } = req.body
   if (!name || !list.includes(name)) {
-    res.status(400).json({ message: '参数错误' })
-    return createSuccessResponse(res, null, '获取成功')
+    return createBadRequestResponse(res, '参数错误')
   }
 
-  createSuccessResponse(res, getYaml(name, 'user'), '获取成功')
+  const data = getYaml(name, 'user')
+  createSuccessResponse(res, data)
 }
 
-router.get('/file', fileRouter)
+/**
+ * 获取文件字段
+ * @param req 请求
+ * @param res 响应
+ */
+const getFileFieldsRouter: RequestHandler = async (req, res) => {
+  const { name } = req.body
+  const fields = getFileList(name)
+  createSuccessResponse(res, fields)
+}
+
+router.post('/file', fileRouter)
 router.post('/set_file', setFileRouter)
 router.post('/get_file', getFileRouter)
+router.post('/get_file_fields', getFileFieldsRouter)

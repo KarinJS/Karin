@@ -1,5 +1,5 @@
 /**
- * `config.yaml` 类型
+ * `config.json` 类型
  */
 export interface Config {
   /** 主人列表 */
@@ -65,17 +65,17 @@ export interface Config {
     /** 频道日志黑名单 */
     log_disable_list: string[]
   }
-  /** 频道消息管理 */
+  /** 子频道消息管理 */
   channels: {
-    /** 是否启用频道消息事件 */
+    /** 是否启用子频道消息事件 */
     enable: boolean
-    /** 频道白名单 */
+    /** 子频道白名单 */
     enable_list: string[]
-    /** 频道黑名单 */
+    /** 子频道黑名单 */
     disable_list: string[]
-    /** 频道日志白名单 */
+    /** 子频道日志白名单 */
     log_enable_list: string[]
-    /** 频道日志黑名单 */
+    /** 子频道日志黑名单 */
     log_disable_list: string[]
   }
 }

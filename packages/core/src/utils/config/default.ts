@@ -167,10 +167,6 @@ const defaultConfig = Object.freeze({
   },
   redis: {
     url: 'redis://127.0.0.1:6379',
-    socket: {
-      host: '127.0.0.1',
-      port: 6379,
-    },
     username: '',
     password: '',
     database: 0,

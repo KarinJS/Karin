@@ -11,10 +11,10 @@
     "build:core": "pnpm --filter node-karin run build",
     "build": "pnpm run build:core && pnpm run build:web",
     "build:prod": "pnpm --filter node-karin run build:prod",
-    "build:web": "cd packages/web && pnpm run build",
+    "build:web": "pnpm --filter karin-webui run build",
     "dev": "pnpm --filter node-karin run dev",
     "dev:cli": "pnpm --filter node-karin run dev:cli",
-    "dev:web": "cd packages/web && pnpm run dev"
+    "dev:web": "pnpm --filter karin-webui run dev"
   },
   "devDependencies": {
     "@types/node": "^22.5.0",
