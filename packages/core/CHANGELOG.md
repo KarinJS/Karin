@@ -1,5 +1,23 @@
 # 更新日志
 
+## [1.2.0](https://github.com/KarinJS/Karin/compare/core-v1.1.5...core-v1.2.0) (2025-01-18)
+
+
+### ✨ Features
+
+* webui ([833eb2a](https://github.com/KarinJS/Karin/commit/833eb2a7bd40225d074f51b21cbfa1261d681665))
+* 修改当前日志等级Api ([874bb7b](https://github.com/KarinJS/Karin/commit/874bb7ba2a220275cc85cff26a2013524523b445))
+* 系统状态 ([4380a76](https://github.com/KarinJS/Karin/commit/4380a76c170e99a74aec2956bedf5ee4a0260e92))
+* 系统状态 ([23d8664](https://github.com/KarinJS/Karin/commit/23d8664706c8c1814b3c160ff1cf3667be4f8e8e))
+* 获取日志Api 修复进程启动检查 ([4f762a1](https://github.com/KarinJS/Karin/commit/4f762a17cdabeba40587e456aa24424cbf8d0ac4))
+
+
+### 🐛 Bug Fixes
+
+* onebot11请求事件 ([f91edbe](https://github.com/KarinJS/Karin/commit/f91edbe01aa3b4f3213b0c0ed791baa6d00e3476))
+* 请求方式&打包路径 ([2a52898](https://github.com/KarinJS/Karin/commit/2a52898033364185e28ad7b31047571fce2ecf44))
+* 配置文件api ([a7ca287](https://github.com/KarinJS/Karin/commit/a7ca287277172577705d70ceb8dc785af525e41b))
+
 ## [1.1.5](https://github.com/KarinJS/Karin/compare/core-v1.1.4...core-v1.1.5) (2025-01-17)
 
 
