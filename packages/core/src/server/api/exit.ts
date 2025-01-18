@@ -9,4 +9,4 @@ const exitRouter: RequestHandler = async (_req, res) => {
   await processExit(0)
 }
 
-router.get('/exit', exitRouter)
+router.post('/exit', exitRouter)

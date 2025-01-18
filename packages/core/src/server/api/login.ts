@@ -6,4 +6,4 @@ const loginRouter: RequestHandler = async (_req, res) => {
   createSuccessResponse(res, null, '登录成功')
 }
 
-router.get('/login', loginRouter)
+router.post('/login', loginRouter)

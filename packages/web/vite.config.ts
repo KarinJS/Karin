@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   base: '/web/',
   build: {
-    outDir: '../../dist/web',
+    outDir: '../core/dist/web',
   },
   server: {
     proxy: {

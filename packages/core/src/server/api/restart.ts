@@ -8,4 +8,4 @@ const restartRouter: RequestHandler = async (_req, res) => {
   restartDirect()
 }
 
-router.get('/restart', restartRouter)
+router.post('/restart', restartRouter)

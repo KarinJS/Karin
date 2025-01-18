@@ -8,8 +8,8 @@
   "type": "module",
   "main": "",
   "scripts": {
-    "build": "pnpm --filter node-karin run build",
-    "build:all": "pnpm run build && pnpm run build:web",
+    "build:core": "pnpm --filter node-karin run build",
+    "build": "pnpm run build:core && pnpm run build:web",
     "build:prod": "pnpm --filter node-karin run build:prod",
     "build:web": "cd packages/web && pnpm run build",
     "dev": "pnpm --filter node-karin run dev",
