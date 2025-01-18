@@ -1,7 +1,8 @@
 import { router } from './router'
-import type { RequestHandler } from 'express'
-import { createSuccessResponse } from '../utils/response'
 import { restartDirect } from '@/utils/system/restart'
+import { createSuccessResponse } from '../utils/response'
+
+import type { RequestHandler } from 'express'
 
 const restartRouter: RequestHandler = async (_req, res) => {
   createSuccessResponse(res, null, '指令发送成功')
@@ -15,5 +16,5 @@ const exitRouter: RequestHandler = async (_req, res) => {
   await processExit(0)
 }
 
-router.post('/restart', restartRouter)
 router.post('/exit', exitRouter)
+router.post('/restart', restartRouter)
