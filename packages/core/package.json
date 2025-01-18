@@ -37,6 +37,7 @@
     "/dist/**/*.cjs",
     "/dist/**/*.d.ts",
     "/default/**",
+    "/dist/web/**",
     "CHANGELOG.md",
     "LICENSE",
     "package.json",
