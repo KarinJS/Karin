@@ -19,15 +19,34 @@ wss.on('error', (error: NodeJS.ErrnoException) => {
 wss.on('connection', (socket, request) => {
   debug(`wss:connection host: ${request.headers.host} url: ${request.url}`)
 
-  if (request?.headers?.a || request.url === '/' || request.url === '/onebot/v11/ws' || request.url === '/onebot/v11/ws/') {
+  if (
+    request?.headers?.a ||
+    request.url === '/' ||
+    request.url === '/onebot/v11/ws' ||
+    request.url === '/onebot/v11/ws/'
+  ) {
     listeners.emit('ws:connection:onebot', socket, request)
+
+    socket.on('close', (code, reason) => {
+      listeners.emit('ws:close:onebot', socket, request, code, reason)
+    })
+
     return
   }
 
   if (request.url === '/puppeteer') {
     listeners.emit('ws:connection:puppeteer', socket, request)
+
+    socket.on('close', (code, reason) => {
+      listeners.emit('ws:close:puppeteer', socket, request, code, reason)
+    })
+
     return
   }
 
   listeners.emit('ws:connection', socket, request)
+
+  socket.on('close', (code, reason) => {
+    listeners.emit('ws:close', socket, request, code, reason)
+  })
 })
