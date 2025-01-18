@@ -2,10 +2,8 @@ import { AdapterBase } from '@/adapter/base'
 import { OB11ApiAction } from '@/adapter/onebot/types/api'
 import { OB11Event } from '@/adapter/onebot/types/event'
 import { createMessage } from '@/adapter/onebot/create/message'
-import {
-  createNotice,
-  createRequest,
-} from '@/adapter/onebot/create/notice'
+import { createNotice } from '@/adapter/onebot/create/notice'
+import { createRequest } from '@/adapter/onebot/create/request'
 import {
   AdapterConvertKarin,
   KarinConvertAdapter,

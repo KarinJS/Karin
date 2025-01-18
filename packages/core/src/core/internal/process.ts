@@ -8,9 +8,10 @@ let exitStatus = false
 /**
  * 日志添加前缀
  * @param msg - 日志内容
+ * @param isTrim - 是否去除空格
  * @returns 日志内容
  */
-const tips = (msg: string) => `[process] ${msg}`
+const tips = (msg: string, isTrim = false) => `[process]${isTrim ? '' : ' '}${msg}`
 
 /** 处理基本信号 */
 export const processHandler = () => {
@@ -138,7 +139,7 @@ const request = async (
 
     if (result.status === 200) {
       logger.info(
-        tips(`[process][${method}] 请求成功:\n`) +
+        tips(`[${method}] 请求成功:\n`, true) +
         `path: ${path}\n` +
         `body: ${JSON.stringify(result.data)}\n`
       )
@@ -147,7 +148,7 @@ const request = async (
 
     if (result.status === 401) {
       logger.error(
-        tips(`[process][${method}] 鉴权失败:\n`) +
+        tips(`[${method}] 鉴权失败:\n`, true) +
         `path: ${path}\n` +
         `body: ${JSON.stringify(result.data)}\n`
       )
@@ -155,7 +156,7 @@ const request = async (
     }
 
     (path === '/ping' ? logger.debug : logger.error).call(logger,
-      tips(`[process][${method}] 请求失败:\n`) +
+      tips(`[${method}] 请求失败:\n`, true) +
       `path: ${path}\n` +
       `body: ${JSON.stringify(result.data)}\n`
     )
@@ -163,7 +164,7 @@ const request = async (
     return { code: result.status, success: false }
   } catch (error) {
     logger.debug(
-      tips(`[process][${method}] 请求异常:\n`) +
+      tips(`[${method}] 请求异常:\n`, true) +
       `path: ${path}\n` +
       `error: ${(error as Error)?.message || '未知错误'}\n`
     )

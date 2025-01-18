@@ -1,7 +1,7 @@
 import { contactFriend, contactGroup, senderFriend, senderGroup } from '@/event'
 import { AdapterOneBot } from '@/adapter/onebot/core/base'
 import { OB11NoticeType } from '@/adapter/onebot/types/event'
-import type { OB11Message, OB11Notice, OB11Request } from '@/adapter/onebot/types/event'
+import type { OB11Notice } from '@/adapter/onebot/types/event'
 import {
   createFriendIncreaseNotice,
   createGroupAdminChangedNotice,
@@ -384,22 +384,4 @@ export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
   }
 
   logger.warn(`[AdapterOneBot] 收到未知事件: ${JSON.stringify(event)}`)
-}
-
-/**
- * 创建请求事件
- * @param event onebot11请求事件
- * @param bot 标准api实例
- */
-export const createRequest = (event: OB11Request, bot: AdapterOneBot) => {
-
-}
-
-/**
- * 处理元事件
- * @param event 元事件
- * @param bot 标准api实例
- */
-export const createMeta = (event: OB11Message, bot: AdapterOneBot) => {
-
 }

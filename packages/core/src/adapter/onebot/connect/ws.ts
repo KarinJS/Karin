@@ -48,7 +48,11 @@ export abstract class WsAdapterOneBot11 extends AdapterOneBot {
     this.socket.on('message', (rawData) => {
       const str = rawData.toString()
       const json = JSON.parse(str)
-      const data = json as OB11AllEvent
+
+      const data = {
+        ...json,
+        self_id: this.selfId,
+      } as OB11AllEvent
 
       if (json.echo) {
         logger.bot('debug', this.selfId, `Api调用回应: ${str}`)
@@ -77,7 +81,6 @@ export abstract class WsAdapterOneBot11 extends AdapterOneBot {
   private async setBotInfo () {
     const info = await this.sendApi(OB11ApiAction.getLoginInfo, {})
     this.account.name = info.nickname
-    this.account.selfId = info.user_id + ''
     this.account.avatar = `https://q1.qlogo.cn/g?b=qq&s=0&nk=${info.user_id}`
   }
 

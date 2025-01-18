@@ -13,7 +13,7 @@ export const createMessage = (event: OB11Message, bot: AdapterOneBot) => {
   debug('onebot:createMessage', event)
   const time = event.time
   if (event.message_type === 'private') {
-    if (event.sub_type === 'friend') {
+    if (event.sub_type === 'friend' || event.sub_type === 'other') {
       const userId = event.sender.user_id + ''
       const contact = contactFriend(userId)
       const sender = senderFriend(userId,
@@ -55,7 +55,10 @@ export const createMessage = (event: OB11Message, bot: AdapterOneBot) => {
         time,
         srcReply: (elements) => bot.sendMsg(contact, elements),
       })
+      return
     }
+
+    logger.warn(`[AdapterOneBot] 收到未知的私聊事件: ${JSON.stringify(event)}`)
     return
   }
 

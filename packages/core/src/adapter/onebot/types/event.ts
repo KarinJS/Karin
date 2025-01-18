@@ -169,6 +169,20 @@ export interface OB11GroupTempMessage extends MessageBase {
   sender: OB11FriendSender
 }
 
+/** 其他好友消息 已知的有 https://github.com/A-kirami/matcha */
+export interface OB11OtherFriendMessage extends MessageBase {
+  /** 消息类型 */
+  message_type: 'private'
+  /** 消息子类型 */
+  sub_type: 'other'
+  /** 接收者QQ gocq-http拓展 */
+  target_id?: number
+  /** 临时会话来源 */
+  temp_source?: number
+  /** 发送人信息 */
+  sender: OB11FriendSender
+}
+
 /** 群消息事件 */
 export interface OB11GroupMessage extends MessageBase {
   /** 消息类型 */
@@ -191,7 +205,7 @@ export interface OB11GroupMessage extends MessageBase {
 }
 
 /** 消息事件 */
-export type OB11Message = OB11PrivateMessage | OB11GroupMessage | OB11GroupTempMessage
+export type OB11Message = OB11PrivateMessage | OB11GroupMessage | OB11GroupTempMessage | OB11OtherFriendMessage
 
 /** 通知事件基类 */
 export interface OB11NoticeBaseType extends OB11EventBase {
