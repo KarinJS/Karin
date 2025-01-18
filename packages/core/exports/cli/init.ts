@@ -160,6 +160,8 @@ const createOrUpdateEnv = (dir: string) => {
     'LOG_MAX_LOG_SIZE=0',
     '# logger.fnc颜色',
     'LOG_FNC_COLOR="#E1D919"',
+    '# 日志实时Api最多支持同时连接数',
+    'LOG_API_MAX_CONNECTIONS=5',
     '\n',
     '# ffmpeg',
     'FFMPEG_PATH=',

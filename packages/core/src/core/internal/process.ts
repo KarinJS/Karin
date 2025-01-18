@@ -1,9 +1,16 @@
+import axios from 'axios'
 import { listeners } from './listeners'
 import { exec } from '@/utils/system/exec'
-import { getPid } from '@/utils/system/pid'
-import { axios, sleep, uptime } from '@/utils/common/index'
+import { sleep, uptime } from '@/utils/common/index'
 
 let exitStatus = false
+
+/**
+ * 日志添加前缀
+ * @param msg - 日志内容
+ * @returns 日志内容
+ */
+const tips = (msg: string) => `[process] ${msg}`
 
 /** 处理基本信号 */
 export const processHandler = () => {
@@ -45,61 +52,38 @@ export const processHandler = () => {
  * @param port - 端口号
  */
 export const checkProcess = async (port: number) => {
-  const host = `http://127.0.0.1:${port}/v1`
-  const data = await axios({
-    url: `${host}/ping`,
-    method: 'get',
-    timeout: 300,
-    headers: { Authorization: `Bearer ${process.env.HTTP_AUTH_KEY}` },
-  })
+  const host = `http://127.0.0.1:${port}/api/v1`
 
-  if (!data || data.status !== 200) return
-
-  /** 端口被未知程序占用 获取对应的进程ID */
-  if (data?.data?.ping !== 'pong') {
-    const pid = await getPid(port).catch(() => -0)
-    logger.fatal(`端口 ${port} 被进程占用，进程ID：${pid}，请手动关闭对应进程或解除端口占用`)
+  /** 1. 检查api是否正常 */
+  const ping = await request(host, '/ping', 'get', 300)
+  if (!ping || !ping.success) {
+    logger.debug(logger.green('没有检测到后台进程~'))
     return
   }
 
-  /** 判断是否为同个进程 防止无限循环启动 */
-  if (data?.data?.pm2_id === process.pid) {
-    return
+  /** 2. 发送关闭后台进程 */
+  logger.error(logger.yellow(tips('检测到后台进程 正在关闭...')))
+  const exit = await request(host, '/exit', 'post', 500)
+  if (!exit || !exit.success) {
+    logger.fatal(logger.red(tips('后台进程关闭失败，如多开Bot请更换端口')))
+    process.exit(1)
   }
 
-  logger.error('检测到后台进程 正在关闭...')
-  const result = await axios({
-    url: `${host}/exit`,
-    method: 'post',
-    timeout: 500,
-    headers: { Authorization: `Bearer ${process.env.HTTP_AUTH_KEY}` },
-  })
-  if (typeof result === 'undefined') {
-    logger.fatal(logger.red(`当前存在多开Bot占用 ${port}端口，请更换端口或者关闭对应Bot`))
-    processExit(1)
-  }
-
+  /** 3. 等待后台进程关闭 */
   for (let i = 0; i < 100; i++) {
-    const result = await axios({
-      url: `${host}/ping`,
-      method: 'get',
-      timeout: 100,
-      headers: { Authorization: `Bearer ${process.env.HTTP_AUTH_KEY}` },
-    })
-    /** 请求成功继续循环 */
-    if (result) {
+    const ping = await request(host, '/ping', 'get', 300)
+    if (ping && ping.success) {
       await sleep(50)
       continue
     }
 
-    /** 请求异常即代表后台进程已关闭 */
-    logger.mark(logger.green('后台进程已关闭'))
+    logger.mark(logger.green(tips('后台进程已关闭')))
     return
   }
 
-  /** 走到这里说明后台关闭失败 */
-  logger.error(logger.red(`后台进程关闭失败，请检查是否有进程正在占用端口 ${port} `))
-  processExit(1)
+  /** 4. 后台进程关闭失败 */
+  logger.error(logger.red(tips(`后台进程关闭失败，请检查是否有进程正在占用端口 ${port} `)))
+  process.exit(1)
 }
 
 /**
@@ -114,7 +98,7 @@ export const processExit = async (code: unknown) => {
     const { redis, level } = await import('@/service/db')
     await Promise.allSettled([redis.save(), level.close()])
 
-    logger.mark(`运行结束 运行时间：${uptime()} 退出码：${code ?? '未知'}`)
+    logger.mark(tips(`运行结束 运行时间：${uptime()} 退出码：${code ?? '未知'}`))
 
     /** 如果是pm2环境 */
     if (process.env.pm_id) {
@@ -126,5 +110,64 @@ export const processExit = async (code: unknown) => {
       exitStatus = true
     }, 200)
     process.exit()
+  }
+}
+
+/**
+ * 发送请求
+ * @param url - 请求地址
+ * @param path - 请求路径
+ * @param method - 请求方法
+ * @param timeout - 请求超时时间
+ */
+const request = async (
+  url: string,
+  path: string,
+  method: 'get' | 'post',
+  timeout: number
+) => {
+  const client = axios.create({
+    baseURL: url,
+    timeout,
+    headers: { Authorization: `Bearer ${process.env.HTTP_AUTH_KEY}` },
+    validateStatus: () => true,
+  })
+
+  try {
+    const result = await client[method](path)
+
+    if (result.status === 200) {
+      logger.info(
+        tips(`[process][${method}] 请求成功:\n`) +
+        `path: ${path}\n` +
+        `body: ${JSON.stringify(result.data)}\n`
+      )
+      return { code: result.status, success: true }
+    }
+
+    if (result.status === 401) {
+      logger.error(
+        tips(`[process][${method}] 鉴权失败:\n`) +
+        `path: ${path}\n` +
+        `body: ${JSON.stringify(result.data)}\n`
+      )
+      return { code: result.status, success: false }
+    }
+
+    (path === '/ping' ? logger.debug : logger.error).call(logger,
+      tips(`[process][${method}] 请求失败:\n`) +
+      `path: ${path}\n` +
+      `body: ${JSON.stringify(result.data)}\n`
+    )
+
+    return { code: result.status, success: false }
+  } catch (error) {
+    logger.debug(
+      tips(`[process][${method}] 请求异常:\n`) +
+      `path: ${path}\n` +
+      `error: ${(error as Error)?.message || '未知错误'}\n`
+    )
+
+    return { code: 500, success: false }
   }
 }

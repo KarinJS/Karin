@@ -1,5 +1,6 @@
-import { Request, Response, NextFunction } from 'express'
 import { auth } from './auth'
+import { Request, Response, NextFunction } from 'express'
+import { createUnauthorizedResponse } from './utils/response'
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   logger.debug(
@@ -17,7 +18,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       return
     }
     if (!auth.getAuth(req)) {
-      res.status(401).json({ message: '无效的token' })
+      createUnauthorizedResponse(res, '错误的token')
       return
     }
   }

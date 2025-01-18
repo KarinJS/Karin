@@ -84,15 +84,17 @@ export const setYaml = <T extends keyof FileListMap> (name: T, data: Record<stri
   return true
 }
 
-/** 每次启动清空临时文件夹 */
-export const clearTemp = () => {
-  const list = [root.htmlPath, root.consolePath]
-  list.forEach(file => {
-    if (fs.existsSync(file)) {
-      fs.rmSync(file, { recursive: true, force: true })
-    }
-  })
-}
+// /** 每次启动清空临时文件夹 */
+// export const clearTemp = () => {
+//   const list = [root.htmlPath, root.consolePath]
+//   list.forEach(file => {
+//     /** console html例外 */
+//     if (file === root.consolePath || file === root.htmlPath) return
+//     if (fs.existsSync(file)) {
+//       fs.rmSync(file, { recursive: true, force: true })
+//     }
+//   })
+// }
 
 /**
  * 更新日志等级

@@ -1,8 +1,10 @@
 import { router } from './router'
 import { listeners, statusListener } from '@/core/internal'
-import type { SystemStatus } from '@/types/system/status'
 import { createSuccessResponse } from '../utils/response'
+
+import type { SystemStatus } from '@/types/system/status'
 import type { RequestHandler } from 'express'
+
 const wsOneBotSet = new Set<WebSocket>()
 const wsPuppeteerSet = new Set<WebSocket>()
 

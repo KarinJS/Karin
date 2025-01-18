@@ -41,6 +41,8 @@ declare global {
       KARIN_VERSION: string
       /** tsx监察者模式 */
       TSX_WATCH: string
+      /** 日志实时Api最多支持同时连接数 */
+      LOG_MAX_CONNECTIONS: string
     }
   }
 }

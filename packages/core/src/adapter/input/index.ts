@@ -153,14 +153,14 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
     await fs.promises.writeFile(file, await buffer(data))
 
     if (cfg.console.isLocal) {
-      return `http://127.0.0.1:${process.env.HTTP_PORT}/console/${name}${ext}`
+      return `http://127.0.0.1:${process.env.HTTP_PORT}/api/v1/console/${name}${ext}`
     }
 
     if (cfg.console.host) {
-      return `${cfg.console.host}/console/${name}${ext}?token=${cfg.console.token}`
+      return `${cfg.console.host}/api/v1/console/${name}${ext}?token=${cfg.console.token}`
     }
 
-    return `http://127.0.0.1:${process.env.HTTP_PORT}/console/${name}${ext}?token=${cfg.console.token}`
+    return `http://127.0.0.1:${process.env.HTTP_PORT}/api/v1/console/${name}${ext}?token=${cfg.console.token}`
   }
 }
 
