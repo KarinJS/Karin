@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.2.1](https://github.com/KarinJS/Karin/compare/core-v1.2.0...core-v1.2.1) (2025-01-18)
+
+
+### 🐛 Bug Fixes
+
+* build web ([54fb566](https://github.com/KarinJS/Karin/commit/54fb566fda73bfb3f37f2cc445b197358e447847))
+
 ## [1.2.0](https://github.com/KarinJS/Karin/compare/core-v1.1.5...core-v1.2.0) (2025-01-18)
 
 
