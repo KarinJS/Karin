@@ -1,7 +1,8 @@
 import path from 'node:path'
 import express from 'express'
-import { createServer } from 'node:http'
+import { karinDir } from '@/root'
 import { router } from './api/router'
+import { createServer } from 'node:http'
 import { listeners } from '@/core/internal'
 import { authMiddleware } from './middleware'
 
@@ -35,7 +36,7 @@ export const listen = (port: number, host: string) => {
  */
 export const web = () => {
   /** web静态文件目录 */
-  const webDir = path.join(process.cwd(), 'dist/web')
+  const webDir = path.join(karinDir, 'dist/web')
   const staticFiles = express.static(webDir)
 
   /** 所有 /web 开头的路由都指向静态文件 */
