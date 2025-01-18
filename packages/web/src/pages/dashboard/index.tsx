@@ -3,16 +3,18 @@ import { Card, CardBody, CardHeader } from '@heroui/card'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
 import clsx from 'clsx'
-import type { KarinStatus } from '@/types/server'
-import { Chip } from '@heroui/chip'
+import type { KarinStatus, SystemStatus } from '@/types/server'
 import { SiJavascript, SiTypescript } from 'react-icons/si'
 import { Button } from '@heroui/button'
 import { RiRestartLine, RiShutDownLine } from 'react-icons/ri'
 import { Tooltip } from '@heroui/tooltip'
-import { useState } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import useDialog from '@/hooks/use-dialog'
+import { VscBracketError } from 'react-icons/vsc'
+import { getSystemStatus } from '@/lib/status'
+import SystemStatusDisplay from '@/components/system_display_card'
 
 function OnlineStatus() {
   const { error } = useRequest(
@@ -38,27 +40,32 @@ export interface StatusItemProps {
 }
 function StatusItem({ title, value }: StatusItemProps) {
   return (
-    <div className="flex shadow-small rounded-full bg-danger-50 bg-opacity-20 overflow-hidden items-center gap-2">
-      <div className="w-24 py-2 px-4 bg-gradient-to-r from-danger-100 to-danger-100/0 text-danger font-bold">
+    <div className="flex shadow-small rounded-full bg-primary-50 bg-opacity-20 overflow-hidden items-center gap-2">
+      <div className="w-24 py-2 px-4 bg-gradient-to-r from-primary-100 to-primary-100/0 text-primary font-bold">
         {title}
       </div>
-      <Chip color="warning" variant="flat">
-        {typeof value === 'boolean' ? (value ? '是' : '否') : value || '--'}
-      </Chip>
+      {typeof value === 'boolean' ? (value ? '是' : '否') : value || '--'}
     </div>
   )
 }
 
 function Status() {
-  const { data, error } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status'), {
+  const { data, error } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'), {
     pollingInterval: 1000,
   })
   if (error || !data) {
-    return <div>请求错误</div>
+    return (
+      <div className="flex flex-col justify-center items-center gap-2">
+        <div className="text-danger text-4xl">
+          <VscBracketError />
+        </div>
+        <div>请求错误</div>
+      </div>
+    )
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
       <StatusItem title="名称" value={data.name.toUpperCase()} />
       <StatusItem title="PID" value={data.pid} />
       <StatusItem title="PM2 ID" value={data.pm2_id} />
@@ -81,6 +88,27 @@ function Status() {
       <StatusItem title="运行环境" value={data.karin_runtime} />
     </div>
   )
+}
+
+function SystemStatusCard()  {
+  const [systemStatus, setSystemStatus] = useState<SystemStatus>()
+  const getStatus = useCallback(() => {
+    try {
+      const event = getSystemStatus(setSystemStatus)
+      return event
+    } catch (error) {
+      toast.error('获取系统状态失败')
+    }
+  }, [])
+
+  useEffect(() => {
+    const close = getStatus()
+    return () => {
+      close?.close()
+    }
+  }, [getStatus])
+
+  return <SystemStatusDisplay data={systemStatus} />
 }
 
 function ControlButtons() {
@@ -142,8 +170,8 @@ function ControlButtons() {
           className="btn btn-primary text-lg"
           isIconOnly
           radius="full"
-          color="warning"
-          variant="shadow"
+          color="primary"
+          variant="flat"
           isDisabled={running}
           onPress={onRestart}
         >
@@ -155,7 +183,7 @@ function ControlButtons() {
           className="btn btn-primary text-lg"
           isIconOnly
           radius="full"
-          color="danger"
+          color="primary"
           variant="shadow"
           isDisabled={running}
           onPress={onShutDown}
@@ -169,13 +197,13 @@ function ControlButtons() {
 
 export default function IndexPage() {
   return (
-    <section>
+    <section className="flex flex-col gap-4">
       <Card shadow="sm">
-        <CardHeader>
+        <CardHeader className="pl-4">
           <div
             className={title({
               size: 'sm',
-              color: 'pink',
+              color: 'blue',
             })}
           >
             Karin
@@ -185,6 +213,11 @@ export default function IndexPage() {
         </CardHeader>
         <CardBody>
           <Status />
+        </CardBody>
+      </Card>
+      <Card shadow="sm">
+        <CardBody>
+          <SystemStatusCard />
         </CardBody>
       </Card>
     </section>

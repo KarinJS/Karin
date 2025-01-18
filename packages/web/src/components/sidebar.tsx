@@ -19,7 +19,8 @@ function MenuButton({ isCollapsed, children }: MenuButtonProps) {
   return (
     <motion.div
       className={clsx(
-        'flex justify-center items-center text-sm h-10 text-danger hover:bg-default-100 transition-colors cursor-default md:cursor-pointer',
+        'flex justify-center items-center text-sm h-10 text-primary hover:bg-default-100 transition-colors cursor-default md:cursor-pointer',
+        !isCollapsed && 'md:h-16',
       )}
       initial={{
         borderRadius: isCollapsed ? 40 : 0,
@@ -40,7 +41,7 @@ export default function Sidebar() {
 
   return (
     <motion.div
-      className="pr-2 h-full fixed md:relative z-50"
+      className="pr-2 h-full fixed md:relative z-50 !pr-0"
       initial={{
         padding: isNotSmallScreen ? 30 : 10,
       }}
@@ -49,7 +50,10 @@ export default function Sidebar() {
       }}
     >
       <motion.div
-        className="bg-content1 md:!h-full md:!w-full shadow-foreground-200 shadow-small dark:shadow-foreground-50 overflow-hidden flex flex-col gap-2"
+        className={clsx(
+          'bg-content1 md:!h-full md:!w-full shadow-foreground-200 shadow-small dark:shadow-foreground-50 overflow-hidden flex flex-col gap-2',
+          !isCollapsed && 'md:pt-4',
+        )}
         initial={{
           borderRadius: 28,
           height: show || isNotSmallScreen ? '100%' : 56,
@@ -63,7 +67,7 @@ export default function Sidebar() {
       >
         <div className="flex p-2 pb-0 flex-shrink-0 flex-grow-0 items-center justify-center md:!p-0.5">
           <div
-            className="aspect-square bg-danger text-2xl rounded-full w-10 md:!w-0 md:!h-0 overflow-hidden shadow-md shadow-danger-300 flex justify-center items-center cursor-default md:cursor-pointer text-white flex-grow-0 flex-shrink-0 transition-all"
+            className="aspect-square bg-primary text-2xl rounded-full w-10 md:!w-0 md:!h-0 overflow-hidden shadow-md shadow-primary-300 flex justify-center items-center cursor-default md:cursor-pointer text-white flex-grow-0 flex-shrink-0 transition-all"
             onClick={() => setShow(!show)}
           >
             {show ? <IoClose /> : <IoMenu />}
@@ -151,7 +155,7 @@ export default function Sidebar() {
             <ThemeSwitch
               className="w-full h-full max-w-full flex justify-center"
               classNames={{
-                wrapper: '!text-danger',
+                wrapper: '!text-primary',
                 base: 'w-full h-full',
               }}
             />
