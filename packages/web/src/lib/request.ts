@@ -32,6 +32,8 @@ request.interceptors.response.use(
       const token = localStorage.getItem(key.token)
       if (token && JSON.parse(token) && err.config.url !== '/api/login') {
         localStorage.removeItem(key.token)
+      }
+      if(err.config.url !== '/api/login') {
         window.location.href = '/web/login'
       }
     }

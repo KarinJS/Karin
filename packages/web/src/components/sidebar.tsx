@@ -51,7 +51,7 @@ export default function Sidebar() {
     >
       <motion.div
         className={clsx(
-          'bg-content1 md:!h-full md:!w-full shadow-foreground-200 shadow-small dark:shadow-foreground-50 overflow-hidden flex flex-col gap-4',
+          'bg-content1 md:!h-full md:!w-full shadow-foreground-200 shadow-small dark:shadow-foreground-50 overflow-hidden flex flex-col gap-4 md:gap-2',
           !isCollapsed && 'md:pt-4',
         )}
         initial={{
@@ -95,7 +95,12 @@ export default function Sidebar() {
             <div>KarinJS</div>
           </motion.div>
         </div>
-        <div className="flex-1 p-2 px-4 pt-0 flex flex-col gap-2 gap-y-4 overflow-y-auto hide-scrollbar">
+        <div className={
+          clsx(
+            "flex-1 p-2 px-2 pt-0 flex flex-col gap-2 gap-y-4 overflow-y-auto hide-scrollbar",
+            !isCollapsed && 'px-4',
+          )
+        }>
           {siteConfig.navItems.map(item => (
             <NavLink
               key={item.href}

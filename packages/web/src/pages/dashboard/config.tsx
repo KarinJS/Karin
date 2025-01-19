@@ -1,8 +1,10 @@
+import PageUnderConstruction from '@/components/page_under_construction'
+
 export default function ConfigPage() {
 
   return (
-    <div>
-      <h1>Config Page</h1>
-    </div>
+    <section>
+      <PageUnderConstruction />
+    </section>
   )
 }

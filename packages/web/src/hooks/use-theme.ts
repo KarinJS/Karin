@@ -1,6 +1,8 @@
-// originally written by @imoaazahmed
+// originally written by @imoaazahmed, edited by @bietiaop
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
+import { useLocalStorageState } from 'ahooks'
+import key from '@/consts/key'
 
 const ThemeProps = {
   key: 'theme',
@@ -11,10 +13,13 @@ const ThemeProps = {
 type Theme = typeof ThemeProps.light | typeof ThemeProps.dark
 
 export const useTheme = (defaultTheme?: Theme) => {
-  const [theme, setTheme] = useState<Theme>(() => {
-    const storedTheme = localStorage.getItem(ThemeProps.key) as Theme | null
-
-    return storedTheme || (defaultTheme ?? ThemeProps.light)
+  try {
+    JSON.parse(localStorage.getItem(ThemeProps.key) ?? '')
+  } catch {
+    localStorage.setItem(ThemeProps.key, ThemeProps.light)
+  }
+  const [theme, setTheme] = useLocalStorageState<Theme>(key.theme, {
+    defaultValue: defaultTheme ?? ThemeProps.light,
   })
 
   const isDark = useMemo(() => {
@@ -39,8 +44,8 @@ export const useTheme = (defaultTheme?: Theme) => {
   const toggleTheme = () => (theme === ThemeProps.dark ? setLightTheme() : setDarkTheme())
 
   useEffect(() => {
-    _setTheme(theme)
-  })
+    _setTheme(theme ?? ThemeProps.light)
+  }, [])
 
   return { theme, isDark, isLight, setLightTheme, setDarkTheme, toggleTheme }
 }
