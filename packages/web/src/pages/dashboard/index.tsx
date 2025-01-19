@@ -132,7 +132,7 @@ function ControlButtons() {
               } catch (e) {
                 console.error(e)
               }
-            }, 1000)
+            }, 2000)
           })
           toast.success('重启成功')
         } catch (e) {

@@ -1,10 +1,11 @@
-import { Adapters } from './adapter'
-import { Config } from './config'
-import { Groups } from './groups'
-import { PM2 } from './pm2'
-import { Privates } from './privates'
-import { Redis } from './redis'
-import { Renders } from './render'
+import type { Adapters } from './adapter'
+import type { Config } from './config'
+import type { Env } from './env'
+import type { Groups } from './groups'
+import type { PM2 } from './pm2'
+import type { Privates } from './privates'
+import type { Redis } from './redis'
+import type { Renders } from './render'
 
 /**
  * 文件列表
@@ -34,4 +35,5 @@ export interface FileListMap {
   render: Renders
   groups: Groups
   privates: Privates
+  env: Env
 }

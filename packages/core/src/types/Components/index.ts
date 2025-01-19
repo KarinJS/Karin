@@ -128,7 +128,9 @@ export interface SelectComponent extends BaseComponent {
     /** 选项文本 */
     label: string
     /** 选项值 */
-    value: string
+    value: string | number | boolean
+    /** 是否禁用 */
+    disabled?: boolean
   }[]
 }
 
@@ -178,7 +180,7 @@ export interface RadioComponent extends BaseComponent {
     /** 选项文本 */
     label: string
     /** 选项值 */
-    value: string
+    value: string | number | boolean
     /** 是否选中 */
     checked?: boolean
     /** 是否禁用 */
@@ -200,7 +202,7 @@ export interface CheckboxComponent extends BaseComponent {
     /** 选项文本 */
     label: string
     /** 选项值 */
-    value: string
+    value: string | number | boolean
     /** 是否选中 */
     checked?: boolean
     /** 是否禁用 */

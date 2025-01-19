@@ -8,6 +8,7 @@ import { defaultConfig } from './default'
 import { requireFile, requireFileSync } from '../fs/require'
 
 import type { Config, Env, FileListMap, Package, PM2, Redis } from '@/types/config'
+import { setEnv } from './env'
 
 const FILE = `${configPath}/config.json`
 let cache = await lint<Config>(defaultConfig.config, await requireFile(FILE))
@@ -77,12 +78,26 @@ export const getYaml = <T extends keyof FileListMap> (
  * @param data 配置数据
  */
 export const setYaml = <T extends keyof FileListMap> (name: T, data: Record<string, any>) => {
+  if (name === 'env') return setEnv(data)
   const file = `${root.configPath}/${name}.json`
   if (!fs.existsSync(file)) return false
 
   fs.writeFileSync(file, JSON.stringify(data, null, 2))
   return true
 }
+
+/**
+ * @description 修改框架配置
+ * @param name 文件名称
+ * @param data 配置数据
+ */
+export const setConfig = <T extends keyof FileListMap> (name: T, data: FileListMap[T]) => {
+  return setYaml(name, data)
+}
+
+/**
+ *
+ */
 
 // /** 每次启动清空临时文件夹 */
 // export const clearTemp = () => {
