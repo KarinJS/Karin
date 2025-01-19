@@ -30,6 +30,7 @@
     "@heroui/tabs": "^2.2.8",
     "@heroui/theme": "2.4.5",
     "@heroui/tooltip": "^2.2.7",
+    "@heroui/popover": "^2.3.10",
     "@hookform/resolvers": "^3.10.0",
     "@react-aria/visually-hidden": "3.8.19",
     "@react-types/shared": "3.27.0",
