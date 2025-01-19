@@ -33,6 +33,12 @@ export enum HTTPStatusCode {
  * @example createResponse(res, HTTPStatusCode.InternalServerError, { message: '服务器错误' })
  */
 export const createResponse = <T> (res: Response, code: HTTPStatusCode, data?: T, message = '') => {
+  logger.debug(
+    '[express] 响应:\n' +
+    `code: ${code}\n` +
+    `data: ${JSON.stringify(data)}\n` +
+    `message: ${message}\n`
+  )
   res.status(code).json({
     code,
     data,
