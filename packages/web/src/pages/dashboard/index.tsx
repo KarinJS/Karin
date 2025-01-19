@@ -65,7 +65,7 @@ function Status() {
   }
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-6">
       <StatusItem title="名称" value={data.name.toUpperCase()} />
       <StatusItem title="PID" value={data.pid} />
       <StatusItem title="PM2 ID" value={data.pm2_id} />
@@ -199,7 +199,7 @@ export default function IndexPage() {
   return (
     <section className="flex flex-col gap-4">
       <Card shadow="sm">
-        <CardHeader className="pl-4">
+        <CardHeader className="pl-6 pr-8 pb-4 pt-6">
           <div
             className={title({
               size: 'sm',
@@ -211,7 +211,7 @@ export default function IndexPage() {
           <OnlineStatus />
           <ControlButtons />
         </CardHeader>
-        <CardBody>
+        <CardBody className='px-6 pb-6'>
           <Status />
         </CardBody>
       </Card>
