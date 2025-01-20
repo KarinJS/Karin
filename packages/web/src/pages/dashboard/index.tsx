@@ -90,7 +90,7 @@ function Status() {
   )
 }
 
-function SystemStatusCard()  {
+function SystemStatusCard() {
   const [systemStatus, setSystemStatus] = useState<SystemStatus>()
   const getStatus = useCallback(() => {
     try {
@@ -197,7 +197,7 @@ function ControlButtons() {
 
 export default function IndexPage() {
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex flex-col gap-4 pt-20 md:pt-8">
       <Card shadow="sm">
         <CardHeader className="pl-6 pr-8 pb-4 pt-6">
           <div
@@ -211,7 +211,7 @@ export default function IndexPage() {
           <OnlineStatus />
           <ControlButtons />
         </CardHeader>
-        <CardBody className='px-6 pb-6'>
+        <CardBody className="px-6 pb-6">
           <Status />
         </CardBody>
       </Card>

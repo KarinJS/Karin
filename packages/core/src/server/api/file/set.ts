@@ -68,4 +68,4 @@ const setFileRouter: RequestHandler = async (req, res) => {
   }
 }
 
-router.post('/set_file', setFileRouter)
+router.post('/config/set', setFileRouter)

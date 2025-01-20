@@ -11,7 +11,7 @@ export default function SandboxPage() {
     toast.error('沙箱调试正在开发中，目前不可用')
   }, [])
   return (
-    <section className="h-full -mt-10 md:mt-0 md:pb-7">
+    <section className="h-full pt-20 md:pt-8 pb-5 md:pb-8">
       <Card shadow="sm" className="h-full">
         <ResizablePanelGroup direction="horizontal">
           <div className="w-14 flex flex-col items-stretch">

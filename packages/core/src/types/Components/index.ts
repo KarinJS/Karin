@@ -1,238 +1,168 @@
-/** 组件类型 */
-export type ComponentType = 'input' |
-  'number' |
-  'switch' |
-  'select' |
-  'section' |
-  'divider' |
-  'title' |
-  'array' |
-  'colorPicker' |
-  'radio' |
-  'checkbox'
-
-interface BaseComponent {
-  /** 组件类型 */
-  type: ComponentType
-}
-
-/** 标题 */
-export interface TitleComponent extends BaseComponent {
-  type: 'title'
-  /** 标题文本 */
-  text: string
-}
-
-/** 文本输入框 */
-export interface InputComponent extends BaseComponent {
-  type: 'input'
-  /** 显示文本 */
-  label?: string
-  /** 字段名 */
-  field?: string
-  /** 输入框内容 */
-  value?: string
-  /** 描述 */
-  description?: string
-  /** 是否必填 */
-  required?: boolean
-  /** 默认值 */
-  defaultValue?: string
-  /** 最小长度 */
-  minLength?: number
-  /** 最大长度 */
-  maxLength?: number
-  /** 是否可编辑 */
-  editable?: boolean
-  /** 是否可删除 */
-  removable?: boolean
-  /** 尺寸: 大、默认、小，高度分别为 40px、32px 和 24px */
-  size?: 'large' | 'middle' | 'small'
-  /** 是否允许清空 */
-  allowClear?: boolean
-  /** 是否显示计数 */
-  showCount?: boolean
-}
-
-/** 数字输入框 */
-export interface NumberComponent extends BaseComponent {
-  type: 'number'
-  /** 显示文本 */
-  label?: string
-  /** 字段名 */
-  field?: string
-  /** 输入框内容 */
-  value?: number
-  /** 描述 */
-  description?: string
-  /** 是否必填 */
-  required?: boolean
-  /** 默认值 */
-  defaultValue?: number
-  /** 最小值 */
-  min?: number
-  /** 最大值 */
-  max?: number
-  /** 步长 */
-  step?: number
-  /** 允许鼠标滚轮改变数值 */
-  changeOnWheel?: boolean
-  /** 尺寸: 大、默认、小，高度分别为 40px、32px 和 24px */
-  size?: 'large' | 'middle' | 'small'
-}
-
-/** 开关 */
-export interface SwitchComponent extends BaseComponent {
-  type: 'switch'
-  /** 显示文本 */
-  label?: string
-  /** 字段名 */
-  field?: string
-  /** 描述 */
-  description?: string
-  /** 选中时的内容 */
-  checkedChildren?: string
-  /** 未选中时的内容 */
-  unCheckedChildren?: string
-  /** 开关大小，可选值：default small */
-  size?: 'default' | 'small'
-  /** 是否选中 */
-  checked?: boolean
-  /** 是否禁用 */
+export type Option = {
+  label: string
+  value: string | number
   disabled?: boolean
 }
 
-/** 下拉框选择器 */
-export interface SelectComponent extends BaseComponent {
-  type: 'select'
+/** 组件类型 */
+export type FieldType =
+  | 'text'
+  | 'number'
+  | 'switch'
+  | 'select'
+  | 'object'
+  | 'divider'
+  | 'array'
+  | 'objectArray'
+  | 'colorPicker'
+  | 'radio'
+  | 'checkbox'
+  | 'section'
+  | 'title'
+
+/** 值类型 */
+export type ValueType = 'string' | 'number' | 'boolean' | 'object'
+
+interface BaseField {
+  /** 组件类型 */
+  type: FieldType
+  /** 字段 */
+  key: string
   /** 显示文本 */
   label?: string
-  /** 字段名 */
-  field?: string
+  /** 是否必填 */
+  required?: boolean
   /** 描述 */
   description?: string
-  /** 是否为多选 */
+}
+
+/** 文本组件 */
+export interface TextField extends BaseField {
+  type: 'text'
+  /** 默认值 */
+  defaultValue?: string
+}
+
+/** 数字输入框 */
+export interface NumberField extends BaseField {
+  type: 'number'
+  /** 默认值 */
+  defaultValue?: number
+}
+
+/** 开关 */
+export interface SwitchField extends BaseField {
+  type: 'switch'
+  /** 默认值 */
+  defaultValue?: boolean
+}
+
+/** 下拉框选择器 */
+export interface SelectField extends BaseField {
+  type: 'select'
+  /** 是否多选 */
   multiple?: boolean
-  /** 是否展开下拉菜单 */
-  open?: boolean
-  /** 选择框默认文本 */
-  placeholder?: string
-  /** 是否显示搜索框 */
-  showSearch?: boolean
-  /** 是否显示清除按钮 */
-  allowClear?: boolean
-  /** 尺寸: 大、默认、小 */
-  size?: 'large' | 'middle' | 'small'
   /** 选项 */
-  options?: {
-    /** 选项文本 */
-    label: string
-    /** 选项值 */
-    value: string | number | boolean
-    /** 是否禁用 */
-    disabled?: boolean
-  }[]
+  options?: Option[]
+  /** 默认值 */
+  defaultValue?: string | number
 }
 
 /** 分隔符 */
-export interface DividerComponent extends BaseComponent {
+export interface DividerField extends BaseField {
   type: 'divider'
-  /** 是否为虚线 */
-  dashed?: boolean
-  /** 分割线是虚线、点线还是实线 */
-  variant?: 'dashed' | 'dotted' | 'solid'
 }
 
-/** 颜色选择器 */
-export interface ColorPickerComponent extends BaseComponent {
-  type: 'colorPicker'
-  /** 显示文本 */
-  label?: string
-  /** 允许清除选择的颜色 */
-  allowClear?: boolean
-  /** 默认值 */
-  defaultValue?: string
-  /** 默认格式 */
-  defaultFormat?: 'rgb' | 'hex' | 'hsb'
-  /** 颜色格式 默认hex */
-  format?: 'rgb' | 'hex' | 'hsb'
-  /** 是否展开颜色选择器 */
-  open?: boolean
-  /** 颜色值 */
-  value?: string
-  /** 选择器模式，用于配置单色与渐变 */
-  mode?: 'single' | 'gradient' | ('single' | 'gradient')[]
-  /** 是否禁用透明度选择 */
-  disabledAlpha?: boolean
-}
+// /** 颜色选择器 */
+// export interface ColorPickerField extends BaseField {
+//   type: 'colorPicker'
+//   /** 显示文本 */
+//   label?: string
+//   /** 允许清除选择的颜色 */
+//   allowClear?: boolean
+//   /** 默认值 */
+//   defaultValue?: string
+//   /** 默认格式 */
+//   defaultFormat?: 'rgb' | 'hex' | 'hsb'
+//   /** 颜色格式 默认hex */
+//   format?: 'rgb' | 'hex' | 'hsb'
+//   /** 是否展开颜色选择器 */
+//   open?: boolean
+//   /** 颜色值 */
+//   value?: string
+//   /** 选择器模式，用于配置单色与渐变 */
+//   mode?: 'single' | 'gradient' | ('single' | 'gradient')[]
+//   /** 是否禁用透明度选择 */
+//   disabledAlpha?: boolean
+// }
 
 /** 单选框 */
-export interface RadioComponent extends BaseComponent {
+export interface RadioField extends BaseField {
   type: 'radio'
-  /** 显示文本 */
-  label?: string
-  /** 字段名 */
-  field?: string
-  /** 垂直布局 默认false */
-  vertical?: boolean
   /** 选项 */
-  options?: {
-    /** 选项文本 */
-    label: string
-    /** 选项值 */
-    value: string | number | boolean
-    /** 是否选中 */
-    checked?: boolean
-    /** 是否禁用 */
-    disabled?: boolean
-  }[]
+  options: Option[]
+  /** 默认值 */
+  defaultValue?: string | number
 }
 
 /** 多选框 */
-export interface CheckboxComponent extends BaseComponent {
+export interface CheckboxField extends BaseField {
   type: 'checkbox'
-  /** 显示文本 */
-  label?: string
-  /** 字段名 */
-  field?: string
-  /** 是否垂直布局 默认false */
-  vertical?: boolean
   /** 选项 */
-  options?: {
-    /** 选项文本 */
-    label: string
-    /** 选项值 */
-    value: string | number | boolean
-    /** 是否选中 */
-    checked?: boolean
-    /** 是否禁用 */
-    disabled?: boolean
-  }[]
+  options: Option[]
+  /** 默认值 */
+  defaultValue?: string[] | number[]
 }
 
 /** 数组 */
-export interface ArrayComponent extends BaseComponent {
+export interface ArrayField extends BaseField {
   type: 'array'
-  /** 显示文本 */
-  label?: string
-  /** 字段名 */
-  field?: string
-  /** 子组件 */
-  items?: Component[]
+  /** 值类型 */
+  elementType: 'text' | 'number'
+  /** 默认值 */
+  defaultValue?: string | number
+}
+
+/** 对象 */
+export interface ObjectField extends BaseField {
+  type: 'object'
+  /** 子组件配置 */
+  fields: FormField[]
+}
+
+/** 对象数组 */
+export interface ObjectArrayField extends BaseField {
+  type: 'objectArray'
+  /** 子组件配置 */
+  fields: FormField[]
 }
 
 /** 分组 */
-export interface SectionComponent extends BaseComponent {
+export interface SectionField extends BaseField {
   type: 'section'
-  /** 显示文本 */
-  label?: string
-  /** 字段名 */
-  field?: string
-  /** 是否展开 */
-  open?: boolean
   /** 子组件 */
-  children?: Component[]
+  children: FormField[]
+}
+
+/** 标题 */
+export interface TitleField extends BaseField {
+  type: 'title'
+  /** 显示文本 */
+  text: string
 }
 
 /** 组件 */
-export type Component = TitleComponent | InputComponent | NumberComponent | SwitchComponent | SelectComponent | DividerComponent | ColorPickerComponent | RadioComponent | CheckboxComponent | ArrayComponent | SectionComponent
+export type FormField =
+  | TextField
+  | NumberField
+  | SwitchField
+  | SelectField
+  | RadioField
+  | CheckboxField
+  | ArrayField
+  | ObjectField
+  | ObjectArrayField
+  | SectionField
+  | TitleField
+  | DividerField
+// | ColorPickerField

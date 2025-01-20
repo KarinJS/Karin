@@ -8,7 +8,7 @@ import { BsTencentQq } from 'react-icons/bs'
 
 export default function AboutPage() {
   return (
-    <section className="flex flex-col items-center justify-center">
+    <section className="flex flex-col items-center justify-center pt-20 md:pt-8">
       <Image src="/web/karin.png" className="w-32" alt="logo" />
       <h1
         className={title({

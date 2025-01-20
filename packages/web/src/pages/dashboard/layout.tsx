@@ -14,7 +14,7 @@ export default function DashboardLayout() {
       <div className="flex-grow-0 flex-shrink-0">
         <Sidebar />
       </div>
-      <main className="container mx-auto px-6 flex-grow pt-20 md:pt-8 overflow-y-scroll">
+      <main className="container mx-auto px-6 flex-grow overflow-y-scroll">
         <Outlet />
       </main>
     </div>

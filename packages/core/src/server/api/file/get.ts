@@ -2,803 +2,815 @@ import { router } from '../router'
 import { createSuccessResponse } from '@/server/utils/response'
 import { config, adapter, groups, privates, render, pm2, redis, env } from '@/utils/config'
 
-import type { Component } from '@/types/Components'
+import type { FormField } from '@/types/Components'
 import type { RequestHandler } from 'express'
 
 /**
- * 数组转输入框
+ * 将字符串数组转换为数组配置
  */
-export const arrayToInput = (items: string[]): Component[] => {
-  return items.map((item) => ({
-    type: 'input',
-    required: true,
-    editable: true,
-    removable: true,
-    default: item
-  }))
+const arrayTotext = (items: string[]) =>
+  ({
+    type: 'array',
+    elementType: 'text',
+    default: items[0] || '',
+  }) as const
+type ConfigValue =
+  | ReturnType<typeof config>
+  | ReturnType<typeof adapter>
+  | ReturnType<typeof groups>
+  | ReturnType<typeof privates>
+  | ReturnType<typeof render>
+  | ReturnType<typeof pm2>
+  | ReturnType<typeof redis>
+  | ReturnType<typeof env>
+type GetConfig = () => {
+  struct: FormField[]
+  value: ConfigValue
 }
 
 /**
  * 获取基本配置
  * @returns 基础配置结构
  */
-const getBasicConfig = (): Component[] => {
+const getBasicConfig: GetConfig = () => {
   const cfg = config()
 
-  const list: Component[] = [
+  const list: FormField[] = [
     {
       type: 'section',
       label: '权限管理',
+      key: 'permission',
       children: [
         {
-          type: 'array',
+          ...arrayTotext(cfg.master),
           label: '主人列表',
-          field: 'master',
-          items: arrayToInput(cfg.master)
+          key: 'master',
         },
         {
-          type: 'array',
+          ...arrayTotext(cfg.admin),
           label: '管理员列表',
-          field: 'admin',
-          items: arrayToInput(cfg.admin)
-        }
-      ]
+          key: 'admin',
+        },
+      ],
     },
     {
       type: 'section',
       label: '用户管理',
+      key: 'user',
       children: [
         {
-          type: 'array',
+          ...arrayTotext(cfg.user?.enable_list || []),
           label: '用户白名单',
-          field: 'user.enable_list',
-          items: arrayToInput(cfg.user?.enable_list || [])
+          key: 'user.enable_list',
         },
         {
-          type: 'array',
+          ...arrayTotext(cfg.user?.disable_list || []),
           label: '用户黑名单',
-          field: 'user.disable_list',
-          items: arrayToInput(cfg.user?.disable_list || [])
+          key: 'user.disable_list',
         },
-      ]
+      ],
     },
     {
       type: 'section',
       label: '好友管理',
+      key: 'friend',
       children: [
         {
-          type: 'array',
+          ...arrayTotext(cfg.friend?.enable_list || []),
           label: '好友白名单',
-          field: 'friend.enable_list',
-          items: arrayToInput(cfg.friend?.enable_list || [])
+          key: 'friend.enable_list',
         },
         {
-          type: 'array',
+          ...arrayTotext(cfg.friend?.disable_list || []),
           label: '好友黑名单',
-          field: 'friend.disable_list',
-          items: arrayToInput(cfg.friend?.disable_list || [])
+          key: 'friend.disable_list',
         },
         {
-          type: 'array',
+          ...arrayTotext(cfg.friend?.log_enable_list || []),
           label: '好友日志白名单',
-          field: 'friend.log_enable_list',
-          items: arrayToInput(cfg.friend?.log_enable_list || [])
+          key: 'friend.log_enable_list',
         },
         {
-          type: 'array',
+          ...arrayTotext(cfg.friend?.log_disable_list || []),
           label: '好友日志黑名单',
-          field: 'friend.log_disable_list',
-          items: arrayToInput(cfg.friend?.log_disable_list || [])
-        }
-      ]
+          key: 'friend.log_disable_list',
+        },
+      ],
     },
     {
       type: 'section',
       label: '群管理',
+      key: 'group',
       children: [
         {
-          type: 'array',
+          ...arrayTotext(cfg.group?.enable_list || []),
           label: '群白名单',
-          field: 'group.enable_list',
-          items: arrayToInput(cfg.group?.enable_list || [])
+          key: 'group.enable_list',
         },
         {
-          type: 'array',
+          ...arrayTotext(cfg.group?.disable_list || []),
           label: '群黑名单',
-          field: 'group.disable_list',
-          items: arrayToInput(cfg.group?.disable_list || [])
+          key: 'group.disable_list',
         },
         {
-          type: 'array',
+          ...arrayTotext(cfg.group?.log_enable_list || []),
           label: '群日志白名单',
-          field: 'group.log_enable_list',
-          items: arrayToInput(cfg.group?.log_enable_list || [])
+          key: 'group.log_enable_list',
         },
         {
-          type: 'array',
+          ...arrayTotext(cfg.group?.log_disable_list || []),
           label: '群日志黑名单',
-          field: 'group.log_disable_list',
-          items: arrayToInput(cfg.group?.log_disable_list || [])
+          key: 'group.log_disable_list',
         },
-      ]
+      ],
     },
     {
       type: 'section',
       label: '频道私信管理',
+      key: 'directs',
       children: [
         {
-          type: 'array',
+          ...arrayTotext(cfg.directs?.enable_list || []),
           label: '私信白名单',
-          field: 'directs.enable_list',
-          items: arrayToInput(cfg.directs?.enable_list || [])
+          key: 'directs.enable_list',
         },
         {
-          type: 'array',
+          ...arrayTotext(cfg.directs?.disable_list || []),
           label: '私信黑名单',
-          field: 'directs.disable_list',
-          items: arrayToInput(cfg.directs?.disable_list || [])
+          key: 'directs.disable_list',
         },
         {
-          type: 'array',
+          ...arrayTotext(cfg.directs?.log_enable_list || []),
           label: '私信日志白名单',
-          field: 'directs.log_enable_list',
-          items: arrayToInput(cfg.directs?.log_enable_list || [])
+          key: 'directs.log_enable_list',
         },
         {
-          type: 'array',
+          ...arrayTotext(cfg.directs?.log_disable_list || []),
           label: '私信日志黑名单',
-          field: 'directs.log_disable_list',
-          items: arrayToInput(cfg.directs?.log_disable_list || [])
-        }
-      ]
+          key: 'directs.log_disable_list',
+        },
+      ],
     },
     {
       type: 'section',
       label: '频道管理',
+      key: 'guilds',
       children: [
         {
-          type: 'array',
+          ...arrayTotext(cfg.guilds?.enable_list || []),
           label: '频道白名单',
-          field: 'guilds.enable_list',
-          items: arrayToInput(cfg.guilds?.enable_list || [])
+          key: 'guilds.enable_list',
         },
         {
-          type: 'array',
+          ...arrayTotext(cfg.guilds?.disable_list || []),
           label: '频道黑名单',
-          field: 'guilds.disable_list',
-          items: arrayToInput(cfg.guilds?.disable_list || [])
+          key: 'guilds.disable_list',
         },
         {
-          type: 'array',
+          ...arrayTotext(cfg.guilds?.log_enable_list || []),
           label: '频道日志白名单',
-          field: 'guilds.log_enable_list',
-          items: arrayToInput(cfg.guilds?.log_enable_list || [])
+          key: 'guilds.log_enable_list',
         },
         {
-          type: 'array',
+          ...arrayTotext(cfg.guilds?.log_disable_list || []),
           label: '频道日志黑名单',
-          field: 'guilds.log_disable_list',
-          items: arrayToInput(cfg.guilds?.log_disable_list || [])
-        }
-      ]
+          key: 'guilds.log_disable_list',
+        },
+      ],
     },
     {
       type: 'section',
       label: '子频道管理',
+      key: 'channels',
       children: [
         {
-          type: 'array',
+          ...arrayTotext(cfg.channels?.enable_list || []),
           label: '子频道白名单',
-          field: 'channels.enable_list',
-          items: arrayToInput(cfg.channels?.enable_list || [])
+          key: 'channels.enable_list',
         },
         {
-          type: 'array',
+          ...arrayTotext(cfg.channels?.disable_list || []),
           label: '子频道黑名单',
-          field: 'channels.disable_list',
-          items: arrayToInput(cfg.channels?.disable_list || [])
+          key: 'channels.disable_list',
         },
         {
-          type: 'array',
+          ...arrayTotext(cfg.channels?.log_enable_list || []),
           label: '子频道日志白名单',
-          field: 'channels.log_enable_list',
-          items: arrayToInput(cfg.channels?.log_enable_list || [])
+          key: 'channels.log_enable_list',
         },
         {
-          type: 'array',
+          ...arrayTotext(cfg.channels?.log_disable_list || []),
           label: '子频道日志黑名单',
-          field: 'channels.log_disable_list',
-          items: arrayToInput(cfg.channels?.log_disable_list || [])
-        }
-      ]
-    }
+          key: 'channels.log_disable_list',
+        },
+      ],
+    },
   ]
 
-  return list
+  return {
+    struct: list,
+    value: cfg,
+  }
 }
 
 /**
  * 获取适配器配置
  * @returns 适配器配置结构
  */
-const getAdapterConfig = (): Component[] => {
+const getAdapterConfig: GetConfig = () => {
   const cfg = adapter()
 
-  return [
-    {
-      type: 'title',
-      text: '适配器配置'
-    },
+  const list: FormField[] = [
     {
       type: 'section',
       label: 'Console适配器',
+      key: 'console',
       children: [
         {
           type: 'switch',
           label: '本地访问',
           description: '是否为只允许本地访问',
-          field: 'console.isLocal',
-          checked: cfg.console?.isLocal ?? false
+          key: 'console.isLocal',
         },
         {
-          type: 'input',
+          type: 'text',
           label: '访问令牌',
           description: '如果非本地访问，则需要设置token',
-          field: 'console.token',
-          required: false,
-          defaultValue: cfg.console?.token
+          key: 'console.token',
+          defaultValue: cfg.console?.token,
         },
         {
-          type: 'input',
+          type: 'text',
           label: '资源地址',
           description: '打印的资源地址',
-          field: 'console.host',
-          required: true,
-          defaultValue: cfg.console?.host
-        }
-      ]
+          key: 'console.host',
+          defaultValue: cfg.console?.host,
+        },
+      ],
     },
     {
       type: 'section',
       label: 'OneBot适配器',
+      key: 'onebot',
       children: [
         {
-          type: 'section',
+          type: 'object',
           label: 'WebSocket服务器',
-          children: [
+          key: 'onebot.ws_server',
+          fields: [
             {
               type: 'switch',
               label: '启用',
               description: '是否启用WebSocket服务器',
-              field: 'onebot.ws_server.enable',
-              checked: cfg.onebot?.ws_server?.enable ?? false
+              key: 'enable',
             },
             {
               type: 'number',
               label: '超时时间',
               description: 'OneBot发送请求超时时间',
-              field: 'onebot.ws_server.timeout',
-              defaultValue: cfg.onebot?.ws_server?.timeout ?? 5000
-            }
-          ]
+              key: 'timeout',
+              defaultValue: cfg.onebot?.ws_server?.timeout ?? 5000,
+            },
+          ],
         },
         {
-          type: 'array',
+          type: 'objectArray',
           label: 'WebSocket客户端',
-          field: 'onebot.ws_client',
-          items: [
+          key: 'onebot.ws_client',
+          fields: [
             {
               type: 'switch',
               label: '启用',
-              field: 'enable',
-              checked: false
+              key: 'enable',
+              defaultValue: false,
             },
             {
-              type: 'input',
+              type: 'text',
               label: 'WebSocket地址',
-              field: 'url',
-              required: true
+              key: 'url',
+              required: true,
             },
             {
-              type: 'input',
+              type: 'text',
               label: '鉴权令牌',
-              field: 'token',
-              required: true
-            }
-          ]
+              key: 'token',
+              required: true,
+            },
+          ],
         },
         {
-          type: 'array',
+          type: 'objectArray',
           label: 'HTTP服务器',
-          field: 'onebot.http_server',
-          items: [
+          key: 'onebot.http_server',
+          fields: [
             {
               type: 'switch',
               label: '启用',
-              field: 'enable',
-              checked: false
+              key: 'enable',
+              defaultValue: false,
             },
             {
-              type: 'input',
+              type: 'text',
               label: 'QQ号',
-              field: 'self_id',
-              required: true
+              key: 'self_id',
+              required: true,
             },
             {
-              type: 'input',
+              type: 'text',
               label: '服务地址',
-              field: 'url',
-              required: true
+              key: 'url',
+              required: true,
             },
             {
-              type: 'input',
+              type: 'text',
               label: '鉴权令牌',
-              field: 'token',
-              required: true
-            }
-          ]
-        }
-      ]
-    }
+              key: 'token',
+              required: true,
+            },
+          ],
+        },
+      ],
+    },
   ]
+
+  return {
+    struct: list,
+    value: cfg,
+  }
 }
 
 /**
  * 获取群聊和频道配置
  */
-const getGroupsConfig = (): Component[] => {
+const getGroupsConfig: GetConfig = () => {
   const cfg = groups()
 
-  const list: Component[] = []
+  const list: FormField[] = []
 
   Object.entries(cfg).forEach(([key, value]) => {
     list.push({
       type: 'section',
       label: key,
+      key,
       children: [
         {
           type: 'number',
           label: '全局消息冷却',
-          field: `${key}.cd`,
-          defaultValue: value.cd
+          key: `${key}.cd`,
+          defaultValue: value.cd,
         },
         {
           type: 'number',
           label: '用户消息冷却',
-          field: `${key}.userCD`,
-          defaultValue: value.userCD
+          key: `${key}.userCD`,
+          defaultValue: value.userCD,
         },
         {
           type: 'radio',
           label: '响应模式',
-          field: `${key}.mode`,
+          key: `${key}.mode`,
           options: [
-            { label: '响应所有消息', value: 0, checked: value.mode === 0 },
-            { label: '仅@机器人', value: 1, checked: value.mode === 1 },
-            { label: '仅回应管理员', value: 2, checked: value.mode === 2 },
-            { label: '仅回应别名', value: 3, checked: value.mode === 3 },
-            { label: '别名或@机器人', value: 4, checked: value.mode === 4 },
-            { label: '管理员无限制，成员别名或@', value: 5, checked: value.mode === 5 },
-            { label: '仅回应主人', value: 6, checked: value.mode === 6 }
+            { label: '响应所有消息', value: 0 },
+            { label: '仅@机器人', value: 1 },
+            { label: '仅回应管理员', value: 2 },
+            { label: '仅回应别名', value: 3 },
+            { label: '别名或@机器人', value: 4 },
+            { label: '管理员无限制，成员别名或@', value: 5 },
+            { label: '仅回应主人', value: 6 },
           ],
         },
         {
-          type: 'array',
+          ...arrayTotext(value.alias || []),
           label: '机器人别名',
-          field: `${key}.alias`,
-          items: arrayToInput(value.alias || [])
+          key: `${key}.alias`,
         },
         {
-          type: 'array',
+          ...arrayTotext(value.enable || []),
           label: '插件白名单',
-          field: `${key}.enable`,
-          items: arrayToInput(value.enable || [])
+          key: `${key}.enable`,
         },
         {
-          type: 'array',
+          ...arrayTotext(value.disable || []),
           label: '插件黑名单',
-          field: `${key}.disable`,
-          items: arrayToInput(value.disable || [])
+          key: `${key}.disable`,
         },
         {
-          type: 'array',
+          ...arrayTotext(value.memberEnable || []),
           label: '成员单独白名单',
-          field: `${key}.memberEnable`,
-          items: arrayToInput(value.memberEnable || [])
+          key: `${key}.memberEnable`,
         },
         {
-          type: 'array',
+          ...arrayTotext(value.memberDisable || []),
           label: '成员单独黑名单',
-          field: `${key}.memberDisable`,
-          items: arrayToInput(value.memberDisable || [])
-        }
-      ]
+          key: `${key}.memberDisable`,
+        },
+      ],
     })
   })
 
-  return list
+  return {
+    struct: list,
+    value: cfg,
+  }
 }
 
 /**
  * 获取好友和频道私信配置
  */
-const getPrivatesConfig = (): Component[] => {
+const getPrivatesConfig: GetConfig = () => {
   const cfg = privates()
 
-  const list: Component[] = []
+  const list: FormField[] = []
 
   Object.entries(cfg).forEach(([key, value]) => {
     list.push({
       type: 'section',
       label: key,
+      key,
       children: [
         {
           type: 'number',
           label: '消息冷却',
-          field: `${key}.cd`,
-          defaultValue: value.cd
+          key: `${key}.cd`,
+          defaultValue: value.cd,
         },
         {
           type: 'radio',
           label: '响应模式',
-          field: `${key}.mode`,
+          key: `${key}.mode`,
           options: [
-            { label: '响应所有消息', value: 0, checked: value.mode === 0 },
-            { label: '仅回应管理员', value: 2, checked: value.mode === 2 },
-            { label: '仅回应别名', value: 3, checked: value.mode === 3 },
-            { label: '管理员无限制，非管理员别名', value: 5, checked: value.mode === 5 },
-            { label: '仅回应主人', value: 6, checked: value.mode === 6 }
-          ]
+            { label: '响应所有消息', value: 0 },
+            { label: '仅回应管理员', value: 2 },
+            { label: '仅回应别名', value: 3 },
+            { label: '管理员无限制，非管理员别名', value: 5 },
+            { label: '仅回应主人', value: 6 },
+          ],
         },
         {
-          type: 'array',
+          ...arrayTotext(value.alias || []),
           label: '机器人别名',
-          field: `${key}.alias`,
-          items: arrayToInput(value.alias || [])
+          key: `${key}.alias`,
         },
         {
-          type: 'array',
+          ...arrayTotext(value.enable || []),
           label: '插件白名单',
-          field: `${key}.enable`,
-          items: arrayToInput(value.enable || [])
+          key: `${key}.enable`,
         },
         {
-          type: 'array',
+          ...arrayTotext(value.disable || []),
           label: '插件黑名单',
-          field: `${key}.disable`,
-          items: arrayToInput(value.disable || [])
-        }
-      ]
+          key: `${key}.disable`,
+        },
+      ],
     })
   })
 
-  return list
+  return {
+    struct: list,
+    value: cfg,
+  }
 }
 
 /**
  * 获取渲染配置
  */
-const getRendersConfig = (): Component[] => {
+const getRendersConfig: GetConfig = () => {
   const cfg = render()
 
-  const list: Component[] = [
+  const list: FormField[] = [
     {
       type: 'title',
-      text: '渲染配置'
+      text: '渲染配置',
+      key: 'render-title',
     },
     {
       type: 'section',
       label: 'WebSocket服务器',
+      key: 'ws_server',
       children: [
         {
           type: 'switch',
           label: '启用',
-          field: 'ws_server.enable',
-          checked: cfg.ws_server?.enable ?? false
-        }
-      ]
-    }
+          key: 'ws_server.enable',
+        },
+      ],
+    },
   ]
 
   Object.entries(cfg.ws_client).forEach(([_, value], index) => {
     list.push({
-      type: 'array',
+      type: 'objectArray',
       label: `正向ws-${index + 1}`,
-      field: 'ws_client',
-      items: [
+      key: 'ws_client',
+      fields: [
         {
           type: 'switch',
           label: '启用',
-          field: `ws_client.${index}.enable`,
-          checked: value.enable
+          key: `ws_client.${index}.enable`,
         },
         {
-          type: 'input',
+          type: 'text',
           label: 'WebSocket地址',
-          field: `ws_client.${index}.url`,
-          required: true
+          key: `ws_client.${index}.url`,
+          required: true,
         },
         {
-          type: 'input',
+          type: 'text',
           label: '鉴权令牌',
-          field: `ws_client.${index}.token`,
-          required: false
-        }
-      ]
+          key: `ws_client.${index}.token`,
+          required: false,
+        },
+      ],
     })
   })
 
   Object.entries(cfg.http_server).forEach(([_, value], index) => {
     list.push({
-      type: 'array',
+      type: 'objectArray',
       label: `反向http-${index + 1}`,
-      field: 'http_server',
-      items: [
+      key: 'http_server',
+      fields: [
         {
           type: 'switch',
           label: '启用',
-          field: `http_server.${index}.enable`,
-          checked: value.enable
+          key: `http_server.${index}.enable`,
         },
         {
-          type: 'input',
+          type: 'text',
           label: '服务地址',
-          field: `http_server.${index}.url`,
-          required: true
+          key: `http_server.${index}.url`,
+          required: true,
         },
         {
-          type: 'input',
+          type: 'text',
           label: '鉴权令牌',
-          field: `http_server.${index}.token`,
-          required: false
-        }
-      ]
+          key: `http_server.${index}.token`,
+          required: false,
+        },
+      ],
     })
   })
 
-  return list
+  return {
+    struct: list,
+    value: cfg,
+  }
 }
 
 /**
  * 获取pm2配置
  */
-const getPM2Config = (): Component[] => {
+const getPM2Config: GetConfig = () => {
   const cfg = pm2()
 
-  const list: Component[] = [
+  const list: FormField[] = [
     {
       type: 'title',
-      text: 'PM2配置'
+      text: 'PM2配置',
+      key: 'pm2-title',
     },
     {
       type: 'number',
       label: '日志最多显示多少行',
-      field: 'lines',
-      defaultValue: cfg.lines
+      key: 'lines',
+      defaultValue: cfg.lines,
     },
   ]
 
   Object.entries(cfg.apps).forEach(([key, value], index) => {
     list.push({
-      type: 'array',
+      type: 'objectArray',
       label: `应用名称-${index + 1}`,
-      field: `apps.${index}`,
-      items: [
+      key: `apps.${index}`,
+      fields: [
         {
-          type: 'input',
+          type: 'text',
           label: '应用名称',
-          field: 'name',
-          required: true
+          key: 'name',
+          required: true,
         },
         {
-          type: 'input',
+          type: 'text',
           label: '入口文件',
-          field: 'script',
-          required: true
+          key: 'script',
+          required: true,
         },
         {
           type: 'switch',
           label: '自动重启',
-          field: 'autorestart',
-          checked: value.autorestart
+          key: 'autorestart',
         },
         {
           type: 'number',
           label: '最大重启次数',
-          field: 'max_restarts',
-          defaultValue: value.max_restarts
+          key: 'max_restarts',
+          defaultValue: value.max_restarts,
         },
         {
-          type: 'input',
+          type: 'text',
           label: '最大内存重启',
-          field: 'max_memory_restart',
-          defaultValue: value.max_memory_restart
+          key: 'max_memory_restart',
+          defaultValue: value.max_memory_restart,
         },
         {
           type: 'number',
           label: '重启延迟',
-          field: 'restart_delay',
-          defaultValue: value.restart_delay
+          key: 'restart_delay',
+          defaultValue: value.restart_delay,
         },
         {
           type: 'switch',
           label: '合并日志',
-          field: 'merge_logs',
-          checked: value.merge_logs
+          key: 'merge_logs',
         },
         {
-          type: 'input',
+          type: 'text',
           label: '错误日志路径',
-          field: 'error_file',
-          defaultValue: value.error_file
+          key: 'error_file',
+          defaultValue: value.error_file,
         },
         {
-          type: 'input',
+          type: 'text',
           label: '输出日志路径',
-          field: 'out_file',
-          defaultValue: value.out_file
-        }
-      ]
+          key: 'out_file',
+          defaultValue: value.out_file,
+        },
+      ],
     })
   })
 
-  return list
+  return {
+    struct: list,
+    value: cfg,
+  }
 }
 
 /**
  * 获取redis配置
  */
-const getRedisConfig = (): Component[] => {
+const getRedisConfig: GetConfig = () => {
   const cfg = redis()
 
-  return [
+  const list: FormField[] = [
     {
       type: 'title',
-      text: 'Redis配置'
+      text: 'Redis配置',
+      key: 'redis-title',
     },
     {
-      type: 'input',
+      type: 'text',
       label: '连接地址',
-      field: 'url',
+      key: 'url',
       required: true,
-      defaultValue: cfg.url
+      defaultValue: cfg.url,
     },
     {
-      type: 'input',
+      type: 'text',
       label: '用户名',
-      field: 'username',
-      defaultValue: cfg.username
+      key: 'username',
+      defaultValue: cfg.username,
     },
     {
-      type: 'input',
+      type: 'text',
       label: '密码',
-      field: 'password',
-      defaultValue: cfg.password
+      key: 'password',
+      defaultValue: cfg.password,
     },
     {
       type: 'number',
       label: '数据库索引',
-      field: 'database',
-      defaultValue: cfg.database
-    }
+      key: 'database',
+      defaultValue: cfg.database,
+    },
   ]
+
+  return {
+    struct: list,
+    value: cfg,
+  }
 }
 
 /**
  * 获取`.env`配置
  */
-const getEnvConfig = (): Component[] => {
+const getEnvConfig: GetConfig = () => {
   const cfg = env()
 
-  return [
+  const list: FormField[] = [
     {
       type: 'title',
-      text: '环境变量配置'
+      text: '环境变量配置',
+      key: 'env-title',
     },
     {
-      type: 'input',
+      type: 'text',
       label: '是否启用HTTP',
-      field: 'HTTP_ENABLE',
-      defaultValue: cfg.HTTP_ENABLE
+      key: 'HTTP_ENABLE',
+      defaultValue: cfg.HTTP_ENABLE,
     },
     {
-      type: 'input',
+      type: 'text',
       label: 'HTTP监听端口',
-      field: 'HTTP_PORT',
-      defaultValue: cfg.HTTP_PORT
+      key: 'HTTP_PORT',
+      defaultValue: cfg.HTTP_PORT,
     },
     {
-      type: 'input',
+      type: 'text',
       label: 'HTTP监听地址',
-      field: 'HTTP_HOST',
-      defaultValue: cfg.HTTP_HOST
+      key: 'HTTP_HOST',
+      defaultValue: cfg.HTTP_HOST,
     },
     {
-      type: 'input',
+      type: 'text',
       label: 'HTTP鉴权秘钥',
-      field: 'HTTP_AUTH_KEY',
-      defaultValue: cfg.HTTP_AUTH_KEY
+      key: 'HTTP_AUTH_KEY',
+      defaultValue: cfg.HTTP_AUTH_KEY,
     },
     {
-      type: 'input',
+      type: 'text',
       label: 'WS服务器鉴权秘钥',
-      field: 'WS_SERVER_AUTH_KEY',
-      defaultValue: cfg.WS_SERVER_AUTH_KEY
+      key: 'WS_SERVER_AUTH_KEY',
+      defaultValue: cfg.WS_SERVER_AUTH_KEY,
     },
     {
-      type: 'input',
+      type: 'text',
       label: '是否启用Redis',
       description: '关闭后将使用内部虚拟Redis',
-      field: 'REDIS_ENABLE',
-      defaultValue: cfg.REDIS_ENABLE
+      key: 'REDIS_ENABLE',
+      defaultValue: cfg.REDIS_ENABLE,
     },
     {
-      type: 'input',
+      type: 'text',
       label: '重启是否调用PM2',
       description: '如果不调用则会直接关机，此配置适合有进程守护的程序',
-      field: 'PM2_RESTART',
-      defaultValue: cfg.PM2_RESTART
+      key: 'PM2_RESTART',
+      defaultValue: cfg.PM2_RESTART,
     },
     {
       type: 'radio',
       label: '运行器',
-      field: 'RUNNER',
+      key: 'RUNNER',
       options: [
-        { label: 'Node', value: 'node', checked: cfg.RUNNER === 'node' },
-        { label: 'PM2', value: 'pm2', checked: cfg.RUNNER === 'pm2' },
-        { label: 'TSX', value: 'tsx', checked: cfg.RUNNER === 'tsx' }
-      ]
+        { label: 'Node', value: 'node' },
+        { label: 'PM2', value: 'pm2' },
+        { label: 'TSX', value: 'tsx' },
+      ],
     },
     {
-      type: 'input',
+      type: 'text',
       label: '日志等级',
-      field: 'LOG_LEVEL',
-      defaultValue: cfg.LOG_LEVEL
+      key: 'LOG_LEVEL',
+      defaultValue: cfg.LOG_LEVEL,
     },
     {
-      type: 'input',
+      type: 'text',
       label: '日志保留天数',
-      field: 'LOG_DAYS_TO_KEEP',
-      defaultValue: cfg.LOG_DAYS_TO_KEEP
+      key: 'LOG_DAYS_TO_KEEP',
+      defaultValue: cfg.LOG_DAYS_TO_KEEP,
     },
     {
-      type: 'input',
+      type: 'text',
       label: '日志文件最大大小',
       description: '如果此项大于0则启用日志分割',
-      field: 'LOG_MAX_LOG_SIZE',
-      defaultValue: cfg.LOG_MAX_LOG_SIZE
+      key: 'LOG_MAX_LOG_SIZE',
+      defaultValue: cfg.LOG_MAX_LOG_SIZE,
     },
     {
-      type: 'input',
+      type: 'text',
       label: 'logger.fnc颜色',
-      field: 'LOG_FNC_COLOR',
-      defaultValue: cfg.LOG_FNC_COLOR
+      key: 'LOG_FNC_COLOR',
+      defaultValue: cfg.LOG_FNC_COLOR,
     },
     {
-      type: 'input',
+      type: 'text',
       label: 'TSX监察者模式',
-      field: 'TSX_WATCH',
-      defaultValue: cfg.TSX_WATCH
+      key: 'TSX_WATCH',
+      defaultValue: cfg.TSX_WATCH,
     },
     {
-      type: 'input',
+      type: 'text',
       label: 'ffmpeg路径',
-      field: 'FFMPEG_PATH',
-      defaultValue: cfg.FFMPEG_PATH
+      key: 'FFMPEG_PATH',
+      defaultValue: cfg.FFMPEG_PATH,
     },
     {
-      type: 'input',
+      type: 'text',
       label: 'ffprobe路径',
-      field: 'FFPROBE_PATH',
-      defaultValue: cfg.FFPROBE_PATH
+      key: 'FFPROBE_PATH',
+      defaultValue: cfg.FFPROBE_PATH,
     },
     {
-      type: 'input',
+      type: 'text',
       label: 'ffplay路径',
-      field: 'FFPLAY_PATH',
-      defaultValue: cfg.FFPLAY_PATH
-    }
+      key: 'FFPLAY_PATH',
+      defaultValue: cfg.FFPLAY_PATH,
+    },
   ]
+
+  return {
+    struct: list,
+    value: cfg,
+  }
 }
 
 /**
@@ -806,40 +818,44 @@ const getEnvConfig = (): Component[] => {
  */
 const getFileRouter: RequestHandler = async (req, res) => {
   const { type } = req.body
-
-  let configStructure: Component[]
+  let getFunction: GetConfig
 
   switch (type) {
     case 'config':
-      configStructure = getBasicConfig()
+      getFunction = getBasicConfig
       break
     case 'adapter':
-      configStructure = getAdapterConfig()
+      getFunction = getAdapterConfig
       break
     case 'groups':
-      configStructure = getGroupsConfig()
+      getFunction = getGroupsConfig
       break
     case 'privates':
-      configStructure = getPrivatesConfig()
+      getFunction = getPrivatesConfig
       break
     case 'renders':
-      configStructure = getRendersConfig()
+      getFunction = getRendersConfig
       break
     case 'pm2':
-      configStructure = getPM2Config()
+      getFunction = getPM2Config
       break
     case 'redis':
-      configStructure = getRedisConfig()
+      getFunction = getRedisConfig
       break
     case 'env':
-      configStructure = getEnvConfig()
+      getFunction = getEnvConfig
       break
     default:
       res.status(400).json({ error: '不支持的配置类型' })
       return
   }
 
-  createSuccessResponse(res, configStructure)
+  const { struct: configStructure, value: cfg } = getFunction()
+
+  createSuccessResponse(res, {
+    struct: configStructure,
+    value: cfg,
+  })
 }
 
-router.post('/get_file', getFileRouter)
+router.post('/config/get', getFileRouter)
