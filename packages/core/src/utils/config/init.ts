@@ -41,7 +41,7 @@ await (async () => {
     { pkg },
     { setVersion, setRuntime },
   ] = await Promise.all([
-    import('@/utils/config/config'),
+    import('@/utils/config/pkg'),
     import('@/env'),
     import('@/utils/config/default'),
   ])

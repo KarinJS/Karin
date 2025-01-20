@@ -464,18 +464,18 @@ export const getGroups = (): getConfigReturn => {
         content: value.disable,
       },
       {
-        key: `${groupKey}.memberEnable`,
+        key: `${groupKey}.member_enable`,
         type: 'string[]',
         title: '成员启用列表',
         description: '群、频道成员单独白名单',
-        content: value.memberEnable,
+        content: value.member_enable,
       },
       {
-        key: `${groupKey}.memberDisable`,
+        key: `${groupKey}.member_disable`,
         type: 'string[]',
         title: '成员禁用列表',
         description: '群、频道成员单独白名单',
-        content: value.memberDisable,
+        content: value.member_disable,
       },
     ]),
   }

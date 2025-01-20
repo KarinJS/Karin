@@ -1,7 +1,9 @@
 /**
- * `groups.json` 类型
+ * `groups.json`中的配置类型
  */
-export type Groups = Record<string, {
+export interface GroupsObjectValue {
+  /** 配置键: `Bot:selfId:groupId` */
+  key: string
   /** 群聊、频道中所有消息冷却时间，单位秒，0则无限制 */
   cd: number
   /** 群聊、频道中 每个人的消息冷却时间，单位秒，0则无限制。注意，开启后所有消息都会进CD，无论是否触发插件。 */
@@ -15,9 +17,12 @@ export type Groups = Record<string, {
   /** 黑名单插件、功能，黑名单中的插件、功能不会响应 `karin-plugin-test:app.js` `karin-plugin-test:测试转发` */
   disable: string[]
   /** 群、频道成员单独黑名单 */
-  memberDisable: string[]
+  member_enable: string[]
   /** 群、频道成员单独白名单 */
-  memberEnable: string[]
-  /** 配置键: `Bot:selfId:groupId` */
-  get key (): string
-}>
+  member_disable: string[]
+}
+
+/**
+ * `groups.json` 文件类型
+ */
+export type Groups = GroupsObjectValue[]

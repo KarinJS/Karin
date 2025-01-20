@@ -1,4 +1,4 @@
-import { port, host } from '@/utils/config/config'
+import { port, host } from '@/utils/config/env'
 import { processHandler, checkProcess } from '@/core/internal/process'
 
 /** 初始化进程 */

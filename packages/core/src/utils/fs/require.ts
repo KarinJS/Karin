@@ -12,6 +12,8 @@ export interface CacheEntry<T = any> {
 export type Parser = (content: string) => any
 
 export type RequireOptions = {
+  /** 指定配置文件类型 */
+  type?: 'json' | 'yaml' | 'yml'
   /** 文件编码，默认utf-8 */
   encoding?: BufferEncoding
   /** 是否强制读取，不使用缓存 */
@@ -61,13 +63,13 @@ export const clearRequire = () => cache.clear()
 export const requireFile: RequireFunction = async (filePath, options = {}) => {
   const now = Date.now()
   const absPath = path.resolve(filePath).replace(/\\/g, '/')
-  const { encoding = 'utf-8', force = false, ex = 300, size = 0, parser } = options
+  const { encoding = 'utf-8', force = false, ex = 300, size = 0, parser, type } = options
 
   const data = fileReady(absPath, now, force, ex)
   if (data !== false) return data
 
   const content = await fs.promises.readFile(absPath, encoding)
-  return fileCache(content, absPath, ex, now, size, encoding, parser)
+  return fileCache(content, absPath, ex, now, size, encoding, parser, type)
 }
 
 /**
@@ -80,13 +82,13 @@ export const requireFile: RequireFunction = async (filePath, options = {}) => {
 export const requireFileSync: RequireFunctionSync = (filePath, options = {}) => {
   const now = Date.now()
   const absPath = path.resolve(filePath).replace(/\\/g, '/')
-  const { encoding = 'utf-8', force = false, ex = 300, size = 0, parser } = options
+  const { encoding = 'utf-8', force = false, ex = 300, size = 0, parser, type } = options
 
   const data = fileReady(absPath, now, force, ex)
   if (data !== false) return data
 
   const content = fs.readFileSync(absPath, encoding)
-  return fileCache(content, absPath, ex, now, size, encoding, parser)
+  return fileCache(content, absPath, ex, now, size, encoding, parser, type)
 }
 
 /**
@@ -123,17 +125,27 @@ const fileReady = (absPath: string, now: number, force: boolean, ex: number) => 
  * @param size 文件大小
  * @param encoding 文件编码
  * @param parser 自定义解析器
+ * @param options 选项
  * @returns 文件内容
  */
-const fileCache = (content: string, absPath: string, ex: number, now: number, size: number, encoding: BufferEncoding, parser?: Parser) => {
+const fileCache = (
+  content: string,
+  absPath: string,
+  ex: number,
+  now: number,
+  size: number,
+  encoding: BufferEncoding,
+  parser?: Parser,
+  type?: RequireOptions['type']
+) => {
   /** 判断文件大小 字节 */
   if (size > 0 && Buffer.byteLength(content, encoding) > size) {
     /** 文件过大 不进行缓存 */
-    return parseContent(absPath, content, parser)
+    return parseContent(absPath, content, parser, type)
   }
 
   /** 自动解析 */
-  const data = parseContent(absPath, content, parser)
+  const data = parseContent(absPath, content, parser, type)
   /** 过期时间 */
   const expiry = ex === 0 ? 0 : now + ex * 1000
   /** 缓存数据 */
@@ -160,18 +172,26 @@ const touchRequireFile = async (filePath: string, ex: number) => {
  * @param absPath 绝对路径
  * @param content 文件内容
  * @param parser 自定义解析器
+ * @param options 选项
  * @returns 解析后的数据
  */
-const parseContent = (absPath: string, content: string, parser?: Parser): any => {
+const parseContent = (
+  absPath: string,
+  content: string,
+  parser?: Parser,
+  type?: RequireOptions['type']
+): any => {
   if (parser) return parser(content)
 
-  if (absPath.endsWith('.json')) {
-    return JSON.parse(content)
-  } else if (absPath.endsWith('.yaml') || absPath.endsWith('.yml')) {
-    return yaml.parse(content)
-  } else {
-    return content
+  if (type) {
+    if (type === 'json') return JSON.parse(content)
+    if (type === 'yaml' || type === 'yml') return yaml.parse(content)
   }
+
+  if (absPath.endsWith('.json')) return JSON.parse(content)
+  if (absPath.endsWith('.yaml') || absPath.endsWith('.yml')) return yaml.parse(content)
+
+  return content
 }
 
 /** 每60秒检查一次过期时间 */

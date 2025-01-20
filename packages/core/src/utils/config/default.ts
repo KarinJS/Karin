@@ -1,11 +1,20 @@
 import { existsSync } from 'node:fs'
 import { writeFile } from 'node:fs/promises'
 import { basePath } from '@/root'
+import { Adapters, Config, Groups, PM2, Privates, Redis, Renders } from '@/types/config'
 
 /**
  * @description 默认配置
  */
-const defaultConfig = Object.freeze({
+const defaultConfig: {
+  adapter: Adapters
+  config: Config
+  groups: Groups
+  pm2: PM2
+  redis: Redis
+  render: Renders
+  privates: Privates
+} = Object.freeze({
   adapter: {
     console: {
       isLocal: true,
@@ -79,9 +88,11 @@ const defaultConfig = Object.freeze({
       log_disable_list: [],
     },
   },
-  groups: {
-    default: {
+  groups: [
+    {
+      key: 'default',
       cd: 0,
+      userCD: 0,
       mode: 0,
       alias: [],
       enable: [],
@@ -89,8 +100,10 @@ const defaultConfig = Object.freeze({
       member_enable: [],
       member_disable: [],
     },
-    'Bot:selfId': {
+    {
+      key: 'Bot:selfId',
       cd: 0,
+      userCD: 0,
       mode: 0,
       alias: [],
       enable: [],
@@ -98,8 +111,10 @@ const defaultConfig = Object.freeze({
       member_enable: [],
       member_disable: [],
     },
-    'Bot:selfId:groupId': {
+    {
+      key: 'Bot:selfId:groupId',
       cd: 0,
+      userCD: 0,
       mode: 0,
       alias: [],
       enable: [],
@@ -107,8 +122,10 @@ const defaultConfig = Object.freeze({
       member_enable: [],
       member_disable: [],
     },
-    'Bot:selfId:guildId': {
+    {
+      key: 'Bot:selfId:guildId',
       cd: 0,
+      userCD: 0,
       mode: 0,
       alias: [],
       enable: [],
@@ -116,8 +133,10 @@ const defaultConfig = Object.freeze({
       member_enable: [],
       member_disable: [],
     },
-    'Bot:selfId:guildId:channelId': {
+    {
+      key: 'Bot:selfId:guildId:channelId',
       cd: 0,
+      userCD: 0,
       mode: 0,
       alias: [],
       enable: [],
@@ -125,7 +144,7 @@ const defaultConfig = Object.freeze({
       member_enable: [],
       member_disable: [],
     },
-  },
+  ],
   pm2: {
     lines: 1000,
     apps: [
@@ -142,29 +161,32 @@ const defaultConfig = Object.freeze({
       },
     ],
   },
-  privates: {
-    default: {
+  privates: [
+    {
+      key: 'default',
       cd: 0,
       mode: 0,
       alias: [],
       enable: [],
       disable: [],
     },
-    'Bot:selfId': {
+    {
+      key: 'Bot:selfId',
       cd: 0,
       mode: 0,
       alias: [],
       enable: [],
       disable: [],
     },
-    'Bot:selfId:userId': {
+    {
+      key: 'Bot:selfId:userId',
       cd: 0,
       mode: 0,
       alias: [],
       enable: [],
       disable: [],
     },
-  },
+  ],
   redis: {
     url: 'redis://127.0.0.1:6379',
     username: '',

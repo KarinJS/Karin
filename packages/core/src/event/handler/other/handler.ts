@@ -309,12 +309,12 @@ export const groupFilterEvent = (
       return false
     }
 
-    if (group.memberEnable?.length && !group.memberEnable.includes(ctx.userId)) {
+    if (group.member_enable?.length && !group.member_enable.includes(ctx.userId)) {
       log(ctx.userId, `用户未处于群成员白名单: ${ctx.eventId}`)
       return false
     }
 
-    if (group.memberDisable?.length && group.memberDisable.includes(ctx.userId)) {
+    if (group.member_disable?.length && group.member_disable.includes(ctx.userId)) {
       log(ctx.userId, `用户处于群成员黑名单: ${ctx.eventId}`)
       return false
     }
@@ -351,12 +351,12 @@ export const groupFilterEvent = (
       return false
     }
 
-    if (group.memberEnable?.length && !group.memberEnable.includes(ctx.userId)) {
+    if (group.member_enable?.length && !group.member_enable.includes(ctx.userId)) {
       log(ctx.userId, `用户未处于频道成员白名单: ${ctx.eventId}`)
       return false
     }
 
-    if (group.memberDisable?.length && group.memberDisable.includes(ctx.userId)) {
+    if (group.member_disable?.length && group.member_disable.includes(ctx.userId)) {
       log(ctx.userId, `用户处于频道成员黑名单: ${ctx.eventId}`)
       return false
     }

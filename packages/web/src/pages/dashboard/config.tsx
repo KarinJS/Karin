@@ -8,7 +8,7 @@ import { Tab, Tabs } from '@heroui/tabs'
 import toast from 'react-hot-toast'
 import { request } from '@/lib/request'
 import { Key } from '@react-types/shared'
-import { MdSave } from 'react-icons/md'
+import { MdSave, MdUnfoldLess } from 'react-icons/md'
 
 // 动态表单组件
 const ConfigPage: React.FC = () => {
@@ -23,6 +23,8 @@ const ConfigPage: React.FC = () => {
   const [configStructure, setConfigStructure] = useState<FormField[]>([])
   const [activeTab, setActiveTab] = useState<Key>('config')
   const [loading, setLoading] = useState(false)
+  const [expandedSections, setExpandedSections] = useState<Set<Key>>(new Set())
+  const [hasSections, setHasSections] = useState(false)
 
   const fetchConfig = async () => {
     try {
@@ -39,6 +41,13 @@ const ConfigPage: React.FC = () => {
       console.log(res)
 
       setConfigStructure(res.struct)
+      // 检查是否有section类型的字段
+      setHasSections(res.struct.some(field => field.type === 'section'))
+      // 默认展开所有section
+      const sectionKeys = res.struct
+        .filter(field => field.type === 'section')
+        .map(field => field.key)
+      setExpandedSections(new Set(sectionKeys))
 
       reset(res.value)
     } catch (error) {
@@ -75,6 +84,19 @@ const ConfigPage: React.FC = () => {
     }
   }
 
+  const toggleAllSections = () => {
+    if (expandedSections.size > 0) {
+      // 全部折叠
+      setExpandedSections(new Set())
+    } else {
+      // 全部展开
+      const sectionKeys = configStructure
+        .filter(field => field.type === 'section')
+        .map(field => field.key)
+      setExpandedSections(new Set(sectionKeys))
+    }
+  }
+
   return (
     <section className="pt-20 md:pt-8">
       <div className="max-w-2xl mx-auto flex items-center sticky top-0 z-10 bg-content1 rounded-full bg-opacity-50 backdrop-blur-md p-4">
@@ -86,17 +108,35 @@ const ConfigPage: React.FC = () => {
         >
           <Tab key="config" title="基础配置" />
           <Tab key="adapter" title="适配器" />
+          <Tab key="groups" title="群聊和频道" />
+          <Tab key="privates" title="好友和频道私信" />
+          <Tab key="render" title="渲染配置" />
+          <Tab key="pm2" title="pm2配置" />
+          <Tab key="redis" title="redis配置" />
+          <Tab key="env" title="环境变量" />
         </Tabs>
-        <Button
-          className="ml-auto"
-          color="primary"
-          startContent={<MdSave />}
-          isLoading={loading}
-          radius="full"
-          onPress={() => handleSubmit(onSubmit)()}
-        >
-          保存
-        </Button>
+        <div className="flex gap-2 ml-auto">
+          {hasSections && (
+            <Button
+              // 根据展开状态切换颜色
+              color={expandedSections.size > 0 ? "primary" : "default"}
+              startContent={<MdUnfoldLess />}
+              radius="full"
+              onPress={toggleAllSections}
+            >
+              {expandedSections.size > 0 ? '全部折叠' : '全部展开'}
+            </Button>
+          )}
+          <Button
+            color="primary"
+            startContent={<MdSave />}
+            isLoading={loading}
+            radius="full"
+            onPress={() => handleSubmit(onSubmit)()}
+          >
+            保存
+          </Button>
+        </div>
       </div>
 
       {configStructure.length === 0 ? (
@@ -108,6 +148,8 @@ const ConfigPage: React.FC = () => {
             control={control}
             errors={errors}
             formConfig={configStructure}
+            expandedSections={expandedSections}
+            setExpandedSections={setExpandedSections}
           />
         </form>
       )}

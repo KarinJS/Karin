@@ -57,7 +57,7 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
       if (level) {
         const list = ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
         if (list.includes(level)) {
-          const { updateLevel } = await import('@/utils/config/config')
+          const { updateLevel } = await import('@/utils/config/admin')
           updateLevel(level)
           logger.info(`日志等级已更新为: ${level}`)
           return

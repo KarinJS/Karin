@@ -2,8 +2,9 @@ import { router } from '../router'
 import { createSuccessResponse } from '@/server/utils/response'
 import { config, adapter, groups, privates, render, pm2, redis, env } from '@/utils/config'
 
-import type { FormField } from '@/types/Components'
 import type { RequestHandler } from 'express'
+import type { FormField } from '@/types/Components'
+import type { Groups, Privates } from '@/types/config'
 
 /**
  * 将字符串数组转换为数组配置
@@ -12,17 +13,19 @@ const arrayTotext = (items: string[]) =>
   ({
     type: 'array',
     elementType: 'text',
-    default: items[0] || '',
+    defaultValue: items[0] || '',
   }) as const
+
 type ConfigValue =
   | ReturnType<typeof config>
   | ReturnType<typeof adapter>
-  | ReturnType<typeof groups>
-  | ReturnType<typeof privates>
   | ReturnType<typeof render>
   | ReturnType<typeof pm2>
   | ReturnType<typeof redis>
   | ReturnType<typeof env>
+  | { privates: Privates }
+  | { groups: Groups }
+
 type GetConfig = () => {
   struct: FormField[]
   value: ConfigValue
@@ -76,6 +79,12 @@ const getBasicConfig: GetConfig = () => {
       key: 'friend',
       children: [
         {
+          type: 'switch',
+          label: '是否启用好友消息事件',
+          key: 'friend.enable',
+          defaultValue: cfg.friend?.enable ?? false,
+        },
+        {
           ...arrayTotext(cfg.friend?.enable_list || []),
           label: '好友白名单',
           key: 'friend.enable_list',
@@ -102,6 +111,12 @@ const getBasicConfig: GetConfig = () => {
       label: '群管理',
       key: 'group',
       children: [
+        {
+          type: 'switch',
+          label: '是否启用群消息事件',
+          key: 'group.enable',
+          defaultValue: cfg.group?.enable ?? false,
+        },
         {
           ...arrayTotext(cfg.group?.enable_list || []),
           label: '群白名单',
@@ -130,6 +145,12 @@ const getBasicConfig: GetConfig = () => {
       key: 'directs',
       children: [
         {
+          type: 'switch',
+          label: '是否启用私信消息事件',
+          key: 'directs.enable',
+          defaultValue: cfg.directs?.enable ?? false,
+        },
+        {
           ...arrayTotext(cfg.directs?.enable_list || []),
           label: '私信白名单',
           key: 'directs.enable_list',
@@ -157,6 +178,12 @@ const getBasicConfig: GetConfig = () => {
       key: 'guilds',
       children: [
         {
+          type: 'switch',
+          label: '是否启用频道消息事件',
+          key: 'guilds.enable',
+          defaultValue: cfg.guilds?.enable ?? false,
+        },
+        {
           ...arrayTotext(cfg.guilds?.enable_list || []),
           label: '频道白名单',
           key: 'guilds.enable_list',
@@ -183,6 +210,12 @@ const getBasicConfig: GetConfig = () => {
       label: '子频道管理',
       key: 'channels',
       children: [
+        {
+          type: 'switch',
+          label: '是否启用子频道消息事件',
+          key: 'channels.enable',
+          defaultValue: cfg.channels?.enable ?? false,
+        },
         {
           ...arrayTotext(cfg.channels?.enable_list || []),
           label: '子频道白名单',
@@ -288,13 +321,13 @@ const getAdapterConfig: GetConfig = () => {
               type: 'text',
               label: 'WebSocket地址',
               key: 'url',
-              required: true,
+              required: false,
             },
             {
               type: 'text',
               label: '鉴权令牌',
               key: 'token',
-              required: true,
+              required: false,
             },
           ],
         },
@@ -313,19 +346,19 @@ const getAdapterConfig: GetConfig = () => {
               type: 'text',
               label: 'QQ号',
               key: 'self_id',
-              required: true,
+              required: false,
             },
             {
               type: 'text',
               label: '服务地址',
               key: 'url',
-              required: true,
+              required: false,
             },
             {
               type: 'text',
               label: '鉴权令牌',
               key: 'token',
-              required: true,
+              required: false,
             },
           ],
         },
@@ -345,72 +378,99 @@ const getAdapterConfig: GetConfig = () => {
 const getGroupsConfig: GetConfig = () => {
   const cfg = groups()
 
-  const list: FormField[] = []
-
-  Object.entries(cfg).forEach(([key, value]) => {
-    list.push({
+  const list: FormField[] = [
+    {
       type: 'section',
-      label: key,
-      key,
+      label: '群聊和频道',
+      key: 'groups',
       children: [
         {
-          type: 'number',
-          label: '全局消息冷却',
-          key: `${key}.cd`,
-          defaultValue: value.cd,
-        },
-        {
-          type: 'number',
-          label: '用户消息冷却',
-          key: `${key}.userCD`,
-          defaultValue: value.userCD,
-        },
-        {
-          type: 'radio',
-          label: '响应模式',
-          key: `${key}.mode`,
-          options: [
-            { label: '响应所有消息', value: 0 },
-            { label: '仅@机器人', value: 1 },
-            { label: '仅回应管理员', value: 2 },
-            { label: '仅回应别名', value: 3 },
-            { label: '别名或@机器人', value: 4 },
-            { label: '管理员无限制，成员别名或@', value: 5 },
-            { label: '仅回应主人', value: 6 },
+          type: 'objectArray',
+          label: '群聊和频道',
+          description: '群聊和频道配置',
+          key: 'groups',
+          fields: [
+            {
+              type: 'text',
+              label: '配置键',
+              key: 'key',
+              required: false,
+            },
+            {
+              type: 'number',
+              label: '全局消息冷却',
+              key: 'cd',
+              defaultValue: 0,
+            },
+            {
+              type: 'number',
+              label: '用户消息冷却',
+              key: 'userCD',
+              defaultValue: 0,
+            },
+            {
+              type: 'radio',
+              label: '响应模式',
+              key: 'mode',
+              options: [
+                { label: '响应所有消息', value: 0 },
+                { label: '仅@机器人', value: 1 },
+                { label: '仅回应管理员', value: 2 },
+                { label: '仅回应别名', value: 3 },
+                { label: '别名或@机器人', value: 4 },
+                { label: '管理员无限制，成员别名或@', value: 5 },
+                { label: '仅回应主人', value: 6 },
+              ],
+            },
+            {
+              type: 'array',
+              elementType: 'text',
+              label: '机器人别名',
+              key: 'alias',
+              defaultValue: '',
+            },
+            {
+              type: 'array',
+              elementType: 'text',
+              label: '插件白名单',
+              key: 'enable',
+              defaultValue: '',
+            },
+            {
+              type: 'array',
+              elementType: 'text',
+              label: '插件黑名单',
+              key: 'disable',
+              defaultValue: '',
+            },
+            {
+              type: 'array',
+              elementType: 'text',
+              label: '成员单独白名单',
+              key: 'memberEnable',
+              defaultValue: '',
+            },
+            {
+              type: 'array',
+              elementType: 'text',
+              label: '成员单独黑名单',
+              key: 'memberDisable',
+              defaultValue: '',
+            },
           ],
         },
-        {
-          ...arrayTotext(value.alias || []),
-          label: '机器人别名',
-          key: `${key}.alias`,
-        },
-        {
-          ...arrayTotext(value.enable || []),
-          label: '插件白名单',
-          key: `${key}.enable`,
-        },
-        {
-          ...arrayTotext(value.disable || []),
-          label: '插件黑名单',
-          key: `${key}.disable`,
-        },
-        {
-          ...arrayTotext(value.memberEnable || []),
-          label: '成员单独白名单',
-          key: `${key}.memberEnable`,
-        },
-        {
-          ...arrayTotext(value.memberDisable || []),
-          label: '成员单独黑名单',
-          key: `${key}.memberDisable`,
-        },
       ],
-    })
-  })
+    },
+  ]
+
+  /** 转数组 因为获取到的是对象缓存 处理过的 原始数据为数组 */
+  const configArray = Object.entries(cfg).map(([key, value]) => ({
+    ...value,
+  }))
 
   return {
     struct: list,
-    value: cfg,
+    value: { groups: configArray },
   }
 }
 
@@ -420,54 +480,76 @@ const getGroupsConfig: GetConfig = () => {
 const getPrivatesConfig: GetConfig = () => {
   const cfg = privates()
 
-  const list: FormField[] = []
-
-  Object.entries(cfg).forEach(([key, value]) => {
-    list.push({
-      type: 'section',
-      label: key,
-      key,
-      children: [
+  const list: FormField[] = [
+    {
+      type: 'objectArray',
+      label: '好友和频道私信',
+      key: 'privates',
+      fields: [
         {
-          type: 'number',
-          label: '消息冷却',
-          key: `${key}.cd`,
-          defaultValue: value.cd,
-        },
-        {
-          type: 'radio',
-          label: '响应模式',
-          key: `${key}.mode`,
-          options: [
-            { label: '响应所有消息', value: 0 },
-            { label: '仅回应管理员', value: 2 },
-            { label: '仅回应别名', value: 3 },
-            { label: '管理员无限制，非管理员别名', value: 5 },
-            { label: '仅回应主人', value: 6 },
+          type: 'section',
+          label: '占位符',
+          key: 'privates',
+          children: [
+            {
+              type: 'text',
+              label: '配置键',
+              key: 'key',
+              required: false,
+            },
+            {
+              type: 'number',
+              label: '全局消息冷却',
+              key: 'cd',
+              defaultValue: 0,
+            },
+            {
+              type: 'radio',
+              label: '响应模式',
+              key: 'mode',
+              options: [
+                { label: '响应所有消息', value: 0 },
+                { label: '仅回应管理员', value: 2 },
+                { label: '仅回应别名', value: 3 },
+                { label: '管理员无限制，非管理员别名', value: 5 },
+                { label: '仅回应主人', value: 6 },
+              ],
+            },
+            {
+              type: 'array',
+              elementType: 'text',
+              label: '机器人别名',
+              key: 'alias',
+              defaultValue: '',
+            },
+            {
+              type: 'array',
+              elementType: 'text',
+              label: '插件白名单',
+              key: 'enable',
+              defaultValue: '',
+            },
+            {
+              type: 'array',
+              elementType: 'text',
+              label: '插件黑名单',
+              key: 'disable',
+              defaultValue: '',
+            },
           ],
-        },
-        {
-          ...arrayTotext(value.alias || []),
-          label: '机器人别名',
-          key: `${key}.alias`,
-        },
-        {
-          ...arrayTotext(value.enable || []),
-          label: '插件白名单',
-          key: `${key}.enable`,
-        },
-        {
-          ...arrayTotext(value.disable || []),
-          label: '插件黑名单',
-          key: `${key}.disable`,
-        },
+        }
       ],
-    })
-  })
+    },
+  ]
+
+  /** 转数组 因为获取到的是对象缓存 处理过的 原始数据为数组 */
+  const configArray = Object.entries(cfg).map(([_, value]) => ({
+    ...value,
+  }))
 
   return {
     struct: list,
-    value: cfg,
+    value: { privates: configArray },
   }
 }
 
@@ -512,7 +594,7 @@ const getRendersConfig: GetConfig = () => {
           type: 'text',
           label: 'WebSocket地址',
           key: `ws_client.${index}.url`,
-          required: true,
+          required: false,
         },
         {
           type: 'text',
@@ -539,7 +621,7 @@ const getRendersConfig: GetConfig = () => {
           type: 'text',
           label: '服务地址',
           key: `http_server.${index}.url`,
-          required: true,
+          required: false,
         },
         {
           type: 'text',
@@ -587,13 +669,13 @@ const getPM2Config: GetConfig = () => {
           type: 'text',
           label: '应用名称',
           key: 'name',
-          required: true,
+          required: false,
         },
         {
           type: 'text',
           label: '入口文件',
           key: 'script',
-          required: true,
+          required: false,
         },
         {
           type: 'switch',
@@ -661,7 +743,7 @@ const getRedisConfig: GetConfig = () => {
       type: 'text',
       label: '连接地址',
       key: 'url',
-      required: true,
+      required: false,
       defaultValue: cfg.url,
     },
     {
@@ -833,7 +915,7 @@ const getFileRouter: RequestHandler = async (req, res) => {
     case 'privates':
       getFunction = getPrivatesConfig
       break
-    case 'renders':
+    case 'render':
       getFunction = getRendersConfig
       break
     case 'pm2':

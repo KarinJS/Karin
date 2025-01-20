@@ -1,6 +1,6 @@
 import { router } from '../router'
+import { config, adapter, render, pm2, redis, setConfig } from '@/utils/config'
 import { createServerErrorResponse, createSuccessResponse } from '@/server/utils/response'
-import { config, adapter, groups, privates, render, pm2, redis, setConfig } from '@/utils/config'
 
 import type { RequestHandler } from 'express'
 
@@ -27,16 +27,6 @@ const setFileRouter: RequestHandler = async (req, res) => {
         setConfig('adapter', { ...cfg, ...data })
         break
       }
-      case 'groups': {
-        const cfg = groups()
-        setConfig('groups', { ...cfg, ...data })
-        break
-      }
-      case 'privates': {
-        const cfg = privates()
-        setConfig('privates', { ...cfg, ...data })
-        break
-      }
       case 'render': {
         const cfg = render()
         setConfig('render', { ...cfg, ...data })
@@ -54,6 +44,23 @@ const setFileRouter: RequestHandler = async (req, res) => {
       }
       case 'env': {
         setConfig('env', data)
+        break
+      }
+      case 'groups': {
+        if (!Array.isArray(data.groups) || !data.groups.every((item: unknown) => typeof item === 'object')) {
+          createServerErrorResponse(res, 'groups 数据格式错误')
+          return
+        }
+        setConfig('groups', data.groups)
+        break
+      }
+      case 'privates': {
+        if (!Array.isArray(data.privates) || !data.privates.every((item: unknown) => typeof item === 'object')) {
+          createServerErrorResponse(res, 'privates 数据格式错误')
+          return
+        }
+
+        setConfig('privates', data.privates)
         break
       }
       default: {

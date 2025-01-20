@@ -11,15 +11,18 @@ import { Accordion, AccordionItem } from '@heroui/accordion'
 import type { ArrayField as ArrayFieldType, FormField, ObjectArrayField } from '@/types/config'
 import { Divider } from '@heroui/divider'
 import { MdAdd, MdDelete } from 'react-icons/md'
+import { Key } from '@react-types/shared'
 
 export interface DynamicFormProps {
   register: ReturnType<typeof useForm>['register']
   control: ReturnType<typeof useForm>['control']
   errors: ReturnType<typeof useForm>['formState']['errors']
   formConfig: FormField[]
+  expandedSections: Set<Key>
+  setExpandedSections: (sections: Set<Key>) => void
 }
 
-function EmptyTip({ fields }: { fields: unknown[] }) {
+function EmptyTip ({ fields }: { fields: unknown[] }) {
   return (
     fields.length === 0 && (
       <div className="text-sm text-content4-foreground text-center col-span-2">
@@ -29,7 +32,7 @@ function EmptyTip({ fields }: { fields: unknown[] }) {
   )
 }
 
-function ArrayField({
+function ArrayField ({
   control,
   field,
   fullPath,
@@ -86,7 +89,7 @@ function ArrayField({
   )
 }
 
-function ObjectArrayField({
+function ObjectArrayField ({
   control,
   field,
   fullPath,
@@ -144,7 +147,14 @@ function ObjectArrayField({
 }
 
 // 动态表单组件
-const DynamicForm: React.FC<DynamicFormProps> = ({ register, control, errors, formConfig }) => {
+const DynamicForm: React.FC<DynamicFormProps> = ({
+  register,
+  control,
+  errors,
+  formConfig,
+  expandedSections,
+  setExpandedSections
+}) => {
   // 渲染表单字段
   const renderField = (field: FormField, path: string = '') => {
     const fullPath = path ? `${path}.${field.key}` : field.key
@@ -158,8 +168,28 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ register, control, errors, fo
 
       case 'section':
         return (
-          <Accordion key={key}>
-            <AccordionItem key={key} title={field.label} textValue={field.label}>
+          <Accordion
+            key={key}
+            selectedKeys={expandedSections}
+            onSelectionChange={(keys) => {
+              if (typeof keys === 'string') {
+                const newSet = new Set(expandedSections)
+                if (newSet.has(field.key)) {
+                  newSet.delete(field.key)
+                } else {
+                  newSet.add(field.key)
+                }
+                setExpandedSections(newSet)
+              } else {
+                setExpandedSections(new Set(keys))
+              }
+            }}
+          >
+            <AccordionItem
+              key={field.key}
+              title={field.label}
+              textValue={field.label}
+            >
               <div className="space-y-4">
                 {field.children.map((subField, subIndex) => (
                   <React.Fragment key={subField.key ?? subIndex}>
