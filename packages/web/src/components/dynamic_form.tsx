@@ -159,6 +159,17 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   const renderField = (field: FormField, path: string = '') => {
     const fullPath = path ? `${path}.${field.key}` : field.key
     const key = fullPath
+
+    // 创建一个通用的描述渲染函数
+    const renderDescription = (description?: string) => {
+      if (!description) return null
+      return (
+        <div className="text-sm text-content4-foreground mt-1">
+          {description}
+        </div>
+      )
+    }
+
     switch (field.type) {
       case 'divider':
         return <Divider key={key} />
@@ -203,81 +214,96 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
 
       case 'text':
         return (
-          <Input
-            key={key}
-            label={field.label}
-            defaultValue={field.defaultValue}
-            {...register(fullPath, { required: field.required })}
-            className="w-full"
-            errorMessage={errors[field.key]?.message?.toString()}
-          />
+          <div key={key}>
+            <Input
+              label={field.label}
+              defaultValue={field.defaultValue}
+              {...register(fullPath, { required: field.required })}
+              className="w-full"
+              errorMessage={errors[field.key]?.message?.toString()}
+              description={field.description}
+            />
+            {renderDescription(field.description)}
+          </div>
         )
 
       case 'number':
         return (
-          <Input
-            key={key}
-            label={field.label}
-            type="number"
-            defaultValue={field.defaultValue?.toString()}
-            {...register(fullPath, { required: field.required })}
-            className="w-full"
-          />
+          <div key={key}>
+            <Input
+              label={field.label}
+              type="number"
+              defaultValue={field.defaultValue?.toString()}
+              {...register(fullPath, { required: field.required })}
+              className="w-full"
+              description={field.description}
+            />
+            {renderDescription(field.description)}
+          </div>
         )
 
       case 'switch':
         return (
-          <Switch key={key} {...register(fullPath)} defaultChecked={field.defaultValue}>
-            {field.label}
-          </Switch>
+          <div key={key}>
+            <Switch key={key} {...register(fullPath)} defaultChecked={field.defaultValue}>
+              {field.label}
+            </Switch>
+            {renderDescription(field.description)}
+          </div>
         )
 
       case 'checkbox':
         return (
-          <CheckboxGroup
-            label={field.label}
-            key={key}
-            defaultValue={field.defaultValue?.map(String)}
-          >
-            {field.options.map(option => (
-              <Checkbox key={option.value} value={option.value.toString()} {...register(fullPath)}>
-                {option.label}
-              </Checkbox>
-            ))}
-          </CheckboxGroup>
+          <div key={key}>
+            <CheckboxGroup
+              label={field.label}
+              defaultValue={field.defaultValue?.map(String)}
+            >
+              {field.options.map(option => (
+                <Checkbox key={option.value} value={option.value.toString()} {...register(fullPath)}>
+                  {option.label}
+                </Checkbox>
+              ))}
+            </CheckboxGroup>
+            {renderDescription(field.description)}
+          </div>
         )
 
       case 'radio':
         return (
-          <RadioGroup
-            key={key}
-            label={field.label}
-            defaultValue={field.options[0]?.value?.toString()}
-          >
-            {field.options.map(option => (
-              <Radio key={option.value} value={option.value.toString()} {...register(fullPath)}>
-                {option.label}
-              </Radio>
-            ))}
-          </RadioGroup>
+          <div key={key}>
+            <RadioGroup
+              label={field.label}
+              defaultValue={field.options[0]?.value?.toString()}
+            >
+              {field.options.map(option => (
+                <Radio key={option.value} value={option.value.toString()} {...register(fullPath)}>
+                  {option.label}
+                </Radio>
+              ))}
+            </RadioGroup>
+            {renderDescription(field.description)}
+          </div>
         )
 
       case 'select':
         return (
-          <Select
-            key={key}
-            label={field.label}
-            defaultSelectedKeys={[]}
-            items={field.options}
-            multiple={field.multiple}
-            {...register(fullPath)}
-          >
-            {option => (
-              <SelectItem key={option.value} value={option.value.toString()}>
-                {option.label}
-              </SelectItem>
-            )}
-          </Select>
+          <div key={key}>
+            <Select
+              label={field.label}
+              defaultSelectedKeys={[]}
+              items={field.options}
+              multiple={field.multiple}
+              {...register(fullPath)}
+            >
+              {option => (
+                <SelectItem key={option.value} value={option.value.toString()}>
+                  {option.label}
+                </SelectItem>
+              )}
+            </Select>
+            {renderDescription(field.description)}
+          </div>
         )
 
       case 'array':
@@ -306,7 +332,14 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
         return (
           <Card key={key} className="p-4">
             <CardHeader className="flex flex-row items-center justify-between">
-              <h2>{field.label}</h2>
+              <div>
+                <h2>{field.label}</h2>
+                {field.description && (
+                  <div className="text-sm text-content4-foreground">
+                    {field.description}
+                  </div>
+                )}
+              </div>
             </CardHeader>
             <CardBody className="space-y-4">
               {field.fields.map((subField, subIndex) => (

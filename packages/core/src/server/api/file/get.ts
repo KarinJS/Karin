@@ -816,9 +816,9 @@ const getEnvConfig: GetConfig = () => {
     {
       type: 'radio',
       label: '运行器',
-      key: 'RUNNER',
+      key: 'RUNTIME',
       options: [
-        { label: 'Node', value: 'node' },
+        { label: 'Node', value: 'node', },
         { label: 'PM2', value: 'pm2' },
         { label: 'TSX', value: 'tsx' },
       ],
