@@ -63,8 +63,8 @@ const merge = async (
     list[value.key] = {
       ...list.default,
       key: value.key,
-      cd: Number(value.cd) ?? list.default.cd,
-      userCD: Number(value.userCD) ?? list.default.userCD,
+      cd: isNaN(Number(value.cd)) ? list.default.cd : Number(value.cd),
+      userCD: isNaN(Number(value.userCD)) ? list.default.userCD : Number(value.userCD),
       mode: Number(value.mode) as GroupsObjectValue['mode'] ?? list.default.mode,
       alias: setStr(Array.isArray(value.alias) ? value.alias : list.default.alias),
       enable: setStr(Array.isArray(value.enable) ? value.enable : list.default.enable),

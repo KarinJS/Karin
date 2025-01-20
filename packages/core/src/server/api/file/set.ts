@@ -3,6 +3,7 @@ import { config, adapter, render, pm2, redis, setConfig } from '@/utils/config'
 import { createServerErrorResponse, createSuccessResponse } from '@/server/utils/response'
 
 import type { RequestHandler } from 'express'
+import type { GroupsObjectValue, PrivatesObjectValue } from '@/types/config'
 
 /**
  * 保存配置文件
@@ -51,7 +52,19 @@ const setFileRouter: RequestHandler = async (req, res) => {
           createServerErrorResponse(res, 'groups 数据格式错误')
           return
         }
-        setConfig('groups', data.groups)
+
+        /** cd、userCD 需要转换为数字 */
+        const newData = data.groups.map((item: GroupsObjectValue) => {
+          const cd = Number(item.cd)
+          const userCD = Number(item.userCD)
+          return {
+            ...item,
+            cd: isNaN(cd) ? 0 : cd,
+            userCD: isNaN(userCD) ? 0 : userCD,
+          }
+        })
+
+        setConfig('groups', newData)
         break
       }
       case 'privates': {
@@ -60,7 +73,16 @@ const setFileRouter: RequestHandler = async (req, res) => {
           return
         }
 
-        setConfig('privates', data.privates)
+        /** cd 需要转换为数字 */
+        const newData = data.privates.map((item: PrivatesObjectValue) => {
+          const cd = Number(item.cd)
+          return {
+            ...item,
+            cd: isNaN(cd) ? 0 : cd,
+          }
+        })
+
+        setConfig('privates', newData)
         break
       }
       default: {

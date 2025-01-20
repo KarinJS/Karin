@@ -63,7 +63,7 @@ const merge = async (
     list[value.key] = {
       ...list.default,
       key: value.key,
-      cd: Number(value.cd) ?? list.default.cd,
+      cd: isNaN(Number(value.cd)) ? list.default.cd : Number(value.cd),
       mode: Number(value.mode) as PrivatesObjectValue['mode'] ?? list.default.mode,
       alias: setStr(Array.isArray(value.alias) ? value.alias : list.default.alias),
       enable: setStr(Array.isArray(value.enable) ? value.enable : list.default.enable),
