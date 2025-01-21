@@ -40,7 +40,7 @@ jobs:
       
       # 构建项目
       - name: 构建项目
-        run: pnpm build:prod
+        run: pnpm build:all && pnpm --filter node-karin run pub
       
       # 更新版本号
       - name: 更新版本号
