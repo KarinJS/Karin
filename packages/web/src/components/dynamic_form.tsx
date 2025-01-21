@@ -123,24 +123,36 @@ function ObjectArrayField({
       </CardHeader>
       <CardBody>
         <EmptyTip fields={fields} />
-        {fields.map((item, index) => (
-          <div key={item.id} className="mb-4 p-4 border rounded space-y-4">
-            {safeFields.map((subField, subIndex) => (
-              <React.Fragment key={subField.key ?? subIndex}>
-                {renderField(subField, `${fullPath}.${index}`)}
-              </React.Fragment>
-            ))}
-            <Button
-              type="button"
-              size="sm"
-              color="danger"
-              onPress={() => remove(index)}
-              className="mt-2"
-            >
-              删除
-            </Button>
-          </div>
-        ))}
+        <Accordion key={field.key} className="mb-4 p-4 border rounded" selectionMode="multiple">
+          {fields.map((item, index) => {
+            const _item = item as Record<string, string>
+            return (
+              <AccordionItem
+                key={item.id}
+                title={_item.key ?? `${field.label} ${index + 1}`}
+                textValue={field?.label ?? '' + index}
+                classNames={{
+                  content: 'flex flex-col gap-4',
+                }}
+              >
+                {safeFields.map((subField, subIndex) => (
+                  <React.Fragment key={subField.key ?? subIndex}>
+                    {renderField(subField, `${fullPath}.${index}`)}
+                  </React.Fragment>
+                ))}
+                <Button
+                  type="button"
+                  size="sm"
+                  color="danger"
+                  onPress={() => remove(index)}
+                  className="mt-2"
+                >
+                  删除
+                </Button>
+              </AccordionItem>
+            )
+          })}
+        </Accordion>
       </CardBody>
     </Card>
   )
