@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/KarinJS/Karin/compare/web-v1.2.0...web-v1.2.1) (2025-01-21)
+
+
+### 🐛 Bug Fixes
+
+* import ([a7b6004](https://github.com/KarinJS/Karin/commit/a7b6004f3975b44347d15831a651aa7eacbee2ff))
+
 ## [1.2.0](https://github.com/KarinJS/Karin/compare/web-v1.1.0...web-v1.2.0) (2025-01-21)
 
 
