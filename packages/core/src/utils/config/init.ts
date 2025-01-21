@@ -33,6 +33,9 @@ await (async () => {
     root.htmlPath,
     root.consolePath,
     root.resourcePath,
+    root.sandboxDataPath,
+    root.sandboxTempPath,
+    `${root.sandboxDataPath}/avatar`,
   ]
 
   list.map(v => existToMkdirSync(v))
@@ -40,13 +43,18 @@ await (async () => {
   const [
     { pkg },
     { setVersion, setRuntime },
+    ,
+    { clearFiles },
   ] = await Promise.all([
     import('@/utils/config/pkg'),
     import('@/env'),
     import('@/utils/config/default'),
+    import('@/utils/config/admin'),
   ])
 
   setVersion(pkg().version)
   env()
   if (process.env.pm_id) setRuntime('pm2')
+
+  clearFiles(root.consolePath)
 })()

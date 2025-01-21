@@ -18,6 +18,7 @@ wss.on('error', (error: NodeJS.ErrnoException) => {
 /** 监听 ws 连接 */
 wss.on('connection', (socket, request) => {
   debug(`wss:connection host: ${request.headers.host} url: ${request.url}`)
+  logger.debug(`[WebSocketServer] host: ${request.headers.host} url: ${request.url}`)
 
   if (
     request?.headers?.a ||
@@ -37,8 +38,18 @@ wss.on('connection', (socket, request) => {
   if (request.url === '/puppeteer') {
     listeners.emit('ws:connection:puppeteer', socket, request)
 
-    socket.on('close', (code, reason) => {
+    socket.once('close', (code, reason) => {
       listeners.emit('ws:close:puppeteer', socket, request, code, reason)
+    })
+
+    return
+  }
+
+  if (request.url === '/sandbox') {
+    listeners.emit('ws:connection:sandbox', socket, request)
+
+    socket.once('close', (code, reason) => {
+      listeners.emit('ws:close:sandbox', socket, request, code, reason)
     })
 
     return

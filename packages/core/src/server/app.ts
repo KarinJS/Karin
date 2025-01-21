@@ -1,6 +1,6 @@
 import path from 'node:path'
 import express from 'express'
-import { karinDir } from '@/root'
+import { karinDir, sandboxDataPath, sandboxTempPath } from '@/root'
 import { router } from './api/router'
 import { createServer } from 'node:http'
 import { listeners } from '@/core/internal'
@@ -37,10 +37,13 @@ export const listen = (port: number, host: string) => {
 export const web = () => {
   /** web静态文件目录 */
   const webDir = path.join(karinDir, 'dist/web')
-  const staticFiles = express.static(webDir)
 
-  /** 所有 /web 开头的路由都指向静态文件 */
-  app.use('/web', staticFiles)
+  /** 静态文件 */
+  app.use('/web', express.static(webDir))
+  /** 沙盒数据 一般存储用户头像 */
+  app.use('/sandbox/data', express.static(sandboxDataPath))
+  /** 沙盒临时文件 一般存储临时文件 */
+  app.use('/sandbox/file', express.static(sandboxTempPath))
 
   /** 处理 /web 路径下的所有请求，确保 SPA 路由可以正常工作 */
   app.get('/web/*', (req, res) => {

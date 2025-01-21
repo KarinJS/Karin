@@ -74,9 +74,9 @@ export interface UserInfo {
   /** 名称 */
   nick: string
   /** 用户UID */
-  uid: string
+  uid?: string
   /** 用户UIN */
-  uin: string
+  uin?: string
   /** qid */
   qid?: string
   /** 备注 */

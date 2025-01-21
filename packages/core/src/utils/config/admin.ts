@@ -54,8 +54,15 @@ export const setConfig = <T extends keyof FileListMap> (
 }
 
 /**
- *
+ * 清空指定目录下的全部文件 不删除目录
+ * @param dir 目录
  */
+export const clearFiles = (dir: string) => {
+  const list = fs.readdirSync(dir)
+  list.forEach(file => {
+    fs.promises.rm(file, { recursive: true, force: true })
+  })
+}
 
 // /** 每次启动清空临时文件夹 */
 // export const clearTemp = () => {

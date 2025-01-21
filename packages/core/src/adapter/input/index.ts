@@ -21,7 +21,7 @@ const botID = 'console'
  * 控制台交互适配器
  * @class AdapterConsole
  */
-export class AdapterConsole extends AdapterBase implements AdapterType {
+class AdapterConsole extends AdapterBase implements AdapterType {
   constructor () {
     super()
     listeners.on('karin:adapter:open', () =>
@@ -164,5 +164,5 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
   }
 }
 
-export const adapter = new AdapterConsole()
+const adapter = new AdapterConsole()
 registerBot('other', adapter)
