@@ -241,7 +241,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
 
       case 'checkbox':
         return (
-          <Card key={key}>
+          <Card key={key} shadow="sm">
             <CheckboxGroup
               label={field.label}
               defaultValue={field.defaultValue?.map(String)}
@@ -262,7 +262,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
 
       case 'radio':
         return (
-          <Card key={key}>
+          <Card key={key} shadow="sm">
             <CardBody>
               <RadioGroup
                 label={field.label}
