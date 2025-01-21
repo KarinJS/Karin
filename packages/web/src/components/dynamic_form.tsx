@@ -22,7 +22,7 @@ export interface DynamicFormProps {
   setExpandedSections: (sections: Set<Key>) => void
 }
 
-function EmptyTip ({ fields }: { fields: unknown[] }) {
+function EmptyTip({ fields }: { fields: unknown[] }) {
   return (
     fields.length === 0 && (
       <div className="text-sm text-content4-foreground text-center col-span-2">
@@ -32,7 +32,7 @@ function EmptyTip ({ fields }: { fields: unknown[] }) {
   )
 }
 
-function ArrayField ({
+function ArrayField({
   control,
   field,
   fullPath,
@@ -89,7 +89,7 @@ function ArrayField ({
   )
 }
 
-function ObjectArrayField ({
+function ObjectArrayField({
   control,
   field,
   fullPath,
@@ -153,7 +153,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   errors,
   formConfig,
   expandedSections,
-  setExpandedSections
+  setExpandedSections,
 }) => {
   // 渲染表单字段
   const renderField = (field: FormField, path: string = '') => {
@@ -163,11 +163,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     // 创建一个通用的描述渲染函数
     const renderDescription = (description?: string) => {
       if (!description) return null
-      return (
-        <div className="text-sm text-content4-foreground mt-1">
-          {description}
-        </div>
-      )
+      return <div className="text-sm text-content4-foreground mt-1">{description}</div>
     }
 
     switch (field.type) {
@@ -181,8 +177,9 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
         return (
           <Accordion
             key={key}
+            selectionMode="multiple"
             selectedKeys={expandedSections}
-            onSelectionChange={(keys) => {
+            onSelectionChange={keys => {
               if (typeof keys === 'string') {
                 const newSet = new Set(expandedSections)
                 if (newSet.has(field.key)) {
@@ -196,11 +193,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
               }
             }}
           >
-            <AccordionItem
-              key={field.key}
-              title={field.label}
-              textValue={field.label}
-            >
+            <AccordionItem key={field.key} title={field.label} textValue={field.label}>
               <div className="space-y-4">
                 {field.children.map((subField, subIndex) => (
                   <React.Fragment key={subField.key ?? subIndex}>
@@ -214,96 +207,95 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
 
       case 'text':
         return (
-          <div key={key}>
-            <Input
-              label={field.label}
-              defaultValue={field.defaultValue}
-              {...register(fullPath, { required: field.required })}
-              className="w-full"
-              errorMessage={errors[field.key]?.message?.toString()}
-              description={field.description}
-            />
-            {renderDescription(field.description)}
-          </div>
+          <Input
+            key={key}
+            label={field.label}
+            defaultValue={field.defaultValue}
+            {...register(fullPath, { required: field.required })}
+            className="w-full"
+            errorMessage={errors[field.key]?.message?.toString()}
+            description={field.description}
+          />
         )
 
       case 'number':
         return (
-          <div key={key}>
-            <Input
-              label={field.label}
-              type="number"
-              defaultValue={field.defaultValue?.toString()}
-              {...register(fullPath, { required: field.required })}
-              className="w-full"
-              description={field.description}
-            />
-            {renderDescription(field.description)}
-          </div>
+          <Input
+            key={key}
+            label={field.label}
+            type="number"
+            defaultValue={field.defaultValue?.toString()}
+            {...register(fullPath, { required: field.required })}
+            className="w-full"
+            description={field.description}
+          />
         )
 
       case 'switch':
         return (
-          <div key={key}>
-            <Switch key={key} {...register(fullPath)} defaultChecked={field.defaultValue}>
-              {field.label}
-            </Switch>
+          <Switch key={key} {...register(fullPath)} defaultChecked={field.defaultValue}>
+            <div>{field.label}</div>
             {renderDescription(field.description)}
-          </div>
+          </Switch>
         )
 
       case 'checkbox':
         return (
-          <div key={key}>
+          <Card key={key}>
             <CheckboxGroup
               label={field.label}
               defaultValue={field.defaultValue?.map(String)}
+              description={field.description}
             >
               {field.options.map(option => (
-                <Checkbox key={option.value} value={option.value.toString()} {...register(fullPath)}>
+                <Checkbox
+                  key={option.value}
+                  value={option.value.toString()}
+                  {...register(fullPath)}
+                >
                   {option.label}
                 </Checkbox>
               ))}
             </CheckboxGroup>
-            {renderDescription(field.description)}
-          </div>
+          </Card>
         )
 
       case 'radio':
         return (
-          <div key={key}>
-            <RadioGroup
-              label={field.label}
-              defaultValue={field.options[0]?.value?.toString()}
-            >
-              {field.options.map(option => (
-                <Radio key={option.value} value={option.value.toString()} {...register(fullPath)}>
-                  {option.label}
-                </Radio>
-              ))}
-            </RadioGroup>
-            {renderDescription(field.description)}
-          </div>
+          <Card key={key}>
+            <CardBody>
+              <RadioGroup
+                label={field.label}
+                defaultValue={field.options[0]?.value?.toString()}
+                description={field.description}
+              >
+                {field.options.map(option => (
+                  <Radio key={option.value} value={option.value.toString()} {...register(fullPath)}>
+                    {option.label}
+                  </Radio>
+                ))}
+              </RadioGroup>
+            </CardBody>
+          </Card>
         )
 
       case 'select':
         return (
-          <div key={key}>
-            <Select
-              label={field.label}
-              defaultSelectedKeys={[]}
-              items={field.options}
-              multiple={field.multiple}
-              {...register(fullPath)}
-            >
-              {option => (
-                <SelectItem key={option.value} value={option.value.toString()}>
-                  {option.label}
-                </SelectItem>
-              )}
-            </Select>
-            {renderDescription(field.description)}
-          </div>
+          <Select
+            label={field.label}
+            defaultSelectedKeys={[]}
+            items={field.options}
+            multiple={field.multiple}
+            key={key}
+            description={field.description}
+            {...register(fullPath)}
+          >
+            {option => (
+              <SelectItem key={option.value} value={option.value.toString()}>
+                {option.label}
+              </SelectItem>
+            )}
+          </Select>
         )
 
       case 'array':
@@ -335,9 +327,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
               <div>
                 <h2>{field.label}</h2>
                 {field.description && (
-                  <div className="text-sm text-content4-foreground">
-                    {field.description}
-                  </div>
+                  <div className="text-sm text-content4-foreground">{field.description}</div>
                 )}
               </div>
             </CardHeader>

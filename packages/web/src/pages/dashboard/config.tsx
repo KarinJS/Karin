@@ -99,9 +99,9 @@ const ConfigPage: React.FC = () => {
 
   return (
     <section className="pt-20 md:pt-8">
-      <div className="max-w-2xl mx-auto flex items-center sticky top-0 z-10 bg-content1 rounded-full bg-opacity-50 backdrop-blur-md p-4">
+      <div className="max-w-2xl mx-auto flex items-center sticky top-0 z-20 bg-content1 rounded-b-3xl bg-opacity-50 backdrop-blur-md py-4 px-2 overflow-hidden mb-4 gap-2">
         <Tabs
-          className="flex"
+          className="w-auto flex flex-shrink flex-grow overflow-x-auto"
           selectedKey={activeTab}
           onSelectionChange={setActiveTab}
           radius="full"
@@ -115,13 +115,14 @@ const ConfigPage: React.FC = () => {
           <Tab key="redis" title="redis配置" />
           <Tab key="env" title="环境变量" />
         </Tabs>
-        <div className="flex gap-2 ml-auto">
+        <div className="flex gap-2 ml-auto flex-grow-0 flex-shrink-0 items-center">
           {hasSections && (
             <Button
-              // 根据展开状态切换颜色
-              color={expandedSections.size > 0 ? "primary" : "default"}
+              color={expandedSections.size > 0 ? 'primary' : 'default'}
               startContent={<MdUnfoldLess />}
               radius="full"
+              size="sm"
+              variant="flat"
               onPress={toggleAllSections}
             >
               {expandedSections.size > 0 ? '全部折叠' : '全部展开'}
@@ -142,7 +143,10 @@ const ConfigPage: React.FC = () => {
       {configStructure.length === 0 ? (
         <Spinner />
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl mx-auto">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="max-w-2xl mx-auto flex flex-col gap-4 px-2 pb-10"
+        >
           <DynamicForm
             register={register}
             control={control}
