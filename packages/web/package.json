@@ -28,6 +28,7 @@
     "@heroui/popover": "^2.3.10",
     "@heroui/radio": "^2.3.9",
     "@heroui/select": "^2.4.10",
+    "@heroui/skeleton": "^2.2.6",
     "@heroui/snippet": "2.2.10",
     "@heroui/spinner": "^2.2.6",
     "@heroui/switch": "2.2.8",

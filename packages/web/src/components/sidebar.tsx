@@ -9,6 +9,8 @@ import { useMediaQuery } from 'react-responsive'
 import { IoMenu, IoClose } from 'react-icons/io5'
 import { title } from '@/components/primitives'
 import { Image } from '@heroui/image'
+import { useLocalStorageState } from 'ahooks'
+import key from '@/consts/key'
 
 export interface MenuButtonProps {
   isCollapsed: boolean
@@ -35,13 +37,18 @@ function MenuButton({ isCollapsed, children }: MenuButtonProps) {
 }
 
 export default function Sidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isCollapsed = false, setIsCollapsed] = useLocalStorageState<boolean>(
+    key.sideBarCollapsed,
+    {
+      defaultValue: false,
+    },
+  )
   const [show, setShow] = useState(true)
   const isNotSmallScreen = useMediaQuery({ minWidth: 768 })
 
   return (
     <motion.div
-      className="pr-2 h-full fixed md:relative z-50 !pr-0"
+      className="h-full fixed md:relative z-50 pr-0"
       initial={{
         padding: isNotSmallScreen ? 30 : 10,
       }}
@@ -95,12 +102,12 @@ export default function Sidebar() {
             <div>KarinJS</div>
           </motion.div>
         </div>
-        <div className={
-          clsx(
-            "flex-1 p-2 px-2 pt-0 flex flex-col gap-2 gap-y-4 overflow-y-auto hide-scrollbar",
+        <div
+          className={clsx(
+            'flex-1 p-2 px-2 pt-0 flex flex-col gap-2 gap-y-4 overflow-y-auto hide-scrollbar',
             !isCollapsed && 'px-4',
-          )
-        }>
+          )}
+        >
           {siteConfig.navItems.map(item => (
             <NavLink
               key={item.href}

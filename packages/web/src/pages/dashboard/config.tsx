@@ -141,7 +141,9 @@ const ConfigPage: React.FC = () => {
       </div>
 
       {configStructure.length === 0 ? (
-        <Spinner />
+        <div className="max-w-2xl mx-auto flex items-center justify-center h-96">
+          <Spinner className="mx-auto" />
+        </div>
       ) : (
         <form
           onSubmit={handleSubmit(onSubmit)}

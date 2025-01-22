@@ -1,14 +1,8 @@
-// import { useTheme } from '@/hooks/use-theme'
 import clsx from 'clsx'
-import {
-  TbMessageCircle,
-  TbMessageCircleFilled,
-  TbUser,
-  TbUserFilled,
-  // TbMenu2,
-} from 'react-icons/tb'
+import { TbMessageCircle, TbMessageCircleFilled, TbUser, TbUserFilled } from 'react-icons/tb'
 import { useMatch, useNavigate } from 'react-router-dom'
 import { Image } from '@heroui/image'
+import useSandbox from '@/hooks/sandbox/use_sandbox'
 
 interface MenuItemProps {
   icon?: React.ReactNode
@@ -58,11 +52,13 @@ const MenuItem: React.FC<MenuItemProps> = props => {
   )
 }
 const SideBar = () => {
-  // const { toggleTheme } = useTheme()
+  const sandbox = useSandbox()
+  const { ws } = sandbox
+  const { botInfo } = ws
   return (
     <div className="select-none flex flex-col items-stretch px-2 flex-1">
       <div className="aspect-square rounded-full my-4">
-        <Image src="/web/karin.png" className="w-full h-full rounded-full" alt="logo" />
+        <Image src={botInfo.avatar} className="w-full h-full rounded-full" alt="avatar" />
       </div>
       <div className="flex flex-1 flex-col items-stretch gap-2 pb-3">
         <MenuItem
@@ -71,9 +67,7 @@ const SideBar = () => {
           href="/sandbox/chat"
         />
         <MenuItem icon={<TbUser />} activeIcon={<TbUserFilled />} href="/sandbox/contact" />
-
         <div className="mt-auto"></div>
-        {/*<MenuItem icon={<TbMenu2 />} onClick={toggleTheme} />*/}
       </div>
     </div>
   )
