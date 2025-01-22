@@ -480,6 +480,22 @@ const getMsgListRouter: RequestHandler = async (req, res) => {
   }
 }
 
+/**
+ * 获取沙盒连接地址
+ */
+const getSandboxUrlRouter: RequestHandler = async (req, res) => {
+  try {
+    const port = process.env.WS_SERVER_PORT
+    const authKey = process.env.WS_SERVER_AUTH_KEY || ''
+
+    const url = `ws://127.0.0.1:${port}/sandbox`
+    createSuccessResponse(res, { url, authKey })
+  } catch (error) {
+    createServerErrorResponse(res, (error as Error).message)
+    logger.error(error)
+  }
+}
+
 const main = () => {
   listeners.on('ws:connection:sandbox', async (socket: WebSocket, request: IncomingMessage) => {
     try {
@@ -534,6 +550,7 @@ router.post('/sandbox/msg/recall', recallMessageRouter)
 router.post('/sandbox/webhook', webhookRouter)
 router.post('/sandbox/self/update', updateBotNameRouter)
 router.post('/sandbox/msg/list', getMsgListRouter)
+router.post('/sandbox/url', getSandboxUrlRouter)
 
 router.post('/sandbox/friend/create', createFriendRouter)
 router.post('/sandbox/friend/list', getFriendListRouter)
