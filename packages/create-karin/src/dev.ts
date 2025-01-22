@@ -73,9 +73,10 @@ export const createDev = async (name: string, type: 'ts' | 'js', puppeteer: bool
       '\n✨ 项目创建成功！',
       yellow('👇 请执行以下命令：\n'),
       green(`  cd ${name}`),
+      green('  pnpm install'),
       green('  pnpm dev\n'),
       '  快捷指令(上下任选其一):',
-      magenta(`  cd ${name} && pnpm dev\n`),
+      magenta(`  cd ${name} && pnpm install && pnpm dev\n`),
       '🚀 开始愉快的开发吧！',
     ]
 
