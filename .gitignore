@@ -43,3 +43,5 @@ packages/types/index.d.ts
 
 #macos 文件
 .DS_Store
+
+!packages/core/src/server/api/plugins
