@@ -15,10 +15,6 @@ jobs:
   release-please:
     # 设置任务运行环境为 ubuntu-latest
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        # 为所有 run 步骤设置工作目录
-        working-directory: packages/core
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
@@ -39,12 +35,12 @@ jobs:
           cache: pnpm
       # 使用 pnpm 安装依赖
       - name: 安装依赖
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install
       # 构建输出
       - name: 构建输出
         id: build
         run: |
-          pnpm run build:prod > build.log 2>&1 || {
+          pnpm run build:all > build.log 2>&1 || {
             echo "构建失败，错误日志："
             cat build.log
             exit 1
@@ -63,7 +59,7 @@ jobs:
       - name: 修订版本号
         id: version
         run: |
-          pnpm run pr all || {
+          pnpm --filter node-karin run pr all || {
             echo "修订版本号失败"
             exit 1
           }
@@ -80,7 +76,7 @@ jobs:
           
           echo "NPM_TOKEN 长度: ${#NODE_AUTH_TOKEN}"
           
-          pnpm run pub-beta || {
+          pnpm --filter node-karin run pub-beta || {
             echo "发布到 npm 失败"
             exit 1
           }
