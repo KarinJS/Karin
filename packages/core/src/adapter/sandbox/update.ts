@@ -36,6 +36,30 @@ const checkCreateCondition = (
 }
 
 /**
+ * 更新Bot名称
+ * @param bot bot实例
+ * @param options 更新选项
+ */
+export const updateBotName = async (bot: AdapterSandbox, options: { name: string, avatar: string }) => {
+  if (!options.name && !options.avatar) {
+    throw new Error('name 和 avatar 不能同时为空')
+  }
+
+  const key = `${bot.prefix.friend}${bot.account.selfId}`
+  const data = JSON.parse(await bot.level.get(key))
+
+  if (options.name) {
+    data.name = options.name
+  }
+
+  if (options.avatar) {
+    data.avatar = options.avatar
+  }
+
+  await bot.level.put(key, JSON.stringify(data))
+}
+
+/**
  * 更新好友信息
  * @param bot bot实例
  * @param userId 好友id
@@ -48,6 +72,10 @@ export const updateFriend = async (
   name?: string,
   avatar?: string
 ) => {
+  if (userId === bot.account.selfId) {
+    throw new Error('Bot自身信息请通过 /sandbox/self/update 接口更新')
+  }
+
   const key = `${bot.prefix.friend}${userId}`
 
   /** 检查好友是否存在 */

@@ -23,7 +23,8 @@ import {
   createMessage,
   deleteMessage,
   updateMessageStatus,
-  createEvent
+  createEvent,
+  updateBotName
 } from '@/adapter/sandbox'
 
 import type WebSocket from 'ws'
@@ -450,6 +451,20 @@ const checkSelfInFriendList = async () => {
   }
 }
 
+/**
+ * 更新Bot名称
+ */
+const updateBotNameRouter: RequestHandler = async (req, res) => {
+  try {
+    const { name, avatar } = req.body as { name: string; avatar: string }
+    await updateBotName(adapter!, { name, avatar })
+    createSuccessResponse(res, '成功')
+  } catch (error) {
+    createServerErrorResponse(res, (error as Error).message)
+    logger.error(error)
+  }
+}
+
 const main = () => {
   listeners.on('ws:connection:sandbox', async (socket: WebSocket, request: IncomingMessage) => {
     try {
@@ -502,6 +517,7 @@ router.post('/sandbox/self', getSelfInfoRouter)
 router.post('/sandbox/msg/create', createMsgRouter)
 router.post('/sandbox/msg/recall', recallMessageRouter)
 router.post('/sandbox/webhook', webhookRouter)
+router.post('/sandbox/self/update', updateBotNameRouter)
 
 router.post('/sandbox/friend/create', createFriendRouter)
 router.post('/sandbox/friend/list', getFriendListRouter)
