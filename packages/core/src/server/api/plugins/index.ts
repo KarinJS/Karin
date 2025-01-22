@@ -47,16 +47,18 @@ interface PluginResponse {
  * @returns 返回最先成功响应的插件列表
  */
 const fetchPluginList = async (): Promise<PluginInfo[]> => {
-  const requests = PLUGIN_SOURCES.map(url =>
-    axios.get<PluginResponse>(url)
+  const requests = PLUGIN_SOURCES.map(url => {
+    const time = Date.now()
+    return axios.get<PluginResponse>(url)
       .then(response => {
-        console.log(url)
+        logger.info(`[插件列表] 从 ${url} 获取成功 耗时${logger.yellow(Date.now() - time + '')}ms`)
         return response.data.plugins
       })
       .catch((error) => {
         logger.error(error)
         return null
       })
+  }
   )
 
   const results = await Promise.race(requests)
