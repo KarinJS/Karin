@@ -27,6 +27,17 @@ export const createEvent = async (bot: AdapterSandbox, data: SandboxEvent) => {
       time: data.time,
       srcReply: elements => bot.sendMsg(contact, elements),
     })
+
+    createMessage(bot, {
+      type: 'group',
+      targetId: data.groupId,
+      seq: data.seq,
+      messageId: data.messageId,
+      time: data.time,
+      elements: data.elements,
+      status: 'normal',
+    })
+
     return
   }
 
@@ -43,6 +54,16 @@ export const createEvent = async (bot: AdapterSandbox, data: SandboxEvent) => {
       sender: senderFriend(data.sender.id, data.sender.name),
       time: data.time,
       srcReply: elements => bot.sendMsg(contact, elements),
+    })
+
+    createMessage(bot, {
+      type: 'friend',
+      targetId: data.sender.id,
+      seq: data.seq,
+      messageId: data.messageId,
+      time: data.time,
+      elements: data.elements,
+      status: 'normal',
     })
     return
   }
@@ -226,5 +247,5 @@ export const createMessage = async (
   }
 
   const key = options.type === 'friend' ? bot.prefix.friendMsg : bot.prefix.groupMsg
-  await bot.level.put(`${key}:${options.messageId}`, JSON.stringify(options))
+  await bot.level.put(`${key}${options.messageId}`, JSON.stringify(options))
 }

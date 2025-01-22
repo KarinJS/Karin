@@ -53,7 +53,7 @@ const testSandboxWS = () => {
           authorization: 'abc123'
         },
         body: JSON.stringify({
-          id: 'test-friend-001',
+          id: 'test',
           name: '测试好友',
           avatar: 'https://example.com/avatar.jpg'
         })
@@ -79,7 +79,7 @@ const testSandboxWS = () => {
         },
         body: JSON.stringify({
           type: 'friend',
-          targetId: 'test-friend-001'
+          targetId: 'test'
         })
       })
       const msgData = await createMsgResponse.json()
@@ -98,7 +98,7 @@ const testSandboxWS = () => {
           messageId: msgData.data.messageId,
           time: msgData.data.time,
           sender: {
-            id: 'test-friend-001',
+            id: 'test',
             name: '测试好友',
             role: 'member'
           },
@@ -114,6 +114,21 @@ const testSandboxWS = () => {
     } catch (error) {
       console.error('API测试失败:', error)
     }
+
+    // 获取消息列表
+    const msgListResponse = await fetch('http://localhost:7777/api/v1/sandbox/msg/list', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: 'abc123'
+      },
+      body: JSON.stringify({
+        type: 'friend',
+        targetId: 'test',
+        count: 10
+      })
+    })
+    console.log('消息列表:', await msgListResponse.json())
   }
 }
 

@@ -32,6 +32,7 @@ import type { RequestHandler } from 'express'
 import type { IncomingMessage } from 'node:http'
 import type { SandboxEvent } from '@/types/sandbox/event'
 import type { SandboxMsgRecord } from '@/types/sandbox/db'
+import { getHistory } from '@/adapter/sandbox/get'
 
 let level: Level
 /** 适配器状态 */
@@ -465,6 +466,20 @@ const updateBotNameRouter: RequestHandler = async (req, res) => {
   }
 }
 
+/**
+ * 获取消息列表
+ */
+const getMsgListRouter: RequestHandler = async (req, res) => {
+  try {
+    const { type, targetId, count } = req.body as { type: 'friend' | 'group'; targetId: string; count: number }
+    const result = await getHistory(adapter!, type, targetId, count)
+    createSuccessResponse(res, result)
+  } catch (error) {
+    createServerErrorResponse(res, (error as Error).message)
+    logger.error(error)
+  }
+}
+
 const main = () => {
   listeners.on('ws:connection:sandbox', async (socket: WebSocket, request: IncomingMessage) => {
     try {
@@ -518,6 +533,7 @@ router.post('/sandbox/msg/create', createMsgRouter)
 router.post('/sandbox/msg/recall', recallMessageRouter)
 router.post('/sandbox/webhook', webhookRouter)
 router.post('/sandbox/self/update', updateBotNameRouter)
+router.post('/sandbox/msg/list', getMsgListRouter)
 
 router.post('/sandbox/friend/create', createFriendRouter)
 router.post('/sandbox/friend/list', getFriendListRouter)

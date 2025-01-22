@@ -466,3 +466,41 @@
   "messageId": "消息ID"
 }
 ```
+
+### 获取消息列表
+
+- 路径: `/sandbox/msg/list`
+- 方法: `POST`
+- 请求体:
+
+```json
+{
+  "type": "friend",
+  "targetId": "目标ID",
+  "count": 10
+}
+```
+
+- 响应:
+
+```json
+{
+  "code": 200,
+  "data": [
+    {
+      "type": "friend",
+      "targetId": "目标ID",
+      "seq": 1,
+      "messageId": "消息ID",
+      "time": 1716489600000,
+      "status": "normal",
+      "elements": [
+        {
+          "type": "text",
+          "text": "消息内容"
+        }
+      ]
+    }
+  ]
+}
+```
