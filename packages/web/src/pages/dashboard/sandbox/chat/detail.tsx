@@ -47,9 +47,9 @@ const ChatDetail = () => {
 
   const dragEvent = (e: DragEvent) => {
     e.preventDefault()
-    for (const f of e.dataTransfer!.files) {
-      console.log('File(s) you dragged here: ', f)
-    }
+    // for (const f of e.dataTransfer!.files) {
+    //   console.log('File(s) you dragged here: ', f)
+    // }
   }
   useEffect(() => {
     document.addEventListener('drop', dragEvent)

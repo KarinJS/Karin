@@ -38,7 +38,7 @@ const ConfigPage: React.FC = () => {
         type: activeTab.toString(),
       })
 
-      console.log(res)
+      // console.log(res)
 
       setConfigStructure(res.struct)
       // 检查是否有section类型的字段
