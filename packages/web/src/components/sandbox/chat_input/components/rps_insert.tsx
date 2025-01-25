@@ -18,6 +18,7 @@ const RPSInsert = () => {
           showStructuredMessage([
             {
               type: 'rps',
+              id: 1,
             },
           ])
         }}

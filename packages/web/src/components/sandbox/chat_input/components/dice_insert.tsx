@@ -18,6 +18,7 @@ const DiceInsert = () => {
           showStructuredMessage([
             {
               type: 'dice',
+              id: 1,
             },
           ])
         }}

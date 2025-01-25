@@ -1,50 +1,44 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { Slice } from '@reduxjs/toolkit'
-
 import type { RootState } from '@/store'
-import { OB11Message } from '@/types/onebot'
+import type { SandboxEvent } from '@/types/sandbox'
 
-export interface UserMessage {
-  user_id: number
-  messages: OB11Message[]
+interface MessagesState {
+  user_id: string
+  messages: SandboxEvent[]
 }
 
-const initialState: UserMessage[] = [
-  {
-    user_id: 1,
-    messages: [],
-  },
-]
+const initialState: MessagesState[] = []
 
-export const messagesSlice: Slice<UserMessage[]> = createSlice({
+const messagesSlice = createSlice({
   name: 'messages',
   initialState,
   reducers: {
-    setMessage: (state, action: PayloadAction<OB11Message>) => {
-      const index = state.findIndex(item => item.user_id === action.payload.sender.user_id)
-      if (index !== -1) {
-        state[index].messages.push(action.payload)
+    setMessage: (state, action: PayloadAction<{ user_id: string; message: SandboxEvent }>) => {
+      const { user_id, message } = action.payload
+      const userMessages = state.find(item => item.user_id === user_id)
+      if (userMessages) {
+        userMessages.messages.push(message)
       } else {
         state.push({
-          user_id: action.payload.sender.user_id,
-          messages: [action.payload],
+          user_id,
+          messages: [message]
         })
       }
     },
-    setEmptyIfNotExist: (state, action: PayloadAction<number>) => {
-      const index = state.findIndex(item => item.user_id === action.payload)
-      if (index === -1) {
+    setEmptyIfNotExist: (state, action: PayloadAction<string>) => {
+      const user_id = action.payload
+      if (!state.find(item => item.user_id === user_id)) {
         state.push({
-          user_id: action.payload,
-          messages: [],
+          user_id,
+          messages: []
         })
       }
-    },
-  },
+    }
+  }
 })
 
 export const { setMessage, setEmptyIfNotExist } = messagesSlice.actions
 
-export const messages = (state: RootState) => state.messages
+export const selectMessages = (state: RootState) => state.messages
 
 export default messagesSlice.reducer

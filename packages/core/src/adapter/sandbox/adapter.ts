@@ -9,7 +9,7 @@ import type { Level } from 'level'
 import type { Contact, GroupSender } from '@/types/event'
 import type { Elements } from '@/types/segment'
 import type { IncomingMessage } from 'node:http'
-import type { Sandbox } from '@/types/sandbox/sendApi'
+import type { SandboxSendApi } from '@/types/sandbox/sendApi'
 import type { prefix as Prefix } from '@/server/api/sandbox/index'
 import type { SandboxMsgRecord } from '@/types/sandbox/db'
 import type { AdapterType, SendMsgResults } from '@/types/adapter'
@@ -66,7 +66,8 @@ export class AdapterSandbox extends AdapterBase implements AdapterType {
     messageId: string,
     time: number,
   ) {
-    await this.level.put(messageId, JSON.stringify({
+    const key = type === 'friend' ? this.prefix.friendMsg : this.prefix.groupMsg
+    await this.level.put(`${key}${messageId}`, JSON.stringify({
       type,
       seq,
       targetId,
@@ -95,7 +96,8 @@ export class AdapterSandbox extends AdapterBase implements AdapterType {
   async updateMsgStatus (messageId: string, status: 'normal' | 'recall') {
     const data = await this.getMsgRecord(messageId)
     data.status = status
-    await this.level.put(messageId, JSON.stringify(data))
+    const key = data.type === 'friend' ? this.prefix.friendMsg : this.prefix.groupMsg
+    await this.level.put(`${key}${messageId}`, JSON.stringify(data))
   }
 
   /**
@@ -149,24 +151,54 @@ export class AdapterSandbox extends AdapterBase implements AdapterType {
 
     const { seq, messageId, time } = await createMsgSeq(this, contact.scene, contact.peer)
 
-    const options = {
-      seq,
-      type: contact.scene,
-      targetId: contact.peer,
-      elements,
-      messageId,
-      time,
+    let options: SandboxSendApi['sendMsg']
+    if (contact.scene === 'group') {
+      options = {
+        seq,
+        selfId: this.selfId,
+        type: 'group',
+        groupId: contact.peer,
+        groupName: contact.name,
+        elements,
+        messageId,
+        time,
+        sender: {
+          id: this.selfId,
+          name: this.account.name,
+          role: 'owner',
+        },
+      }
+    } else {
+      options = {
+        seq,
+        selfId: this.selfId,
+        type: 'friend',
+        elements,
+        messageId,
+        time,
+        sender: {
+          id: this.selfId,
+          name: this.account.name,
+        },
+      }
     }
 
-    this._pushWeb('sendMsg', options)
-    await this.level.put(messageId, JSON.stringify(options))
+    await this._pushWeb('sendMsg', options)
+    await this.createMsgRecord(
+      options.type,
+      options.seq,
+      options.type === 'friend' ? options.sender.id : options.groupId,
+      options.elements,
+      options.messageId,
+      options.time
+    )
 
     return {
       time,
       messageId,
       message_id: messageId,
       messageTime: time,
-      rawData: {},
+      rawData: { seq, messageId, time },
     }
   }
 
@@ -175,7 +207,7 @@ export class AdapterSandbox extends AdapterBase implements AdapterType {
    * @param action 请求类型
    * @param param 请求参数
    */
-  async _pushWeb<T extends keyof Sandbox> (action: T, param: Sandbox[T]) {
+  async _pushWeb<T extends keyof SandboxSendApi> (action: T, param: SandboxSendApi[T]) {
     const data = JSON.stringify({
       action,
       param,

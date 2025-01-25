@@ -13,19 +13,18 @@ import useShowStructuredMessage from '@/hooks/sandbox/use_show_strcuted_message'
 
 import { isURI } from '@/lib/utils'
 
-import type { OB11Segment } from '@/types/onebot'
+import type { Elements } from '@/types/segment'
 
 const AudioInsert = () => {
   const [audioUrl, setAudioUrl] = useState<string>('')
   const audioInputRef = useRef<HTMLInputElement>(null)
   const showStructuredMessage = useShowStructuredMessage()
   const showAudioSegment = (file: string) => {
-    const messages: OB11Segment[] = [
+    const messages: Elements[] = [
       {
         type: 'record',
-        data: {
-          file: file,
-        },
+        file: file,
+        magic: false,
       },
     ]
     showStructuredMessage(messages)

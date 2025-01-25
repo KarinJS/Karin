@@ -31,6 +31,8 @@ export const uploadAvatar = async (
     }
   } else if (data.startsWith('base64://')) {
     await fs.promises.writeFile(file, Buffer.from(data.replace(/^base64:\/\//, ''), 'base64'))
+  } else if (fs.existsSync(data)) {
+    await fs.promises.copyFile(data, file)
   } else {
     throw new Error('文件格式错误，请检查文件是否为base64或http链接')
   }

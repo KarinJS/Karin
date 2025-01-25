@@ -1,6 +1,6 @@
 import type { SandboxEvent } from './event'
 
-export interface SandboxSendApi {
+export interface SandboxWsEvent {
   sendMsg: SandboxEvent,
   /** 撤回消息 */
   recallMsg: {

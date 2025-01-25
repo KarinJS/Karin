@@ -1,23 +1,24 @@
 import store from '@/store'
-import { OB11Message } from '@/types/onebot'
+import type { SandboxEvent } from '@/types/sandbox'
+import type { Elements } from '@/types/segment'
 
 export class MessageItem {
-  private readonly raw_message: OB11Message['message'][number]
+  private readonly raw_message: Elements
 
-  constructor(data: OB11Message['message'][number]) {
+  constructor (data: Elements) {
     this.raw_message = data
   }
 
-  get structured() {
+  get structured () {
     return this.raw_message
   }
 
-  toString() {
+  toString () {
     if (this.structured.type === 'text') {
-      return this.structured.data.text
+      return this.structured.text
     }
     if (this.structured.type === 'face') {
-      return `[表情${this.structured.data.id}]`
+      return `[表情${this.structured.id}]`
     }
     if (this.structured.type === 'image') {
       return '[图片]'
@@ -29,7 +30,7 @@ export class MessageItem {
       return '[视频]'
     }
     if (this.structured.type === 'at') {
-      return `@${this.structured.data.qq}`
+      return `@${this.structured.targetId}`
     }
     if (this.structured.type === 'rps') {
       return '[猜拳]'
@@ -46,11 +47,8 @@ export class MessageItem {
     if (this.structured.type === 'reply') {
       return '[回复消息]'
     }
-    if (this.structured.type === 'node') {
-      return '[节点消息]'
-    }
-    if (this.structured.type === 'forward') {
-      return '[转发消息]'
+    if (this.structured.type === 'pasmsg') {
+      return '[被动消息]'
     }
     if (this.structured.type === 'contact') {
       return '[名片分享]'
@@ -64,50 +62,42 @@ export class MessageItem {
     if (this.structured.type === 'share') {
       return '[分享链接]'
     }
-    if (this.structured.type === 'anonymous') {
-      return '[匿名消息]'
-    }
-    if (this.structured.type === 'poke') {
-      return '[戳一戳消息]'
-    }
-    if (this.structured.type === 'shake') {
-      return '[抖动窗口消息]'
-    }
     return '[未知消息]'
   }
 }
 
+/** 发送消息类 */
 export class Message {
-  private readonly raw_message: OB11Message
+  private readonly raw_message: SandboxEvent
 
   public self: boolean
 
-  constructor(data: OB11Message) {
+  constructor (data: SandboxEvent) {
     this.raw_message = data
-    this.self = data.sender.user_id === store.getState().user.user_id
+    this.self = data.sender.id === store.getState().user.userId
   }
 
-  get id() {
-    return this.raw_message.message_id
+  get id () {
+    return this.raw_message.messageId
   }
 
-  get structured() {
+  get structured () {
     return this.raw_message
   }
 
-  get sender_id() {
-    return this.raw_message.sender.user_id
+  get sender_id () {
+    return this.raw_message.sender.id
   }
 
-  get receiver_id() {
-    return this.raw_message.self_id
+  get receiver_id () {
+    return this.raw_message.selfId
   }
 
-  get time() {
+  get time () {
     return new Date(this.raw_message.time)
   }
 
-  get message() {
-    return this.raw_message.message.map(item => new MessageItem(item)).join('\n')
+  get message () {
+    return this.raw_message.elements.map(item => new MessageItem(item)).join('\n')
   }
 }

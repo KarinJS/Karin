@@ -3,8 +3,8 @@ import type { Message as MessageType } from '@/model/message.model'
 import clsx from 'clsx'
 
 interface MessageItemProps {
-  id: number
-  sender_id: number
+  id: string
+  sender_id: string
   content: MessageType
   time: number
   align?: 'left' | 'right'

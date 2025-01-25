@@ -506,7 +506,7 @@ const main = () => {
         return
       }
 
-      logger.info(`[Sandbox] 连接成功: ${request.headers.authorization}`)
+      logger.info(`[Sandbox] 连接成功: ${request.url}`)
 
       if (!level) {
         level = new Level(sandboxLevelPath)
@@ -519,15 +519,13 @@ const main = () => {
         adapter.account.selfId = await getBotId()
         adapter.account.name = await level.get(prefix.selfId) || 'karin'
         adapter.account.avatar = await adapter.getAvatarUrl(adapter.account.selfId)
-        registerBot('webSocketServer', adapter)
       }
 
       await checkSelfInFriendList()
 
-      socket.once('close', () => {
+      socket.once('close', async () => {
         logger.warn('[Sandbox] 连接关闭')
-        unregisterBot('selfId', adapter!.account.selfId)
-        adapter = undefined
+        unregisterBot('selfId', await getBotId())
       })
 
       /** 发送初始化完成事件 */
@@ -536,6 +534,8 @@ const main = () => {
         name: adapter.account.name,
         avatar: adapter.account.avatar,
       })
+
+      registerBot('webSocketServer', adapter)
     } catch (error) {
       socket.close(1008, '初始化失败')
       logger.error(error)

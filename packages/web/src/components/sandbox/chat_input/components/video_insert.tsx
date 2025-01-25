@@ -12,19 +12,17 @@ import useShowStructuredMessage from '@/hooks/sandbox/use_show_strcuted_message'
 
 import { isURI } from '@/lib/utils'
 
-import type { OB11Segment } from '@/types/onebot'
+import type { Elements } from '@/types/segment'
 
 const VideoInsert = () => {
   const [videoUrl, setVideoUrl] = useState<string>('')
   const videoInputRef = useRef<HTMLInputElement>(null)
   const showStructuredMessage = useShowStructuredMessage()
   const showVideoSegment = (file: string) => {
-    const messages: OB11Segment[] = [
+    const messages: Elements[] = [
       {
         type: 'video',
-        data: {
-          file: file,
-        },
+        file: file,
       },
     ]
     showStructuredMessage(messages)

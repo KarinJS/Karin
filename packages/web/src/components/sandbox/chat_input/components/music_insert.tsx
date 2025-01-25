@@ -17,49 +17,44 @@ import useShowStructuredMessage from '@/hooks/sandbox/use_show_strcuted_message'
 
 import { isURI } from '@/lib/utils'
 
-import type { CustomMusicSegment, MusicSegment, OB11Segment } from '@/types/onebot'
+import type { Elements, CustomMusicElement, MusicElement } from '@/types/segment'
 
-type MusicData = CustomMusicSegment['data'] | MusicSegment['data']
+type MusicData = CustomMusicElement | MusicElement
 
 const MusicInsert = () => {
   const [musicId, setMusicId] = useState<string>('')
   const [musicType, setMusicType] = useState<SharedSelection>(new Set(['163']))
   const [mode, setMode] = useState<Key>('default')
   const containerRef = useRef<HTMLDivElement>(null)
-  const { control, handleSubmit, reset } = useForm<Omit<CustomMusicSegment['data'], 'type'>>({
+  const { control, handleSubmit, reset } = useForm<Omit<CustomMusicElement, 'type'>>({
     defaultValues: {
       url: '',
       audio: '',
       title: '',
-      image: '',
-      content: '',
     },
   })
   const showStructuredMessage = useShowStructuredMessage()
 
   const showMusicSegment = (data: MusicData) => {
-    const messages: OB11Segment[] = []
-    if (data.type === 'custom') {
+    const messages: Elements[] = []
+    if (data.platform === 'custom') {
       messages.push({
+        ...data,
         type: 'music',
-        data: {
-          ...data,
-          type: 'custom',
-        },
       })
     } else {
       messages.push({
+        ...data,
         type: 'music',
-        data,
       })
     }
     showStructuredMessage(messages)
   }
 
-  const onSubmit = (data: Omit<CustomMusicSegment['data'], 'type'>) => {
+  const onSubmit = (data: Omit<CustomMusicElement, 'type'>) => {
     showMusicSegment({
-      type: 'custom',
       ...data,
+      type: 'music',
     })
     reset()
   }
@@ -131,8 +126,9 @@ const MusicInsert = () => {
                     return
                   }
                   showMusicSegment({
-                    type: Array.from(musicType)[0] as MusicSegment['data']['type'],
+                    type: 'music',
                     id: musicId,
+                    platform: Array.from(musicType)[0] as '163' | 'qq' | 'migu' | 'kugou' | 'kuwo',
                   })
                   setMusicId('')
                 }}
@@ -194,7 +190,7 @@ const MusicInsert = () => {
                   )}
                 />
                 <Controller
-                  name="image"
+                  name="pic"
                   control={control}
                   render={({ field }) => (
                     <Input
@@ -206,10 +202,10 @@ const MusicInsert = () => {
                   )}
                 />
                 <Controller
-                  name="content"
+                  name="author"
                   control={control}
                   render={({ field }) => (
-                    <Input {...field} size="sm" placeholder="请输入音乐描述" label="音乐描述" />
+                    <Input {...field} size="sm" placeholder="请输入音乐作者" label="音乐作者" />
                   )}
                 />
                 <Button

@@ -3,15 +3,14 @@ import { User } from '@/model/user.model'
 import type { Slice } from '@reduxjs/toolkit'
 
 import type { RootState } from '@/store'
-import type { UserInfo } from '@/types/onebot'
 
-const initialState: UserInfo = new User(0).toJSON()
+const initialState: User = new User('').toJSON()
 
-export const userSlice: Slice<UserInfo> = createSlice({
+export const userSlice: Slice<User> = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setInfo: (state, action: PayloadAction<number>) => {
+    setInfo: (state, action: PayloadAction<string>) => {
       state = new User(action.payload).toJSON()
       return state
     },

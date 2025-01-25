@@ -7,7 +7,7 @@ import { Message } from '@/model/message.model'
 import { Image } from '@heroui/image'
 
 interface ChatBoxItemProps {
-  id: number
+  id: string
   message: string
   time: number
   unread: number
@@ -18,7 +18,7 @@ const ChatBoxItem: React.FC<ChatBoxItemProps> = props => {
   const match = useMatch('/sandbox/chat/:id')
   const navigate = useNavigate()
 
-  const { user: sender } = useUser(Number(id))
+  const { user: sender } = useUser(id)
   const isActive = match?.params.id === id.toString()
   return (
     <div

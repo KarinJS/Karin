@@ -9,8 +9,6 @@ import useShowStructuredMessage from '@/hooks/sandbox/use_show_strcuted_message'
 
 import { quillToMessage } from '@/lib/utils'
 
-import type { OB11Segment } from '@/types/onebot'
-
 import AudioInsert from './components/audio_insert'
 import DiceInsert from './components/dice_insert'
 import EmojiPicker from './components/emoji_picker'
@@ -24,25 +22,33 @@ import EmojiBlot from './formats/emoji_blot'
 import type { EmojiValue } from './formats/emoji_blot'
 import ImageBlot from './formats/image_blot'
 import ReplyBlock from './formats/reply_blot'
+import useSendMessage from '@/hooks/sandbox/use_send_message'
+import { useParams } from 'react-router-dom'
 
 const ChatInput = () => {
   const memorizedRange = useRef<Range | null>(null)
-
   const showStructuredMessage = useShowStructuredMessage()
   const formats: string[] = ['image', 'emoji', 'reply']
   const modules = {
     toolbar: '#toolbar',
   }
+
+  const formatsRegistered = useRef(false)
+
   const { quillRef, quill, Quill } = useCustomQuill({
     modules,
     formats,
     placeholder: '',
   })
 
-  if (Quill && !quill) {
+  const { sendMessage } = useSendMessage()
+  const { type = 'friend', id } = useParams<{ type: 'friend' | 'group'; id: string }>()
+
+  if (Quill && !quill && !formatsRegistered.current) {
     Quill.register('formats/emoji', EmojiBlot)
     Quill.register('formats/image', ImageBlot, true)
     Quill.register('formats/reply', ReplyBlock)
+    formatsRegistered.current = true
   }
 
   if (quill) {
@@ -120,7 +126,7 @@ const ChatInput = () => {
     })
     quill?.setSelection((selection?.index || 0) + 1, 0)
   }
-  function insertReplyBlock(messageId: string) {
+  function insertReplyBlock (messageId: string) {
     const isNumberReg = /^(?:0|(?:-?[1-9]\d*))$/
     if (!isNumberReg.test(messageId)) {
       toast.error('请输入正确的消息ID')
@@ -160,10 +166,25 @@ const ChatInput = () => {
       delta?.ops?.filter(op => {
         return op.insert !== '\n'
       }) ?? []
-    const messages: OB11Segment[] = ops.map(op => {
+    const messages: Record<string, any>[] = ops.map(op => {
       return quillToMessage(op)
     })
     return messages
+  }
+
+  const handleSendMessage = async () => {
+    const messages = getChatMessage()
+    try {
+      await sendMessage({
+        type,
+        targetId: id!,
+        elements: messages
+      })
+      // 清空输入框
+      quill?.setContents([])
+    } catch (err) {
+      toast.error('发送失败')
+    }
   }
 
   return (
@@ -184,10 +205,7 @@ const ChatInput = () => {
         <Button
           color="primary"
           size="sm"
-          onPress={() => {
-            const messages = getChatMessage()
-            showStructuredMessage(messages)
-          }}
+          onPress={handleSendMessage}
           className="ml-auto"
         >
           发送

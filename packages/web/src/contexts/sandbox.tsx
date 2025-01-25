@@ -20,7 +20,7 @@ export const SandboxContext = createContext<SandboxContextType>({
   },
 })
 
-export function SandboxProvider({ children }: { children: React.ReactNode }) {
+export function SandboxProvider ({ children }: { children: React.ReactNode }) {
   const ws = useSandboxWebsoocket()
   return (
     <SandboxContext.Provider

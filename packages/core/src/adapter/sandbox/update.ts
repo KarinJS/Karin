@@ -209,5 +209,6 @@ export const updateMessageStatus = async (
   messageId: string,
   status: 'normal' | 'recall'
 ) => {
-  await bot.level.put(`${bot.prefix.friendMsg}:${messageId}`, JSON.stringify({ status }))
+  const key = messageId.startsWith(bot.prefix.friend) ? bot.prefix.friendMsg : bot.prefix.groupMsg
+  await bot.level.put(`${key}${messageId}`, JSON.stringify({ status }))
 }

@@ -1,9 +1,9 @@
 import { Snippet } from '@heroui/snippet'
 
-import { OB11Segment } from '@/types/onebot'
+import type { Elements } from '@/types/segment'
 
 export interface ShowStructedMessageProps {
-  messages: OB11Segment[]
+  messages: Elements[]
 }
 
 const ShowStructedMessage = ({ messages }: ShowStructedMessageProps) => {

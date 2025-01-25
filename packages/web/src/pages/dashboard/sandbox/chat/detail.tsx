@@ -11,11 +11,11 @@ const ChatDetail = () => {
   const { id } = useParams<{ id: string }>()
   const message = useMessages()
   const messages = message.useWatch()
-  const currentMessage = messages.find(item => item.user_id === Number(id))
+  const currentMessage = messages.find(item => item.user_id === id)
   const endRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   // const [content, setContent] = useState('')
-  const { user } = useUser(Number(id))
+  const { user } = useUser(id!)
   const positionRef = useRef<{
     scrollHeight: number
     clientHeight: number
@@ -85,9 +85,9 @@ const ChatDetail = () => {
           {currentMessage?.messages.map(item => {
             return (
               <MessageItem
-                key={item.message_id}
-                id={item.message_id}
-                sender_id={item.sender.user_id}
+                key={item.messageId}
+                id={item.messageId}
+                sender_id={item.sender.id}
                 content={new Message(item)}
                 time={item.time}
                 align={'left'}

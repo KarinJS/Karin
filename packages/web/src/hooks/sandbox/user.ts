@@ -1,7 +1,7 @@
 import { User } from '@/model/user.model'
 import { useEffect, useState } from 'react'
 
-const useUser = (uid: number) => {
+const useUser = (uid: string) => {
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
   const [user, setUser] = useState<User>(new User(uid))

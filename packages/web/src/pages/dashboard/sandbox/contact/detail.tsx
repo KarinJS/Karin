@@ -5,8 +5,8 @@ import { IoMale } from 'react-icons/io5'
 import { Button } from '@heroui/button'
 import useMessages from '@/hooks/sandbox/message'
 import { useEffect, useState } from 'react'
-import { User } from '@/model/user.model'
 import { Image } from '@heroui/image'
+import { request } from '@/lib/request'
 
 document.addEventListener('dragover', e => {
   e.preventDefault()
@@ -48,34 +48,136 @@ const ItemWithDivider: React.FC<ItemWithDividerProps> = props => {
   )
 }
 
+export interface Friend {
+  userId: string
+  nick: string
+  avatar: string
+}
+
+export interface Group {
+  groupId: string
+  name: string
+  avatar: string
+}
+
 const UserDetail: React.FC = () => {
   const id = useParams<{ id: string }>().id
   const navigate = useNavigate()
   const message = useMessages()
-  const [user, setUser] = useState<User | null>(null)
+  const [friend, setFriend] = useState<Friend | null>(null)
+  const [group, setGroup] = useState<Group | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (id) {
-      const u = new User(Number(id))
-      u.refresh()
-        .then(() => {
-          setUser(u)
-        })
-        .catch(err => {
-          console.error(err)
-        })
+    const getContactInfo = async () => {
+      if (!id) return
+
+      try {
+        setLoading(true)
+        setError(null)
+
+        // 先尝试获取群组信息
+        const groupList = await request.serverPost<Group[], any>('/api/v1/sandbox/group/list', {})
+        const currentGroup = groupList.find(g => g.groupId === id)
+
+        if (currentGroup) {
+          setGroup(currentGroup)
+          return
+        }
+
+        // 如果不是群组，尝试获取好友信息
+        const friendList = await request.serverPost<Friend[], any>('/api/v1/sandbox/friend/list', {})
+        const currentFriend = friendList.find(f => f.userId === id)
+
+        if (currentFriend) {
+          setFriend(currentFriend)
+        } else {
+          setError('未找到联系人信息')
+        }
+      } catch (err) {
+        console.error('获取联系人信息失败:', err)
+        setError('网络错误，请稍后重试')
+      } finally {
+        setLoading(false)
+      }
     }
+
+    getContactInfo()
   }, [id])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-sm text-gray-500">加载中...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-sm text-red-500">{error}</div>
+      </div>
+    )
+  }
+
+  // 群组详情视图
+  if (group) {
+    return (
+      <div className="mx-auto h-full relative px-3">
+        <div className="w-full h-20 app-drag"></div>
+        <div className="w-[500px] max-w-full mx-auto">
+          <div className="flex items-center gap-2 pb-3 border-b border-zinc-100 dark:border-zinc-800">
+            <div className="w-24 aspect-square rounded-full overflow-hidden">
+              <Image src={group.avatar} alt={group.name} className="w-full h-full object-cover" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <div className="text-xl font-semibold">{group.name}</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">群号: {group.groupId}</div>
+            </div>
+          </div>
+          <div className="py-3 flex flex-col gap-3">
+            <DetailItem icon={<FiUsers />} title="群成员" content="查看全部群成员" />
+            <DetailItem icon={<FiEdit3 />} title="群公告" content="暂无群公告" />
+          </div>
+          <div className="flex justify-center gap-2 mt-2">
+            <Button size="md">分享</Button>
+            <Button
+              color="primary"
+              size="md"
+              onPress={() => {
+                message.emptyIfNotExists(id!)
+                navigate(`/sandbox/chat/${id}`)
+              }}
+            >
+              发消息
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // 好友详情视图
+  if (!friend) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-sm text-gray-500">未找到联系人信息</div>
+      </div>
+    )
+  }
+
   return (
     <div className="mx-auto h-full relative px-3">
       <div className="w-full h-20 app-drag"></div>
       <div className="w-[500px] max-w-full mx-auto">
         <div className="flex items-center gap-2 pb-3 border-b border-zinc-100 dark:border-zinc-800">
           <div className="w-24 aspect-square rounded-full overflow-hidden">
-            <Image src={user?.avatar} alt={user?.nickname} className="w-full h-full object-cover" />
+            <Image src={friend?.avatar} alt={friend?.nick} className="w-full h-full object-cover" />
           </div>
           <div className="flex flex-col gap-1">
-            <div className="text-xl font-semibold">{user?.nickname}</div>
+            <div className="text-xl font-semibold">{friend?.nick}</div>
             <div className="text-sm text-gray-500 dark:text-gray-400">ID {id}</div>
             <div className="text-sm">【状态】</div>
           </div>
@@ -101,7 +203,7 @@ const UserDetail: React.FC = () => {
             color="primary"
             size="md"
             onPress={() => {
-              message.emptyIfNotExists(Number(id))
+              message.emptyIfNotExists(id!)
               navigate(`/sandbox/chat/${id}`)
             }}
           >

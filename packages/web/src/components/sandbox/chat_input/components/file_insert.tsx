@@ -12,19 +12,17 @@ import useShowStructuredMessage from '@/hooks/sandbox/use_show_strcuted_message'
 
 import { isURI } from '@/lib/utils'
 
-import type { OB11Segment } from '@/types/onebot'
+import type { Elements } from '@/types/segment'
 
 const FileInsert = () => {
   const [fileUrl, setFileUrl] = useState<string>('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const showStructuredMessage = useShowStructuredMessage()
   const showFileSegment = (file: string) => {
-    const messages: OB11Segment[] = [
+    const messages: Elements[] = [
       {
         type: 'file',
-        data: {
-          file: file,
-        },
+        file: file,
       },
     ]
     showStructuredMessage(messages)

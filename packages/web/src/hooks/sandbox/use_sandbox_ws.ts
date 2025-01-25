@@ -1,6 +1,7 @@
 import type { SandboxBotInfo } from '@/types/sandbox/bot'
 import { useEffect, useState, useRef } from 'react'
-function useSandboxWebsoocket() {
+
+function useSandboxWebsoocket () {
   const wsRef = useRef<WebSocket | null>(null)
   const [connecting, setConnecting] = useState(false)
   const [connected, setConnected] = useState(false)
@@ -15,6 +16,7 @@ function useSandboxWebsoocket() {
   useEffect(() => {
     console.log('WebSocket connecting')
     if (wsRef.current) return
+    setConnecting(true)
     const currentURL = new URL(window.location.href)
     currentURL.protocol = currentURL.protocol.replace('http', 'ws')
     currentURL.pathname = '/sandbox'
@@ -28,6 +30,7 @@ function useSandboxWebsoocket() {
     }
     ws.onmessage = event => {
       const message = JSON.parse(event.data)
+      console.log(message)
       if (message.action === 'init') {
         setReady(true)
         setBotInfo(message.param)
@@ -53,6 +56,7 @@ function useSandboxWebsoocket() {
       wsRef.current = null
     }
   }, [])
+
   return {
     connecting,
     connected,

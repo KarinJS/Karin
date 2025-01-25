@@ -1,13 +1,7 @@
 // import { Message } from '@/model/message.model'
 import { useAppDispatch, useAppSelector } from '../store'
-import {
-  setMessage as storeSetMessage,
-  setEmptyIfNotExist as storeSetEmptyIfNotExist,
-} from '@/store/modules/messages'
-import { setMessage as storeSendMessage } from '@/store/modules/sends'
-
-import store from '@/store'
-import { OB11Message } from '@/types/onebot'
+import { setMessage, setEmptyIfNotExist } from '@/store/modules/messages'
+import type { SandboxEvent } from '@/types/sandbox'
 
 const useMessages = () => {
   const dispatch = useAppDispatch()
@@ -17,32 +11,35 @@ const useMessages = () => {
     return messages
   }
 
-  const setMessage = (user_id: number, messages: OB11Message) => {
-    dispatch(storeSetMessage({ user_id, messages }))
+  const setMessageToStore = (user_id: string, message: SandboxEvent) => {
+    dispatch(setMessage({ user_id, message }))
   }
 
-  const setMessages = (user_id: number, messages: OB11Message[]) => {
-    messages.forEach(message => {
-      setMessage(user_id, message)
-    })
+  const sendMessage = async (user_id: string, message: SandboxEvent) => {
+    // 确保消息对象是可序列化的
+    const serializedMessage = {
+      ...message,
+      type: message.type,
+      seq: message.seq,
+      messageId: message.messageId,
+      time: message.time,
+      elements: message.elements,
+      ...(message.type === 'group' ? {
+        groupId: user_id,
+        groupName: '群聊'
+      } : {})
+    } as SandboxEvent
+
+    dispatch(setMessage({ user_id, message: serializedMessage }))
   }
 
-  const sendMessage = async (user_id: number, message: OB11Message) => {
-    // const current_user_id = store.getState().user.user_id
-
-    dispatch(storeSendMessage({ user_id, message: message }))
-  }
-
-  const emptyIfNotExists = (user_id: number) => {
-    if (!store.getState().messages.find(message => message.user_id === user_id)) {
-      dispatch(storeSetEmptyIfNotExist(user_id))
-    }
+  const emptyIfNotExists = (user_id: string) => {
+    dispatch(setEmptyIfNotExist(user_id))
   }
 
   return {
     useWatch,
-    setMessage,
-    setMessages,
+    setMessage: setMessageToStore,
     sendMessage,
     emptyIfNotExists,
   }
