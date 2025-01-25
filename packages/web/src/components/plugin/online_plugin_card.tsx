@@ -8,7 +8,7 @@ export interface PluginCardProps {
   plugin: OnlinePluginInfo
 }
 
-export default function PluginCard({ plugin }: PluginCardProps) {
+export default function PluginCard ({ plugin }: PluginCardProps) {
   return (
     <Card className="w-[200px] relative" radius="sm" shadow="sm">
       <div className="absolute right-0 top-0 bg-primary-50 text-primary-500 px-2 py-1 rounded-bl-md text-xs shadow-small">

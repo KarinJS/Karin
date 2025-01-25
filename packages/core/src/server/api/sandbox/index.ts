@@ -171,6 +171,9 @@ const createGroupMemberRouter: RequestHandler = async (req, res) => {
  */
 const getFriendListRouter: RequestHandler = async (req, res) => {
   try {
+    /** 判断适配器是否初始化完毕 */
+    if (!adapter) await new Promise(resolve => setTimeout(resolve, 500))
+
     const friendList = await adapter!.getFriendList()
     createSuccessResponse(res, friendList)
   } catch (error) {
@@ -184,6 +187,7 @@ const getFriendListRouter: RequestHandler = async (req, res) => {
  */
 const getGroupListRouter: RequestHandler = async (req, res) => {
   try {
+    if (!adapter) await new Promise(resolve => setTimeout(resolve, 500))
     const groupList = await adapter!.getGroupList()
     createSuccessResponse(res, groupList)
   } catch (error) {

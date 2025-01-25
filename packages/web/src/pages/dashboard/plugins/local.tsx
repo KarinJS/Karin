@@ -4,9 +4,9 @@ import { request } from '@/lib/request'
 import { LocalPluginInfo } from '@/types/plugin'
 import { useRequest } from 'ahooks'
 
-export default function LocalPluginPage() {
+export default function LocalPluginPage () {
   const { data, error, loading } = useRequest(
-    () => request.serverGet<LocalPluginInfo[]>('/api/v1/plugin/list'),
+    () => request.serverPost<LocalPluginInfo[], null>('/api/v1/plugin/list'),
     {
       refreshDeps: [],
     },

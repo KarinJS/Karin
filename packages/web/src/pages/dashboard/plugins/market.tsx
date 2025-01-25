@@ -4,9 +4,9 @@ import { request } from '@/lib/request'
 import type { OnlinePluginInfo } from '@/types/plugin'
 import { useRequest } from 'ahooks'
 
-export default function PluginMarketPage() {
+export default function PluginMarketPage () {
   const { data, error, loading } = useRequest(
-    () => request.serverGet<OnlinePluginInfo[]>('/api/v1/plugin/index'),
+    () => request.serverPost<OnlinePluginInfo[], null>('/api/v1/plugin/index'),
     {
       refreshDeps: [],
     },
