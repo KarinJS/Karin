@@ -69,6 +69,7 @@
     "@eslint/compat": "^1.2.5",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
+    "@heroui/pagination": "^2.2.9",
     "@types/event-source-polyfill": "^1.0.5",
     "@types/node": "22.10.7",
     "@types/react": "19.0.7",

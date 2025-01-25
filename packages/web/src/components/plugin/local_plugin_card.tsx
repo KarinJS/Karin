@@ -1,4 +1,4 @@
-import { LocalPluginInfo } from '@/types/plugin'
+import { LocalPluginInfo } from '@/types/plugins/plugin'
 import { Card, CardBody } from '@heroui/card'
 
 export interface LocalPluginCardProps {
