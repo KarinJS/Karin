@@ -18,7 +18,7 @@ export const uploadAvatar = async (
   data: string
 ) => {
   const prefix = type === 'friend' ? bot.prefix.friendAvatar : bot.prefix.groupAvatar
-  const file = path.join(sandboxDataPath, `${prefix}${targetId}${bot.prefix.avatarExt}`)
+  const file = path.join(sandboxDataPath, 'avatar', `${prefix}${targetId}${bot.prefix.avatarExt}`)
   /** 如果文件存在 先删掉 */
   if (fs.existsSync(file)) {
     await fs.promises.unlink(file)
@@ -34,7 +34,7 @@ export const uploadAvatar = async (
   } else if (fs.existsSync(data)) {
     await fs.promises.copyFile(data, file)
   } else {
-    throw new Error('文件格式错误，请检查文件是否为base64或http链接')
+    throw new Error('文件格式错误，请检查文件是否为base64或http链接: ' + data)
   }
 
   if (type === 'friend') {
