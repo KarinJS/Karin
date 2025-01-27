@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.3.0](https://github.com/KarinJS/Karin/compare/web-v1.2.1...web-v1.3.0) (2025-01-27)
+
+
+### ✨ Features
+
+* 插件市场 ([b9b0504](https://github.com/KarinJS/Karin/commit/b9b050426ebef23cda064051f24eafa0c84f277b))
+* 部分功能 ([5150da5](https://github.com/KarinJS/Karin/commit/5150da5a05ae5fc62952b98d5e222cd889f2b1ff))
+
+
+### 🐛 Bug Fixes
+
+* del console ([2c5fab7](https://github.com/KarinJS/Karin/commit/2c5fab766ade01f181e54f5291ade6f495224812))
+* web plugins ([cf0d0e0](https://github.com/KarinJS/Karin/commit/cf0d0e02d0025cdc7dce124820076bfc0204b01b))
+* web适配获取好友列表、群列表 ([68d1632](https://github.com/KarinJS/Karin/commit/68d16322294e3d3bf5fe018b4b38b63edd347f0a))
+
+
+### 💄 Styles
+
+* 插件列表样式 ([5876832](https://github.com/KarinJS/Karin/commit/587683293315d40704210e2bdfa3565e49ae7d1f))
+
 ## [1.2.1](https://github.com/KarinJS/Karin/compare/web-v1.2.0...web-v1.2.1) (2025-01-21)
 
 

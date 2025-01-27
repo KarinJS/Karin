@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/KarinJS/Karin/compare/create-karin-v1.0.2...create-karin-v1.0.3) (2025-01-27)
+
+
+### 🐛 Bug Fixes
+
+* create karin tips ([3755018](https://github.com/KarinJS/Karin/commit/3755018ded673aea5c40ba95365ba13082a4f4f1))
+
 ## [1.0.2](https://github.com/KarinJS/Karin/compare/create-karin-v1.0.1...create-karin-v1.0.2) (2025-01-16)
 
 
