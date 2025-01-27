@@ -1,11 +1,11 @@
-import { LocalPluginInfo } from '@/types/plugins/plugin'
+import { LocalPluginInfo } from '@/types/plugins'
 import { Card, CardBody } from '@heroui/card'
 
 export interface LocalPluginCardProps {
   plugin: LocalPluginInfo
 }
 
-export default function LocalPluginCard ({ plugin }: LocalPluginCardProps) {
+export default function LocalPluginCard({ plugin }: LocalPluginCardProps) {
   /**
    * 从完整路径中提取文件名
    * @param path - 完整路径
@@ -40,10 +40,7 @@ export default function LocalPluginCard ({ plugin }: LocalPluginCardProps) {
               <div className="font-medium mb-1">应用列表：</div>
               <div className="flex flex-wrap gap-1">
                 {formatApps(plugin.apps).map((app, index) => (
-                  <span
-                    key={index}
-                    className="bg-default-100 px-2 py-0.5 rounded-full"
-                  >
+                  <span key={index} className="bg-default-100 px-2 py-0.5 rounded-full">
                     {app}
                   </span>
                 ))}
@@ -53,10 +50,7 @@ export default function LocalPluginCard ({ plugin }: LocalPluginCardProps) {
               <div className="font-medium mb-1">全局应用：</div>
               <div className="flex flex-wrap gap-1">
                 {formatApps(plugin.allApps).map((app, index) => (
-                  <span
-                    key={index}
-                    className="bg-default-100 px-2 py-0.5 rounded-full"
-                  >
+                  <span key={index} className="bg-default-100 px-2 py-0.5 rounded-full">
                     {app}
                   </span>
                 ))}

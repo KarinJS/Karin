@@ -1,12 +1,15 @@
 import LocalPluginCard from '@/components/plugin/local_plugin_card'
 import PluginCardSkeleton from '@/components/plugin/plugin_card_skeleton'
 import { request } from '@/lib/request'
-import { LocalPluginInfo } from '@/types/plugins/plugin'
+import { LocalPluginInfo } from '@/types/plugins'
 import { useRequest } from 'ahooks'
 
-export default function LocalPluginPage () {
+export default function LocalPluginPage() {
   const { data, error, loading } = useRequest(
-    () => request.serverPost<LocalPluginInfo[], { time: number }>('/api/v1/plugin/list', { time: 20 * 1000 }),
+    () =>
+      request.serverPost<LocalPluginInfo[], { time: number }>('/api/v1/plugin/list', {
+        time: 20 * 1000,
+      }),
     {
       refreshDeps: [],
     },
