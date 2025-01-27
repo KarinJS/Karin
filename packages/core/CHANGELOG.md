@@ -1,5 +1,26 @@
 # 更新日志
 
+## [1.3.0](https://github.com/KarinJS/Karin/compare/core-v1.2.3...core-v1.3.0) (2025-01-27)
+
+
+### ✨ Features
+
+* `/sandbox/self/update` ([0ff19fb](https://github.com/KarinJS/Karin/commit/0ff19fb45f0c0f882fe2240a6694984365a2c688))
+* 插件市场 ([b9b0504](https://github.com/KarinJS/Karin/commit/b9b050426ebef23cda064051f24eafa0c84f277b))
+* 沙盒支持获取历史记录。 ([ba37287](https://github.com/KarinJS/Karin/commit/ba372878dc452b0a903af33cc646c42e0269de31))
+* 获取在线插件列表Api ([3dcb874](https://github.com/KarinJS/Karin/commit/3dcb8744867e88d7a95f847dfb95c9bb7d6f8ffb))
+* 获取已安装插件列表详情 ([75f3541](https://github.com/KarinJS/Karin/commit/75f35414b4e1d852e8d3e7e35975c51075742e25))
+* 获取沙盒连接地址 ([4699dde](https://github.com/KarinJS/Karin/commit/4699dde53ffe1dd611257000e61ce38497192722))
+
+
+### 🐛 Bug Fixes
+
+* avatar dir ([04f370f](https://github.com/KarinJS/Karin/commit/04f370f87f704e2df53b65d54387abde5d23738c))
+* export create event ([0152581](https://github.com/KarinJS/Karin/commit/0152581e74c1255017ec0aa987da048d4b7dd626))
+* tips ([7e096bd](https://github.com/KarinJS/Karin/commit/7e096bd38269ebfc62712148a6ed7a2a02d42fb1))
+* web plugins ([cf0d0e0](https://github.com/KarinJS/Karin/commit/cf0d0e02d0025cdc7dce124820076bfc0204b01b))
+* web适配获取好友列表、群列表 ([68d1632](https://github.com/KarinJS/Karin/commit/68d16322294e3d3bf5fe018b4b38b63edd347f0a))
+
 ## [1.2.3](https://github.com/KarinJS/Karin/compare/core-v1.2.2...core-v1.2.3) (2025-01-21)
 
 
