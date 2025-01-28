@@ -24,15 +24,17 @@ import DefaultPage from '@/components/default_page'
 import FriendRequest from '@/pages/dashboard/sandbox/contact/friend_request'
 import UserDetail from '@/pages/dashboard/sandbox/contact/detail'
 import GroupNotice from '@/pages/dashboard/sandbox/contact/group_notice'
+import PluginConfigTest from '@/components/plugin_config/test'
 
 // Main App
-function App() {
+function App () {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route element={<DashboardLayout />} path="/">
         <Route element={<IndexPage />} path="" />
         <Route element={<ConfigPage />} path="/config" />
+        <Route element={<PluginConfigTest />} path="/test" />
         <Route element={<PluginsPage />} path="/plugins">
           <Route element={<PluginMarketPage />} path="" />
           <Route element={<LocalPluginPage />} path="local" />
