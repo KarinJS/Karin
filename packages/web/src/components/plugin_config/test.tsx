@@ -268,12 +268,104 @@ const renderAccordion = (key: string, data: Record<string, any>, ref: Record<str
 }
 
 /**
+ * 手风琴Pro渲染
+ * @param key 组件唯一标识符
+ * @param options 组件配置
+ * @param ref 组件数据
+ * @returns 手风琴Pro组件
+ */
+const renderAccordionPro = (
+  key: string,
+  options: Record<string, any>,
+  ref: Record<string, any>,
+  accordionData: any[],
+  setAccordionData: (data: any[]) => void
+) => {
+  const { data: _, children, ...accordionOptions } = options
+
+  /** 渲染完成的手风琴卡片组 */
+  const accordionItems: JSX.Element[] = []
+
+  /** 每一次循环都是一个手风琴卡片组 */
+  accordionData.forEach((dataItem, i) => {
+    /** 手风琴卡片组中的组件 */
+    const itemData: JSX.Element[] = []
+    children.forEach((val: any) => {
+      const { componentType, key, title, validate, ...childrenOptions } = val
+      handleValidate(childrenOptions, validate)
+
+      if (componentType === ComponentType.INPUT) {
+        /** 获取dataItem中对应key的值 */
+        const defaultValue = dataItem[key] ?? childrenOptions.defaultValue
+        /** key的组成: 组件唯一标识符-data数据索引 */
+        const uniqueKey = `${key}-${i}`
+
+        cacheComponentData(uniqueKey, defaultValue, ref)
+        itemData.push(
+          renderInput(
+            uniqueKey,
+            {
+              ...childrenOptions,
+              defaultValue
+            },
+            ref
+          )
+        )
+      }
+    })
+
+    /** 组成一个手风琴卡片组 */
+    accordionItems.push(
+      <AccordionItem key={`accordion-item-${i}`} className="w-full" title={dataItem.title}>
+        <div className="flex flex-col gap-4">
+          {itemData}
+        </div>
+      </AccordionItem>
+    )
+  })
+
+  return (
+    <div key={key} className="flex flex-col gap-4 w-full">
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={() => {
+            /** 创建一个空的数据对象 */
+            const emptyData = {
+              title: '新的手风琴卡片组',
+              number: '',
+              gmail: ''
+            }
+            /** 添加到现有数据中 */
+            setAccordionData([...accordionData, emptyData])
+          }}
+          className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+        >
+          添加卡片组
+        </button>
+      </div>
+      <Accordion {...accordionOptions}>
+        {accordionItems}
+      </Accordion>
+    </div>
+  )
+}
+
+/**
  * 动态渲染组件
  * @param data 后端传递的组件数据
  */
 const renderComponent = (data: any[]) => {
-  /** 创建一个响应式数据 */
-  const [forceUpdate, setForceUpdate] = useState(0)
+  /** 创建响应式数据存储手风琴数据 */
+  const [accordionData, setAccordionData] = useState<any[]>([])
+
+  /** 首次渲染时初始化手风琴数据 */
+  useEffect(() => {
+    const accordionProConfig = data.find(item => item.componentType === 'accordion-pro')
+    if (accordionProConfig) {
+      setAccordionData(accordionProConfig.data)
+    }
+  }, [])
 
   /** 组件 */
   const Component: any[] = []
@@ -284,7 +376,7 @@ const renderComponent = (data: any[]) => {
   /** 监听 resize 事件来触发重新渲染 */
   useEffect(() => {
     const handleResize = () => {
-      setForceUpdate(prev => prev + 1)
+      // 这里需要重新渲染组件的逻辑
     }
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
@@ -320,81 +412,9 @@ const renderComponent = (data: any[]) => {
       return
     }
 
-    /** 手风琴 */
+    /** 手风琴Pro */
     if (componentType === ComponentType.ACCORDION_PRO) {
-      const { data, children, ...accordionOptions } = options
-
-      /** 渲染完成的手风琴卡片组 */
-      const accordionData: JSX.Element[] = []
-
-      /** 每一次循环都是一个手风琴卡片组 */
-      for (let i = 0; i < data.length; i++) {
-        const dataItem = data[i]
-
-        /** 手风琴卡片组中的组件 */
-        const itemData: JSX.Element[] = []
-        children.forEach((val: any) => {
-          const { componentType, key, title, validate, ...childrenOptions } = val
-          handleValidate(childrenOptions, validate)
-
-          if (componentType === ComponentType.INPUT) {
-            /** 获取dataItem中对应key的值 */
-            const defaultValue = dataItem[key] ?? childrenOptions.defaultValue
-            /** key的组成: 组件唯一标识符-data数据索引 */
-            const uniqueKey = `${key}-${i}`
-
-            cacheComponentData(uniqueKey, defaultValue, ref)
-            itemData.push(
-              renderInput(
-                uniqueKey,
-                {
-                  ...childrenOptions,
-                  defaultValue // 使用关联的值覆盖默认值
-                },
-                ref
-              )
-            )
-          }
-        })
-
-        /** 组成一个手风琴卡片组 */
-        accordionData.push(
-          <AccordionItem key={`accordion-item-${i}`} className="w-full" title={dataItem.title}>
-            <div className="flex flex-col gap-4">
-              {itemData}
-            </div>
-          </AccordionItem>
-        )
-      }
-
-      console.log('data:', data)
-      Component.push(
-        <div key={`${key}-${forceUpdate}`} className="flex flex-col gap-4 w-full">
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={() => {
-                /** 创建一个空的数据对象 */
-                const emptyData = {
-                  title: '新的手风琴卡片组',
-                  number: '',
-                  gmail: ''
-                }
-                /** 添加到现有数据中 */
-                data.push(emptyData)
-                /** 触发重新渲染 */
-                setForceUpdate(prev => prev + 1)
-              }}
-              className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            >
-              添加卡片组
-            </button>
-          </div>
-          <Accordion {...accordionOptions}>
-            {accordionData}
-          </Accordion>
-        </div>
-      )
+      Component.push(renderAccordionPro(key, options, ref, accordionData, setAccordionData))
       return
     }
   })
