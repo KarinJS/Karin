@@ -33,6 +33,7 @@ interface BaseComponentProps {
   key: string
   /** 组件引用对象 */
   componentRef: ComponentRef
+  onValueChange: (key: string, value: ComponentValue) => void
 }
 
 // ==================== 通用工具函数 ====================
@@ -88,7 +89,7 @@ const ConfigContext = createContext<ComponentConfig[]>([])
  */
 function renderInput (
   props: ApiInputProps,
-  { componentRef, key }: BaseComponentProps,
+  { componentRef, key, onValueChange }: BaseComponentProps,
   configs: ComponentConfig[]
 ) {
   const { key: inputKey, ...inputProps } = props
@@ -125,9 +126,7 @@ function renderInput (
         validate={validator}
         defaultValue={componentRef[key]?.old?.toString()}
         onValueChange={(value) => {
-          if (componentRef[key]) {
-            componentRef[key].new = value
-          }
+          onValueChange(key, value)
         }}
       />
     </div>
@@ -139,9 +138,11 @@ function renderInput (
  */
 function renderSwitch (
   props: ApiSwitchProps,
-  { componentRef, key }: BaseComponentProps
+  { componentRef, key, onValueChange }: BaseComponentProps
 ) {
-  // 确保 componentRef 中存在对应的 key
+  // 从 props 中解构出需要的属性
+  const { key: inputKey, startText, endText, ...switchProps } = props
+
   if (!componentRef[key]) {
     componentRef[key] = {
       old: props.defaultSelected,
@@ -151,16 +152,16 @@ function renderSwitch (
 
   return (
     <div className="flex items-center gap-2">
-      {props.startText && <span>{props.startText}</span>}
+      {startText && <span>{startText}</span>}
       <Switch
-        {...props}
+        key={inputKey}
+        {...switchProps}
+        defaultSelected={componentRef[key]?.old as boolean}
         onValueChange={(value) => {
-          if (componentRef[key]) {
-            componentRef[key].new = value
-          }
+          onValueChange(key, value)
         }}
       />
-      {props.endText && <span>{props.endText}</span>}
+      {endText && <span>{endText}</span>}
     </div>
   )
 }
@@ -174,7 +175,7 @@ function renderAccordionPro (
   configs: ComponentConfig[]
 ) {
   const [items, setItems] = useState([...props.data])
-  const { key, data, ...accordionProps } = props
+  const { key, data, componentType, children, ...accordionProps } = props
 
   const handleAddItem = () => {
     const template = JSON.parse(JSON.stringify(props.data[0]))
@@ -208,10 +209,11 @@ function renderAccordionPro (
           console.log('item:', item)
           const list: JSX.Element[] = []
 
-          props.children?.forEach((childConfig) => {
-            if (childConfig.componentType !== ComponentType.ACCORDION_ITEM) return
+          children?.forEach((childConfig) => {
+            const { componentType, children: grandChildren, ...itemProps } = childConfig
+            if (componentType !== ComponentType.ACCORDION_ITEM) return
 
-            childConfig.children?.forEach((child) => {
+            grandChildren?.forEach((child) => {
               if (!child) return
               const componentKey = `${key}-${cardIndex}-${child.key}`
               const options = child.componentType === ComponentType.INPUT ? { defaultValue: item[child.key] ?? child.defaultValue } : {}
@@ -276,30 +278,38 @@ function renderComponent (
   props: BaseComponentProps,
   configs: ComponentConfig[]
 ): JSX.Element | null {
-  switch (config.componentType) {
+  const { componentType } = config
+
+  switch (componentType) {
     case ComponentType.INPUT:
       return renderInput(config, props, configs)
     case ComponentType.SWITCH:
       return renderSwitch(config, props)
-    case ComponentType.DIVIDER:
-      const { componentType, key, ...dividerProps } = config
-      return <Divider {...dividerProps} className={config.transparent ? 'opacity-0' : ''} />
-    case ComponentType.ACCORDION:
+    case ComponentType.DIVIDER: {
+      const { componentType, key, transparent, ...dividerProps } = config
+      return <Divider key={key} {...dividerProps} />
+    }
+    case ComponentType.ACCORDION: {
+      const { componentType, children, ...accordionProps } = config
       return (
-        <Accordion {...config}>
-          {(config.children || []).map(child => (
-            <AccordionItem key={child.key} title={child.title}>
-              {renderComponent(child, props, configs)}
-            </AccordionItem>
-          ))}
+        <Accordion {...accordionProps}>
+          {(children || []).map(child => {
+            const { componentType: _, key: childKey, ...childProps } = child
+            return (
+              <AccordionItem key={childKey} {...childProps}>
+                {renderComponent(child, props, configs)}
+              </AccordionItem>
+            )
+          })}
         </Accordion>
       )
-    case ComponentType.ACCORDION_ITEM:
-      const { key: itemKey, ...itemProps } = config
+    }
+    case ComponentType.ACCORDION_ITEM: {
+      const { componentType, key: itemKey, children, ...itemProps } = config
       return (
         <AccordionItem key={itemKey} {...itemProps}>
           <div className="flex flex-col gap-4">
-            {config.children?.map((child, index) => {
+            {children?.map((child, index) => {
               const childKey = `${itemKey}-${child.key}-${index}`
               return renderComponent(
                 { ...child, key: childKey },
@@ -310,6 +320,7 @@ function renderComponent (
           </div>
         </AccordionItem>
       )
+    }
     case ComponentType.ACCORDION_PRO:
       return renderAccordionPro(config, props, configs)
     default:
@@ -323,7 +334,38 @@ interface DynamicComponentRendererProps {
 }
 
 export function DynamicComponentRenderer ({ configs }: DynamicComponentRendererProps) {
-  const componentRef: ComponentRef = {}
+  // 将 componentRef 改为 state，这样可以保持状态更新
+  const [componentRef, setComponentRef] = useState<ComponentRef>({})
+
+  // 初始化 componentRef
+  useEffect(() => {
+    const initialRef: ComponentRef = {}
+    configs.forEach(config => {
+      if (config.componentType === ComponentType.INPUT) {
+        initialRef[config.key] = {
+          old: config.defaultValue ?? '',
+          new: config.defaultValue ?? ''
+        }
+      } else if (config.componentType === ComponentType.SWITCH) {
+        initialRef[config.key] = {
+          old: config.defaultSelected ?? false,
+          new: config.defaultSelected ?? false
+        }
+      }
+    })
+    setComponentRef(initialRef)
+  }, [configs])
+
+  // 更新值的处理函数
+  const handleValueChange = (key: string, value: ComponentValue) => {
+    setComponentRef(prev => ({
+      ...prev,
+      [key]: {
+        ...prev[key],
+        new: value
+      }
+    }))
+  }
 
   return (
     <ConfigContext.Provider value={configs}>
@@ -339,7 +381,15 @@ export function DynamicComponentRenderer ({ configs }: DynamicComponentRendererP
         <div className="flex flex-wrap gap-4 w-full">
           {configs.map(config => (
             <div key={config.key} className="w-full">
-              {renderComponent(config, { key: config.key, componentRef }, configs)}
+              {renderComponent(
+                config,
+                {
+                  key: config.key,
+                  componentRef,
+                  onValueChange: handleValueChange
+                },
+                configs
+              )}
             </div>
           ))}
         </div>
@@ -351,56 +401,55 @@ export function DynamicComponentRenderer ({ configs }: DynamicComponentRendererP
 // 使用示例
 export default function App () {
   const data: ComponentConfig[] = [
-    // {
-    //   componentType: 'switch',
-    //   key: 'switch',
-    //   name: '开关',
-    //   color: 'success',
-    //   defaultSelected: false,
-    //   startText: '这是一个测试开关: ',
-    //   endText: ''
-    // },
-    // {
-    //   componentType: 'divider',
-    //   orientation: 'vertical',
-    //   transparent: false,
-    // },
-    // {
-    //   componentType: 'input',
-    //   key: 'email',
-    //   type: 'email',
-    //   label: '邮箱',
-    //   placeholder: '请输入邮箱',
-    //   defaultValue: '123@123.com',
-    //   isRequired: true,
-    //   isClearable: true,
-    //   color: 'primary',
-    //   validate: [
-    //     { regex: '/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/', error: '请输入有效的邮箱地址' },
-    //     { minLength: 5, maxLength: 50, error: '邮箱长度应在5-50个字符之间' }
-    //   ]
-    // },
-    // {
-    //   componentType: 'divider',
-    //   orientation: 'horizontal',
-    //   transparent: false,
-    // },
-    // {
-    //   componentType: 'input',
-    //   key: 'number',
-    //   type: 'text',
-    //   label: '数字',
-    //   placeholder: '请输入数字',
-    //   isRequired: true,
-    //   isClearable: true,
-    //   color: 'primary',
-    //   validate: [{ min: 0, max: 100, error: '数字应在0-100之间' }]
-    // },
-    // {
-    //   componentType: 'divider',
-    //   orientation: 'horizontal',
-    //   transparent: false,
-    // },
+    {
+      componentType: ComponentType.SWITCH,
+      key: 'switch',
+      color: 'success',
+      defaultSelected: false,
+      startText: '这是一个测试开关: ',
+      endText: ''
+    },
+    {
+      componentType: ComponentType.DIVIDER,
+      key: 'divider1',
+      orientation: 'vertical',
+    },
+    {
+      componentType: ComponentType.INPUT,
+      key: 'email',
+      type: 'email',
+      label: '邮箱',
+      placeholder: '请输入邮箱',
+      defaultValue: '123@123.com',
+      isRequired: true,
+      isClearable: true,
+      color: 'primary',
+      rules: [
+        { regex: '/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/', error: '请输入有效的邮箱地址' },
+        { minLength: 5, maxLength: 50, error: '邮箱长度应在5-50个字符之间' }
+      ]
+    },
+    {
+      componentType: ComponentType.DIVIDER,
+      key: 'divider2',
+      orientation: 'horizontal',
+    },
+    {
+      componentType: ComponentType.INPUT,
+      key: 'number',
+      type: 'text',
+      label: '数字',
+      placeholder: '请输入数字',
+      isRequired: true,
+      isClearable: true,
+      color: 'primary',
+      rules: [{ min: 0, max: 100, error: '数字应在0-100之间' }]
+    },
+    {
+      componentType: ComponentType.DIVIDER,
+      key: 'divider3',
+      orientation: 'horizontal',
+    },
     {
       componentType: ComponentType.ACCORDION_PRO,
       key: 'accordion-pro',
