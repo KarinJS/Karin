@@ -52,8 +52,15 @@ function validateValue (value: string, rule: ValidationRule): string | null {
   }
 
   if (rule.regex) {
-    const regExp = rule.regex instanceof RegExp ? rule.regex : new RegExp(rule.regex)
-    if (!regExp.test(value)) return rule.error || '格式不符合要求'
+    try {
+      const regExp = typeof rule.regex === 'string'
+        ? new RegExp(rule.regex.replace(/^\/|\/$/g, ''))
+        : rule.regex
+      if (!regExp.test(value)) return rule.error || '格式不符合要求'
+    } catch (e) {
+      console.error('Invalid regex:', rule.regex)
+      return '无效的验证规则'
+    }
   }
 
   if (rule.minLength && value.length < rule.minLength) {
