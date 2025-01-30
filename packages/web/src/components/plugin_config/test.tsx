@@ -1,6 +1,6 @@
 import { Switch } from '@heroui/switch'
 import { Divider } from '@heroui/divider'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, createContext, useContext } from 'react'
 import { Input, type InputProps } from '@heroui/input'
 import { Accordion, AccordionItem, type AccordionItemProps } from '@heroui/accordion'
 import { ComponentType } from '@/types/components'
@@ -80,23 +80,39 @@ function createValidator (rules: ValidationRule[]): InputProps['validate'] {
   }
 }
 
+// 创建一个 context 来存储配置
+const ConfigContext = createContext<ComponentConfig[]>([])
 
 /**
  * 渲染输入框组件
  */
 function renderInput (
   props: ApiInputProps,
-  { componentRef, key }: BaseComponentProps
+  { componentRef, key }: BaseComponentProps,
+  configs: ComponentConfig[]
 ) {
   const { key: inputKey, ...inputProps } = props
-  console.log('props:', props)
   const validator = props.rules ? createValidator([props.rules].flat()) : undefined
 
-  // 确保 componentRef 中存在对应的 key
-  if (!componentRef[key]) {
-    componentRef[key] = {
-      old: props.defaultValue,
-      new: props.defaultValue
+  // 从 key 中解析出数据索引和字段名
+  const keyParts = key.split('-')
+  if (keyParts.length >= 3) {
+    const dataIndex = parseInt(keyParts[1])
+    const fieldKey = keyParts[2]
+
+    // 获取对应的数据值
+    const accordionConfig = configs.find(config =>
+      config.componentType === ComponentType.ACCORDION_PRO
+    ) as ApiAccordionProProps
+
+    const dataValue = accordionConfig?.data[dataIndex]?.[fieldKey]
+
+    // 设置初始值
+    if (!componentRef[key]) {
+      componentRef[key] = {
+        old: dataValue !== undefined ? dataValue : props.defaultValue,
+        new: dataValue !== undefined ? dataValue : props.defaultValue
+      }
     }
   }
 
@@ -107,6 +123,7 @@ function renderInput (
         {...inputProps}
         className="w-full"
         validate={validator}
+        defaultValue={componentRef[key]?.old?.toString()}
         onValueChange={(value) => {
           if (componentRef[key]) {
             componentRef[key].new = value
@@ -124,8 +141,6 @@ function renderSwitch (
   props: ApiSwitchProps,
   { componentRef, key }: BaseComponentProps
 ) {
-
-  console.log('componentRef:', componentRef)
   // 确保 componentRef 中存在对应的 key
   if (!componentRef[key]) {
     componentRef[key] = {
@@ -155,19 +170,26 @@ function renderSwitch (
  */
 function renderAccordionPro (
   props: ApiAccordionProProps,
-  { componentRef }: BaseComponentProps
+  { componentRef }: BaseComponentProps,
+  configs: ComponentConfig[]
 ) {
   const [items, setItems] = useState([...props.data])
   const { key, data, ...accordionProps } = props
 
   const handleAddItem = () => {
     const template = JSON.parse(JSON.stringify(props.data[0]))
+    console.log('template:', template)
+    Object.keys(template).forEach((key: string) => template[key] = '')
+    /** 数据清空 */
     const newItem = {
       ...template,
-      title: `${props.title} ${items.length + 1}`,
-      id: `${key}-${Date.now()}`
+      title: `${props.title} ${items.length + 1}`
     }
     setItems(prev => [...prev, newItem])
+  }
+
+  const handleDeleteItem = (index: number) => {
+    setItems(prev => prev.filter((_, i) => i !== index))
   }
 
   return (
@@ -183,22 +205,24 @@ function renderAccordionPro (
       </div>
       <Accordion key={key} {...accordionProps}>
         {items.map((item, cardIndex) => {
-          const itemKey = `${key}-${item.id || cardIndex}`
+          console.log('item:', item)
           const list: JSX.Element[] = []
 
           props.children?.forEach((childConfig) => {
             if (childConfig.componentType !== ComponentType.ACCORDION_ITEM) return
 
-            childConfig.children?.forEach((child, index) => {
+            childConfig.children?.forEach((child) => {
               if (!child) return
-              const childKey = `${itemKey}-${child.key}-${index}`
+              const componentKey = `${key}-${cardIndex}-${child.key}`
+              const options = child.componentType === ComponentType.INPUT ? { defaultValue: item[child.key] ?? child.defaultValue } : {}
               const result = renderComponent(
-                { ...child, key: childKey },
-                { componentRef, key: childKey }
+                { ...child, key: componentKey, ...options },
+                { componentRef, key: componentKey },
+                configs
               )
               if (!result) return
               list.push(
-                <div key={childKey}>
+                <div key={componentKey}>
                   {result}
                 </div>
               )
@@ -207,8 +231,31 @@ function renderAccordionPro (
 
           return (
             <AccordionItem
-              key={itemKey}
-              title={item.title}
+              key={`${key}-${item.id || cardIndex}`}
+              textValue={item.title}
+              title={
+                <div className="flex justify-between items-center w-full pr-4">
+                  <span>{item.title}</span>
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleDeleteItem(cardIndex)
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        handleDeleteItem(cardIndex)
+                      }
+                    }}
+                    className="px-2 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors cursor-pointer"
+                  >
+                    删除
+                  </div>
+                </div>
+              }
             >
               <div className="flex flex-col gap-4">
                 {list}
@@ -226,11 +273,12 @@ function renderAccordionPro (
  */
 function renderComponent (
   config: ComponentConfig,
-  props: BaseComponentProps
+  props: BaseComponentProps,
+  configs: ComponentConfig[]
 ): JSX.Element | null {
   switch (config.componentType) {
     case ComponentType.INPUT:
-      return renderInput(config, props)
+      return renderInput(config, props, configs)
     case ComponentType.SWITCH:
       return renderSwitch(config, props)
     case ComponentType.DIVIDER:
@@ -241,7 +289,7 @@ function renderComponent (
         <Accordion {...config}>
           {(config.children || []).map(child => (
             <AccordionItem key={child.key} title={child.title}>
-              {renderComponent(child, props)}
+              {renderComponent(child, props, configs)}
             </AccordionItem>
           ))}
         </Accordion>
@@ -255,14 +303,15 @@ function renderComponent (
               const childKey = `${itemKey}-${child.key}-${index}`
               return renderComponent(
                 { ...child, key: childKey },
-                { ...props, key: childKey }
+                { ...props, key: childKey },
+                configs
               )
             })}
           </div>
         </AccordionItem>
       )
     case ComponentType.ACCORDION_PRO:
-      return renderAccordionPro(config, props)
+      return renderAccordionPro(config, props, configs)
     default:
       return null
   }
@@ -276,28 +325,26 @@ interface DynamicComponentRendererProps {
 export function DynamicComponentRenderer ({ configs }: DynamicComponentRendererProps) {
   const componentRef: ComponentRef = {}
 
-  // 初始化组件数据
-  useEffect(() => {
-    configs.forEach(config => {
-      const initialValue = config.componentType === ComponentType.SWITCH
-        ? (config as ApiSwitchProps).defaultSelected
-        : (config as ApiInputProps).defaultValue
-
-      componentRef[config.key] = {
-        old: initialValue,
-        new: initialValue
-      }
-    })
-  }, [])
-
   return (
-    <div className="flex flex-wrap gap-4 w-full max-w-2xl px-4">
-      {configs.map(config => (
-        <div key={config.key} className="w-full">
-          {renderComponent(config, { key: config.key, componentRef })}
+    <ConfigContext.Provider value={configs}>
+      <div className="relative w-full max-w-2xl px-4">
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => console.log('componentRef:', componentRef)}
+          className="absolute -top-8 right-0 px-3 py-1 text-sm bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors cursor-pointer"
+        >
+          输出数据
         </div>
-      ))}
-    </div>
+        <div className="flex flex-wrap gap-4 w-full">
+          {configs.map(config => (
+            <div key={config.key} className="w-full">
+              {renderComponent(config, { key: config.key, componentRef }, configs)}
+            </div>
+          ))}
+        </div>
+      </div>
+    </ConfigContext.Provider>
   )
 }
 
@@ -367,12 +414,12 @@ export default function App () {
         {
           title: '这是一个手风琴卡片组',
           number: 234,
-          gmail: '123@123.com',
+          email: '123@123.com',
         },
         {
           title: '这是一个手风琴卡片组',
           number: 345,
-          gmail: '123@123.com',
+          email: '123@123.com',
         },
       ],
       children: [
