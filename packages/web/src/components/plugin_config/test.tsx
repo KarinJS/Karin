@@ -92,7 +92,7 @@ function renderInput (
   { componentRef, key, onValueChange }: BaseComponentProps,
   configs: ComponentConfig[]
 ) {
-  const { key: inputKey, ...inputProps } = props
+  const { key: inputKey, componentType: _, ...inputProps } = props
   const validator = props.rules ? createValidator([props.rules].flat()) : undefined
 
   // 从 key 中解析出数据索引和字段名
@@ -141,7 +141,7 @@ function renderSwitch (
   { componentRef, key, onValueChange }: BaseComponentProps
 ) {
   // 从 props 中解构出需要的属性
-  const { key: inputKey, startText, endText, ...switchProps } = props
+  const { key: inputKey, componentType: _, startText, endText, ...switchProps } = props
 
   if (!componentRef[key]) {
     componentRef[key] = {
@@ -171,15 +171,14 @@ function renderSwitch (
  */
 function renderAccordionPro (
   props: ApiAccordionProProps,
-  { componentRef }: BaseComponentProps,
+  { componentRef, key, onValueChange }: BaseComponentProps,
   configs: ComponentConfig[]
 ) {
   const [items, setItems] = useState([...props.data])
-  const { key, data, componentType, children, ...accordionProps } = props
+  const { key: accordionKey, data, componentType, children, ...accordionProps } = props
 
   const handleAddItem = () => {
     const template = JSON.parse(JSON.stringify(props.data[0]))
-    console.log('template:', template)
     Object.keys(template).forEach((key: string) => template[key] = '')
     /** 数据清空 */
     const newItem = {
@@ -204,22 +203,23 @@ function renderAccordionPro (
           添加新卡片
         </button>
       </div>
-      <Accordion key={key} {...accordionProps}>
+      <Accordion key={accordionKey} {...accordionProps}>
         {items.map((item, cardIndex) => {
-          console.log('item:', item)
           const list: JSX.Element[] = []
 
           children?.forEach((childConfig) => {
-            const { componentType, children: grandChildren, ...itemProps } = childConfig
-            if (componentType !== ComponentType.ACCORDION_ITEM) return
+            const { componentType: _, children: grandChildren, ...itemProps } = childConfig
+            if (_ !== ComponentType.ACCORDION_ITEM) return
 
             grandChildren?.forEach((child) => {
               if (!child) return
               const componentKey = `${key}-${cardIndex}-${child.key}`
-              const options = child.componentType === ComponentType.INPUT ? { defaultValue: item[child.key] ?? child.defaultValue } : {}
+              const options = child.componentType === ComponentType.INPUT
+                ? { defaultValue: item[child.key] ?? child.defaultValue }
+                : {}
               const result = renderComponent(
                 { ...child, key: componentKey, ...options },
-                { componentRef, key: componentKey },
+                { componentRef, key: componentKey, onValueChange },
                 configs
               )
               if (!result) return
@@ -286,15 +286,15 @@ function renderComponent (
     case ComponentType.SWITCH:
       return renderSwitch(config, props)
     case ComponentType.DIVIDER: {
-      const { componentType, key, transparent, ...dividerProps } = config
+      const { componentType: _, key, ...dividerProps } = config
       return <Divider key={key} {...dividerProps} />
     }
     case ComponentType.ACCORDION: {
-      const { componentType, children, ...accordionProps } = config
+      const { componentType: _, children, key, ...accordionProps } = config
       return (
-        <Accordion {...accordionProps}>
+        <Accordion key={key} {...accordionProps}>
           {(children || []).map(child => {
-            const { componentType: _, key: childKey, ...childProps } = child
+            const { componentType: __, key: childKey, ...childProps } = child
             return (
               <AccordionItem key={childKey} {...childProps}>
                 {renderComponent(child, props, configs)}
@@ -305,7 +305,7 @@ function renderComponent (
       )
     }
     case ComponentType.ACCORDION_ITEM: {
-      const { componentType, key: itemKey, children, ...itemProps } = config
+      const { componentType: _, key: itemKey, children, ...itemProps } = config
       return (
         <AccordionItem key={itemKey} {...itemProps}>
           <div className="flex flex-col gap-4">
@@ -358,6 +358,7 @@ export function DynamicComponentRenderer ({ configs }: DynamicComponentRendererP
 
   // 更新值的处理函数
   const handleValueChange = (key: string, value: ComponentValue) => {
+    console.log('handleValueChange:', key, value)
     setComponentRef(prev => ({
       ...prev,
       [key]: {
