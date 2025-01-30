@@ -382,7 +382,6 @@ export default function App () {
           title: '这是一个手风琴卡片组',
           children: [
             {
-              title: '数字',
               componentType: ComponentType.INPUT,
               key: 'number',
               type: 'text',
@@ -394,7 +393,6 @@ export default function App () {
               rules: [{ min: 0, max: 100, error: '数字应在0-100之间' }]
             },
             {
-              title: '邮箱',
               componentType: ComponentType.INPUT,
               key: 'email',
               type: 'email',
