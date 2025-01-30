@@ -90,6 +90,7 @@
     "globals": "^15.14.0",
     "postcss": "8.5.1",
     "prettier": "3.4.2",
+    "react-scan": "^0.1.1",
     "sass": "^1.83.4",
     "typescript": "5.7.3",
     "vite": "^6.0.7",
