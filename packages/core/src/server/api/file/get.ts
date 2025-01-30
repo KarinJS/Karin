@@ -3,7 +3,7 @@ import { createSuccessResponse } from '@/server/utils/response'
 import { config, adapter, groups, privates, render, pm2, redis, env } from '@/utils/config'
 
 import type { RequestHandler } from 'express'
-import type { FormField } from '@/types/Components'
+import type { FormField } from '@/types/components'
 import type { Groups, Privates } from '@/types/config'
 
 /**

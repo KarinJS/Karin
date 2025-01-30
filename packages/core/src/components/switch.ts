@@ -1,13 +1,13 @@
 import { Component } from './base'
-import { ComponentType } from '@/types/Components'
-import type { SwitchProps } from '@/types/Components'
+import { ComponentType } from '@/types/components'
+import type { SwitchProps } from '@/types/components'
 
-class Switch extends Component {
-  config: SwitchProps = { key: '' }
+class Switch extends Component<SwitchProps> {
+  _config: SwitchProps = { key: '', componentType: ComponentType.SWITCH }
 
   constructor (key: string) {
     super(ComponentType.SWITCH)
-    this.config.key = key
+    this._config.key = key
   }
 
   /**
@@ -15,7 +15,7 @@ class Switch extends Component {
    * @param text 开始文本
    */
   startText = (text: string) => {
-    this.config.startText = text
+    this._config.startText = text
     return this
   }
 
@@ -24,7 +24,7 @@ class Switch extends Component {
    * @param text 结束文本
    */
   endText = (text: string) => {
-    this.config.endText = text
+    this._config.endText = text
     return this
   }
 
@@ -33,7 +33,7 @@ class Switch extends Component {
    * @param size 大小
    */
   size = (size: 'sm' | 'md' | 'lg') => {
-    this.config.size = size
+    this._config.size = size
     return this
   }
 
@@ -42,7 +42,7 @@ class Switch extends Component {
    * @param color 颜色
    */
   color = (color: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger') => {
-    this.config.color = color
+    this._config.color = color
     return this
   }
 
@@ -51,7 +51,7 @@ class Switch extends Component {
    * @param icon 图标
    */
   thumbIcon = (icon: string) => {
-    this.config.thumbIcon = icon
+    this._config.thumbIcon = icon
     return this
   }
 
@@ -60,7 +60,7 @@ class Switch extends Component {
    * @param icon 图标
    */
   startContent = (icon: string) => {
-    this.config.startContent = icon
+    this._config.startContent = icon
     return this
   }
 
@@ -69,7 +69,7 @@ class Switch extends Component {
    * @param icon 图标
    */
   endContent = (icon: string) => {
-    this.config.endContent = icon
+    this._config.endContent = icon
     return this
   }
 
@@ -78,7 +78,7 @@ class Switch extends Component {
    * @param selected 是否被选中
    */
   selected = (selected: boolean = true) => {
-    this.config.isSelected = selected
+    this._config.isSelected = selected
     return this
   }
 
@@ -87,7 +87,7 @@ class Switch extends Component {
    * @param selected 是否默认选中
    */
   defaultSelected = (selected: boolean = true) => {
-    this.config.defaultSelected = selected
+    this._config.defaultSelected = selected
     return this
   }
 
@@ -96,7 +96,7 @@ class Switch extends Component {
    * @param readonly 是否只读
    */
   readonly = (readonly: boolean = true) => {
-    this.config.isReadOnly = readonly
+    this._config.isReadOnly = readonly
     return this
   }
 
@@ -105,7 +105,7 @@ class Switch extends Component {
    * @param disabled 是否禁用
    */
   disabled = (disabled: boolean = true) => {
-    this.config.isDisabled = disabled
+    this._config.isDisabled = disabled
     return this
   }
 
@@ -114,7 +114,7 @@ class Switch extends Component {
    * @param disable 是否禁用动画
    */
   disableAnimation = (disable: boolean = true) => {
-    this.config.disableAnimation = disable
+    this._config.disableAnimation = disable
     return this
   }
 
@@ -123,7 +123,7 @@ class Switch extends Component {
    * @param options 参数
    */
   options = (options: SwitchProps) => {
-    this.config = options
+    this._config = options
     return this
   }
 }
@@ -145,4 +145,4 @@ const switchComponent = {
   options: (key: string, options: SwitchProps) => new Switch(key).options(options)
 }
 
-export { switchComponent as switch }
+export { switchComponent }

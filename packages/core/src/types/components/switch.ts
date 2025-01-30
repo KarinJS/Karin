@@ -1,9 +1,10 @@
-import { ComponentProps } from './base'
+import { ComponentProps, ComponentType } from './base'
 
 /**
  * 开关类型
  */
 export interface SwitchProps extends ComponentProps {
+  componentType: ComponentType.SWITCH
   /** 开始文本 */
   startText?: string
   /** 结束文本 */

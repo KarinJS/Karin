@@ -1,4 +1,4 @@
-import { ComponentProps } from './base'
+import { ComponentProps, ComponentType } from './base'
 
 /**
  * 输入类型枚举
@@ -51,6 +51,7 @@ export interface ValidationRule {
  * 输入框类型
  */
 export interface InputProps extends ComponentProps {
+  componentType: ComponentType.INPUT
   /**
    * 输入框的样式
    * - flat: 扁平化
@@ -128,7 +129,7 @@ export interface InputProps extends ComponentProps {
   /** 类名 */
   classNames?: Partial<Record<'base' | 'label' | 'inputWrapper' | 'innerWrapper' | 'mainWrapper' | 'input' | 'clearButton' | 'helperWrapper' | 'description' | 'errorMessage', string>>
   /** 自定义字段 验证规则 */
-  validate?: ValidationRule | ValidationRule[]
+  rules?: ValidationRule[]
   /** 自定义字段 输入框宽度 */
   width?: string
   /** 自定义字段 输入框高度 */

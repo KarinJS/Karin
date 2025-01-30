@@ -1,15 +1,16 @@
 import { Component } from './base'
-import { ComponentType } from '@/types/Components'
-import type { AccordionItemProps, AccordionProps } from '@/types/Components'
+import { ComponentType } from '@/types/components'
+import type { AccordionItemProps, AccordionProps } from '@/types/components'
 import { input } from './input'
 import { divider } from './divider'
+import { ComponentsClass } from './all'
 
-class Accordion extends Component {
-  config: AccordionProps = { key: '' }
+class Accordion extends Component<AccordionProps> {
+  _config: AccordionProps = { key: '', componentType: ComponentType.ACCORDION }
 
   constructor (key: string) {
     super(ComponentType.ACCORDION)
-    this.config.key = key
+    this._config.key = key
   }
 
   /**
@@ -17,7 +18,7 @@ class Accordion extends Component {
    * @param title - 标题文本
    */
   title = (title: string) => {
-    this.config.title = title
+    this._config.title = title
     return this
   }
 
@@ -26,7 +27,11 @@ class Accordion extends Component {
    * @param children - 子组件数组
    */
   children = (children: AccordionItem[]) => {
-    this.config.children = children
+    const childrens: AccordionItemProps[] = []
+    for (const child of children) {
+      childrens.push(child.toJSON())
+    }
+    this._config.children = childrens
     return this
   }
 
@@ -35,7 +40,7 @@ class Accordion extends Component {
    * @param variant - 样式类型
    */
   variant = (variant: AccordionProps['variant']) => {
-    this.config.variant = variant
+    this._config.variant = variant
     return this
   }
 
@@ -47,7 +52,7 @@ class Accordion extends Component {
    * - multiple: 多选
    */
   selectionMode = (mode: AccordionProps['selectionMode']) => {
-    this.config.selectionMode = mode
+    this._config.selectionMode = mode
     return this
   }
 
@@ -58,7 +63,7 @@ class Accordion extends Component {
    * - replace: 替换
    */
   selectionBehavior = (behavior: AccordionProps['selectionBehavior']) => {
-    this.config.selectionBehavior = behavior
+    this._config.selectionBehavior = behavior
     return this
   }
 
@@ -67,7 +72,7 @@ class Accordion extends Component {
    * @param isCompact - 是否紧凑
    */
   compact = (isCompact: boolean = true) => {
-    this.config.isCompact = isCompact
+    this._config.isCompact = isCompact
     return this
   }
 
@@ -76,7 +81,7 @@ class Accordion extends Component {
    * @param isDisabled - 是否禁用
    */
   disabled = (isDisabled: boolean = true) => {
-    this.config.isDisabled = isDisabled
+    this._config.isDisabled = isDisabled
     return this
   }
 
@@ -85,7 +90,7 @@ class Accordion extends Component {
    * @param show - 是否显示
    */
   showDivider = (show: boolean = true) => {
-    this.config.showDivider = show
+    this._config.showDivider = show
     return this
   }
 
@@ -94,7 +99,7 @@ class Accordion extends Component {
    * @param hide - 是否隐藏
    */
   hideIndicator = (hide: boolean = true) => {
-    this.config.hideIndicator = hide
+    this._config.hideIndicator = hide
     return this
   }
 
@@ -103,7 +108,7 @@ class Accordion extends Component {
    * @param disable - 是否禁用
    */
   disableAnimation = (disable: boolean = true) => {
-    this.config.disableAnimation = disable
+    this._config.disableAnimation = disable
     return this
   }
 
@@ -112,7 +117,7 @@ class Accordion extends Component {
    * @param disable - 是否禁用
    */
   disableIndicatorAnimation = (disable: boolean = true) => {
-    this.config.disableIndicatorAnimation = disable
+    this._config.disableIndicatorAnimation = disable
     return this
   }
 
@@ -121,7 +126,7 @@ class Accordion extends Component {
    * @param disallow - 是否不允许
    */
   disallowEmptySelection = (disallow: boolean = true) => {
-    this.config.disallowEmptySelection = disallow
+    this._config.disallowEmptySelection = disallow
     return this
   }
 
@@ -130,7 +135,7 @@ class Accordion extends Component {
    * @param keep - 是否保持
    */
   keepContentMounted = (keep: boolean = true) => {
-    this.config.keepContentMounted = keep
+    this._config.keepContentMounted = keep
     return this
   }
 
@@ -139,7 +144,7 @@ class Accordion extends Component {
    * @param full - 是否全宽
    */
   fullWidth = (full: boolean = true) => {
-    this.config.fullWidth = full
+    this._config.fullWidth = full
     return this
   }
 
@@ -148,7 +153,7 @@ class Accordion extends Component {
    * @param keys - 禁用的键数组
    */
   disabledKeys = (keys: string[]) => {
-    this.config.disabledKeys = keys
+    this._config.disabledKeys = keys
     return this
   }
 
@@ -157,7 +162,7 @@ class Accordion extends Component {
    * @param keys - 选中的键数组
    */
   selectedKeys = (keys: string[]) => {
-    this.config.selectedKeys = keys
+    this._config.selectedKeys = keys
     return this
   }
 
@@ -166,7 +171,7 @@ class Accordion extends Component {
    * @param keys - 默认选中的键数组
    */
   defaultSelectedKeys = (keys: string[]) => {
-    this.config.defaultSelectedKeys = keys
+    this._config.defaultSelectedKeys = keys
     return this
   }
 
@@ -175,7 +180,7 @@ class Accordion extends Component {
    * @param options - 配置选项
    */
   options = (options: AccordionProps) => {
-    this.config = { ...this.config, ...options }
+    this._config = { ...this._config, ...options }
     return this
   }
 
@@ -183,35 +188,33 @@ class Accordion extends Component {
    * 转换为JSON对象
    * @description 手风琴比较特殊 需要子组件也进行转换
    */
-  toJSON = () => {
-    const children = []
-    if (!this.config.children) this.config.children = []
-    for (const child of this.config.children) {
-      children.push(child.toJSON())
-    }
+  toJSON = (): AccordionProps => {
+    if (!this._config.children) this._config.children = []
 
-    return {
-      componentType: this.componentType,
-      ...this.config,
-      children
-    }
+    return this._config
   }
 }
 
-export class AccordionItem extends Component {
-  config: AccordionItemProps = { key: '' }
+/**
+ * 手风琴子组件
+ */
+export class AccordionItem extends Component<AccordionItemProps> {
+  _config: AccordionItemProps = { key: '', componentType: ComponentType.ACCORDION_ITEM }
 
   constructor (key: string) {
     super(ComponentType.ACCORDION_ITEM)
-    this.config.key = key
+    this._config.key = key
   }
 
   /**
    * 设置子组件
    * @param children - 子组件数组
    */
-  children = (children: Component[]) => {
-    this.config.children = children
+  children = (children: ComponentsClass | ComponentsClass[]) => {
+    if (!Array.isArray(children)) children = [children]
+    this._config.children = children.map(child => child?.toJSON())
+    /** 排除空的 */
+    this._config.children = this._config.children.filter(Boolean)
     return this
   }
 
@@ -220,7 +223,7 @@ export class AccordionItem extends Component {
    * @param title - 标题文本
    */
   title = (title: string) => {
-    this.config.title = title
+    this._config.title = title
     return this
   }
 
@@ -229,7 +232,7 @@ export class AccordionItem extends Component {
    * @param subtitle - 副标题文本
    */
   subtitle = (subtitle: string) => {
-    this.config.subtitle = subtitle
+    this._config.subtitle = subtitle
     return this
   }
 
@@ -238,34 +241,34 @@ export class AccordionItem extends Component {
    * @param hide - 是否隐藏
    */
   hideIndicator = (hide: boolean = true) => {
-    this.config.hideIndicator = hide
+    this._config.hideIndicator = hide
     return this
   }
 
-  /**
-   * 设置开始内容
-   * @param content - 开始内容组件
-   */
-  startContent = (content: Component) => {
-    this.config.startContent = content
-    return this
-  }
+  // /**
+  //  * 设置开始内容
+  //  * @param content - 开始内容组件
+  //  */
+  // startContent = (content: Component) => {
+  //   this.config.startContent = content
+  //   return this
+  // }
 
-  /**
-   * 设置结束内容
-   * @param content - 结束内容组件
-   */
-  endContent = (content: Component) => {
-    this.config.endContent = content
-    return this
-  }
+  // /**
+  //  * 设置结束内容
+  //  * @param content - 结束内容组件
+  //  */
+  // endContent = (content: Component) => {
+  //   this.config.endContent = content
+  //   return this
+  // }
 
   /**
    * 设置是否紧凑模式
    * @param isCompact - 是否紧凑
    */
   compact = (isCompact: boolean = true) => {
-    this.config.isCompact = isCompact
+    this._config.isCompact = isCompact
     return this
   }
 
@@ -274,7 +277,7 @@ export class AccordionItem extends Component {
    * @param isDisabled - 是否禁用
    */
   disabled = (isDisabled: boolean = true) => {
-    this.config.isDisabled = isDisabled
+    this._config.isDisabled = isDisabled
     return this
   }
 
@@ -283,7 +286,7 @@ export class AccordionItem extends Component {
    * @param keep - 是否保持
    */
   keepContentMounted = (keep: boolean = true) => {
-    this.config.keepContentMounted = keep
+    this._config.keepContentMounted = keep
     return this
   }
 
@@ -292,7 +295,7 @@ export class AccordionItem extends Component {
    * @param disable - 是否禁用
    */
   disableAnimation = (disable: boolean = true) => {
-    this.config.disableAnimation = disable
+    this._config.disableAnimation = disable
     return this
   }
 
@@ -301,25 +304,25 @@ export class AccordionItem extends Component {
    * @param disable - 是否禁用
    */
   disableIndicatorAnimation = (disable: boolean = true) => {
-    this.config.disableIndicatorAnimation = disable
+    this._config.disableIndicatorAnimation = disable
     return this
   }
 
-  /**
-   * 设置标题组件
-   * @param component - 标题组件
-   */
-  headingComponent = (component: Component) => {
-    this.config.HeadingComponent = component
-    return this
-  }
+  // /**
+  //  * 设置标题组件
+  //  * @param component - 标题组件
+  //  */
+  // headingComponent = (component: string) => {
+  //   this.config.headingComponent = component
+  //   return this
+  // }
 
   /**
    * 自定义配置
    * @param options - 配置选项
    */
   options = (options: AccordionItemProps) => {
-    this.config = { ...this.config, ...options }
+    this._config = { ...this._config, ...options }
     return this
   }
 
@@ -327,18 +330,8 @@ export class AccordionItem extends Component {
    * 转换为JSON对象
    * @description 手风琴比较特殊 需要子组件也进行转换
    */
-  toJSON = () => {
-    const children = []
-    if (!this.config.children) this.config.children = []
-    for (const child of this.config.children) {
-      children.push(child.toJSON())
-    }
-
-    return {
-      componentType: this.componentType,
-      ...this.config,
-      children
-    }
+  toJSON = (): AccordionItemProps => {
+    return this._config
   }
 }
 

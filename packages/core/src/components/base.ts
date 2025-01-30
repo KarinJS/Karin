@@ -1,11 +1,11 @@
-import { ComponentType } from '@/types/Components'
+import { ComponentType } from '@/types/components'
 
-export class Component {
-  config: unknown
-  componentType: ComponentType
+export class Component<T extends Record<string, any>> {
+  _config: unknown
+  _componentType: ComponentType
 
   constructor (componentType: ComponentType) {
-    this.componentType = componentType
+    this._componentType = componentType
   }
 
   /**
@@ -18,7 +18,7 @@ export class Component {
   /**
    * 转换为JSON对象
    */
-  toJSON (): Record<string, any> {
-    return { componentType: this.componentType, ...(this.config as Record<string, any>) }
+  toJSON (): T {
+    return { componentType: this._componentType, ...(this._config as T) }
   }
 }

@@ -1,3 +1,5 @@
+import { ComponentProps, ComponentType } from './base'
+
 /**
  * 输入类型枚举
  */
@@ -46,13 +48,10 @@ export interface ValidationRule {
   error?: string
 }
 /**
- * 类型
+ * 输入框类型
  */
-export interface InputProps {
-  /** 唯一标识 */
-  key: string
-  /** 类名 */
-  className?: string
+export interface InputProps extends ComponentProps {
+  componentType: ComponentType.INPUT
   /**
    * 输入框的样式
    * - flat: 扁平化
@@ -93,12 +92,8 @@ export interface InputProps {
   defaultValue?: string
   /** 提示信息 */
   placeholder?: string
-  /** 描述 */
-  description?: string
   /** 错误信息 */
   errorMessage?: string
-  /** 验证 */
-  // validate: (text: string) => boolean
   /** 验证行为 */
   validationBehavior?: 'native' | 'aria'
   /** 最小长度 */
@@ -133,6 +128,10 @@ export interface InputProps {
   disableAnimation?: boolean
   /** 类名 */
   classNames?: Partial<Record<'base' | 'label' | 'inputWrapper' | 'innerWrapper' | 'mainWrapper' | 'input' | 'clearButton' | 'helperWrapper' | 'description' | 'errorMessage', string>>
-  /** 验证规则 */
-  validationRules?: ValidationRule[]
+  /** 自定义字段 验证规则 */
+  rules?: ValidationRule[]
+  /** 自定义字段 输入框宽度 */
+  width?: string
+  /** 自定义字段 输入框高度 */
+  height?: string
 }

@@ -1,21 +1,20 @@
 import { Component } from './base'
-import { ComponentType, InputDataType, } from '@/types/Components'
-import type { InputProps, ValidationRule } from '@/types/Components'
+import { ComponentType, InputDataType, } from '@/types/components'
+import type { InputProps, ValidationRule } from '@/types/components'
 
-class Input extends Component {
-  config: InputProps = { key: '', type: 'text' }
+class Input extends Component<InputProps> {
+  _config: InputProps = { key: '', type: 'text', componentType: ComponentType.INPUT }
 
   constructor (key: string) {
     super(ComponentType.INPUT)
-    this.config.key = key
+    this._config.key = key
   }
 
   /**
    * 内部属性 仅在`options`中可手动设置，其他方法请不要调用
    */
   _type (dataType: InputDataType) {
-    // 映射 InputDataType 到 HTML input type
-    const typeMap: Record<InputDataType, InputProps['type']> = {
+    const typeMap = {
       [InputDataType.STRING]: 'text',
       [InputDataType.NUMBER]: 'text',
       [InputDataType.BOOLEAN]: 'text',
@@ -28,10 +27,10 @@ class Input extends Component {
       [InputDataType.PASSWORD]: 'password',
       [InputDataType.COLOR]: 'text',
       [InputDataType.JSON]: 'text'
-    }
+    } as const
 
     if (!typeMap[dataType]) return this
-    this.config.type = typeMap[dataType]
+    this._config.type = typeMap[dataType]
     return this
   }
 
@@ -39,7 +38,7 @@ class Input extends Component {
    * 设置标签
    */
   label (label: string) {
-    this.config.label = label
+    this._config.label = label
     return this
   }
 
@@ -47,7 +46,7 @@ class Input extends Component {
    * 设置占位符
    */
   placeholder (placeholder: string) {
-    this.config.placeholder = placeholder
+    this._config.placeholder = placeholder
     return this
   }
 
@@ -63,7 +62,7 @@ class Input extends Component {
       }
     })
 
-    this.config.validate = rules
+    this._config.rules = rules
     return this
   }
 
@@ -73,7 +72,7 @@ class Input extends Component {
    * @returns 输入框构建器
    */
   size (size: 'sm' | 'md' | 'lg') {
-    this.config.size = size
+    this._config.size = size
     return this
   }
 
@@ -81,7 +80,7 @@ class Input extends Component {
    * 设置颜色
    */
   color (color: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger') {
-    this.config.color = color
+    this._config.color = color
     return this
   }
 
@@ -89,7 +88,7 @@ class Input extends Component {
    * 设置是否必填
    */
   required (required: boolean = true) {
-    this.config.isRequired = required
+    this._config.isRequired = required
     return this
   }
 
@@ -97,7 +96,7 @@ class Input extends Component {
    * 设置清除按钮
    */
   clearable (clearable: boolean = true) {
-    this.config.isClearable = clearable
+    this._config.isClearable = clearable
     return this
   }
 
@@ -105,7 +104,7 @@ class Input extends Component {
    * 设置描述
    */
   description (description: string) {
-    this.config.description = description
+    this._config.description = description
     return this
   }
 
@@ -113,15 +112,8 @@ class Input extends Component {
    * 自定义参数
    */
   options (options: InputProps) {
-    this.config = options
+    this._config = options
     return this
-  }
-
-  /**
-   * 转换为字符串
-   */
-  toString () {
-    return JSON.stringify({ componentType: this.componentType, ...this.config })
   }
 }
 

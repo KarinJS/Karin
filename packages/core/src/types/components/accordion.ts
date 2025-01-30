@@ -1,15 +1,10 @@
-import { ComponentProps } from './base'
-// 移除这些导入，因为它们似乎不是必需的
-// import type { Component } from '@/components/base'
-// import type { AccordionItem } from '@/components/accordion'
-
-/** 组件类型 */
-type Component = any // 临时使用 any，建议创建一个具体的组件类型
+import { Children } from './all'
+import { ComponentProps, ComponentType } from './base'
 
 /**
  * 手风琴(折叠面板) 类型
  */
-export interface AccordionProps extends ComponentProps {
+interface Accordion extends ComponentProps {
   /** 子组件 */
   children?: AccordionItemProps[]
   /** 标题 */
@@ -71,8 +66,9 @@ export interface AccordionProps extends ComponentProps {
  * 手风琴子组件类型 `也就是每一项手风琴`
  */
 export interface AccordionItemProps extends ComponentProps {
+  componentType: ComponentType.ACCORDION_ITEM
   /** 子组件 */
-  children?: Component[]
+  children?: Children[]
   /** 标题 */
   title?: string
   /** 副标题 */
@@ -80,9 +76,9 @@ export interface AccordionItemProps extends ComponentProps {
   /** 折叠项展开指示器，通常为箭头图标 */
   indicator?: boolean
   /** 折叠项开始内容，通常是图标或头像 */
-  startContent?: Component
+  // startContent?: string // TODO: 后续处理
   /** 折叠项结束内容，通常是图标或头像 */
-  endContent?: Component
+  // endContent?: string  // TODO: 后续处理
   /** 用于修改 framer 运动动画的 props。使用 variants API 创建您自己的动画 */
   // motionProps?:
   /** 是否紧凑模式 */
@@ -98,5 +94,19 @@ export interface AccordionItemProps extends ComponentProps {
   /** 是否禁用 AccordionItem 指示器动画 */
   disableIndicatorAnimation?: boolean
   /** 于 Web 辅助功能的可自定义标题标签。使用标题来描述内容，并在语义上一致地使用它们 */
-  HeadingComponent?: Component
+  // HeadingComponent?: string // TODO:后续处理
+}
+
+/** 手风琴 */
+export interface AccordionProps extends Accordion {
+  componentType: ComponentType.ACCORDION
+}
+
+/**
+ * 手风琴Pro
+ */
+export interface AccordionProProps extends Accordion {
+  componentType: ComponentType.ACCORDION_PRO
+  /** 渲染数据 */
+  data: Record<string, any>[]
 }

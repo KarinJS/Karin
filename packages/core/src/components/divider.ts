@@ -1,13 +1,15 @@
 import { Component } from './base'
-import { ComponentType } from '@/types/Components'
-import type { DividerProps } from '@/types/Components'
+import { ComponentType } from '@/types/components'
+import type { DividerProps } from '@/types/components'
 
-class Divider extends Component {
-  config: DividerProps
+class Divider extends Component<DividerProps> {
+  _config: DividerProps
 
   constructor () {
     super(ComponentType.DIVIDER)
-    this.config = {
+    this._config = {
+      key: Math.random().toString(36).substring(2, 15),
+      componentType: ComponentType.DIVIDER,
       transparent: false,
       orientation: 'horizontal'
     }
@@ -18,7 +20,7 @@ class Divider extends Component {
    * @param transparent 是否透明 默认不透明
    */
   transparent (transparent: boolean) {
-    this.config.transparent = transparent
+    this._config.transparent = transparent
     return this
   }
 
@@ -27,7 +29,7 @@ class Divider extends Component {
    * @param orientation 是否使用竖向分隔线 默认使用横向
    */
   vertical (orientation: boolean) {
-    this.config.orientation = orientation ? 'vertical' : 'horizontal'
+    this._config.orientation = orientation ? 'vertical' : 'horizontal'
     return this
   }
 }

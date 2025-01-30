@@ -1,266 +1,220 @@
-import { Input, type InputProps } from '@heroui/input'
 import { Switch } from '@heroui/switch'
-import { ValidationRule } from './input.types'
 import { Divider } from '@heroui/divider'
-import { Accordion, AccordionItem, type AccordionItemProps } from '@heroui/accordion'
-import type { JSX } from 'react'
-import {
-  type InputProps as InputPropsType,
-  type AccordionProps as AccordionPropsType,
-  type AccordionItemProps as AccordionItemPropsType,
-  type SwitchProps as SwitchPropsType,
-  type DividerProps as DividerPropsType,
-  ComponentType
-} from '@/types/component'
 import { useState, useEffect } from 'react'
+import { Input, type InputProps } from '@heroui/input'
+import { Accordion, AccordionItem, type AccordionItemProps } from '@heroui/accordion'
+import { ComponentType } from '@/types/components'
 
-/** ref类型 */
-type RefType = Record<
-  string,
-  { old: string, new: string } |
-  { old: boolean, new: boolean } |
-  { old: number, new: number } |
-  { old: undefined, new: undefined } |
-  { old: null, new: null } |
-  { old: undefined, new: string | number | boolean | null }
->
+import type { JSX } from 'react'
+import type {
+  ValidationRule,
+  InputProps as ApiInputProps,
+  AccordionProps as ApiAccordionProps,
+  AccordionItemProps as ApiAccordionItemProps,
+  SwitchProps as ApiSwitchProps,
+  DividerProps as ApiDividerProps,
+  AccordionProProps as ApiAccordionProProps
+} from '@/types/components'
+import { Children } from '@/types/components/all'
 
-/** 渲染的输入框类型 */
-type RenderInputType = Omit<InputPropsType, 'validate'>
-/** 渲染的开关类型 */
-type RenderSwitchType = Omit<SwitchPropsType, 'validate'>
-/** 渲染的分隔线类型 */
-type RenderDividerType = Omit<DividerPropsType, 'validate'>
-/** 渲染的手风琴类型 */
-type RenderAccordionType = Omit<AccordionPropsType, 'validate'>
-/** 渲染的手风琴项类型 */
-type RenderAccordionItemType = Omit<AccordionItemPropsType, 'validate'>
+/** 组件配置类型 */
+type ComponentConfig = Children | ApiAccordionProps | ApiAccordionProProps | ApiAccordionItemProps | ApiDividerProps
 
+// ==================== 保留原始类型定义 ====================
+/** 组件引用值类型 */
+type ComponentValue = string | boolean | number | undefined | null
+
+/** 组件引用记录类型 */
+type ComponentRef = Record<string, { old: ComponentValue; new: ComponentValue }>
+
+// ==================== 组件渲染部分 ====================
+interface BaseComponentProps {
+  /** 组件唯一标识 */
+  key: string
+  /** 组件引用对象 */
+  componentRef: ComponentRef
+}
+
+// ==================== 通用工具函数 ====================
 /**
- * 验证单个规则
- * @param value 输入值
- * @param rule 验证规则
- * @returns 错误信息或 null
+ * 验证输入值是否符合规则
+ * @param value - 需要验证的值
+ * @param rule - 验证规则
+ * @returns 错误信息或验证通过
  */
-const validateRule = (value: string, rule: ValidationRule): string | null => {
-  /* 数字验证 */
+function validateValue (value: string, rule: ValidationRule): string | null {
   if (rule.min !== undefined || rule.max !== undefined) {
-    const num = Number(value)
-    if (isNaN(num)) return rule.error || '请输入有效数字'
-    if (rule.min !== undefined && num < rule.min) return rule.error || `不能小于${rule.min}`
-    if (rule.max !== undefined && num > rule.max) return rule.error || `不能大于${rule.max}`
+    const numericValue = Number(value)
+    if (Number.isNaN(numericValue)) return rule.error || '请输入有效数字'
+    if (rule.min !== undefined && numericValue < rule.min) return rule.error || `最小值不能小于 ${rule.min}`
+    if (rule.max !== undefined && numericValue > rule.max) return rule.error || `最大值不能超过 ${rule.max}`
   }
 
-  /* 正则验证 */
   if (rule.regex) {
-    const reg = rule.regex instanceof RegExp ? rule.regex : new RegExp(rule.regex)
-    if (!reg.test(value)) return rule.error || '格式不正确'
+    const regExp = rule.regex instanceof RegExp ? rule.regex : new RegExp(rule.regex)
+    if (!regExp.test(value)) return rule.error || '格式不符合要求'
   }
 
-  /* 长度验证 */
   if (rule.minLength && value.length < rule.minLength) {
-    return rule.error || `长度不能小于${rule.minLength}`
+    return rule.error || `内容长度不能少于 ${rule.minLength} 个字符`
   }
   if (rule.maxLength && value.length > rule.maxLength) {
-    return rule.error || `长度不能大于${rule.maxLength}`
+    return rule.error || `内容长度不能超过 ${rule.maxLength} 个字符`
   }
 
   return null
 }
 
 /**
- * 处理验证函数
+ * 创建验证处理器
+ * @param rules - 验证规则数组
+ * @returns 验证处理函数
  */
-const handleValidate = (data: InputProps, validate: ValidationRule | ValidationRule[]) => {
-  if (!validate) return
-  if (!Array.isArray(validate)) validate = [validate]
-
-  data.validate = (value: string) => {
-    for (const rule of validate) {
-      if (typeof rule !== 'object') continue
-
-      const error = validateRule(value, rule)
-      if (!error) continue
-      data.isInvalid = true
-      return error
+function createValidator (rules: ValidationRule[]): InputProps['validate'] {
+  return (value: string) => {
+    for (const rule of rules) {
+      const error = validateValue(value, rule)
+      if (error) return error
     }
-    data.isInvalid = false
     return true
   }
 }
 
+
 /**
- * 缓存组件数据
- * @param key 组件唯一标识符
- * @param value 组件数据
- * @param ref 组件数据
+ * 渲染输入框组件
  */
-const cacheComponentData = <T extends string | boolean | number | undefined> (
-  key: string,
-  value: T,
-  ref: RefType
-) => {
-  if (value === undefined) {
-    ref[key] = { old: undefined, new: undefined }
-  } else if (typeof value === 'string') {
-    ref[key] = { old: value, new: value } as { old: string; new: string }
-  } else if (typeof value === 'boolean') {
-    ref[key] = { old: value, new: value } as { old: boolean; new: boolean }
-  } else if (typeof value === 'number') {
-    ref[key] = { old: value, new: value } as { old: number; new: number }
+function renderInput (
+  props: ApiInputProps,
+  { componentRef, key }: BaseComponentProps
+) {
+  const { key: inputKey, ...inputProps } = props
+  console.log('props:', props)
+  const validator = props.rules ? createValidator([props.rules].flat()) : undefined
+
+  // 确保 componentRef 中存在对应的 key
+  if (!componentRef[key]) {
+    componentRef[key] = {
+      old: props.defaultValue,
+      new: props.defaultValue
+    }
   }
 
-  /** 锁定旧数据 只读 */
-  Object.defineProperty(ref[key], 'old', { writable: false })
-}
-
-/**
- * 获取组件数据变化
- * @template T 组件值的类型
- * @param key 组件唯一标识符
- * @param ref 组件数据
- * @returns 组件数据变化处理函数
- */
-const getOnValueChange = <T extends string | boolean | number> (key: string, ref: RefType) => {
-  return (value: T) => {
-    console.log(`${key}:`, value)
-    ref[key].new = value
-  }
-}
-
-/**
- * 输入框渲染
- * @param key 组件唯一标识符
- * @param options 组件配置
- * @param ref 组件数据
- * @returns 输入框组件
- */
-const renderInput = (key: string, options: RenderInputType, ref: RefType) => {
   return (
-    <div key={key} className={`w-${options.width || 200}px h-${options.height || 40}px`}>
-      <Input {...options} className="w-full" onValueChange={getOnValueChange<string>(key, ref)} />
-    </div>
-  )
-}
-
-/**
- * 开关渲染
- * @param key 组件唯一标识符
- * @param options 组件配置
- * @param ref 组件数据
- * @returns 开关组件
- */
-const renderSwitch = (
-  key: string,
-  options: Record<string, any>,
-  ref: Record<string, any>
-) => {
-  const { startText, endText, ...switchOptions } = options
-  return (
-    <div key={key} className="flex items-center gap-2">
-      {startText && <span>{startText}</span>}
-      <Switch {...switchOptions} onValueChange={getOnValueChange<boolean>(key, ref)} />
-      {endText && <span>{endText}</span>}
-    </div>
-  )
-}
-
-/**
- * 分隔线渲染
- * @param index 索引
- * @param options 组件配置
- * @returns 分隔线组件
- */
-const renderDivider = (index: number, options: Record<string, any>) => {
-  if (options.orientation === 'vertical') {
-    return (
-      <div key={`divider-${index}`}>
-        <Divider
-          {...options}
-          className={options.transparent ? 'opacity-0' : ''}
-        // transparent={options.transparent ? 'true' : 'false'}
-        />
-      </div>
-    )
-  } else {
-    return (
-      <Divider
-        key={`divider-${index}`}
-        {...options}
-        className={options.transparent ? 'opacity-0' : ''}
-      // transparent={options.transparent ? 'true' : 'false'}
+    <div className={`w-${props.width || 200}px h-${props.height || 40}px`}>
+      <Input
+        key={inputKey}
+        {...inputProps}
+        className="w-full"
+        validate={validator}
+        onValueChange={(value) => {
+          if (componentRef[key]) {
+            componentRef[key].new = value
+          }
+        }}
       />
-    )
-  }
+    </div>
+  )
 }
 
 /**
- * 类型判断
+ * 渲染开关组件
  */
-const targetType = {
-  input: (options: Record<string, any>): options is RenderInputType => {
-    return options.componentType === ComponentType.INPUT
-  },
-  switch: (options: Record<string, any>): options is RenderSwitchType => {
-    return options.componentType === ComponentType.SWITCH
-  },
-  divider: (options: Record<string, any>): options is RenderDividerType => {
-    return options.componentType === ComponentType.DIVIDER
-  },
-  accordion: (options: Record<string, any>): options is RenderAccordionType => {
-    return options.componentType === ComponentType.ACCORDION
-  },
-  accordionItem: (options: Record<string, any>): options is RenderAccordionItemType => {
-    return options.componentType === ComponentType.ACCORDION_ITEM
-  }
-}
+function renderSwitch (
+  props: ApiSwitchProps,
+  { componentRef, key }: BaseComponentProps
+) {
 
-/**
- * 手风琴渲染
- * @param key 组件唯一标识符
- * @param data 组件配置
- * @param ref 组件数据
- * @returns 手风琴组件
- */
-const renderAccordion = (key: string, data: Record<string, any>, ref: Record<string, any>) => {
-  const { title, children, ...accordionOptions } = data
+  console.log('componentRef:', componentRef)
+  // 确保 componentRef 中存在对应的 key
+  if (!componentRef[key]) {
+    componentRef[key] = {
+      old: props.defaultSelected,
+      new: props.defaultSelected
+    }
+  }
+
   return (
-    <div key={key} className="w-full">
-      <Accordion title={title} {...accordionOptions}>
-        {children.map((
-          { componentType, key, title: itemTitle, validate, ...options }: Record<string, any>,
-          index: number
-        ) => {
-          handleValidate(options, validate)
-
-          /** 输入框 */
-          if (targetType.input(options)) {
-            cacheComponentData(key, options.defaultValue, ref)
-            return (
-              <AccordionItem key={`accordion-item-${index}`} className="w-full" title={itemTitle}>
-                {renderInput(key, options as RenderInputType, ref)}
-              </AccordionItem>
-            )
+    <div className="flex items-center gap-2">
+      {props.startText && <span>{props.startText}</span>}
+      <Switch
+        {...props}
+        onValueChange={(value) => {
+          if (componentRef[key]) {
+            componentRef[key].new = value
           }
+        }}
+      />
+      {props.endText && <span>{props.endText}</span>}
+    </div>
+  )
+}
 
-          /** 开关 */
-          if (componentType === ComponentType.SWITCH) {
-            cacheComponentData(key, options.defaultSelected, ref)
-            return (
-              <AccordionItem key={`accordion-item-${index}`} className="w-full" title={itemTitle}>
-                {renderSwitch(key, options, ref)}
-              </AccordionItem>
-            )
-          }
+/**
+ * 渲染高级手风琴组件
+ */
+function renderAccordionPro (
+  props: ApiAccordionProProps,
+  { componentRef }: BaseComponentProps
+) {
+  const [items, setItems] = useState([...props.data])
+  const { key, data, ...accordionProps } = props
 
-          /** 分隔线 */
-          if (componentType === ComponentType.DIVIDER) {
-            return (
-              <AccordionItem key={`accordion-item-${index}`} className="w-full" title={itemTitle}>
-                {renderDivider(index, options)}
-              </AccordionItem>
-            )
-          }
+  const handleAddItem = () => {
+    const template = JSON.parse(JSON.stringify(props.data[0]))
+    const newItem = {
+      ...template,
+      title: `${props.title} ${items.length + 1}`,
+      id: `${key}-${Date.now()}`
+    }
+    setItems(prev => [...prev, newItem])
+  }
+
+  return (
+    <div className="flex flex-col gap-4 w-full">
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={handleAddItem}
+          className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+        >
+          添加新卡片
+        </button>
+      </div>
+      <Accordion key={key} {...accordionProps}>
+        {items.map((item, cardIndex) => {
+          const itemKey = `${key}-${item.id || cardIndex}`
+          const list: JSX.Element[] = []
+
+          props.children?.forEach((childConfig) => {
+            if (childConfig.componentType !== ComponentType.ACCORDION_ITEM) return
+
+            childConfig.children?.forEach((child, index) => {
+              if (!child) return
+              const childKey = `${itemKey}-${child.key}-${index}`
+              const result = renderComponent(
+                { ...child, key: childKey },
+                { componentRef, key: childKey }
+              )
+              if (!result) return
+              list.push(
+                <div key={childKey}>
+                  {result}
+                </div>
+              )
+            })
+          })
+
+          return (
+            <AccordionItem
+              key={itemKey}
+              title={item.title}
+            >
+              <div className="flex flex-col gap-4">
+                {list}
+              </div>
+            </AccordionItem>
+          )
         })}
       </Accordion>
     </div>
@@ -268,167 +222,88 @@ const renderAccordion = (key: string, data: Record<string, any>, ref: Record<str
 }
 
 /**
- * 手风琴Pro渲染
- * @param key 组件唯一标识符
- * @param options 组件配置
- * @param ref 组件数据
- * @returns 手风琴Pro组件
+ * 组件渲染分发器
  */
-const renderAccordionPro = (
-  key: string,
-  options: Record<string, any>,
-  ref: Record<string, any>,
-  accordionData: any[],
-  setAccordionData: (data: any[]) => void
-) => {
-  const { data: _, children, ...accordionOptions } = options
+function renderComponent (
+  config: ComponentConfig,
+  props: BaseComponentProps
+): JSX.Element | null {
+  switch (config.componentType) {
+    case ComponentType.INPUT:
+      return renderInput(config, props)
+    case ComponentType.SWITCH:
+      return renderSwitch(config, props)
+    case ComponentType.DIVIDER:
+      const { componentType, key, ...dividerProps } = config
+      return <Divider {...dividerProps} className={config.transparent ? 'opacity-0' : ''} />
+    case ComponentType.ACCORDION:
+      return (
+        <Accordion {...config}>
+          {(config.children || []).map(child => (
+            <AccordionItem key={child.key} title={child.title}>
+              {renderComponent(child, props)}
+            </AccordionItem>
+          ))}
+        </Accordion>
+      )
+    case ComponentType.ACCORDION_ITEM:
+      const { key: itemKey, ...itemProps } = config
+      return (
+        <AccordionItem key={itemKey} {...itemProps}>
+          <div className="flex flex-col gap-4">
+            {config.children?.map((child, index) => {
+              const childKey = `${itemKey}-${child.key}-${index}`
+              return renderComponent(
+                { ...child, key: childKey },
+                { ...props, key: childKey }
+              )
+            })}
+          </div>
+        </AccordionItem>
+      )
+    case ComponentType.ACCORDION_PRO:
+      return renderAccordionPro(config, props)
+    default:
+      return null
+  }
+}
 
-  /** 渲染完成的手风琴卡片组 */
-  const accordionItems: JSX.Element[] = []
+// ==================== 主组件 ====================
+interface DynamicComponentRendererProps {
+  configs: ComponentConfig[]
+}
 
-  /** 每一次循环都是一个手风琴卡片组 */
-  accordionData.forEach((dataItem, i) => {
-    /** 手风琴卡片组中的组件 */
-    const itemData: JSX.Element[] = []
-    children.forEach((val: any) => {
-      const { componentType, key, title, validate, ...childrenOptions } = val
-      handleValidate(childrenOptions, validate)
+export function DynamicComponentRenderer ({ configs }: DynamicComponentRendererProps) {
+  const componentRef: ComponentRef = {}
 
-      if (componentType === ComponentType.INPUT) {
-        /** 获取dataItem中对应key的值 */
-        const defaultValue = dataItem[key] ?? childrenOptions.defaultValue
-        /** key的组成: 组件唯一标识符-data数据索引 */
-        const uniqueKey = `${key}-${i}`
+  // 初始化组件数据
+  useEffect(() => {
+    configs.forEach(config => {
+      const initialValue = config.componentType === ComponentType.SWITCH
+        ? (config as ApiSwitchProps).defaultSelected
+        : (config as ApiInputProps).defaultValue
 
-        cacheComponentData(uniqueKey, defaultValue, ref)
-        itemData.push(
-          renderInput(
-            uniqueKey,
-            {
-              ...childrenOptions,
-              defaultValue
-            },
-            ref
-          )
-        )
+      componentRef[config.key] = {
+        old: initialValue,
+        new: initialValue
       }
     })
-
-    /** 组成一个手风琴卡片组 */
-    accordionItems.push(
-      <AccordionItem key={`accordion-item-${i}`} className="w-full" title={dataItem.title}>
-        <div className="flex flex-col gap-4">
-          {itemData}
-        </div>
-      </AccordionItem>
-    )
-  })
+  }, [])
 
   return (
-    <div key={key} className="flex flex-col gap-4 w-full">
-      <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={() => {
-            /** 创建一个空的数据对象 */
-            const emptyData = {
-              title: '新的手风琴卡片组',
-              number: '',
-              gmail: ''
-            }
-            /** 添加到现有数据中 */
-            setAccordionData([...accordionData, emptyData])
-          }}
-          className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-        >
-          添加卡片组
-        </button>
-      </div>
-      <Accordion {...accordionOptions}>
-        {accordionItems}
-      </Accordion>
+    <div className="flex flex-wrap gap-4 w-full max-w-2xl px-4">
+      {configs.map(config => (
+        <div key={config.key} className="w-full">
+          {renderComponent(config, { key: config.key, componentRef })}
+        </div>
+      ))}
     </div>
   )
 }
 
-/**
- * 动态渲染组件
- * @param data 后端传递的组件数据
- */
-const renderComponent = (data: any[]) => {
-  /** 创建响应式数据存储手风琴数据 */
-  const [accordionData, setAccordionData] = useState<any[]>([])
-
-  /** 首次渲染时初始化手风琴数据 */
-  useEffect(() => {
-    const accordionProConfig = data.find(item => item.componentType === 'accordion-pro')
-    if (accordionProConfig) {
-      setAccordionData(accordionProConfig.data)
-    }
-  }, [])
-
-  /** 组件 */
-  const Component: any[] = []
-
-  /** 记录组件数据变化 */
-  const ref: Record<string, any> = {}
-
-  /** 监听 resize 事件来触发重新渲染 */
-  useEffect(() => {
-    const handleResize = () => {
-      // 这里需要重新渲染组件的逻辑
-    }
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-
-  data.forEach((val, index) => {
-    const { componentType, key, validate, ...options } = val
-    handleValidate(options, validate)
-
-    /** 输入框 */
-    if (targetType.input(options)) {
-      cacheComponentData(key, options.defaultValue, ref)
-      Component.push(renderInput(key, options, ref))
-      return
-    }
-
-    /** 开关 */
-    if (targetType.switch(options)) {
-      cacheComponentData(key, options.defaultSelected, ref)
-      Component.push(renderSwitch(key, options, ref))
-      return
-    }
-
-    /** 分隔线 */
-    if (targetType.divider(options)) {
-      Component.push(renderDivider(index, options))
-      return
-    }
-
-    /** 手风琴 */
-    if (targetType.accordion(options)) {
-      Component.push(renderAccordion(key, options, ref))
-      return
-    }
-
-    /** 手风琴Pro */
-    if (componentType === ComponentType.ACCORDION_PRO) {
-      Component.push(renderAccordionPro(key, options, ref, accordionData, setAccordionData))
-      return
-    }
-  })
-
-  /** 回调函数 调用后获取ref */
-  const getRef = () => ref
-
-  return { Component, getRef }
-}
-
-
-// 修改App组件的返回部分
+// 使用示例
 export default function App () {
-  const data = [
+  const data: ComponentConfig[] = [
     // {
     //   componentType: 'switch',
     //   key: 'switch',
@@ -480,7 +355,7 @@ export default function App () {
     //   transparent: false,
     // },
     {
-      componentType: 'accordion-pro',
+      componentType: ComponentType.ACCORDION_PRO,
       key: 'accordion-pro',
       title: '折叠面板',
       variant: 'bordered',
@@ -502,58 +377,47 @@ export default function App () {
       ],
       children: [
         {
-          title: '数字',
-          componentType: 'input',
+          componentType: ComponentType.ACCORDION_ITEM,
           key: 'number',
-          type: 'text',
-          label: '数字',
-          placeholder: '请输入数字',
-          isRequired: true,
-          isClearable: true,
-          color: 'primary',
-          validate: [{ min: 0, max: 100, error: '数字应在0-100之间' }]
-        },
-        {
-          title: '邮箱',
-          componentType: 'input',
-          key: 'email',
-          type: 'email',
-          label: '邮箱',
-          placeholder: '请输入邮箱',
-          defaultValue: '123@123.com',
-          isRequired: true,
-          isClearable: true,
-          color: 'primary',
-          validate: [
-            { regex: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$', error: '请输入有效的邮箱地址' },
-            { minLength: 5, maxLength: 50, error: '邮箱长度应在5-50个字符之间' }
+          title: '这是一个手风琴卡片组',
+          children: [
+            {
+              title: '数字',
+              componentType: ComponentType.INPUT,
+              key: 'number',
+              type: 'text',
+              label: '数字',
+              placeholder: '请输入数字',
+              isRequired: true,
+              isClearable: true,
+              color: 'primary',
+              rules: [{ min: 0, max: 100, error: '数字应在0-100之间' }]
+            },
+            {
+              title: '邮箱',
+              componentType: ComponentType.INPUT,
+              key: 'email',
+              type: 'email',
+              label: '邮箱',
+              placeholder: '请输入邮箱',
+              // defaultValue: '123@123.com',
+              isRequired: true,
+              isClearable: true,
+              color: 'primary',
+              rules: [
+                { regex: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$', error: '请输入有效的邮箱地址' },
+                { minLength: 5, maxLength: 50, error: '邮箱长度应在5-50个字符之间' }
+              ]
+            },
           ]
-        },
+        }
       ]
     }
   ]
 
-  const { Component, getRef } = renderComponent(data)
-
-  /** 处理测试按钮点击事件 */
-  const handleTestClick = () => {
-    const result = getRef()
-    console.log('组件数据:', result)
-  }
-
   return (
-    <div className="w-full h-screen flex items-center justify-center relative">
-      <button
-        onClick={handleTestClick}
-        className="absolute top-4 right-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-        type="button"
-      >
-        测试
-      </button>
-      <div className="flex flex-wrap gap-4 w-full max-w-2xl px-4">
-        {...Component}
-      </div>
+    <div className="w-full h-screen flex items-center justify-center">
+      <DynamicComponentRenderer configs={data} />
     </div>
   )
 }
-
