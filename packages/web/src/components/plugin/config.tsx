@@ -6,7 +6,7 @@ import { IoSettingsOutline } from 'react-icons/io5'
 import { RiPlugLine } from 'react-icons/ri'
 import { request } from '@/lib/request'
 import { DynamicComponentRenderer } from './dynamicComponents'
-import { Modal, ModalContent, ModalHeader, ModalBody } from '@heroui/modal'
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
 
 import type { ComponentConfig } from './dynamicComponents'
 
@@ -94,50 +94,30 @@ export const PluginConfig = ({
       scrollBehavior="inside"
       classNames={{
         base: "bg-white dark:bg-gray-900",
-        header: "border-b border-gray-100 dark:border-gray-800"
+        header: "border-b border-gray-100 dark:border-gray-800",
+        footer: "border-t border-gray-100 dark:border-gray-800"
       }}
     >
-      <ModalContent>
-        <ModalHeader>
-          <div className="flex items-center justify-between py-3 px-1">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-50/80 dark:bg-blue-900/20 transition-colors">
-                <IoSettingsOutline className="text-xl text-blue-600/90 dark:text-blue-400" />
+      <ModalContent className="max-h-[85vh]">
+        <ModalHeader className="shrink-0">
+          <div className="flex items-center py-1 px-1">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 flex items-center justify-center rounded-lg bg-blue-50/80 dark:bg-blue-900/20 transition-colors">
+                <IoSettingsOutline className="text-base text-blue-600/90 dark:text-blue-400" />
               </div>
               <div>
-                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                <h2 className="text-[15px] font-medium text-gray-900 dark:text-gray-100 leading-[18px]">
                   {name}
                 </h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-[14px]">
                   插件配置与管理
                 </p>
               </div>
             </div>
-            <div className="absolute right-8 top-6 flex items-center gap-3">
-              <Button
-                color="primary"
-                variant="flat"
-                size="md"
-                onPress={handleSave}
-                isDisabled={configs.length === 0}
-                className="px-5 h-10 min-w-[88px] font-medium bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400"
-              >
-                保存
-              </Button>
-              <Button
-                color="default"
-                variant="bordered"
-                size="md"
-                onPress={onClose}
-                className="px-5 h-10 min-w-[88px] font-medium border-gray-200 dark:border-gray-700"
-              >
-                取消
-              </Button>
-            </div>
           </div>
         </ModalHeader>
-        <ModalBody>
-          <div className="min-h-[400px] py-6">
+        <ModalBody className="flex-1 overflow-auto">
+          <div className="h-[480px] py-5">
             {loading ? (
               <div className="h-full flex items-center justify-center">
                 <div className="flex flex-col items-center gap-3">
@@ -154,8 +134,8 @@ export const PluginConfig = ({
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1.5">该插件当前没有需要配置的选项</p>
               </div>
             ) : (
-              <div className="space-y-5">
-                <div className="p-7 bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 transition-colors">
+              <div className="h-full space-y-4 overflow-y-auto custom-scrollbar">
+                <div className="p-6 bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 transition-colors">
                   <DynamicComponentRenderer
                     configs={configs}
                     onChange={handleConfigChange}
@@ -165,6 +145,29 @@ export const PluginConfig = ({
             )}
           </div>
         </ModalBody>
+        <ModalFooter className="shrink-0 py-3">
+          <div className="flex justify-end gap-2">
+            <Button
+              color="default"
+              variant="bordered"
+              size="md"
+              onPress={onClose}
+              className="px-5 h-10 min-w-[88px] font-medium border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+            >
+              取消
+            </Button>
+            <Button
+              color="primary"
+              variant="flat"
+              size="md"
+              onPress={handleSave}
+              isDisabled={configs.length === 0}
+              className="px-5 h-10 min-w-[88px] font-medium bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400"
+            >
+              保存
+            </Button>
+          </div>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   )
