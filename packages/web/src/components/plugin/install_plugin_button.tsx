@@ -177,6 +177,8 @@ export function InstallPluginButton ({ plugin }: InstallPluginButtonProps) {
         onClose={() => {
           setIsInstalling(false)
           setIsOpen(false)
+          // 通知父组件需要刷新
+          window.dispatchEvent(new Event('plugin-list-update'))
         }}
         taskId={taskId}
         plugin={plugin}

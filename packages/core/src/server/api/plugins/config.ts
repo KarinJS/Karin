@@ -98,5 +98,15 @@ const saveConfig: RequestHandler = async (req, res) => {
   createSuccessResponse(res, null)
 }
 
+/**
+ * 判断插件是否存在配置
+ */
+const isConfigExist: RequestHandler = async (req, res) => {
+  const options = req.body as BaseConfig
+  const configPath = getConfigPath(options)
+  createSuccessResponse(res, typeof configPath === 'string')
+}
+
 router.post('/plugin/config/get', getConfig)
 router.post('/plugin/config/save', saveConfig)
+router.post('/plugin/config/is-exist', isConfigExist)

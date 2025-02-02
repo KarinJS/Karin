@@ -5,7 +5,6 @@ import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
 import { FaEye, FaTrash } from 'react-icons/fa6'
 import { toast } from 'react-hot-toast'
-import path from 'path'
 
 interface Props {
   isOpen: boolean

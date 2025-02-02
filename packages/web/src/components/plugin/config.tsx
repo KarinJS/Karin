@@ -28,7 +28,6 @@ export const PluginConfig = ({
   name,
   type,
   onClose,
-  onViewConfig
 }: PluginConfigProps) => {
   const [loading, setLoading] = useState(false)
   const [configs, setConfigs] = useState<ComponentConfig[]>([])

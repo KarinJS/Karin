@@ -8,7 +8,7 @@ import type { KarinBase } from '@/types/plugins'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
 import { toast } from 'react-hot-toast'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { InstallLogModal } from '@/components/plugin/install_log_modal'
 
 interface PluginInfoModalProps {
@@ -46,6 +46,8 @@ export function PluginInfoModal ({
   const showViewApps = plugin.type.toLowerCase() === 'app' && onViewApps
   const [isUninstalling, setIsUninstalling] = useState(false)
   const [taskId, setTaskId] = useState<string>('')
+  const [hasConfig, setHasConfig] = useState<boolean>(false)
+  const [checkingConfig, setCheckingConfig] = useState<boolean>(false)
 
   const { loading: uninstallLoading, run: handleUninstall } = useRequest<{ taskId: string }, any>(
     async () => {
@@ -67,6 +69,38 @@ export function PluginInfoModal ({
       }
     }
   )
+
+  // 检查配置文件是否存在
+  const { loading: configCheckLoading, run: checkConfig } = useRequest(
+    async () => {
+      const result = await request.serverPost<boolean, { name: string; type: string }>(
+        '/api/v1/plugin/config/is-exist',
+        {
+          name: plugin.name,
+          type: plugin.type
+        }
+      )
+      setHasConfig(result)
+      return result
+    },
+    {
+      manual: true,
+      onError: (error) => {
+        toast.error('检查配置文件失败: ' + error.message)
+        setHasConfig(false)
+      }
+    }
+  )
+
+  // 组件挂载和插件变化时检查配置
+  useEffect(() => {
+    if (plugin && plugin.type.toLowerCase() !== 'app') {
+      setCheckingConfig(true)
+      Promise.resolve(checkConfig()).finally(() => {
+        setCheckingConfig(false)
+      })
+    }
+  }, [plugin])
 
   return (
     <>
@@ -167,6 +201,8 @@ export function PluginInfoModal ({
                   variant="light"
                   onPress={onViewConfig}
                   startContent={<FaGear />}
+                  isLoading={checkingConfig}
+                  isDisabled={!hasConfig}
                 >
                   配置
                 </Button>

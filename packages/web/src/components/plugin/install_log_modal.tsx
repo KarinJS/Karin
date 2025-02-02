@@ -67,7 +67,7 @@ export function InstallLogModal ({ isOpen, onClose, taskId, plugin, task: initia
       isOpen={isOpen}
       onClose={onClose}
       size="2xl"
-      isDismissable={false}
+      isDismissable={true}
     >
       <ModalContent>
         <ModalHeader className="flex gap-1">
@@ -99,7 +99,6 @@ export function InstallLogModal ({ isOpen, onClose, taskId, plugin, task: initia
           <Button
             color="primary"
             onPress={onClose}
-            isDisabled={currentTask?.status === 'running'}
           >
             关闭
           </Button>

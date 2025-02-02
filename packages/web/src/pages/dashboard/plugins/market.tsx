@@ -1,9 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
 import { Pagination } from '@heroui/pagination'
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/table'
-import { DownloadPluginButton } from '@/components/plugin/download_plugin_button'
 import { Button } from '@heroui/button'
 import { FaUser } from 'react-icons/fa6'
 import { FaGithub, FaGitter, FaNpm } from 'react-icons/fa6'
@@ -16,7 +15,6 @@ import { Tooltip } from '@heroui/tooltip'
 import { toast } from 'react-hot-toast'
 import type { KarinBase } from '@/types/plugins'
 import { InstalledPluginButton } from '@/components/plugin/installed_plugin_button'
-import { useNavigate } from 'react-router-dom'
 import { InstallPluginButton } from '@/components/plugin/install_plugin_button'
 import { Task, TaskList } from '@/components/plugin/task_list'
 import { TaskListModal } from '@/components/plugin/task_list_modal'
@@ -226,11 +224,26 @@ export default function MarketPage () {
   const [page, setPage] = useState(1)
   const [activeTask, setActiveTask] = useState<string | null>(null)
   const [isTaskListOpen, setIsTaskListOpen] = useState(false)
+  const [isUninstalling, setIsUninstalling] = useState(false)
 
   // 获取在线插件列表
-  const { data: plugins = [], error: onlineError, loading: onlineLoading, run: refreshPlugins } = useRequest<KarinBase<'all'>, [{ time: number }]>(
-    () => request.serverPost('/api/v1/plugin/index', { time: 20 * 1000 }),
-    { refreshDeps: [] }
+  const { data: plugins = [], error: onlineError, loading: onlineLoading, refresh: refreshPlugins } = useRequest<KarinBase<'all'>, any>(
+    async () => {
+      console.log('🔄 正在刷新插件列表...')
+      return request.serverPost<KarinBase<'all'>, { time: number }>('/api/v1/plugin/index', { time: 20 * 1000 }).then(res => {
+        console.log('✅ 插件列表刷新成功:', res)
+        return res
+      }).catch(err => {
+        console.error('❌ 插件列表刷新失败:', err)
+        throw err
+      })
+    },
+    {
+      refreshDeps: [],
+      onSuccess: (data) => {
+        console.log('📦 新的插件列表数据:', data)
+      }
+    }
   )
 
   // 获取任务列表
@@ -240,7 +253,7 @@ export default function MarketPage () {
       pollingInterval: 1000,
       pollingWhenHidden: false,
       onSuccess: (data) => {
-        // 只在任务首次创建时设置最小化状态
+        // 移除自动刷新逻辑,只保留最小化状态的设置
         data.forEach(task => {
           const existingTask = tasks.find(t => t.id === task.id)
           if (!existingTask) {
@@ -261,9 +274,48 @@ export default function MarketPage () {
     setActiveTask(taskId)
   }
 
+  const handleCloseTaskLog = () => {
+    console.log('🔍 触发关闭任务日志窗口')
+    setActiveTask(null)
+    console.log('⏳ 准备延迟刷新...')
+    setTimeout(() => {
+      console.log('🚀 执行刷新操作')
+      refreshPlugins()
+    }, 500)
+  }
+
+  const handleCloseInstallLog = () => {
+    console.log('🔍 触发关闭安装日志窗口')
+    setActiveTask(null)
+    setIsUninstalling(false)
+    console.log('⏳ 准备延迟刷新...')
+    setTimeout(() => {
+      console.log('🚀 执行刷新操作')
+      refreshPlugins()
+    }, 500)
+  }
+
+  // 添加一个 useEffect 来监听 activeTask 的变化
+  useEffect(() => {
+    console.log('🎯 activeTask 发生变化:', activeTask)
+  }, [activeTask])
+
   // 获取当前活动任务
   const activeTaskData = activeTask ? tasks.find(t => t.id === activeTask) : undefined
   const activeTaskPlugin = activeTaskData ? plugins.find(p => p.name === activeTaskData.name) : undefined
+
+  // 在组件顶部添加事件监听
+  useEffect(() => {
+    const handlePluginUpdate = () => {
+      console.log('🔄 收到插件更新事件，准备刷新列表...')
+      refreshPlugins()
+    }
+
+    window.addEventListener('plugin-list-update', handlePluginUpdate)
+    return () => {
+      window.removeEventListener('plugin-list-update', handlePluginUpdate)
+    }
+  }, [refreshPlugins])
 
   if (onlineError) {
     return <div className="text-center">{onlineError.message}</div>
@@ -293,7 +345,7 @@ export default function MarketPage () {
         <Button
           variant="bordered"
           size="sm"
-          onPress={() => refreshPlugins({ time: 20 * 1000 })}
+          onPress={() => refreshPlugins()}
           className="min-w-[88px] font-medium border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
           startContent={<IoRefreshOutline className="text-lg" />}
         >
@@ -391,7 +443,14 @@ export default function MarketPage () {
       {activeTaskData && activeTaskPlugin && activeTask && (
         <InstallLogModal
           isOpen={true}
-          onClose={() => setActiveTask(null)}
+          onClose={() => {
+            console.log('📢 InstallLogModal onClose 被调用')
+            if (activeTaskData.type === 'uninstall') {
+              handleCloseTaskLog()
+            } else {
+              handleCloseInstallLog()
+            }
+          }}
           taskId={activeTask}
           plugin={activeTaskPlugin}
           task={{

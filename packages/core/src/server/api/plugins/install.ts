@@ -173,28 +173,11 @@ async function installPluginTask (task: InstallTask, url?: string) {
     task.logs.push('-------------------')
     task.logs.push('🎉 安装完成!')
     task.status = 'completed'
-
-    // 延迟5秒后删除任务
-    setTimeout(() => {
-      const taskToRemove = taskQueue.get(task.id)
-      if (taskToRemove && taskToRemove.status === 'completed') {
-        taskQueue.delete(task.id)
-      }
-    }, 5000)
   } catch (error) {
     task.status = 'failed'
     task.error = (error as Error).message
     task.logs.push('-------------------')
     task.logs.push(`❌ 安装失败: ${(error as Error).message}`)
-
-    // 延迟5秒后删除失败的任务
-    setTimeout(() => {
-      const taskToRemove = taskQueue.get(task.id)
-      if (taskToRemove && taskToRemove.status === 'failed') {
-        taskQueue.delete(task.id)
-      }
-    }, 5000)
-
     throw error
   }
 }
@@ -289,28 +272,11 @@ async function uninstallPluginTask (task: InstallTask) {
     task.logs.push('🎉 卸载完成!')
     task.logs.push('⚠️ 建议重启 Bot 以使更改生效')
     task.status = 'completed'
-
-    // 延迟5秒后删除任务
-    setTimeout(() => {
-      const taskToRemove = taskQueue.get(task.id)
-      if (taskToRemove && taskToRemove.status === 'completed') {
-        taskQueue.delete(task.id)
-      }
-    }, 5000)
   } catch (error) {
     task.status = 'failed'
     task.error = (error as Error).message
     task.logs.push('-------------------')
     task.logs.push(`❌ 卸载失败: ${(error as Error).message}`)
-
-    // 延迟5秒后删除失败的任务
-    setTimeout(() => {
-      const taskToRemove = taskQueue.get(task.id)
-      if (taskToRemove && taskToRemove.status === 'failed') {
-        taskQueue.delete(task.id)
-      }
-    }, 5000)
-
     throw error
   }
 }
