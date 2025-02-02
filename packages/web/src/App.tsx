@@ -6,8 +6,6 @@ import DashboardLayout from '@/pages/dashboard/layout'
 import IndexPage from '@/pages/dashboard'
 // Config Page
 import ConfigPage from '@/pages/dashboard/config'
-// Plugin Page
-import PluginsPage from '@/pages/dashboard/plugins'
 // Plugin Market
 import PluginMarketPage from '@/pages/dashboard/plugins/market'
 // Sandbox Page

@@ -1,4 +1,6 @@
 import './config'
+import './admin'
+import './install'
 import path from 'node:path'
 import { testGithub } from './test-url'
 import { getPlugins } from '@/plugin/list'
@@ -15,7 +17,7 @@ import type { pluginLists } from '@/types/server/plugins'
  */
 const getOnlinePluginList: RequestHandler = async (_req, res) => {
   try {
-    const [list, createUrl, localPlugins] = await Promise.all([fetchPluginList(), testGithub(), getPlugins('all', true)])
+    const [list, createUrl, localPlugins] = await Promise.all([fetchPluginList(), testGithub(), getPlugins('all', true, true)])
 
     const pluginMap = new Map<string, pluginLists>()
 
@@ -116,36 +118,6 @@ const getPluginListRouter: RequestHandler = async (req, res) => {
 }
 
 /**
- * 更新插件
- */
-const updatePlugin: RequestHandler = async (req, res) => {
-  try {
-    const { name } = req.body
-    console.log(`updatePlugin: ${name}`)
-    // 实现插件更新逻辑
-    createSuccessResponse(res, { success: true })
-  } catch (error) {
-    createServerErrorResponse(res, (error as Error).message)
-    logger.error(error)
-  }
-}
-
-/**
- * 卸载插件
- */
-const uninstallPlugin: RequestHandler = async (req, res) => {
-  try {
-    const { name } = req.body
-    console.log(`uninstallPlugin: ${name}`)
-    // 实现插件卸载逻辑
-    createSuccessResponse(res, { success: true })
-  } catch (error) {
-    createServerErrorResponse(res, (error as Error).message)
-    logger.error(error)
-  }
-}
-
-/**
  * 获取应用插件的应用列表
  */
 const getPluginApps: RequestHandler = async (req, res) => {
@@ -167,7 +139,5 @@ const getPluginApps: RequestHandler = async (req, res) => {
 
 router.post('/plugin/index', getOnlinePluginList)
 router.post('/plugin/list', getPluginListRouter)
-router.post('/plugin/update', updatePlugin)
-router.post('/plugin/uninstall', uninstallPlugin)
 router.post('/plugin/apps', getPluginApps)
 router.post('/plugin/file', handlePluginFile)

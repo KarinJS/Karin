@@ -2,8 +2,12 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@herou
 import { Button } from "@heroui/button"
 import { Chip } from "@heroui/chip"
 import { TbApps } from "react-icons/tb"
-import { FaGear } from "react-icons/fa6"
+import { FaGear, FaGithub, FaGitter, FaNpm } from "react-icons/fa6"
+import { Link } from "@heroui/link"
 import type { KarinBase } from '@/types/plugins'
+import { useRequest } from 'ahooks'
+import { request } from '@/lib/request'
+import { toast } from 'react-hot-toast'
 
 interface PluginInfoModalProps {
   isOpen: boolean
@@ -13,6 +17,19 @@ interface PluginInfoModalProps {
   onUninstall: () => void
   onViewApps?: () => void
   onViewConfig: () => void
+}
+
+const getRepoIcon = (type: string) => {
+  switch (type.toLowerCase()) {
+    case 'github':
+      return <FaGithub className="text-lg" />
+    case 'gitee':
+      return <FaGitter className="text-lg text-red-500" />
+    case 'npm':
+      return <FaNpm className="text-lg text-[#CB3837]" />
+    default:
+      return null
+  }
 }
 
 export function PluginInfoModal ({
@@ -25,6 +42,29 @@ export function PluginInfoModal ({
   onViewConfig
 }: PluginInfoModalProps) {
   const showViewApps = plugin.type.toLowerCase() === 'app' && onViewApps
+
+  const { loading: uninstallLoading, run: handleUninstall } = useRequest<{ taskId: string }, any>(
+    async () => {
+      if (plugin.type.toLowerCase() === 'app') {
+        throw new Error('不支持卸载 App 类型的插件')
+      }
+      const { taskId } = await request.serverPost<{ taskId: string }, { name: string; type: string }>('/api/v1/plugin/uninstall', {
+        name: plugin.name,
+        type: plugin.type
+      })
+      return { taskId }
+    },
+    {
+      manual: true,
+      onSuccess: () => {
+        toast.success('卸载任务已创建')
+        onUninstall()
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      }
+    }
+  )
 
   return (
     <Modal
@@ -53,6 +93,40 @@ export function PluginInfoModal ({
                 </Chip>
               </div>
             )}
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-default-600">仓库源</span>
+              <div className="flex items-center gap-2">
+                {Array.isArray(plugin.repo) && plugin.repo.length > 0 ? (
+                  plugin.repo.map((repo, index) => (
+                    <Link
+                      key={repo.url + index}
+                      className="text-default-600 hover:text-default-900 transition-colors inline-flex"
+                      href={repo.url}
+                      isExternal
+                    >
+                      {getRepoIcon(repo.type)}
+                    </Link>
+                  ))
+                ) : (
+                  <span className="text-sm text-default-400">-</span>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-default-600">开源许可</span>
+              {plugin.license.url ? (
+                <Link
+                  className="text-xs text-primary-500 hover:text-primary-600 inline-flex items-center"
+                  href={plugin.license.url}
+                  isExternal
+                  showAnchorIcon
+                >
+                  {plugin.license.name}
+                </Link>
+              ) : (
+                <span className="text-sm text-default-400">{plugin.license.name || '-'}</span>
+              )}
+            </div>
           </div>
         </ModalBody>
         <ModalFooter>
@@ -68,7 +142,9 @@ export function PluginInfoModal ({
             <Button
               color="danger"
               variant="light"
-              onPress={onUninstall}
+              onPress={handleUninstall}
+              isLoading={uninstallLoading}
+              isDisabled={plugin.type.toLowerCase() === 'app'}
             >
               卸载
             </Button>

@@ -4,15 +4,23 @@ import { request } from '@/lib/request'
 import { Pagination } from '@heroui/pagination'
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/table'
 import { DownloadPluginButton } from '@/components/plugin/download_plugin_button'
+import { Button } from '@heroui/button'
 import { FaUser } from 'react-icons/fa6'
 import { FaGithub, FaGitter, FaNpm } from 'react-icons/fa6'
 import { TbApps } from 'react-icons/tb'
+import { IoRefreshOutline, IoListOutline, IoCloudUploadOutline } from 'react-icons/io5'
 import { Link } from '@heroui/link'
 import { Spinner } from '@heroui/spinner'
 import { Chip } from '@heroui/chip'
 import { Tooltip } from '@heroui/tooltip'
+import { toast } from 'react-hot-toast'
 import type { KarinBase } from '@/types/plugins'
 import { InstalledPluginButton } from '@/components/plugin/installed_plugin_button'
+import { useNavigate } from 'react-router-dom'
+import { InstallPluginButton } from '@/components/plugin/install_plugin_button'
+import { Task, TaskList } from '@/components/plugin/task_list'
+import { TaskListModal } from '@/components/plugin/task_list_modal'
+import { InstallLogModal } from '@/components/plugin/install_log_modal'
 
 type TableColumnAlign = 'center' | 'start' | 'end'
 type TableCellAlign = 'center' | 'left' | 'right' | 'justify' | 'char'
@@ -52,18 +60,6 @@ const columns: Column[] = [
     key: 'author',
     label: '作者',
     width: 200,
-  },
-  {
-    key: 'repo',
-    label: '仓库源',
-    width: 60,
-    columnAlign: 'center',
-    cellAlign: 'center',
-  },
-  {
-    key: 'license',
-    label: '开源许可',
-    width: 120,
   },
   {
     key: 'installed',
@@ -191,26 +187,7 @@ const renderCell = (
           </p>
         </div>
       )
-    case 'repo':
-      if (Array.isArray(item.repo) && item.repo.length > 0) {
-        return (
-          <div className="flex items-center gap-2 justify-center">
-            {item.repo.map((repo, index) => (
-              <Link
-                key={repo.url + index}
-                className="text-default-600 hover:text-default-900 transition-colors inline-flex"
-                href={repo.url}
-                isExternal
-              >
-                {getRepoIcon(repo.type)}
-              </Link>
-            ))}
-          </div>
-        )
-      }
-      return <div className="text-sm truncate text-default-600">-</div>
     case 'installed':
-      console.log(item.installed)
       return (
         <Chip
           color={item.installed ? "success" : "default"}
@@ -227,25 +204,10 @@ const renderCell = (
           {item.installed ? (
             <InstalledPluginButton plugin={item} />
           ) : (
-            <DownloadPluginButton plugin={item} installed={item.installed} />
+            <InstallPluginButton plugin={item} />
           )}
         </div>
       )
-    case 'license':
-      if (item.license.url) {
-        return (
-          <Link
-            className="text-xs text-primary-500 hover:text-primary-600 inline-flex items-center"
-            href={item.license.url}
-            isExternal
-            showAnchorIcon
-          >
-            {item.license.name}
-          </Link>
-        )
-      }
-      /** 返回空文本- */
-      return <div className="text-sm truncate">-</div>
     case 'version':
       return (
         <div className="text-xs font-mono text-default-600 bg-default-50 px-1.5 py-0.5 rounded">
@@ -253,17 +215,40 @@ const renderCell = (
         </div>
       )
     default:
-      return <div className="text-xs truncate">{item[columnKey]}</div>
+      if (typeof item[columnKey] === 'string') {
+        return <div className="text-xs truncate">{item[columnKey]}</div>
+      }
+      return <div className="text-xs truncate">-</div>
   }
 }
 
 export default function MarketPage () {
   const [page, setPage] = useState(1)
+  const [activeTask, setActiveTask] = useState<string | null>(null)
+  const [isTaskListOpen, setIsTaskListOpen] = useState(false)
 
   // 获取在线插件列表
-  const { data: plugins = [], error: onlineError, loading: onlineLoading } = useRequest<KarinBase<'all'>, [{ time: number }]>(
+  const { data: plugins = [], error: onlineError, loading: onlineLoading, run: refreshPlugins } = useRequest<KarinBase<'all'>, [{ time: number }]>(
     () => request.serverPost('/api/v1/plugin/index', { time: 20 * 1000 }),
     { refreshDeps: [] }
+  )
+
+  // 获取任务列表
+  const { data: tasks = [], refresh: refreshTasks } = useRequest<Task[], any>(
+    () => request.serverPost<Task[], null>('/api/v1/plugin/task/list'),
+    {
+      pollingInterval: 1000,
+      pollingWhenHidden: false,
+      onSuccess: (data) => {
+        // 只在任务首次创建时设置最小化状态
+        data.forEach(task => {
+          const existingTask = tasks.find(t => t.id === task.id)
+          if (!existingTask) {
+            task.minimized = activeTask !== task.id
+          }
+        })
+      }
+    }
   )
 
   const pageSize = 10
@@ -272,12 +257,49 @@ export default function MarketPage () {
     [plugins, page],
   )
 
+  const handleMaximize = (taskId: string) => {
+    setActiveTask(taskId)
+  }
+
+  // 获取当前活动任务
+  const activeTaskData = activeTask ? tasks.find(t => t.id === activeTask) : undefined
+  const activeTaskPlugin = activeTaskData ? plugins.find(p => p.name === activeTaskData.name) : undefined
+
   if (onlineError) {
     return <div className="text-center">{onlineError.message}</div>
   }
 
   return (
     <div className="h-full flex flex-col">
+      <div className="flex-shrink-0 flex justify-end gap-2 pt-2">
+        <Button
+          variant="bordered"
+          size="sm"
+          onPress={() => setIsTaskListOpen(true)}
+          className="min-w-[88px] font-medium border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+          startContent={<IoListOutline className="text-lg" />}
+        >
+          任务列表 {tasks.length > 0 && `(${tasks.length})`}
+        </Button>
+        <Button
+          variant="bordered"
+          size="sm"
+          onPress={() => toast.error('更新管理功能暂不支持')}
+          className="min-w-[88px] font-medium border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+          startContent={<IoCloudUploadOutline className="text-lg" />}
+        >
+          更新管理
+        </Button>
+        <Button
+          variant="bordered"
+          size="sm"
+          onPress={() => refreshPlugins({ time: 20 * 1000 })}
+          className="min-w-[88px] font-medium border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+          startContent={<IoRefreshOutline className="text-lg" />}
+        >
+          刷新
+        </Button>
+      </div>
       <Table
         aria-label="Plugin List"
         shadow="none"
@@ -356,6 +378,28 @@ export default function MarketPage () {
           )}
         </TableBody>
       </Table>
+      <TaskList
+        onMaximize={handleMaximize}
+        tasks={tasks.filter(task => task.minimized)}
+      />
+      <TaskListModal
+        isOpen={isTaskListOpen}
+        onClose={() => setIsTaskListOpen(false)}
+        tasks={tasks}
+        onMaximize={handleMaximize}
+      />
+      {activeTaskData && activeTaskPlugin && activeTask && (
+        <InstallLogModal
+          isOpen={true}
+          onClose={() => setActiveTask(null)}
+          taskId={activeTask}
+          plugin={activeTaskPlugin}
+          task={{
+            ...activeTaskData,
+            logs: activeTaskData.logs || []
+          }}
+        />
+      )}
     </div>
   )
 }
