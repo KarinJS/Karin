@@ -19,7 +19,17 @@ export function InstallPluginButton ({ plugin }: InstallPluginButtonProps) {
   const [isInstalling, setIsInstalling] = useState(false)
   const [taskId, setTaskId] = useState<string>('')
 
-  const { loading, run: handleInstall } = useRequest<{ taskId: string }, any>(
+  // 获取任务状态
+  const { data: task } = useRequest(
+    () => request.serverPost<Task, { taskId: string }>('/api/v1/plugin/task', { taskId }),
+    {
+      pollingInterval: 1000,
+      pollingWhenHidden: false,
+      ready: !!taskId && isInstalling,
+    }
+  )
+
+  const { loading, run: handleInstall } = useRequest(
     async () => {
       const { taskId } = await request.serverPost<{ taskId: string }, { name: string; type: string; url: string }>('/api/v1/plugin/install', {
         name: plugin.name,
@@ -170,7 +180,7 @@ export function InstallPluginButton ({ plugin }: InstallPluginButtonProps) {
         }}
         taskId={taskId}
         plugin={plugin}
-        task={{
+        task={task || {
           id: taskId,
           name: plugin.name,
           type: 'install',

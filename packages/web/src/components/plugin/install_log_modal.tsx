@@ -4,6 +4,7 @@ import { Button } from '@heroui/button'
 import { request } from '@/lib/request'
 import { FaWindowMinimize } from 'react-icons/fa'
 import type { KarinBase } from '@/types/plugins'
+import { useRequest } from 'ahooks'
 
 interface Task {
   id: string
@@ -20,18 +21,31 @@ interface InstallLogModalProps {
   onClose: () => void
   taskId: string
   plugin: KarinBase<'all'>[number]
-  task: Task | undefined
+  task?: Task
 }
 
-export function InstallLogModal ({ isOpen, onClose, taskId, plugin, task }: InstallLogModalProps) {
+export function InstallLogModal ({ isOpen, onClose, taskId, plugin, task: initialTask }: InstallLogModalProps) {
   const logEndRef = useRef<HTMLDivElement>(null)
+
+  // 获取任务状态
+  const { data: currentTask = initialTask } = useRequest<Task, [{ taskId: string }]>(
+    async () => {
+      const response = await request.serverPost<Task, { taskId: string }>('/api/v1/plugin/task', { taskId })
+      return response
+    },
+    {
+      pollingInterval: 1000,
+      pollingWhenHidden: false,
+      ready: !!taskId && isOpen,
+    }
+  )
 
   // 自动滚动到底部
   useEffect(() => {
-    if (task?.logs.length) {
+    if (currentTask?.logs?.length) {
       logEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
-  }, [task?.logs])
+  }, [currentTask?.logs])
 
   const handleMinimize = async () => {
     await request.serverPost('/api/v1/plugin/task/status', {
@@ -39,6 +53,13 @@ export function InstallLogModal ({ isOpen, onClose, taskId, plugin, task }: Inst
       minimized: true
     })
     onClose()
+  }
+
+  const getTitle = () => {
+    if (currentTask?.type === 'uninstall') {
+      return '卸载插件:'
+    }
+    return '安装插件:'
   }
 
   return (
@@ -50,14 +71,14 @@ export function InstallLogModal ({ isOpen, onClose, taskId, plugin, task }: Inst
     >
       <ModalContent>
         <ModalHeader className="flex gap-1">
-          <span>安装插件:</span>
+          <span>{getTitle()}</span>
           <span className="font-mono text-primary-500">{plugin.name}</span>
         </ModalHeader>
 
         <ModalBody>
           <div className="h-[400px] w-full overflow-auto">
             <div className="font-mono text-sm whitespace-pre-wrap">
-              {task?.logs.map((log, index) => (
+              {currentTask?.logs?.map((log, index) => (
                 <div key={index} className="py-0.5">
                   {log}
                 </div>
@@ -78,7 +99,7 @@ export function InstallLogModal ({ isOpen, onClose, taskId, plugin, task }: Inst
           <Button
             color="primary"
             onPress={onClose}
-            isDisabled={task?.status === 'running'}
+            isDisabled={currentTask?.status === 'running'}
           >
             关闭
           </Button>

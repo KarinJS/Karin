@@ -8,6 +8,8 @@ import type { KarinBase } from '@/types/plugins'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
 import { toast } from 'react-hot-toast'
+import { useState } from 'react'
+import { InstallLogModal } from '@/components/plugin/install_log_modal'
 
 interface PluginInfoModalProps {
   isOpen: boolean
@@ -42,6 +44,8 @@ export function PluginInfoModal ({
   onViewConfig
 }: PluginInfoModalProps) {
   const showViewApps = plugin.type.toLowerCase() === 'app' && onViewApps
+  const [isUninstalling, setIsUninstalling] = useState(false)
+  const [taskId, setTaskId] = useState<string>('')
 
   const { loading: uninstallLoading, run: handleUninstall } = useRequest<{ taskId: string }, any>(
     async () => {
@@ -52,14 +56,12 @@ export function PluginInfoModal ({
         name: plugin.name,
         type: plugin.type
       })
+      setTaskId(taskId)
+      setIsUninstalling(true)
       return { taskId }
     },
     {
       manual: true,
-      onSuccess: () => {
-        toast.success('卸载任务已创建')
-        onUninstall()
-      },
       onError: (error) => {
         toast.error(error.message)
       }
@@ -67,110 +69,130 @@ export function PluginInfoModal ({
   )
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onOpenChange={onClose}
-      title="插件配置"
-    >
-      <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">
-          <h3 className="text-lg font-semibold">{plugin.name}</h3>
-          <p className="text-sm text-default-600">{plugin.description}</p>
-        </ModalHeader>
-        <ModalBody>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-default-600">当前版本</span>
-              <Chip size="sm" variant="flat" color="primary">
-                {plugin.version}
-              </Chip>
-            </div>
-            {plugin.latestVersion && plugin.latestVersion !== plugin.version && (
+    <>
+      <Modal
+        isOpen={isOpen && !isUninstalling}
+        onOpenChange={onClose}
+        title="插件配置"
+      >
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">
+            <h3 className="text-lg font-semibold">{plugin.name}</h3>
+            <p className="text-sm text-default-600">{plugin.description}</p>
+          </ModalHeader>
+          <ModalBody>
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-default-600">最新版本</span>
-                <Chip size="sm" variant="flat" color="success">
-                  {plugin.latestVersion}
+                <span className="text-sm text-default-600">当前版本</span>
+                <Chip size="sm" variant="flat" color="primary">
+                  {plugin.version}
                 </Chip>
               </div>
-            )}
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-default-600">仓库源</span>
-              <div className="flex items-center gap-2">
-                {Array.isArray(plugin.repo) && plugin.repo.length > 0 ? (
-                  plugin.repo.map((repo, index) => (
-                    <Link
-                      key={repo.url + index}
-                      className="text-default-600 hover:text-default-900 transition-colors inline-flex"
-                      href={repo.url}
-                      isExternal
-                    >
-                      {getRepoIcon(repo.type)}
-                    </Link>
-                  ))
+              {plugin.latestVersion && plugin.latestVersion !== plugin.version && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-default-600">最新版本</span>
+                  <Chip size="sm" variant="flat" color="success">
+                    {plugin.latestVersion}
+                  </Chip>
+                </div>
+              )}
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-default-600">仓库源</span>
+                <div className="flex items-center gap-2">
+                  {Array.isArray(plugin.repo) && plugin.repo.length > 0 ? (
+                    plugin.repo.map((repo, index) => (
+                      <Link
+                        key={repo.url + index}
+                        className="text-default-600 hover:text-default-900 transition-colors inline-flex"
+                        href={repo.url}
+                        isExternal
+                      >
+                        {getRepoIcon(repo.type)}
+                      </Link>
+                    ))
+                  ) : (
+                    <span className="text-sm text-default-400">-</span>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-default-600">开源许可</span>
+                {plugin.license.url ? (
+                  <Link
+                    className="text-xs text-primary-500 hover:text-primary-600 inline-flex items-center"
+                    href={plugin.license.url}
+                    isExternal
+                    showAnchorIcon
+                  >
+                    {plugin.license.name}
+                  </Link>
                 ) : (
-                  <span className="text-sm text-default-400">-</span>
+                  <span className="text-sm text-default-400">{plugin.license.name || '-'}</span>
                 )}
               </div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-default-600">开源许可</span>
-              {plugin.license.url ? (
-                <Link
-                  className="text-xs text-primary-500 hover:text-primary-600 inline-flex items-center"
-                  href={plugin.license.url}
-                  isExternal
-                  showAnchorIcon
+          </ModalBody>
+          <ModalFooter>
+            <div className="flex gap-2">
+              <Button
+                color="primary"
+                variant="light"
+                onPress={onUpdate}
+                isDisabled={!plugin.latestVersion || plugin.latestVersion === plugin.version}
+              >
+                更新
+              </Button>
+              <Button
+                color="danger"
+                variant="light"
+                onPress={handleUninstall}
+                isLoading={uninstallLoading}
+                isDisabled={plugin.type.toLowerCase() === 'app'}
+              >
+                卸载
+              </Button>
+              {showViewApps && (
+                <Button
+                  color="secondary"
+                  variant="light"
+                  onPress={onViewApps}
+                  startContent={<TbApps />}
                 >
-                  {plugin.license.name}
-                </Link>
-              ) : (
-                <span className="text-sm text-default-400">{plugin.license.name || '-'}</span>
+                  查看应用
+                </Button>
+              )}
+              {plugin.type.toLowerCase() !== 'app' && (
+                <Button
+                  color="secondary"
+                  variant="light"
+                  onPress={onViewConfig}
+                  startContent={<FaGear />}
+                >
+                  配置
+                </Button>
               )}
             </div>
-          </div>
-        </ModalBody>
-        <ModalFooter>
-          <div className="flex gap-2">
-            <Button
-              color="primary"
-              variant="light"
-              onPress={onUpdate}
-              isDisabled={!plugin.latestVersion || plugin.latestVersion === plugin.version}
-            >
-              更新
-            </Button>
-            <Button
-              color="danger"
-              variant="light"
-              onPress={handleUninstall}
-              isLoading={uninstallLoading}
-              isDisabled={plugin.type.toLowerCase() === 'app'}
-            >
-              卸载
-            </Button>
-            {showViewApps && (
-              <Button
-                color="secondary"
-                variant="light"
-                onPress={onViewApps}
-                startContent={<TbApps />}
-              >
-                查看应用
-              </Button>
-            )}
-            {plugin.type.toLowerCase() !== 'app' && (
-              <Button
-                color="secondary"
-                variant="light"
-                onPress={onViewConfig}
-                startContent={<FaGear />}
-              >
-                配置
-              </Button>
-            )}
-          </div>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <InstallLogModal
+        isOpen={isUninstalling}
+        onClose={() => {
+          setIsUninstalling(false)
+          onUninstall()
+        }}
+        taskId={taskId}
+        plugin={plugin}
+        task={{
+          id: taskId,
+          name: plugin.name,
+          type: 'uninstall',
+          status: 'running',
+          minimized: false,
+          logs: []
+        }}
+      />
+    </>
   )
 } 
