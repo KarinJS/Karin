@@ -59,30 +59,34 @@ interface App extends Base {
 export type OnlinePluginInfo<T extends 'npm' | 'git' | 'app' | 'all'> = T extends 'npm'
   ? Base
   : T extends 'git'
-    ? Base
-    : T extends 'app'
-      ? App
-      : T extends 'all'
-        ? Base | Base | App
-        : never
+  ? Base
+  : T extends 'app'
+  ? App
+  : T extends 'all'
+  ? Base | Base | App
+  : never
 
 type Other = {
   /** 最新版本 */
   version: string
   /** 是否已经安装 */
   installed: boolean
+  /** 最新可用版本 */
+  latestVersion?: string
 }
 
 /**
  * karin api返回类型
  */
-export type KarinBase<T extends 'npm' | 'git' | 'app' | 'all'> = (Other &
+export type KarinBase<T extends 'npm' | 'git' | 'app' | 'all'> = Array<
+  Other &
   (T extends 'npm'
     ? Base
     : T extends 'git'
-      ? Base
-      : T extends 'app'
-        ? App
-        : T extends 'all'
-          ? Base | Base | App
-          : never))[]
+    ? Base
+    : T extends 'app'
+    ? App
+    : T extends 'all'
+    ? Base | Base | App
+    : never)
+>

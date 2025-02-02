@@ -11,11 +11,11 @@ const PLUGIN_SOURCES = [
  * 从多个源获取插件列表
  * @returns 返回最先成功响应的插件列表
  */
-export const fetchPluginList = async (): Promise<OnlinePluginInfo<'all'>> => {
+export const fetchPluginList = async (): Promise<OnlinePluginInfo> => {
   const requests = PLUGIN_SOURCES.map(async url => {
     const time = Date.now()
     try {
-      const response = await axios.get<OnlinePluginInfo<'all'>>(url)
+      const response = await axios.get<OnlinePluginInfo>(url)
       logger.info(`[插件列表] 从 ${url} 获取成功 耗时${logger.yellow(Date.now() - time + '')}ms`)
       return response.data
     } catch (error) {

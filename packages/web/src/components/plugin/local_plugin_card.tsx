@@ -1,64 +1,159 @@
-import { LocalPluginInfo } from '@/types/plugins'
-import { Card, CardBody } from '@heroui/card'
+import { useMemo, useState } from 'react'
+import { useRequest } from 'ahooks'
+import { request } from '@/lib/request'
+import { Pagination } from '@heroui/pagination'
+import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/table'
+import { DownloadPluginButton } from '@/components/plugin/download_plugin_button'
+import type { OnlinePluginInfo } from '@/types/plugins'
+import { FaUser } from 'react-icons/fa6'
+import { FaGithub, FaGitter, FaNpm } from 'react-icons/fa6'
+import { Link } from '@heroui/link'
+import { Spinner } from '@heroui/spinner'
+import { Chip } from '@heroui/chip'
 
-export interface LocalPluginCardProps {
-  plugin: LocalPluginInfo
-}
-
-export default function LocalPluginCard({ plugin }: LocalPluginCardProps) {
-  /**
-   * 从完整路径中提取文件名
-   * @param path - 完整路径
-   * @returns 文件名
-   */
-  const getFileName = (path: string) => {
-    // 移除目录部分，只保留文件名
-    const fileName = path.split('\\').pop()?.split('/').pop() || ''
-    // 移除扩展名
-    return fileName
+const columns = [
+  { key: 'name', label: '名称' },
+  { key: 'type', label: '类型' },
+  { key: 'author', label: '作者' },
+  { key: 'description', label: '插件描述' },
+  { key: 'repo', label: '仓库源' },
+  { key: 'license', label: '开源许可' },
+  { key: 'version', label: '版本' },
+  { key: 'action', label: '操作' },
+]
+const getRepoIcon = (type: string) => {
+  switch (type.toLowerCase()) {
+    case 'github':
+      return <FaGithub className="text-lg" />
+    case 'gitee':
+      return <FaGitter className="text-lg text-red-500" />
+    case 'npm':
+      return <FaNpm className="text-lg text-[#CB3837]" />
+    default:
+      return null
   }
+}
+const renderCell = (
+  item: OnlinePluginInfo<'all'>,
+  columnKey: keyof OnlinePluginInfo<'all'> | 'action',
+) => {
+  switch (columnKey) {
+    case 'name':
+      return (
+        <div className="text-xs text-default-500 font-mono bg-default-100 px-2 py-1 rounded w-fit">
+          {item.name}
+        </div>
+      )
+    case 'type':
+      return (
+        <Chip color="primary" size="sm" variant="flat">
+          {item.type.toUpperCase()}
+        </Chip>
+      )
+    case 'author':
+      return (
+        <div className="flex items-center gap-1.5">
+          <FaUser className="text-default-400 shrink-0 text-sm" />
+          <span className="text-sm truncate">
+            {item.author.map((author, index) => (
+              <span key={author.home}>
+                <a href={author.home} target="_blank" rel="noreferrer" className="text-primary-500">
+                  {author.name}
+                </a>
+                {index !== item.author.length - 1 && <span>, </span>}
+              </span>
+            ))}
+          </span>
+        </div>
+      )
+    case 'repo':
+      if (Array.isArray(item.repo) && item.repo.length > 0) {
+        return (
+          <Link className="text-default-900" href={item.repo[0].url} rel="noreferrer" isExternal>
+            {getRepoIcon(item.repo[0].type)}
+          </Link>
+        )
+      }
+      /** 返回空文本- */
+      return <div className="text-sm truncate">-</div>
+    case 'action':
+      return (
+        <div className="flex justify-center">
+          <DownloadPluginButton plugin={item} />
+        </div>
+      )
+    case 'license':
+      return (
+        <Link className="text-sm" href={item.license.url} isExternal>
+          {item.license.name}
+        </Link>
+      )
+    default:
+      return <div className="text-sm truncate">{item[columnKey]}</div>
+  }
+}
+export default function MarketPage () {
+  const [page, setPage] = useState(1)
+  const { data, error, loading } = useRequest(
+    () =>
+      request.serverPost<OnlinePluginInfo<'all'>[], { time: number }>('/api/v1/plugin/index', {
+        time: 20 * 1000,
+      }),
+    {
+      refreshDeps: [],
+    },
+  )
+  const pageSize = 10
+  const plugins = useMemo(
+    () => data?.slice((page - 1) * pageSize, page * pageSize) || [],
+    [data, page],
+  )
 
-  /**
-   * 处理应用列表，转换为文件名数组
-   * @param paths - 完整路径数组
-   * @returns 文件名数组
-   */
-  const formatApps = (paths: string[]) => {
-    return paths.map(getFileName).filter(Boolean)
+  if (error) {
+    return <div className="text-center">{error.message}</div>
   }
 
   return (
-    <Card className="w-[200px] relative" radius="sm" shadow="sm">
-      <div className="absolute right-0 top-0 bg-primary-50 text-primary-500 px-2 py-1 rounded-bl-md text-xs shadow-small">
-        {plugin?.type?.toUpperCase()}
-      </div>
-      <CardBody className="space-y-5">
-        <div>
-          <h3 className="text-lg font-bold">{plugin.name}</h3>
-          <div className="flex flex-col gap-2 text-xs mt-2">
-            <div className="text-default-500">
-              <div className="font-medium mb-1">应用列表：</div>
-              <div className="flex flex-wrap gap-1">
-                {formatApps(plugin.apps).map((app, index) => (
-                  <span key={index} className="bg-default-100 px-2 py-0.5 rounded-full">
-                    {app}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className="text-default-500">
-              <div className="font-medium mb-1">全局应用：</div>
-              <div className="flex flex-wrap gap-1">
-                {formatApps(plugin.allApps).map((app, index) => (
-                  <span key={index} className="bg-default-100 px-2 py-0.5 rounded-full">
-                    {app}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
+    <Table
+      aria-label="Plugin List"
+      shadow="none"
+      className="h-full"
+      classNames={{
+        wrapper: 'h-full',
+      }}
+      bottomContentPlacement="outside"
+      bottomContent={
+        <div className="flex w-full justify-center">
+          <Pagination
+            isCompact
+            showControls
+            showShadow
+            color="secondary"
+            page={page}
+            total={Math.ceil(plugins!.length / pageSize)}
+            onChange={page => setPage(page)}
+          />
         </div>
-      </CardBody>
-    </Card>
+      }
+    >
+      <TableHeader columns={columns}>
+        {column => <TableColumn key={column.key}>{column.label}</TableColumn>}
+      </TableHeader>
+      <TableBody
+        items={plugins}
+        isLoading={loading}
+        loadingContent={<Spinner size="lg" color="primary" className="m-auto" />}
+      >
+        {item => (
+          <TableRow key={item.name + item.time}>
+            {columnKey => (
+              <TableCell>
+                {renderCell(item, columnKey as keyof OnlinePluginInfo<'all'> | 'action')}
+              </TableCell>
+            )}
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
   )
 }

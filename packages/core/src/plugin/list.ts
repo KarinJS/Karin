@@ -27,7 +27,13 @@ export const getPlugins = async<T extends boolean = false> (
   type: GetPluginType,
   isInfo?: T
 ): Promise<GetPluginReturn<T>> => {
-  if (cache?.list?.[type]) return cache.list[type] as GetPluginReturn<T>
+  /** 先走缓存 */
+  if (isInfo) {
+    if (cache?.info?.[type]) return cache.info[type] as GetPluginReturn<T>
+  } else {
+    if (cache?.list?.[type]) return cache.list[type] as GetPluginReturn<T>
+  }
+
   if (!cache.list) cache.list = {} as Record<GetPluginType, string[]>
   if (!cache.info) cache.info = {} as Record<GetPluginType, PkgInfo[]>
   if (!['npm', 'all', 'git', 'app'].includes(type)) return []

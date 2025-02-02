@@ -18,7 +18,7 @@ import type {
 } from '@/types/components'
 
 /** 组件配置类型 */
-type ComponentConfig = Children | ApiAccordionProps | ApiAccordionProProps | ApiAccordionItemProps | ApiDividerProps
+export type ComponentConfig = Children | ApiAccordionProps | ApiAccordionProProps | ApiAccordionItemProps | ApiDividerProps
 
 /** 组件引用值类型 */
 type ComponentValue = string | boolean | number | undefined | null
@@ -47,6 +47,8 @@ interface BaseComponentProps {
 interface DynamicComponentRendererProps {
   /** 组件配置数组 */
   configs: ComponentConfig[]
+  /** 值变更回调 */
+  onChange?: (values: Record<string, any>) => void
 }
 
 /** 创建配置上下文 */
@@ -442,7 +444,10 @@ const initializeComponentRef = (config: ComponentConfig, parentConfig?: Componen
  * @param props - 组件属性
  * @returns 渲染后的组件
  */
-export const DynamicComponentRenderer = ({ configs }: DynamicComponentRendererProps): JSX.Element => {
+export const DynamicComponentRenderer = ({
+  configs,
+  onChange
+}: DynamicComponentRendererProps): JSX.Element => {
   const [componentRef, setComponentRef] = useState<ComponentRef>({})
 
   useEffect(() => {
@@ -454,44 +459,39 @@ export const DynamicComponentRenderer = ({ configs }: DynamicComponentRendererPr
   }, [configs])
 
   const handleValueChange = (key: string, value: ComponentValue, parentKey: string) => {
-    console.log(`watch: => ${key} => ${value}`)
-    setComponentRef(prev => ({
-      ...prev,
-      [key]: {
-        ...prev[key],
-        new: value,
-        key: parentKey
+    setComponentRef(prev => {
+      const newRef = {
+        ...prev,
+        [key]: {
+          ...prev[key],
+          new: value,
+          key: parentKey
+        }
       }
-    }))
+
+      // 当值变更时，构建并触发onChange回调
+      const result: Record<string, any> = {}
+      Object.entries(newRef).forEach(([k, value]) => {
+        if (k === value.key) {
+          result[k] = value.new
+          return
+        }
+
+        const key = value.key
+        if (!result[key]) result[key] = []
+        const [_, index, subKey] = k.split('-')
+        if (!result[key]?.[index]) result[key][index] = {}
+        result[key][index][subKey] = value.new
+      })
+      onChange?.(result)
+
+      return newRef
+    })
   }
 
   return (
     <ConfigContext.Provider value={configs}>
-      <div className="relative w-full max-w-2xl px-4">
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={() => {
-            console.log('componentRef:', componentRef)
-            const result: Record<string, any> = {}
-            Object.entries(componentRef).forEach(([k, value]) => {
-              if (k === value.key) {
-                result[k] = value.new
-                return
-              }
-
-              const key = value.key
-              if (!result[key]) result[key] = []
-              const [_, index, subKey] = k.split('-')
-              if (!result[key]?.[index]) result[key][index] = {}
-              result[key][index][subKey] = value.new
-            })
-            console.log('result:', result)
-          }}
-          className="absolute -top-8 right-0 px-3 py-1 text-sm bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors cursor-pointer"
-        >
-          输出数据
-        </div>
+      <div className="w-full">
         <div className="flex flex-wrap gap-4 w-full">
           {configs.map(config => (
             <div key={config.key} className="w-full">
