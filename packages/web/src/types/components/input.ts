@@ -102,8 +102,18 @@ export interface InputProps extends ComponentProps {
   maxLength?: number
   /** 模式 */
   pattern?: string
-  /** 类型 */
-  type?: 'text' | 'email' | 'url' | 'password' | 'tel' | 'search' | 'file'
+  /**
+   * 类型
+   * - text: 文本
+   * - email: 邮箱
+   * - url: URL
+   * - password: 密码
+   * - tel: 电话
+   * - search: 搜索
+   * - file: 文件
+   * - number: 数字
+   */
+  type?: 'text' | 'email' | 'url' | 'password' | 'tel' | 'search' | 'file' | 'number'
   /** 开始内容 */
   startContent?: string
   /** 结束内容 */

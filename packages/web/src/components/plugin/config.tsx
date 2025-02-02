@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { Button } from '@heroui/button'
 import { toast } from 'react-hot-toast'
 import { Spinner } from '@heroui/spinner'
-import { FaGear } from 'react-icons/fa6'
-import { TbPlugConnected } from 'react-icons/tb'
+import { IoSettingsOutline } from 'react-icons/io5'
+import { RiPlugLine } from 'react-icons/ri'
 import { request } from '@/lib/request'
 import { DynamicComponentRenderer } from './dynamicComponents'
 import { Modal, ModalContent, ModalHeader, ModalBody } from '@heroui/modal'
@@ -92,34 +92,44 @@ export const PluginConfig = ({
       onOpenChange={onClose}
       size="4xl"
       scrollBehavior="inside"
+      classNames={{
+        base: "bg-white dark:bg-gray-900",
+        header: "border-b border-gray-100 dark:border-gray-800"
+      }}
     >
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1 border-b">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <FaGear className="text-xl text-primary" />
+        <ModalHeader>
+          <div className="flex items-center justify-between py-3 px-1">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-50/80 dark:bg-blue-900/20 transition-colors">
+                <IoSettingsOutline className="text-xl text-blue-600/90 dark:text-blue-400" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                  插件配置
-                  <span className="text-default-400">|</span>
-                  <span className="text-primary font-normal">{name}</span>
-                </h3>
-                <p className="text-sm text-default-500">管理插件的配置项</p>
+                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                  {name}
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                  插件配置与管理
+                </p>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="absolute right-8 top-6 flex items-center gap-3">
               <Button
                 color="primary"
+                variant="flat"
+                size="md"
                 onPress={handleSave}
                 isDisabled={configs.length === 0}
+                className="px-5 h-10 min-w-[88px] font-medium bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400"
               >
-                保存配置
+                保存
               </Button>
               <Button
-                variant="light"
+                color="default"
+                variant="bordered"
+                size="md"
                 onPress={onClose}
+                className="px-5 h-10 min-w-[88px] font-medium border-gray-200 dark:border-gray-700"
               >
                 取消
               </Button>
@@ -127,23 +137,25 @@ export const PluginConfig = ({
           </div>
         </ModalHeader>
         <ModalBody>
-          <div className="min-h-[400px]">
+          <div className="min-h-[400px] py-6">
             {loading ? (
               <div className="h-full flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                  <Spinner size="lg" color="primary" />
-                  <p className="text-default-500">正在加载配置...</p>
+                <div className="flex flex-col items-center gap-3">
+                  <Spinner size="md" color="primary" />
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">正在加载配置...</p>
                 </div>
               </div>
             ) : configs.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-default-400">
-                <TbPlugConnected className="text-5xl mb-4" />
-                <p className="text-lg">暂无配置项</p>
-                <p className="text-sm mt-2">该插件当前没有可配置的选项</p>
+              <div className="h-full flex flex-col items-center justify-center">
+                <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-50 dark:bg-gray-800">
+                  <RiPlugLine className="text-2xl text-gray-400 dark:text-gray-500" />
+                </div>
+                <h3 className="mt-4 text-gray-900 dark:text-gray-100 font-medium">暂无配置项</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1.5">该插件当前没有需要配置的选项</p>
               </div>
             ) : (
-              <div className="space-y-6">
-                <div className="p-6 bg-default-50 rounded-xl border">
+              <div className="space-y-5">
+                <div className="p-7 bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 transition-colors">
                   <DynamicComponentRenderer
                     configs={configs}
                     onChange={handleConfigChange}

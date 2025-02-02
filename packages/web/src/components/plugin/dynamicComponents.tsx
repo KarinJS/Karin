@@ -148,7 +148,11 @@ const renderInput = (
         className="w-full"
         validate={validator}
         defaultValue={componentRef[key]?.old?.toString()}
-        onValueChange={(value) => onValueChange(key, value, parentKey)}
+        onValueChange={(value) => onValueChange(
+          key,
+          inputProps.type === 'number' ? Number(value) : value,
+          parentKey
+        )}
       />
     </div>
   )
