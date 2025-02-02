@@ -10,8 +10,6 @@ import ConfigPage from '@/pages/dashboard/config'
 import PluginsPage from '@/pages/dashboard/plugins'
 // Plugin Market
 import PluginMarketPage from '@/pages/dashboard/plugins/market'
-// Local Plugin
-import LocalPluginPage from '@/pages/dashboard/plugins/local'
 // Sandbox Page
 import SandboxPage from '@/pages/dashboard/sandbox'
 // About Page
