@@ -86,7 +86,8 @@ async function installGitPlugin (task: InstallTask, url?: string) {
   task.logs.push(`目标目录: ${pluginDir}`)
 
   await fs.promises.mkdir(pluginDir, { recursive: true })
-  await spawnCommand('git', ['clone', url, pluginDir], task)
+  // git clone --depth=1 https://github.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-kkk/
+  await spawnCommand('git', ['clone', '--depth=1', url, `./plugins/${task.name}`], task)
 
   // 检查是否有 package.json
   const pkgPath = path.join(pluginDir, 'package.json')
