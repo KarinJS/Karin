@@ -6,12 +6,12 @@ import { request } from '@/lib/request'
 import { toast } from 'react-hot-toast'
 import { FaDownload } from 'react-icons/fa'
 import { Link } from '@heroui/link'
-import type { KarinBase } from '@/types/plugins'
+import type { pluginLists } from '@/types/plugins'
 import { InstallLogModal } from './install_log_modal'
 import type { Task } from './task_list'
 
 interface InstallPluginButtonProps {
-  plugin: KarinBase<'all'>[number]
+  plugin: pluginLists
 }
 
 export function InstallPluginButton ({ plugin }: InstallPluginButtonProps) {
@@ -34,7 +34,7 @@ export function InstallPluginButton ({ plugin }: InstallPluginButtonProps) {
       const { taskId } = await request.serverPost<{ taskId: string }, { name: string; type: string; url: string }>('/api/v1/plugin/install', {
         name: plugin.name,
         type: plugin.type,
-        url: plugin.repo[0]?.url
+        url: plugin.type === 'app' ? plugin.repo[0]?.url : plugin.repo[0]?.url
       })
       setTaskId(taskId)
       setIsInstalling(true)

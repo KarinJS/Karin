@@ -13,7 +13,7 @@ import { Spinner } from '@heroui/spinner'
 import { Chip } from '@heroui/chip'
 import { Tooltip } from '@heroui/tooltip'
 import { toast } from 'react-hot-toast'
-import type { KarinBase } from '@/types/plugins'
+import type { pluginLists } from '@/types/plugins'
 import { InstalledPluginButton } from '@/components/plugin/installed_plugin_button'
 import { InstallPluginButton } from '@/components/plugin/install_plugin_button'
 import { Task, TaskList } from '@/components/plugin/task_list'
@@ -112,8 +112,8 @@ const getRepoIcon = (type: string) => {
 }
 
 const renderCell = (
-  item: KarinBase<'all'>[number],
-  columnKey: keyof KarinBase<'all'>[number] | 'action',
+  item: pluginLists,
+  columnKey: keyof pluginLists | 'action',
 ) => {
   switch (columnKey) {
     case 'name':
@@ -227,10 +227,10 @@ export default function MarketPage () {
   const [isUninstalling, setIsUninstalling] = useState(false)
 
   // 获取在线插件列表
-  const { data: plugins = [], error: onlineError, loading: onlineLoading, refresh: refreshPlugins } = useRequest<KarinBase<'all'>, any>(
+  let { data: plugins, error: onlineError, loading: onlineLoading, refresh: refreshPlugins } = useRequest<pluginLists[], any>(
     async () => {
       console.log('🔄 正在刷新插件列表...')
-      return request.serverPost<KarinBase<'all'>, { time: number }>('/api/v1/plugin/index', { time: 20 * 1000 }).then(res => {
+      return request.serverPost<pluginLists[], { time: number }>('/api/v1/plugin/index', { time: 20 * 1000 }).then(res => {
         console.log('✅ 插件列表刷新成功:', res)
         return res
       }).catch(err => {
@@ -245,6 +245,8 @@ export default function MarketPage () {
       }
     }
   )
+
+  if (!plugins) plugins = []
 
   // 获取任务列表
   const { data: tasks = [], refresh: refreshTasks } = useRequest<Task[], any>(
@@ -422,7 +424,7 @@ export default function MarketPage () {
                 const column = columns.find(col => col.key === columnKey)
                 return (
                   <TableCell align={column?.cellAlign}>
-                    {renderCell(item, columnKey as keyof KarinBase<'all'>[number] | 'action')}
+                    {renderCell(item, columnKey as keyof pluginLists | 'action')}
                   </TableCell>
                 )
               }}

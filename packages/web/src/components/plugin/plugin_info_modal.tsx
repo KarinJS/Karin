@@ -4,7 +4,7 @@ import { Chip } from "@heroui/chip"
 import { TbApps } from "react-icons/tb"
 import { FaGear, FaGithub, FaGitter, FaNpm } from "react-icons/fa6"
 import { Link } from "@heroui/link"
-import type { KarinBase } from '@/types/plugins'
+import type { pluginLists } from '@/types/plugins'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
 import { toast } from 'react-hot-toast'
@@ -14,7 +14,7 @@ import { InstallLogModal } from '@/components/plugin/install_log_modal'
 interface PluginInfoModalProps {
   isOpen: boolean
   onClose: () => void
-  plugin: KarinBase<'all'>[number]
+  plugin: pluginLists
   onUpdate: () => void
   onUninstall: () => void
   onViewApps?: () => void

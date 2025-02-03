@@ -3,7 +3,7 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@herou
 import { Button } from '@heroui/button'
 import { request } from '@/lib/request'
 import { FaWindowMinimize } from 'react-icons/fa'
-import type { KarinBase } from '@/types/plugins'
+import type { pluginLists } from '@/types/plugins'
 import { useRequest } from 'ahooks'
 
 interface Task {
@@ -20,7 +20,7 @@ interface InstallLogModalProps {
   isOpen: boolean
   onClose: () => void
   taskId: string
-  plugin: KarinBase<'all'>[number]
+  plugin: pluginLists
   task?: Task
 }
 

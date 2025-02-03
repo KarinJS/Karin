@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { PluginConfig } from './config'
-import type { KarinBase } from '@/types/plugins'
+import type { pluginLists } from '@/types/plugins'
 
 interface PluginCardProps {
-  plugin: KarinBase<'all'>[number]
+  plugin: pluginLists
 }
 
 export const PluginCard = ({ plugin }: PluginCardProps) => {

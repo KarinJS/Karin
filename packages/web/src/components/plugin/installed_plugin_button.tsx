@@ -4,12 +4,12 @@ import { FaExclamationCircle } from "react-icons/fa"
 import { PluginInfoModal } from './plugin_info_modal'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
-import type { KarinBase } from '@/types/plugins'
+import type { pluginLists } from '@/types/plugins'
 import { PluginAppsModal } from './plugin_apps_modal'
 import { PluginConfig } from './config'
 
 interface InstalledPluginButtonProps {
-  plugin: KarinBase<'all'>[number]
+  plugin: pluginLists
 }
 
 export function InstalledPluginButton ({ plugin }: InstalledPluginButtonProps) {
