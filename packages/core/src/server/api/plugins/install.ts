@@ -103,7 +103,12 @@ async function installGitPlugin (task: InstallTask, url?: string) {
 async function installAppPlugin (task: InstallTask, url?: string) {
   if (!url) throw new Error('App 插件需要提供下载地址')
 
-  const pluginDir = path.join(process.cwd(), 'plugins', `karin-plugin-${task.name}`)
+  /** 非js、ts不允许下载 */
+  if (!url.endsWith('.js') && !url.endsWith('.ts')) {
+    throw new Error('非js、ts不允许下载')
+  }
+
+  const pluginDir = path.join(process.cwd(), 'plugins', 'karin-plugin-example')
   task.logs.push(`开始下载插件: ${url}`)
   task.logs.push(`目标目录: ${pluginDir}`)
 
@@ -115,36 +120,11 @@ async function installAppPlugin (task: InstallTask, url?: string) {
     [
       '-L',
       '-o',
-      path.join(pluginDir, 'plugin.zip'),
+      pluginDir,
       url
     ],
     task
   )
-
-  task.logs.push('下载完成，开始解压...')
-
-  // 解压文件
-  await spawnCommand(
-    'unzip',
-    [
-      '-o',
-      path.join(pluginDir, 'plugin.zip'),
-      '-d',
-      pluginDir
-    ],
-    task
-  )
-
-  // 删除压缩包
-  await fs.promises.unlink(path.join(pluginDir, 'plugin.zip'))
-  task.logs.push('解压完成，清理临时文件...')
-
-  // 检查是否有 package.json
-  const pkgPath = path.join(pluginDir, 'package.json')
-  if (fs.existsSync(pkgPath)) {
-    task.logs.push('检测到 package.json，开始安装依赖...')
-    await spawnCommand('pnpm', ['install'], task)
-  }
 }
 
 /**
