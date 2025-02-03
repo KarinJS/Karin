@@ -33,8 +33,8 @@ const useMessages = () => {
     dispatch(setMessage({ user_id, message: serializedMessage }))
   }
 
-  const emptyIfNotExists = (user_id: string) => {
-    dispatch(setEmptyIfNotExist(user_id))
+  const emptyIfNotExists = (user_id: string, type: 'friend' | 'group') => {
+    dispatch(setEmptyIfNotExist({ id: user_id, type }))
   }
 
   return {

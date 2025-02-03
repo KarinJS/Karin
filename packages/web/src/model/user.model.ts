@@ -35,7 +35,13 @@ export class User {
     return JSON.stringify(this)
   }
 
-  toJSON (): User {
-    return this
+  toJSON () {
+    return {
+      userId: this.userId,
+      nickname: this.nickname,
+      avatar: this.avatar,
+      signature: this.signature,
+      id: this.id
+    }
   }
 }

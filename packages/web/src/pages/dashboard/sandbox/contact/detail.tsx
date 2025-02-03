@@ -147,8 +147,9 @@ const UserDetail: React.FC = () => {
               color="primary"
               size="md"
               onPress={() => {
-                message.emptyIfNotExists(id!)
-                navigate(`/sandbox/chat/${id}`)
+                message.emptyIfNotExists(id!, 'group')
+                const type = 'group'
+                navigate(`/sandbox/chat/${type}/${id}`)
               }}
             >
               发消息
@@ -203,8 +204,9 @@ const UserDetail: React.FC = () => {
             color="primary"
             size="md"
             onPress={() => {
-              message.emptyIfNotExists(id!)
-              navigate(`/sandbox/chat/${id}`)
+              message.emptyIfNotExists(id!, 'friend')
+              const type = 'friend'
+              navigate(`/sandbox/chat/${type}/${id}`)
             }}
           >
             发消息

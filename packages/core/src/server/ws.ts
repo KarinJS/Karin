@@ -45,7 +45,7 @@ wss.on('connection', (socket, request) => {
     return
   }
 
-  if (request.url === '/sandbox') {
+  if (request.url?.startsWith('/sandbox')) {
     listeners.emit('ws:connection:sandbox', socket, request)
 
     socket.once('close', (code, reason) => {

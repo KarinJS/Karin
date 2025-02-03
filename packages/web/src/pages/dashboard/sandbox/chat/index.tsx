@@ -11,15 +11,17 @@ interface ChatBoxItemProps {
   message: string
   time: number
   unread: number
+  type: 'friend' | 'group'
 }
 
 const ChatBoxItem: React.FC<ChatBoxItemProps> = props => {
-  const { id, message, time, unread } = props
-  const match = useMatch('/sandbox/chat/:id')
+  const { id, message, time, unread, type } = props
+  const match = useMatch('/sandbox/chat/:type/:id')
   const navigate = useNavigate()
 
   const { user: sender } = useUser(id)
-  const isActive = match?.params.id === id.toString()
+  const isActive = match?.params.id === id.toString() && match?.params.type === type
+
   return (
     <div
       className={clsx(
@@ -30,7 +32,7 @@ const ChatBoxItem: React.FC<ChatBoxItemProps> = props => {
       )}
       onClick={() => {
         if (!isActive) {
-          navigate(`/sandbox/chat/${id}`, { replace: true })
+          navigate(`/sandbox/chat/${type}/${id}`, { replace: true })
         }
       }}
     >
@@ -76,12 +78,14 @@ const ChatBoxItem: React.FC<ChatBoxItemProps> = props => {
 const ChatList = memo(() => {
   const message = useMessages()
   const messages = message.useWatch()
+
   return (
     <>
       {messages.map(item => (
         <ChatBoxItem
           key={item.user_id}
           id={item.user_id}
+          type={item.type}
           message={
             item.messages.length ? new Message(item.messages[item.messages.length - 1]).message : ''
           }

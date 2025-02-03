@@ -489,7 +489,7 @@ const getMsgListRouter: RequestHandler = async (req, res) => {
  */
 const getSandboxUrlRouter: RequestHandler = async (req, res) => {
   try {
-    const port = process.env.WS_SERVER_PORT
+    const port = process.env.HTTP_PORT
     const authKey = process.env.WS_SERVER_AUTH_KEY || ''
 
     const url = `ws://127.0.0.1:${port}/sandbox`
@@ -504,13 +504,18 @@ const main = () => {
   listeners.on('ws:connection:sandbox', async (socket: WebSocket, request: IncomingMessage) => {
     try {
       /** 鉴权 */
-      if (process.env.WS_SERVER_AUTH_KEY && request.headers.authorization !== process.env.WS_SERVER_AUTH_KEY) {
-        logger.error(`[Sandbox] 鉴权失败: ${request.headers.authorization}`)
+      const url = new URL(request.url || '', `http://${request.headers.host}`)
+      const authFromUrl = url.searchParams.get('authorization')
+      const authFromHeader = request.headers.authorization
+      const authKey = process.env.WS_SERVER_AUTH_KEY
+
+      if (authKey && authFromUrl !== authKey && authFromHeader !== authKey) {
+        logger.error(`[Sandbox] 鉴权失败: URL Auth: ${authFromUrl}, Header Auth: ${authFromHeader}`)
         socket.close(1008, '鉴权失败')
         return
       }
 
-      logger.info(`[Sandbox] 连接成功: ${request.url}`)
+      logger.info(`[Sandbox] 连接成功: ${request.url?.split('?')[0] || request.url}`)
 
       if (!level) {
         level = new Level(sandboxLevelPath)

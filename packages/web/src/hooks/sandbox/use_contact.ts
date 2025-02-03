@@ -25,7 +25,7 @@ const defaultGroup = {
 
 /** 获取好友列表 */
 const getFriendList = async () => {
-  const friends = await request.serverPost<Friend[], any>('/api/v1/sandbox/friend/list', {})
+  const friends = await request.serverPost<Friend[], object>('/api/v1/sandbox/friend/list', {})
   return friends.map(friend => ({
     user_id: friend.userId,
     nickname: friend.nick,
@@ -40,7 +40,7 @@ const createDefaultGroup = async () => {
 
 /** 获取群组列表 */
 const getGroupList = async () => {
-  const groups = await request.serverPost<Group[], any>('/api/v1/sandbox/group/list', {})
+  const groups = await request.serverPost<Group[], object>('/api/v1/sandbox/group/list', {})
   if (groups.length === 0) {
     await createDefaultGroup()
     return [{

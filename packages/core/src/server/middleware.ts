@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express'
 import { createUnauthorizedResponse } from './utils/response'
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  logger.debug(
+  logger.trace(
     '[express] 收到请求: \n' +
     `method: ${req.method}\n` +
     `ip: ${req.ip}\n` +

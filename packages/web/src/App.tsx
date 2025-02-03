@@ -34,7 +34,7 @@ function App () {
           <Route element={<Navigate to="/sandbox/chat" />} path="" />
           <Route path="chat">
             <Route element={<DefaultPage />} path="" />
-            <Route element={<ChatDetail />} path=":id" />
+            <Route element={<ChatDetail />} path=":type/:id" />
           </Route>
           <Route path="contact/*">
             <Route element={<DefaultPage />} path="" />
