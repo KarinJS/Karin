@@ -197,6 +197,7 @@ export default function MarketPage () {
   const [isTaskListOpen, setIsTaskListOpen] = useState(false)
   const [isUninstalling, setIsUninstalling] = useState(false)
   const [filterType, setFilterType] = useState<string>('all')
+  const [searchQuery, setSearchQuery] = useState<string>('')
 
   // 获取在线插件列表
   let { data: plugins, error: onlineError, loading: onlineLoading, refresh: refreshPlugins } = useRequest<pluginLists[], any>(
@@ -239,9 +240,39 @@ export default function MarketPage () {
 
   const pageSize = 12
   const filteredPlugins = useMemo(() => {
-    if (filterType === 'all') return plugins
-    return plugins.filter(plugin => plugin.type.toLowerCase() === filterType.toLowerCase())
-  }, [plugins, filterType])
+    let filtered = plugins || []
+
+    // 类型筛选
+    if (filterType !== 'all') {
+      filtered = filtered.filter(plugin => plugin.type.toLowerCase() === filterType.toLowerCase())
+    }
+
+    // 搜索筛选
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim()
+      filtered = filtered.filter(plugin => {
+        return (
+          // 搜索名称
+          plugin.name.toLowerCase().includes(query) ||
+          // 搜索描述
+          (plugin.description && plugin.description !== '-' &&
+            plugin.description.toLowerCase().includes(query)) ||
+          // 搜索作者
+          plugin.author.some(author =>
+            author.name.toLowerCase().includes(query)) ||
+          // 搜索类型
+          plugin.type.toLowerCase().includes(query)
+        )
+      })
+    }
+
+    return filtered
+  }, [plugins, filterType, searchQuery])
+
+  // 重置页码当筛选条件改变时
+  useEffect(() => {
+    setPage(1)
+  }, [filterType, searchQuery])
 
   const currentPagePlugins = useMemo(
     () => filteredPlugins?.slice((page - 1) * pageSize, page * pageSize) || [],
@@ -359,8 +390,12 @@ export default function MarketPage () {
                   inputWrapper: "h-7 border-gray-200 dark:border-gray-700"
                 }}
                 placeholder="搜索插件..."
+                value={searchQuery}
+                onValueChange={setSearchQuery}
                 startContent={<IoSearchOutline className="text-default-400 text-base" />}
                 size="sm"
+                isClearable
+                onClear={() => setSearchQuery('')}
               />
               <Dropdown>
                 <DropdownTrigger>
