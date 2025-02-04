@@ -20,6 +20,7 @@ import DefaultPage from '@/components/default_page'
 import FriendRequest from '@/pages/dashboard/sandbox/contact/friend_request'
 import UserDetail from '@/pages/dashboard/sandbox/contact/detail'
 import GroupNotice from '@/pages/dashboard/sandbox/contact/group_notice'
+import GroupChatTest from '@/pages/dashboard/sandbox/group'
 
 // Main App
 function App () {
@@ -42,6 +43,7 @@ function App () {
             <Route element={<GroupNotice />} path="group_notice" />
             <Route element={<UserDetail />} path=":id" />
           </Route>
+          <Route element={<GroupChatTest />} path="group" />
         </Route>
         <Route element={<AboutPage />} path="/about" />
       </Route>
