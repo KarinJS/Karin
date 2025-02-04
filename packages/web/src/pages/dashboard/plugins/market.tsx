@@ -73,10 +73,14 @@ const PluginCard = ({ plugin }: { plugin: pluginLists }) => {
 
   return (
     <Card
-      className="group w-full h-[140px] flex flex-col overflow-hidden hover:border-primary-200 dark:hover:border-primary-500/20 transition-colors"
+      className="group w-full h-[140px] flex flex-col overflow-hidden cursor-pointer relative bg-default-50/50 dark:bg-default-100/5 hover:-translate-y-[2px] hover:shadow-md hover:bg-default-100/80 dark:hover:bg-default-100/10 transition-all duration-300 rounded-xl"
       isPressable
+      radius="lg"
     >
-      <CardBody className="p-4 flex flex-col h-full">
+      {/* 添加边框动画效果 */}
+      <div className="absolute inset-0 border border-default-200 dark:border-default-100/20 group-hover:border-primary-500/50 dark:group-hover:border-primary-500/30 group-hover:border-2 transition-all duration-300 rounded-xl" />
+
+      <CardBody className="p-4 flex flex-col h-full relative">
         {/* 顶部区域 */}
         <div className="flex items-start justify-between gap-3 mb-2">
           <div className="flex-1 min-w-0">
@@ -130,7 +134,7 @@ const PluginCard = ({ plugin }: { plugin: pluginLists }) => {
                         isBordered
                         size="sm"
                         src={`https://avatar.vercel.sh/${author.name}`}
-                        className="bg-default-100 hover:scale-105 transition-transform cursor-pointer border-white dark:border-default-800"
+                        className="bg-default-100 border-white dark:border-default-800"
                       />
                     </Link>
                   ) : (
@@ -284,24 +288,14 @@ export default function MarketPage () {
   }
 
   const handleCloseTaskLog = () => {
-    console.log('🔍 触发关闭任务日志窗口')
     setActiveTask(null)
-    console.log('⏳ 准备延迟刷新...')
-    setTimeout(() => {
-      console.log('🚀 执行刷新操作')
-      refreshPlugins()
-    }, 500)
+    refreshPlugins()
   }
 
   const handleCloseInstallLog = () => {
-    console.log('🔍 触发关闭安装日志窗口')
     setActiveTask(null)
     setIsUninstalling(false)
-    console.log('⏳ 准备延迟刷新...')
-    setTimeout(() => {
-      console.log('🚀 执行刷新操作')
-      refreshPlugins()
-    }, 500)
+    refreshPlugins()
   }
 
   useEffect(() => {
