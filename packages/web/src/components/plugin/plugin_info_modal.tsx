@@ -34,6 +34,28 @@ const getRepoIcon = (type: string) => {
   }
 }
 
+// 添加默认描述生成函数
+const getDefaultDescription = (name: string) => {
+  const descriptions = [
+    `为您的工作流程带来更多可能性`,
+    `提升您的开发效率的得力助手`,
+    `简单易用，功能强大的插件`,
+    `让开发更轻松，体验更流畅`,
+    `为您的项目锦上添花`
+  ]
+  const seed = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+  return descriptions[seed % descriptions.length]
+}
+
+// 添加默认作者信息生成函数
+const getDefaultAuthorInfo = (name: string) => {
+  return {
+    name: name.split('-')[0] || '未知作者',
+    email: '-',
+    url: '-'
+  }
+}
+
 export function PluginInfoModal ({
   isOpen,
   onClose,
@@ -112,14 +134,16 @@ export function PluginInfoModal ({
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">
             <h3 className="text-lg font-semibold">{plugin.name}</h3>
-            <p className="text-sm text-default-600">{plugin.description}</p>
+            <p className="text-sm text-default-600">
+              {plugin.description === '-' ? getDefaultDescription(plugin.name) : plugin.description}
+            </p>
           </ModalHeader>
           <ModalBody>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-default-600">当前版本</span>
                 <Chip size="sm" variant="flat" color="primary">
-                  {plugin.version}
+                  {plugin.version === '-' ? '0.0.1' : plugin.version}
                 </Chip>
               </div>
               {plugin.latestVersion && plugin.latestVersion !== plugin.version && (
@@ -130,6 +154,33 @@ export function PluginInfoModal ({
                   </Chip>
                 </div>
               )}
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-default-600">作者</span>
+                <div className="flex items-center gap-2">
+                  {plugin.author && plugin.author.length > 0 ? (
+                    plugin.author.map((author, index) => (
+                      author.home && author.home !== '-' ? (
+                        <Link
+                          key={author.name + index}
+                          href={author.home}
+                          isExternal
+                          className="text-xs text-primary-500 hover:text-primary-600"
+                        >
+                          {author.name}
+                        </Link>
+                      ) : (
+                        <span key={author.name + index} className="text-xs text-default-600">
+                          {author.name}
+                        </span>
+                      )
+                    ))
+                  ) : (
+                    <span className="text-xs text-default-400">
+                      {getDefaultAuthorInfo(plugin.name).name}
+                    </span>
+                  )}
+                </div>
+              </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-default-600">仓库源</span>
                 <div className="flex items-center gap-2">
@@ -145,7 +196,7 @@ export function PluginInfoModal ({
                       </Link>
                     ))
                   ) : (
-                    <span className="text-sm text-default-400">-</span>
+                    <span className="text-sm text-default-400">暂无仓库信息</span>
                   )}
                 </div>
               </div>
@@ -161,8 +212,45 @@ export function PluginInfoModal ({
                     {plugin.license.name}
                   </Link>
                 ) : (
-                  <span className="text-sm text-default-400">{plugin.license.name || '-'}</span>
+                  <span className="text-sm text-default-400">
+                    {plugin.license.name || 'MIT'}
+                  </span>
                 )}
+              </div>
+              {plugin.home && plugin.home !== '-' && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-default-600">插件主页</span>
+                  <Link
+                    className="text-xs text-primary-500 hover:text-primary-600 inline-flex items-center"
+                    href={plugin.home}
+                    isExternal
+                    showAnchorIcon
+                  >
+                    访问主页
+                  </Link>
+                </div>
+              )}
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-default-600">插件类型</span>
+                <Chip
+                  size="sm"
+                  variant="flat"
+                  color={plugin.type.toLowerCase() === 'app' ? 'secondary' : 'default'}
+                >
+                  {plugin.type.toLowerCase() === '-' ? 'NPM' : plugin.type.toUpperCase()}
+                </Chip>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-default-600">安装时间</span>
+                <span className="text-sm text-default-400">
+                  {new Date(plugin.time).toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </span>
               </div>
             </div>
           </ModalBody>

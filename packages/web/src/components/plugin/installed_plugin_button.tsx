@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from "@heroui/button"
-import { FaExclamationCircle } from "react-icons/fa"
+import { IoSettingsOutline } from "react-icons/io5"
 import { PluginInfoModal } from './plugin_info_modal'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
@@ -32,11 +32,11 @@ export function InstalledPluginButton ({ plugin }: InstalledPluginButtonProps) {
       <Button
         isIconOnly
         variant="light"
-        color="warning"
+        color="primary"
         size="sm"
         onPress={() => setIsOpen(true)}
       >
-        <FaExclamationCircle className="text-lg" />
+        <IoSettingsOutline className="text-lg" />
       </Button>
 
       <PluginInfoModal

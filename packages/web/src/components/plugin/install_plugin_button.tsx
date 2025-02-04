@@ -9,6 +9,7 @@ import { Link } from '@heroui/link'
 import type { pluginLists } from '@/types/plugins'
 import { InstallLogModal } from './install_log_modal'
 import type { Task } from './task_list'
+import { IoCloudDownloadOutline } from 'react-icons/io5'
 
 interface InstallPluginButtonProps {
   plugin: pluginLists
@@ -51,13 +52,14 @@ export function InstallPluginButton ({ plugin }: InstallPluginButtonProps) {
   return (
     <>
       <Button
-        isIconOnly
-        variant="light"
-        color="primary"
         size="sm"
+        variant="flat"
+        color="primary"
+        className="h-7 bg-primary-500/10 hover:bg-primary-500/20 dark:bg-primary-500/20 dark:hover:bg-primary-500/30"
+        startContent={<IoCloudDownloadOutline className="text-base" />}
         onPress={() => setIsOpen(true)}
       >
-        <FaDownload className="text-lg" />
+        安装
       </Button>
 
       {/* 安装确认弹窗 */}
