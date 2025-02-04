@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@heroui/accordion": "^2.2.8",
+    "@heroui/avatar": "^2.2.7",
     "@heroui/button": "2.2.9",
     "@heroui/card": "^2.2.9",
     "@heroui/checkbox": "^2.3.9",
