@@ -259,6 +259,11 @@ export const modifyPackageJson = () => {
   // 永恒是猪 scripts都为空
   if (!data.scripts) data.scripts = {}
   data.scripts.karin = 'karin'
+  data.pnpm = {}
+  data.pnpm.ignoredBuiltDependencies = [
+    'sqlite3',
+    'classic-level',
+  ]
 
   const list = ['app', 'start', 'pm2', 'stop', 'rs', 'log']
   if (!isDev) {
