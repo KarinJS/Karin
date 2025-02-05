@@ -56,5 +56,12 @@
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "node-karin",
+      "sqlite3",
+      "classic-level"
+    ]
   }
 }
