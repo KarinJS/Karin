@@ -15,10 +15,6 @@ jobs:
   release-please:
     # 设置任务运行环境为 ubuntu-latest
     runs-on: ubuntu-latest
-    # 设置默认工作目录
-    defaults:
-      run:
-        working-directory: packages/core
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
@@ -63,7 +59,7 @@ jobs:
       - name: 修订版本号
         id: version
         run: |
-          pnpm --filter node-karin run pr all || {
+          pnpm --filter node-karin run pr || {
             echo "修订版本号失败"
             exit 1
           }
