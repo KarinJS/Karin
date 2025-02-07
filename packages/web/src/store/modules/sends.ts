@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { Slice } from '@reduxjs/toolkit'
 
 import type { RootState } from '@/store'
-import { OB11Message } from '@/types/onebot'
+import { OB11Message } from 'node-karin'
 
 export interface SendMessage {
   user_id: number

@@ -2,7 +2,7 @@ import { Card } from '@heroui/card'
 import { Divider } from '@heroui/divider'
 import { Avatar } from '@heroui/avatar'
 import { Button } from '@heroui/button'
-import { Input } from '@heroui/input'
+// import { Input } from '@heroui/input'
 import { useState, useRef, useEffect } from 'react'
 import {
   Panel,
@@ -11,20 +11,20 @@ import {
 } from 'react-resizable-panels'
 import AudioInsert from '../../../../components/sandbox/chat_input/components/audio_insert'
 import DiceInsert from '../../../../components/sandbox/chat_input/components/dice_insert'
-import EmojiPicker from '../../../../components/sandbox/chat_input/components/emoji_picker'
 import FileInsert from '../../../../components/sandbox/chat_input/components/file_insert'
-import ImageInsert from '../../../../components/sandbox/chat_input/components/image_insert'
+// import EmojiPicker from '../../../../components/sandbox/chat_input/components/emoji_picker'
+// import ImageInsert from '../../../../components/sandbox/chat_input/components/image_insert'
 import MusicInsert from '../../../../components/sandbox/chat_input/components/music_insert'
 import ReplyInsert from '../../../../components/sandbox/chat_input/components/reply_insert'
 import RPSInsert from '../../../../components/sandbox/chat_input/components/rps_insert'
 import VideoInsert from '../../../../components/sandbox/chat_input/components/video_insert'
-import EmojiBlot from '../../../../components/sandbox/chat_input/formats/emoji_blot'
-import ReplyBlock from '../../../../components/sandbox/chat_input/formats/reply_blot'
-import type { EmojiValue } from '../../../../components/sandbox/chat_input/formats/emoji_blot'
-import ImageBlot from '../../../../components/sandbox/chat_input/formats/image_blot'
-import useSendMessage from '@/hooks/sandbox/use_send_message'
-import { useParams } from 'react-router-dom'
-import type { Range } from 'quill'
+// import EmojiBlot from '../../../../components/sandbox/chat_input/formats/emoji_blot'
+// import ReplyBlock from '../../../../components/sandbox/chat_input/formats/reply_blot'
+// import ImageBlot from '../../../../components/sandbox/chat_input/formats/image_blot'
+// import useSendMessage from '@/hooks/sandbox/use_send_message'
+// import { useParams } from 'react-router-dom'
+// import type { Range } from 'quill'
+// import type { EmojiValue } from '../../../../components/sandbox/chat_input/formats/emoji_blot'
 
 
 // 模拟数据
@@ -91,7 +91,6 @@ const GroupChatTest = () => {
   const [isSending, setIsSending] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLDivElement>(null)
-  const memorizedRange = useRef<Range | null>(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -135,64 +134,60 @@ const GroupChatTest = () => {
     }
   }
 
-  // 添加表情处理函数
-  const onOpenChange = (open: boolean) => {
-    // 暂时空实现,因为我们使用的是 contentEditable 而不是 Quill
-  }
 
-  const onInsertEmoji = (emoji: EmojiValue) => {
-    if (inputRef.current) {
-      const selection = window.getSelection()
-      const range = selection?.getRangeAt(0)
+  // const onInsertEmoji = (emoji: EmojiValue) => {
+  //   if (inputRef.current) {
+  //     const selection = window.getSelection()
+  //     const range = selection?.getRangeAt(0)
 
-      if (range) {
-        const img = document.createElement('img')
-        img.src = emoji.src
-        img.alt = emoji.alt
-        img.className = 'inline-block w-5 h-5 align-middle'
-        img.dataset.emojiId = emoji.id
+  //     if (range) {
+  //       const img = document.createElement('img')
+  //       img.src = emoji.src
+  //       img.alt = emoji.alt
+  //       img.className = 'inline-block w-5 h-5 align-middle'
+  //       img.dataset.emojiId = emoji.id
 
-        range.deleteContents()
-        range.insertNode(img)
+  //       range.deleteContents()
+  //       range.insertNode(img)
 
-        // 移动光标到表情后面
-        range.setStartAfter(img)
-        range.setEndAfter(img)
-        selection?.removeAllRanges()
-        selection?.addRange(range)
+  //       // 移动光标到表情后面
+  //       range.setStartAfter(img)
+  //       range.setEndAfter(img)
+  //       selection?.removeAllRanges()
+  //       selection?.addRange(range)
 
-        // 更新消息内容
-        setMessage(inputRef.current.innerHTML)
-      }
-    }
-  }
+  //       // 更新消息内容
+  //       setMessage(inputRef.current.innerHTML)
+  //     }
+  //   }
+  // }
 
-  // 添加其他功能的处理函数
-  const insertImage = async (url: string) => {
-    if (inputRef.current) {
-      const selection = window.getSelection()
-      const range = selection?.getRangeAt(0)
+  // // 添加其他功能的处理函数
+  // const insertImage = async (url: string) => {
+  //   if (inputRef.current) {
+  //     const selection = window.getSelection()
+  //     const range = selection?.getRangeAt(0)
 
-      if (range) {
-        const img = document.createElement('img')
-        img.src = url
-        img.alt = '图片'
-        img.className = 'max-w-[200px] max-h-[200px] object-contain'
+  //     if (range) {
+  //       const img = document.createElement('img')
+  //       img.src = url
+  //       img.alt = '图片'
+  //       img.className = 'max-w-[200px] max-h-[200px] object-contain'
 
-        range.deleteContents()
-        range.insertNode(img)
+  //       range.deleteContents()
+  //       range.insertNode(img)
 
-        // 移动光标到图片后面
-        range.setStartAfter(img)
-        range.setEndAfter(img)
-        selection?.removeAllRanges()
-        selection?.addRange(range)
+  //       // 移动光标到图片后面
+  //       range.setStartAfter(img)
+  //       range.setEndAfter(img)
+  //       selection?.removeAllRanges()
+  //       selection?.addRange(range)
 
-        // 更新消息内容
-        setMessage(inputRef.current.innerHTML)
-      }
-    }
-  }
+  //       // 更新消息内容
+  //       setMessage(inputRef.current.innerHTML)
+  //     }
+  //   }
+  // }
 
   const insertReplyBlock = (messageId: string) => {
     if (inputRef.current) {
@@ -224,107 +219,37 @@ const GroupChatTest = () => {
     }
   }
 
-  const handleFileInsert = async (file: File) => {
-    // 这里应该上传文件到服务器,获取URL
-    // 暂时模拟一个文件显示
-    if (inputRef.current) {
-      const selection = window.getSelection()
-      const range = selection?.getRangeAt(0)
+  // const handleFileInsert = async (file: File) => {
+  //   // 这里应该上传文件到服务器,获取URL
+  //   // 暂时模拟一个文件显示
+  //   if (inputRef.current) {
+  //     const selection = window.getSelection()
+  //     const range = selection?.getRangeAt(0)
 
-      if (range) {
-        const fileDiv = document.createElement('div')
-        fileDiv.className = 'bg-gray-100 p-2 rounded inline-flex items-center gap-2'
-        fileDiv.innerHTML = `
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          <span>${file.name}</span>
-        `
+  //     if (range) {
+  //       const fileDiv = document.createElement('div')
+  //       fileDiv.className = 'bg-gray-100 p-2 rounded inline-flex items-center gap-2'
+  //       fileDiv.innerHTML = `
+  //         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  //           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+  //         </svg>
+  //         <span>${file.name}</span>
+  //       `
 
-        range.deleteContents()
-        range.insertNode(fileDiv)
+  //       range.deleteContents()
+  //       range.insertNode(fileDiv)
 
-        // 移动光标到文件显示后面
-        range.setStartAfter(fileDiv)
-        range.setEndAfter(fileDiv)
-        selection?.removeAllRanges()
-        selection?.addRange(range)
+  //       // 移动光标到文件显示后面
+  //       range.setStartAfter(fileDiv)
+  //       range.setEndAfter(fileDiv)
+  //       selection?.removeAllRanges()
+  //       selection?.addRange(range)
 
-        // 更新消息内容
-        setMessage(inputRef.current.innerHTML)
-      }
-    }
-  }
-
-  const handleAudioInsert = () => {
-    // 音频插入逻辑
-    console.log('Audio insert clicked')
-  }
-
-  const handleVideoInsert = () => {
-    // 视频插入逻辑
-    console.log('Video insert clicked')
-  }
-
-  const handleMusicInsert = () => {
-    // 音乐插入逻辑
-    console.log('Music insert clicked')
-  }
-
-  const handleDiceInsert = () => {
-    if (inputRef.current) {
-      const selection = window.getSelection()
-      const range = selection?.getRangeAt(0)
-
-      if (range) {
-        const diceSpan = document.createElement('span')
-        const randomNum = Math.floor(Math.random() * 6) + 1
-        diceSpan.className = 'inline-flex items-center justify-center bg-gray-100 rounded p-1 mx-1'
-        diceSpan.innerHTML = `🎲 ${randomNum}`
-        diceSpan.dataset.diceValue = randomNum.toString()
-
-        range.deleteContents()
-        range.insertNode(diceSpan)
-
-        // 移动光标到骰子后面
-        range.setStartAfter(diceSpan)
-        range.setEndAfter(diceSpan)
-        selection?.removeAllRanges()
-        selection?.addRange(range)
-
-        // 更新消息内容
-        setMessage(inputRef.current.innerHTML)
-      }
-    }
-  }
-
-  const handleRPSInsert = () => {
-    if (inputRef.current) {
-      const selection = window.getSelection()
-      const range = selection?.getRangeAt(0)
-
-      if (range) {
-        const rpsSpan = document.createElement('span')
-        const options = ['✌️', '✊', '✋']
-        const randomChoice = options[Math.floor(Math.random() * options.length)]
-        rpsSpan.className = 'inline-flex items-center justify-center bg-gray-100 rounded p-1 mx-1'
-        rpsSpan.innerHTML = randomChoice
-        rpsSpan.dataset.rpsValue = randomChoice
-
-        range.deleteContents()
-        range.insertNode(rpsSpan)
-
-        // 移动光标到猜拳后面
-        range.setStartAfter(rpsSpan)
-        range.setEndAfter(rpsSpan)
-        selection?.removeAllRanges()
-        selection?.addRange(range)
-
-        // 更新消息内容
-        setMessage(inputRef.current.innerHTML)
-      }
-    }
-  }
+  //       // 更新消息内容
+  //       setMessage(inputRef.current.innerHTML)
+  //     }
+  //   }
+  // }
 
   const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
     setMessage(e.currentTarget.textContent || '')
@@ -413,8 +338,6 @@ const GroupChatTest = () => {
 
             {/* 工具栏 */}
             <div className="!border-none flex gap-2 p-1">
-              <EmojiPicker onInsertEmoji={onInsertEmoji} onOpenChange={onOpenChange} />
-              <ImageInsert insertImage={insertImage} onOpenChange={onOpenChange} />
               <ReplyInsert insertReply={insertReplyBlock} />
               <FileInsert />
               <AudioInsert />

@@ -1,11 +1,11 @@
 import clsx from 'clsx'
-import { User } from '@/model/user.model'
-import { useEffect, useState } from 'react'
+// import { User } from '@/model/user.model'
+import { useState } from 'react'
 import { IoChevronForward } from 'react-icons/io5'
 import { useMatch, useNavigate } from 'react-router-dom'
 import { Image } from '@heroui/image'
-import { request } from '@/lib/request'
-import type { Friend } from './detail'
+// import { request } from '@/lib/request'
+// import type { Friend } from './detail'
 import { useFriendList, useGroupList } from '@/hooks/sandbox/use_contact'
 
 interface ContactItemProps {
@@ -15,41 +15,41 @@ interface ContactItemProps {
   description: string
 }
 
-const getFriendList = async () => {
-  const friends = await request.serverPost<Friend[], any>('/api/v1/sandbox/friend/list', {})
-  return friends.map(friend => ({
-    user_id: friend.userId,
-    nickname: friend.nick,
-    avatar: friend.avatar
-  }))
-}
+// const getFriendList = async () => {
+//   const friends = await request.serverPost<Friend[], any>('/api/v1/sandbox/friend/list', {})
+//   return friends.map(friend => ({
+//     user_id: friend.userId,
+//     nickname: friend.nick,
+//     avatar: friend.avatar
+//   }))
+// }
 
-/** 创建默认群组 */
-const createDefaultGroup = async () => {
-  await request.serverPost('/api/v1/sandbox/group/create', {
-    id: 'groupSandbox',
-    name: '测试群',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=group'
-  })
-}
+// /** 创建默认群组 */
+// const createDefaultGroup = async () => {
+//   await request.serverPost('/api/v1/sandbox/group/create', {
+//     id: 'groupSandbox',
+//     name: '测试群',
+//     avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=group'
+//   })
+// }
 
-/** 获取群组列表 */
-const getGroupList = async () => {
-  const groups = await request.serverPost<any[], any>('/api/v1/sandbox/group/list', {})
-  if (groups.length === 0) {
-    await createDefaultGroup()
-    return [{
-      group_id: 'groupSandbox',
-      name: '测试群',
-      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=group'
-    }]
-  }
-  return groups.map(group => ({
-    group_id: group.groupId,
-    name: group.name,
-    avatar: group.avatar
-  }))
-}
+// /** 获取群组列表 */
+// const getGroupList = async () => {
+//   const groups = await request.serverPost<any[], any>('/api/v1/sandbox/group/list', {})
+//   if (groups.length === 0) {
+//     await createDefaultGroup()
+//     return [{
+//       group_id: 'groupSandbox',
+//       name: '测试群',
+//       avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=group'
+//     }]
+//   }
+//   return groups.map(group => ({
+//     group_id: group.groupId,
+//     name: group.name,
+//     avatar: group.avatar
+//   }))
+// }
 
 const ContactItem: React.FC<ContactItemProps> = props => {
   const { id, name, description, avatar } = props

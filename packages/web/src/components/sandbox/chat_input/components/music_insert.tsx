@@ -1,22 +1,22 @@
 import { Button } from '@heroui/button'
 import { Form } from '@heroui/form'
 import { Input } from '@heroui/input'
+import toast from 'react-hot-toast'
 import { Popover, PopoverContent, PopoverTrigger } from '@heroui/popover'
 import { Select, SelectItem } from '@heroui/select'
-import type { SharedSelection } from '@heroui/system'
 import { Tab, Tabs } from '@heroui/tabs'
 import { Tooltip } from '@heroui/tooltip'
-import type { Key } from '@react-types/shared'
 import { useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import toast from 'react-hot-toast'
 import { IoMusicalNotes } from 'react-icons/io5'
 import { TbMusicPlus } from 'react-icons/tb'
-
+import { isURI } from '@/lib/utils'
 import useShowStructuredMessage from '@/hooks/sandbox/use_show_strcuted_message'
 
-import { isURI } from '@/lib/utils'
 
+import type { Key } from '@react-types/shared'
+
+import type { SharedSelection } from '@heroui/system'
 import type { Elements, CustomMusicElement, MusicElement } from '@/types/segment'
 
 type MusicData = CustomMusicElement | MusicElement

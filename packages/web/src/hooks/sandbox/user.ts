@@ -29,8 +29,8 @@ export const updateGroupsCache = async () => {
 }
 
 const useUser = (uid: string) => {
-  const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<Error | null>(null)
+  const [loading] = useState<boolean>(false)
+  const [error] = useState<Error | null>(null)
   const [user, setUser] = useState<User>(() => {
     // 优先从缓存中获取用户信息
     return userCache.get(uid) || new User(uid)

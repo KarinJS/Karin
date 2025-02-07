@@ -4,15 +4,15 @@ import { request } from '@/lib/request'
 import { Pagination } from '@heroui/pagination'
 import { Button } from '@heroui/button'
 import { FaUser } from 'react-icons/fa6'
-import { FaGithub, FaGitter, FaNpm } from 'react-icons/fa6'
+import { FaGithub, FaNpm } from 'react-icons/fa6'
 import { TbApps } from 'react-icons/tb'
-import { IoRefreshOutline, IoListOutline, IoCloudUploadOutline, IoSearchOutline, IoFilterOutline, IoDownloadOutline, IoCloudDownloadOutline, IoCheckmarkCircleOutline, IoAppsOutline, IoChevronDownOutline, IoAlbumsOutline } from 'react-icons/io5'
+import { IoRefreshOutline, IoListOutline, IoCloudUploadOutline, IoSearchOutline, IoDownloadOutline, IoCheckmarkCircleOutline, IoAppsOutline, IoChevronDownOutline, IoAlbumsOutline } from 'react-icons/io5'
 import { Link } from '@heroui/link'
 import { Spinner } from '@heroui/spinner'
 import { Chip } from '@heroui/chip'
 import { Tooltip } from '@heroui/tooltip'
 import { toast } from 'react-hot-toast'
-import { Card, CardBody, CardHeader, CardFooter } from '@heroui/card'
+import { Card, CardBody, CardFooter } from '@heroui/card'
 import { Input } from '@heroui/input'
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/dropdown'
 import { ScrollShadow } from '@heroui/scroll-shadow'
@@ -22,7 +22,7 @@ import { InstallPluginButton } from '@/components/plugin/install_plugin_button'
 import { Task, TaskList } from '@/components/plugin/task_list'
 import { TaskListModal } from '@/components/plugin/task_list_modal'
 import { InstallLogModal } from '@/components/plugin/install_log_modal'
-import * as ReactDOM from 'react-dom/client'
+// import * as ReactDOM from 'react-dom/client'
 import type { PluginLists } from 'node-karin'
 
 // 默认描述生成函数
@@ -68,8 +68,8 @@ const getTypeIcon = (type: string) => {
   }
 }
 
-const PluginCard = ({ plugin }: { plugin: pluginLists }) => {
-  const typeInfo = getTypeIcon(plugin.type)
+const PluginCard = ({ plugin }: { plugin: PluginLists }) => {
+  // const typeInfo = getTypeIcon(plugin.type)
 
   return (
     <Card
@@ -199,15 +199,15 @@ export default function MarketPage () {
   const [page, setPage] = useState(1)
   const [activeTask, setActiveTask] = useState<string | null>(null)
   const [isTaskListOpen, setIsTaskListOpen] = useState(false)
-  const [isUninstalling, setIsUninstalling] = useState(false)
+  const [, setIsUninstalling] = useState(false)
   const [filterType, setFilterType] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState<string>('')
 
   // 获取在线插件列表
-  let { data: plugins, error: onlineError, loading: onlineLoading, refresh: refreshPlugins } = useRequest<pluginLists[], any>(
+  let { data: plugins, error: onlineError, loading: onlineLoading, refresh: refreshPlugins } = useRequest<PluginLists[], any>(
     async () => {
       console.log('🔄 正在刷新插件列表...')
-      return request.serverPost<pluginLists[], { time: number }>('/api/v1/plugin/index', { time: 20 * 1000 }).then(res => {
+      return request.serverPost<PluginLists[], { time: number }>('/api/v1/plugin/index', { time: 20 * 1000 }).then(res => {
         console.log('✅ 插件列表刷新成功:', res)
         return res
       }).catch(err => {
@@ -226,7 +226,7 @@ export default function MarketPage () {
   if (!plugins) plugins = []
 
   // 获取任务列表
-  const { data: tasks = [], refresh: refreshTasks } = useRequest<Task[], any>(
+  const { data: tasks = [] } = useRequest<Task[], any>(
     () => request.serverPost<Task[], null>('/api/v1/plugin/task/list'),
     {
       pollingInterval: 1000,

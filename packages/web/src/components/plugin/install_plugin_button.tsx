@@ -4,7 +4,6 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@herou
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
 import { toast } from 'react-hot-toast'
-import { FaDownload } from 'react-icons/fa'
 import { Link } from '@heroui/link'
 import type { pluginLists } from '@/types/plugins'
 import { InstallLogModal } from './install_log_modal'

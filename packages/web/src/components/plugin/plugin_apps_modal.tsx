@@ -12,13 +12,7 @@ interface Props {
   pluginName: string
 }
 
-interface AppInfo {
-  name: string
-  file: string
-}
-
 export function PluginAppsModal ({ isOpen, onClose, pluginName }: Props) {
-  const [selectedFile, setSelectedFile] = useState<string | null>(null)
   const [fileContent, setFileContent] = useState<string | undefined>(undefined)
 
   // 处理文件操作

@@ -93,7 +93,7 @@ export function PluginInfoModal ({
   )
 
   // 检查配置文件是否存在
-  const { loading: configCheckLoading, run: checkConfig } = useRequest(
+  const { run: checkConfig } = useRequest(
     async () => {
       const result = await request.serverPost<boolean, { name: string; type: string }>(
         '/api/v1/plugin/config/is-exist',

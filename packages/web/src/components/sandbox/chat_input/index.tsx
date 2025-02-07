@@ -3,11 +3,7 @@ import type { Range } from 'quill'
 import 'quill/dist/quill.core.css'
 import { useRef, useEffect } from 'react'
 import toast from 'react-hot-toast'
-import Quill from 'quill'
-
 import { useCustomQuill } from '@/hooks/sandbox/use_custom_quill'
-import useShowStructuredMessage from '@/hooks/sandbox/use_show_strcuted_message'
-
 import { quillToMessage } from '@/lib/utils'
 
 import AudioInsert from './components/audio_insert'
@@ -28,7 +24,6 @@ import { useParams } from 'react-router-dom'
 
 const ChatInput = () => {
   const memorizedRange = useRef<Range | null>(null)
-  const showStructuredMessage = useShowStructuredMessage()
   const formats: string[] = ['image', 'emoji', 'reply']
   const modules = {
     toolbar: '#toolbar',

@@ -237,7 +237,7 @@ const renderAccordionPro = (
           const list: JSX.Element[] = []
 
           children?.forEach((childConfig) => {
-            const { componentType: _, children: grandChildren, ...itemProps } = childConfig
+            const { componentType: _, children: grandChildren } = childConfig
             if (_ !== ComponentType.ACCORDION_ITEM) return
 
             grandChildren?.forEach((child) => {
