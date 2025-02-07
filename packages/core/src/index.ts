@@ -22,7 +22,7 @@ export * from '@/adapter/render/admin/cache'
 export * from '@/adapter/render/admin/types'
 export { AdapterBase } from '@/adapter/base/index'
 export { getPlugins } from '@/plugin/list'
-
+export { Plugin } from '@/plugin/class'
 export { karin as default } from '@/core/karin'
 export type * from '@/types'
 

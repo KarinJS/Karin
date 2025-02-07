@@ -163,6 +163,7 @@ const privateCmd = async (
     } else {
       const App = new plugin.Cls()
       if (typeof App?.[plugin.file.method as keyof typeof App] !== 'function') {
+        logger.debug(`[${plugin.pkg.name}][${plugin.file.method}] 方法不存在`)
         return true
       }
 
