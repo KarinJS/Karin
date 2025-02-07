@@ -74,11 +74,12 @@ const web = (dir: typeof root) => {
  * @param port 监听端口
  * @param host 监听地址
  */
-export const initExpress = (
+export const initExpress = async (
   dir: typeof root,
   port: number,
   host: string,
 ) => {
+  await import('./api/index')
   app.use('/api/v1', router)
   web(dir)
   listen(port, host)

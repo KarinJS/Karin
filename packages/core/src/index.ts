@@ -95,7 +95,7 @@ export const start = async () => {
    * - 设置静态文件目录
    * - 设置根路径请求
    */
-  initExpress(root, Number(process.env.HTTP_PORT), process.env.HTTP_HOST)
+  await initExpress(root, Number(process.env.HTTP_PORT), process.env.HTTP_HOST)
 
   /**
    * 7. 初始化数据库
