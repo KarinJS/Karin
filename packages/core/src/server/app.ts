@@ -80,6 +80,7 @@ export const initExpress = async (
   host: string,
 ) => {
   await import('./api/index')
+  await import('./ws')
   app.use('/api/v1', router)
   web(dir)
   listen(port, host)
