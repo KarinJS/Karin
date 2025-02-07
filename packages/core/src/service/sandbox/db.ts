@@ -4,10 +4,8 @@ import { sandboxDataPath } from '@/root'
 import type {
   FriendMessageOptions,
   GroupMessageOptions,
-  FriendNoticeOptions,
-  GroupNoticeOptions,
-  FriendRequestOptions,
-  GroupRequestOptions,
+  NoticeOptions,
+  RequestOptions,
 } from '@/types/event'
 import type {
   FriendData,
@@ -15,7 +13,7 @@ import type {
   GroupMemberData,
   DbStreams
 } from '@/types/sandbox/db'
-import type { AccountInfo } from '@/types/sandbox/account'
+import type { SandBoxAccountInfo } from '@/types/sandbox/account'
 
 /** 默认用户、群成员头像 */
 export const DEFAULT_USER_AVATAR = 'https://q1.qlogo.cn/g?b=qq&nk=1812868335&s=0'
@@ -26,7 +24,7 @@ export const DEFAULT_GROUP_AVATAR = 'https://p.qlogo.cn/gh/967068507/967068507/0
 export const root = path.join(sandboxDataPath, 'db')
 
 /** 登录号信息 */
-export const selfInfo: AccountInfo = {
+export const selfInfo: SandBoxAccountInfo = {
   userId: 'sandbox',
   nick: '沙盒小助手',
   sex: 'unknown',
@@ -150,7 +148,7 @@ const deleteData = async (file: string, key: string) => {
 /**
  * 获取登录号信息
  */
-export const getAccountInfo = async (): Promise<AccountInfo> => {
+export const getAccountInfo = async (): Promise<SandBoxAccountInfo> => {
   await fs.access(dir.account)
   const content = await fs.readFile(dir.account, 'utf-8')
   return JSON.parse(content)
@@ -160,10 +158,10 @@ export const getAccountInfo = async (): Promise<AccountInfo> => {
  * 修改登录号信息
  * @param info 登录号信息
  */
-export const updateAccountInfo = async (info: Partial<AccountInfo>) => {
+export const updateAccountInfo = async (info: Partial<SandBoxAccountInfo>) => {
   const current = await getAccountInfo()
   /** 登录号ID不能修改 */
-  const newInfo: AccountInfo = {
+  const newInfo: SandBoxAccountInfo = {
     userId: current.userId,
     nick: info?.nick || current.nick,
     sex: info?.sex || current.sex,
@@ -244,7 +242,7 @@ export const addGroupHistory = (data: Omit<GroupMessageOptions, 'bot' | 'srcRepl
  * 新增一条好友通知
  * @param data 好友通知数据
  */
-export const addFriendNotice = (data: Omit<FriendNoticeOptions, 'bot' | 'srcReply'>) => {
+export const addFriendNotice = (data: Omit<NoticeOptions, 'bot' | 'srcReply'>) => {
   addWrite('friendNotice', dir.friendNotice, data.eventId, data)
 }
 
@@ -252,7 +250,7 @@ export const addFriendNotice = (data: Omit<FriendNoticeOptions, 'bot' | 'srcRepl
  * 新增一条群通知
  * @param data 群通知数据
  */
-export const addGroupNotice = (data: Omit<GroupNoticeOptions, 'bot' | 'srcReply'>) => {
+export const addGroupNotice = (data: Omit<NoticeOptions, 'bot' | 'srcReply'>) => {
   addWrite('groupNotice', dir.groupNotice, data.eventId, data)
 }
 
@@ -260,7 +258,7 @@ export const addGroupNotice = (data: Omit<GroupNoticeOptions, 'bot' | 'srcReply'
  * 新增一条好友请求
  * @param data 好友请求数据
  */
-export const addFriendRequest = (data: Omit<FriendRequestOptions, 'bot' | 'srcReply'>) => {
+export const addFriendRequest = (data: Omit<RequestOptions, 'bot' | 'srcReply'>) => {
   addWrite('friendRequest', dir.friendRequest, data.eventId, data)
 }
 
@@ -268,7 +266,7 @@ export const addFriendRequest = (data: Omit<FriendRequestOptions, 'bot' | 'srcRe
  * 新增一条群请求
  * @param data 群请求数据
  */
-export const addGroupRequest = (data: Omit<GroupRequestOptions, 'bot' | 'srcReply'>) => {
+export const addGroupRequest = (data: Omit<RequestOptions, 'bot' | 'srcReply'>) => {
   addWrite('groupRequest', dir.groupRequest, data.eventId, data)
 }
 

@@ -65,7 +65,7 @@ export interface OnlinePluginInfo {
 /**
  * karin api返回类型
  */
-export interface pluginLists extends Base {
+export interface PluginLists extends Base {
   version: string
   /** 是否已经安装 */
   installed: boolean

@@ -1,4 +1,4 @@
-import { callRender, renderHtml, renderMultiHtml } from '@/adapter/render'
+import { callRender, renderHtml, renderMultiHtml } from '@/adapter/render/admin/cache'
 import type { Options, RenderResult } from '@/adapter/render/admin/types'
 
 export interface Renders {

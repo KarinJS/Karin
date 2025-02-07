@@ -8,9 +8,9 @@ importers:
 
   .:
     dependencies:
-      node-karin:
+      '@karinjs/karin-types':
         specifier: workspace:*
-        version: link:packages/core
+        version: link:packages/types
     devDependencies:
       '@types/node':
         specifier: ^22.5.0
@@ -104,6 +104,8 @@ importers:
       yaml:
         specifier: 2.7.0
         version: 2.7.0
+
+  packages/core/plugins/karin-plugin-demo: {}
 
   packages/create-karin:
     dependencies:

@@ -1,13 +1,7 @@
 import fs from 'node:fs'
 import chalk from 'chalk'
-import { logsPath } from '@/root'
 import log4js, { type Configuration } from 'log4js'
-import type { Logger, LoggerOptions } from '@/types/system'
-
-if (!fs.existsSync(logsPath))
-  fs.mkdirSync(logsPath, {
-    recursive: true,
-  })
+import type { Logger, LoggerLevel, LoggerOptions } from '@/types/system/logger'
 
 /**
  * 创建日志记录器
@@ -125,13 +119,34 @@ const addColor = (Logger: log4js.Logger, color?: string) => {
 
 /**
  * 创建日志记录器
+ * @param dir - 日志文件夹
  * @param options - 配置项
  * @returns 日志记录器
  */
-export const createLogger = (options: LoggerOptions = {}) => {
+const createLogger = (dir: string, options: LoggerOptions = {}) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true, })
+  }
+
   initLogger(options)
   const logger = addColor(log4js.getLogger('default'))
 
   global.logger = logger
   return logger
+}
+
+/**
+ * @public
+ * @description 创建内部日志管理器
+ * @param dir - 日志文件夹
+ */
+export const createInnerLogger = (dir: string) => {
+  return createLogger(dir, {
+    log4jsCfg: {
+      level: process.env.LOG_LEVEL as LoggerLevel || 'info',
+      daysToKeep: Number(process.env.LOG_DAYS_TO_KEEP) || 30,
+      maxLogSize: Number(process.env.LOG_MAX_LOG_SIZE) || 0,
+      logColor: process.env.LOG_FNC_COLOR || '#E1D919',
+    }
+  })
 }

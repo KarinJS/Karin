@@ -2,7 +2,7 @@ import path from 'node:path'
 import { router } from './router'
 import { consolePath } from '@/root'
 import { promises as fs } from 'node:fs'
-import { adapter } from '@/utils/config/adapter'
+import { adapter } from '@/utils/config/file/adapter'
 import { isLocalRequest } from '@/utils/system/ip'
 
 import type { RequestHandler } from 'express'

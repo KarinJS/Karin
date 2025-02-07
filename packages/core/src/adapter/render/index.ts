@@ -1,13 +1,14 @@
-export * from './admin/cache'
-export * from './admin/template'
-export * from './admin/types'
-import './connect/client'
-import './connect/server'
+export type * from './admin/types'
 
 import { createHttpRenderClient } from './connect/http'
 import { createWebSocketRenderClient } from './connect/client'
 
-setTimeout(() => {
+/**
+ * @internal
+ * @description 初始化渲染器
+ */
+export const initRender = async () => {
   createHttpRenderClient()
   createWebSocketRenderClient()
-}, 1000)
+  await import('./connect/server')
+}

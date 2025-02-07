@@ -1,4 +1,4 @@
-import { Response } from 'express'
+import type { Response } from 'express'
 
 /** HTTP状态码 */
 export enum HTTPStatusCode {

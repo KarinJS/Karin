@@ -1,5 +1,5 @@
 import { WebSocketRender } from './ws'
-import { render } from '@/utils/config/render'
+import { render } from '@/utils/config/file/render'
 import { listeners } from '@/core/internal'
 import type { WebSocket } from 'ws'
 import type { IncomingMessage } from 'node:http'

@@ -487,6 +487,8 @@ export type PrivateApplyRequestOptions = RequestOptions & {
   content: PrivateApplyType
 }
 
+export type FriendRequestOptions = PrivateApplyRequestOptions
+
 /** 创建新成员加入群聊申请请求事件 */
 export type GroupApplyRequestOptions = RequestOptions & {
   /** 事件来源信息 */

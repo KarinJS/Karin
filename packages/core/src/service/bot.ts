@@ -164,7 +164,7 @@ export const registerBot = (type: AdapterCommunication, bot: AdapterBase) => {
   }
 
   setTimeout(async () => {
-    const { level } = await import('@/service/db')
+    const { level } = await import('@/index')
     const key = `karin:restart:${bot.selfId}`
     const options = await level.has(key)
     if (!options) return

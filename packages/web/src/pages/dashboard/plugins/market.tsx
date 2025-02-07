@@ -17,13 +17,13 @@ import { Input } from '@heroui/input'
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/dropdown'
 import { ScrollShadow } from '@heroui/scroll-shadow'
 import { Avatar } from '@heroui/avatar'
-import type { pluginLists } from '@/types/plugins'
 import { InstalledPluginButton } from '@/components/plugin/installed_plugin_button'
 import { InstallPluginButton } from '@/components/plugin/install_plugin_button'
 import { Task, TaskList } from '@/components/plugin/task_list'
 import { TaskListModal } from '@/components/plugin/task_list_modal'
 import { InstallLogModal } from '@/components/plugin/install_log_modal'
 import * as ReactDOM from 'react-dom/client'
+import type { PluginLists } from 'node-karin'
 
 // 默认描述生成函数
 const getDefaultDescription = (name: string) => {

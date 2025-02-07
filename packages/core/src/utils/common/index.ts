@@ -10,11 +10,13 @@ import { getPlugins as GetPlugin } from '@/plugin/list'
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 // import { getAppPlugins, getNpmPlugins as GetNpmPlugins, getGitPlugins as GetGitPlugins } from '@/plugin/index'
 
-export { isDir, existToMkdir as exists } from '@/utils/fs/fsPromises'
+export { sleep } from './sleep'
+export { uptime } from './uptime'
 export { downFile, absPath } from '@/utils/fs/file'
 export { mkdirSync as mkdir } from '@/utils/fs/fsSync'
 export { base64, buffer, stream } from '@/utils/fs/data'
 export { getRelPath, urlToPath, splitPath } from '@/utils/fs/path'
+export { isDir, existToMkdir as exists } from '@/utils/fs/fsPromises'
 export { read as readYaml, write as writeYaml } from '@/utils/fs/yaml'
 export { readJsonSync as readJson, writeJsonSync as writeJson } from '@/utils/fs/json'
 export { pkgRoot as pkgroot, getPluginInfo as pkgJson, isPlugin } from '@/utils/fs/pkg'
@@ -42,16 +44,6 @@ export interface NpmInfo {
   file: string,
   isMain: boolean
 }
-
-/**
- * 休眠函数
- * @param ms 毫秒
- * @example
- * ```ts
- * await sleep(1000)
- * ```
- */
-export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 /**
  * axios请求
@@ -84,29 +76,6 @@ export const axios: AxiosFn = async (
     logger.debug((error as Error).stack || error)
     return null
   }
-}
-
-/**
- * 获取运行时间
- * @example
- * ```ts
- * uptime()
- * // -> '1天2小时3分钟4秒'
- * // -> '2小时3分钟4秒'
- * // -> '3分钟4秒'
- * // -> '4秒'
- * ```
- */
-export const uptime = () => {
-  const time = process.uptime()
-  const day = Math.floor(time / 86400)
-  const hour = Math.floor((time % 86400) / 3600)
-  const min = Math.floor((time % 3600) / 60)
-  const sec = Math.floor(time % 60)
-
-  const parts = [day ? `${day}天` : '', hour ? `${hour}小时` : '', min ? `${min}分钟` : '', !day && sec ? `${sec}秒` : '']
-
-  return parts.filter(Boolean).join('')
 }
 
 /**

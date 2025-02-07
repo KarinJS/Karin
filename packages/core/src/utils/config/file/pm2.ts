@@ -1,5 +1,5 @@
 import { configPath } from '@/root'
-import { requireFileSync } from '../fs/require'
+import { requireFileSync } from '../../fs/require'
 import type { PM2 } from '@/types/config'
 
 /** pm2配置 */

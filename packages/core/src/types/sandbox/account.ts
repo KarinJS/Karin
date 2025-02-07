@@ -3,7 +3,7 @@ import { Sex } from '../event'
 /**
  * 登录号信息
  */
-export interface AccountInfo {
+export interface SandBoxAccountInfo {
   /** 登录号ID */
   userId: string
   /** 昵称 */

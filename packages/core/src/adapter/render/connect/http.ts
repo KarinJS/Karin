@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios'
 import crypto from 'node:crypto'
 import { registerRender, unregisterRender } from '../admin/cache'
-import { render } from '@/utils/config/render'
+import { render } from '@/utils/config/file/render'
 
 /**
  * @description 创建http渲染器

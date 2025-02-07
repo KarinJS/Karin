@@ -15,7 +15,9 @@ export const watch = <T> (
     /** 旧数据 */
     oldData: T,
     /** 新数据 */
-    newData: T) => void
+    newData: T
+  ) => void,
+  options?: Parameters<typeof requireFileSync>[1]
 ) => {
   /** 检查此文件是否已有监听器 已有则先将原来的停止 */
   const isWatch = cache.get(file)
@@ -31,9 +33,9 @@ export const watch = <T> (
   /** 监听文件变动 */
   watcher.on('change', async () => {
     logger.info(`[配置文件变动] ${path.relative(process.cwd(), file).replace(/\\/g, '/')}`)
-    const oldData = requireFileSync<T>(file)
+    const oldData = requireFileSync<T>(file, { ...options, readCache: true })
     clearRequireFile(file)
-    const newData = requireFileSync<T>(file, { force: true })
+    const newData = requireFileSync<T>(file, { ...options, force: true })
     typeof fnc === 'function' && fnc(oldData, newData)
   })
 
@@ -50,7 +52,7 @@ export const watch = <T> (
     clearRequireFile(file)
   })
 
-  return new Watch<T>(file, watcher)
+  return new Watch<T>(file, watcher, options)
 }
 
 /**
@@ -65,7 +67,7 @@ export const watchAndMerge = <T> (
 ) => {
   /** 监听器 */
   const watcher = watch(dynamicFile, fnc)
-  return new Watcher<T>(dynamicFile, defaultCFile, watcher.watcher)
+  return new Watcher<T>(dynamicFile, defaultCFile, watcher.watcher, watcher.options)
 }
 
 /**
@@ -76,21 +78,25 @@ export const watchAndMerge = <T> (
 export class Watch<T> {
   watcher: FSWatcher
   file: string
+  options?: Parameters<typeof requireFileSync>[1]
   constructor (
     file: string,
-    watcher: FSWatcher
+    watcher: FSWatcher,
+    options?: Parameters<typeof requireFileSync>[1]
   ) {
     /** 监听器 */
     this.watcher = watcher
     /** 动态配置文件路径 */
     this.file = file
+    /** 选项 */
+    this.options = options
   }
 
   /**
    * @description 获取配置数据
    */
   get value () {
-    return requireFileSync<T>(this.file)
+    return requireFileSync<T>(this.file, this.options)
   }
 
   /**
@@ -104,14 +110,21 @@ export class Watch<T> {
   }
 }
 
+/**
+ * 监听管理器
+ * @param dynamicFile 动态配置文件路径
+ * @param defaultCFile 默认配置文件路径
+ */
 export class Watcher<T> {
   watcher: FSWatcher
   dynamicFile: string
   defaultCFile: string
+  options?: Parameters<typeof requireFileSync>[1]
   constructor (
     dynamicFile: string,
     defaultCfgFile: string,
-    watcher: FSWatcher
+    watcher: FSWatcher,
+    options?: Parameters<typeof requireFileSync>[1]
   ) {
     /** 监听器 */
     this.watcher = watcher
@@ -119,14 +132,16 @@ export class Watcher<T> {
     this.dynamicFile = dynamicFile
     /** 默认配置文件路径 */
     this.defaultCFile = defaultCfgFile
+    /** 选项 */
+    this.options = options
   }
 
   /**
    * @description 获取配置数据
    */
   get value () {
-    const dynamicData = requireFileSync<T>(this.dynamicFile)
-    const defaultData = requireFileSync<T>(this.defaultCFile)
+    const dynamicData = requireFileSync<T>(this.dynamicFile, this.options)
+    const defaultData = requireFileSync<T>(this.defaultCFile, this.options)
     if (typeof defaultData === 'object' && typeof dynamicData === 'object') {
       return { ...defaultData, ...dynamicData }
     }

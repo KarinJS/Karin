@@ -1,6 +1,6 @@
 import { auth } from './auth'
-import { Request, Response, NextFunction } from 'express'
 import { createUnauthorizedResponse } from './utils/response'
+import type { Request, Response, NextFunction } from 'express'
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   logger.trace(

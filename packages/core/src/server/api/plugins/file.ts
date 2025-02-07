@@ -6,7 +6,7 @@ import type { RequestHandler } from 'express'
 import { pluginDir as getPluginsDir } from '@/root'
 
 import type { GetPluginType } from '@/types/plugin'
-import type { pluginLists, OnlinePluginInfo } from '@/types/server/plugins'
+import type { PluginLists, OnlinePluginInfo } from '@/types/server/plugins'
 import { createServerErrorResponse, createSuccessResponse } from '@/server/utils/response'
 
 /**
@@ -15,7 +15,7 @@ import { createServerErrorResponse, createSuccessResponse } from '@/server/utils
  * @param github github URL转换函数
  * @returns 构建后的raw URL
  */
-export const buildRawUrl = (plugin: pluginLists['repo'][number], github: (url: string) => string) => {
+export const buildRawUrl = (plugin: PluginLists['repo'][number], github: (url: string) => string) => {
   const url = plugin.url.replace('.git', '')
 
   const urlMap = {

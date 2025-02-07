@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import * as root from '@/root'
-import { setEnv } from './env'
+import { setEnv } from './file/env'
 import { requireFileSync } from '../fs/require'
 
 import type { FileListMap, Groups, Privates } from '@/types/config'

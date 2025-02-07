@@ -1,5 +1,5 @@
 import { configPath } from '@/root'
-import { requireFileSync } from '../fs/require'
+import { requireFileSync } from '../../fs/require'
 import type { Redis } from '@/types/config'
 
 /** redis配置 */

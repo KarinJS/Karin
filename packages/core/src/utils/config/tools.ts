@@ -1,71 +1,8 @@
-const NODE_TYPES = ['number', 'string', 'boolean', 'undefined', 'null']
-
 /**
- * 合并配置
- * @param defData 默认配置
- * @param data 配置
- * @returns 合并后的配置
- */
-export const lint = async <T = Record<string, any>> (
-  defData: Record<string, any>,
-  data: Record<string, any>
-): Promise<T> => {
-  const list = {} as Record<string, any>
-  await Promise.all(Object.keys(defData).map(async (key) => {
-    if (Array.isArray(data?.[key])) {
-      /** 数组中必须非对象才可以setStr */
-      if (data?.[key].every((v: any) => typeof v !== 'object')) {
-        list[key] = setStr(data?.[key] || defData[key])
-        return
-      } else {
-        list[key] = data?.[key] || defData[key]
-        return
-      }
-    }
-
-    if (NODE_TYPES.includes(typeof data?.[key])) {
-      list[key] = data?.[key] ?? defData[key]
-      return
-    }
-
-    if (typeof data?.[key] === 'object') {
-      list[key] = await lint(defData[key], data?.[key])
-    }
-  }))
-
-  return list as T
-}
-
-/**
- * 合并对象 专属privates、groups
- * @param defData 默认配置
- * @param data 配置
- * @returns 合并后的配置
- */
-export const mergeData = (defData: Record<string, any>, data: Record<string, any>) => {
-  const list = {} as Record<string, any>
-  Object.keys(defData).forEach((key) => {
-    if (typeof defData[key] === 'number') {
-      list[key] = Number(data[key]) ?? defData[key]
-      return
-    }
-
-    if (Array.isArray(defData[key])) {
-      list[key] = Array.isArray(data[key]) ? data[key] : []
-      list[key] = list[key].map((val: string) => String(val))
-      return
-    }
-
-    throw TypeError(`${key} is not a number or array`)
-  })
-  return list
-}
-
-/**
- * 统一转换为字符串数组
+ * 传入一个数组 将数组中所有元素为字符串
  * @param data 数据
  */
-export const setStr = (data: any[]) => {
+export const formatArray = (data: any[]) => {
   try {
     return data.map((v: string) => String(v)) || []
   } catch {
@@ -74,7 +11,60 @@ export const setStr = (data: any[]) => {
 }
 
 /**
- * 创建缓存对象
+ * @internal
+ * 传入一个对象 将对象中的嵌套数组中所有元素为字符串
+ * @param data 数据
+ * @returns 统一后的数据
+ */
+export const formatObject = <T extends Record<string, any>> (data: T): T => {
+  const list = {} as Record<string, any>
+
+  Object.entries(data).forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      list[key] = formatArray(value)
+      return
+    }
+
+    if (typeof value === 'object') {
+      list[key] = formatObject(value)
+      return
+    }
+
+    list[key] = value
+  })
+  return list as T
+}
+
+/**
+ * 合并对象 专属privates、groups
+ * @param def 默认配置
+ * @param cfg 配置
+ * @returns 合并后的配置
+ */
+export const mergeDegAndCfg = <T extends Record<string, any>> (def: T, cfg: T): T => {
+  const list = {} as Record<string, any>
+
+  Object.entries(cfg).forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      list[key] = formatArray(value || def[key])
+      return
+    }
+
+    if (typeof value === 'number') {
+      value = Number(value)
+      list[key] = isNaN(value) ? def[key] : value
+      return
+    }
+
+    list[key] = value || def[key]
+  })
+
+  return list as T
+}
+
+/**
+ * @internal
+ * @description 创建缓存对象
  */
 export const createCount = () => {
   return {} as Record<string, {

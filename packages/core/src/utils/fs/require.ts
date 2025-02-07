@@ -24,6 +24,8 @@ export type RequireOptions = {
   size?: number
   /** 自定义解析器 */
   parser?: Parser
+  /** 是否只读缓存，为true时如果缓存不存在则返回undefined */
+  readCache?: boolean
 }
 
 export type RequireFunction = <T = any>(
@@ -63,9 +65,9 @@ export const clearRequire = () => cache.clear()
 export const requireFile: RequireFunction = async (filePath, options = {}) => {
   const now = Date.now()
   const absPath = path.resolve(filePath).replace(/\\/g, '/')
-  const { encoding = 'utf-8', force = false, ex = 300, size = 0, parser, type } = options
+  const { encoding = 'utf-8', force = false, ex = 300, size = 0, parser, type, readCache } = options
 
-  const data = fileReady(absPath, now, force, ex)
+  const data = fileReady(absPath, now, force, ex, readCache)
   if (data !== false) return data
 
   const content = await fs.promises.readFile(absPath, encoding)
@@ -82,9 +84,9 @@ export const requireFile: RequireFunction = async (filePath, options = {}) => {
 export const requireFileSync: RequireFunctionSync = (filePath, options = {}) => {
   const now = Date.now()
   const absPath = path.resolve(filePath).replace(/\\/g, '/')
-  const { encoding = 'utf-8', force = false, ex = 300, size = 0, parser, type } = options
+  const { encoding = 'utf-8', force = false, ex = 300, size = 0, parser, type, readCache } = options
 
-  const data = fileReady(absPath, now, force, ex)
+  const data = fileReady(absPath, now, force, ex, readCache)
   if (data !== false) return data
 
   const content = fs.readFileSync(absPath, encoding)
@@ -98,7 +100,7 @@ export const requireFileSync: RequireFunctionSync = (filePath, options = {}) => 
  * @param now 当前时间
  * @param ex 过期时间
  */
-const fileReady = (absPath: string, now: number, force: boolean, ex: number) => {
+const fileReady = (absPath: string, now: number, force: boolean, ex: number, readCache?: boolean) => {
   if (!force) {
     const cached = cache.get(absPath)
     if (cached) {
@@ -111,6 +113,8 @@ const fileReady = (absPath: string, now: number, force: boolean, ex: number) => 
         cache.delete(absPath)
       }
     }
+    /** 如果是只读缓存模式且没有命中缓存，返回undefined */
+    if (readCache) return undefined
   }
 
   return false

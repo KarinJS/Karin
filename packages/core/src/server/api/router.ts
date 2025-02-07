@@ -1,11 +1,14 @@
 import express from 'express'
 import { Router } from 'express'
+import { authMiddleware } from '../middleware'
 
 /**
  * karin-api 路由
  */
 export const router: Router = Router()
 
+/** 鉴权 */
+router.use(authMiddleware)
 router.use(express.json())
 
 router.use((req, res, next) => {

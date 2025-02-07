@@ -1,4 +1,4 @@
-import type { AccountInfo } from './account'
+import type { SandBoxAccountInfo } from './account'
 import type { FriendMessageOptions, GroupMessageOptions } from '../event'
 
 /** 发送好友消息 */
@@ -21,5 +21,5 @@ export interface SandboxSendApi {
     messageId: string
   }
   /** 初始化完成 */
-  init: AccountInfo
+  init: SandBoxAccountInfo
 }

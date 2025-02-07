@@ -24,7 +24,6 @@
   "license": "MIT",
   "author": "shijin",
   "type": "module",
-  "time": "2025-01-21",
   "main": "./src/index.ts",
   "types": "./dist/index.d.ts",
   "bin": {
@@ -93,6 +92,7 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
+  "time": "2025-01-21",
   "exports": {
     ".": {
       "import": "./src/index.ts",
@@ -106,6 +106,10 @@
       "import": "./dist/cli/index.js",
       "types": "./dist/cli/index.d.ts",
       "require": "./dist/cli/index.cjs"
+    },
+    "./root": {
+      "import": "./dist/root.js",
+      "types": "./dist/root.d.ts"
     },
     "./template": {
       "import": "./dist/module/art-template.js",

@@ -1,12 +1,9 @@
-import { existsSync } from 'node:fs'
-import { writeFile } from 'node:fs/promises'
-import { basePath } from '@/root'
-import { Adapters, Config, Groups, PM2, Privates, Redis, Renders } from '@/types/config'
+import type { Adapters, Config, Groups, PM2, Privates, Redis, Renders } from '@/types/config'
 
 /**
  * @description 默认配置
  */
-const defaultConfig: {
+export const defaultConfig: {
   adapter: Adapters
   config: Config
   groups: Groups
@@ -213,13 +210,3 @@ const defaultConfig: {
     ],
   },
 })
-
-await Promise.all(Object.keys(defaultConfig).map(async (key) => {
-  const file = `${basePath}/config/${key}.json`
-  if (existsSync(file)) return
-  const data = JSON.stringify(defaultConfig[key as keyof typeof defaultConfig], null, 2)
-  await writeFile(file, data, 'utf-8')
-  return true
-}))
-
-export { defaultConfig }

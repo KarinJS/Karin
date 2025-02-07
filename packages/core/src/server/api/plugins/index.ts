@@ -10,7 +10,7 @@ import { handleAppPlugin, handleGitPlugin, handleNpmPlugin, handlePluginFile } f
 import { createServerErrorResponse, createSuccessResponse } from '@/server/utils/response'
 import type { RequestHandler } from 'express'
 import type { GetPluginType } from '@/types/plugin'
-import type { pluginLists } from '@/types/server/plugins'
+import type { PluginLists } from '@/types/server/plugins'
 
 /**
  * 获取在线插件列表
@@ -19,7 +19,7 @@ const getOnlinePluginList: RequestHandler = async (_req, res) => {
   try {
     const [list, createUrl, localPlugins] = await Promise.all([fetchPluginList(), testGithub(), getPlugins('all', true, true)])
 
-    const pluginMap = new Map<string, pluginLists>()
+    const pluginMap = new Map<string, PluginLists>()
 
     /** 先处理本地插件 */
     for (const plugin of localPlugins) {
