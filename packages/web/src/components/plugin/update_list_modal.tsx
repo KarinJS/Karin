@@ -130,10 +130,11 @@ export function UpdateListModal ({ isOpen, onClose }: Props) {
   useEffect(() => {
     console.log('插件列表更新:', plugins)
     const updatablePlugins = plugins.filter(p => p.hasUpdate).map(plugin => plugin.name)
-    // 这里不再依赖于可更新插件的数量
     console.log(`当前选中的插件数量: ${selectedPlugins.size}, 所有插件数量: ${plugins.length}`)
-    if (selectedPlugins.size === plugins.length) {
-      console.log('当前选中的插件数量等于所有插件数量，更新选中状态')
+
+    // 仅在需要时更新 selectedPlugins
+    if (selectedPlugins.size !== updatablePlugins.length) {
+      console.log('更新选中状态')
       setSelectedPlugins(new Set(updatablePlugins))
     }
     console.log(`按钮状态: ${selectedPlugins.size === plugins.length ? '取消全选' : '全选'}`)
