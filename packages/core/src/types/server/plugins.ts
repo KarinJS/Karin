@@ -30,6 +30,8 @@ interface Base {
     name: string
     /** 主页 */
     home: string
+    /** 头像 */
+    avatar: string
   }[]
   /** 插件仓库 */
   repo: {
@@ -71,4 +73,10 @@ export interface PluginLists extends Base {
   installed: boolean
   /** 最新版本 */
   latestVersion?: string
+  /** 下载量 */
+  downloads: number
+  /** 插件大小 */
+  size: number
+  /** 最近一次更新时间 */
+  updated: string
 }

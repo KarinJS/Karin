@@ -31,7 +31,7 @@ export const speedTest = async () => {
   const promises = list.map(async (host, index) => {
     try {
       const startTime = Date.now()
-      const url = `${host}/${testUrl}`
+      const url = host === github ? testUrl : `${host}/${testUrl}`
       await axios.get(url, { signal: controllers[index].signal, timeout: 2 * 1000 })
       const endTime = Date.now()
 

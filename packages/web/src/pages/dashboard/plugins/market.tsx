@@ -24,6 +24,7 @@ import { TaskListModal } from '@/components/plugin/task_list_modal'
 import { InstallLogModal } from '@/components/plugin/install_log_modal'
 // import * as ReactDOM from 'react-dom/client'
 import type { PluginLists } from 'node-karin'
+import { getRandomString, formatTimeAgo, formatNumber } from '@/lib/utils'
 
 // 默认描述生成函数
 const getDefaultDescription = (name: string) => {
@@ -133,7 +134,7 @@ const PluginCard = ({ plugin }: { plugin: PluginLists }) => {
                       <Avatar
                         isBordered
                         size="sm"
-                        src={`https://avatar.vercel.sh/${author.name}`}
+                        src={author.avatar || `https://avatar.vercel.sh/${author.name}`}
                         className="bg-default-100 border-white dark:border-default-800"
                       />
                     </Link>
@@ -141,9 +142,10 @@ const PluginCard = ({ plugin }: { plugin: PluginLists }) => {
                     <Avatar
                       isBordered
                       size="sm"
-                      src={`https://avatar.vercel.sh/${author.name}`}
+                      src={author.avatar || `https://avatar.vercel.sh/ikenxuan`}
                       className="bg-default-100 border-white dark:border-default-800"
                     />
+
                   )}
                 </Tooltip>
               ))
@@ -173,15 +175,16 @@ const PluginCard = ({ plugin }: { plugin: PluginLists }) => {
             <div className="flex items-center gap-2 text-xs text-default-400">
               <div className="flex items-center gap-1">
                 <IoDownloadOutline className="text-base" />
-                <span>1.2k</span>
+                <span>{formatNumber(plugin.downloads || 0)}</span>
               </div>
               <span>·</span>
               <div className="flex items-center gap-1">
                 <IoRefreshOutline className="text-base" />
-                <span>2天前</span>
+                <span>{formatTimeAgo(plugin.updated)}</span>
               </div>
             </div>
           </div>
+
           <div className="flex items-center gap-2">
             {plugin.installed ? (
               <InstalledPluginButton plugin={plugin} />
@@ -217,8 +220,16 @@ export default function MarketPage () {
     },
     {
       refreshDeps: [],
-      onSuccess: (data) => {
-        console.log('📦 新的插件列表数据:', data)
+      onSuccess: (data, oldData) => {
+        // 比较新旧数据是否有实质性变化
+        const hasChanged = !oldData || JSON.stringify(data) !== JSON.stringify(oldData)
+
+        if (hasChanged) {
+          console.log('📦 插件列表发生变化:', data)
+        } else {
+          console.log('📦 插件列表无变化，跳过更新')
+          return oldData // 返回旧数据，避免触发重渲染
+        }
       }
     }
   )
@@ -231,13 +242,22 @@ export default function MarketPage () {
     {
       pollingInterval: 1000,
       pollingWhenHidden: false,
-      onSuccess: (data) => {
-        data.forEach(task => {
-          const existingTask = tasks.find(t => t.id === task.id)
-          if (!existingTask) {
-            task.minimized = activeTask !== task.id
-          }
-        })
+      onSuccess: (data, oldData) => {
+        // 比较新旧数据是否有实质性变化
+        const hasChanged = !oldData || JSON.stringify(data) !== JSON.stringify(oldData)
+
+        if (hasChanged) {
+          console.log('📝 任务列表发生变化，更新UI...')
+          data.forEach(task => {
+            const existingTask = tasks.find(t => t.id === task.id)
+            if (!existingTask) {
+              task.minimized = activeTask !== task.id
+            }
+          })
+        } else {
+          console.log('📝 任务列表无变化，跳过更新')
+          return oldData // 返回旧数据，避免触发重渲染
+        }
       }
     }
   )

@@ -85,6 +85,9 @@
     "ws": "8.18.0",
     "yaml": "2.7.0"
   },
+  "peerDependencies": {
+    "node-karin": "workspace:*"
+  },
   "engines": {
     "node": ">=18"
   },
