@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.3](https://github.com/KarinJS/Karin/compare/create-karin-v1.0.2...create-karin-v1.0.3) (2025-02-08)
+
+
+### 🐛 Bug Fixes
+
+* create karin tips ([3755018](https://github.com/KarinJS/Karin/commit/3755018ded673aea5c40ba95365ba13082a4f4f1))
+* **create-karin:** pnpm 10 ([6f9da1e](https://github.com/KarinJS/Karin/commit/6f9da1e8efaf5a2b7895f886012e3bdb0eb0d058))
+
 ## [1.0.2](https://github.com/KarinJS/Karin/compare/create-karin-v1.0.1...create-karin-v1.0.2) (2025-01-16)
 
 
