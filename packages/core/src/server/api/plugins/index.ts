@@ -161,7 +161,7 @@ const str = (text: string) => text || '-'
 const getPluginListRouter: RequestHandler = async (req, res) => {
   try {
     const { type = 'all' } = req.query as { type?: GetPluginType }
-    const plugins = await getPlugins(type, true)
+    const plugins = await getPlugins(type, true, true)
     createSuccessResponse(res, plugins)
   } catch (error) {
     createServerErrorResponse(res, (error as Error).message)
@@ -175,7 +175,7 @@ const getPluginListRouter: RequestHandler = async (req, res) => {
 const getPluginApps: RequestHandler = async (req, res) => {
   try {
     const { name } = req.body
-    const list = await getPlugins('app', true)
+    const list = await getPlugins('app', true, true)
     const apps = list.filter((item) => item.name === name)
     /** 只需要文件名称和后缀 */
     const result: string[] = []
@@ -227,7 +227,7 @@ const getUpdatablePlugins: RequestHandler = async (_req, res) => {
     // 并发获取 node-karin 和其他插件信息
     const [nodeKarinInfo, plugins] = await Promise.all([
       checkNodeKarinUpdate(),
-      getPlugins('all', true)
+      getPlugins('all', true, true)
     ])
 
     const pluginInfos: PluginUpdateInfo[] = nodeKarinInfo ? [nodeKarinInfo] : []
@@ -294,7 +294,7 @@ const getUpdatablePlugins: RequestHandler = async (_req, res) => {
 const batchUpdatePlugins: RequestHandler = async (req, res) => {
   try {
     const { plugins } = req.body as { plugins: string[] }
-    const list = await getPlugins('all', true)
+    const list = await getPlugins('all', true, true)
 
     // 并发处理所有插件的更新
     const results = await Promise.all(
