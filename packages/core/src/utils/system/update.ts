@@ -77,7 +77,7 @@ export const getRemotePkgVersion = async (name: string, tag = 'latest') => {
   const cmd = tag === 'latest' ? `npm show ${name} version` : `npm show ${name} dist-tags.${tag}`
 
   const { status, stdout, error } = await exec(cmd)
-  if (status) {
+  if (!status) {
     if (error?.stack?.toString().includes('empty')) {
       throw new Error(`获取失败，${name} 未安装`)
     }

@@ -51,38 +51,24 @@ interface App extends Base {
   files: string[]
 }
 
+type Plugins = Base | App
+
 /**
  * 官方Api返回类型
  * https://registry.npmjs.com/@karinjs/plugins-list/latest
  * https://registry.npmmirror.com/@karinjs/plugins-list/latest
  */
-export type OnlinePluginInfo<T extends 'npm' | 'git' | 'app' | 'all'> = T extends 'npm'
-  ? Base
-  : T extends 'git'
-    ? Base
-    : T extends 'app'
-      ? App
-      : T extends 'all'
-        ? Base | Base | App
-        : never
-
-type Other = {
-  /** 最新版本 */
-  version: string
-  /** 是否已经安装 */
-  installed: boolean
+export interface OnlinePluginInfo {
+  plugins: Plugins[]
 }
 
 /**
  * karin api返回类型
  */
-export type KarinBase<T extends 'npm' | 'git' | 'app' | 'all'> = (Other &
-  (T extends 'npm'
-    ? Base
-    : T extends 'git'
-      ? Base
-      : T extends 'app'
-        ? App
-        : T extends 'all'
-          ? Base | Base | App
-          : never))[]
+export interface pluginLists extends Base {
+  version: string
+  /** 是否已经安装 */
+  installed: boolean
+  /** 最新版本 */
+  latestVersion?: string
+}

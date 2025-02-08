@@ -11,6 +11,9 @@ import { isClass } from '@/utils/system/class'
 import { createLogger } from './tools'
 import { isTsx } from '@/env'
 import { createPluginDir } from '@/utils/fs/file'
+import { listeners } from '@/core/internal'
+import { WatcherPlugin } from './watcher'
+import type { Plugin } from './class'
 import type {
   Accept,
   AllPluginMethods,
@@ -18,13 +21,10 @@ import type {
   Command,
   Handler,
   PkgInfo,
-  Plugin,
   PluginFile,
   PluginFncTypes,
   Task,
 } from '@/types/plugin'
-import { listeners } from '@/core/internal'
-import { WatcherPlugin } from './watcher'
 
 let seq = 0
 
@@ -78,9 +78,11 @@ export class LoaderPlugin {
 
       /** 收集所有app加载的Promise */
       pkg.apps.forEach(app => {
-        const promise = this.importApp(pkg.name, app)
-          .then(result => this.cachePlugin(result, pkg, app))
-        allPromises.push(promise)
+        const promise = async () => {
+          const result = await this.importApp(pkg.name, app)
+          this.cachePlugin(result, pkg, app)
+        }
+        allPromises.push(promise())
       })
 
       /** 收集入口文件加载的Promise */
@@ -221,12 +223,12 @@ export class LoaderPlugin {
       if (key === 'default') continue
 
       if (typeof result[key] === 'function') {
-        if (!isClass(result[key])) return
+        if (!isClass(result[key])) continue
         // TODO: 可以使用 instanceof 判断是否为插件类
         // if (result[key].prototype instanceof Plugin) {
         // }
         this.cacheClassPlugin(result[key], pkg, app, key)
-        return
+        continue
       }
 
       const data = result[key]
@@ -326,7 +328,7 @@ export class LoaderPlugin {
         permission: v.permission || 'all',
         event: v.event || command.event || 'message',
         priority: v.priority || 10000,
-        file: this.createFile(app, 'command', key, command.name),
+        file: this.createFile(app, 'command', v.fnc, command.name),
         authFailMsg: v.authFailMsg || true,
       })
     })

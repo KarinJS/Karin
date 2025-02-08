@@ -22,7 +22,7 @@ export interface Env {
   /** logger.fnc颜色 */
   LOG_FNC_COLOR: string
   /** 运行器 "node" | "pm2" | "tsx" */
-  RUNNER: 'node' | 'pm2' | 'tsx'
+  RUNTIME: 'node' | 'pm2' | 'tsx'
   /** ffmpeg路径 */
   FFMPEG_PATH: string
   /** ffprobe路径 */

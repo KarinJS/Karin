@@ -1,4 +1,4 @@
-import { webSocketServerToken } from '@/utils/config/adapter'
+import { webSocketServerToken } from '@/utils/config/file/adapter'
 import { unregisterBot } from '@/service/bot'
 import { WsAdapterOneBot11 } from './ws'
 import type { WebSocket } from 'ws'

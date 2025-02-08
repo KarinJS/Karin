@@ -6,12 +6,8 @@ import DashboardLayout from '@/pages/dashboard/layout'
 import IndexPage from '@/pages/dashboard'
 // Config Page
 import ConfigPage from '@/pages/dashboard/config'
-// Plugin Page
-import PluginsPage from '@/pages/dashboard/plugins'
 // Plugin Market
 import PluginMarketPage from '@/pages/dashboard/plugins/market'
-// Local Plugin
-import LocalPluginPage from '@/pages/dashboard/plugins/local'
 // Sandbox Page
 import SandboxPage from '@/pages/dashboard/sandbox'
 // About Page
@@ -24,24 +20,22 @@ import DefaultPage from '@/components/default_page'
 import FriendRequest from '@/pages/dashboard/sandbox/contact/friend_request'
 import UserDetail from '@/pages/dashboard/sandbox/contact/detail'
 import GroupNotice from '@/pages/dashboard/sandbox/contact/group_notice'
+import GroupChatTest from '@/pages/dashboard/sandbox/group'
 
 // Main App
-function App() {
+function App () {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route element={<DashboardLayout />} path="/">
         <Route element={<IndexPage />} path="" />
         <Route element={<ConfigPage />} path="/config" />
-        <Route element={<PluginsPage />} path="/plugins">
-          <Route element={<PluginMarketPage />} path="" />
-          <Route element={<LocalPluginPage />} path="local" />
-        </Route>
+        <Route element={<PluginMarketPage />} path="/plugins" />
         <Route element={<SandboxPage />} path="/sandbox">
           <Route element={<Navigate to="/sandbox/chat" />} path="" />
           <Route path="chat">
             <Route element={<DefaultPage />} path="" />
-            <Route element={<ChatDetail />} path=":id" />
+            <Route element={<ChatDetail />} path=":type/:id" />
           </Route>
           <Route path="contact/*">
             <Route element={<DefaultPage />} path="" />
@@ -49,6 +43,7 @@ function App() {
             <Route element={<GroupNotice />} path="group_notice" />
             <Route element={<UserDetail />} path=":id" />
           </Route>
+          <Route element={<GroupChatTest />} path="group" />
         </Route>
         <Route element={<AboutPage />} path="/about" />
       </Route>

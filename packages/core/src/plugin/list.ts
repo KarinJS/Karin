@@ -1,8 +1,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import lodash from 'lodash'
 import { isTsx } from '@/env'
 import { filesByExt } from '@/utils/fs/path'
-import { pluginDir as dir, karinDir } from '@/root'
+import { pluginDir as dir } from '@/root'
 import { requireFile, requireFileSync } from '@/utils/fs/require'
 
 import type { GetPluginType, PkgInfo, GetPluginReturn } from '@/types/plugin'
@@ -22,14 +23,36 @@ const cache: {
  * 获取插件
  * @param type 获取插件的方式
  * @param isInfo 是否获取插件详细信息 否则返回插件名称列表
+ * @param isForce 是否强制更新缓存
  */
 export const getPlugins = async<T extends boolean = false> (
   type: GetPluginType,
-  isInfo?: T
+  isInfo?: T,
+  isForce: boolean = false
 ): Promise<GetPluginReturn<T>> => {
-  if (cache?.list?.[type]) return cache.list[type] as GetPluginReturn<T>
-  if (!cache.list) cache.list = {} as Record<GetPluginType, string[]>
-  if (!cache.info) cache.info = {} as Record<GetPluginType, PkgInfo[]>
+  if (isForce) {
+    delete cache.list
+    delete cache.info
+  }
+
+  if (isInfo) {
+    if (cache?.info?.[type] && !lodash.isEqual(cache.info[type], cache.info[type])) {
+      return cache.info[type] as GetPluginReturn<T>
+    }
+  } else {
+    if (cache?.list?.[type] && !lodash.isEqual(cache.list[type], cache.list[type])) {
+      return cache.list[type] as GetPluginReturn<T>
+    }
+  }
+
+  if (!cache.list) {
+    cache.list = {} as Record<GetPluginType, string[]>
+  }
+
+  if (!cache.info) {
+    cache.info = {} as Record<GetPluginType, PkgInfo[]>
+  }
+
   if (!['npm', 'all', 'git', 'app'].includes(type)) return []
 
   const list: string[] = []
@@ -56,7 +79,7 @@ export const getPlugins = async<T extends boolean = false> (
   setTimeout(() => delete cache?.list?.[type], 60 * 1000)
   if (!isInfo) return list as GetPluginReturn<T>
 
-  const info = await getPluginsInfo(list)
+  const info = await getPluginsInfo(list, isForce)
   cache.info[type] = info
   setTimeout(() => delete cache?.info?.[type], 60 * 1000)
   return info as GetPluginReturn<T>
@@ -66,7 +89,7 @@ export const getPlugins = async<T extends boolean = false> (
  * 获取插件详细信息
  * @param list 插件名称列表
  */
-const getPluginsInfo = async (list: string[]): Promise<PkgInfo[]> => {
+const getPluginsInfo = async (list: string[], isForce: boolean): Promise<PkgInfo[]> => {
   const info: PkgInfo[] = []
   const ext = isTsx() ? ['.ts', '.js'] : ['.js']
 
@@ -75,19 +98,19 @@ const getPluginsInfo = async (list: string[]): Promise<PkgInfo[]> => {
 
     if (type === 'app') {
       const file = path.join(dir, name)
-      await getAppInfo(info, file, name, ext)
+      await getAppInfo(info, file, name, ext, isForce)
       return
     }
 
     if (type === 'git' || type === 'root') {
       const file = type === 'root' ? process.cwd() : path.join(dir, name)
-      await getGitInfo(info, file, name, ext)
+      await getGitInfo(info, file, name, ext, isForce)
       return
     }
 
     if (type === 'npm') {
       const file = path.join(process.cwd(), 'node_modules', name)
-      await getNpmInfo(info, file, name)
+      await getNpmInfo(info, file, name, isForce)
     }
   }))
 
@@ -99,7 +122,8 @@ const createPkg = (
   name: string,
   dir: string,
   apps: string[],
-  allApps: string[]
+  allApps: string[],
+  isForce: boolean
 ): PkgInfo => {
   return {
     type,
@@ -115,7 +139,7 @@ const createPkg = (
     },
     get pkgData () {
       if (!this.pkgPath) return {}
-      return requireFileSync(this.pkgPath)
+      return requireFileSync(this.pkgPath, { force: isForce })
     },
   }
 }
@@ -125,10 +149,11 @@ const createPkg = (
  * @param dir 插件目录
  * @param name 插件名称
  * @param ext 文件后缀
+ * @param isForce 是否强制更新缓存
  */
-const getAppInfo = async (info: PkgInfo[], dir: string, name: string, ext: string[]) => {
+const getAppInfo = async (info: PkgInfo[], dir: string, name: string, ext: string[], isForce: boolean) => {
   const apps = filesByExt(dir, ext, 'abs')
-  info.push(createPkg('app', name, dir, apps, [dir]))
+  info.push(createPkg('app', name, dir, apps, [dir], isForce))
 }
 
 /**
@@ -136,11 +161,18 @@ const getAppInfo = async (info: PkgInfo[], dir: string, name: string, ext: strin
  * @param dir 插件目录
  * @param name 插件名称
  * @param ext 文件后缀
+ * @param isForce 是否强制更新缓存
  */
-const getGitInfo = async (info: PkgInfo[], dir: string, name: string, ext: string[]) => {
+const getGitInfo = async (
+  info: PkgInfo[],
+  dir: string,
+  name: string,
+  ext: string[],
+  isForce: boolean
+) => {
   const pkg = await requireFile(path.join(dir, 'package.json'))
   if (!pkg || !pkg.karin) {
-    info.push(createPkg('git', name, dir, [], []))
+    info.push(createPkg('git', name, dir, [], [], isForce))
     return
   }
 
@@ -172,22 +204,27 @@ const getGitInfo = async (info: PkgInfo[], dir: string, name: string, ext: strin
     allApps.push(appPath)
   }))
 
-  info.push(createPkg('git', name, dir, apps, allApps))
+  info.push(createPkg('git', name, dir, apps, allApps, isForce))
 }
 
 /**
  * 获取npm插件信息
  * @param dir 插件目录
  * @param name 插件名称
+ * @param isForce 是否强制更新缓存
  */
-const getNpmInfo = async (info: PkgInfo[], dir: string, name: string) => {
+const getNpmInfo = async (
+  info: PkgInfo[],
+  dir: string, name: string,
+  isForce: boolean
+) => {
   const ext = '.js'
   const apps: string[] = []
   const allApps: string[] = []
   const pkg = await requireFile(path.join(dir, 'package.json'))
 
   if (!pkg.karin?.apps?.length) {
-    info.push(createPkg('npm', name, dir, [], []))
+    info.push(createPkg('npm', name, dir, [], [], isForce))
     return
   }
 
@@ -205,7 +242,7 @@ const getNpmInfo = async (info: PkgInfo[], dir: string, name: string) => {
     allApps.push(appPath)
   }))
 
-  info.push(createPkg('npm', name, dir, apps, allApps))
+  info.push(createPkg('npm', name, dir, apps, allApps, isForce))
 }
 
 /**
@@ -246,10 +283,29 @@ const filterGit = async (files: fs.Dirent[], list: string[]) => {
 }
 
 const filterPkg = async (list: string[]) => {
-  const karinPkg = await requireFile(path.join(karinDir, 'package.json'))
-  const exclude = [...Object.keys(karinPkg.dependencies || {}), ...Object.keys(karinPkg.devDependencies || {})]
+  const exclude = [
+    '@types/express',
+    '@types/lodash',
+    '@types/node-schedule',
+    '@types/ws',
+    'art-template',
+    'axios',
+    'chalk',
+    'chokidar',
+    'commander',
+    'dotenv',
+    'express',
+    'level',
+    'lodash',
+    'log4js',
+    'moment',
+    'node-schedule',
+    'redis',
+    'ws',
+    'yaml',
+  ]
 
-  const pkg = await requireFile('./package.json')
+  const pkg = await requireFile('./package.json', { force: true })
   const dependencies = Object.keys(pkg.dependencies || {}).filter((name) => !exclude.includes(name) && !name.startsWith('@types'))
 
   await Promise.all(dependencies.map(async (name) => {

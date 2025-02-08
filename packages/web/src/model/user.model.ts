@@ -18,11 +18,17 @@ export class User {
     this.signature = signature
   }
 
+  static fromFriend (friend: { userId: string; nick: string; avatar: string }) {
+    return new User(friend.userId, friend.nick, friend.avatar)
+  }
+
+  static fromGroup (group: { groupId: string; name: string; avatar: string }) {
+    return new User(group.groupId, group.name, group.avatar)
+  }
+
   async refresh () {
-    // const user_info = await getUserInfo(this.user_id)
-    // this.nickname = user_info.nickname
-    // this.avatar = user_info.avatar
-    // this.signature = user_info.signature
+    // 不需要重新获取，因为已经有了完整信息
+    return
   }
 
   setInfo (nickname: string, avatar: string, signature: string) {
@@ -35,7 +41,13 @@ export class User {
     return JSON.stringify(this)
   }
 
-  toJSON (): User {
-    return this
+  toJSON () {
+    return {
+      userId: this.userId,
+      nickname: this.nickname,
+      avatar: this.avatar,
+      signature: this.signature,
+      id: this.id
+    }
   }
 }

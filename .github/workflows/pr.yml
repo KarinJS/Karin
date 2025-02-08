@@ -59,7 +59,7 @@ jobs:
       - name: 修订版本号
         id: version
         run: |
-          pnpm --filter node-karin run pr all || {
+          pnpm --filter node-karin run pr || {
             echo "修订版本号失败"
             exit 1
           }

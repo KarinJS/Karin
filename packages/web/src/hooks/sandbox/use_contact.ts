@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { User } from '@/model/user.model'
 import { request } from '@/lib/request'
+import { updateUserCache } from './user'
 
 /** 好友信息接口 */
 interface Friend {
@@ -25,12 +26,16 @@ const defaultGroup = {
 
 /** 获取好友列表 */
 const getFriendList = async () => {
-  const friends = await request.serverPost<Friend[], any>('/api/v1/sandbox/friend/list', {})
-  return friends.map(friend => ({
-    user_id: friend.userId,
-    nickname: friend.nick,
-    avatar: friend.avatar
-  }))
+  const friends = await request.serverPost<Friend[], object>('/api/v1/sandbox/friend/list', {})
+  return friends.map(friend => {
+    const user = User.fromFriend(friend)
+    updateUserCache(user) // 更新用户缓存
+    return {
+      user_id: friend.userId,
+      nickname: friend.nick,
+      avatar: friend.avatar
+    }
+  })
 }
 
 /** 创建默认群组 */
@@ -40,20 +45,30 @@ const createDefaultGroup = async () => {
 
 /** 获取群组列表 */
 const getGroupList = async () => {
-  const groups = await request.serverPost<Group[], any>('/api/v1/sandbox/group/list', {})
+  const groups = await request.serverPost<Group[], object>('/api/v1/sandbox/group/list', {})
   if (groups.length === 0) {
     await createDefaultGroup()
+    const defaultGroupUser = User.fromGroup({
+      groupId: defaultGroup.id,
+      name: defaultGroup.name,
+      avatar: defaultGroup.avatar
+    })
+    updateUserCache(defaultGroupUser)
     return [{
       group_id: defaultGroup.id,
       name: defaultGroup.name,
       avatar: defaultGroup.avatar
     }]
   }
-  return groups.map(group => ({
-    group_id: group.groupId,
-    name: group.name,
-    avatar: group.avatar
-  }))
+  return groups.map(group => {
+    const user = User.fromGroup(group)
+    updateUserCache(user) // 更新用户缓存
+    return {
+      group_id: group.groupId,
+      name: group.name,
+      avatar: group.avatar
+    }
+  })
 }
 
 /** 好友列表 Hook */
@@ -66,11 +81,13 @@ export const useFriendList = () => {
     setLoading(true)
     try {
       const friends = await getFriendList()
-      const list: User[] = []
-      for (const friend of friends) {
-        const user = new User(friend.user_id, friend.nickname, friend.avatar)
-        list.push(user)
-      }
+      const list: User[] = friends.map(friend =>
+        User.fromFriend({
+          userId: friend.user_id,
+          nick: friend.nickname,
+          avatar: friend.avatar
+        })
+      )
       setData(list)
     } catch (error) {
       setError(error as Error)

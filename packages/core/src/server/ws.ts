@@ -21,7 +21,6 @@ wss.on('connection', (socket, request) => {
   logger.debug(`[WebSocketServer] host: ${request.headers.host} url: ${request.url}`)
 
   if (
-    request?.headers?.a ||
     request.url === '/' ||
     request.url === '/onebot/v11/ws' ||
     request.url === '/onebot/v11/ws/'
@@ -45,7 +44,7 @@ wss.on('connection', (socket, request) => {
     return
   }
 
-  if (request.url === '/sandbox') {
+  if (request.url?.startsWith('/sandbox')) {
     listeners.emit('ws:connection:sandbox', socket, request)
 
     socket.once('close', (code, reason) => {

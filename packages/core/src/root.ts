@@ -50,3 +50,28 @@ export const consolePath = Object.freeze(path.join(tempPath, 'console'))
 export const sandboxDataPath = Object.freeze(path.join(dataPath, 'sandbox'))
 /** 沙盒临时数据目录 `@karinjs/temp/sandbox` */
 export const sandboxTempPath = Object.freeze(path.join(tempPath, 'sandbox'))
+
+export default {
+  karinDir,
+  karinMain,
+  pluginDir,
+  isPkg,
+  defaultConfigPath,
+  defaultViewPath,
+  commentPath,
+  basePath,
+  configPath,
+  dataPath,
+  tempPath,
+  resourcePath,
+  dbPath,
+  levelPath,
+  redisLevelPath,
+  sandboxLevelPath,
+  logsPath,
+  htmlPath,
+  pm2Path,
+  consolePath,
+  sandboxDataPath,
+  sandboxTempPath,
+}

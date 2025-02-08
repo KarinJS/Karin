@@ -1,4 +1,4 @@
-import type { Plugin } from '../plugin/class'
+import type { Plugin } from '@/plugin/class'
 import type { MessageEventMap, Permission } from '../event'
 import type { AdapterOptions, Log, PkgInfo, PluginFile } from './base'
 

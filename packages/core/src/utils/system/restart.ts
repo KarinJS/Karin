@@ -22,7 +22,7 @@ export const restart = async (
   }
 
   const key = `karin:restart:${selfId}`
-  const { level } = await import('@/service/db')
+  const { level } = await import('@/index')
   await level.set(key, options)
 
   if (isFront && process.send) {

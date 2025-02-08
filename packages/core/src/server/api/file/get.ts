@@ -3,7 +3,7 @@ import { createSuccessResponse } from '@/server/utils/response'
 import { config, adapter, groups, privates, render, pm2, redis, env } from '@/utils/config'
 
 import type { RequestHandler } from 'express'
-import type { FormField } from '@/types/Components'
+import type { FormField } from '@/types/components'
 import type { Groups, Privates } from '@/types/config'
 
 /**
@@ -762,7 +762,6 @@ const getRedisConfig: GetConfig = () => {
  */
 const getEnvConfig: GetConfig = () => {
   const cfg = env()
-
   const list: FormField[] = [
     {
       type: 'title',
@@ -773,45 +772,45 @@ const getEnvConfig: GetConfig = () => {
       type: 'text',
       label: '是否启用HTTP',
       key: 'HTTP_ENABLE',
-      defaultValue: cfg.HTTP_ENABLE,
+      defaultValue: process.env.HTTP_ENABLE,
     },
     {
       type: 'text',
       label: 'HTTP监听端口',
       key: 'HTTP_PORT',
-      defaultValue: cfg.HTTP_PORT,
+      defaultValue: process.env.HTTP_PORT,
     },
     {
       type: 'text',
       label: 'HTTP监听地址',
       key: 'HTTP_HOST',
-      defaultValue: cfg.HTTP_HOST,
+      defaultValue: process.env.HTTP_HOST,
     },
     {
       type: 'text',
       label: 'HTTP鉴权秘钥',
       key: 'HTTP_AUTH_KEY',
-      defaultValue: cfg.HTTP_AUTH_KEY,
+      defaultValue: process.env.HTTP_AUTH_KEY,
     },
     {
       type: 'text',
       label: 'WS服务器鉴权秘钥',
       key: 'WS_SERVER_AUTH_KEY',
-      defaultValue: cfg.WS_SERVER_AUTH_KEY,
+      defaultValue: process.env.WS_SERVER_AUTH_KEY,
     },
     {
       type: 'text',
       label: '是否启用Redis',
       description: '关闭后将使用内部虚拟Redis',
       key: 'REDIS_ENABLE',
-      defaultValue: cfg.REDIS_ENABLE,
+      defaultValue: process.env.REDIS_ENABLE,
     },
     {
       type: 'text',
       label: '重启是否调用PM2',
       description: '如果不调用则会直接关机，此配置适合有进程守护的程序',
       key: 'PM2_RESTART',
-      defaultValue: cfg.PM2_RESTART,
+      defaultValue: process.env.PM2_RESTART,
     },
     {
       type: 'radio',
@@ -827,50 +826,50 @@ const getEnvConfig: GetConfig = () => {
       type: 'text',
       label: '日志等级',
       key: 'LOG_LEVEL',
-      defaultValue: cfg.LOG_LEVEL,
+      defaultValue: process.env.LOG_LEVEL,
     },
     {
       type: 'text',
       label: '日志保留天数',
       key: 'LOG_DAYS_TO_KEEP',
-      defaultValue: cfg.LOG_DAYS_TO_KEEP,
+      defaultValue: process.env.LOG_DAYS_TO_KEEP,
     },
     {
       type: 'text',
       label: '日志文件最大大小',
       description: '如果此项大于0则启用日志分割',
       key: 'LOG_MAX_LOG_SIZE',
-      defaultValue: cfg.LOG_MAX_LOG_SIZE,
+      defaultValue: process.env.LOG_MAX_LOG_SIZE,
     },
     {
       type: 'text',
       label: 'logger.fnc颜色',
       key: 'LOG_FNC_COLOR',
-      defaultValue: cfg.LOG_FNC_COLOR,
+      defaultValue: process.env.LOG_FNC_COLOR,
     },
     {
       type: 'text',
       label: 'TSX监察者模式',
       key: 'TSX_WATCH',
-      defaultValue: cfg.TSX_WATCH,
+      defaultValue: process.env.TSX_WATCH,
     },
     {
       type: 'text',
       label: 'ffmpeg路径',
       key: 'FFMPEG_PATH',
-      defaultValue: cfg.FFMPEG_PATH,
+      defaultValue: process.env.FFMPEG_PATH,
     },
     {
       type: 'text',
       label: 'ffprobe路径',
       key: 'FFPROBE_PATH',
-      defaultValue: cfg.FFPROBE_PATH,
+      defaultValue: process.env.FFPROBE_PATH,
     },
     {
       type: 'text',
       label: 'ffplay路径',
       key: 'FFPLAY_PATH',
-      defaultValue: cfg.FFPLAY_PATH,
+      defaultValue: process.env.FFPLAY_PATH,
     },
   ]
 

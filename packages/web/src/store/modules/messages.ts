@@ -4,6 +4,7 @@ import type { SandboxEvent } from '@/types/sandbox'
 
 interface MessagesState {
   user_id: string
+  type: 'friend' | 'group'
   messages: SandboxEvent[]
 }
 
@@ -20,16 +21,18 @@ const messagesSlice = createSlice({
         userMessages.messages.push(message)
       } else {
         state.push({
+          type: message.type,
           user_id,
           messages: [message]
         })
       }
     },
-    setEmptyIfNotExist: (state, action: PayloadAction<string>) => {
-      const user_id = action.payload
-      if (!state.find(item => item.user_id === user_id)) {
+    setEmptyIfNotExist: (state, action: PayloadAction<{ id: string, type: 'friend' | 'group' }>) => {
+      const { id, type } = action.payload
+      if (!state.find(item => item.user_id === id)) {
         state.push({
-          user_id,
+          type,
+          user_id: id,
           messages: []
         })
       }

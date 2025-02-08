@@ -13,12 +13,15 @@
 
 ```json
 {
- "action": "init",
- "param": {
-   "id": "机器人id",
-   "name": "机器人名称",
-   "avatar": "机器人头像"
- }
+  "action": "init",
+  "param": {
+    "userId": "机器人id",
+    "nick": "机器人名称",
+    "sex": "性别",
+    "avatar": "机器人头像",
+    "sign": "签名",
+    "status": "在线状态"
+  }
 }
 ```
 
@@ -31,7 +34,10 @@
 ```json
 {
   "code": 200,
-  "data": { "url": "ws://localhost:7777/sandbox" }
+  "data": { 
+    "url": "ws://localhost:7777/sandbox",
+    "authKey": "认证密钥"
+  }
 }
 ```
 
@@ -47,9 +53,12 @@
 {
   "code": 200,
   "data": {
-    "id": "sandbox",
-    "name": "Bot名称",
-    "avatar": "头像URL"
+    "userId": "sandbox",
+    "nick": "Bot名称",
+    "sex": "性别",
+    "avatar": "头像URL",
+    "sign": "签名",
+    "status": "在线状态"
   }
 }
 ```
@@ -62,8 +71,11 @@
 
 ```json
 {
-  "name": "新名称",
-  "avatar": "新头像URL"
+  "nick": "新名称",
+  "avatar": "新头像URL",
+  "sex": "性别",
+  "sign": "新签名",
+  "status": "新状态"
 }
 ```
 
@@ -78,21 +90,9 @@
 ```json
 {
   "id": "好友ID",
-  "name": "好友名称",
-  "avatar": "头像URL"
-}
-```
-
-- 响应:
-
-```json
-{
-  "code": 200,
-  "data": {
-    "userId": "好友ID",
-    "name": "好友名称", 
-    "avatar": "头像URL"
-  }
+  "nick": "好友名称",
+  "avatar": "头像URL",
+  "sex": "性别"
 }
 ```
 
@@ -108,7 +108,8 @@
   "data": [
     {
       "userId": "好友ID",
-      "name": "好友名称",
+      "nick": "好友名称",
+      "sex": "性别",
       "avatar": "头像URL"
     }
   ]
@@ -127,15 +128,6 @@
 }
 ```
 
-- 响应:
-
-```json
-{
-  "code": 200,
-  "data": "成功"
-}
-```
-
 ### 更新好友信息
 
 - 路径: `/sandbox/friend/update`
@@ -144,22 +136,10 @@
 
 ```json
 {
-  "id": "好友ID",
-  "name": "新名称",
-  "avatar": "新头像URL"
-}
-```
-
-- 响应:
-
-```json
-{
-  "code": 200,
-  "data": {
-    "userId": "好友ID",
-    "name": "更新后的名称",
-    "avatar": "更新后的头像URL"
-  }
+  "userId": "好友ID",
+  "nick": "新名称",
+  "avatar": "新头像URL",
+  "sex": "性别"
 }
 ```
 
@@ -173,21 +153,17 @@
 
 ```json
 {
-  "id": "群ID",
+  "groupId": "群ID",
   "name": "群名称",
-  "avatar": "群头像URL"
-}
-```
-
-- 响应:
-
-```json
-{
-  "code": 200,
-  "data": {
-    "groupId": "群ID",
-    "name": "群名称",
-    "avatar": "群头像URL"
+  "avatar": "群头像URL",
+  "member": {
+    "userId": "成员ID",
+    "name": "成员名称",
+    "avatar": "成员头像",
+    "sex": "性别",
+    "role": "成员角色",
+    "card": "群名片",
+    "title": "群头衔"
   }
 }
 ```
@@ -223,15 +199,6 @@
 }
 ```
 
-- 响应:
-
-```json
-{
-  "code": 200,
-  "data": "成功"
-}
-```
-
 ### 更新群组信息
 
 - 路径: `/sandbox/group/update`
@@ -240,22 +207,9 @@
 
 ```json
 {
-  "id": "群ID",
+  "groupId": "群ID",
   "name": "新群名称",
   "avatar": "新群头像URL"
-}
-```
-
-- 响应:
-
-```json
-{
-  "code": 200,
-  "data": {
-    "groupId": "群ID",
-    "name": "更新后的群名称",
-    "avatar": "更新后的群头像URL"
-  }
 }
 ```
 
@@ -282,9 +236,15 @@
     {
       "groupId": "群ID",
       "userId": "成员ID",
-      "name": "成员名称",
-      "avatar": "成员头像URL",
-      "role": "member"
+      "role": "成员角色",
+      "joinTime": "加入时间",
+      "lastSpeakTime": "最后发言时间",
+      "muteTime": "禁言时间",
+      "card": "群名片",
+      "title": "群头衔",
+      "nick": "昵称",
+      "sex": "性别",
+      "avatar": "头像URL"
     }
   ]
 }
@@ -300,24 +260,12 @@
 {
   "groupId": "群ID",
   "userId": "成员ID",
+  "role": "成员角色",
+  "card": "群名片",
+  "title": "群头衔",
   "name": "成员名称",
-  "avatar": "成员头像URL",
-  "role": "member"
-}
-```
-
-- 响应:
-
-```json
-{
-  "code": 200,
-  "data": {
-    "groupId": "群ID",
-    "userId": "成员ID", 
-    "name": "成员名称",
-    "avatar": "成员头像URL",
-    "role": "member"
-  }
+  "avatar": "成员头像",
+  "sex": "性别"
 }
 ```
 
@@ -334,15 +282,6 @@
 }
 ```
 
-- 响应:
-
-```json
-{
-  "code": 200,
-  "data": "成功"
-}
-```
-
 ### 更新群成员信息
 
 - 路径: `/sandbox/group/member/update`
@@ -353,102 +292,37 @@
 {
   "groupId": "群ID",
   "userId": "成员ID",
-  "name": "新名称",
-  "avatar": "新头像URL",
-  "role": "member"
-}
-```
-
-- 响应:
-
-```json
-{
-  "code": 200,
-  "data": {
-    "groupId": "群ID",
-    "userId": "成员ID",
-    "name": "更新后的名称",
-    "avatar": "更新后的头像URL",
-    "role": "更新后的角色"
-  }
+  "role": "新角色",
+  "card": "新群名片",
+  "title": "新群头衔"
 }
 ```
 
 ## 消息相关
 
-### 创建消息索引
-
-- 路径: `/sandbox/msg/create`
-- 方法: `POST`
-- 请求体:
-
-```json
-{
-  "type": "friend",
-  "targetId": "目标ID"
-}
-```
-
-```json
-{
-  "type": "group",
-  "targetId": "目标ID"
-}
-```
-
-- 响应:
-
-```json
-{
-  "code": 200,
-  "data": {
-    "seq": 1,
-    "time": 1716489600000,
-    "messageId": "friend:123456:1716489600000"
-  }
-}
-```
-
 ### 消息上报
-
-> `seq`、`messageId`、`time` 由 `createMsgSeq` 接口生成
 
 - 路径: `/sandbox/webhook`
 - 方法: `POST`
 - 请求体:
 
-```json
-{
-  "type": "friend",
-  "seq": 1,
-  "messageId": "消息ID",
-  "time": 1716489600000,
-  "sender": {
-    "id": "发送者ID",
-    "name": "发送者名称",
-    "role": "member"
-  },
-  "groupId": "群ID",
-  "groupName": "群名称",
-  "elements": [
-    {
-      "type": "text",
-      "text": "消息内容"
-    }
-  ]
-}
-```
+好友消息:
 
 ```json
 {
   "type": "friend",
-  "seq": 1,
-  "messageId": "消息ID",
-  "time": 1716489600000,
+  "event": "message",
+  "subEvent": "friend",
+  "contact": {
+    "scene": "friend",
+    "peer": "好友ID",
+    "name": "好友名称"
+  },
   "sender": {
-    "id": "发送者ID",
+    "userId": "发送者ID",
+    "nick": "发送者昵称",
     "name": "发送者名称",
-    "role": "member"
+    "sex": "性别"
   },
   "elements": [
     {
@@ -459,12 +333,33 @@
 }
 ```
 
-- 响应:
+群消息:
 
 ```json
 {
-  "code": 200,
-  "data": "成功"
+  "type": "group",
+  "event": "message",
+  "subEvent": "group",
+  "contact": {
+    "scene": "group",
+    "peer": "群ID",
+    "name": "群名称"
+  },
+  "sender": {
+    "userId": "发送者ID",
+    "nick": "发送者昵称",
+    "name": "发送者名称",
+    "sex": "性别",
+    "role": "角色",
+    "card": "群名片",
+    "title": "群头衔"
+  },
+  "elements": [
+    {
+      "type": "text",
+      "text": "消息内容"
+    }
+  ]
 }
 ```
 
@@ -488,9 +383,9 @@
 
 ```json
 {
-  "type": "friend",
+  "type": "friend|group",
   "targetId": "目标ID",
-  "count": 10
+  "count": "获取数量"
 }
 ```
 
@@ -501,18 +396,13 @@
   "code": 200,
   "data": [
     {
-      "type": "friend",
-      "targetId": "目标ID",
-      "seq": 1,
       "messageId": "消息ID",
-      "time": 1716489600000,
-      "status": "normal",
-      "elements": [
-        {
-          "type": "text",
-          "text": "消息内容"
-        }
-      ]
+      "messageSeq": "消息序号",
+      "time": "消息时间",
+      "elements": "消息内容",
+      "rawEvent": "原始事件",
+      "contact": "来源信息",
+      "sender": "发送者信息"
     }
   ]
 }

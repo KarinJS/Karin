@@ -1,7 +1,7 @@
 import WebSocket from 'ws'
 import crypto from 'node:crypto'
 import { WebSocketRender } from './ws'
-import { render } from '@/utils/config/render'
+import { render } from '@/utils/config/file/render'
 
 /**
  * @description WebSocket客户端渲染器

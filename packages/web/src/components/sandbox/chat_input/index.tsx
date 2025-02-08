@@ -1,12 +1,9 @@
 import { Button } from '@heroui/button'
 import type { Range } from 'quill'
 import 'quill/dist/quill.core.css'
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import toast from 'react-hot-toast'
-
 import { useCustomQuill } from '@/hooks/sandbox/use_custom_quill'
-import useShowStructuredMessage from '@/hooks/sandbox/use_show_strcuted_message'
-
 import { quillToMessage } from '@/lib/utils'
 
 import AudioInsert from './components/audio_insert'
@@ -19,15 +16,14 @@ import ReplyInsert from './components/reply_insert'
 import RPSInsert from './components/rps_insert'
 import VideoInsert from './components/video_insert'
 import EmojiBlot from './formats/emoji_blot'
+import ReplyBlock from './formats/reply_blot'
 import type { EmojiValue } from './formats/emoji_blot'
 import ImageBlot from './formats/image_blot'
-import ReplyBlock from './formats/reply_blot'
 import useSendMessage from '@/hooks/sandbox/use_send_message'
 import { useParams } from 'react-router-dom'
 
 const ChatInput = () => {
   const memorizedRange = useRef<Range | null>(null)
-  const showStructuredMessage = useShowStructuredMessage()
   const formats: string[] = ['image', 'emoji', 'reply']
   const modules = {
     toolbar: '#toolbar',
@@ -43,6 +39,20 @@ const ChatInput = () => {
 
   const { sendMessage } = useSendMessage()
   const { type = 'friend', id } = useParams<{ type: 'friend' | 'group'; id: string }>()
+
+  useEffect(() => {
+    if (!formatsRegistered.current) {
+      Quill.register({
+        'formats/emoji': EmojiBlot,
+        'formats/reply': ReplyBlock
+      })
+      formatsRegistered.current = true
+    }
+
+    if (!quillRef.current) {
+      // 初始化 Quill 编辑器的代码
+    }
+  }, [])
 
   if (Quill && !quill && !formatsRegistered.current) {
     Quill.register('formats/emoji', EmojiBlot)
