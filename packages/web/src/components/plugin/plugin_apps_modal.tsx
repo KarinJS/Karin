@@ -59,7 +59,6 @@ export function PluginAppsModal ({ isOpen, onClose, pluginName }: Props) {
     }
   }, [isOpen, pluginName])
 
-  console.log('response', response)
   const apps = response || []
 
   return (

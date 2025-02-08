@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useRef } from 'react'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
 import { Pagination } from '@heroui/pagination'
@@ -6,12 +6,10 @@ import { Button } from '@heroui/button'
 import { FaUser } from 'react-icons/fa6'
 import { FaGithub, FaNpm } from 'react-icons/fa6'
 import { TbApps } from 'react-icons/tb'
-import { IoRefreshOutline, IoListOutline, IoCloudUploadOutline, IoSearchOutline, IoDownloadOutline, IoCheckmarkCircleOutline, IoAppsOutline, IoChevronDownOutline, IoAlbumsOutline } from 'react-icons/io5'
 import { Link } from '@heroui/link'
 import { Spinner } from '@heroui/spinner'
 import { Chip } from '@heroui/chip'
 import { Tooltip } from '@heroui/tooltip'
-import { toast } from 'react-hot-toast'
 import { Card, CardBody, CardFooter } from '@heroui/card'
 import { Input } from '@heroui/input'
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/dropdown'
@@ -22,9 +20,20 @@ import { InstallPluginButton } from '@/components/plugin/install_plugin_button'
 import { Task, TaskList } from '@/components/plugin/task_list'
 import { TaskListModal } from '@/components/plugin/task_list_modal'
 import { InstallLogModal } from '@/components/plugin/install_log_modal'
-// import * as ReactDOM from 'react-dom/client'
+import { formatTimeAgo, formatNumber } from '@/lib/utils'
+import {
+  IoRefreshOutline,
+  IoListOutline,
+  IoCloudUploadOutline,
+  IoSearchOutline,
+  IoDownloadOutline,
+  IoCheckmarkCircleOutline,
+  IoAppsOutline,
+  IoChevronDownOutline,
+  IoAlbumsOutline
+} from 'react-icons/io5'
+import { UpdateListModal } from '@/components/plugin/update_list_modal'
 import type { PluginLists } from 'node-karin'
-import { getRandomString, formatTimeAgo, formatNumber } from '@/lib/utils'
 
 // 默认描述生成函数
 const getDefaultDescription = (name: string) => {
@@ -202,20 +211,26 @@ export default function MarketPage () {
   const [page, setPage] = useState(1)
   const [activeTask, setActiveTask] = useState<string | null>(null)
   const [isTaskListOpen, setIsTaskListOpen] = useState(false)
+  const [isUpdateListOpen, setIsUpdateListOpen] = useState(false)
   const [, setIsUninstalling] = useState(false)
   const [filterType, setFilterType] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // 获取在线插件列表
   let { data: plugins, error: onlineError, loading: onlineLoading, refresh: refreshPlugins } = useRequest<PluginLists[], any>(
     async () => {
       console.log('🔄 正在刷新插件列表...')
+      setIsRefreshing(true)
       return request.serverPost<PluginLists[], { time: number }>('/api/v1/plugin/index', { time: 20 * 1000 }).then(res => {
         console.log('✅ 插件列表刷新成功:', res)
         return res
       }).catch(err => {
         console.error('❌ 插件列表刷新失败:', err)
         throw err
+      }).finally(() => {
+        setIsRefreshing(false)
       })
     },
     {
@@ -240,7 +255,7 @@ export default function MarketPage () {
   const { data: tasks = [] } = useRequest<Task[], any>(
     () => request.serverPost<Task[], null>('/api/v1/plugin/task/list'),
     {
-      pollingInterval: 1000,
+      pollingInterval: 2000,
       pollingWhenHidden: false,
       onSuccess: (data, oldData) => {
         // 比较新旧数据是否有实质性变化
@@ -337,6 +352,16 @@ export default function MarketPage () {
     }
   }, [refreshPlugins])
 
+  const handleRefresh = () => {
+    if (isRefreshing) return
+    if (refreshTimeoutRef.current) {
+      clearTimeout(refreshTimeoutRef.current)
+    }
+    refreshTimeoutRef.current = setTimeout(() => {
+      refreshPlugins()
+    }, 300)
+  }
+
   if (onlineError) {
     return (
       <div className="h-full flex items-center justify-center">
@@ -385,7 +410,7 @@ export default function MarketPage () {
               <Button
                 variant="flat"
                 size="sm"
-                onPress={() => toast.error('更新管理功能暂不支持')}
+                onPress={() => setIsUpdateListOpen(true)}
                 className="h-7 px-2 min-w-[76px] font-medium"
                 startContent={<IoCloudUploadOutline className="text-base" />}
               >
@@ -448,9 +473,10 @@ export default function MarketPage () {
             <Button
               variant="flat"
               size="sm"
-              onPress={() => refreshPlugins()}
+              onPress={handleRefresh}
               className="h-7 px-2 min-w-[76px] font-medium"
               startContent={<IoRefreshOutline className="text-base" />}
+              disabled={isRefreshing}
             >
               刷新
             </Button>
@@ -510,6 +536,10 @@ export default function MarketPage () {
         onClose={() => setIsTaskListOpen(false)}
         tasks={tasks}
         onMaximize={handleMaximize}
+      />
+      <UpdateListModal
+        isOpen={isUpdateListOpen}
+        onClose={() => setIsUpdateListOpen(false)}
       />
       {activeTaskData && activeTaskPlugin && activeTask && (
         <InstallLogModal

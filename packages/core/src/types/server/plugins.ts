@@ -80,3 +80,18 @@ export interface PluginLists extends Base {
   /** 最近一次更新时间 */
   updated: string
 }
+
+export interface PluginUpdateInfo extends PluginLists {
+  /** 是否可更新 */
+  hasUpdate: boolean
+  /** 当前版本 */
+  currentVersion?: string
+  /** 最新版本 */
+  latestVersion?: string
+  /** 当前hash */
+  currentHash?: string
+  /** 更新日志 */
+  updateLog?: string
+  /** 更新数量 */
+  updateCount?: number
+}
