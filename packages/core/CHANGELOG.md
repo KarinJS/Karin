@@ -1,5 +1,13 @@
 # 更新日志
 
+## [1.3.1](https://github.com/KarinJS/Karin/compare/core-v1.3.0...core-v1.3.1) (2025-02-10)
+
+
+### 🐛 Bug Fixes
+
+* pnpm 10 (原谅我 push错了 ([1b06936](https://github.com/KarinJS/Karin/commit/1b06936b15864cb6ac61ab279448a86c630f23e4))
+* web页面的请求不走缓存 ([5055eab](https://github.com/KarinJS/Karin/commit/5055eab032bf786d471ca88fbd5c685982e3c4e2))
+
 ## [1.3.0](https://github.com/KarinJS/Karin/compare/core-v1.2.3...core-v1.3.0) (2025-02-08)
 
 
