@@ -8,7 +8,7 @@ import { createServerErrorResponse, createSuccessResponse } from '@/server/utils
 import type { Apps } from '@/types/plugin'
 import type { RequestHandler } from 'express'
 
-const WEB_CONFIG_NAME = 'web.config.js'
+const WEB_CONFIG_NAME = 'web.config.mjs'
 
 interface BaseConfig {
   /** 插件类型 */
@@ -81,11 +81,24 @@ const getConfig: RequestHandler = async (req, res) => {
     return
   }
 
+  const list: Record<string, any>[] = []
   const { components } = await loadConfig(configPath)
-  createSuccessResponse(res, components())
+
+  components().forEach((item: any) => {
+    if (typeof item?.toJSON === 'function') {
+      list.push(item.toJSON())
+    } else {
+      if (typeof item === 'object' && item !== null) {
+        list.push(item)
+      }
+    }
+  })
+
+  createSuccessResponse(res, list)
 }
 
 /**
+
  * 保存插件配置
  */
 const saveConfig: RequestHandler = async (req, res) => {

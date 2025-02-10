@@ -1,15 +1,14 @@
 import { Component } from './base'
-import { ComponentType } from '@/types/components'
 import type { DividerProps } from '@/types/components'
 
 class Divider extends Component<DividerProps> {
   _config: DividerProps
 
   constructor () {
-    super(ComponentType.DIVIDER)
+    super('divider')
     this._config = {
-      key: Math.random().toString(36).substring(2, 15),
-      componentType: ComponentType.DIVIDER,
+      key: '',
+      componentType: 'divider',
       transparent: false,
       orientation: 'horizontal'
     }
@@ -32,6 +31,21 @@ class Divider extends Component<DividerProps> {
     this._config.orientation = orientation ? 'vertical' : 'horizontal'
     return this
   }
+
+  /**
+   * 转换为 JSON 对象
+   * @returns JSON 对象
+   */
+  toJSON () {
+    const data = new Divider()
+    const key = Math.random().toString(36).substring(2, 15)
+    data._config = { ...this._config, key }
+    return data._config
+  }
 }
 
+/**
+ * 获取分隔线组件
+ * @returns 分隔线组件
+ */
 export const divider = new Divider()

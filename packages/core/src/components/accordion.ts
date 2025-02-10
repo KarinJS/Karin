@@ -1,16 +1,18 @@
 import { Component } from './base'
-import { ComponentType } from '@/types/components'
-import type { AccordionItemProps, AccordionProps } from '@/types/components'
-import { input } from './input'
-import { divider } from './divider'
 import { ComponentsClass } from './all'
+import type { AccordionItemProps, AccordionProps, AccordionProProps } from '@/types/components'
+import { Children } from '@/types/components/all'
 
-class Accordion extends Component<AccordionProps> {
-  _config: AccordionProps = { key: '', componentType: ComponentType.ACCORDION }
+type AccordionType<
+  T extends 'accordion'
+  | 'accordion-pro'
+> = T extends 'accordion' ? AccordionProps : AccordionProProps
 
-  constructor (key: string) {
-    super(ComponentType.ACCORDION)
-    this._config.key = key
+class AccordionBase<T extends 'accordion' | 'accordion-pro'> extends Component<AccordionType<T>> {
+  _config: AccordionType<T>
+  constructor (key: string, componentType: T) {
+    super(componentType)
+    this._config = { key, componentType } as AccordionType<T>
   }
 
   /**
@@ -29,7 +31,15 @@ class Accordion extends Component<AccordionProps> {
   children = (children: AccordionItem[]) => {
     const childrens: AccordionItemProps[] = []
     for (const child of children) {
-      childrens.push(child.toJSON())
+      if (typeof child?.toJSON === 'function') {
+        childrens.push(child.toJSON())
+        continue
+      }
+
+      if (typeof child === 'object' && child !== null) {
+        childrens.push(child as unknown as AccordionItemProps)
+        continue
+      }
     }
     this._config.children = childrens
     return this
@@ -179,7 +189,7 @@ class Accordion extends Component<AccordionProps> {
    * 自定义配置
    * @param options - 配置选项
    */
-  options = (options: AccordionProps) => {
+  options = (options: AccordionType<T>) => {
     this._config = { ...this._config, ...options }
     return this
   }
@@ -188,10 +198,31 @@ class Accordion extends Component<AccordionProps> {
    * 转换为JSON对象
    * @description 手风琴比较特殊 需要子组件也进行转换
    */
-  toJSON = (): AccordionProps => {
+  toJSON = (): AccordionType<T> => {
     if (!this._config.children) this._config.children = []
 
-    return this._config
+    return this._config as AccordionType<T>
+  }
+}
+
+class Accordion extends AccordionBase<'accordion'> {
+  constructor (key: string) {
+    super(key, 'accordion')
+  }
+}
+
+class AccordionPro extends AccordionBase<'accordion-pro'> {
+  constructor (key: string) {
+    super(key, 'accordion-pro')
+  }
+
+  /**
+   * 设置渲染数据
+   * @param data - 渲染数据
+   */
+  data = (data: Record<string, any>[]) => {
+    this._config.data = data
+    return this
   }
 }
 
@@ -199,10 +230,10 @@ class Accordion extends Component<AccordionProps> {
  * 手风琴子组件
  */
 export class AccordionItem extends Component<AccordionItemProps> {
-  _config: AccordionItemProps = { key: '', componentType: ComponentType.ACCORDION_ITEM }
+  _config: AccordionItemProps = { key: '', componentType: 'accordion-item' }
 
   constructor (key: string) {
-    super(ComponentType.ACCORDION_ITEM)
+    super('accordion-item')
     this._config.key = key
   }
 
@@ -212,9 +243,19 @@ export class AccordionItem extends Component<AccordionItemProps> {
    */
   children = (children: ComponentsClass | ComponentsClass[]) => {
     if (!Array.isArray(children)) children = [children]
-    this._config.children = children.map(child => child?.toJSON())
-    /** 排除空的 */
-    this._config.children = this._config.children.filter(Boolean)
+    const childrens: Children[] = []
+    children.forEach(child => {
+      if (typeof child?.toJSON === 'function') {
+        childrens.push(child.toJSON())
+        return
+      }
+
+      if (typeof child === 'object' && child !== null) {
+        childrens.push(child as unknown as Children)
+      }
+    })
+
+    this._config.children = childrens
     return this
   }
 
@@ -373,46 +414,45 @@ export const accordion = {
   createItem: (key: string) => new AccordionItem(key)
 }
 
-console.log(
-  accordion
-    .default('accordion')
-    .children(
-      [
-        accordion
-          .createItem('item1')
-          .title('数字输入框')
-          .children([input.number('number')]),
-        accordion
-          .createItem('item2')
-          .title('邮箱输入框')
-          .children([input.email('email')])
-      ]
-    )
-    .toJSON()
-)
+/**
+ * 手风琴Pro组件构建器
+ */
+export const accordionPro = {
+  /**
+   * 创建基础手风琴组件
+   * @param key - 唯一标识符
+   */
+  create: (key: string, data: Record<string, any>[]) => new AccordionPro(key).data(data),
+
+  /**
+   * 创建默认配置的手风琴组件
+   * @param key - 唯一标识符
+   */
+  default: (key: string) => {
+    return new AccordionPro(key)
+      .title('折叠面板Pro')
+      .variant('bordered')
+      .selectionMode('single')
+      .selectionBehavior('toggle')
+      .showDivider()
+      .fullWidth()
+  },
+
+  /**
+   * 使用自定义配置创建手风琴组件
+   * @param key - 唯一标识符
+   * @param options - 配置选项
+   */
+  options: (key: string, options: AccordionProProps) => new AccordionPro(key).options(options),
+}
 
 /**
- * 手风琴比较特殊 用法一
- * @description 用法详解:
- * - 这里定义了一个组件基类，通过循环渲染数据来在手风琴卡片组中渲染组件
- * - 右上角带添加按钮 点击添加之后会添加一个新的空数据子项手风琴
- * - 每一项手风琴展开之后可以进行编辑、删除
- * - 每一项手风琴都有一个标题 标题可以自定义在渲染数据中 如果不传，则会使用组件key+index
+ * 手风琴子组件构建器
  */
-export const test = {
-  /** 标题 */
-  title: '这是一个手风琴卡片组',
-  /** 需要渲染的数据 */
-  data: [
-    {
-      gmail: '123@123.com',
-      number: 123
-    }
-  ],
-  /** 组件 */
-  component: [
-    input.email('email'),
-    divider,
-    input.number('number'),
-  ]
+export const accordionItem = {
+  /**
+   * 创建手风琴子项
+   * @param key - 唯一标识符
+   */
+  create: (key: string) => new AccordionItem(key)
 }

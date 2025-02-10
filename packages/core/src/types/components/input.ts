@@ -1,4 +1,4 @@
-import { ComponentProps, ComponentType } from './base'
+import { ComponentProps } from './base'
 
 /**
  * 输入类型枚举
@@ -51,7 +51,7 @@ export interface ValidationRule {
  * 输入框类型
  */
 export interface InputProps extends ComponentProps {
-  componentType: ComponentType.INPUT
+  componentType: 'input'
   /**
    * 输入框的样式
    * - flat: 扁平化
@@ -103,7 +103,7 @@ export interface InputProps extends ComponentProps {
   /** 模式 */
   pattern?: string
   /** 类型 */
-  type?: 'text' | 'email' | 'url' | 'password' | 'tel' | 'search' | 'file'
+  type?: 'text' | 'email' | 'url' | 'password' | 'tel' | 'search' | 'file' | 'number'
   /** 开始内容 */
   startContent?: string
   /** 结束内容 */

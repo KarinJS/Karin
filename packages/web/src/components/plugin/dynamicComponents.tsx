@@ -3,11 +3,10 @@ import { Divider } from '@heroui/divider'
 import { useState, useEffect, createContext } from 'react'
 import { Input, type InputProps } from '@heroui/input'
 import { Accordion, AccordionItem } from '@heroui/accordion'
-import { ComponentType } from '@/types/components'
 
 import type { JSX } from 'react'
-import type { Children } from '@/types/components/all'
 import type {
+  Children,
   ValidationRule,
   InputProps as ApiInputProps,
   AccordionProps as ApiAccordionProps,
@@ -15,7 +14,7 @@ import type {
   SwitchProps as ApiSwitchProps,
   DividerProps as ApiDividerProps,
   AccordionProProps as ApiAccordionProProps
-} from '@/types/components'
+} from 'node-karin'
 
 /** 组件配置类型 */
 export type ComponentConfig = Children | ApiAccordionProps | ApiAccordionProProps | ApiAccordionItemProps | ApiDividerProps
@@ -126,7 +125,7 @@ const renderInput = (
     const fieldKey = keyParts[2]
 
     const accordionConfig = configs.find(config =>
-      config.componentType === ComponentType.ACCORDION_PRO
+      config.componentType === 'accordion-pro'
     ) as ApiAccordionProProps
 
     const dataValue = accordionConfig?.data[dataIndex]?.[fieldKey]
@@ -232,20 +231,24 @@ const renderAccordionPro = (
           添加新卡片
         </button>
       </div>
-      <Accordion key={accordionKey} {...accordionProps}>
+      <Accordion
+        key={accordionKey}
+        {...accordionProps}
+      >
         {items.map((item, cardIndex) => {
           const list: JSX.Element[] = []
 
           children?.forEach((childConfig) => {
             const { componentType: _, children: grandChildren } = childConfig
-            if (_ !== ComponentType.ACCORDION_ITEM) return
+            if (_ !== 'accordion-item') return
 
             grandChildren?.forEach((child) => {
               if (!child) return
               const componentKey = `${key}-${cardIndex}-${child.key}`
-              const options = child.componentType === ComponentType.INPUT
+              const options = child.componentType === 'input'
                 ? { defaultValue: item[child.key] ?? child.defaultValue }
                 : {}
+
               const result = renderComponent(
                 { ...child, key: componentKey, ...options },
                 { componentRef, key: componentKey, onValueChange, parentKey: key },
@@ -314,30 +317,43 @@ const renderComponent = (
   const { componentType } = config
 
   switch (componentType) {
-    case ComponentType.INPUT:
+    case 'input':
       return renderInput(config, props, configs)
-    case ComponentType.SWITCH:
+    case 'switch':
       return renderSwitch(config, props)
-    case ComponentType.DIVIDER: {
+    case 'divider': {
       const { componentType: _, key, ...dividerProps } = config
       return <Divider key={key} {...dividerProps} />
     }
-    case ComponentType.ACCORDION: {
+    case 'accordion': {
       const { componentType: _, children, key, ...accordionProps } = config
       return (
         <Accordion key={key} {...accordionProps}>
-          {(children || []).map(child => {
-            const { componentType: __, key: childKey, ...childProps } = child
+          {(children || []).map((child) => {
+            const { componentType: __, key: childKey, children: itemChildren, ...itemProps } = child
             return (
-              <AccordionItem key={childKey} {...childProps}>
-                {renderComponent(child, props, configs)}
+              <AccordionItem key={childKey} {...itemProps}>
+                <div className="flex flex-col gap-4">
+                  {itemChildren?.map((grandChild, index) => {
+                    const componentKey = `${childKey}-${grandChild.key}-${index}`
+                    return (
+                      <div key={componentKey}>
+                        {renderComponent(
+                          { ...grandChild, key: componentKey },
+                          { ...props, key: componentKey },
+                          configs
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
               </AccordionItem>
             )
           })}
         </Accordion>
       )
     }
-    case ComponentType.ACCORDION_ITEM: {
+    case 'accordion-item': {
       const { componentType: _, key: itemKey, children, ...itemProps } = config
       return (
         <AccordionItem key={itemKey} {...itemProps}>
@@ -354,7 +370,7 @@ const renderComponent = (
         </AccordionItem>
       )
     }
-    case ComponentType.ACCORDION_PRO:
+    case 'accordion-pro':
       return renderAccordionPro(config, props, configs)
     default:
       return null
@@ -369,11 +385,12 @@ const renderComponent = (
  */
 const getParentKey = (config: ComponentConfig, parentConfig?: ComponentConfig): string => {
   if (!parentConfig) return config.key
-  if (parentConfig.componentType === ComponentType.ACCORDION_PRO) {
+  if (parentConfig.componentType === 'accordion-pro') {
     return parentConfig.key
   }
   return config.key
 }
+
 
 /**
  * 类型守卫：检查是否为带有children属性的组件配置
@@ -386,7 +403,7 @@ const hasChildren = (config: ComponentConfig): config is ComponentConfig & { chi
  * 类型守卫：检查是否为AccordionPro组件配置
  */
 const isAccordionPro = (config: ComponentConfig): config is ApiAccordionProProps => {
-  return config.componentType === ComponentType.ACCORDION_PRO && Array.isArray((config as any).data)
+  return config.componentType === 'accordion-pro' && Array.isArray((config as any).data)
 }
 
 /**
@@ -401,14 +418,14 @@ const initializeComponentRef = (config: ComponentConfig, parentConfig?: Componen
 
   // 处理基础组件类型
   switch (config.componentType) {
-    case ComponentType.INPUT:
+    case 'input':
       ref[config.key] = {
         old: config.defaultValue ?? '',
         new: config.defaultValue ?? '',
         key: parentKey
       }
       break
-    case ComponentType.SWITCH:
+    case 'switch':
       ref[config.key] = {
         old: config.defaultSelected ?? false,
         new: config.defaultSelected ?? false,
@@ -460,9 +477,28 @@ export const DynamicComponentRenderer = ({
       Object.assign(initialRef, initializeComponentRef(config))
     })
     setComponentRef(initialRef)
+
+    // 添加初始化触发
+    const result: Record<string, any> = {}
+    Object.entries(initialRef).forEach(([k, value]) => {
+      if (k === value.key) {
+        result[k] = value.old  // 使用初始值
+        return
+      }
+
+      const key = value.key
+      if (!result[key]) result[key] = []
+      const [_, index, subKey] = k.split('-')
+      if (!result[key]?.[index]) result[key][index] = {}
+      result[key][index][subKey] = value.old  // 使用初始值
+    })
+
+    // 触发onChange回调，传递初始值
+    onChange?.(result)
   }, [configs])
 
   const handleValueChange = (key: string, value: ComponentValue, parentKey: string) => {
+    console.log(key, value, parentKey)
     setComponentRef(prev => {
       const newRef = {
         ...prev,

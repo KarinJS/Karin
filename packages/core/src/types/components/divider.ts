@@ -1,10 +1,10 @@
-import { ComponentProps, ComponentType } from './base'
+import { ComponentProps } from './base'
 
 /**
  * 分隔线
  */
 export interface DividerProps extends ComponentProps {
-  componentType: ComponentType.DIVIDER
+  componentType: 'divider'
   /** 是否透明 */
   transparent?: boolean
   /** 方向 */

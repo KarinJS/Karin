@@ -1,12 +1,12 @@
 import { Component } from './base'
-import { ComponentType, InputDataType, } from '@/types/components'
+import { InputDataType } from '@/types/components'
 import type { InputProps, ValidationRule } from '@/types/components'
 
 class Input extends Component<InputProps> {
-  _config: InputProps = { key: '', type: 'text', componentType: ComponentType.INPUT }
+  _config: InputProps = { key: '', type: 'text', componentType: 'input' }
 
   constructor (key: string) {
-    super(ComponentType.INPUT)
+    super('input')
     this._config.key = key
   }
 

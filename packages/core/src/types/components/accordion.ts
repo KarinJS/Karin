@@ -1,5 +1,5 @@
 import { Children } from './all'
-import { ComponentProps, ComponentType } from './base'
+import { ComponentProps } from './base'
 
 /**
  * 手风琴(折叠面板) 类型
@@ -66,7 +66,7 @@ interface Accordion extends ComponentProps {
  * 手风琴子组件类型 `也就是每一项手风琴`
  */
 export interface AccordionItemProps extends ComponentProps {
-  componentType: ComponentType.ACCORDION_ITEM
+  componentType: 'accordion-item'
   /** 子组件 */
   children?: Children[]
   /** 标题 */
@@ -99,14 +99,14 @@ export interface AccordionItemProps extends ComponentProps {
 
 /** 手风琴 */
 export interface AccordionProps extends Accordion {
-  componentType: ComponentType.ACCORDION
+  componentType: 'accordion'
 }
 
 /**
  * 手风琴Pro
  */
 export interface AccordionProProps extends Accordion {
-  componentType: ComponentType.ACCORDION_PRO
+  componentType: 'accordion-pro'
   /** 渲染数据 */
   data: Record<string, any>[]
 }

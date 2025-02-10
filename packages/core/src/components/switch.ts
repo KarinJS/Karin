@@ -1,12 +1,11 @@
 import { Component } from './base'
-import { ComponentType } from '@/types/components'
 import type { SwitchProps } from '@/types/components'
 
 class Switch extends Component<SwitchProps> {
-  _config: SwitchProps = { key: '', componentType: ComponentType.SWITCH }
+  _config: SwitchProps = { key: '', componentType: 'switch' }
 
   constructor (key: string) {
-    super(ComponentType.SWITCH)
+    super('switch')
     this._config.key = key
   }
 

@@ -1,17 +1,19 @@
-export const enum ComponentType {
-  /** 输入框 */
-  INPUT = 'input',
-  /** 开关 */
-  SWITCH = 'switch',
-  /** 分隔线 */
-  DIVIDER = 'divider',
-  /** 手风琴 */
-  ACCORDION = 'accordion',
-  /** 手风琴项 */
-  ACCORDION_ITEM = 'accordion-item',
-  /** 手风琴Pro */
-  ACCORDION_PRO = 'accordion-pro'
-}
+/**
+ * 组件类型
+ * - input: 输入框
+ * - switch: 开关
+ * - divider: 分隔线
+ * - accordion: 手风琴
+ * - accordion-item: 手风琴项
+ * - accordion-pro: 手风琴Pro
+ */
+export type ComponentType =
+  | 'input'
+  | 'switch'
+  | 'divider'
+  | 'accordion'
+  | 'accordion-item'
+  | 'accordion-pro'
 
 /** 组件通用属性 */
 export interface ComponentProps {
