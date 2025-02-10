@@ -260,7 +260,7 @@ export const modifyPackageJson = () => {
   if (!data.scripts) data.scripts = {}
   data.scripts.karin = 'karin'
   data.pnpm = {}
-  data.pnpm.ignoredBuiltDependencies = [
+  data.pnpm.onlyBuiltDependenciesFile = [
     'sqlite3',
     'classic-level',
   ]
