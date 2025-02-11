@@ -23,10 +23,19 @@ interface BaseConfig {
 const getConfigPath = (options: BaseConfig) => {
   if (options.type === 'npm') {
     const configPath = path.join(process.cwd(), 'node_modules', options.name, WEB_CONFIG_NAME)
-    if (!fs.existsSync(configPath)) {
-      return null
+    if (fs.existsSync(configPath)) {
+      return configPath
     }
-    return configPath
+
+    /** 在开发环境下，根目录也要寻找 */
+    if (isDev()) {
+      const rootConfigPath = path.join(process.cwd(), WEB_CONFIG_NAME)
+      if (fs.existsSync(rootConfigPath)) {
+        return rootConfigPath
+      }
+    }
+
+    return null
   }
 
   /**
