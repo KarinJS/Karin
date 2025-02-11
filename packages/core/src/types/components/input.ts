@@ -47,6 +47,7 @@ export interface ValidationRule {
   /** 自定义错误消息 */
   error?: string
 }
+
 /**
  * 输入框类型
  */

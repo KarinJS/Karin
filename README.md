@@ -16,6 +16,13 @@
 
 当前`1.0.0`仍处于测试阶段，欢迎大家提出宝贵意见，我们会尽快修复。
 
+## 鸣谢
+
+- webui: [bietiaop](https://github.com/bietiaop)
+- docs: [ikenxuan](https://github.com/ikenxuan)
+
+> ps: 感谢两位大佬~
+
 ### 贡献者
 
 > 🌟 星光闪烁，你们的智慧如同璀璨的夜空。感谢所有为**Karin**做出贡献的人！

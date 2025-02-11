@@ -1,14 +1,7 @@
 import Sidebar from '@/components/sidebar.tsx'
-import { Outlet, useNavigate } from 'react-router-dom'
-import { useLocalStorageState } from 'ahooks'
-import key from '@/consts/key'
+import { Outlet } from 'react-router-dom'
 
-export default function DashboardLayout() {
-  const [token] = useLocalStorageState(key.token)
-  const navigate = useNavigate()
-  if (!token) {
-    navigate('/login')
-  }
+export default function DashboardLayout () {
   return (
     <div className="relative flex h-screen items-stretch">
       <div className="flex-grow-0 flex-shrink-0">

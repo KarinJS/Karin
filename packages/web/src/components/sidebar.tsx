@@ -17,7 +17,7 @@ export interface MenuButtonProps {
   children: React.ReactNode
 }
 
-function MenuButton({ isCollapsed, children }: MenuButtonProps) {
+function MenuButton ({ isCollapsed, children }: MenuButtonProps) {
   return (
     <motion.div
       className={clsx(
@@ -36,7 +36,7 @@ function MenuButton({ isCollapsed, children }: MenuButtonProps) {
   )
 }
 
-export default function Sidebar() {
+export default function Sidebar () {
   const [isCollapsed = false, setIsCollapsed] = useLocalStorageState<boolean>(
     key.sideBarCollapsed,
     {

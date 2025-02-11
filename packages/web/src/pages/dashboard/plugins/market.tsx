@@ -221,10 +221,8 @@ export default function MarketPage () {
   // 获取在线插件列表
   let { data: plugins, error: onlineError, loading: onlineLoading, refresh: refreshPlugins } = useRequest<PluginLists[], any>(
     async () => {
-      console.log('🔄 正在刷新插件列表...')
       setIsRefreshing(true)
       return request.serverPost<PluginLists[], { time: number }>('/api/v1/plugin/index', { time: 20 * 1000 }).then(res => {
-        console.log('✅ 插件列表刷新成功:', res)
         return res
       }).catch(err => {
         console.error('❌ 插件列表刷新失败:', err)
@@ -240,9 +238,7 @@ export default function MarketPage () {
         const hasChanged = !oldData || JSON.stringify(data) !== JSON.stringify(oldData)
 
         if (hasChanged) {
-          console.log('📦 插件列表发生变化:', data)
         } else {
-          console.log('📦 插件列表无变化，跳过更新')
           return oldData // 返回旧数据，避免触发重渲染
         }
       }
@@ -262,7 +258,6 @@ export default function MarketPage () {
         const hasChanged = !oldData || JSON.stringify(data) !== JSON.stringify(oldData)
 
         if (hasChanged) {
-          console.log('📝 任务列表发生变化，更新UI...')
           data.forEach(task => {
             const existingTask = tasks.find(t => t.id === task.id)
             if (!existingTask) {
@@ -270,7 +265,6 @@ export default function MarketPage () {
             }
           })
         } else {
-          console.log('📝 任务列表无变化，跳过更新')
           return oldData // 返回旧数据，避免触发重渲染
         }
       }
@@ -334,7 +328,6 @@ export default function MarketPage () {
   }
 
   useEffect(() => {
-    console.log('🎯 activeTask 发生变化:', activeTask)
   }, [activeTask])
 
   const activeTaskData = activeTask ? tasks.find(t => t.id === activeTask) : undefined
@@ -342,7 +335,6 @@ export default function MarketPage () {
 
   useEffect(() => {
     const handlePluginUpdate = () => {
-      console.log('🔄 收到插件更新事件，准备刷新列表...')
       refreshPlugins()
     }
 

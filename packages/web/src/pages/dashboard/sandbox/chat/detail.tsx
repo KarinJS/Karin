@@ -51,7 +51,6 @@ const ChatDetail = () => {
   const dragEvent = useCallback((e: DragEvent) => {
     e.preventDefault()
     // for (const f of e.dataTransfer!.files) {
-    //   console.log('File(s) you dragged here: ', f)
     // }
   }, [])
   useEffect(() => {
@@ -67,7 +66,6 @@ const ChatDetail = () => {
   //       return
   //     }
   //     try {
-  //       console.log('send', content)
   //       setContent('')
   //       setTimeout(() => {
   //         endRef.current?.scrollIntoView({ behavior: 'smooth' })

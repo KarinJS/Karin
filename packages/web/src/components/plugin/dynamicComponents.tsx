@@ -1,6 +1,6 @@
 import { Switch } from '@heroui/switch'
 import { Divider } from '@heroui/divider'
-import { useState, useEffect, createContext } from 'react'
+import { useState, useEffect, createContext, useMemo, useCallback } from 'react'
 import { Input, type InputProps } from '@heroui/input'
 import { Accordion, AccordionItem } from '@heroui/accordion'
 
@@ -205,20 +205,25 @@ const renderAccordionPro = (
 ): JSX.Element => {
   const [items, setItems] = useState([...props.data])
   const { key: accordionKey, data, componentType, children, ...accordionProps } = props
+  // 使用useMemo缓存模板对象
+  const template = useMemo(() => {
+    const baseTemplate = JSON.parse(JSON.stringify(props.data[0]))
+    Object.keys(baseTemplate).forEach((key: string) => baseTemplate[key] = '')
+    return baseTemplate
+  }, [props.data])
 
-  const handleAddItem = () => {
-    const template = JSON.parse(JSON.stringify(props.data[0]))
-    Object.keys(template).forEach((key: string) => template[key] = '')
+  // 使用useCallback缓存事件处理函数
+  const handleAddItem = useCallback(() => {
     const newItem = {
       ...template,
-      title: `${props.title} ${items.length + 1}`
+      title: `${children?.[0]?.title} ${items.length + 1}`
     }
     setItems(prev => [...prev, newItem])
-  }
+  }, [template, children, items.length])
 
-  const handleDeleteItem = (index: number) => {
+  const handleDeleteItem = useCallback((index: number) => {
     setItems(prev => prev.filter((_, i) => i !== index))
-  }
+  }, [])
 
   return (
     <div className="flex flex-col gap-4 w-full">
@@ -266,10 +271,10 @@ const renderAccordionPro = (
           return (
             <AccordionItem
               key={`${key}-${item.id || cardIndex}`}
-              textValue={item.title}
+              textValue={item.title || '默认标题'}
               title={
                 <div className="flex justify-between items-center w-full pr-4">
-                  <span>{item.title}</span>
+                  <span>{item.title || (children?.[0]?.title || '默认标题') + (cardIndex + 1)}</span>
                   <div
                     role="button"
                     tabIndex={0}
@@ -396,7 +401,7 @@ const getParentKey = (config: ComponentConfig, parentConfig?: ComponentConfig): 
  * 类型守卫：检查是否为带有children属性的组件配置
  */
 const hasChildren = (config: ComponentConfig): config is ComponentConfig & { children: ComponentConfig[] } => {
-  return Array.isArray((config as any).children)
+  return config.componentType === 'accordion' && Array.isArray((config as any).children)
 }
 
 /**
@@ -424,25 +429,28 @@ const initializeComponentRef = (config: ComponentConfig, parentConfig?: Componen
         new: config.defaultValue ?? '',
         key: parentKey
       }
-      break
+      return ref
     case 'switch':
       ref[config.key] = {
         old: config.defaultSelected ?? false,
         new: config.defaultSelected ?? false,
         key: parentKey
       }
-      break
+      return ref
   }
 
   // 处理子组件
   if (hasChildren(config)) {
+    console.log('config.children:', config.children)
     config.children.forEach(child => {
       Object.assign(ref, initializeComponentRef(child, config))
     })
+    return ref
   }
 
   // 处理手风琴Pro的数据项
   if (isAccordionPro(config)) {
+    console.log('config.data:', config.data)
     config.data.forEach((item, index) => {
       Object.entries(item).forEach(([key, value]) => {
         if (key !== 'title') {
@@ -455,6 +463,7 @@ const initializeComponentRef = (config: ComponentConfig, parentConfig?: Componen
         }
       })
     })
+    return ref
   }
 
   return ref
@@ -476,21 +485,23 @@ export const DynamicComponentRenderer = ({
     configs.forEach(config => {
       Object.assign(initialRef, initializeComponentRef(config))
     })
-    setComponentRef(initialRef)
 
-    // 添加初始化触发
+    setComponentRef(initialRef)
+    console.log('initialRef:', initialRef)
+
+    // 添加初始化触发，使用与handleValueChange相同的处理逻辑
     const result: Record<string, any> = {}
     Object.entries(initialRef).forEach(([k, value]) => {
       if (k === value.key) {
-        result[k] = value.old  // 使用初始值
+        result[k] = value.old
         return
       }
 
       const key = value.key
       if (!result[key]) result[key] = []
-      const [_, index, subKey] = k.split('-')
+      const [index, subKey] = k.split(key)[1].split('-').filter(Boolean)
       if (!result[key]?.[index]) result[key][index] = {}
-      result[key][index][subKey] = value.old  // 使用初始值
+      result[key][index][subKey] = value.old
     })
 
     // 触发onChange回调，传递初始值
@@ -498,7 +509,6 @@ export const DynamicComponentRenderer = ({
   }, [configs])
 
   const handleValueChange = (key: string, value: ComponentValue, parentKey: string) => {
-    console.log(key, value, parentKey)
     setComponentRef(prev => {
       const newRef = {
         ...prev,
@@ -519,7 +529,7 @@ export const DynamicComponentRenderer = ({
 
         const key = value.key
         if (!result[key]) result[key] = []
-        const [_, index, subKey] = k.split('-')
+        const [index, subKey] = k.split(key)[1].split('-').filter(Boolean)
         if (!result[key]?.[index]) result[key][index] = {}
         result[key][index][subKey] = value.new
       })

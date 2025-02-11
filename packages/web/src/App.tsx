@@ -21,13 +21,21 @@ import FriendRequest from '@/pages/dashboard/sandbox/contact/friend_request'
 import UserDetail from '@/pages/dashboard/sandbox/contact/detail'
 import GroupNotice from '@/pages/dashboard/sandbox/contact/group_notice'
 import GroupChatTest from '@/pages/dashboard/sandbox/group'
+import RequireAuth from '@/components/auth/RequireAuth'
 
 // Main App
 function App () {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route element={<DashboardLayout />} path="/">
+      <Route
+        element={
+          <RequireAuth>
+            <DashboardLayout />
+          </RequireAuth>
+        }
+        path="/"
+      >
         <Route element={<IndexPage />} path="" />
         <Route element={<ConfigPage />} path="/config" />
         <Route element={<PluginMarketPage />} path="/plugins" />

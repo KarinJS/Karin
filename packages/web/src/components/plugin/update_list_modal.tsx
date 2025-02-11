@@ -55,34 +55,25 @@ export function UpdateListModal ({ isOpen, onClose }: Props) {
     const newSelected = new Set(selectedPlugins)
     if (newSelected.has(plugin.name)) {
       newSelected.delete(plugin.name)
-      console.log(`取消选择插件: ${plugin.name}`)
     } else {
       newSelected.add(plugin.name)
-      console.log(`选择插件: ${plugin.name}`)
     }
     setSelectedPlugins(newSelected)
-    console.log(`当前选中的插件数量: ${newSelected.size}`)
-    console.log(`按钮状态: ${newSelected.size === updatableCount ? '取消全选' : '全选'}`)
   }
 
   const handleSelectAll = () => {
     const allPlugins = plugins.map(plugin => plugin.name)
-    console.log(`当前选中的插件数量: ${selectedPlugins.size}, 所有插件数量: ${allPlugins.length}`)
     if (selectedPlugins.size === allPlugins.length) {
       // 如果当前已全选，则取消全选
-      console.log('取消全选')
       setSelectedPlugins(new Set())
     } else {
       // 否则全选
-      console.log('全选插件:', allPlugins)
       setSelectedPlugins(new Set(allPlugins))
     }
-    console.log(`全选后的插件数量: ${selectedPlugins.size}`)
   }
 
   const handleUpdate = async () => {
     const selectedPluginsArray = Array.from(selectedPlugins)
-    console.log('即将更新的插件:', selectedPluginsArray)
     const hasUpdatePlugins = selectedPluginsArray.filter(name =>
       plugins.find(p => p.name === name && p.hasUpdate)
     )
@@ -99,7 +90,6 @@ export function UpdateListModal ({ isOpen, onClose }: Props) {
       })
 
       // 处理更新结果
-      console.log('更新结果:', result)
       const successCount = result.filter(r => r.status === 'ok').length
       const failedCount = result.length - successCount
 
@@ -128,16 +118,12 @@ export function UpdateListModal ({ isOpen, onClose }: Props) {
 
   // 在插件列表渲染完成后，更新全选按钮的状态
   useEffect(() => {
-    console.log('插件列表更新:', plugins)
     const updatablePlugins = plugins.filter(p => p.hasUpdate).map(plugin => plugin.name)
-    console.log(`当前选中的插件数量: ${selectedPlugins.size}, 所有插件数量: ${plugins.length}`)
 
     // 仅在需要时更新 selectedPlugins
     if (selectedPlugins.size !== updatablePlugins.length) {
-      console.log('更新选中状态')
       setSelectedPlugins(new Set(updatablePlugins))
     }
-    console.log(`按钮状态: ${selectedPlugins.size === plugins.length ? '取消全选' : '全选'}`)
   }, [plugins])
 
   return (

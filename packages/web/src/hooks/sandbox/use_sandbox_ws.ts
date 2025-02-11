@@ -16,7 +16,6 @@ function useSandboxWebsoocket () {
 
   useEffect(() => {
     const connectWs = async () => {
-      console.log('WebSocket connecting')
       if (wsRef.current) return
       setConnecting(true)
 
@@ -32,21 +31,17 @@ function useSandboxWebsoocket () {
       ws.onopen = () => {
         setConnecting(false)
         setConnected(true)
-        console.log('WebSocket connected')
       }
       ws.onmessage = event => {
         const message = JSON.parse(event.data)
-        console.log(message)
         if (message.action === 'init') {
           setReady(true)
           setBotInfo(message.param)
         }
-        console.log('WebSocket message received:', event.data)
       }
       ws.onclose = () => {
         setConnecting(false)
         setConnected(false)
-        console.log('WebSocket disconnected')
       }
       ws.onerror = error => {
         setError(error)
@@ -57,7 +52,6 @@ function useSandboxWebsoocket () {
     connectWs()
 
     return () => {
-      console.log('WebSocket cleanup')
       setConnecting(false)
       setConnected(false)
       setError(null)
