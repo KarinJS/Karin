@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/KarinJS/Karin/compare/create-karin-v1.0.3...create-karin-v1.0.4) (2025-02-11)
+
+
+### 🐛 Bug Fixes
+
+* pnpm10与pnpm 9冲突 ([c2e7d51](https://github.com/KarinJS/Karin/commit/c2e7d5129e0ff122ddce474e359f402221028740))
+
 ## [1.0.3](https://github.com/KarinJS/Karin/compare/create-karin-v1.0.2...create-karin-v1.0.3) (2025-02-08)
 
 

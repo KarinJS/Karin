@@ -1,5 +1,13 @@
 # 更新日志
 
+## [1.3.4](https://github.com/KarinJS/Karin/compare/core-v1.3.3...core-v1.3.4) (2025-02-11)
+
+
+### 🐛 Bug Fixes
+
+* pnpm10与pnpm 9冲突 ([c2e7d51](https://github.com/KarinJS/Karin/commit/c2e7d5129e0ff122ddce474e359f402221028740))
+* webui login ([#257](https://github.com/KarinJS/Karin/issues/257)) ([31263c8](https://github.com/KarinJS/Karin/commit/31263c850325bf2c6009ffc27b113100dda2f004))
+
 ## [1.3.3](https://github.com/KarinJS/Karin/compare/core-v1.3.2...core-v1.3.3) (2025-02-11)
 
 
