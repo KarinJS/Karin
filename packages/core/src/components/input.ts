@@ -16,7 +16,7 @@ class Input extends Component<InputProps> {
   _type (dataType: InputDataType) {
     const typeMap = {
       [InputDataType.STRING]: 'text',
-      [InputDataType.NUMBER]: 'text',
+      [InputDataType.NUMBER]: 'number',
       [InputDataType.BOOLEAN]: 'text',
       [InputDataType.DATE]: 'text',
       [InputDataType.TIME]: 'text',

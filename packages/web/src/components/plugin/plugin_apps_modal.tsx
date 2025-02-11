@@ -54,7 +54,6 @@ export function PluginAppsModal ({ isOpen, onClose, pluginName }: Props) {
   // 当模态框打开时获取应用列表
   useEffect(() => {
     if (isOpen && pluginName) {
-      console.log('Modal opened, fetching apps...') // 调试日志
       fetchApps()
     }
   }, [isOpen, pluginName])
