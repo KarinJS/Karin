@@ -45,12 +45,5 @@
   },
   "dependencies": {
     "node-karin": "1.1.1"
-  },
-  "pnpm": {
-    "ignoredBuiltDependencies": [
-      "node-karin",
-      "sqlite3",
-      "classic-level"
-    ]
   }
 }

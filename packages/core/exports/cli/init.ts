@@ -251,7 +251,7 @@ export const createConfig = () => {
 /**
  * 修改package.json
  */
-export const modifyPackageJson = () => {
+export const modifyPackageJson = async () => {
   /** 将type设置为module */
   const pkg = fs.readFileSync(path.join(dir, 'package.json'), 'utf-8')
   const data = JSON.parse(pkg)
@@ -259,11 +259,20 @@ export const modifyPackageJson = () => {
   // 永恒是猪 scripts都为空
   if (!data.scripts) data.scripts = {}
   data.scripts.karin = 'karin'
-  data.pnpm = {}
-  data.pnpm.onlyBuiltDependenciesFile = [
-    'sqlite3',
-    'classic-level',
-  ]
+
+  // 检查pnpm版本
+  const { stdout: pnpmVersion } = execSync('pnpm -v')
+  const majorVersion = parseInt(pnpmVersion.split('.')[0])
+
+  if (majorVersion < 10 && data.pnpm) {
+    delete data.pnpm
+  } else if (majorVersion >= 10) {
+    if (typeof data.pnpm !== 'object') data.pnpm = {}
+    data.pnpm.onlyBuiltDependenciesFile = [
+      'sqlite3',
+      'classic-level',
+    ]
+  }
 
   const list = ['app', 'start', 'pm2', 'stop', 'rs', 'log']
   if (!isDev) {
@@ -284,6 +293,6 @@ export const init = async () => {
   createDir()
   await createOtherFile()
   createConfig()
-  modifyPackageJson()
+  await modifyPackageJson()
   process.exit(0)
 }
