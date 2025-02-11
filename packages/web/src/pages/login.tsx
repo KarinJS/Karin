@@ -1,6 +1,5 @@
 import { Input } from '@heroui/input'
 import { Button } from '@heroui/button'
-import { title } from '@/components/primitives'
 import { Image } from '@heroui/image'
 import { request } from '@/lib/request'
 import { useLocalStorageState } from 'ahooks'
