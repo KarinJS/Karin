@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.3.3](https://github.com/KarinJS/Karin/compare/core-v1.3.2...core-v1.3.3) (2025-02-11)
+
+
+### 🐛 Bug Fixes
+
+* web.config.mjs ([38d3417](https://github.com/KarinJS/Karin/commit/38d34172931fdeb3de8047971aac026b00cabf46))
+
 ## [1.3.2](https://github.com/KarinJS/Karin/compare/core-v1.3.1...core-v1.3.2) (2025-02-10)
 
 
