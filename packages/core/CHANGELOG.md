@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.3.5](https://github.com/KarinJS/Karin/compare/core-v1.3.4...core-v1.3.5) (2025-02-11)
+
+
+### 🐛 Bug Fixes
+
+* 抽象的EventEmitter ([3c5402b](https://github.com/KarinJS/Karin/commit/3c5402b46ae23c49c76fddb101748d298a384538))
+
 ## [1.3.4](https://github.com/KarinJS/Karin/compare/core-v1.3.3...core-v1.3.4) (2025-02-11)
 
 
