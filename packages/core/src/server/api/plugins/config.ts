@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import util from 'node:util'
 import { isDev } from '@/env'
 import { pathToFileURL } from 'node:url'
 import { router } from '@/server/api/router'
@@ -92,8 +93,10 @@ const getConfig: RequestHandler = async (req, res) => {
 
   const list: Record<string, any>[] = []
   const { components } = await loadConfig(configPath)
+  let result = components()
+  result = util.types.isPromise(result) ? await result : result
 
-  components().forEach((item: any) => {
+  result.forEach((item: any) => {
     if (typeof item?.toJSON === 'function') {
       list.push(item.toJSON())
     } else {

@@ -110,7 +110,7 @@ export abstract class WebSocketRender {
           return resolve(data)
         }
 
-        reject(new Error(`[sendApi] 请求错误:\n  action: ${action}\n  params: ${str}\n  error: ${data}}`))
+        reject(new Error(`[sendApi] 请求错误:\n  action: ${action}\n  params: ${str}`, { cause: data }))
       })
     })
   }
