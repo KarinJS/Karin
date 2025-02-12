@@ -118,6 +118,9 @@ export const types = () => {
     .replace(/declare /g, '')
 
   const index = './dist/index.d.ts'
+  const indexContent = fs.readFileSync(index, 'utf-8')
+  fs.writeFileSync(index, `import { EventEmitter } from 'node:events';\n${indexContent}`)
+
   const indexData = fs.readFileSync(index, 'utf-8')
   const lines = indexData.split('\n')
 

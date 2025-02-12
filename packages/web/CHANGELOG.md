@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/KarinJS/Karin/compare/web-v1.3.1...web-v1.3.2) (2025-02-11)
+
+
+### 🐛 Bug Fixes
+
+* webui login ([#257](https://github.com/KarinJS/Karin/issues/257)) ([31263c8](https://github.com/KarinJS/Karin/commit/31263c850325bf2c6009ffc27b113100dda2f004))
+
 ## [1.3.1](https://github.com/KarinJS/Karin/compare/web-v1.3.0...web-v1.3.1) (2025-02-10)
 
 

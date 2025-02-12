@@ -12,7 +12,6 @@ const createInput = (key: string, config?: Partial<Omit<InputProps, 'key' | 'com
     ...config,
     componentType: 'input',
   }
-  console.log('result:', result)
   return result
 }
 
