@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useRef } from 'react'
+import { useMemo, useState, useEffect, useRef, useCallback } from 'react'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
 import { Pagination } from '@heroui/pagination'
@@ -254,19 +254,19 @@ export default function MarketPage () {
       pollingInterval: 2000,
       pollingWhenHidden: false,
       onSuccess: (data, oldData) => {
-        // 比较新旧数据是否有实质性变化
-        const hasChanged = !oldData || JSON.stringify(data) !== JSON.stringify(oldData)
-
-        if (hasChanged) {
-          data.forEach(task => {
-            const existingTask = tasks.find(t => t.id === task.id)
-            if (!existingTask) {
-              task.minimized = activeTask !== task.id
-            }
-          })
-        } else {
-          return oldData // 返回旧数据，避免触发重渲染
+        // 使用深度比较来避免不必要的更新
+        if (!oldData || JSON.stringify(data) !== JSON.stringify(oldData)) {
+          // 只在数据真正变化时更新
+          const newTasks = data.map(task => ({
+            ...task,
+            minimized: activeTask !== task.id
+          }))
+          // 确保新旧数据确实不同
+          if (JSON.stringify(newTasks) !== JSON.stringify(oldData)) {
+            return newTasks
+          }
         }
+        return oldData // 返回旧数据，避免触发重渲染
       }
     }
   )
@@ -285,15 +285,11 @@ export default function MarketPage () {
       const query = searchQuery.toLowerCase().trim()
       filtered = filtered.filter(plugin => {
         return (
-          // 搜索名称
           plugin.name.toLowerCase().includes(query) ||
-          // 搜索描述
           (plugin.description && plugin.description !== '-' &&
             plugin.description.toLowerCase().includes(query)) ||
-          // 搜索作者
           plugin.author.some(author =>
             author.name.toLowerCase().includes(query)) ||
-          // 搜索类型
           plugin.type.toLowerCase().includes(query)
         )
       })
@@ -309,29 +305,36 @@ export default function MarketPage () {
 
   const currentPagePlugins = useMemo(
     () => filteredPlugins?.slice((page - 1) * pageSize, page * pageSize) || [],
-    [filteredPlugins, page],
+    [filteredPlugins, page, pageSize]
   )
 
-  const handleMaximize = (taskId: string) => {
+  const handleMaximize = useCallback((taskId: string) => {
     setActiveTask(taskId)
-  }
+  }, [])
 
-  const handleCloseTaskLog = () => {
+  const handleCloseTaskLog = useCallback(() => {
     setActiveTask(null)
     refreshPlugins()
-  }
+  }, [refreshPlugins])
 
-  const handleCloseInstallLog = () => {
+  const handleCloseInstallLog = useCallback(() => {
     setActiveTask(null)
     setIsUninstalling(false)
     refreshPlugins()
-  }
+  }, [refreshPlugins])
 
   useEffect(() => {
   }, [activeTask])
 
-  const activeTaskData = activeTask ? tasks.find(t => t.id === activeTask) : undefined
-  const activeTaskPlugin = activeTaskData ? plugins.find(p => p.name === activeTaskData.name) : undefined
+  const activeTaskData = useMemo(() =>
+    activeTask ? tasks.find(t => t.id === activeTask) : undefined,
+    [activeTask, tasks]
+  )
+
+  const activeTaskPlugin = useMemo(() =>
+    activeTaskData ? plugins.find(p => p.name === activeTaskData.name) : undefined,
+    [activeTaskData, plugins]
+  )
 
   useEffect(() => {
     const handlePluginUpdate = () => {
@@ -344,7 +347,7 @@ export default function MarketPage () {
     }
   }, [refreshPlugins])
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     if (isRefreshing) return
     if (refreshTimeoutRef.current) {
       clearTimeout(refreshTimeoutRef.current)
@@ -352,7 +355,7 @@ export default function MarketPage () {
     refreshTimeoutRef.current = setTimeout(() => {
       refreshPlugins()
     }, 300)
-  }
+  }, [isRefreshing, refreshPlugins])
 
   if (onlineError) {
     return (

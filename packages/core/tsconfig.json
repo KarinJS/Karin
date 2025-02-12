@@ -26,7 +26,8 @@
     "strict": true,
     "target": "ES2022",
     "types": [
-      "@types/node"
+      "@types/node",
+      "@types/express"
     ]
   },
   "exclude": [

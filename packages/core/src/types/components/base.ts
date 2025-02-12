@@ -6,6 +6,10 @@
  * - accordion: 手风琴
  * - accordion-item: 手风琴项
  * - accordion-pro: 手风琴Pro
+ * - checkbox: 复选框
+ * - checkbox-group: 复选框组
+ * - radio: 单选框
+ * - radio-group: 单选框组
  */
 export type ComponentType =
   | 'input'
@@ -14,6 +18,10 @@ export type ComponentType =
   | 'accordion'
   | 'accordion-item'
   | 'accordion-pro'
+  | 'checkbox'
+  | 'checkbox-group'
+  | 'radio'
+  | 'radio-group'
 
 /** 组件通用属性 */
 export interface ComponentProps {
@@ -23,4 +31,6 @@ export interface ComponentProps {
   componentType: ComponentType
   /** 描述 */
   description?: string
+  /** 每个渲染的组件都包裹了一个div，这里可以自定义这个div的className */
+  className?: string
 }

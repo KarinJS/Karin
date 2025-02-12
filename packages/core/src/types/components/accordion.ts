@@ -68,7 +68,7 @@ interface Accordion extends ComponentProps {
 export interface AccordionItemProps extends ComponentProps {
   componentType: 'accordion-item'
   /** 子组件 */
-  children?: Children[]
+  children: Children[]
   /** 标题 */
   title?: string
   /** 副标题 */
@@ -105,8 +105,10 @@ export interface AccordionProps extends Accordion {
 /**
  * 手风琴Pro
  */
-export interface AccordionProProps extends Accordion {
+export interface AccordionProProps extends Omit<Accordion, 'children'> {
   componentType: 'accordion-pro'
   /** 渲染数据 */
   data: Record<string, any>[]
+  /** 子组件 pro只有一个 因为是模板 */
+  children: Omit<AccordionItemProps, 'componentType'>
 }
