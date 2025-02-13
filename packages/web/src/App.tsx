@@ -7,7 +7,7 @@ import IndexPage from '@/pages/dashboard'
 // Config Page
 import ConfigPage from '@/pages/dashboard/config'
 // Plugin Market
-import PluginMarketPage from '@/pages/dashboard/plugins/market'
+import PluginMarketPage from '@/pages/dashboard/plugins'
 // Sandbox Page
 import SandboxPage from '@/pages/dashboard/sandbox'
 // About Page
