@@ -16,133 +16,165 @@ import {
   checkGitPluginUpdate,
 } from '@/utils/system/update'
 import { getAuthorAvatar, getNpmInfo, getGitInfo } from './info'
+import { getPluginListCache, setPluginListCache, paginatePlugins } from './cache'
 import type { RequestHandler } from 'express'
 import type { GetPluginType } from '@/types/plugin'
 import type { PluginLists, PluginUpdateInfo } from '@/types/server/plugins'
 
 /**
- * 获取在线插件列表
+ * 获取完整的插件列表
  */
-const getOnlinePluginList: RequestHandler = async (_req, res) => {
-  try {
-    // 并发获取基础数据
-    const [list, createUrl, localPlugins] = await Promise.all([
-      fetchPluginList(),
-      testGithub(),
-      getPlugins('all', true, true)
-    ])
+const getFullPluginList = async () => {
+  // 并发获取基础数据
+  const [list, createUrl, localPlugins] = await Promise.all([
+    fetchPluginList(),
+    testGithub(),
+    getPlugins('all', true, true)
+  ])
 
-    const pluginMap = new Map<string, PluginLists>()
+  const pluginMap = new Map<string, PluginLists>()
 
-    // 并发处理本地插件
-    await Promise.all(localPlugins.map(async (plugin) => {
-      const { version, description, homepage, time, license, author } = plugin?.pkgData || {}
-      pluginMap.set(plugin.name, {
-        installed: true,
-        version: str(version),
-        type: plugin.type,
-        name: plugin.name,
-        description: str(description),
-        home: str(homepage),
-        time: str(time),
-        license: {
-          name: str(license),
-          url: '',
+  // 并发处理本地插件
+  await Promise.all(localPlugins.map(async (plugin) => {
+    const { version, description, homepage, time, license, author } = plugin?.pkgData || {}
+    pluginMap.set(plugin.name, {
+      installed: true,
+      version: str(version),
+      type: plugin.type,
+      name: plugin.name,
+      description: str(description),
+      home: str(homepage),
+      time: str(time),
+      license: {
+        name: str(license),
+        url: '',
+      },
+      author: [
+        {
+          name: str(author),
+          home: '',
+          avatar: ''
         },
-        author: [
-          {
-            name: str(author),
-            home: '',
-            avatar: ''
-          },
-        ],
-        repo: [],
-        downloads: 0,
-        size: 0,
-        updated: '',
-      })
-    }))
+      ],
+      repo: [],
+      downloads: 0,
+      size: 0,
+      updated: '',
+    })
+  }))
 
-    // 并发处理在线插件
-    await Promise.all(list.plugins.map(async (plugin) => {
-      let info = null
+  // 并发处理在线插件
+  await Promise.all(list.plugins.map(async (plugin) => {
+    let info = null
 
-      switch (plugin.type) {
-        case 'npm':
-          info = await handleNpmPlugin(plugin)
-          break
-        case 'git':
-          info = await handleGitPlugin(plugin, createUrl)
-          break
-        case 'app':
-          info = await handleAppPlugin(plugin)
-          break
-      }
+    switch (plugin.type) {
+      case 'npm':
+        info = await handleNpmPlugin(plugin)
+        break
+      case 'git':
+        info = await handleGitPlugin(plugin, createUrl)
+        break
+      case 'app':
+        info = await handleAppPlugin(plugin)
+        break
+    }
 
-      if (!info) return
+    if (!info) return
 
-      const existingPlugin = pluginMap.get(info.name)
-      if (existingPlugin) {
-        pluginMap.set(info.name, {
-          ...info,
-          installed: existingPlugin.installed,
-          version: existingPlugin.installed ? existingPlugin.version : info.version,
-          latestVersion: info.version,
-          downloads: existingPlugin.downloads,
-          size: existingPlugin.size,
-          updated: existingPlugin.updated,
-        })
-        return
-      }
-
+    const existingPlugin = pluginMap.get(info.name)
+    if (existingPlugin) {
       pluginMap.set(info.name, {
         ...info,
+        installed: existingPlugin.installed,
+        version: existingPlugin.installed ? existingPlugin.version : info.version,
         latestVersion: info.version,
-        downloads: 0,
-        size: 0,
-        updated: '',
+        downloads: existingPlugin.downloads,
+        size: existingPlugin.size,
+        updated: existingPlugin.updated,
       })
-    }))
+      return
+    }
 
-    // 并发获取下载量和作者信息
-    await Promise.all(
-      Array.from(pluginMap.values()).map(async (plugin) => {
-        await Promise.all([
-          // 并发处理作者头像
-          Promise.all(
-            plugin.author.map(async (item) => {
-              item.avatar = getAuthorAvatar(item.home, item.avatar)
-            })
-          ),
-          // 并发获取插件信息
-          (async () => {
-            if (plugin.type === 'npm') {
-              const info = await getNpmInfo(plugin.name)
-              plugin.downloads = info.downloads
-              plugin.size = info.size
-              plugin.updated = info.updated
-            } else if (plugin.type === 'git' && !plugin.installed) {
-              const repoUrl = plugin.repo[0]?.url || ''
-              if (repoUrl) {
-                const info = await getGitInfo(repoUrl)
-                plugin.downloads = info.downloads
-                plugin.updated = info.updated
-              }
-            }
-          })()
-        ])
-      })
-    )
-
-    /** 排序 */
-    const result = Array.from(pluginMap.values())
-    result.sort((a, b) => {
-      if (a.installed && !b.installed) return -1
-      if (!a.installed && b.installed) return 1
-      return a.name.localeCompare(b.name)
+    pluginMap.set(info.name, {
+      ...info,
+      latestVersion: info.version,
+      downloads: 0,
+      size: 0,
+      updated: '',
     })
+  }))
 
-    createSuccessResponse(res, result)
+  // 并发获取下载量和作者信息
+  await Promise.all(
+    Array.from(pluginMap.values()).map(async (plugin) => {
+      await Promise.all([
+        // 并发处理作者头像
+        Promise.all(
+          plugin.author.map(async (item) => {
+            item.avatar = getAuthorAvatar(item.home, item.avatar)
+          })
+        ),
+        // 并发获取插件信息
+        (async () => {
+          if (plugin.type === 'npm') {
+            const info = await getNpmInfo(plugin.name)
+            plugin.downloads = info.downloads
+            plugin.size = info.size
+            plugin.updated = info.updated
+          } else if (plugin.type === 'git' && !plugin.installed) {
+            const repoUrl = plugin.repo[0]?.url || ''
+            if (repoUrl) {
+              const info = await getGitInfo(repoUrl)
+              plugin.downloads = info.downloads
+              plugin.updated = info.updated
+            }
+          }
+        })()
+      ])
+    })
+  )
+
+  /** 排序 */
+  const result = Array.from(pluginMap.values())
+  result.sort((a, b) => {
+    if (a.installed && !b.installed) return -1
+    if (!a.installed && b.installed) return 1
+    return a.name.localeCompare(b.name)
+  })
+
+  return result
+}
+
+/**
+ * 获取在线插件列表
+ */
+const getOnlinePluginList: RequestHandler = async (req, res) => {
+  try {
+    const { page = 1, pageSize = 16, refresh = false } = req.body as { page: number; pageSize: number; refresh?: boolean }
+
+    let plugins: PluginLists[] | null = null
+
+    // 如果不是强制刷新，尝试从缓存获取
+    if (!refresh) {
+      plugins = await getPluginListCache()
+    }
+
+    // 如果缓存不存在或强制刷新，则重新获取数据
+    if (!plugins) {
+      plugins = await getFullPluginList()
+      // 设置缓存
+      await setPluginListCache(plugins)
+    }
+
+    // 分页处理
+    const paginatedPlugins = paginatePlugins(plugins, page, pageSize)
+
+    createSuccessResponse(res, {
+      list: paginatedPlugins,
+      total: plugins.length,
+      page,
+      pageSize
+    })
   } catch (error) {
     createServerErrorResponse(res, (error as Error).message)
     logger.error(error)

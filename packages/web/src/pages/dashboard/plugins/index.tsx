@@ -231,10 +231,24 @@ export default function MarketPage () {
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // 获取在线插件列表
-  let { data: plugins, error: onlineError, loading: onlineLoading, refresh: refreshPlugins } = useRequest<PluginLists[], any>(
+  let { data: pluginsData, error: onlineError, loading: onlineLoading, refresh: refreshPlugins } = useRequest<{
+    list: PluginLists[]
+    total: number
+    page: number
+    pageSize: number
+  }, any>(
     async () => {
       setIsRefreshing(true)
-      return request.serverPost<PluginLists[], { time: number }>('/api/v1/plugin/index', { time: 20 * 1000 }).then(res => {
+      return request.serverPost<{
+        list: PluginLists[]
+        total: number
+        page: number
+        pageSize: number
+      }, { page: number; pageSize: number; refresh?: boolean }>('/api/v1/plugin/index', {
+        page,
+        pageSize: 16,
+        refresh: isRefreshing
+      }).then(res => {
         return res
       }).catch(err => {
         console.error('❌ 插件列表刷新失败:', err)
@@ -244,7 +258,7 @@ export default function MarketPage () {
       })
     },
     {
-      refreshDeps: [],
+      refreshDeps: [page],
       onSuccess: (data, oldData) => {
         const hasChanged = !oldData || !isEqual(data, oldData)
         if (hasChanged) {
@@ -255,7 +269,16 @@ export default function MarketPage () {
     }
   )
 
-  if (!plugins) plugins = []
+  if (!pluginsData) {
+    pluginsData = {
+      list: [],
+      total: 0,
+      page: 1,
+      pageSize: 16
+    }
+  }
+
+  const plugins = pluginsData.list
 
   // 获取任务列表
   const { data: tasks = [] } = useRequest<Task[], any>(
@@ -281,7 +304,7 @@ export default function MarketPage () {
     }
   )
 
-  const pageSize = 12
+  const pageSize = 16
   const filteredPlugins = useMemo(() => {
     let filtered = plugins || []
 
@@ -314,8 +337,8 @@ export default function MarketPage () {
   }, [filterType, searchQuery])
 
   const currentPagePlugins = useMemo(
-    () => filteredPlugins?.slice((page - 1) * pageSize, page * pageSize) || [],
-    [filteredPlugins, page, pageSize]
+    () => filteredPlugins || [],
+    [filteredPlugins]
   )
 
   const handleMaximize = useCallback((taskId: string) => {
@@ -362,6 +385,7 @@ export default function MarketPage () {
     if (refreshTimeoutRef.current) {
       clearTimeout(refreshTimeoutRef.current)
     }
+    setIsRefreshing(true)
     refreshTimeoutRef.current = setTimeout(() => {
       refreshPlugins()
     }, 300)
@@ -524,7 +548,7 @@ export default function MarketPage () {
                 color="primary"
                 size="sm"
                 page={page}
-                total={Math.ceil(filteredPlugins.length / pageSize)}
+                total={Math.ceil(pluginsData.total / pageSize)}
                 onChange={page => setPage(page)}
               />
             </CardFooter>

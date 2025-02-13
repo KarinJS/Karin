@@ -3,6 +3,7 @@ import { createServerErrorResponse, createSuccessResponse } from '@/server/utils
 import { spawn } from 'child_process'
 import path from 'path'
 import fs from 'fs'
+import { deletePluginListCache } from './cache'
 import type { RequestHandler } from 'express'
 
 interface InstallTask {
@@ -154,6 +155,9 @@ async function installPluginTask (task: InstallTask, url?: string) {
     task.logs.push('-------------------')
     task.logs.push('🎉 安装完成!')
     task.status = 'completed'
+
+    // 清除插件列表缓存
+    await deletePluginListCache()
   } catch (error) {
     task.status = 'failed'
     task.error = (error as Error).message
@@ -253,6 +257,9 @@ async function uninstallPluginTask (task: InstallTask) {
     task.logs.push('🎉 卸载完成!')
     task.logs.push('⚠️ 建议重启 Bot 以使更改生效')
     task.status = 'completed'
+
+    // 清除插件列表缓存
+    await deletePluginListCache()
   } catch (error) {
     task.status = 'failed'
     task.error = (error as Error).message
