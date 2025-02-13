@@ -11,7 +11,6 @@ import { CheckboxGroup } from './checkboxs'
 import type { JSX } from 'react'
 import type { Result } from './types'
 import type { AccordionProProps, AccordionKV } from 'node-karin'
-import { getRandomString } from '@/lib/utils'
 
 /**
  * 渲染手风琴pro组件
@@ -45,9 +44,9 @@ export const AccordionPro = (
   const { children: childrenList, ...childrenOptions } = children
 
   for (let i = 0; i < data.length; i++) {
-    const heroui = childrenList.map((options) => {
-      /** 生成随机key */
-      const strKey = `${key}-${options.key}-${i}`
+    const heroui = childrenList.map((options, optionIndex) => {
+      /** 生成稳定的key */
+      const strKey = `${key}-${options.key}-${i}-${optionIndex}`
 
       if (options.componentType === 'input') {
         const opt = { ...options, key: strKey, defaultValue: data[i][options.key] || options.defaultValue }
@@ -100,7 +99,7 @@ export const AccordionPro = (
     list.push(
       <HeroAccordionItem
         {...childrenOptions}
-        key={key + getRandomString(5)}
+        key={`${key}-accordion-${i}-${forceKey}`}
         textValue={data[i].title || childrenOptions.title || '默认标题'}
         title={
           <div className="flex justify-between items-center w-full pr-4">
