@@ -1,3 +1,5 @@
+import isEqual from 'lodash.isequal'
+import { BadgeCheck } from 'lucide-react'
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
@@ -31,7 +33,6 @@ import {
   IoChevronDownOutline,
   IoAlbumsOutline,
 } from 'react-icons/io5'
-import { BadgeCheck } from 'lucide-react'
 import { UpdateListModal } from '@/components/plugin/update_list_modal'
 import type { PluginLists } from 'node-karin'
 
@@ -245,9 +246,7 @@ export default function MarketPage () {
     {
       refreshDeps: [],
       onSuccess: (data, oldData) => {
-        // 比较新旧数据是否有实质性变化
-        const hasChanged = !oldData || JSON.stringify(data) !== JSON.stringify(oldData)
-
+        const hasChanged = !oldData || !isEqual(data, oldData)
         if (hasChanged) {
         } else {
           return oldData // 返回旧数据，避免触发重渲染
@@ -288,7 +287,7 @@ export default function MarketPage () {
 
     // 类型筛选
     if (filterType !== 'all') {
-      filtered = filtered.filter(plugin => plugin.type.toLowerCase() === filterType.toLowerCase())
+      filtered = filtered.filter(plugin => plugin.type && plugin.type.toLowerCase() === filterType.toLowerCase())
     }
 
     // 搜索筛选
@@ -301,7 +300,7 @@ export default function MarketPage () {
             plugin.description.toLowerCase().includes(query)) ||
           plugin.author.some(author =>
             author.name.toLowerCase().includes(query)) ||
-          plugin.type.toLowerCase().includes(query)
+          (plugin.type && plugin.type.toLowerCase().includes(query))
         )
       })
     }

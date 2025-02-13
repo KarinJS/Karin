@@ -1,9 +1,8 @@
 import { Input as HeroInput } from '@heroui/input'
+import { createValidator } from './utils'
 import type { JSX } from 'react'
 import type { Result } from './types'
 import type { InputProps } from 'node-karin'
-import { useComponentState } from './hooks/useComponentState'
-import { createValidator } from './utils'
 
 /**
  * 渲染输入框组件
@@ -17,25 +16,20 @@ export const Input = (
   result: Result<'input'>,
   onValueChange?: (value: string) => void
 ): JSX.Element => {
-  const { componentType: _, key, className, defaultValue, ...options } = props
+  const { componentType: _, key, className, ...options } = props
   const validator = props.rules ? createValidator(props.rules) : undefined
 
-  const { value, onChange: handleValueChange } = useComponentState(
-    key,
-    defaultValue ?? '',
-    result,
-    onValueChange
-  )
 
   return (
     <div className={className || `w-${props.width || 200}px h-${props.height || 40}px`}>
       <HeroInput
         key={key}
         {...options}
-        value={value}
         className="w-full"
         validate={validator}
-        onValueChange={handleValueChange}
+        onValueChange={onValueChange || ((value) => {
+          result[key] = value
+        })}
       />
     </div>
   )

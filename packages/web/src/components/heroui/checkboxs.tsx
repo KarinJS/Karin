@@ -5,7 +5,6 @@ import {
 import type { JSX } from 'react'
 import type { Result } from './types'
 import type { CheckboxGroupProps } from 'node-karin'
-import { useComponentState } from './hooks/useComponentState'
 
 /**
  * 渲染复选框组件
@@ -20,40 +19,33 @@ export const CheckboxGroup = (
   onValueChange?: (key: string, value: boolean) => void
 ): JSX.Element => {
   const { componentType: _, key, className, checkbox, ...options } = props
-
-  // 初始化选中状态
-  const initialState: Record<string, boolean> = {}
+  result[key] = {}
   checkbox.forEach((item) => {
-    initialState[item.key] = item.defaultSelected ?? false
+    result[key][item.key] = item.defaultSelected ?? false
   })
-
-  const { value: selectedState, onChange: handleStateChange } = useComponentState(
-    key,
-    initialState,
-    result,
-    onValueChange ?
-      undefined : // 如果有外部 onValueChange，我们使用自定义的处理逻辑
-      (newState: Record<string, boolean>) => result[key] = newState
-  )
-
-  // 处理单个复选框的变化
-  const handleValueChange = (checkboxKey: string, value: boolean) => {
-    const newState = { ...selectedState, [checkboxKey]: value }
-    handleStateChange(newState)
-    onValueChange?.(checkboxKey, value)
-  }
 
   return (
     <div className={className || 'flex items-center gap-2'}>
-      <HeroCheckboxGroup key={key} {...options}>
-        {checkbox.map(({ key: checkboxKey, ...item }) => (
-          <HeroCheckbox
-            {...item}
-            key={checkboxKey}
-            isSelected={selectedState[checkboxKey]}
-            onValueChange={(value) => handleValueChange(checkboxKey, value)}
-          />
-        ))}
+      <HeroCheckboxGroup
+        key={key}
+        {...options}
+      >
+        {checkbox.map(({ key: CheckboxKey, ...item }) => {
+          return (
+            <HeroCheckbox
+              {...item}
+              key={CheckboxKey}
+              defaultSelected={result[key][CheckboxKey]}
+              onValueChange={(value) => {
+                if (onValueChange) {
+                  onValueChange(CheckboxKey, value)
+                } else {
+                  result[key][CheckboxKey] = value
+                }
+              }}
+            />
+          )
+        })}
       </HeroCheckboxGroup>
     </div>
   )

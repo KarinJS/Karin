@@ -2,7 +2,6 @@ import { Radio as HeroRadio, RadioGroup as HeroRadioGroup } from '@heroui/radio'
 import type { JSX } from 'react'
 import type { Result } from './types'
 import type { RadioGroupProps } from 'node-karin'
-import { useComponentState } from './hooks/useComponentState'
 
 /**
  * 渲染单选框组件
@@ -18,20 +17,14 @@ export const RadioGroup = (
 ): JSX.Element => {
   const { componentType: _, key, className, radio, ...options } = props
 
-  const { value, onChange: handleValueChange } = useComponentState(
-    key,
-    props.value || props.defaultValue || '',
-    result,
-    onValueChange
-  )
-
   return (
     <div className={className || 'flex items-center gap-2'}>
       <HeroRadioGroup
         key={key}
         {...options}
-        value={value}
-        onValueChange={handleValueChange}
+        onValueChange={onValueChange || ((value) => {
+          result[key] = value
+        })}
       >
         {radio.map(({ key, label, ...item }) => (
           <HeroRadio key={key} {...item}>

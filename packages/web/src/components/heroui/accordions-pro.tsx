@@ -47,7 +47,7 @@ export const AccordionPro = (
   for (let i = 0; i < data.length; i++) {
     const heroui = childrenList.map((options) => {
       /** 生成随机key */
-      const strKey = options.key + getRandomString(5)
+      const strKey = `${key}-${options.key}-${i}`
 
       if (options.componentType === 'input') {
         const opt = { ...options, key: strKey, defaultValue: data[i][options.key] || options.defaultValue }
