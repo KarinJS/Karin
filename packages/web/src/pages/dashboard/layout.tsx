@@ -7,7 +7,7 @@ export default function DashboardLayout () {
       <div className="flex-grow-0 flex-shrink-0">
         <Sidebar />
       </div>
-      <main className="container mx-auto px-6 flex-grow overflow-y-scroll">
+      <main className="container mx-auto px-3 flex-grow overflow-y-scroll">
         <Outlet />
       </main>
     </div>
