@@ -15,7 +15,8 @@
     "build:all": "pnpm run build:prod && pnpm run build:web",
     "dev": "pnpm --filter node-karin run dev",
     "dev:cli": "pnpm --filter node-karin run dev:cli",
-    "dev:web": "pnpm --filter karin-webui run dev"
+    "dev:web": "pnpm --filter karin-webui run dev",
+    "web": "pnpm --filter karin-webui run dev"
   },
   "devDependencies": {
     "@types/node": "^22.5.0",

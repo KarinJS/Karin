@@ -153,6 +153,7 @@ export const AccordionPro = (
       <HeroAccordion
         key={`${key}-${forceKey}`}
         {...options}
+        keepContentMounted={true}
       >
         {list}
       </HeroAccordion>

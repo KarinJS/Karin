@@ -63,7 +63,11 @@ export const Accordion = (
             || !Array.isArray(itemChildren)
           ) return null
           return (
-            <HeroAccordionItem key={childrenKey} {...item} >
+            <HeroAccordionItem
+              key={childrenKey}
+              {...item}
+              keepContentMounted={true}
+            >
               {itemChildren.map((options) => {
                 if (options.componentType === 'input') {
                   return Input(options, {}, (value) => {

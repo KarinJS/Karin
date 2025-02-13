@@ -126,38 +126,49 @@ const PluginCard = ({ plugin }: { plugin: PluginLists }) => {
           {/* 作者头像组 */}
           <div className="flex -space-x-2 shrink-0">
             {plugin.author.length > 0 ? (
-              plugin.author.map((author, index) => (
-                <Tooltip
-                  key={author.name + index}
-                  content={
-                    <div className="text-center">
-                      <p className="font-semibold">{author.name}</p>
-                      {author.home && author.home !== '-' && (
-                        <p className="text-xs text-default-400">点击访问主页</p>
-                      )}
-                    </div>
-                  }
-                >
-                  {author.home && author.home !== '-' ? (
-                    <Link href={author.home} isExternal>
+              <>
+                {/* 最多显示2个头像 */}
+                {plugin.author.slice(0, 2).map((author, index) => (
+                  <Tooltip
+                    key={author.name + index}
+                    content={
+                      <div className="text-center">
+                        <p className="font-semibold">{author.name}</p>
+                        {author.home && author.home !== '-' && (
+                          <p className="text-xs text-default-400">点击访问主页</p>
+                        )}
+                      </div>
+                    }
+                  >
+                    {author.home && author.home !== '-' ? (
+                      <Link href={author.home} isExternal>
+                        <Avatar
+                          isBordered
+                          size="sm"
+                          src={author.avatar || `https://avatar.vercel.sh/ikenxuan`}
+                          className="bg-default-100 border-white dark:border-default-800"
+                        />
+                      </Link>
+                    ) : (
                       <Avatar
                         isBordered
                         size="sm"
-                        src={author.avatar || `https://avatar.vercel.sh/${author.name}`}
+                        src={author.avatar || `https://avatar.vercel.sh/ikenxuan`}
                         className="bg-default-100 border-white dark:border-default-800"
                       />
-                    </Link>
-                  ) : (
-                    <Avatar
-                      isBordered
-                      size="sm"
-                      src={author.avatar || `https://avatar.vercel.sh/ikenxuan`}
-                      className="bg-default-100 border-white dark:border-default-800"
-                    />
-
-                  )}
-                </Tooltip>
-              ))
+                    )}
+                  </Tooltip>
+                ))}
+                {/* 如果作者超过2个，显示剩余数量 */}
+                {plugin.author.length > 2 && (
+                  <Avatar
+                    isBordered
+                    size="sm"
+                    className="bg-default-100 border-white dark:border-default-800"
+                    fallback={`+${plugin.author.length - 2}`}
+                  />
+                )}
+              </>
             ) : (
               <Avatar
                 isBordered
