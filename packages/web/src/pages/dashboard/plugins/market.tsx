@@ -27,26 +27,38 @@ import {
   IoCloudUploadOutline,
   IoSearchOutline,
   IoDownloadOutline,
-  IoCheckmarkCircleOutline,
   IoAppsOutline,
   IoChevronDownOutline,
-  IoAlbumsOutline
+  IoAlbumsOutline,
 } from 'react-icons/io5'
+import { BadgeCheck } from 'lucide-react'
 import { UpdateListModal } from '@/components/plugin/update_list_modal'
 import type { PluginLists } from 'node-karin'
 
 // 默认描述生成函数
 const getDefaultDescription = (name: string) => {
   const descriptions = [
-    `为您的工作流程带来更多可能性`,
-    `提升您的开发效率的得力助手`,
-    `简单易用，功能强大的插件`,
-    `让开发更轻松，体验更流畅`,
-    `为您的项目锦上添花`
+    `为您的工作流程带来更多可能性和效率提升`,
+    `简单易用且功能强大的插件，助力开发体验`,
+    `为项目开发锦上添花的得力助手`,
+    `提升开发效率的智能工具，让工作更轻松`,
+    `优化您的开发流程，提供更好的使用体验`,
+    `为您的项目增添新的维度和可能性`,
+    `智能且高效的开发工具，助力效率提升`,
+    `让开发更简单，让创作更有趣`,
+    `为您的工作流程带来智能化的解决方案`,
+    `提供专业的开发支持，让工作更高效`
   ]
+
   // 使用插件名称作为种子来选择固定的描述
   const seed = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
-  return descriptions[seed % descriptions.length]
+  const index = seed % descriptions.length
+
+  // 将插件名称插入描述中，使其更加个性化
+  return descriptions[index].replace(/您的|开发/, () => {
+    const keywords = ['您的', name, '开发']
+    return keywords[seed % keywords.length]
+  })
 }
 
 const getTypeIcon = (type: string) => {
@@ -83,92 +95,80 @@ const PluginCard = ({ plugin }: { plugin: PluginLists }) => {
 
   return (
     <Card
-      className="group w-full h-[140px] flex flex-col overflow-hidden cursor-pointer relative bg-default-50/50 dark:bg-default-100/5 hover:-translate-y-[2px] hover:shadow-md hover:bg-default-100/80 dark:hover:bg-default-100/10 transition-all duration-300 rounded-xl"
+      className="group w-full h-[140px] flex flex-col overflow-hidden cursor-pointer relative bg-default-50/30 dark:bg-default-100/5 hover:-translate-y-[1px] hover:shadow-sm hover:bg-default-100/50 dark:hover:bg-default-100/10 transition-all duration-300 rounded-xl"
       isPressable
-      radius="lg"
+      radius="sm"
     >
-      {/* 添加边框动画效果 */}
-      <div className="absolute inset-0 border border-default-200 dark:border-default-100/20 group-hover:border-primary-500/50 dark:group-hover:border-primary-500/30 group-hover:border-2 transition-all duration-300 rounded-xl" />
+      {/* 优化边框动画效果 */}
+      <div className="absolute inset-0 border border-default-200/20 dark:border-default-100/5 group-hover:border-primary-500/30 dark:group-hover:border-primary-500/20 transition-all duration-300 rounded-xl" />
 
       <CardBody className="p-4 flex flex-col h-full relative">
         {/* 顶部区域 */}
         <div className="flex items-start justify-between gap-3 mb-2">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1.5">
+
+              {plugin.installed && (
+                <Tooltip content="已安装">
+                  <div className="relative flex items-center justify-center">
+                    <div className="w-4 h-4 flex items-center justify-center">
+                      <BadgeCheck className="w-full h-full text-success-500/90 dark:text-success-400/90 stroke-[2]" />
+                    </div>
+                  </div>
+                </Tooltip>
+              )}
               {plugin.home && plugin.home !== '-' ? (
                 <Tooltip content="点击访问插件主页">
                   <Link
                     href={plugin.home}
                     isExternal
-                    className="text-sm font-semibold text-default-900 hover:text-primary-500 transition-colors truncate"
+                    className="text-sm font-medium text-default-900 hover:text-primary-500 transition-colors truncate"
                   >
                     {plugin.name}
                   </Link>
                 </Tooltip>
               ) : (
-                <span className="text-sm font-semibold text-default-900 truncate">
+                <span className="text-sm font-medium text-default-900 truncate">
                   {plugin.name}
                 </span>
               )}
-              {plugin.installed && (
-                <Tooltip content="已安装">
-                  <div className="w-5 h-5 flex items-center justify-center">
-                    <IoCheckmarkCircleOutline className="text-success-500 text-lg" />
-                  </div>
-                </Tooltip>
-              )}
             </div>
-            <p className="text-xs text-default-500 line-clamp-2" title={plugin.description}>
+            <p className="text-xs text-default-500 line-clamp-2 leading-relaxed" title={plugin.description}>
               {plugin.description === '-' ? getDefaultDescription(plugin.name) : plugin.description}
             </p>
           </div>
 
           {/* 作者头像组 */}
-          <div className="flex -space-x-2 shrink-0">
+          <div className="flex shrink-0">
             {plugin.author.length > 0 ? (
-              <>
-                {/* 最多显示2个头像 */}
-                {plugin.author.slice(0, 2).map((author, index) => (
-                  <Tooltip
-                    key={author.name + index}
-                    content={
-                      <div className="text-center">
-                        <p className="font-semibold">{author.name}</p>
-                        {author.home && author.home !== '-' && (
-                          <p className="text-xs text-default-400">点击访问主页</p>
-                        )}
-                      </div>
-                    }
-                  >
-                    {author.home && author.home !== '-' ? (
-                      <Link href={author.home} isExternal>
-                        <Avatar
-                          isBordered
-                          size="sm"
-                          src={author.avatar || `https://avatar.vercel.sh/ikenxuan`}
-                          className="bg-default-100 border-white dark:border-default-800"
-                        />
-                      </Link>
-                    ) : (
-                      <Avatar
-                        isBordered
-                        size="sm"
-                        src={author.avatar || `https://avatar.vercel.sh/ikenxuan`}
-                        className="bg-default-100 border-white dark:border-default-800"
-                      />
+              <Tooltip
+                content={
+                  <div className="text-center">
+                    <p className="text-sm text-default-600">{plugin.author[0].name}</p>
+                    {plugin.author[0].home && plugin.author[0].home !== '-' && (
+                      <p className="text-xs text-default-400">点击访问主页</p>
                     )}
-                  </Tooltip>
-                ))}
-                {/* 如果作者超过2个，显示剩余数量 */}
-                {plugin.author.length > 2 && (
+                  </div>
+                }
+              >
+                {plugin.author[0].home && plugin.author[0].home !== '-' ? (
+                  <Link href={plugin.author[0].home} isExternal>
+                    <Avatar
+                      isBordered
+                      size="sm"
+                      src={plugin.author[0].avatar || `https://avatar.vercel.sh/ikenxuan`}
+                      className="bg-default-100 border-white dark:border-default-800"
+                    />
+                  </Link>
+                ) : (
                   <Avatar
                     isBordered
                     size="sm"
+                    src={plugin.author[0].avatar || `https://avatar.vercel.sh/ikenxuan`}
                     className="bg-default-100 border-white dark:border-default-800"
-                    fallback={`+${plugin.author.length - 2}`}
                   />
                 )}
-              </>
+              </Tooltip>
             ) : (
               <Avatar
                 isBordered
