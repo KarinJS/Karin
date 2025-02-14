@@ -5,9 +5,12 @@ import type { CheckboxProps, CheckboxGroupProps } from '@/types/components'
  * @param key 唯一标识符
  * @param config 复选框配置（可选）
  */
-const createCheckbox = (key: string, config?: Partial<Omit<CheckboxProps, 'key' | 'componentType'>>) => ({
-  key,
+const createCheckbox = (
+  key: string,
+  config: Partial<Omit<CheckboxProps, 'key' | 'componentType'>> = {}
+): CheckboxProps => ({
   ...config,
+  key,
   componentType: 'checkbox',
 })
 
@@ -16,10 +19,14 @@ const createCheckbox = (key: string, config?: Partial<Omit<CheckboxProps, 'key' 
  * @param key 唯一标识符
  * @param config 复选框组配置（可选）
  */
-const createCheckboxGroup = (key: string, config?: Partial<Omit<CheckboxGroupProps, 'key' | 'componentType'>>) => ({
-  key,
+const createCheckboxGroup = (
+  key: string,
+  config: Partial<Omit<CheckboxGroupProps, 'key' | 'componentType'>> = {}
+): CheckboxGroupProps => ({
   ...config,
+  key,
   componentType: 'checkbox-group',
+  checkbox: config.checkbox || [],
 })
 
 /**

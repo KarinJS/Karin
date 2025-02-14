@@ -5,9 +5,13 @@ import type { Radio, RadioGroupProps } from '@/types/components'
  * @param key 唯一标识符
  * @param config 复选框配置（可选）
  */
-const createRadio = (key: string, config?: Partial<Omit<Radio, 'key' | 'componentType'>>) => ({
-  key,
+const createRadio = (
+  key: string,
+  config: Partial<Omit<Radio, 'key' | 'componentType'>> = {}
+): Radio => ({
   ...config,
+  key,
+  value: config.value || '',
   componentType: 'radio',
 })
 
@@ -16,10 +20,14 @@ const createRadio = (key: string, config?: Partial<Omit<Radio, 'key' | 'componen
  * @param key 唯一标识符
  * @param config 复选框组配置（可选）
  */
-const createRadioGroup = (key: string, config?: Partial<Omit<RadioGroupProps, 'key' | 'componentType'>>) => ({
-  key,
+const createRadioGroup = (
+  key: string,
+  config: Partial<Omit<RadioGroupProps, 'key' | 'componentType'>> = {}
+): RadioGroupProps => ({
   ...config,
+  key,
   componentType: 'radio-group',
+  radio: config.radio || [],
 })
 
 /**

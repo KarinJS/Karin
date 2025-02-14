@@ -5,15 +5,14 @@ import type { InputProps } from '@/types/components'
  * @param key 唯一标识符
  * @param config 输入框配置（可选）
  */
-const createInput = (key: string, config?: Partial<Omit<InputProps, 'key' | 'componentType'>>) => {
-  const result = {
-    key,
-    type: 'text',
-    ...config,
-    componentType: 'input',
-  }
-  return result
-}
+const createInput = (
+  key: string,
+  config: Partial<Omit<InputProps, 'key' | 'componentType'>> = {}
+): InputProps => ({
+  ...config,
+  key,
+  componentType: 'input',
+})
 
 /**
  * 输入框
