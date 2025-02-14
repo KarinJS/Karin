@@ -56,7 +56,7 @@ export class AdapterServerOneBot11 extends WsAdapterOneBot11 {
 
     const auth = this.request.headers['authorization']
     if (auth !== `Bearer ${token}`) {
-      this.logger('error', `[oneBot11][鉴权失败] address: ${this.adapter.address} token: ${token}`)
+      this.logger('error', `[oneBot11][鉴权失败] address: ${this.adapter.address} token: ${token} auth: ${auth}`)
       this.socket.close()
       return false
     }
