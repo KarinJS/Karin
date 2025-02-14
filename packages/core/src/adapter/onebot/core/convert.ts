@@ -24,57 +24,59 @@ export const buildError = (selfId: string, action: string, request: string, erro
    * onebot11转karin
    * @return karin格式消息
    */
-export function AdapterConvertKarin (data: Array<OB11Segment> = []): Array<Elements> {
-  const elements = []
-  for (const i of data) {
-    switch (i.type) {
-      case 'text':
-        elements.push(segment.text(i.data.text))
-        break
-      case 'face':
-        elements.push(segment.face(Number(i.data.id)))
-        break
-      case 'image':
-        elements.push(segment.image(i.data.url || i.data.file, { fileType: i.data.type }))
-        break
-      case 'record':
-        elements.push(segment.record(i.data.url || i.data.file, i.data.magic === 1))
-        break
-      case 'video':
-        elements.push(segment.video(i.data.url || i.data.file))
-        break
-      case 'at':
-        elements.push(segment.at(i.data.qq, i.data.name))
-        break
-      case 'poke':
-        // TODO: 需要变成通知事件 但是貌似已经没有这个消息类型了
-        // elements.push(segment.poke(Number(i.data.id), Number(i.data.type)))
-        break
-      case 'contact':
-        elements.push(segment.contact(i.data.type === 'qq' ? 'friend' : 'group', i.data.id))
-        break
-      case 'location':
-        elements.push(segment.location(Number(i.data.lat), Number(i.data.lon), i.data.title || '', i.data.content || ''))
-        break
-      case 'reply':
-        elements.push(segment.reply(i.data.id))
-        break
-      case 'forward':
-        // TODO: 需要变成通知事件
-        // elements.push(segment.forward(i.data.id))
-        break
-      case 'json':
-        elements.push(segment.json(i.data.data))
-        break
-      case 'xml':
-        elements.push(segment.xml(i.data.data))
-        break
-      default: {
-        elements.push(segment.text(JSON.stringify(i)))
+export function AdapterConvertKarin(data: Array<OB11Segment> = []): Array<Elements> {
+  const elements = [];
+  try {
+    for (const i of data) {
+      switch (i.type) {
+        case 'text':
+          elements.push(segment.text(i.data.text));
+          break;
+        case 'face':
+          elements.push(segment.face(Number(i.data.id)));
+          break;
+        case 'image':
+          elements.push(segment.image(i.data.url || i.data.file, { fileType: i.data.type }));
+          break;
+        case 'record':
+          elements.push(segment.record(i.data.url || i.data.file, i.data.magic === 1));
+          break;
+        case 'video':
+          elements.push(segment.video(i.data.url || i.data.file));
+          break;
+        case 'at':
+          elements.push(segment.at(i.data.qq, i.data.name));
+          break;
+        case 'contact':
+          elements.push(segment.contact(i.data.type === 'qq' ? 'friend' : 'group', i.data.id));
+          break;
+        case 'location':
+          elements.push(segment.location(
+            Number(i.data.lat),
+            Number(i.data.lon),
+            i.data.title || '',
+            i.data.content || ''
+          ));
+          break;
+        case 'reply':
+          elements.push(segment.reply(i.data.id));
+          break;
+        case 'json':
+          elements.push(segment.json(i.data.data));
+          break;
+        case 'xml':
+          elements.push(segment.xml(i.data.data));
+          break;
+        default: {
+          elements.push(segment.text(JSON.stringify(i)));
+        }
       }
     }
+  } catch (error) {
+    // 负责捕获处理非OneBOT11标准适配器报错的问题 输出已成功处理的elements
+    return elements;
   }
-  return elements
+  return elements;
 }
 
 /**
