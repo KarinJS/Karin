@@ -1,0 +1,9 @@
+*.ts linguist-detectable
+*.js linguist-vendored
+*.js.map linguist-vendored
+*.json linguist-vendored
+*.md linguist-vendored
+*.yml linguist-vendored
+*.yaml linguist-vendored
+*.lock linguist-vendored
+*.d.ts linguist-vendored
