@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.3.3](https://github.com/KarinJS/Karin/compare/web-v1.3.2...web-v1.3.3) (2025-02-14)
+
+
+### 🐛 Bug Fixes
+
+* ... ([3693919](https://github.com/KarinJS/Karin/commit/3693919f5c7c1e55c59cf71a363b613606838fe3))
+* components ([edeccdc](https://github.com/KarinJS/Karin/commit/edeccdc2d43797086c890cec0d0a8ef18775aef8))
+* 修复手风琴 更改插件卡片最多显示2个头像 ([116d348](https://github.com/KarinJS/Karin/commit/116d3484c481ce442e7baa738a28eb01ea735916))
+* 修复组件渲染 ([951e4b8](https://github.com/KarinJS/Karin/commit/951e4b8628eef75ef62141b8fbbab05492dec5ed))
+* 删除无效文件 ([52b54c1](https://github.com/KarinJS/Karin/commit/52b54c1061113327c8c52690d938855d866e3525))
+* 单选框默认值 ([2bc2935](https://github.com/KarinJS/Karin/commit/2bc29357dfb45b95618e320a12d339bed7b68055))
+* 唯一key ([efaadbb](https://github.com/KarinJS/Karin/commit/efaadbbad81b41417a2fa23b84dd229abb41e351))
+* 增加单选框、复选框组件，修正组件渲染错误 ([edeccdc](https://github.com/KarinJS/Karin/commit/edeccdc2d43797086c890cec0d0a8ef18775aef8))
+* 插件列表缓存 ([009ec94](https://github.com/KarinJS/Karin/commit/009ec947b29578f856b1bc29cd756ba369e92e6c))
+* 普通手风琴的样式 ([07aebfe](https://github.com/KarinJS/Karin/commit/07aebfe1b35afd87fd992d51eba676b2c519d13d))
+* 给予一个默认值 ([1146c3f](https://github.com/KarinJS/Karin/commit/1146c3fb8e5ee9ade4c794cdec9ebc7f6f6fa4be))
+* 重命名插件页面 ([b54f5e2](https://github.com/KarinJS/Karin/commit/b54f5e28dcd3f6f4114c1442cea2b0aea82a5e6b))
+
+
+### 💄 Styles
+
+* 插件卡片样式微调 ([da3e387](https://github.com/KarinJS/Karin/commit/da3e38754dc98e4382533c29f856c97f999adf50))
+* 登录页面样式 ([1081bb2](https://github.com/KarinJS/Karin/commit/1081bb2f1ad0f88f900bb3261d17c8f58fbedf05))
+
 ## [1.3.2](https://github.com/KarinJS/Karin/compare/web-v1.3.1...web-v1.3.2) (2025-02-11)
 
 

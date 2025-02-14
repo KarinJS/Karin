@@ -1,5 +1,19 @@
 # 更新日志
 
+## [1.3.6](https://github.com/KarinJS/Karin/compare/core-v1.3.5...core-v1.3.6) (2025-02-14)
+
+
+### 🐛 Bug Fixes
+
+* ... ([3693919](https://github.com/KarinJS/Karin/commit/3693919f5c7c1e55c59cf71a363b613606838fe3))
+* components ([edeccdc](https://github.com/KarinJS/Karin/commit/edeccdc2d43797086c890cec0d0a8ef18775aef8))
+* express types ([9c97066](https://github.com/KarinJS/Karin/commit/9c97066b25f57046ef78fc7e8829f1fdd7bf78ae))
+* fix [#253](https://github.com/KarinJS/Karin/issues/253) ([c6c4d54](https://github.com/KarinJS/Karin/commit/c6c4d54c15ac09ecf8f0e5afbfbee1073626b777))
+* fix [#261](https://github.com/KarinJS/Karin/issues/261) ([440c635](https://github.com/KarinJS/Karin/commit/440c63535c108d31fea5d25be381aab82b7b966e))
+* 修复组件渲染 ([951e4b8](https://github.com/KarinJS/Karin/commit/951e4b8628eef75ef62141b8fbbab05492dec5ed))
+* 增加单选框、复选框组件，修正组件渲染错误 ([edeccdc](https://github.com/KarinJS/Karin/commit/edeccdc2d43797086c890cec0d0a8ef18775aef8))
+* 插件列表缓存 ([009ec94](https://github.com/KarinJS/Karin/commit/009ec947b29578f856b1bc29cd756ba369e92e6c))
+
 ## [1.3.5](https://github.com/KarinJS/Karin/compare/core-v1.3.4...core-v1.3.5) (2025-02-11)
 
 
