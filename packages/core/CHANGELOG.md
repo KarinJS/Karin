@@ -1,5 +1,13 @@
 # 更新日志
 
+## [1.3.8](https://github.com/KarinJS/Karin/compare/core-v1.3.7...core-v1.3.8) (2025-02-14)
+
+
+### 🐛 Bug Fixes
+
+* 修复Router导出 ([c4304de](https://github.com/KarinJS/Karin/commit/c4304de57f63bdd67252d379bc96deb2da3e8c7b))
+* 怎么有适配器结构体都不传 ([cc42593](https://github.com/KarinJS/Karin/commit/cc425930d61897a292adadb63cb4b261c14941cd))
+
 ## [1.3.7](https://github.com/KarinJS/Karin/compare/core-v1.3.6...core-v1.3.7) (2025-02-14)
 
 
