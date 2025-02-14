@@ -2,10 +2,10 @@ import { listeners } from '@/core/internal'
 import { adapter } from '@/utils/config/file/adapter'
 import { registerHttpBot } from './post/register'
 import { AdapterServerOneBot11, HttpAdapterOneBot11 } from './connect'
-import { AdapterClientOneBot11 } from '@/adapter/onebot/connect/client'
+import { createOneBot11Client } from '@/adapter/onebot/connect/client'
 
-import type { IncomingMessage } from 'node:http'
 import type { WebSocket } from 'ws'
+import type { IncomingMessage } from 'node:http'
 
 export * from '@/adapter/onebot/types'
 export type { AdapterOneBot } from '@/adapter/onebot/core/base'
@@ -28,7 +28,7 @@ const createClient = async () => {
 
   for (const item of cfg.onebot.ws_client) {
     if (!item?.enable || !item?.url) continue
-    AdapterClientOneBot11.init(item.url, item.token)
+    createOneBot11Client(item.url, item.token)
   }
 }
 

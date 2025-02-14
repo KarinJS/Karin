@@ -1,12 +1,11 @@
-import { config } from '@/utils'
+import { timeout } from '@/utils/config/file/adapter'
 import { AdapterOneBot } from '@/adapter/onebot/core/base'
 import { OB11ApiAction, OB11ApiParams, OB11ApiRequest } from '../types'
 import { OB11Event, type OB11AllEvent } from '@/adapter/onebot/types/event'
-import { registerBot } from '@/service/bot'
+import { registerBot, unregisterBot } from '@/service/bot'
 import { buildError } from '@/adapter/onebot/core/convert'
 
 import type { WebSocket } from 'ws'
-import type { AdapterCommunication } from '@/types/adapter'
 
 export abstract class WsAdapterOneBot11 extends AdapterOneBot {
   /** 请求id */
@@ -20,31 +19,7 @@ export abstract class WsAdapterOneBot11 extends AdapterOneBot {
     this.socket = socket
   }
 
-  /**
-   * 初始化
-   * @param selfId 机器人ID
-   * @param url WebSocket地址
-   * @param communication 通讯方式
-   */
-  async init (selfId: string, url: string, communication: AdapterCommunication) {
-    this.account.uid = selfId
-    this.account.uin = selfId
-    this.account.selfId = selfId
-    this.adapter.address = url
-    try {
-      this.adapter.communication = communication
-      this.onEvent()
-      await Promise.all([this.setBotInfo(), this.setAdapterInfo()])
-      logger.bot('info', this.selfId, `[onebot11][${communication}] 连接成功: ${url}`)
-
-      this.adapter.index = registerBot(communication, this)
-    } catch (error) {
-      this.socket.close()
-      throw new Error(`[onebot11][${communication}] 连接失败: ${url}`)
-    }
-  }
-
-  private onEvent () {
+  onEvent () {
     this.socket.on('message', (rawData) => {
       const str = rawData.toString()
       const json = JSON.parse(str)
@@ -70,18 +45,53 @@ export abstract class WsAdapterOneBot11 extends AdapterOneBot {
     })
   }
 
+  /**
+   * 注册机器人
+   */
+  registerBot () {
+    logger.bot('info', this.selfId, `[onebot11][${this.adapter.communication}] 连接成功: ${this.adapter.address}`)
+    this.adapter.index = registerBot(this.adapter.communication, this)
+  }
+
+  /**
+   * 卸载注册的机器人
+   */
+  unregisterBot () {
+    this.socket.removeAllListeners()
+    unregisterBot('index', this.adapter.index)
+    logger.bot('info', this.selfId, `连接关闭: ${this.adapter.address}`)
+  }
+
   /** 获取登录号信息 */
-  private async setAdapterInfo () {
+  async setAdapterInfo () {
     const info = await this.sendApi(OB11ApiAction.getVersionInfo, {})
     this.adapter.name = info.app_name
     this.adapter.version = info.app_version
+    this.adapter.platform = 'qq'
+    if (/gocq/i.test(info.app_name)) {
+      this.adapter.protocol = 'gocq-http'
+    } else if (/napcat/i.test(info.app_name)) {
+      this.adapter.protocol = 'napcat'
+    } else if (/llonebot/i.test(info.app_name)) {
+      this.adapter.protocol = 'llonebot'
+    } else if (/lagrange/i.test(info.app_name)) {
+      this.adapter.protocol = 'lagrange'
+    } else if (/conwechat/i.test(info.app_name)) {
+      this.adapter.protocol = 'conwechat'
+    } else {
+      this.adapter.protocol = 'other'
+    }
   }
 
-  /** 设置登录号详细信息 */
-  private async setBotInfo () {
+  /**
+   * 设置登录号详细信息
+   * @param setSelfId 是否设置selfId
+   */
+  async setBotInfo (setSelfId: boolean = false) {
     const info = await this.sendApi(OB11ApiAction.getLoginInfo, {})
     this.account.name = info.nickname
     this.account.avatar = `https://q1.qlogo.cn/g?b=qq&s=0&nk=${info.user_id}`
+    if (setSelfId) this.account.selfId = String(info.user_id)
   }
 
   async sendApi<T extends keyof OB11ApiParams> (
@@ -89,7 +99,7 @@ export abstract class WsAdapterOneBot11 extends AdapterOneBot {
     params: OB11ApiParams[T],
     time = 120
   ): Promise<OB11ApiRequest[T]> {
-    if (!time) time = config.timeout()
+    if (!time) time = timeout()
     const echo = ++this.seq + ''
     const request = JSON.stringify({ echo, action, params })
     logger.bot('debug', this.selfId, `发送Api请求 ${action}: ${request}`)
