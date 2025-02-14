@@ -1,15 +1,15 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import util from 'node:util'
-import { isDev } from '@/env'
+import { isDev, isTsx } from '@/env'
 import { pathToFileURL } from 'node:url'
 import { router } from '@/server/api/router'
+import { requireFileSync } from '@/utils/fs/require'
 import { createServerErrorResponse, createSuccessResponse } from '@/server/utils/response'
 
 import type { Apps } from '@/types/plugin'
 import type { RequestHandler } from 'express'
-
-const WEB_CONFIG_NAME = 'web.config.mjs'
+import type { PkgData } from '@/utils/fs/pkg'
 
 interface BaseConfig {
   /** 插件类型 */
@@ -19,38 +19,77 @@ interface BaseConfig {
 }
 
 /**
- * 获取插件配置路径
+ * 从package.json中获取web配置路径
+ * @param pkg package.json内容
+ * @param baseDir 基础目录
+ * @returns web配置路径或null
  */
-const getConfigPath = (options: BaseConfig) => {
-  if (options.type === 'npm') {
-    const configPath = path.join(process.cwd(), 'node_modules', options.name, WEB_CONFIG_NAME)
-    if (fs.existsSync(configPath)) {
-      return configPath
-    }
+const getWebConfigPathFromPkg = (pkg: PkgData, baseDir: string): string | null => {
+  if (!pkg.karin) return null
 
-    /** 在开发环境下，根目录也要寻找 */
-    if (isDev()) {
-      const rootConfigPath = path.join(process.cwd(), WEB_CONFIG_NAME)
-      if (fs.existsSync(rootConfigPath)) {
-        return rootConfigPath
-      }
-    }
-
-    return null
+  if (isTsx() && pkg.karin['ts-web']) {
+    return path.join(baseDir, pkg.karin['ts-web'])
   }
 
-  /**
-    * 2种情况
-    * 1. 在plugins下
-    * 2. 在根目录
-    */
-  let configPath = path.join(process.cwd(), 'plugins', options.name, WEB_CONFIG_NAME)
-  if (fs.existsSync(configPath)) return configPath
+  if (pkg.karin.web) return path.join(baseDir, pkg.karin.web)
+  return null
+}
 
-  configPath = path.join(process.cwd(), WEB_CONFIG_NAME)
-  if (!fs.existsSync(configPath)) return null
+/**
+ * 获取NPM插件配置路径
+ * @param name 插件名称
+ * @returns 配置路径或null
+ */
+const getNpmPluginConfigPath = (name: string): string | null => {
+  const dir = path.join(process.cwd(), 'node_modules', name)
+  if (fs.existsSync(dir)) {
+    const pkg = requireFileSync<PkgData>(path.join(dir, 'package.json'))
+    const configPath = getWebConfigPathFromPkg(pkg, dir)
+    if (configPath) return configPath
+  }
 
-  return configPath
+  /** 开发环境检查根目录 */
+  if (isDev()) {
+    const rootPkgPath = path.join(process.cwd(), 'package.json')
+    const pkg = requireFileSync<PkgData>(rootPkgPath)
+    if (pkg?.name === name) {
+      return getWebConfigPathFromPkg(pkg, process.cwd())
+    }
+  }
+
+  return null
+}
+
+/**
+ * 获取本地插件配置路径
+ * @param name 插件名称
+ * @returns 配置路径或null
+ */
+const getLocalPluginConfigPath = (name: string): string | null => {
+  const pluginDir = path.join(process.cwd(), 'plugins', name)
+  if (fs.existsSync(pluginDir)) {
+    const pkg = requireFileSync<PkgData>(path.join(pluginDir, 'package.json'))
+    return getWebConfigPathFromPkg(pkg, pluginDir)
+  }
+
+  const pkg = requireFileSync<PkgData>(path.join(process.cwd(), 'package.json'))
+  return getWebConfigPathFromPkg(pkg, process.cwd()) || null
+}
+
+/**
+ * 获取插件配置路径
+ * @param options 插件配置
+ * @returns 配置路径
+ */
+const getConfigPath = (options: BaseConfig): string | null => {
+  switch (options.type) {
+    case 'npm':
+      return getNpmPluginConfigPath(options.name)
+    case 'git':
+      return getLocalPluginConfigPath(options.name)
+    default:
+      return null
+  }
 }
 
 /**
@@ -85,14 +124,23 @@ const getConfig: RequestHandler = async (req, res) => {
     return
   }
 
-  const configPath = getConfigPath(options)
-  if (!configPath) {
+  const webConfig = getConfigPath(options)
+
+  if (!webConfig) {
+    createSuccessResponse(res, null)
+    return
+  }
+
+  /** 获取文件名称 不包含后缀 */
+  const baseName = path.basename(webConfig, path.extname(webConfig))
+  if (baseName !== 'web.config') {
+    logger.error(`[plugin] 插件${options.name}的web配置文件名称不正确: 需要以 web.config 命名`)
     createSuccessResponse(res, null)
     return
   }
 
   const list: Record<string, any>[] = []
-  const { components } = await loadConfig(configPath)
+  const { components } = await loadConfig(webConfig)
   let result = components()
   result = util.types.isPromise(result) ? await result : result
 

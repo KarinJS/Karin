@@ -7,8 +7,6 @@ import { FaChevronRight } from 'react-icons/fa6'
 import { ThemeSwitch } from '@/components/theme-switch.tsx'
 import { useMediaQuery } from 'react-responsive'
 import { IoMenu, IoClose } from 'react-icons/io5'
-import { title } from '@/components/primitives'
-import { Image } from '@heroui/image'
 import { useLocalStorageState } from 'ahooks'
 import key from '@/consts/key'
 

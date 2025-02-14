@@ -6,7 +6,7 @@ import { IoSettingsOutline } from 'react-icons/io5'
 import { RiPlugLine } from 'react-icons/ri'
 import { VscJson } from 'react-icons/vsc'
 import { request } from '@/lib/request'
-import { DynamicComponentRenderer } from './dynamicComponents'
+import { DynamicRender } from '../heroui/main'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
 
 import type { ComponentConfig } from '../heroui/types'
@@ -174,7 +174,7 @@ export const PluginConfig = memo(({
     return (
       <div className="h-full space-y-4 overflow-y-auto custom-scrollbar">
         <div className="p-6 bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 transition-colors">
-          <DynamicComponentRenderer
+          <DynamicRender
             configs={configs}
             onChange={handleConfigChange}
             values={configValues}

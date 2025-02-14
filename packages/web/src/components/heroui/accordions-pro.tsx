@@ -1,4 +1,4 @@
-import React from 'react'
+import { useState } from 'react'
 import {
   Accordion as HeroAccordion,
   AccordionItem as HeroAccordionItem
@@ -23,8 +23,8 @@ export const AccordionPro = (
   props: AccordionProProps,
   result: Result<'accordion'>
 ): JSX.Element => {
-  let { componentType: _, key, data, className, children, ...options } = props
-  const [forceKey, setForceKey] = React.useState(0)
+  let { componentType: _, key, data, label, className, children, ...options } = props
+  const [forceKey, setForceKey] = useState(0)
 
   const handleDeleteItem = (index: number) => {
     data.splice(index, 1)
@@ -36,7 +36,6 @@ export const AccordionPro = (
     const { title, ...rest } = item
     return rest
   })
-  console.log('result:', result)
 
   const list: JSX.Element[] = []
 
@@ -45,6 +44,8 @@ export const AccordionPro = (
 
   for (let i = 0; i < data.length; i++) {
     const heroui = childrenList.map((options, optionIndex) => {
+      if (!options.key) return null // 如果没有key，跳过该元素
+
       /** 生成稳定的key */
       const strKey = `${key}-${options.key}-${i}-${optionIndex}`
 
@@ -92,14 +93,16 @@ export const AccordionPro = (
       }
 
       if (options.componentType === 'divider') {
-        return Divider(options)
+        return Divider({ ...options, key: strKey })
       }
-    })
+
+      return null
+    }).filter(Boolean) // 过滤掉所有的null和undefined
 
     list.push(
       <HeroAccordionItem
         {...childrenOptions}
-        key={`${key}-accordion-${i}-${forceKey}`}
+        key={`${key}-accordion-item-${i}-${forceKey}`}
         textValue={data[i].title || childrenOptions.title || '默认标题'}
         title={
           <div className="flex justify-between items-center w-full pr-4">
@@ -134,7 +137,8 @@ export const AccordionPro = (
 
   return (
     <div className={className || 'flex flex-col gap-4 w-full'}>
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center">
+        <span className="text-default-500 text-md">{label}</span>
         <button
           type="button"
           onClick={() => {
@@ -150,7 +154,8 @@ export const AccordionPro = (
         </button>
       </div>
       <HeroAccordion
-        key={`${key}-${forceKey}`}
+        key={`${key}-accordion-${forceKey}`}
+        className="border border-default-200 rounded-lg p-1"
         {...options}
         keepContentMounted={true}
       >

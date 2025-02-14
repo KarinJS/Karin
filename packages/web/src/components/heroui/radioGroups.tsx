@@ -26,9 +26,11 @@ export const RadioGroup = (
           result[key] = value
         })}
       >
-        {radio.map(({ key, label, ...item }) => (
-          <HeroRadio key={key} {...item}>
-            {label}
+        {radio.map(({ componentType: _, key, ...item }) => (
+          <HeroRadio
+            key={key}
+            {...item}>
+            {item.label}
           </HeroRadio>
         ))}
       </HeroRadioGroup>

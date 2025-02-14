@@ -5,6 +5,8 @@ import { ComponentProps } from './base'
  * 手风琴(折叠面板) 类型
  */
 interface Accordion extends ComponentProps {
+  /** 标签 */
+  label?: string
   /** 子组件 */
   children?: AccordionItemProps[]
   /** 标题 */

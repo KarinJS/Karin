@@ -8,8 +8,10 @@ import type { DividerProps } from 'node-karin'
  * @returns 渲染后的输入框组件
  */
 export const Divider = (props: DividerProps): JSX.Element => {
-  const { componentType: _, key, className, ...options } = props
-  return <HeroDivider key={key} {...options} />
+  const { componentType: _, key, className, transparent, ...options } = props
+  const dividerClassName = transparent ? `${className || ''} opacity-0` : className
+
+  return <HeroDivider key={key} className={dividerClassName} {...options} />
 }
 
 

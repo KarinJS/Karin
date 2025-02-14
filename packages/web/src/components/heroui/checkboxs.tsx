@@ -30,7 +30,7 @@ export const CheckboxGroup = (
         key={key}
         {...options}
       >
-        {checkbox.map(({ key: CheckboxKey, ...item }) => {
+        {checkbox.map(({ componentType: _, key: CheckboxKey, ...item }) => {
           return (
             <HeroCheckbox
               {...item}
@@ -43,7 +43,9 @@ export const CheckboxGroup = (
                   result[key][CheckboxKey] = value
                 }
               }}
-            />
+            >
+              {item.label}
+            </HeroCheckbox>
           )
         })}
       </HeroCheckboxGroup>

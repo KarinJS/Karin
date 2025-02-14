@@ -1,6 +1,5 @@
 import type { InputProps } from '@heroui/input'
 import type { ValidationRule } from 'node-karin'
-import type { Result } from './types'
 
 /**
  * 创建组件返回数据
@@ -9,7 +8,7 @@ import type { Result } from './types'
  */
 export const createResult = (initialValues: Record<string, any> = {}) => {
   /** 传递给后端的对象 */
-  const result: Result<'all'> = { ...initialValues }
+  const result = { ...initialValues }
   return result
 }
 
