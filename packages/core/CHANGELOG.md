@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.3.7](https://github.com/KarinJS/Karin/compare/core-v1.3.6...core-v1.3.7) (2025-02-14)
+
+
+### 🐛 Bug Fixes
+
+* 组件类型 ([e83ec8b](https://github.com/KarinJS/Karin/commit/e83ec8b2908ea8df58fb702c6153664623f305ce))
+
 ## [1.3.6](https://github.com/KarinJS/Karin/compare/core-v1.3.5...core-v1.3.6) (2025-02-14)
 
 
