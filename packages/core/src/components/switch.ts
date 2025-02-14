@@ -5,15 +5,14 @@ import type { SwitchProps } from '@/types/components'
  * @param key 唯一标识符
  * @param config 开关配置（可选）
  */
-const createSwitch = (key: string, config: Partial<Omit<SwitchProps, 'key' | 'componentType'>> = {}) => {
-  const result = {
-    key,
-    ...config,
-    componentType: 'switch'
-  }
-  console.log('createSwitch:', JSON.stringify(result))
-  return result
-}
+const createSwitch = (
+  key: string,
+  config: Partial<Omit<SwitchProps, 'key' | 'componentType'>> = {}
+): SwitchProps => ({
+  ...config,
+  key,
+  componentType: 'switch'
+})
 
 /**
  * 开关组件

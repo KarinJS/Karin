@@ -6,7 +6,10 @@ import { Children } from '@/types/components/all'
  * @param key 唯一标识符
  * @param config 手风琴配置（可选）
  */
-const createAccordion = (key: string, config?: Partial<Omit<AccordionProps, 'key' | 'componentType'>>) => ({
+const createAccordion = (
+  key: string,
+  config: Partial<Omit<AccordionProps, 'key' | 'componentType'>> = {}
+): AccordionProps => ({
   key,
   ...config,
   componentType: 'accordion',
@@ -17,30 +20,30 @@ const createAccordion = (key: string, config?: Partial<Omit<AccordionProps, 'key
  * @param key 唯一标识符
  * @param config 手风琴Pro配置（可选）
  */
-const createAccordionPro = (key: string, config?: Partial<Omit<AccordionProProps, 'key' | 'componentType'>>) => {
-  const result = {
-    key,
-    ...config,
-    componentType: 'accordion-pro',
-  }
-  console.log('createAccordionPro:', JSON.stringify(result))
-  return result
-}
+const createAccordionPro = (
+  key: string,
+  config: Partial<Omit<AccordionProProps, 'key' | 'componentType'>> = {}
+): AccordionProProps => ({
+  ...config,
+  key,
+  componentType: 'accordion-pro',
+  data: config.data || [],
+})
 
 /**
  * 创建手风琴子项配置
  * @param key 唯一标识符
  * @param config 手风琴子项配置（可选）
  */
-const createAccordionItem = (key: string, config?: Partial<Omit<AccordionItemProps, 'key' | 'componentType'>>) => {
-  const result = {
-    key,
-    ...config,
-    componentType: 'accordion-item',
-  }
-  console.log('createAccordionItem:', JSON.stringify(result))
-  return result
-}
+const createAccordionItem = (
+  key: string,
+  config: Partial<Omit<AccordionItemProps, 'key' | 'componentType'>> = {}
+): AccordionItemProps => ({
+  key,
+  ...config,
+  componentType: 'accordion-item',
+  children: config.children || [],
+})
 
 /**
  * 手风琴组件

@@ -5,12 +5,15 @@ import type { DividerProps } from '@/types/components'
  * @param key 唯一标识符
  * @param config 分隔线配置（可选）
  */
-const createDivider = (key: string, config?: Partial<Omit<DividerProps, 'key' | 'componentType'>>) => ({
-  key,
+const createDivider = (
+  key: string,
+  config: Partial<Omit<DividerProps, 'key' | 'componentType'>> = {}
+): DividerProps => ({
   componentType: 'divider',
   transparent: false,
   orientation: 'horizontal',
-  ...config
+  ...config,
+  key,
 })
 
 /**
@@ -22,7 +25,7 @@ export const divider = {
    * @param key 唯一标识符
    * @param options 分隔线配置
    */
-  create: (key: string, options: Omit<DividerProps, 'key' | 'componentType'>) => createDivider(key, options),
+  create: (key: string, options: Omit<DividerProps, 'key' | 'componentType'> = {}) => createDivider(key, options),
 
   /**
    * 创建水平分隔线
