@@ -29,15 +29,15 @@ export const Accordion = (
     const kv: Record<string, unknown> = {}
     item.children.forEach((child) => {
       if (child.componentType === 'input') {
-        kv[child.key] = child.defaultValue
+        kv[child.key] = child.defaultValue ?? ''
         return
       }
       if (child.componentType === 'switch') {
-        kv[child.key] = child.defaultSelected
+        kv[child.key] = child.defaultSelected ?? false
         return
       }
       if (child.componentType === 'radio-group') {
-        kv[child.key] = child.defaultValue
+        kv[child.key] = child.defaultValue ?? ''
         return
       }
       if (child.componentType === 'checkbox-group') {
