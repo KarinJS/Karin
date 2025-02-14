@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.3.10](https://github.com/KarinJS/Karin/compare/core-v1.3.9...core-v1.3.10) (2025-02-14)
+
+
+### 🐛 Bug Fixes
+
+* 负责捕获处理非OneBOT11标准适配器报错的问题 ([#267](https://github.com/KarinJS/Karin/issues/267)) ([9291a0c](https://github.com/KarinJS/Karin/commit/9291a0c1de9cf02aa54439807d497ecd511cb49a))
+
 ## [1.3.9](https://github.com/KarinJS/Karin/compare/core-v1.3.8...core-v1.3.9) (2025-02-14)
 
 
