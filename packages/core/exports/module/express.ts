@@ -4,7 +4,7 @@ export {
   json,
   raw,
   text,
-  type Router,
+  Router,
   type Express,
   type RouterOptions,
   type Application,
