@@ -17,8 +17,12 @@ export interface PkgData {
     main?: string
     /** 插件app列表 */
     apps?: string | string[]
+    /** web配置文件 */
+    web?: string
     /** ts插件app列表 ts专属 仅在ts开发模式下生效 */
     ['ts-apps']?: string | string[]
+    /** ts-web */
+    ['ts-web']?: string
     /** 静态资源目录 */
     static?: string | string[]
     /** 基本文件夹结构 */

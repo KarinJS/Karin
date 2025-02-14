@@ -16,6 +16,11 @@ const watcherCache = new Map<string, chokidar.FSWatcher>()
  * @param options 截图参数
  */
 export const renderTpl = (options: Omit<Options, 'name'> & { name?: string }) => {
+  if (typeof options.file !== 'string') {
+    throw TypeError('模板文件路径必须为字符串')
+  }
+
+  /** 渲染模板数据 */
   if (options.data) {
     /** 他喵的 不会真的有笨比传个http吧... */
     if (options.file.startsWith('http')) {
@@ -38,7 +43,7 @@ export const renderTpl = (options: Omit<Options, 'name'> & { name?: string }) =>
   }
 
   if (!options.file.startsWith('http') && !options.file.startsWith('file')) {
-    options.file = `file://${options.file}`
+    options.file = `file://${path.resolve(options.file)}`
   }
 
   delete options.data

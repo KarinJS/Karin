@@ -166,3 +166,43 @@ export type FormField =
   | TitleField
   | DividerField
 // | ColorPickerField
+
+/**
+ * 输入框返回类型
+ */
+export type InputResult = Record<string, string | undefined>
+
+/**
+ * 开关返回类型
+ */
+export type SwitchResult = Record<string, boolean>
+
+/**
+ * 单选框返回类型
+ */
+export type RadioResult = Record<string, string | undefined>
+
+/**
+ * 多选框返回类型
+ */
+export type CheckboxResult = Record<string, Record<string, boolean>>
+
+/**
+ * 手风琴kv类型
+ */
+export type AccordionKV = string | boolean | Record<string, boolean>
+
+/**
+ * 手风琴返回类型
+ */
+export type AccordionResult = Record<string, AccordionKV[]>
+
+/**
+ * 手风琴pro返回类型
+ */
+export type AccordionProResult = AccordionResult
+
+/**
+ * save 方法返回的类型
+ */
+export type SaveResult = InputResult | SwitchResult | RadioResult | CheckboxResult | AccordionResult | AccordionProResult

@@ -8,6 +8,7 @@
   "type": "module",
   "main": "",
   "scripts": {
+    "app": "pnpm --filter node-karin run app",
     "build:core": "pnpm --filter node-karin run build:dev",
     "build": "pnpm run build:core && pnpm run build:web",
     "build:prod": "pnpm --filter node-karin run build:prod",
@@ -15,7 +16,8 @@
     "build:all": "pnpm run build:prod && pnpm run build:web",
     "dev": "pnpm --filter node-karin run dev",
     "dev:cli": "pnpm --filter node-karin run dev:cli",
-    "dev:web": "pnpm --filter karin-webui run dev"
+    "dev:web": "pnpm --filter karin-webui run dev",
+    "web": "pnpm --filter karin-webui run dev"
   },
   "devDependencies": {
     "@types/node": "^22.5.0",

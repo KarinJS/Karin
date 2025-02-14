@@ -67,13 +67,53 @@ export default function LoginPage () {
                   stiffness: 200
                 }}
               >
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-blue-500 rounded-full blur-xl opacity-50 animate-pulse" />
-                  <Image
-                    src="/web/karin.png"
-                    className="relative w-24 h-24 rounded-full shadow-lg border-4 border-white dark:border-neutral-800"
-                    alt="logo"
+                <div className="relative group cursor-pointer">
+                  {/* 光晕动画效果 */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-br from-violet-500/50 to-blue-500/50 rounded-full blur-xl opacity-50"
+                    animate={{
+                      scale: [1, 1.2, 1],
+                      opacity: [0.5, 0.8, 0.5],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
                   />
+
+                  {/* 悬停时的装饰环 */}
+                  <motion.div
+                    className="absolute -inset-1 bg-gradient-to-br from-violet-600/0 to-blue-600/0 rounded-full opacity-0 group-hover:opacity-100"
+                    whileHover={{
+                      scale: 1.1,
+                      rotate: 180,
+                    }}
+                    transition={{
+                      duration: 0.8,
+                      type: "spring",
+                      stiffness: 100
+                    }}
+                  />
+
+                  {/* 头像容器 */}
+                  <motion.div
+                    whileHover={{
+                      scale: 1.05,
+                      rotate: 5,
+                    }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 10
+                    }}
+                  >
+                    <Image
+                      src="/web/karin.png"
+                      className="relative w-24 h-24 rounded-full shadow-lg border-4 border-white dark:border-neutral-800 transition-all duration-300 group-hover:shadow-primary/20"
+                      alt="logo"
+                    />
+                  </motion.div>
                 </div>
               </motion.div>
               <motion.div
@@ -124,12 +164,31 @@ export default function LoginPage () {
                 transition={{ duration: 0.5, delay: 0.7 }}
                 className="w-full mt-8"
               >
+                <style>
+                  {`
+                    @keyframes gradientMove {
+                      0% {
+                        background-position: 100% 0;
+                      }
+                      50% {
+                        background-position: 0 0;
+                      }
+                      100% {
+                        background-position: -100% 0;
+                      }
+                    }
+                    .gradient-animate {
+                      background-size: 200% 100%;
+                      animation: gradientMove 5s linear infinite;
+                    }
+                  `}
+                </style>
                 <Button
                   type="submit"
                   size="lg"
                   color="primary"
                   variant="shadow"
-                  className="w-full bg-gradient-to-r from-violet-500 to-blue-500 hover:from-violet-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-violet-500/25"
+                  className="w-full relative overflow-hidden bg-gradient-to-r from-violet-500 via-blue-500 to-violet-500 hover:from-violet-600 hover:via-blue-600 hover:to-violet-600 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-violet-500/25 gradient-animate"
                 >
                   登录
                 </Button>

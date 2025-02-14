@@ -50,6 +50,7 @@ export type AdapterProtocol =
   | 'conwechat'
   | 'lagrange'
   | 'console'
+  | 'other'
 
 /**
  * 适配器通信方式

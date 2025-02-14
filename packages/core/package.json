@@ -65,7 +65,7 @@
     "sort": "sort-package-json && sort-json tsconfig.json"
   },
   "dependencies": {
-    "@types/express": "^5.0.0",
+    "@types/express": "^4.17.21",
     "@types/lodash": "^4.17.10",
     "@types/node-schedule": "^2.1.7",
     "@types/ws": "^8.5.12",

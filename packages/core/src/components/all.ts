@@ -1,5 +1,7 @@
 import { input } from './input'
+import { radio } from './radioGroup'
 import { divider } from './divider'
+import { checkbox } from './checkbox'
 import { switchComponent } from './switch'
 import { accordion, accordionPro, accordionItem } from './accordion'
 
@@ -15,7 +17,11 @@ export const components = {
   /** 手风琴Pro */
   accordionPro,
   /** 手风琴项 */
-  accordionItem
+  accordionItem,
+  /** 单选框 */
+  radio,
+  /** 多选框 */
+  checkbox,
 }
 
 export type ComponentsClass = typeof divider

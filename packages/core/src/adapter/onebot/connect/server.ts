@@ -1,5 +1,4 @@
 import { webSocketServerToken } from '@/utils/config/file/adapter'
-import { unregisterBot } from '@/service/bot'
 import { WsAdapterOneBot11 } from './ws'
 import type { WebSocket } from 'ws'
 import type { IncomingMessage } from 'node:http'
@@ -18,38 +17,51 @@ export class AdapterServerOneBot11 extends WsAdapterOneBot11 {
 
   async init () {
     const url = `ws://${this.request.headers.host}${this.request.url}`
-    const selfId = String(this.request.headers['x-self-id'])
+    this.adapter.address = url
+    this.adapter.communication = 'webSocketServer'
+    this.account.selfId = String(this.request.headers['x-self-id'])
 
-    if (!this.auth(selfId)) return
-    super.init(selfId, url, 'webSocketServer')
+    /** 有些适配器不在请求头设置selfId */
+    const isSetSelfId = typeof this.account.selfId === 'string' && this.account.selfId.length > 1
 
-    this.socket.on('close', () => {
-      /** 停止全部监听 */
-      this.socket.removeAllListeners()
-      unregisterBot('index', this.adapter.index)
-      logger.bot('info', this.selfId, `连接关闭: ${url}`)
-    })
+    try {
+      /** 监听事件 接收api回调 事件推送 */
+      this.onEvent()
+      /** 获取登录号信息 */
+      await Promise.all([this.setBotInfo(isSetSelfId), this.setAdapterInfo()])
+      if (!this.auth()) return
+
+      this.account.uin = this.selfId
+      this.registerBot()
+
+      this.socket.on('close', () => {
+        this.unregisterBot()
+      })
+    } catch (error) {
+      this.socket.close()
+      throw new Error(`[onebot11][${this.adapter.communication}] 连接失败: ${this.adapter.address}`)
+    }
   }
 
   /**
    * @description 鉴权
    * @returns 返回`true`表示鉴权成功
    */
-  private auth (selfId: string) {
+  private auth () {
     const token = webSocketServerToken()
     if (!token) {
-      logger.bot('debug', selfId, '未设置反向ws鉴权秘钥，跳过鉴权')
+      this.logger('debug', '未设置反向ws鉴权秘钥，跳过鉴权')
       return true
     }
 
     const auth = this.request.headers['authorization']
     if (auth !== `Bearer ${token}`) {
-      logger.bot('error', selfId, `[oneBot11][鉴权失败] address: ${this.adapter.address} token: ${token}`)
+      this.logger('error', `[oneBot11][鉴权失败] address: ${this.adapter.address} token: ${token}`)
       this.socket.close()
       return false
     }
 
-    logger.bot('debug', selfId, `鉴权成功: ${auth}`)
+    this.logger('debug', `鉴权成功: ${auth}`)
     return true
   }
 }
