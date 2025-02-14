@@ -24,7 +24,7 @@ export const buildError = (selfId: string, action: string, request: string, erro
    * onebot11转karin
    * @return karin格式消息
    */
-export function AdapterConvertKarin (data: Array<OB11Segment>): Array<Elements> {
+export function AdapterConvertKarin (data: Array<OB11Segment> = []): Array<Elements> {
   const elements = []
   for (const i of data) {
     switch (i.type) {
