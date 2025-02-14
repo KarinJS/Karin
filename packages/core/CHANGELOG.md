@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.3.9](https://github.com/KarinJS/Karin/compare/core-v1.3.8...core-v1.3.9) (2025-02-14)
+
+
+### 🐛 Bug Fixes
+
+* 鉴权失败打印auth ([a0a4df6](https://github.com/KarinJS/Karin/commit/a0a4df6d2300f7ee08326a309bfcb38ae674f30d))
+
 ## [1.3.8](https://github.com/KarinJS/Karin/compare/core-v1.3.7...core-v1.3.8) (2025-02-14)
 
 
