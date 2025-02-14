@@ -17,6 +17,10 @@ export const RadioGroup = (
 ): JSX.Element => {
   const { componentType: _, key, className, radio, ...options } = props
 
+  if (!onValueChange) {
+    result[key] = options.defaultValue ?? ''
+  }
+
   return (
     <div className={className || 'flex items-center gap-2'}>
       <HeroRadioGroup
