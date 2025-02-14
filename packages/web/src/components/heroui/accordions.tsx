@@ -20,7 +20,7 @@ export const Accordion = (
   props: AccordionProps,
   result: Result<'accordion'>
 ): JSX.Element => {
-  let { componentType: _, key, className, children, ...options } = props
+  let { componentType: _, key, className, children, label, ...options } = props
   if (!Array.isArray(children)) children = []
   result[key] = []
 
@@ -52,10 +52,15 @@ export const Accordion = (
   })
 
   return (
-    <div className={className || 'flex items-center gap-2'}>
+    <div className={className || 'flex flex-col gap-4 w-full'}>
+      <div className="flex justify-between items-center">
+        <span className="text-default-500 text-md">{label}</span>
+      </div>
       <HeroAccordion
         key={key}
+        className="border border-default-200 rounded-lg p-1"
         {...options}
+        keepContentMounted={true}
       >
         {children.map(({ componentType, key: childrenKey, children: itemChildren, ...item }, index) => {
           if (
@@ -66,39 +71,40 @@ export const Accordion = (
             <HeroAccordionItem
               key={childrenKey}
               {...item}
-              keepContentMounted={true}
             >
-              {itemChildren.map((options) => {
-                if (options.componentType === 'input') {
-                  return Input(options, {}, (value) => {
-                    (result[key][index] as Record<string, AccordionKV>)[options.key] = value
-                  })
-                }
+              <div className="flex flex-col gap-4">
+                {itemChildren.map((options) => {
+                  if (options.componentType === 'input') {
+                    return Input(options, {}, (value) => {
+                      (result[key][index] as Record<string, AccordionKV>)[options.key] = value
+                    })
+                  }
 
-                if (options.componentType === 'switch') {
-                  return Switch(options, {}, (value) => {
-                    (result[key][index] as Record<string, AccordionKV>)[options.key] = value
-                  })
-                }
+                  if (options.componentType === 'switch') {
+                    return Switch(options, {}, (value) => {
+                      (result[key][index] as Record<string, AccordionKV>)[options.key] = value
+                    })
+                  }
 
-                if (options.componentType === 'radio-group') {
-                  return RadioGroup(options, {}, (value) => {
-                    (result[key][index] as Record<string, AccordionKV>)[options.key] = value
-                  })
-                }
+                  if (options.componentType === 'radio-group') {
+                    return RadioGroup(options, {}, (value) => {
+                      (result[key][index] as Record<string, AccordionKV>)[options.key] = value
+                    })
+                  }
 
-                if (options.componentType === 'checkbox-group') {
-                  (result[key][index] as Record<string, AccordionKV>)[options.key] = {}
-                  return CheckboxGroup(options, {}, (subKey, value) => {
-                    ((result[key][index] as Record<string, AccordionKV>
-                    )[options.key] as Record<string, boolean>)[subKey] = value
-                  })
-                }
+                  if (options.componentType === 'checkbox-group') {
+                    (result[key][index] as Record<string, AccordionKV>)[options.key] = {}
+                    return CheckboxGroup(options, {}, (subKey, value) => {
+                      ((result[key][index] as Record<string, AccordionKV>
+                      )[options.key] as Record<string, boolean>)[subKey] = value
+                    })
+                  }
 
-                if (options.componentType === 'divider') {
-                  return Divider(options)
-                }
-              })}
+                  if (options.componentType === 'divider') {
+                    return Divider(options)
+                  }
+                })}
+              </div>
             </HeroAccordionItem>
           )
         })}
