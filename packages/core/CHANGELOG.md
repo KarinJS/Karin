@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.3.12](https://github.com/KarinJS/Karin/compare/core-v1.3.11...core-v1.3.12) (2025-02-15)
+
+
+### 🐛 Bug Fixes
+
+* 组件分隔线适配描述文本 ([cedff08](https://github.com/KarinJS/Karin/commit/cedff082a8b1b4a169640f3e812d13f646a2cfbb))
+
 ## [1.3.11](https://github.com/KarinJS/Karin/compare/core-v1.3.10...core-v1.3.11) (2025-02-15)
 
 
