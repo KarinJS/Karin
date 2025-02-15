@@ -170,7 +170,8 @@ const saveConfig: RequestHandler = async (req, res) => {
 
   const { save } = await loadConfig(configPath)
   const result = save(options.config)
-  createSuccessResponse(res, util.types.isPromise(result) ? await result : result)
+  const response = util.types.isPromise(result) ? await result : result
+  createSuccessResponse(res, response || { success: true, message: '没有返回值哦 φ(>ω<*) ' })
 }
 
 /**
