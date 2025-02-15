@@ -93,7 +93,7 @@ export const main = (isDev = false) => {
   pkg.exports = init(cwd, isDev)
   pkg.main = pkg.exports['.'].import
   pkg.types = pkg.exports['.'].types
-  delete pkg?.peerDependencies
+  !isDev && delete pkg?.peerDependencies
 
   fs.writeFileSync(file, JSON.stringify(pkg, null, 2))
   execSync('npm run sort', { stdio: 'inherit', cwd })
