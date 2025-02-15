@@ -9,182 +9,132 @@ import { request } from '@/lib/request'
 import { DynamicRender } from '../heroui/main'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
 import { useForm, FormProvider } from 'react-hook-form'
-
 import type { ComponentConfig } from '../heroui/types'
 
-// 请求参数
-interface SaveConfigRequest {
+interface GetConfigRequest {
   name: string
   type: 'git' | 'npm' | 'app'
-  config: Record<string, any>
 }
 
-// 响应参数
-interface SaveConfigResponse {
-  success: boolean
-  message: string
-}
-
-// 插件配置组件的 props
+interface SaveConfigRequest { name: string; type: 'git' | 'npm' | 'app'; config: Record<string, any> }
+interface SaveConfigResponse { success: boolean; message: string }
 interface PluginConfigProps {
-  /** 是否显示 */
   open: boolean
-  /** 插件名称 */
   name: string
-  /** 插件类型 */
   type: 'git' | 'npm' | 'app'
-  /** 关闭回调 */
   onClose: () => void
-  /** 查看配置回调 */
-  onViewConfig: () => void
+  onViewConfig?: () => void
 }
 
-// 使用 memo 包装配置组件
-export const PluginConfig = memo(({
-  open,
-  name,
-  type,
-  onClose,
-}: PluginConfigProps) => {
+// 提取常量
+const MODAL_CLASS_NAMES = {
+  base: "bg-white dark:bg-gray-900",
+  header: "border-b border-gray-100 dark:border-gray-800",
+  footer: "border-t border-gray-100 dark:border-gray-800"
+}
+
+const BUTTON_COMMON_STYLES = 'px-5 h-10 min-w-[88px] font-medium'
+
+// 抽离子组件
+const LoadingState = () => (
+  <div className="h-full flex items-center justify-center">
+    <div className="flex flex-col items-center gap-3">
+      <Spinner size="md" color="primary" />
+      <p className="text-gray-500 dark:text-gray-400 text-sm">正在加载配置...</p>
+    </div>
+  </div>
+)
+
+const EmptyState = () => (
+  <div className="h-full flex flex-col items-center justify-center">
+    <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-50 dark:bg-gray-800">
+      <RiPlugLine className="text-2xl text-gray-400 dark:text-gray-500" />
+    </div>
+    <h3 className="mt-4 text-gray-900 dark:text-gray-100 font-medium">暂无配置项</h3>
+    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1.5">该插件当前没有需要配置的选项</p>
+  </div>
+)
+
+export const PluginConfig = memo(({ open, name, type, onClose }: PluginConfigProps) => {
   const [loading, setLoading] = useState(false)
   const [configs, setConfigs] = useState<ComponentConfig[]>([])
-  const mountedRef = useRef(false)
+  const configDataRef = useRef<Record<string, any>>({})
+  const abortControllerRef = useRef<AbortController | null>(null)
 
-  /**
-   * 传给后端的数据
-   */
-  let configData: Record<string, any> = {}
+  const methods = useForm({ mode: 'onChange' })
+  const { handleSubmit, reset, getValues } = methods
 
-  // 使用 React Hook Form
-  const methods = useForm({
-    mode: 'onChange'
-  })
-
-  const { handleSubmit } = methods
-
-  useEffect(() => {
-    mountedRef.current = true
-    return () => {
-      mountedRef.current = false
-    }
-  }, [])
-
-  // 优化 handleGetConfig
   const handleGetConfig = useCallback(async () => {
     if (!open) return
 
     try {
       setLoading(true)
-      const result = await request.serverPost<ComponentConfig[], { name: string, type: 'git' | 'npm' | 'app' }>('/api/v1/plugin/config/get', {
-        name,
-        type
-      })
-      if (!mountedRef.current) return
+      abortControllerRef.current?.abort()
+      abortControllerRef.current = new AbortController()
 
-      if (!result) {
-        toast.error('获取配置失败')
-        onClose()
-        return
-      }
-      setConfigs(result)
+      const result = await request.serverPost<ComponentConfig[], GetConfigRequest>(
+        '/api/v1/plugin/config/get',
+        { name, type },
+        { signal: abortControllerRef.current.signal }
+      )
+
+      setConfigs(result || [])
+      if (result?.length) reset(result.reduce((acc, cur) => ({ ...acc, [cur.componentType]: cur }), {}))
     } catch (error) {
-      if (!mountedRef.current) return
-      toast.error((error as Error).message)
-      onClose()
+      if ((error as Error).name !== 'AbortError') {
+        toast.error((error as Error).message)
+        onClose()
+      }
     } finally {
-      if (!mountedRef.current) return
       setLoading(false)
     }
-  }, [name, type, onClose, open])
+  }, [name, type, open, onClose, reset])
 
   useEffect(() => {
     if (open) {
       handleGetConfig()
     } else {
       setConfigs([])
-      setLoading(false)
+      abortControllerRef.current?.abort()
     }
   }, [open, handleGetConfig])
 
-  // 优化配置值变更处理
   const handleConfigChange = useCallback((result: Record<string, any>) => {
-    configData = result
-    console.log('收到数据变更', result)
-    // if (!mountedRef.current || !open) return
-    // 直接使用 result 对象
-    methods.reset(result)
-  }, [open, methods])
+    configDataRef.current = result
+  }, [])
 
-  // 优化保存处理
   const onSubmit = useCallback(async () => {
-    if (!open) return
-
     try {
       const response = await request.serverPost<SaveConfigResponse, SaveConfigRequest>(
         '/api/v1/plugin/config/save',
-        {
-          name,
-          type,
-          config: configData
-        }
+        { name, type, config: configDataRef.current }
       )
 
-      if (!mountedRef.current) return
-
-      if (!response.success) {
-        toast.error(response.message || '保存失败')
-        return
-      }
-
-      toast.success(response.message || '保存成功')
+      response.success
+        ? toast.success(response.message || '保存成功')
+        : toast.error(response.message || '保存失败')
     } catch (error) {
-      if (!mountedRef.current) return
       toast.error((error as Error).message)
     }
-  }, [name, type, open])
+  }, [name, type])
 
-  // 使用 useMemo 优化渲染内容
   const renderContent = useMemo(() => {
     if (!open) return null
-
-    if (loading) {
-      return (
-        <div className="h-full flex items-center justify-center">
-          <div className="flex flex-col items-center gap-3">
-            <Spinner size="md" color="primary" />
-            <p className="text-gray-500 dark:text-gray-400 text-sm">正在加载配置...</p>
-          </div>
-        </div>
-      )
-    }
-
-    if (configs.length === 0) {
-      return (
-        <div className="h-full flex flex-col items-center justify-center">
-          <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-50 dark:bg-gray-800">
-            <RiPlugLine className="text-2xl text-gray-400 dark:text-gray-500" />
-          </div>
-          <h3 className="mt-4 text-gray-900 dark:text-gray-100 font-medium">暂无配置项</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1.5">该插件当前没有需要配置的选项</p>
-        </div>
-      )
-    }
+    if (loading) return <LoadingState />
+    if (!configs.length) return <EmptyState />
 
     return (
       <div className="h-full space-y-4 overflow-y-auto custom-scrollbar">
         <div className="p-6 bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 transition-colors">
           <FormProvider {...methods}>
             <form id="plugin-config-form" onSubmit={handleSubmit(onSubmit)}>
-              <DynamicRender
-                configs={configs}
-                onChange={handleConfigChange}
-              />
+              <DynamicRender configs={configs} onChange={handleConfigChange} />
             </form>
           </FormProvider>
         </div>
       </div>
     )
-  }, [loading, configs, handleConfigChange, open, methods, handleSubmit, onSubmit])
+  }, [open, loading, configs, methods, handleSubmit, onSubmit, handleConfigChange])
 
   if (!open) return null
 
@@ -194,11 +144,7 @@ export const PluginConfig = memo(({
       onOpenChange={onClose}
       size="4xl"
       scrollBehavior="inside"
-      classNames={{
-        base: "bg-white dark:bg-gray-900",
-        header: "border-b border-gray-100 dark:border-gray-800",
-        footer: "border-t border-gray-100 dark:border-gray-800"
-      }}
+      classNames={MODAL_CLASS_NAMES}
     >
       <ModalContent className="max-h-[85vh]">
         <ModalHeader className="shrink-0">
@@ -219,9 +165,7 @@ export const PluginConfig = memo(({
           </div>
         </ModalHeader>
         <ModalBody className="flex-1 overflow-auto">
-          <div className="h-[480px] py-5">
-            {renderContent}
-          </div>
+          <div className="h-[480px] py-5">{renderContent}</div>
         </ModalBody>
         <ModalFooter className="shrink-0 py-3">
           <div className="flex justify-end gap-2">
@@ -229,8 +173,8 @@ export const PluginConfig = memo(({
               color="default"
               variant="bordered"
               size="md"
-              onPress={() => console.log('当前配置值:', methods.getValues())}
-              className="px-5 h-10 min-w-[88px] font-medium border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+              onPress={() => console.log('当前配置值:', getValues())}
+              className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
               startContent={<VscJson className="text-lg" />}
             >
               打印配置
@@ -240,7 +184,7 @@ export const PluginConfig = memo(({
               variant="bordered"
               size="md"
               onPress={onClose}
-              className="px-5 h-10 min-w-[88px] font-medium border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+              className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
             >
               取消
             </Button>
@@ -250,8 +194,8 @@ export const PluginConfig = memo(({
               color="primary"
               variant="flat"
               size="md"
-              isDisabled={configs.length === 0}
-              className="px-5 h-10 min-w-[88px] font-medium bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400"
+              isDisabled={!configs.length}
+              className={`${BUTTON_COMMON_STYLES} bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400`}
             >
               保存
             </Button>
@@ -260,10 +204,4 @@ export const PluginConfig = memo(({
       </ModalContent>
     </Modal>
   )
-}, (prevProps, nextProps) => {
-  return (
-    prevProps.open === nextProps.open &&
-    prevProps.name === nextProps.name &&
-    prevProps.type === nextProps.type
-  )
-})
+}, (prev, next) => prev.open === next.open && prev.name === next.name && prev.type === next.type)
