@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.3.4](https://github.com/KarinJS/Karin/compare/web-v1.3.3...web-v1.3.4) (2025-02-15)
+
+
+### 🐛 Bug Fixes
+
+* deepseek优化的 有问题别喷我 ([99a06a8](https://github.com/KarinJS/Karin/commit/99a06a8dd0511185018ef8923c2f04f36bb5074f))
+* fix [#270](https://github.com/KarinJS/Karin/issues/270) ([78bc77a](https://github.com/KarinJS/Karin/commit/78bc77aa764d24864212c5139247de479a49b196))
+* webui build error ([659bf8c](https://github.com/KarinJS/Karin/commit/659bf8ccc525743e166ea63e1d4a0156ec7349f1))
+* 组件save函数返回值处理 ([452c725](https://github.com/KarinJS/Karin/commit/452c725c815827d8ceb9189dbb974ce49f89de13))
+* 输入框初始化错误 ([1b0a235](https://github.com/KarinJS/Karin/commit/1b0a2355926db76dd6f84540b7da76ebe49c3d06))
+
+
+### 💄 Styles
+
+* 打印配置按钮样式 ([ba5c088](https://github.com/KarinJS/Karin/commit/ba5c0881651639267582fc4d41c0528a31b14ece))
+
 ## [1.3.3](https://github.com/KarinJS/Karin/compare/web-v1.3.2...web-v1.3.3) (2025-02-14)
 
 

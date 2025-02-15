@@ -1,5 +1,25 @@
 # 更新日志
 
+## [1.3.11](https://github.com/KarinJS/Karin/compare/core-v1.3.10...core-v1.3.11) (2025-02-15)
+
+
+### 🐛 Bug Fixes
+
+* `web.config` save方法给予默认值 ([c5f8539](https://github.com/KarinJS/Karin/commit/c5f853995a3ed0ac285a7031a595b26f2e27ccbb))
+* 修正后端传递组件包含正则处理错误的问题 ([dc3a2ae](https://github.com/KarinJS/Karin/commit/dc3a2aebdfd7d685ecab27cfa1fc18093579933d))
+* 组件save函数返回值处理 ([452c725](https://github.com/KarinJS/Karin/commit/452c725c815827d8ceb9189dbb974ce49f89de13))
+* 补上组件注释 ([7885de6](https://github.com/KarinJS/Karin/commit/7885de68cd86d32f170074ae04605012dbc444aa))
+
+
+### 🎫 Chores
+
+* 格式化 ([800d1de](https://github.com/KarinJS/Karin/commit/800d1de2c29c1e2fbedb870dcf5c659d774ff533))
+
+
+### 🎡 Continuous Integration
+
+* build.js ([c6bc6c1](https://github.com/KarinJS/Karin/commit/c6bc6c1a92acb57bf5048e355ed78732d887eb33))
+
 ## [1.3.10](https://github.com/KarinJS/Karin/compare/core-v1.3.9...core-v1.3.10) (2025-02-14)
 
 
