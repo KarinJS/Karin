@@ -11,6 +11,20 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@herou
 
 import type { ComponentConfig } from '../heroui/types'
 
+// 请求参数
+interface SaveConfigRequest {
+  name: string
+  type: 'git' | 'npm' | 'app'
+  config: Record<string, any>
+}
+
+// 响应参数
+interface SaveConfigResponse {
+  success: boolean
+  message: string
+}
+
+// 插件配置组件的 props
 interface PluginConfigProps {
   /** 是否显示 */
   open: boolean
@@ -117,27 +131,23 @@ export const PluginConfig = memo(({
     if (!open) return
 
     try {
-      // 直接使用 currentValues(即原始 result)，不做任何处理
-      const response = await request.serverPost<{ result: Record<string, any> }, {
-        name: string,
-        type: 'git' | 'npm' | 'app',
-        config: Record<string, any>
-      }>('/api/v1/plugin/config/save', {
-        name,
-        type,
-        config: currentValues  // 直接使用原始 result
-      })
+      const response = await request.serverPost<SaveConfigResponse, SaveConfigRequest>(
+        '/api/v1/plugin/config/save',
+        {
+          name,
+          type,
+          config: currentValues
+        }
+      )
 
       if (!mountedRef.current) return
 
-      if (response?.result) {
-        // 保持原始数据结构
-        setConfigValues(response.result)
-        setCurrentValues(response.result)
-        initialStateRef.current.configValues = response.result
+      if (!response.success) {
+        toast.error(response.message || '保存失败')
+        return
       }
 
-      toast.success('保存成功')
+      toast.success(response.message || '保存成功')
     } catch (error) {
       if (!mountedRef.current) return
       toast.error((error as Error).message)

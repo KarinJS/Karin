@@ -104,7 +104,9 @@ const loadConfig = async (configPath: string) => {
     default: {
       info: Record<string, any>
       components: () => any
-      save: (config: Record<string, any>) => void
+      save: (config: Record<string, any>) =>
+        { success: boolean, message: string } |
+        Promise<{ success: boolean, message: string }>
     }
   }
   return result.default
@@ -167,8 +169,8 @@ const saveConfig: RequestHandler = async (req, res) => {
   if (!configPath) return
 
   const { save } = await loadConfig(configPath)
-  save(options.config)
-  createSuccessResponse(res, null)
+  const result = save(options.config)
+  createSuccessResponse(res, util.types.isPromise(result) ? await result : result)
 }
 
 /**
