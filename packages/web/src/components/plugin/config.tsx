@@ -63,7 +63,7 @@ export const PluginConfig = memo(({ open, name, type, onClose }: PluginConfigPro
   const abortControllerRef = useRef<AbortController | null>(null)
 
   const methods = useForm({ mode: 'onChange' })
-  const { handleSubmit, reset, getValues } = methods
+  const { handleSubmit, reset } = methods
 
   const handleGetConfig = useCallback(async () => {
     if (!open) return

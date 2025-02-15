@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { Input } from './inputs'
 import { createResult } from './utils'
 import { Switch } from './switchs'
@@ -6,11 +5,10 @@ import { CheckboxGroup } from './checkboxs'
 import { RadioGroup } from './radioGroups'
 import { Accordion } from './accordions'
 import { AccordionPro } from './accordions-pro'
+import { Divider } from './dividers'
 
 import type { JSX } from 'react'
 import type { ComponentConfig, Result } from './types'
-import { Divider } from './dividers'
-import { useWatch } from '@/hooks/use-watch'
 
 interface DynamicComponentRendererProps {
   configs: ComponentConfig[]
