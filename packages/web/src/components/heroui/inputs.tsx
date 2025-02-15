@@ -19,6 +19,10 @@ export const Input = (
   const { componentType: _, key, className, ...options } = props
   const validator = props.rules ? createValidator(props.rules) : undefined
 
+  if (!onValueChange) {
+    result[key] = options.defaultValue ?? ''
+  }
+
 
   return (
     <div className={className || `w-${props.width || 200}px h-${props.height || 40}px`}>
@@ -26,7 +30,12 @@ export const Input = (
         key={key}
         {...options}
         className="w-full"
-        validate={validator}
+        validate={(value) => {
+          if (options.isRequired && !value) {
+            return '( • ̀ω•́ )✧ 不能为空哦~'
+          }
+          return validator?.(value)
+        }}
         onValueChange={onValueChange || ((value) => {
           result[key] = value
         })}
