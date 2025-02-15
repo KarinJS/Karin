@@ -31,8 +31,12 @@ export const Input = (
         {...options}
         className="w-full"
         validate={(value) => {
-          if (options.isRequired && !value) {
-            return '( • ̀ω•́ )✧ 不能为空哦~'
+          if (!value) {
+            if (options.isRequired) {
+              return '( • ̀ω•́ )✧ 不能为空哦~'
+            }
+
+            return true
           }
           return validator?.(value)
         }}

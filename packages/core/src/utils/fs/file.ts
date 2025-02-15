@@ -132,9 +132,9 @@ export const copyFiles = async (files: string[], defaulPath: string, userPath: s
 
 /**
  * 创建配置文件 同步
- * @description 从模板配置文件复制到用户配置文件
+ * @description 从模板配置文件复制到目标文件夹
  * @param defaulPath 模板配置文件路径
- * @param userPath 用户配置文件路径
+ * @param userPath 目标文件夹路径
  * @param suffixs 需要复制的文件后缀 可带点
  * @param isThrow 是否抛出异常 默认不抛出
  * @returns 是否复制成功

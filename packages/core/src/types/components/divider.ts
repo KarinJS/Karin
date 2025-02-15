@@ -9,4 +9,6 @@ export interface DividerProps extends ComponentProps {
   transparent?: boolean
   /** 方向 */
   orientation?: 'horizontal' | 'vertical'
+  /** 描述文本位置 0-100的数字 */
+  descPosition?: number
 }

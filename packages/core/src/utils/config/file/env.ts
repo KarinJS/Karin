@@ -161,7 +161,7 @@ export const setEnv = (data: Record<string, any>): boolean => {
  * @public 公开Api
  * @description 获取.env文件内容
  */
-export const getEnv = (filePath: string): Record<string, {
+export const getEnv = (filePath: string = path.join(process.cwd(), '.env')): Record<string, {
   /** 值 */
   value: string
   /** 注释 */

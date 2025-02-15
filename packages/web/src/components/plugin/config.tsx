@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast'
 import { Spinner } from '@heroui/spinner'
 import { IoSettingsOutline } from 'react-icons/io5'
 import { RiPlugLine } from 'react-icons/ri'
-import { VscJson, VscCopy } from 'react-icons/vsc'
+import { VscJson, VscCopy, VscOutput, VscSymbolString } from 'react-icons/vsc'
 import { request } from '@/lib/request'
 import { DynamicRender } from '../heroui/main'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
@@ -185,7 +185,7 @@ export const PluginConfig = memo(({ open, name, type, onClose }: PluginConfigPro
                 className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
                 startContent={<VscJson className="text-lg" />}
               >
-                打印配置
+                配置详情
               </Button>
               <Button
                 color="default"
@@ -244,6 +244,30 @@ export const PluginConfig = memo(({ open, name, type, onClose }: PluginConfigPro
           </ModalBody>
           <ModalFooter>
             <div className="flex justify-end gap-2">
+              <Button
+                color="default"
+                variant="bordered"
+                size="md"
+                onPress={() => {
+                  console.log('Plugin Configuration:', configDataRef.current)
+                }}
+                className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
+                startContent={<VscOutput className="text-lg" />}
+              >
+                正常打印
+              </Button>
+              <Button
+                color="default"
+                variant="bordered"
+                size="md"
+                onPress={() => {
+                  console.log('Plugin Configuration:', JSON.stringify(configDataRef.current, null, 2))
+                }}
+                className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
+                startContent={<VscSymbolString className="text-lg" />}
+              >
+                纯文本打印
+              </Button>
               <Button
                 color="default"
                 variant="bordered"
