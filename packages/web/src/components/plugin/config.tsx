@@ -8,6 +8,7 @@ import { VscJson } from 'react-icons/vsc'
 import { request } from '@/lib/request'
 import { DynamicRender } from '../heroui/main'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
+import { useForm, FormProvider } from 'react-hook-form'
 
 import type { ComponentConfig } from '../heroui/types'
 
@@ -47,18 +48,19 @@ export const PluginConfig = memo(({
 }: PluginConfigProps) => {
   const [loading, setLoading] = useState(false)
   const [configs, setConfigs] = useState<ComponentConfig[]>([])
-  const [configValues, setConfigValues] = useState<Record<string, any>>({})
-  const [currentValues, setCurrentValues] = useState<Record<string, any>>({})
-
-  // 添加 mounted ref 来防止组件卸载后的状态更新
   const mountedRef = useRef(false)
 
-  // 缓存组件的初始状态
-  const initialStateRef = useRef({
-    name,
-    type,
-    configValues: {} as Record<string, any>
+  /**
+   * 传给后端的数据
+   */
+  let configData: Record<string, any> = {}
+
+  // 使用 React Hook Form
+  const methods = useForm({
+    mode: 'onChange'
   })
+
+  const { handleSubmit } = methods
 
   useEffect(() => {
     mountedRef.current = true
@@ -67,9 +69,9 @@ export const PluginConfig = memo(({
     }
   }, [])
 
-  // 优化 handleGetConfig，添加状态重置
+  // 优化 handleGetConfig
   const handleGetConfig = useCallback(async () => {
-    if (!open) return // 如果模态框关闭，不执行请求
+    if (!open) return
 
     try {
       setLoading(true)
@@ -85,9 +87,6 @@ export const PluginConfig = memo(({
         return
       }
       setConfigs(result)
-      // 重置配置值状态
-      setConfigValues(initialStateRef.current.configValues)
-      setCurrentValues(initialStateRef.current.configValues)
     } catch (error) {
       if (!mountedRef.current) return
       toast.error((error as Error).message)
@@ -98,36 +97,26 @@ export const PluginConfig = memo(({
     }
   }, [name, type, onClose, open])
 
-  // 只在模态框打开时获取配置
   useEffect(() => {
     if (open) {
       handleGetConfig()
     } else {
-      // 模态框关闭时重置状态
       setConfigs([])
-      setConfigValues(initialStateRef.current.configValues)
-      setCurrentValues(initialStateRef.current.configValues)
       setLoading(false)
     }
   }, [open, handleGetConfig])
 
-  // 优化配置值变更处理 - 直接传递 result，不做任何处理
+  // 优化配置值变更处理
   const handleConfigChange = useCallback((result: Record<string, any>) => {
-    if (!mountedRef.current || !open) return
-    // 直接设置 result，不做任何转换
-    setCurrentValues(result)
-  }, [open])
-
-  // 优化配置值的更新逻辑
-  useEffect(() => {
-    if (!open) return // 如果模态框关闭，不更新状态
-    if (JSON.stringify(currentValues) !== JSON.stringify(configValues)) {
-      setConfigValues(currentValues)
-    }
-  }, [currentValues, configValues, open])
+    configData = result
+    console.log('收到数据变更', result)
+    // if (!mountedRef.current || !open) return
+    // 直接使用 result 对象
+    methods.reset(result)
+  }, [open, methods])
 
   // 优化保存处理
-  const handleSave = useCallback(async () => {
+  const onSubmit = useCallback(async () => {
     if (!open) return
 
     try {
@@ -136,7 +125,7 @@ export const PluginConfig = memo(({
         {
           name,
           type,
-          config: currentValues
+          config: configData
         }
       )
 
@@ -152,11 +141,11 @@ export const PluginConfig = memo(({
       if (!mountedRef.current) return
       toast.error((error as Error).message)
     }
-  }, [name, type, currentValues, open])
+  }, [name, type, open])
 
   // 使用 useMemo 优化渲染内容
   const renderContent = useMemo(() => {
-    if (!open) return null // 如果模态框关闭，不渲染内容
+    if (!open) return null
 
     if (loading) {
       return (
@@ -184,17 +173,19 @@ export const PluginConfig = memo(({
     return (
       <div className="h-full space-y-4 overflow-y-auto custom-scrollbar">
         <div className="p-6 bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 transition-colors">
-          <DynamicRender
-            configs={configs}
-            onChange={handleConfigChange}
-            values={configValues}
-          />
+          <FormProvider {...methods}>
+            <form id="plugin-config-form" onSubmit={handleSubmit(onSubmit)}>
+              <DynamicRender
+                configs={configs}
+                onChange={handleConfigChange}
+              />
+            </form>
+          </FormProvider>
         </div>
       </div>
     )
-  }, [loading, configs, handleConfigChange, open, configValues])
+  }, [loading, configs, handleConfigChange, open, methods, handleSubmit, onSubmit])
 
-  // 如果模态框关闭，不渲染任何内容
   if (!open) return null
 
   return (
@@ -238,7 +229,7 @@ export const PluginConfig = memo(({
               color="default"
               variant="bordered"
               size="md"
-              onPress={() => console.log('当前配置值:', currentValues)}
+              onPress={() => console.log('当前配置值:', methods.getValues())}
               className="px-5 h-10 min-w-[88px] font-medium border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
               startContent={<VscJson className="text-lg" />}
             >
@@ -254,10 +245,11 @@ export const PluginConfig = memo(({
               取消
             </Button>
             <Button
+              type="submit"
+              form="plugin-config-form"
               color="primary"
               variant="flat"
               size="md"
-              onPress={handleSave}
               isDisabled={configs.length === 0}
               className="px-5 h-10 min-w-[88px] font-medium bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400"
             >
@@ -269,7 +261,6 @@ export const PluginConfig = memo(({
     </Modal>
   )
 }, (prevProps, nextProps) => {
-  // 自定义比较函数，只在必要时重新渲染
   return (
     prevProps.open === nextProps.open &&
     prevProps.name === nextProps.name &&

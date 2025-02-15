@@ -10,6 +10,7 @@ import { AccordionPro } from './accordions-pro'
 import type { JSX } from 'react'
 import type { ComponentConfig, Result } from './types'
 import { Divider } from './dividers'
+import { useWatch } from '@/hooks/use-watch'
 
 interface DynamicComponentRendererProps {
   configs: ComponentConfig[]
@@ -25,34 +26,53 @@ interface DynamicComponentRendererProps {
  */
 export function renders (
   options: ComponentConfig[],
-  initialValues: Record<string, any> = {}
+  onChange: (result: Result<'all'>) => void,
+  initialValues: Record<string, any> = {},
 ) {
   const list: JSX.Element[] = []
   const result = createResult(initialValues)
 
+  /**
+   * 代理 result 对象
+   */
+  const proxy = new Proxy(result, {
+    set: (target, prop, value) => {
+      target[prop as keyof typeof target] = value
+      onChange(result)
+      return true
+    },
+    get: (target, prop) => {
+      console.log('target', typeof target, target)
+      console.log('prop', typeof prop, prop)
+      onChange(result)
+      return target[prop as keyof typeof target]
+    }
+  })
+
+
   options.forEach(item => {
     if (item.componentType === 'input') {
-      return list.push(Input(item, result as Result<'input'>))
+      return list.push(Input(item, proxy as Result<'input'>))
     }
 
     if (item.componentType === 'switch') {
-      return list.push(Switch(item, result as Result<'switch'>))
+      return list.push(Switch(item, proxy as Result<'switch'>))
     }
 
     if (item.componentType === 'checkbox-group') {
-      return list.push(CheckboxGroup(item, result as Result<'checkbox'>))
+      return list.push(CheckboxGroup(item, proxy as Result<'checkbox'>))
     }
 
     if (item.componentType === 'radio-group') {
-      return list.push(RadioGroup(item, result as Result<'radio'>))
+      return list.push(RadioGroup(item, proxy as Result<'radio'>))
     }
 
     if (item.componentType === 'accordion') {
-      return list.push(Accordion(item, result as Result<'accordion'>))
+      return list.push(Accordion(item, proxy as Result<'accordion'>))
     }
 
     if (item.componentType === 'accordion-pro') {
-      return list.push(AccordionPro(item, result as Result<'accordion-pro'>))
+      return list.push(AccordionPro(item, proxy as Result<'accordion-pro'>))
     }
 
     if (item.componentType === 'divider') {
@@ -62,7 +82,7 @@ export function renders (
     console.log(`[未知组件] ${item}`)
   })
 
-  return { list, result }
+  return { list, result: proxy }
 }
 
 /**
@@ -73,11 +93,7 @@ export function renders (
 export const DynamicRender = (
   { configs, onChange, values = {} }: DynamicComponentRendererProps
 ) => {
-  const { list, result } = renders(configs, values)
-
-  useEffect(() => {
-    onChange(result)
-  }, [result, onChange])
+  const { list } = renders(configs, onChange, values)
 
   return (
     <div className="w-full">
