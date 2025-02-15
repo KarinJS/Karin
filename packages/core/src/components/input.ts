@@ -8,11 +8,24 @@ import type { InputProps } from '@/types/components'
 const createInput = (
   key: string,
   config: Partial<Omit<InputProps, 'key' | 'componentType'>> = {}
-): InputProps => ({
-  ...config,
-  key,
-  componentType: 'input',
-})
+): InputProps => {
+  const data: InputProps = {
+    ...config,
+    key,
+    componentType: 'input',
+  }
+
+  if (config.rules) {
+    data.rules = config.rules.map((rule) => {
+      return {
+        ...rule,
+        regex: rule.regex instanceof RegExp ? rule.regex.source : rule.regex
+      }
+    })
+  }
+
+  return data
+}
 
 /**
  * 输入框
