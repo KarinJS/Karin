@@ -70,6 +70,7 @@ export function PluginInfoModal ({
   const [taskId, setTaskId] = useState<string>('')
   const [hasConfig, setHasConfig] = useState<boolean>(false)
   const [checkingConfig, setCheckingConfig] = useState<boolean>(false)
+  const [showUninstallConfirm, setShowUninstallConfirm] = useState(false)
 
   const { loading: uninstallLoading, run: handleUninstall } = useRequest<{ taskId: string }, any>(
     async () => {
@@ -267,8 +268,7 @@ export function PluginInfoModal ({
               <Button
                 color="danger"
                 variant="light"
-                onPress={handleUninstall}
-                isLoading={uninstallLoading}
+                onPress={() => setShowUninstallConfirm(true)}
                 isDisabled={plugin.type.toLowerCase() === 'app'}
               >
                 卸载
@@ -295,6 +295,46 @@ export function PluginInfoModal ({
                   配置
                 </Button>
               )}
+            </div>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal
+        isOpen={showUninstallConfirm}
+        onOpenChange={() => setShowUninstallConfirm(false)}
+        size="sm"
+      >
+        <ModalContent>
+          <ModalHeader>
+            <h3 className="text-lg font-semibold">确认卸载</h3>
+          </ModalHeader>
+          <ModalBody>
+            <p className="text-sm text-default-600">
+              您确定要卸载插件 "{plugin.name}" 吗？
+              <br />
+              此操作不可逆，请谨慎操作。
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <div className="flex gap-2">
+              <Button
+                color="default"
+                variant="light"
+                onPress={() => setShowUninstallConfirm(false)}
+              >
+                取消
+              </Button>
+              <Button
+                color="danger"
+                onPress={() => {
+                  setShowUninstallConfirm(false)
+                  handleUninstall()
+                }}
+                isLoading={uninstallLoading}
+              >
+                确认卸载
+              </Button>
             </div>
           </ModalFooter>
         </ModalContent>
