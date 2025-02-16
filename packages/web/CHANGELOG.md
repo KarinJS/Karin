@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.5](https://github.com/KarinJS/Karin/compare/web-v1.3.4...web-v1.3.5) (2025-02-15)
+
+
+### 🐛 Bug Fixes
+
+* 卸载按钮添加二次确认 ([87f3a8d](https://github.com/KarinJS/Karin/commit/87f3a8dcd1264dce8e15d62e8fc3c0615670a65e))
+* 组件分隔线适配描述文本 ([cedff08](https://github.com/KarinJS/Karin/commit/cedff082a8b1b4a169640f3e812d13f646a2cfbb))
+
 ## [1.3.4](https://github.com/KarinJS/Karin/compare/web-v1.3.3...web-v1.3.4) (2025-02-15)
 
 
