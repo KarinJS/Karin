@@ -162,6 +162,17 @@ class AdapterConsole extends AdapterBase implements AdapterType {
 
     return `http://127.0.0.1:${process.env.HTTP_PORT}/api/v1/console/${name}${ext}?token=${cfg.console.token}`
   }
+
+  async getAvatarUrl (userId: string, size?: 0 | 40 | 100 | 140) {
+    if (userId === botID) {
+      return process.env.ADAPTER_CONSOLE_AVATAR || 'https://p.qlogo.cn/gh/967068507/967068507/0'
+    }
+    return ''
+  }
+
+  async getGroupAvatarUrl (groupId: string, size?: 0 | 40 | 100 | 140, history?: number) {
+    return 'https://p.qlogo.cn/gh/967068507/967068507/0'
+  }
 }
 
 const adapter = new AdapterConsole()
