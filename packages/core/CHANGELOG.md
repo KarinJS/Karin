@@ -1,5 +1,13 @@
 # 更新日志
 
+## [1.3.13](https://github.com/KarinJS/Karin/compare/core-v1.3.12...core-v1.3.13) (2025-02-16)
+
+
+### 🐛 Bug Fixes
+
+* console adapter基本接口 ([42c421d](https://github.com/KarinJS/Karin/commit/42c421d295c6666c14f75e2f4a2113fdd1f66fd7))
+* console adapter基本接口 ([041031d](https://github.com/KarinJS/Karin/commit/041031d2a8093a5ab33aadd5e5aba918f294342f))
+
 ## [1.3.12](https://github.com/KarinJS/Karin/compare/core-v1.3.11...core-v1.3.12) (2025-02-15)
 
 
