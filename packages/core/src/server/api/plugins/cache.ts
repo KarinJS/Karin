@@ -23,7 +23,7 @@ export const getPluginListCache = async (): Promise<PluginLists[] | null> => {
  */
 export const setPluginListCache = async (plugins: PluginLists[]): Promise<void> => {
   try {
-    await redis.setEx(CACHE_KEY, CACHE_EXPIRE, JSON.stringify(plugins))
+    await redis.set(CACHE_KEY, JSON.stringify(plugins), { EX: CACHE_EXPIRE })
   } catch (error) {
     logger.error('设置插件列表缓存失败:', error)
   }
