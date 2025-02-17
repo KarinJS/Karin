@@ -43,7 +43,7 @@ export abstract class AdapterBase implements AdapterType {
       communication: 'other',
       address: '',
       secret: null,
-      connectTime: -1,
+      connectTime: Date.now(),
     }
   }
 
