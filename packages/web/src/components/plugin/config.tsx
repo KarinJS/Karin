@@ -101,7 +101,6 @@ export const PluginConfig = memo(({ open, name, type, onClose }: PluginConfigPro
   }, [open, handleGetConfig])
 
   const handleConfigChange = useCallback((result: Record<string, any>) => {
-    console.log('handleConfigChange:', result)
     configDataRef.current = result
   }, [])
 

@@ -36,26 +36,13 @@ export function renders (
   const proxy = new Proxy(result, {
     set: (target, prop, value) => {
       target[prop as keyof typeof target] = value
-      console.log('set-target', typeof target, target)
-      console.log('set-prop', typeof prop, prop)
-      console.log('set-value', typeof value, value)
       onChange(result)
       return true
     },
-    get: (target, prop, receiver) => {
-      console.log('get-target', typeof target, target)
-      console.log('get-prop', typeof prop, prop)
-      console.log('get-receiver', typeof receiver, receiver)
-      // onChange(result)
+    get: (target, prop) => {
       return target[prop as keyof typeof target]
     }
   })
-
-  // 每5秒打印一次result
-  setInterval(() => {
-    console.log('result', result)
-  }, 5000)
-
 
   options.forEach(item => {
     if (item.componentType === 'input') {
