@@ -7,7 +7,8 @@ import type {
   AccordionProProps,
   AccordionItemProps,
   AccordionKV,
-  DividerProps
+  DividerProps,
+  InputGroupProps
 } from 'node-karin'
 
 interface Cache<T> {
@@ -47,6 +48,11 @@ export type CheckboxRef = Record<string, Cache<boolean>[]>
 export type AccordionRef = Record<string, Cache<string | boolean | undefined>[]>
 
 /**
+ * 输入框组的缓存类型
+ */
+export type InputGroupRef = Record<string, Cache<string>>
+
+/**
  * 手风琴pro的缓存类型
  */
 export type AccordionProRef = AccordionRef
@@ -59,7 +65,8 @@ export type Ref<
   'radio' |
   'checkbox' |
   'accordion' |
-  'accordion-pro'
+  'accordion-pro' |
+  'input-group'
 > =
   T extends 'input' ? InputRef :
   T extends 'switch' ? SwitchRef :
@@ -67,6 +74,7 @@ export type Ref<
   T extends 'checkbox' ? CheckboxRef :
   T extends 'accordion' ? AccordionRef :
   T extends 'accordion-pro' ? AccordionProRef :
+  T extends 'input-group' ? InputGroupRef :
   never
 
 export type InputResult = Record<string, string | undefined>
@@ -74,13 +82,22 @@ export type SwitchResult = Record<string, boolean>
 export type RadioResult = Record<string, string>
 export type CheckboxResult = Record<string, Record<string, boolean>>
 export type AccordionResult = Record<string, AccordionKV[]>
+export type InputGroupResult = Record<string, string[]>
 
 export type Result<T extends string> = T extends 'input' ? InputResult
   : T extends 'switch' ? SwitchResult
   : T extends 'radio' ? RadioResult
   : T extends 'checkbox' ? CheckboxResult
   : T extends 'accordion' | 'accordion-pro' ? AccordionResult
-  : T extends 'all' ? InputResult & SwitchResult & RadioResult & CheckboxResult & AccordionResult
+  : T extends 'input-group' ? InputGroupResult
+  : T extends 'all' ? (
+    InputResult &
+    SwitchResult &
+    RadioResult &
+    CheckboxResult &
+    AccordionResult &
+    InputGroupResult
+  )
   : never
 
 /** 组件配置类型 */
@@ -93,3 +110,4 @@ export type ComponentConfig =
   | (AccordionProProps & { componentType: 'accordion-pro' })
   | (AccordionItemProps & { componentType: 'accordion-item' })
   | (DividerProps & { componentType: 'divider' })
+  | (InputGroupProps & { componentType: 'input-group' })

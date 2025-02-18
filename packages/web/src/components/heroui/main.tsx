@@ -1,4 +1,4 @@
-import { Input } from './inputs'
+import { Input, InputGroup } from './inputs'
 import { createResult } from './utils'
 import { Switch } from './switchs'
 import { CheckboxGroup } from './checkboxs'
@@ -36,16 +36,25 @@ export function renders (
   const proxy = new Proxy(result, {
     set: (target, prop, value) => {
       target[prop as keyof typeof target] = value
+      console.log('set-target', typeof target, target)
+      console.log('set-prop', typeof prop, prop)
+      console.log('set-value', typeof value, value)
       onChange(result)
       return true
     },
-    get: (target, prop) => {
-      console.log('target', typeof target, target)
-      console.log('prop', typeof prop, prop)
-      onChange(result)
+    get: (target, prop, receiver) => {
+      console.log('get-target', typeof target, target)
+      console.log('get-prop', typeof prop, prop)
+      console.log('get-receiver', typeof receiver, receiver)
+      // onChange(result)
       return target[prop as keyof typeof target]
     }
   })
+
+  // 每5秒打印一次result
+  setInterval(() => {
+    console.log('result', result)
+  }, 5000)
 
 
   options.forEach(item => {
@@ -75,6 +84,10 @@ export function renders (
 
     if (item.componentType === 'divider') {
       return list.push(Divider(item))
+    }
+
+    if (item.componentType === 'input-group') {
+      return list.push(InputGroup(item, proxy as Result<'input-group'>))
     }
 
     console.log(`[未知组件] ${item}`)

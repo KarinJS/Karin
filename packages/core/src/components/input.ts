@@ -1,4 +1,4 @@
-import type { InputProps } from '@/types/components'
+import type { InputGroupProps, InputProps } from '@/types/components'
 
 /**
  * 创建输入框配置
@@ -28,6 +28,26 @@ const createInput = (
 }
 
 /**
+ * 创建输入框组配置
+ * @param key 唯一标识符
+ * @param options 输入框组配置
+ */
+const createInputGroup = (
+  key: string,
+  options: Omit<InputGroupProps, 'key' | 'componentType'>
+): InputGroupProps => {
+  return {
+    ...options,
+    key,
+    componentType: 'input-group',
+    template: createInput('input-group-template', options.template),
+    data: Array.isArray(options?.data) ? options.data : [],
+    itemsPerRow: options.itemsPerRow ?? 3,
+    maxRows: options.maxRows ?? 5,
+    maxInputs: options.maxInputs ?? 100,
+  }
+}
+/**
  * 输入框
  */
 export const input = {
@@ -37,6 +57,16 @@ export const input = {
    * @param options 输入框配置
    */
   create: (key: string, options: Omit<InputProps, 'key' | 'componentType'>) => createInput(key, options),
+
+  /**
+   * 创建输入框组
+   * @param key 唯一标识符
+   * @param options 输入框组配置
+   */
+  group: (
+    key: string,
+    options: Omit<InputGroupProps, 'key' | 'componentType'>
+  ) => createInputGroup(key, options),
 
   /**
    * 字符串输入框

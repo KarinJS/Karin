@@ -10,6 +10,7 @@ export default defineConfig({
     outDir: '../core/dist/web',
   },
   server: {
+    host: true,
     proxy: {
       '/api': {
         target: 'http://localhost:7777',

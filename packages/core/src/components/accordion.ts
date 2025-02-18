@@ -1,5 +1,5 @@
-import type { AccordionItemProps, AccordionProps, AccordionProProps } from '@/types/components'
 import { Children } from '@/types/components/all'
+import type { AccordionItemProps, AccordionProps, AccordionProProps } from '@/types/components'
 
 /**
  * 创建手风琴配置

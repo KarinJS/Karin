@@ -22,6 +22,7 @@ export type ComponentType =
   | 'checkbox-group'
   | 'radio'
   | 'radio-group'
+  | 'input-group'
 
 /** 组件通用属性 */
 export interface ComponentProps {

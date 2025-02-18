@@ -136,3 +136,22 @@ export interface InputProps extends ComponentProps {
   /** 自定义字段 输入框高度 */
   height?: string
 }
+
+/**
+ * 输入框组类型
+ */
+export interface InputGroupProps extends ComponentProps {
+  componentType: 'input-group'
+  /** 标签 */
+  label?: string
+  /** 输入框模板 */
+  template: InputProps
+  /** 输入框一行最多显示多少个 默认3个 */
+  itemsPerRow?: number
+  /** 输入框最大显示多少行 超出后滚动 默认5行 */
+  maxRows?: number
+  /** 输入框最大输入框数量 默认100 0不限制 */
+  maxInputs?: number
+  /** 数据 */
+  data: string[]
+}
