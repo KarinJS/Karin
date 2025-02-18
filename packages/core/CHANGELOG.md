@@ -1,5 +1,15 @@
 # 更新日志
 
+## [1.3.14](https://github.com/KarinJS/Karin/compare/core-v1.3.13...core-v1.3.14) (2025-02-18)
+
+
+### 🐛 Bug Fixes
+
+* connectTime ([b6ec69e](https://github.com/KarinJS/Karin/commit/b6ec69e04acbf043ccd1724e583de7e4c19b4d24))
+* redis.setEx ([f6f69ed](https://github.com/KarinJS/Karin/commit/f6f69ed1a4b35826011954a2df229514456a9958))
+* 手风琴适配输入框组 ([1e33a72](https://github.com/KarinJS/Karin/commit/1e33a72157fd1c4420f3c97a45bce0412bc31cb0))
+* 新增组件输入框组 ([834a2bd](https://github.com/KarinJS/Karin/commit/834a2bd558670ebff54ef948c1f3fd15d026077b))
+
 ## [1.3.13](https://github.com/KarinJS/Karin/compare/core-v1.3.12...core-v1.3.13) (2025-02-16)
 
 
