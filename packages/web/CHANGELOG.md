@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.3.6](https://github.com/KarinJS/Karin/compare/web-v1.3.5...web-v1.3.6) (2025-02-18)
+
+
+### 🐛 Bug Fixes
+
+* ...该死的手风琴 我恨手风琴 ([2349b71](https://github.com/KarinJS/Karin/commit/2349b7146e420e35233192c9e937322b48bdc20a))
+* build error ([8f00701](https://github.com/KarinJS/Karin/commit/8f00701ff21eb948ad65884a89f4e44ef871dd39))
+* 删除多余的日志 ([0fe8833](https://github.com/KarinJS/Karin/commit/0fe8833eca434ce22059c93d816e2c9f2c00d173))
+* 手风琴适配输入框组 ([1e33a72](https://github.com/KarinJS/Karin/commit/1e33a72157fd1c4420f3c97a45bce0412bc31cb0))
+* 新增组件输入框组 ([834a2bd](https://github.com/KarinJS/Karin/commit/834a2bd558670ebff54ef948c1f3fd15d026077b))
+
+
+### 💄 Styles
+
+* 破防了 下播了 ([1105da3](https://github.com/KarinJS/Karin/commit/1105da3fbe78f420b387bfe3f4aa6c53be908b5c))
+
 ## [1.3.5](https://github.com/KarinJS/Karin/compare/web-v1.3.4...web-v1.3.5) (2025-02-15)
 
 
