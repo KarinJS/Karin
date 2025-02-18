@@ -9,7 +9,7 @@ import { Divider } from './dividers'
 import { RadioGroup } from './radioGroups'
 import { CheckboxGroup } from './checkboxs'
 import type { JSX } from 'react'
-import type { AccordionProProps, AccordionKV } from 'node-karin'
+import type { AccordionProProps } from 'node-karin'
 
 /**
  * 渲染手风琴pro组件
