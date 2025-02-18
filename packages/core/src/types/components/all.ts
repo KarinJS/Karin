@@ -1,7 +1,13 @@
-import { DividerProps } from './divider'
-import { InputProps } from './input'
-import { SwitchProps } from './switch'
-import { CheckboxProps, CheckboxGroupProps } from './checkbox'
-import { RadioGroupProps } from './radioGroup'
+import type { DividerProps } from './divider'
+import type { InputGroupProps, InputProps } from './input'
+import type { SwitchProps } from './switch'
+import type { CheckboxProps, CheckboxGroupProps } from './checkbox'
+import type { RadioGroupProps } from './radioGroup'
 
-export type Children = InputProps | SwitchProps | DividerProps | CheckboxProps | CheckboxGroupProps | RadioGroupProps
+export type Children = InputProps
+  | SwitchProps
+  | DividerProps
+  | CheckboxProps
+  | CheckboxGroupProps
+  | RadioGroupProps
+  | InputGroupProps

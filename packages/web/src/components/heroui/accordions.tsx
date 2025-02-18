@@ -2,13 +2,12 @@ import {
   Accordion as HeroAccordion,
   AccordionItem as HeroAccordionItem
 } from '@heroui/accordion'
-import { Input } from './inputs'
+import { Input, InputGroup } from './inputs'
 import { Switch } from './switchs'
 import { Divider } from './dividers'
 import { RadioGroup } from './radioGroups'
 import { CheckboxGroup } from './checkboxs'
 import type { JSX } from 'react'
-import type { Result } from './types'
 import type { AccordionProps, AccordionKV } from 'node-karin'
 /**
  * 渲染手风琴组件
@@ -18,7 +17,7 @@ import type { AccordionProps, AccordionKV } from 'node-karin'
  */
 export const Accordion = (
   props: AccordionProps,
-  result: Result<'accordion'>
+  result: Record<string, any>
 ): JSX.Element => {
   let { componentType: _, key, className, children, label, ...options } = props
   if (!Array.isArray(children)) children = []
@@ -45,6 +44,10 @@ export const Accordion = (
         child.checkbox.forEach((item) => {
           (kv[child.key] as Record<string, boolean>)[item.key] = item.defaultSelected ?? false
         })
+        return
+      }
+      if (child.componentType === 'input-group') {
+        kv[child.key] = child.data
         return
       }
     })
@@ -76,32 +79,37 @@ export const Accordion = (
                 {itemChildren.map((options) => {
                   if (options.componentType === 'input') {
                     return Input(options, {}, (value) => {
-                      (result[key][index] as Record<string, AccordionKV>)[options.key] = value
+                      result[key][index][options.key] = value
                     })
                   }
 
                   if (options.componentType === 'switch') {
                     return Switch(options, {}, (value) => {
-                      (result[key][index] as Record<string, AccordionKV>)[options.key] = value
+                      result[key][index][options.key] = value
                     })
                   }
 
                   if (options.componentType === 'radio-group') {
                     return RadioGroup(options, {}, (value) => {
-                      (result[key][index] as Record<string, AccordionKV>)[options.key] = value
+                      result[key][index][options.key] = value
                     })
                   }
 
                   if (options.componentType === 'checkbox-group') {
                     (result[key][index] as Record<string, AccordionKV>)[options.key] = {}
                     return CheckboxGroup(options, {}, (subKey, value) => {
-                      ((result[key][index] as Record<string, AccordionKV>
-                      )[options.key] as Record<string, boolean>)[subKey] = value
+                      result[key][index][options.key][subKey] = value
                     })
                   }
 
                   if (options.componentType === 'divider') {
                     return Divider(options)
+                  }
+
+                  if (options.componentType === 'input-group') {
+                    return InputGroup(options, {}, (i, value) => {
+                      result[key][index][options.key][i] = value
+                    })
                   }
                 })}
               </div>

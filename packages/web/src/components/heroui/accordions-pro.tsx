@@ -3,13 +3,12 @@ import {
   Accordion as HeroAccordion,
   AccordionItem as HeroAccordionItem
 } from '@heroui/accordion'
-import { Input } from './inputs'
+import { Input, InputGroup } from './inputs'
 import { Switch } from './switchs'
 import { Divider } from './dividers'
 import { RadioGroup } from './radioGroups'
 import { CheckboxGroup } from './checkboxs'
 import type { JSX } from 'react'
-import type { Result } from './types'
 import type { AccordionProProps, AccordionKV } from 'node-karin'
 
 /**
@@ -21,7 +20,7 @@ import type { AccordionProProps, AccordionKV } from 'node-karin'
  */
 export const AccordionPro = (
   props: AccordionProProps,
-  result: Result<'accordion'>
+  result: Record<string, any>
 ): JSX.Element => {
   let { componentType: _, key, data, label, className, children, ...options } = props
   const [forceKey, setForceKey] = useState(0)
@@ -53,8 +52,8 @@ export const AccordionPro = (
         const opt = { ...options, key: strKey, defaultValue: data[i][options.key] || options.defaultValue }
         return Input(opt, {}, (value) => {
           data[i][options.key] = value
-          if (!result[key][i]) result[key][i] = {};
-          (result[key][i] as Record<string, AccordionKV>)[options.key] = value
+          if (!result[key][i]) result[key][i] = {}
+          result[key][i][options.key] = value
         })
       }
 
@@ -62,8 +61,8 @@ export const AccordionPro = (
         const opt = { ...options, key: strKey, defaultSelected: data[i][options.key] ?? options.defaultSelected }
         return Switch(opt, {}, (value) => {
           data[i][options.key] = value
-          if (!result[key][i]) result[key][i] = {};
-          (result[key][i] as Record<string, AccordionKV>)[options.key] = value
+          if (!result[key][i]) result[key][i] = {}
+          result[key][i][options.key] = value
         })
       }
 
@@ -71,8 +70,8 @@ export const AccordionPro = (
         const opt = { ...options, key: strKey, defaultValue: data[i][options.key] ?? options.defaultValue }
         return RadioGroup(opt, {}, (value) => {
           data[i][options.key] = value
-          if (!result[key][i]) result[key][i] = {};
-          (result[key][i] as Record<string, AccordionKV>)[options.key] = value
+          if (!result[key][i]) result[key][i] = {}
+          result[key][i][options.key] = value
         })
       }
 
@@ -81,19 +80,25 @@ export const AccordionPro = (
         if (!result[key][i]) result[key][i] = {}
         return CheckboxGroup(opt, {}, (subKey, value) => {
           data[i][options.key][subKey] = value
-          if (!((result[key][i] as Record<string, AccordionKV>
-          )[options.key] as Record<string, boolean>)) {
-            ((result[key][i] as Record<string, AccordionKV>
-            )[options.key] as Record<string, boolean>) = {}
+          if (!result[key][i][options.key]) {
+            result[key][i][options.key] = {}
           }
 
-          ((result[key][i] as Record<string, AccordionKV>
-          )[options.key] as Record<string, boolean>)[subKey] = value
+          result[key][i][options.key][subKey] = value
         })
       }
 
       if (options.componentType === 'divider') {
         return Divider({ ...options, key: strKey })
+      }
+
+      if (options.componentType === 'input-group') {
+        const opt = { ...options, key: strKey }
+        return InputGroup(opt, {}, (index, value) => {
+          data[i][options.key][index] = value
+          if (!result[key][i]) result[key][i] = {}
+          result[key][i][options.key][index] = value
+        })
       }
 
       return null
