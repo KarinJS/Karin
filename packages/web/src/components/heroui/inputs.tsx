@@ -142,15 +142,15 @@ export const InputGroup = (
   }
 
   return (
-    <div className={props.className || "w-full bg-white rounded-xl shadow-xl border border-gray-200 p-4 sm:p-6"}>
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
-        <div className="flex flex-col gap-1">
-          <span className="text-base font-semibold text-gray-800">{props.label}</span>
+    <div className={props.className || "w-full bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-gray-200 dark:border-gray-700 p-3 sm:p-4 transition-colors"}>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 mb-2">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-default-500 text-md">{props.label}</span>
           {props.description && (
             <p className="text-sm text-gray-500">{props.description}</p>
           )}
         </div>
-        <div className="flex items-center gap-2 self-end sm:self-auto">
+        <div className="flex items-center gap-1.5 self-end sm:self-auto">
           <span className="text-sm text-gray-500">
             {dataVal.length}{maxInputs !== 0 ? `/${maxInputs}` : ''}
           </span>
@@ -170,7 +170,7 @@ export const InputGroup = (
 
       <div
         ref={containerRef}
-        className="grid gap-4 p-4 border-2 border-dashed border-gray-300 rounded-lg min-h-[100px]"
+        className="grid gap-4 p-4 bg-white/50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl min-h-[100px] transition-colors"
         style={{
           maxHeight: `calc((60px * ${maxRows}) + (1rem * ${maxRows}))`,
           gridTemplateColumns: columns,
