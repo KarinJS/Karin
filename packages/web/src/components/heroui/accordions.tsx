@@ -96,7 +96,7 @@ export const Accordion = (
                   }
 
                   if (options.componentType === 'checkbox-group') {
-                    (result[key][index] as Record<string, AccordionKV>)[options.key] = {}
+                    result[key][index][options.key] = {}
                     return CheckboxGroup(options, {}, (subKey, value) => {
                       result[key][index][options.key][subKey] = value
                     })
@@ -107,9 +107,14 @@ export const Accordion = (
                   }
 
                   if (options.componentType === 'input-group') {
-                    return InputGroup(options, {}, (i, value) => {
-                      result[key][index][options.key][i] = value
-                    })
+                    return InputGroup(options, {}, (i, value, type) => {
+                      if (type === 'add') {
+                        result[key][index][options.key][i] = value
+                        result[key][index][options.key] = result[key][index][options.key].map(String)
+                      } else {
+                        result[key][index][options.key].splice(i, 1)
+                      }
+                    }, result[key][index][options.key])
                   }
                 })}
               </div>

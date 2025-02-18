@@ -94,11 +94,18 @@ export const AccordionPro = (
 
       if (options.componentType === 'input-group') {
         const opt = { ...options, key: strKey }
-        return InputGroup(opt, {}, (index, value) => {
-          data[i][options.key][index] = value
-          if (!result[key][i]) result[key][i] = {}
-          result[key][i][options.key][index] = value
-        })
+        return InputGroup(opt, {}, (index, value, type) => {
+          if (type === 'add') {
+            data[i][options.key][index] = value
+            if (!result[key][i]) result[key][i] = {}
+            result[key][i][options.key][index] = value
+          } else {
+            data[i][options.key].splice(index, 1)
+            if (!result[key][i]) result[key][i] = {}
+            result[key][i][options.key].splice(index, 1)
+          }
+
+        }, result[key][i][options.key])
       }
 
       return null

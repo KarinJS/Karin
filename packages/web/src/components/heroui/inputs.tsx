@@ -58,7 +58,8 @@ export const Input = (
 export const InputGroup = (
   props: InputGroupProps,
   result: Result<'input-group'>,
-  onValueChange?: (index: number, value: string) => void
+  onValueChange?: (index: number, value: string, type: 'add' | 'del') => void,
+  cache?: string[],
 ) => {
   const { key, template, data } = props
   const { componentType: __, key: ___, ...templateOptions } = template
@@ -73,7 +74,7 @@ export const InputGroup = (
     })
   }
 
-  const [dataVal, setDataVal] = useState(() => result[key])
+  const [dataVal, setDataVal] = useState(() => result[key] || cache || [])
 
   // 同步到result
   useEffect(() => {
@@ -120,18 +121,20 @@ export const InputGroup = (
       return
     }
 
-    if (!onValueChange) {
-      result[key] = [...result[key], '']
-    } else {
-      onValueChange(dataVal.length, '')
-    }
     setDataVal(prev => [...prev, ''])
+    if (onValueChange) {
+      onValueChange(dataVal.length, '', 'add')
+    } else {
+      result[key] = [...result[key], '']
+    }
   }
 
   // 删除输入框
   const handleDeleteInput = (index: number) => {
-    if (!onValueChange) {
-      result[key] = result[key].filter((_, i) => i !== index)
+    if (onValueChange) {
+      onValueChange(index, '', 'del')
+    } else {
+      result[key].splice(index, 1)
     }
 
     setDataVal(prev => prev.filter((_, i) => i !== index))
@@ -152,6 +155,7 @@ export const InputGroup = (
             {dataVal.length}{maxInputs !== 0 ? `/${maxInputs}` : ''}
           </span>
           <Button
+            key={`${key}-add-input`}
             variant="solid"
             color="primary"
             size="sm"
@@ -191,7 +195,7 @@ export const InputGroup = (
               }}
               onValueChange={(value) => {
                 if (onValueChange) {
-                  onValueChange(index, value)
+                  onValueChange(index, value, 'add')
                 } else {
                   result[key][index] = value
                 }
