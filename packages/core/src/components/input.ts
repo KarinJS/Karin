@@ -43,7 +43,7 @@ const createInputGroup = (
     template: createInput('input-group-template', options.template),
     data: Array.isArray(options?.data) ? options.data : [],
     itemsPerRow: options.itemsPerRow ?? 3,
-    maxRows: options.maxRows ?? 5,
+    maxRows: options.maxRows ?? 3,
     maxInputs: options.maxInputs ?? 100,
   }
 }
