@@ -1,4 +1,4 @@
-import { Children } from './all'
+import { Children } from './joint'
 import { ComponentProps } from './base'
 
 /**

@@ -1,36 +1,6 @@
 import { ComponentProps } from './base'
 
 /**
- * 输入类型枚举
- */
-export enum InputDataType {
-  /** 字符串 */
-  STRING = 'string',
-  /** 数字 */
-  NUMBER = 'number',
-  /** 布尔值 */
-  BOOLEAN = 'boolean',
-  /** 日期 */
-  DATE = 'date',
-  /** 时间 */
-  TIME = 'time',
-  /** 日期时间 */
-  DATETIME = 'datetime',
-  /** 邮箱 */
-  EMAIL = 'email',
-  /** URL */
-  URL = 'url',
-  /** 电话 */
-  TEL = 'tel',
-  /** 密码 */
-  PASSWORD = 'password',
-  /** 颜色 */
-  COLOR = 'color',
-  /** JSON */
-  JSON = 'json'
-}
-
-/**
  * 验证规则接口
  */
 export interface ValidationRule {
@@ -89,6 +59,8 @@ export interface InputProps extends ComponentProps {
   radius?: 'none' | 'sm' | 'md' | 'lg' | 'full'
   /** 标签 */
   label?: string
+  /** 值 */
+  value?: string
   /** 默认值 */
   defaultValue?: string
   /** 提示信息 */
@@ -123,18 +95,16 @@ export interface InputProps extends ComponentProps {
   isDisabled?: boolean
   /** 是否无效 */
   isInvalid?: boolean
-  // /** 基础引用 */
-  // baseRef: RefObject<HTMLDivElement>
   /** 禁用动画 */
   disableAnimation?: boolean
-  /** 类名 */
-  classNames?: Partial<Record<'base' | 'label' | 'inputWrapper' | 'innerWrapper' | 'mainWrapper' | 'input' | 'clearButton' | 'helperWrapper' | 'description' | 'errorMessage', string>>
   /** 自定义字段 验证规则 */
   rules?: ValidationRule[]
   /** 自定义字段 输入框宽度 */
   width?: string
   /** 自定义字段 输入框高度 */
   height?: string
+  /** 自动补全 */
+  autoComplete?: string
 }
 
 /**

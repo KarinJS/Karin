@@ -3,11 +3,11 @@ import {
   Accordion as HeroAccordion,
   AccordionItem as HeroAccordionItem
 } from '@heroui/accordion'
-import { Input, InputGroup } from './inputs'
-import { Switch } from './switchs'
-import { Divider } from './dividers'
-import { RadioGroup } from './radioGroups'
-import { CheckboxGroup } from './checkboxs'
+import { createInput, createInputGroup } from './inputs'
+import { createSwitch } from './switchs'
+import { createDivider } from './dividers'
+import { createRadioGroup } from './radioGroups'
+import { createCheckboxGroup } from './checkboxs'
 import type { JSX } from 'react'
 import type { AccordionProProps } from 'node-karin'
 
@@ -22,7 +22,7 @@ export const AccordionPro = (
   props: AccordionProProps,
   result: Record<string, any>
 ): JSX.Element => {
-  let { componentType: _, key, data, label, className, children, ...options } = props
+  const { componentType: _, key, data, label, className, children, ...options } = props
   const [forceKey, setForceKey] = useState(0)
 
   const handleDeleteItem = (index: number) => {
@@ -50,7 +50,7 @@ export const AccordionPro = (
 
       if (options.componentType === 'input') {
         const opt = { ...options, key: strKey, defaultValue: data[i][options.key] || options.defaultValue }
-        return Input(opt, {}, (value) => {
+        return createInput(opt, {}, (value) => {
           data[i][options.key] = value
           if (!result[key][i]) result[key][i] = {}
           result[key][i][options.key] = value
@@ -59,7 +59,7 @@ export const AccordionPro = (
 
       if (options.componentType === 'switch') {
         const opt = { ...options, key: strKey, defaultSelected: data[i][options.key] ?? options.defaultSelected }
-        return Switch(opt, {}, (value) => {
+        return createSwitch(opt, {}, (value) => {
           data[i][options.key] = value
           if (!result[key][i]) result[key][i] = {}
           result[key][i][options.key] = value
@@ -68,7 +68,7 @@ export const AccordionPro = (
 
       if (options.componentType === 'radio-group') {
         const opt = { ...options, key: strKey, defaultValue: data[i][options.key] ?? options.defaultValue }
-        return RadioGroup(opt, {}, (value) => {
+        return createRadioGroup(opt, {}, (value) => {
           data[i][options.key] = value
           if (!result[key][i]) result[key][i] = {}
           result[key][i][options.key] = value
@@ -78,7 +78,7 @@ export const AccordionPro = (
       if (options.componentType === 'checkbox-group') {
         const opt = { ...options, key: strKey, checkbox: data[i][options.key] ?? options.checkbox }
         if (!result[key][i]) result[key][i] = {}
-        return CheckboxGroup(opt, {}, (subKey, value) => {
+        return createCheckboxGroup(opt, {}, (subKey, value) => {
           data[i][options.key][subKey] = value
           if (!result[key][i][options.key]) {
             result[key][i][options.key] = {}
@@ -89,12 +89,12 @@ export const AccordionPro = (
       }
 
       if (options.componentType === 'divider') {
-        return Divider({ ...options, key: strKey })
+        return createDivider({ ...options, key: strKey })
       }
 
       if (options.componentType === 'input-group') {
         const opt = { ...options, key: strKey }
-        return InputGroup(opt, {}, (index, value, type) => {
+        return createInputGroup(opt, {}, (index, value, type) => {
           if (type === 'add') {
             data[i][options.key][index] = value
             if (!result[key][i]) result[key][i] = {}
@@ -104,7 +104,6 @@ export const AccordionPro = (
             if (!result[key][i]) result[key][i] = {}
             result[key][i][options.key].splice(index, 1)
           }
-
         }, result[key][i][options.key])
       }
 
@@ -117,10 +116,10 @@ export const AccordionPro = (
         key={`${key}-accordion-item-${i}-${forceKey}`}
         textValue={data[i].title || childrenOptions.title || '默认标题'}
         title={
-          <div className="flex justify-between items-center w-full pr-4">
+          <div className='flex justify-between items-center w-full pr-4'>
             <span>{data[i].title || childrenOptions.title || '默认标题'}</span>
             <div
-              role="button"
+              role='button'
               tabIndex={0}
               onClick={(e) => {
                 e.stopPropagation()
@@ -133,14 +132,14 @@ export const AccordionPro = (
                   handleDeleteItem(i)
                 }
               }}
-              className="px-2 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors cursor-pointer"
+              className='px-2 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors cursor-pointer'
             >
               删除
             </div>
           </div>
         }
       >
-        <div className="flex flex-col gap-4">
+        <div className='flex flex-col gap-4'>
           {heroui}
         </div>
       </HeroAccordionItem>
@@ -149,10 +148,10 @@ export const AccordionPro = (
 
   return (
     <div className={className || 'flex flex-col gap-4 w-full'}>
-      <div className="flex justify-between items-center">
-        <span className="text-default-500 text-md">{label}</span>
+      <div className='flex justify-between items-center'>
+        <span className='text-default-500 text-md'>{label}</span>
         <button
-          type="button"
+          type='button'
           onClick={() => {
             data.push({
               ...JSON.parse(JSON.stringify(data[0])),
@@ -160,21 +159,19 @@ export const AccordionPro = (
             })
             setForceKey(prev => prev + 1)
           }}
-          className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          className='px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
         >
           添加新卡片
         </button>
       </div>
       <HeroAccordion
         key={`${key}-accordion-${forceKey}`}
-        className="border border-default-200 rounded-lg p-1"
+        className='border border-default-200 rounded-lg p-1'
         {...options}
-        keepContentMounted={true}
+        keepContentMounted
       >
         {list}
       </HeroAccordion>
     </div>
   )
 }
-
-

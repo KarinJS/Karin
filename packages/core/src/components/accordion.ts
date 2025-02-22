@@ -1,4 +1,4 @@
-import { Children } from '@/types/components/all'
+import { Children } from '@/types/components/joint'
 import type { AccordionItemProps, AccordionProps, AccordionProProps } from '@/types/components'
 
 /**

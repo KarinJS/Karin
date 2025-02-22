@@ -1,11 +1,11 @@
-import { Input, InputGroup } from './inputs'
+import { createInput, createInputGroup } from './inputs'
 import { createResult } from './utils'
-import { Switch } from './switchs'
-import { CheckboxGroup } from './checkboxs'
-import { RadioGroup } from './radioGroups'
+import { createSwitch } from './switchs'
+import { createCheckboxGroup } from './checkboxs'
+import { createRadioGroup } from './radioGroups'
 import { Accordion } from './accordions'
 import { AccordionPro } from './accordions-pro'
-import { Divider } from './dividers'
+import { createDivider } from './dividers'
 
 import type { JSX } from 'react'
 import type { ComponentConfig, Result } from './types'
@@ -46,19 +46,19 @@ export function renders (
 
   options.forEach(item => {
     if (item.componentType === 'input') {
-      return list.push(Input(item, proxy as Result<'input'>))
+      return list.push(createInput(item, proxy as Result<'input'>))
     }
 
     if (item.componentType === 'switch') {
-      return list.push(Switch(item, proxy as Result<'switch'>))
+      return list.push(createSwitch(item, proxy as Result<'switch'>))
     }
 
     if (item.componentType === 'checkbox-group') {
-      return list.push(CheckboxGroup(item, proxy as Result<'checkbox'>))
+      return list.push(createCheckboxGroup(item, proxy as Result<'checkbox'>))
     }
 
     if (item.componentType === 'radio-group') {
-      return list.push(RadioGroup(item, proxy as Result<'radio'>))
+      return list.push(createRadioGroup(item, proxy as Result<'radio'>))
     }
 
     if (item.componentType === 'accordion') {
@@ -70,11 +70,11 @@ export function renders (
     }
 
     if (item.componentType === 'divider') {
-      return list.push(Divider(item))
+      return list.push(createDivider(item))
     }
 
     if (item.componentType === 'input-group') {
-      return list.push(InputGroup(item, proxy as Result<'input-group'>))
+      return list.push(createInputGroup(item, proxy as Result<'input-group'>))
     }
 
     console.log(`[未知组件] ${item}`)
@@ -85,7 +85,7 @@ export function renders (
 
 /**
  * 动态组件渲染器
- * @param props - 组件属性  
+ * @param props - 组件属性
  * @returns 渲染后的组件
  */
 export const DynamicRender = (
@@ -94,10 +94,10 @@ export const DynamicRender = (
   const { list } = renders(configs, onChange, values)
 
   return (
-    <div className="w-full">
-      <div className="flex flex-wrap gap-4 w-full">
+    <div className='w-full'>
+      <div className='flex flex-wrap gap-4 w-full'>
         {list.map((item, index) => (
-          <div key={`dynamic-component-${index}-${item.key || ''}`} className="w-full">
+          <div key={`dynamic-component-${index}-${item.key || ''}`} className='w-full'>
             {item}
           </div>
         ))}

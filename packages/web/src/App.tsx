@@ -15,6 +15,8 @@ import AboutPage from '@/pages/dashboard/about'
 // ----------
 // Login Page
 import LoginPage from '@/pages/login'
+// Test Page
+import TestCanvas from '@/pages/dashboard/test'
 import ChatDetail from '@/pages/dashboard/sandbox/chat/detail'
 import DefaultPage from '@/components/default_page'
 import FriendRequest from '@/pages/dashboard/sandbox/contact/friend_request'
@@ -27,33 +29,35 @@ import RequireAuth from '@/components/auth/RequireAuth'
 function App () {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
+      <Route path='/login' element={<LoginPage />} />
       <Route
         element={
           <RequireAuth>
             <DashboardLayout />
           </RequireAuth>
         }
-        path="/"
+        path='/'
       >
-        <Route element={<IndexPage />} path="" />
-        <Route element={<ConfigPage />} path="/config" />
-        <Route element={<PluginMarketPage />} path="/plugins" />
-        <Route element={<SandboxPage />} path="/sandbox">
-          <Route element={<Navigate to="/sandbox/chat" />} path="" />
-          <Route path="chat">
-            <Route element={<DefaultPage />} path="" />
-            <Route element={<ChatDetail />} path=":type/:id" />
+        <Route element={<IndexPage />} path='' />
+        <Route element={<ConfigPage />} path='/config' />
+        <Route element={<PluginMarketPage />} path='/plugins' />
+        {/* <Route element={<PluginConfigPage />} path="/plugins/:name/config" /> */}
+        <Route element={<TestCanvas />} path='/test' />
+        <Route element={<SandboxPage />} path='/sandbox'>
+          <Route element={<Navigate to='/sandbox/chat' />} path='' />
+          <Route path='chat'>
+            <Route element={<DefaultPage />} path='' />
+            <Route element={<ChatDetail />} path=':type/:id' />
           </Route>
-          <Route path="contact/*">
-            <Route element={<DefaultPage />} path="" />
-            <Route element={<FriendRequest />} path="friend_request" />
-            <Route element={<GroupNotice />} path="group_notice" />
-            <Route element={<UserDetail />} path=":id" />
+          <Route path='contact/*'>
+            <Route element={<DefaultPage />} path='' />
+            <Route element={<FriendRequest />} path='friend_request' />
+            <Route element={<GroupNotice />} path='group_notice' />
+            <Route element={<UserDetail />} path=':id' />
           </Route>
-          <Route element={<GroupChatTest />} path="group" />
+          <Route element={<GroupChatTest />} path='group' />
         </Route>
-        <Route element={<AboutPage />} path="/about" />
+        <Route element={<AboutPage />} path='/about' />
       </Route>
     </Routes>
   )

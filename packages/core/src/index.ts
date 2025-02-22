@@ -1,4 +1,4 @@
-export * from '@/service/debug'
+import '@/service/debug'
 import dotenv from 'dotenv'
 import root from '@/root'
 import { createInnerLogger } from '@/utils/logger'
@@ -10,6 +10,7 @@ import { printStartLog } from './service/start'
 import { Client, createLevelDB, createRedis } from '@/core/db'
 import { initRender } from '@/adapter/render'
 import { initOneBot } from '@/adapter/onebot'
+export * from '@/service/debug'
 
 export * from '@/root'
 export * from '@/service'

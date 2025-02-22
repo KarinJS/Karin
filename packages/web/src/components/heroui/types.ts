@@ -1,3 +1,4 @@
+/* eslint-disable @stylistic/indent */
 import type {
   InputProps,
   SwitchProps,
@@ -102,12 +103,12 @@ export type Result<T extends string> = T extends 'input' ? InputResult
 
 /** 组件配置类型 */
 export type ComponentConfig =
-  | (InputProps & { componentType: 'input' })
-  | (SwitchProps & { componentType: 'switch' })
-  | (RadioGroupProps & { componentType: 'radio-group' })
-  | (CheckboxGroupProps & { componentType: 'checkbox-group' })
-  | (AccordionProps & { componentType: 'accordion' })
-  | (AccordionProProps & { componentType: 'accordion-pro' })
-  | (AccordionItemProps & { componentType: 'accordion-item' })
-  | (DividerProps & { componentType: 'divider' })
-  | (InputGroupProps & { componentType: 'input-group' })
+  InputProps |
+  SwitchProps |
+  RadioGroupProps |
+  CheckboxGroupProps |
+  AccordionProps |
+  AccordionProProps |
+  AccordionItemProps |
+  DividerProps |
+  InputGroupProps

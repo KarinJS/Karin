@@ -3,6 +3,7 @@ import type { InputGroupProps, InputProps } from './input'
 import type { SwitchProps } from './switch'
 import type { CheckboxProps, CheckboxGroupProps } from './checkbox'
 import type { RadioGroupProps } from './radioGroup'
+import type { AccordionItemProps, AccordionProProps, AccordionProps } from './accordion'
 
 export type Children = InputProps
   | SwitchProps
@@ -11,3 +12,15 @@ export type Children = InputProps
   | CheckboxGroupProps
   | RadioGroupProps
   | InputGroupProps
+
+/** 组件配置类型 */
+export type ComponentConfig =
+  InputProps |
+  SwitchProps |
+  RadioGroupProps |
+  CheckboxGroupProps |
+  AccordionProps |
+  AccordionProProps |
+  AccordionItemProps |
+  DividerProps |
+  InputGroupProps

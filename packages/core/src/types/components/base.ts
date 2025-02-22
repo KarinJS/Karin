@@ -34,4 +34,6 @@ export interface ComponentProps {
   description?: string
   /** 每个渲染的组件都包裹了一个div，这里可以自定义这个div的className */
   className?: string
+  /** 组件本身的className */
+  componentClassName?: string
 }

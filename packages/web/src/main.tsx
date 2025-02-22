@@ -1,3 +1,4 @@
+import { scan } from 'react-scan'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
@@ -7,17 +8,15 @@ import '@/styles/globals.scss'
 
 if (import.meta.env.MODE === 'development') {
   if (typeof window !== 'undefined') {
-    import('react-scan').then(({ scan }) => {
-      scan({
-        log: true,
-      })
+    scan({
+      log: false,
     })
   }
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter basename="/web/">
+    <BrowserRouter basename='/web/'>
       <Provider>
         <App />
       </Provider>

@@ -2,11 +2,11 @@ import {
   Accordion as HeroAccordion,
   AccordionItem as HeroAccordionItem
 } from '@heroui/accordion'
-import { Input, InputGroup } from './inputs'
-import { Switch } from './switchs'
-import { Divider } from './dividers'
-import { RadioGroup } from './radioGroups'
-import { CheckboxGroup } from './checkboxs'
+import { createInput, createInputGroup } from './inputs'
+import { createSwitch } from './switchs'
+import { createDivider } from './dividers'
+import { createRadioGroup } from './radioGroups'
+import { createCheckboxGroup } from './checkboxs'
 import type { JSX } from 'react'
 import type { AccordionProps, AccordionKV } from 'node-karin'
 /**
@@ -48,7 +48,6 @@ export const Accordion = (
       }
       if (child.componentType === 'input-group') {
         kv[child.key] = child.data
-        return
       }
     })
     result[key].push(kv as AccordionKV)
@@ -56,58 +55,58 @@ export const Accordion = (
 
   return (
     <div className={className || 'flex flex-col gap-4 w-full'}>
-      <div className="flex justify-between items-center">
-        <span className="text-default-500 text-md">{label}</span>
+      <div className='flex justify-between items-center'>
+        <span className='text-default-500 text-md'>{label}</span>
       </div>
       <HeroAccordion
         key={key}
-        className="border border-default-200 rounded-lg p-1"
+        className='border border-default-200 rounded-lg p-1'
         {...options}
-        keepContentMounted={true}
+        keepContentMounted
       >
         {children.map(({ componentType, key: childrenKey, children: itemChildren, ...item }, index) => {
           if (
-            componentType !== 'accordion-item'
-            || !Array.isArray(itemChildren)
+            componentType !== 'accordion-item' ||
+            !Array.isArray(itemChildren)
           ) return null
           return (
             <HeroAccordionItem
               key={childrenKey}
               {...item}
             >
-              <div className="flex flex-col gap-4">
+              <div className='flex flex-col gap-4'>
                 {itemChildren.map((options) => {
                   if (options.componentType === 'input') {
-                    return Input(options, {}, (value) => {
+                    return createInput(options, {}, (value) => {
                       result[key][index][options.key] = value
                     })
                   }
 
                   if (options.componentType === 'switch') {
-                    return Switch(options, {}, (value) => {
+                    return createSwitch(options, {}, (value) => {
                       result[key][index][options.key] = value
                     })
                   }
 
                   if (options.componentType === 'radio-group') {
-                    return RadioGroup(options, {}, (value) => {
+                    return createRadioGroup(options, {}, (value) => {
                       result[key][index][options.key] = value
                     })
                   }
 
                   if (options.componentType === 'checkbox-group') {
                     result[key][index][options.key] = {}
-                    return CheckboxGroup(options, {}, (subKey, value) => {
+                    return createCheckboxGroup(options, {}, (subKey, value) => {
                       result[key][index][options.key][subKey] = value
                     })
                   }
 
                   if (options.componentType === 'divider') {
-                    return Divider(options)
+                    return createDivider(options)
                   }
 
                   if (options.componentType === 'input-group') {
-                    return InputGroup(options, {}, (i, value, type) => {
+                    return createInputGroup(options, {}, (i, value, type) => {
                       if (type === 'add') {
                         result[key][index][options.key][i] = value
                         result[key][index][options.key] = result[key][index][options.key].map(String)
@@ -125,5 +124,3 @@ export const Accordion = (
     </div>
   )
 }
-
-

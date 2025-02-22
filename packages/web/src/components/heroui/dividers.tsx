@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { Divider as HeroDivider } from '@heroui/divider'
 import type { JSX } from 'react'
 import type { DividerProps } from 'node-karin'
@@ -7,11 +8,12 @@ import type { DividerProps } from 'node-karin'
  * @param props - 分割线属性
  * @returns 渲染后的分割线组件
  */
-export const Divider = (props: DividerProps): JSX.Element => {
+export const createDivider = (props: DividerProps): JSX.Element => {
   const {
     componentType: _,
     key,
-    className,
+    className: __,
+    componentClassName,
     transparent,
     description,
     orientation = 'horizontal',
@@ -22,12 +24,14 @@ export const Divider = (props: DividerProps): JSX.Element => {
   // 纵向分割线直接返回原始组件
   if (orientation === 'vertical') {
     return (
-      <HeroDivider
-        key={key}
-        className={`${transparent ? 'opacity-0' : ''} ${className || ''}`}
-        orientation="vertical"
-        {...options}
-      />
+      <Fragment key={`${key}-Fragment`}>
+        <HeroDivider
+          key={key}
+          className={`${transparent ? 'opacity-0' : ''} ${componentClassName || ''}`}
+          orientation='vertical'
+          {...options}
+        />
+      </Fragment>
     )
   }
 
@@ -37,26 +41,28 @@ export const Divider = (props: DividerProps): JSX.Element => {
     const rightWidth = `w-[${100 - descPosition}%]`
 
     return (
-      <div key={key} className={`${transparent ? 'opacity-0' : ''} ${className || ''} flex items-center`}>
-        <div className={leftWidth}>
-          <HeroDivider {...options} />
+      <Fragment key={`${key}-Fragment`}>
+        <div key={key} className={`${transparent ? 'opacity-0' : ''} ${componentClassName || ''} flex items-center`}>
+          <div className={leftWidth}>
+            <HeroDivider {...options} />
+          </div>
+          <span className='px-4 text-gray-500 shrink-0'>{description}</span>
+          <div className={rightWidth}>
+            <HeroDivider {...options} />
+          </div>
         </div>
-        <span className="px-4 text-gray-500 shrink-0">{description}</span>
-        <div className={rightWidth}>
-          <HeroDivider {...options} />
-        </div>
-      </div>
+      </Fragment>
     )
   }
 
   return (
-    <HeroDivider
-      key={key}
-      className={`${transparent ? 'opacity-0' : ''} ${className || ''}`}
-      orientation="horizontal"
-      {...options}
-    />
+    <Fragment key={`${key}-Fragment`}>
+      <HeroDivider
+        key={key}
+        className={`${transparent ? 'opacity-0' : ''} ${componentClassName || ''}`}
+        orientation='horizontal'
+        {...options}
+      />
+    </Fragment>
   )
 }
-
-

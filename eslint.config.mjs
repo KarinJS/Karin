@@ -1,5 +1,4 @@
 import neostandard from 'neostandard'
-import prettier from 'eslint-plugin-prettier'
 
 /** 尾随逗号 */
 const commaDangle = val => {
@@ -28,13 +27,6 @@ const ignores = [
 const options = neostandard({
   ts: true,
   ignores,
-  globals: ['logger'],
-  plugins: {
-    prettier,
-  },
-  rules: {
-    'prettier/prettier': 'error',
-  },
 }).map(commaDangle)
 
 export default options
