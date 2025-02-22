@@ -3,7 +3,7 @@ import { Form } from '@heroui/form'
 import { Card } from '@heroui/card'
 import { Button } from '@heroui/button'
 import { Avatar } from '@heroui/avatar'
-import { Input as HeroInput } from '@heroui/input'
+import { toast } from 'react-hot-toast'
 import { ConfigDetailModal, BUTTON_COMMON_STYLES } from './printConfig'
 import { Accordion as HeroAccordion, AccordionItem as HeroAccordionItem } from '@heroui/accordion'
 import { createInput, createInputGroup } from '@/components/heroui/inputs'
@@ -164,8 +164,30 @@ export const DashboardPage = () => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
+      toast.error(Object.entries(newErrors).map(([key, msg]) => `${key}: ${msg}`).join('\n'))
       return null
     }
+
+    /**
+     * 处理手风琴
+     * tips: 讨厌手风琴...
+     */
+    Object.entries(result).forEach(([key, value]) => {
+      if (key.includes('accordion:') || key.includes('accordion-pro:')) {
+        delete result[key]
+        const [_, index, sourceKey] = key.split(':')
+        if (!result[sourceKey]) {
+          result[sourceKey] = []
+        }
+        /** 不要用切割出来的，可能会有笨比传个:::这样的 */
+        const subKey = key.replace(`${_}:${index}:${sourceKey}`, '')
+        if (!result[sourceKey][index]) {
+          result[sourceKey][index] = {}
+        }
+
+        result[sourceKey][index][subKey] = value
+      }
+    })
 
     return result
   }
@@ -188,11 +210,17 @@ export const DashboardPage = () => {
 
   /**
    * 渲染配置组件
+   * @param options - 配置组件
+   * @param createResultFnc - 创建结果函数
+   * @param subKey - 子键
+   * @param disableAccordionRecursion - 禁止递归渲染
+   * @returns 配置组件
    */
   const renderConfig = (
     options: ComponentConfig[],
     createResultFnc: CreateResultFnc,
-    subKey?: string
+    subKey?: string,
+    disableAccordionRecursion: boolean = false
   ) => {
     const list: JSX.Element[] = []
 
@@ -259,6 +287,11 @@ export const DashboardPage = () => {
 
       /** 手风琴 */
       if (val.componentType === 'accordion') {
+        if (disableAccordionRecursion) {
+          console.error('[accordion] 不允许递归渲染')
+          return null
+        }
+
         const { componentType: _, key, className, componentClassName, label, children = [], ...options } = val
 
         return list.push(
@@ -278,11 +311,20 @@ export const DashboardPage = () => {
                 }
 
                 return (
-                  <HeroAccordionItem {...item} key={item.key}>
-                    {renderConfig(item.children as ComponentConfig[], createResultFnc, `accordion:${index}:`)}
+                  <HeroAccordionItem
+                    {...item}
+                    key={item.key}
+                    textValue={`textValue-${item.key}-${index}`}
+                  >
+                    {renderConfig(
+                      item.children as ComponentConfig[],
+                      createResultFnc,
+                      `accordion:${index}:${key}:`,
+                      true
+                    )}
                   </HeroAccordionItem>
                 )
-              })}
+              }).filter(Boolean)}
             </HeroAccordion>
           </div>
         )
