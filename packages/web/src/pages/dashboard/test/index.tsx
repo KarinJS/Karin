@@ -11,7 +11,7 @@ import { createDivider } from '@/components/heroui/dividers'
 import { createSwitch } from '@/components/heroui/switchs'
 import { createRadioGroup } from '@/components/heroui/radioGroups'
 
-import type { ComponentConfig } from 'node-karin'
+import type { CheckboxGroupProps, ComponentConfig } from 'node-karin'
 import { createCheckboxGroup } from '@/components/heroui/checkboxs'
 
 type CreateResultFnc = (key: string, value: (v: string, k: string) => void) => void
@@ -103,6 +103,25 @@ const input: ComponentConfig[] = [
       placeholder: '请输入您的爱好',
       type: 'text'
     }
+  },
+  {
+    componentType: 'accordion',
+    label: '爱好',
+    key: 'hobby-accordion',
+    children: [
+      {
+        componentType: 'accordion-item',
+        key: 'hobby-accordion-item',
+        children: [
+          {
+            componentType: 'input',
+            label: '爱好',
+            key: 'accordion-input',
+            isRequired: true,
+          }
+        ]
+      }
+    ]
   }
 ]
 
@@ -173,7 +192,7 @@ export const DashboardPage = () => {
   const renderConfig = (
     options: ComponentConfig[],
     createResultFnc: CreateResultFnc,
-    customCreateResultFnc?: () => void,
+    subKey?: string
   ) => {
     const list: JSX.Element[] = []
 
@@ -185,79 +204,88 @@ export const DashboardPage = () => {
 
       /** 输入框 */
       if (val.componentType === 'input') {
-        if (customCreateResultFnc) {
-          customCreateResultFnc()
-        } else {
-          createResultFnc(val.key, (value: string) => {
-            result[val.key] = value
-          })
-        }
-        return list.push(createInput(val))
+        const k = subKey ? `${subKey}${val.key}` : val.key
+        createResultFnc(k, (value: string) => {
+          result[k] = value
+        })
+        return list.push(createInput({ ...val, key: k }))
       }
 
       /** 开关 */
       if (val.componentType === 'switch') {
-        if (customCreateResultFnc) {
-          customCreateResultFnc()
-        } else {
-          createResultFnc(val.key, (value: string) => {
-            result[val.key] = value
-          })
-        }
+        createResultFnc(val.key, (value: string) => {
+          result[val.key] = value
+        })
         return list.push(createSwitch(val))
       }
 
       /** 单选框组 */
       if (val.componentType === 'radio-group') {
-        if (customCreateResultFnc) {
-          customCreateResultFnc()
-        } else {
-          createResultFnc(val.key, (value: string, key: string) => {
-            result[val.key] = value
-          })
-        }
-        return list.push(createRadioGroup(val))
+        const k = subKey ? `${subKey}${val.key}` : val.key
+        createResultFnc(k, (value: string) => {
+          result[k] = value
+        })
+        return list.push(createRadioGroup({ ...val, key: k }))
       }
 
       /** 复选框组 */
       if (val.componentType === 'checkbox-group') {
-        if (customCreateResultFnc) {
-          customCreateResultFnc()
-        } else {
-          val.checkbox.forEach(v => {
-            createResultFnc(v.key, (value: string, k: string) => {
-              if (!result[val.key]) {
-                result[val.key] = {}
-                val.checkbox.forEach(v => {
-                  result[val.key][v.key] = v.defaultSelected ?? false
-                })
-              }
-              result[val.key][k] = !!value
-            })
+        const option: CheckboxGroupProps = val
+        val.checkbox.forEach((v, index) => {
+          const k = subKey ? `${subKey}${val.key}` : v.key
+          createResultFnc(k, (value: string, sourceKey: string) => {
+            if (!result[val.key]) {
+              result[val.key] = {}
+              val.checkbox.forEach(v => {
+                result[val.key][k] = v.defaultSelected ?? false
+              })
+            }
+            result[val.key][sourceKey] = !!value
           })
-        }
-        return list.push(createCheckboxGroup(val))
+          option.checkbox[index] = { ...v, key: k }
+        })
+        return list.push(createCheckboxGroup(option))
       }
 
       /** 输入框组 */
       if (val.componentType === 'input-group') {
-        if (customCreateResultFnc) {
-          customCreateResultFnc()
-        } else {
-          createResultFnc(val.key, (value: string) => {
-            if (!result[val.key]) result[val.key] = []
-            result[val.key] = JSON.parse(value)
-          })
-          // val.data.forEach((v, index) => {
-          //   createResultFnc(`input-group-${val.key}-${index}`, (value: string, key: string) => {
-          //     if (!result[val.key]) result[val.key] = []
-          //     const i = Number(key.split('-').filter(Boolean).pop())
-          //     result[val.key][i] = value
-          //     result[val.key] = result[val.key].map((v: unknown) => String(v))
-          //   })
-          // })
-        }
-        return list.push(createInputGroup(val))
+        const k = subKey ? `${subKey}${val.key}` : val.key
+        createResultFnc(k, (value: string) => {
+          if (!result[k]) result[k] = []
+          result[k] = JSON.parse(value)
+        })
+        return list.push(createInputGroup({ ...val, key: k }))
+      }
+
+      /** 手风琴 */
+      if (val.componentType === 'accordion') {
+        const { componentType: _, key, className, componentClassName, label, children = [], ...options } = val
+
+        return list.push(
+          <div className={className || 'flex flex-col gap-4 w-full'} key={key}>
+            <div className='flex justify-between items-center'>
+              <span className='text-default-500 text-md'>{label}</span>
+            </div>
+            <HeroAccordion
+              key={key}
+              className='border border-default-200 rounded-lg p-1'
+              {...options}
+              keepContentMounted
+            >
+              {children.map((item, index) => {
+                if (item.componentType !== 'accordion-item') {
+                  return null
+                }
+
+                return (
+                  <HeroAccordionItem {...item} key={item.key}>
+                    {renderConfig(item.children as ComponentConfig[], createResultFnc, `accordion:${index}:`)}
+                  </HeroAccordionItem>
+                )
+              })}
+            </HeroAccordion>
+          </div>
+        )
       }
     })
 
@@ -315,43 +343,6 @@ export const DashboardPage = () => {
         >
           <div className='mb-4 px-6 py-4 w-full min-w-[500px]'>
             {renderConfig(input, createResultFnc)}
-            <HeroAccordion
-              key='accordion'
-              className='w-full'
-            >
-              <HeroAccordionItem title='手风琴测试项1'>
-                {(() => {
-                  const key = 'accordion'
-                  const itemKey = 'accordion-input'
-                  const index = 0
-                  createResultFnc(itemKey, (value: string) => {
-                    if (!result[key]) result[key] = []
-                    if (!result[key][index]) result[key][index] = {}
-                    result[key][index][itemKey] = value
-                  })
-                  return (
-                    <React.Fragment key={itemKey}>
-                      <HeroInput
-                        name={itemKey}
-                        label='姓名'
-                        placeholder='请输入您的姓名'
-                        type='text'
-                        isRequired
-                      />
-                    </React.Fragment>
-                  )
-                })()}
-              </HeroAccordionItem>
-              <HeroAccordionItem title='手风琴测试项2'>
-                <HeroInput
-                  label='密码'
-                  key='password'
-                  placeholder='请输入您的密码'
-                  type='password'
-                  defaultValue='123456'
-                />
-              </HeroAccordionItem>
-            </HeroAccordion>
           </div>
         </Form>
       </Card>
