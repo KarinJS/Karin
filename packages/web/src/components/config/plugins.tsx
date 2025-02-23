@@ -261,7 +261,7 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
             {data.map((item, index) => {
               const props: ComponentConfig[] = []
               childrenConfig.forEach(v => {
-                if (!item[v.key]) return
+                if (typeof item[v.key] === 'undefined') return
                 if (
                   v.componentType === 'input' ||
                   v.componentType === 'checkbox-group' ||
