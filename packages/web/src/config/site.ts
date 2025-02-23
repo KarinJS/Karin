@@ -5,7 +5,28 @@ import { BsWindowSidebar } from 'react-icons/bs'
 import { request } from '@/lib/request'
 
 import type { LocalApiResponse } from 'node-karin'
-export type SiteConfig = typeof siteConfig
+
+export interface NavItem {
+  Icon: React.ComponentType
+  label: string
+  href: string
+  children?: {
+    label?: string
+    href: string
+    icon?: {
+      name?: string
+      size?: number
+      color?: string
+    }
+    type?: 'git' | 'npm' | 'app'
+  }[]
+}
+
+export interface SiteConfigType {
+  name: string
+  description: string
+  navItems: NavItem[]
+}
 
 /**
  * 获取已安装的插件列表
@@ -20,7 +41,7 @@ const getInstalledPlugins = async () => {
   }))
 }
 
-export const siteConfig = {
+const defaultSiteConfig: SiteConfigType = {
   name: 'KarinJS WebUI',
   description: 'KarinJS WebUI.',
   navItems: [
@@ -43,7 +64,7 @@ export const siteConfig = {
       Icon: MdExtension,
       label: '插件配置',
       href: '/plugins',
-      children: await getInstalledPlugins(),
+      children: [],
     },
     // {
     //   Icon: FiCodesandbox,
@@ -56,4 +77,15 @@ export const siteConfig = {
       href: '/about',
     },
   ],
+}
+
+export const siteConfig: SiteConfigType = { ...defaultSiteConfig }
+
+export const initSiteConfig = async () => {
+  const plugins = await getInstalledPlugins()
+  const pluginConfigIndex = siteConfig.navItems.findIndex(item => item.href === '/plugins')
+  if (pluginConfigIndex !== -1) {
+    siteConfig.navItems[pluginConfigIndex].children = plugins
+  }
+  return siteConfig
 }

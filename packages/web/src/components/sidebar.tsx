@@ -1,7 +1,7 @@
-import { siteConfig } from '@/config/site'
+import { siteConfig, initSiteConfig } from '@/config/site'
 import clsx from 'clsx'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaChevronRight } from 'react-icons/fa6'
 import { ThemeSwitch } from '@/components/theme-switch.tsx'
@@ -78,9 +78,20 @@ export default function Sidebar () {
   )
   const [show, setShow] = useState(true)
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const isNotSmallScreen = useMediaQuery({ minWidth: 768 })
   const location = useLocation()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    initSiteConfig().then(() => {
+      setIsLoading(false)
+    })
+  }, [])
+
+  if (isLoading) {
+    return null
+  }
 
   return (
     <motion.div className='h-full fixed md:relative z-50'>

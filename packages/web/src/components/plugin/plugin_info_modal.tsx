@@ -63,7 +63,6 @@ export function PluginInfoModal ({
   onUpdate,
   onUninstall,
   onViewApps,
-  onViewConfig
 }: PluginInfoModalProps) {
   const showViewApps = plugin.type.toLowerCase() === 'app' && onViewApps
   const [taskId, setTaskId] = useState<string>('')
