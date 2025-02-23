@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.9](https://github.com/KarinJS/Karin/compare/web-v1.3.8...web-v1.3.9) (2025-02-23)
+
+
+### 🐛 Bug Fixes
+
+* ... ([804090b](https://github.com/KarinJS/Karin/commit/804090b7191a636237831a9de552c97cc431159f))
+* 神经 ([9340d2b](https://github.com/KarinJS/Karin/commit/9340d2b6809f5440674a32fd4e89e30d90c8f088))
+
 ## [1.3.8](https://github.com/KarinJS/Karin/compare/web-v1.3.7...web-v1.3.8) (2025-02-23)
 
 
