@@ -34,7 +34,7 @@ jobs:
       - name: 设置 pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 9
         if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/create-karin--release_created'] || steps.release.outputs['packages/web--release_created'] }}
 
       # 安装所有依赖
