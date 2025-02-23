@@ -113,7 +113,7 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
       const response = await request.serverPost<Record<string, any>, Record<string, any>>(
         '/api/v1/plugin/config/save',
         {
-          name: info.name,
+          name: info.id,
           type: info.type,
           config: processedResult
         }
@@ -413,7 +413,7 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
             <Avatar src={info?.author?.[0]?.avatar || `https://avatar.vercel.sh/${info?.name || 'ikenxuan'}`} size='sm' radius='full' />
             <div className='flex flex-col ml-3'>
               <div className='text-sm font-medium text-default-900'>
-                {info.name || '插件名称'}
+                {`${info.name || '插件名称'}(${info.id})`}
               </div>
               <div className='text-xs text-default-500'>{info.description || '这个人很懒，什么都没写...'}</div>
             </div>

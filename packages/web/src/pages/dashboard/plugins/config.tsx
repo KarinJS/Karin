@@ -52,5 +52,5 @@ export default function PluginConfigPage () {
     return <div>加载中...</div>
   }
 
-  return <DashboardPage options={config.options} info={{ ...config.info, type, name }} />
+  return <DashboardPage options={config.options} info={{ ...config.info, type }} />
 }
