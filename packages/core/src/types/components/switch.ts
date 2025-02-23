@@ -29,4 +29,6 @@ export interface SwitchProps extends ComponentProps {
   isDisabled?: boolean
   /** 是否禁用动画 */
   disableAnimation?: boolean
+  /** 标签 */
+  label?: string
 }

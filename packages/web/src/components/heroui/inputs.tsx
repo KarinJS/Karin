@@ -66,9 +66,9 @@ export const createInputGroup = (props: InputGroupProps) => {
   const validator = template.rules ? createValidator(template.rules) : undefined
 
   /** 单行最多允许多少个输入框 */
-  const itemsPerRow = props.itemsPerRow || 3
+  const itemsPerRow = props.itemsPerRow || 5
   /** 最大显示行数 */
-  const maxRows = props.maxRows || 3
+  const maxRows = props.maxRows || 5
   /** 最大输入框数量 */
   const maxInputs = props.maxInputs ?? 100
 
@@ -116,7 +116,7 @@ export const createInputGroup = (props: InputGroupProps) => {
   const handleDeleteInput = (index: number) => {
     setDataVal(prev => prev.filter((_, i) => i !== index))
     setGroupValue(prev => prev.filter((_, i) => i !== index))
-    toast.success('已删除一个输入框')
+    toast.success(props.deleteSuccessTips || '删除成功')
   }
 
   return (
@@ -124,7 +124,7 @@ export const createInputGroup = (props: InputGroupProps) => {
       key={`div-${key}`}
       className={
         props.className ||
-        'w-full bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-gray-200 dark:border-gray-700 p-3 sm:p-4 transition-colors'
+        'w-full rounded-2xl p-3 sm:p-4 transition-colors'
       }
     >
       {/* 添加一个隐藏的输入框来存储整个组的值 */}
@@ -134,8 +134,8 @@ export const createInputGroup = (props: InputGroupProps) => {
         value={JSON.stringify(groupValue)}
       />
 
-      <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 mb-2'>
-        <div className='flex flex-col gap-0.5'>
+      <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2'>
+        <div className='flex flex-col'>
           <span className='text-default-500 text-md'>{props.label}</span>
           {props.description && (
             <p className='text-sm text-gray-500'>{props.description}</p>

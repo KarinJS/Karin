@@ -116,12 +116,14 @@ export interface InputGroupProps extends ComponentProps {
   label?: string
   /** 输入框模板 */
   template: InputProps
+  /** 数据 */
+  data: string[]
   /** 输入框一行最多显示多少个 默认3个 */
   itemsPerRow?: number
   /** 输入框最大显示多少行 超出后滚动 默认3行 */
   maxRows?: number
   /** 输入框最大输入框数量 默认100 0不限制 */
   maxInputs?: number
-  /** 数据 */
-  data: string[]
+  /** 删除输入框提示 默认: 删除成功 */
+  deleteSuccessTips?: string
 }

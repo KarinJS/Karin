@@ -27,7 +27,7 @@ export const createDivider = (props: DividerProps): JSX.Element => {
       <Fragment key={`${key}-Fragment`}>
         <HeroDivider
           key={key}
-          className={`${transparent ? 'opacity-0' : ''} ${componentClassName || ''}`}
+          className={`${transparent ? 'opacity-0' : ''} ${componentClassName || ''} my-2`}
           orientation='vertical'
           {...options}
         />
@@ -59,7 +59,7 @@ export const createDivider = (props: DividerProps): JSX.Element => {
     <Fragment key={`${key}-Fragment`}>
       <HeroDivider
         key={key}
-        className={`${transparent ? 'opacity-0' : ''} ${componentClassName || ''}`}
+        className={`${transparent ? 'opacity-0' : ''} ${componentClassName || ''} my-2`}
         orientation='horizontal'
         {...options}
       />

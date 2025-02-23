@@ -112,5 +112,5 @@ export interface AccordionProProps extends Omit<Accordion, 'children'> {
   /** 渲染数据 */
   data: Record<string, any>[]
   /** 子组件 pro只有一个 因为是模板 */
-  children?: Omit<AccordionItemProps, 'componentType'>
+  children: Omit<AccordionItemProps, 'componentType'>
 }

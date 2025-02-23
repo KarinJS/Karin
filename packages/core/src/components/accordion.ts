@@ -28,6 +28,7 @@ const createAccordionPro = (
   key,
   componentType: 'accordion-pro',
   data: config.data || [],
+  children: config.children!,
 })
 
 /**

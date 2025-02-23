@@ -21,16 +21,21 @@ export const createSwitch = (props: SwitchProps): JSX.Element => {
   } = props
 
   return (
-    <div className={className || 'flex items-center gap-2'} key={`div-${key}`}>
-      {startText && <span>{startText}</span>}
-      <HeroSwitch
-        key={key}
-        {...options}
-        name={key}
-        className={componentClassName}
-        defaultSelected={props.defaultSelected}
-      />
-      {endText && <span>{endText}</span>}
+    <div className='flex flex-col gap-2 mx-2' key={`div-${key}`}>
+      {props.label && <label className='block text-sm font-medium text-gray-700'>{props.label}</label>}
+      {props.description && <span className='text-xs text-gray-500'>{props.description}</span>}
+      <div className='flex items-center gap-2'>
+        {startText && <span>{startText}</span>}
+        <HeroSwitch
+          key={key}
+          {...options}
+          name={key}
+          className={componentClassName}
+          defaultSelected={props.defaultSelected}
+        >
+          {endText}
+        </HeroSwitch>
+      </div>
     </div>
   )
 }

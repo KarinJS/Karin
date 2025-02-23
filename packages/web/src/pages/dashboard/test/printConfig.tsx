@@ -111,6 +111,7 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
                 size='md'
                 onPress={() => {
                   console.log('配置详情:', print)
+                  toast.success('打印成功 请查看控制台')
                 }}
                 className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
                 startContent={<VscOutput className='text-lg' />}
@@ -123,6 +124,7 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
                 size='md'
                 onPress={() => {
                   console.log('配置详情:', JSON.stringify(print, null, 2))
+                  toast.success('打印成功 请查看控制台')
                 }}
                 className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
                 startContent={<VscSymbolString className='text-lg' />}

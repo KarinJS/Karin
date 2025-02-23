@@ -1,18 +1,19 @@
-import React, { type JSX } from 'react'
+import React from 'react'
 import { Form } from '@heroui/form'
 import { Card } from '@heroui/card'
 import { Button } from '@heroui/button'
 import { Avatar } from '@heroui/avatar'
 import { toast } from 'react-hot-toast'
+import { createCheckboxGroup } from '@/components/heroui/checkboxs'
 import { ConfigDetailModal, BUTTON_COMMON_STYLES } from './printConfig'
-import { Accordion as HeroAccordion, AccordionItem as HeroAccordionItem } from '@heroui/accordion'
 import { createInput, createInputGroup } from '@/components/heroui/inputs'
 import { createDivider } from '@/components/heroui/dividers'
 import { createSwitch } from '@/components/heroui/switchs'
 import { createRadioGroup } from '@/components/heroui/radioGroups'
+import { Accordion as HeroAccordion, AccordionItem as HeroAccordionItem } from '@heroui/accordion'
 
-import type { CheckboxGroupProps, ComponentConfig } from 'node-karin'
-import { createCheckboxGroup } from '@/components/heroui/checkboxs'
+import type { JSX } from 'react'
+import type { AccordionProProps, AccordionProps, CheckboxGroupProps, ComponentConfig } from 'node-karin'
 
 type CreateResultFnc = (key: string, value: (v: string, k: string) => void) => void
 
@@ -47,6 +48,22 @@ const input: ComponentConfig[] = [
     isRequired: true,
   },
   {
+    componentType: 'divider',
+    key: 'divider',
+  },
+  {
+    componentType: 'switch',
+    key: 'agree',
+    defaultSelected: true,
+    label: '用户协议',
+    description: '是否同意用户协议',
+
+  },
+  {
+    componentType: 'divider',
+    key: 'divider-11',
+  },
+  {
     componentType: 'radio-group',
     label: '性别',
     key: 'gender',
@@ -65,6 +82,10 @@ const input: ComponentConfig[] = [
         key: 'female'
       }
     ]
+  },
+  {
+    componentType: 'divider',
+    key: 'divider-1',
   },
   {
     componentType: 'checkbox-group',
@@ -92,10 +113,15 @@ const input: ComponentConfig[] = [
     ]
   },
   {
+    componentType: 'divider',
+    key: 'divider-2',
+  },
+  {
     componentType: 'input-group',
     label: '爱好',
     key: 'hobby-group',
-    data: ['篮球', '足球', '羽毛球'],
+    data: ['篮球', '足球', '羽毛球', '排球', '网球'],
+    description: '请输入您的爱好',
     template: {
       componentType: 'input',
       label: '爱好',
@@ -103,6 +129,10 @@ const input: ComponentConfig[] = [
       placeholder: '请输入您的爱好',
       type: 'text'
     }
+  },
+  {
+    componentType: 'divider',
+    key: 'divider-3',
   },
   {
     componentType: 'accordion',
@@ -118,10 +148,41 @@ const input: ComponentConfig[] = [
             label: '爱好',
             key: 'accordion-input',
             isRequired: true,
+            defaultValue: '篮球'
           }
         ]
       }
     ]
+  },
+  {
+    componentType: 'accordion-pro',
+    label: '手风琴pro',
+    key: 'accordion-pro',
+    data: [
+      {
+        'accordion-pro-name': '张三',
+        'accordion-pro-age': 18,
+      },
+      {
+        'accordion-pro-name': '李四',
+        'accordion-pro-age': 20,
+      }
+    ],
+    children: {
+      key: 'accordion-pro-item',
+      children: [
+        {
+          componentType: 'input',
+          label: '名称',
+          key: 'accordion-pro-name',
+        },
+        {
+          componentType: 'input',
+          label: '年龄',
+          key: 'accordion-pro-age',
+        }
+      ]
+    }
   }
 ]
 
@@ -129,7 +190,7 @@ const input: ComponentConfig[] = [
  * 动态渲染插件配置页面
  * @returns 仪表盘页面
  */
-export const DashboardPage = () => {
+export const DashboardPage = (configProps: ComponentConfig[]) => {
   let result: Record<string, any> = {}
   let newErrors: Record<string, string> = {}
   const list: Record<string, (v: string, k: string) => void> = {}
@@ -180,7 +241,7 @@ export const DashboardPage = () => {
           result[sourceKey] = []
         }
         /** 不要用切割出来的，可能会有笨比传个:::这样的 */
-        const subKey = key.replace(`${_}:${index}:${sourceKey}`, '')
+        const subKey = key.replace(`${_}:${index}:${sourceKey}:`, '')
         if (!result[sourceKey][index]) {
           result[sourceKey][index] = {}
         }
@@ -223,6 +284,172 @@ export const DashboardPage = () => {
     disableAccordionRecursion: boolean = false
   ) => {
     const list: JSX.Element[] = []
+
+    /**
+     * 构建手风琴
+     * @param val - 手风琴配置
+     * @returns 手风琴组件
+     */
+    const createAccordion = (val: AccordionProps) => {
+      if (disableAccordionRecursion) {
+        console.error('[accordion] 不允许递归渲染')
+        return null
+      }
+
+      const {
+        componentType: _,
+        key,
+        className,
+        componentClassName,
+        label,
+        children = [],
+        ...options
+      } = val
+      return list.push(
+        <div className={className || 'flex flex-col gap-4 w-full mx-2'} key={key}>
+          <div className='flex justify-between items-center'>
+            <span className='text-default-500 text-md mt-2'>{label || '手风琴'}</span>
+          </div>
+          <HeroAccordion
+            key={key}
+            className={componentClassName || 'border border-default-200 rounded-lg p-1'}
+            {...options}
+            keepContentMounted
+          >
+            {children.map(({
+              componentType: _,
+              key,
+              className,
+              componentClassName,
+              title,
+              subtitle,
+              children: childrenConfig,
+              ...itemOptions
+            }, index) => {
+              if (_ !== 'accordion-item') return null
+
+              return (
+                <HeroAccordionItem
+                  {...itemOptions}
+                  key={key}
+                  title={title || '手风琴默认标题'}
+                  subtitle={subtitle || '手风琴默认副标题'}
+                  className={componentClassName}
+                  textValue={`textValue-${key}-${index}`}
+                >
+                  {renderConfig(
+                    childrenConfig as ComponentConfig[],
+                    createResultFnc,
+                    `accordion:${index}:${key}:`,
+                    true
+                  )}
+                </HeroAccordionItem>
+              )
+            }).filter(Boolean)}
+          </HeroAccordion>
+        </div>
+      )
+    }
+
+    /**
+     * 构建手风琴pro
+     * @param val - 手风琴pro配置
+     * @returns 手风琴pro组件
+     */
+    const createAccordionPro = (val: AccordionProProps) => {
+      if (disableAccordionRecursion) {
+        console.error('[accordion] 不允许递归渲染')
+        return null
+      }
+
+      const {
+        componentType: _,
+        key,
+        className,
+        componentClassName,
+        label,
+        children,
+        data,
+        ...options
+      } = val
+
+      // 根据data来填充模板 形成对应的子组件children
+      const {
+        children: childrenConfig,
+        title,
+        subtitle,
+        className: childrenClassName,
+        componentClassName: childrenComponentClassName,
+        ...childrenOptions
+      } = children
+
+      return list.push(
+        <div className={className || 'flex flex-col gap-4 w-full mx-2'} key={`div-${key}`}>
+          <div className='flex justify-between items-center'>
+            <span className='text-default-500 text-md mt-2'>{label}</span>
+          </div>
+          <HeroAccordion
+            key={`accordion-pro-${key}`}
+            {...options}
+            className={componentClassName || 'border border-default-200 rounded-lg p-1'}
+            keepContentMounted
+          >
+            {data.map((item, index) => {
+              const props: ComponentConfig[] = []
+              childrenConfig.forEach(v => {
+                if (!item[v.key]) return
+                if (
+                  v.componentType === 'input' ||
+                  v.componentType === 'checkbox-group' ||
+                  v.componentType === 'radio-group'
+                ) {
+                  props.push({
+                    ...v,
+                    defaultValue: item[v.key]
+                  })
+                  return
+                }
+
+                if (v.componentType === 'switch') {
+                  props.push({
+                    ...v,
+                    defaultSelected: item[v.key]
+                  })
+                }
+
+                if (v.componentType === 'input-group') {
+                  props.push({
+                    ...v,
+                    data: item[v.key]
+                  })
+                  return
+                }
+
+                console.error(`[accordion-pro] 不支持的组件类型: ${v.componentType}`)
+              })
+
+              return (
+                <HeroAccordionItem
+                  {...childrenOptions}
+                  className={childrenClassName || 'mx-2'}
+                  key={`accordion-pro-item-${item.key}-${index}`}
+                  textValue={`textValue-${item.key}-${index}`}
+                  title={item.title || title || '手风琴默认标题'}
+                  subtitle={item.subtitle || subtitle || '手风琴默认副标题'}
+                >
+                  {renderConfig(
+                    props,
+                    createResultFnc,
+                    `accordion-pro:${index}:${key}:`,
+                    true
+                  )}
+                </HeroAccordionItem>
+              )
+            }).filter(Boolean)}
+          </HeroAccordion>
+        </div>
+      )
+    }
 
     options.forEach(val => {
       /** 分割线 */
@@ -287,48 +514,15 @@ export const DashboardPage = () => {
 
       /** 手风琴 */
       if (val.componentType === 'accordion') {
-        if (disableAccordionRecursion) {
-          console.error('[accordion] 不允许递归渲染')
-          return null
-        }
-
-        const { componentType: _, key, className, componentClassName, label, children = [], ...options } = val
-
-        return list.push(
-          <div className={className || 'flex flex-col gap-4 w-full'} key={key}>
-            <div className='flex justify-between items-center'>
-              <span className='text-default-500 text-md'>{label}</span>
-            </div>
-            <HeroAccordion
-              key={key}
-              className='border border-default-200 rounded-lg p-1'
-              {...options}
-              keepContentMounted
-            >
-              {children.map((item, index) => {
-                if (item.componentType !== 'accordion-item') {
-                  return null
-                }
-
-                return (
-                  <HeroAccordionItem
-                    {...item}
-                    key={item.key}
-                    textValue={`textValue-${item.key}-${index}`}
-                  >
-                    {renderConfig(
-                      item.children as ComponentConfig[],
-                      createResultFnc,
-                      `accordion:${index}:${key}:`,
-                      true
-                    )}
-                  </HeroAccordionItem>
-                )
-              }).filter(Boolean)}
-            </HeroAccordion>
-          </div>
-        )
+        return createAccordion(val)
       }
+
+      /** 手风琴pro */
+      if (val.componentType === 'accordion-pro') {
+        return createAccordionPro(val)
+      }
+
+      console.error(`[${val.componentType}] 不支持的组件类型`)
     })
 
     return list
@@ -351,11 +545,11 @@ export const DashboardPage = () => {
             </div>
           </div>
           <div className='flex gap-2'>
-            {/* <ConfigDetailModal
+            <ConfigDetailModal
               showJsonModal={showJsonModal}
               setShowJsonModal={setShowJsonModal}
               handleFormResult={handleFormResult}
-            /> */}
+            />
             <Button
               type='submit'
               color='primary'
