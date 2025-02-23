@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.3.16](https://github.com/KarinJS/Karin/compare/core-v1.3.15...core-v1.3.16) (2025-02-23)
+
+
+### 🐛 Bug Fixes
+
+* ci ([7606096](https://github.com/KarinJS/Karin/commit/76060969ea778e9a79543514a2fa1f45a0d2ea3a))
+
 ## [1.3.15](https://github.com/KarinJS/Karin/compare/core-v1.3.14...core-v1.3.15) (2025-02-23)
 
 

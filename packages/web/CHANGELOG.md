@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.8](https://github.com/KarinJS/Karin/compare/web-v1.3.7...web-v1.3.8) (2025-02-23)
+
+
+### 🐛 Bug Fixes
+
+* ci ([9be3efb](https://github.com/KarinJS/Karin/commit/9be3efbccc15313935bc8be09f6a8db17e25c7af))
+
 ## [1.3.7](https://github.com/KarinJS/Karin/compare/web-v1.3.6...web-v1.3.7) (2025-02-23)
 
 
