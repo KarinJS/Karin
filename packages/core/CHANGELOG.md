@@ -1,5 +1,23 @@
 # 更新日志
 
+## [1.3.15](https://github.com/KarinJS/Karin/compare/core-v1.3.14...core-v1.3.15) (2025-02-23)
+
+
+### 🐛 Bug Fixes
+
+* 补充api 获取本地插件列表 ([181daf6](https://github.com/KarinJS/Karin/commit/181daf6e8ac3ca7acb41853c51e21d2c4d1b7310))
+* 重构插件配置页面 ([47f423e](https://github.com/KarinJS/Karin/commit/47f423e37e748dee9c83ee6fa38c913e1d126545))
+
+
+### 💄 Styles
+
+* 手风琴pro ([1cc4085](https://github.com/KarinJS/Karin/commit/1cc40855c88e67be5f9cb5bd993fc9db9ddce24a))
+
+
+### ✅ Tests
+
+* 重构插件配置组件 ([e49fde0](https://github.com/KarinJS/Karin/commit/e49fde0dae4c97e7f720e8dfa849362eef38a33e))
+
 ## [1.3.14](https://github.com/KarinJS/Karin/compare/core-v1.3.13...core-v1.3.14) (2025-02-18)
 
 

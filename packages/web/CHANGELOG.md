@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.3.7](https://github.com/KarinJS/Karin/compare/web-v1.3.6...web-v1.3.7) (2025-02-23)
+
+
+### 🐛 Bug Fixes
+
+* build web error ([783e4a6](https://github.com/KarinJS/Karin/commit/783e4a6d20b3f599ba7a90927023f505436a7f0d))
+* 手风琴pro组件下判断错误 ([a0abfe4](https://github.com/KarinJS/Karin/commit/a0abfe48a1da8988b1925e932c5d9823b6f333e7))
+* 重构插件配置页面 ([47f423e](https://github.com/KarinJS/Karin/commit/47f423e37e748dee9c83ee6fa38c913e1d126545))
+
+
+### 💄 Styles
+
+* 优化错误提示 ([7313744](https://github.com/KarinJS/Karin/commit/731374477937d84f9855b25b8f00edc4489e1574))
+* 完成DashboardPage ([8bd37e9](https://github.com/KarinJS/Karin/commit/8bd37e9b06eaa26f2b4a6c10308ea22293c2e942))
+* 将插件市场和插件配置分离 ([152660c](https://github.com/KarinJS/Karin/commit/152660c5b78351ac60059dde00c218f225272500))
+* 微调样式 ([01fd047](https://github.com/KarinJS/Karin/commit/01fd0477035c242e7d4f2a5a0f7c2f08c85879d4))
+* 微调样式 防止页面崩溃 ([a8c517f](https://github.com/KarinJS/Karin/commit/a8c517f962be63d9342a7a0b9a99b473566fc69e))
+* 手风琴pro ([1cc4085](https://github.com/KarinJS/Karin/commit/1cc40855c88e67be5f9cb5bd993fc9db9ddce24a))
+* 暂时隐藏沙盒入口(木有实力写！ ([d9d1f40](https://github.com/KarinJS/Karin/commit/d9d1f4070028a9ec33c222573c5366c032bb31bf))
+* 输入框组样式 ([10abd5b](https://github.com/KarinJS/Karin/commit/10abd5bf2365d469278bc2e418aa256ad92f496c))
+
+
+### ✅ Tests
+
+* 讨厌的手风琴 ([f2e02d2](https://github.com/KarinJS/Karin/commit/f2e02d27510904c5974c616370e959c7a7529a8b))
+* 重构插件配置组件 ([e49fde0](https://github.com/KarinJS/Karin/commit/e49fde0dae4c97e7f720e8dfa849362eef38a33e))
+
 ## [1.3.6](https://github.com/KarinJS/Karin/compare/web-v1.3.5...web-v1.3.6) (2025-02-18)
 
 
