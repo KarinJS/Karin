@@ -15,9 +15,6 @@ permissions:
 jobs:
   publish-core:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: packages/core
     steps:
       # 检出代码
       - uses: actions/checkout@v4
@@ -36,18 +33,18 @@ jobs:
       
       # 安装项目依赖
       - name: 安装依赖
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install
       
       # 构建项目
       - name: 构建项目
-        run: pnpm build:all && pnpm --filter node-karin run pub
+        run: pnpm build:all
       
       # 更新版本号
       - name: 更新版本号
-        run: npm pkg set version=${{ inputs.version }}
+        run: cd packages/core && npm pkg set version=${{ inputs.version }}
       
       # 发布到npm
       - name: 发布到NPM
-        run: pnpm pub
+        run: cd packages/core && pnpm pub
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
