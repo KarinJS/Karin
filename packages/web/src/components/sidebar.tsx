@@ -1,6 +1,6 @@
 import { siteConfig } from '@/config/site'
 import clsx from 'clsx'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaChevronRight } from 'react-icons/fa6'
@@ -27,6 +27,21 @@ const menuItemVariants = {
     x: -20,
     transition: {
       duration: 0.2,
+    }
+  }
+}
+
+const subMenuVariants = {
+  hidden: {
+    height: 0,
+    opacity: 0,
+  },
+  visible: {
+    height: 'auto',
+    opacity: 1,
+    transition: {
+      duration: 0.3,
+      ease: 'easeInOut',
     }
   }
 }
@@ -61,7 +76,10 @@ export default function Sidebar () {
     }
   )
   const [show, setShow] = useState(true)
+  const [expandedMenu, setExpandedMenu] = useState<string | null>(null)
   const isNotSmallScreen = useMediaQuery({ minWidth: 768 })
+  const location = useLocation()
+  const navigate = useNavigate()
 
   return (
     <motion.div className='h-full fixed md:relative z-50'>
@@ -397,15 +415,15 @@ export default function Sidebar () {
                 exit='exit'
                 transition={{ delay: index * 0.05 }}
               >
-                <NavLink
-                  to={item.href}
-                  className={({ isActive }) =>
-                    clsx(
-                      'block text-default-600 hover:text-primary rounded-xl w-max hover:bg-default-100/50 transition-all cursor-default md:cursor-pointer group',
-                      {
-                        '!text-primary bg-primary/5 font-medium ring-1 ring-primary/10': isActive,
-                      }
-                    )}
+                <div
+                  className={clsx(
+                    'block text-default-600 hover:text-primary rounded-xl w-max hover:bg-default-100/50 transition-all cursor-default md:cursor-pointer group',
+                    {
+                      '!text-primary bg-primary/5 font-medium ring-1 ring-primary/10':
+                        location.pathname === item.href ||
+                        (item.children?.some(child => location.pathname === child.href)),
+                    }
+                  )}
                 >
                   <motion.div
                     className='flex items-center gap-3 py-2.5 overflow-hidden relative'
@@ -420,6 +438,13 @@ export default function Sidebar () {
                       paddingRight: isCollapsed ? 10 : 16,
                     }}
                     whileHover={{ x: 4 }}
+                    onClick={() => {
+                      if (item.children) {
+                        setExpandedMenu(expandedMenu === item.href ? null : item.href)
+                      } else {
+                        navigate(item.href)
+                      }
+                    }}
                   >
                     <motion.div
                       className='text-xl relative z-10'
@@ -429,7 +454,7 @@ export default function Sidebar () {
                       <item.Icon />
                     </motion.div>
                     <motion.div
-                      className='whitespace-nowrap overflow-hidden text-sm relative z-10'
+                      className='whitespace-nowrap overflow-hidden text-sm relative z-10 flex-1'
                       initial={{
                         width: isCollapsed ? 0 : 'auto',
                       }}
@@ -439,8 +464,48 @@ export default function Sidebar () {
                     >
                       {item.label}
                     </motion.div>
+                    {item.children && !isCollapsed && (
+                      <motion.div
+                        initial={{ rotate: 0 }}
+                        animate={{ rotate: expandedMenu === item.href ? 90 : 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <FaChevronRight className='w-3 h-3' />
+                      </motion.div>
+                    )}
                   </motion.div>
-                </NavLink>
+
+                  {/* 子菜单 */}
+                  {item.children && !isCollapsed && (
+                    <AnimatePresence>
+                      {expandedMenu === item.href && (
+                        <motion.div
+                          variants={subMenuVariants}
+                          initial='hidden'
+                          animate='visible'
+                          exit='hidden'
+                          className='overflow-hidden ml-4'
+                        >
+                          {item.children.map((child, childIndex) => (
+                            <NavLink
+                              key={child.href}
+                              to={child.href}
+                              className={({ isActive }) =>
+                                clsx(
+                                  'block py-2 px-3 text-sm text-default-600 hover:text-primary rounded-lg transition-colors',
+                                  {
+                                    '!text-primary bg-primary/5': isActive,
+                                  }
+                                )}
+                            >
+                              {child.label}
+                            </NavLink>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  )}
+                </div>
               </motion.div>
             ))}
           </AnimatePresence>
