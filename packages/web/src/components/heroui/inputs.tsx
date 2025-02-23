@@ -56,11 +56,17 @@ export const createInput = (props: InputProps): JSX.Element => {
  */
 export const createInputGroup = (props: InputGroupProps) => {
   const { key, template, data } = props
-  const [dataVal, setDataVal] = useState(() => data || [])
-  const containerRef = useRef<HTMLDivElement>(null)
 
-  // 添加一个用于存储整个输入组值的状态
-  const [groupValue, setGroupValue] = useState<string[]>(data || [])
+  // 使用 key 作为组件实例的唯一标识
+  const instanceId = useRef(key)
+
+  // 确保初始数据格式正确
+  const initialData = (data || []).map(item =>
+    typeof item === 'string' ? item : String(item)
+  )
+
+  const [groupValue, setGroupValue] = useState<string[]>(initialData)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const { componentType: __, key: ___, componentClassName, ...templateOptions } = template
   const validator = template.rules ? createValidator(template.rules) : undefined
@@ -73,6 +79,13 @@ export const createInputGroup = (props: InputGroupProps) => {
   const maxInputs = props.maxInputs ?? 100
 
   const [columns, setColumns] = useState('1fr')
+
+  // 当 data prop 变化时更新状态
+  useEffect(() => {
+    if (data) {
+      setGroupValue(data)
+    }
+  }, [data])
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(min-width: 640px)')
@@ -92,50 +105,52 @@ export const createInputGroup = (props: InputGroupProps) => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight
     }
-  }, [dataVal.length])
+  }, [groupValue.length])
 
   // 处理输入框值变化
   const handleInputChange = (value: string, index: number) => {
-    const newValues = [...groupValue]
-    newValues[index] = value
-    setGroupValue(newValues)
+    setGroupValue(prev => {
+      const newValues = [...prev]
+      newValues[index] = value
+      return newValues
+    })
   }
 
   // 添加新输入框
   const handleAddInput = () => {
-    if (maxInputs !== 0 && dataVal.length >= maxInputs) {
+    if (maxInputs !== 0 && groupValue.length >= maxInputs) {
       toast.error(`最多只能添加 ${maxInputs} 个输入框哦 φ(>ω<*) `)
       return
     }
-
-    setDataVal(prev => [...prev, ''])
     setGroupValue(prev => [...prev, ''])
   }
 
   // 删除输入框
   const handleDeleteInput = (index: number) => {
-    setDataVal(prev => prev.filter((_, i) => i !== index))
-    setGroupValue(prev => prev.filter((_, i) => i !== index))
-    toast.success(props.deleteSuccessTips || '删除成功')
+    setGroupValue(prev => {
+      const newValues = [...prev]
+      newValues.splice(index, 1)
+      return newValues
+    })
+    toast.success('已删除一个输入框')
   }
 
   return (
     <div
-      key={`div-${key}`}
+      key={instanceId.current}
       className={
         props.className ||
-        'w-full rounded-2xl p-3 sm:p-4 transition-colors'
+        'w-full bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-gray-200 dark:border-gray-700 p-3 sm:p-4 transition-colors'
       }
     >
-      {/* 添加一个隐藏的输入框来存储整个组的值 */}
       <input
         type='hidden'
-        name={key}
+        name={instanceId.current}
         value={JSON.stringify(groupValue)}
       />
 
-      <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2'>
-        <div className='flex flex-col'>
+      <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 mb-2'>
+        <div className='flex flex-col gap-0.5'>
           <span className='text-default-500 text-md'>{props.label}</span>
           {props.description && (
             <p className='text-sm text-gray-500'>{props.description}</p>
@@ -143,16 +158,16 @@ export const createInputGroup = (props: InputGroupProps) => {
         </div>
         <div className='flex items-center gap-1.5 self-end sm:self-auto'>
           <span className='text-sm text-gray-500'>
-            {dataVal.length}{maxInputs !== 0 ? `/${maxInputs}` : ''}
+            {groupValue.length}{maxInputs !== 0 ? `/${maxInputs}` : ''}
           </span>
           <Button
-            key={`${key}-add-input`}
+            key={`${instanceId.current}-add-input`}
             variant='solid'
             color='primary'
             size='sm'
             onPress={handleAddInput}
             className='flex items-center gap-1 px-2 h-7 min-w-[60px]'
-            disabled={maxInputs !== 0 && dataVal.length >= maxInputs}
+            disabled={maxInputs !== 0 && groupValue.length >= maxInputs}
           >
             添加
           </Button>
@@ -169,34 +184,39 @@ export const createInputGroup = (props: InputGroupProps) => {
           overflowX: 'hidden'
         }}
       >
-        {dataVal.map((value, index) => (
-          <div key={`${key}-${index}`} className='grid grid-cols-[1fr,auto] items-center gap-1'>
-            <HeroInput
-              {...templateOptions}
-              defaultValue={value}
-              className={`${componentClassName || 'w-full'}`}
-              onValueChange={(val) => handleInputChange(val, index)}
-              validate={(val) => {
-                if (!val) {
-                  if (templateOptions.isRequired) {
-                    return '( • ̀ω•́ )✧ 不能为空哦~'
+        {groupValue.map((value, index) => {
+          const itemKey = `${instanceId.current}-${index}`
+          return (
+            <div key={itemKey} className='grid grid-cols-[1fr,auto] items-center gap-1'>
+              <HeroInput
+                {...templateOptions}
+                key={`input-${itemKey}`}
+                value={value}
+                className={`${componentClassName || 'w-full'}`}
+                onValueChange={(val) => handleInputChange(val, index)}
+                validate={(val) => {
+                  if (!val) {
+                    if (templateOptions.isRequired) {
+                      return '( • ̀ω•́ )✧ 不能为空哦~'
+                    }
+                    return true
                   }
-                  return true
-                }
-                return validator?.(val)
-              }}
-            />
-            <Button
-              variant='light'
-              color='danger'
-              onPress={() => handleDeleteInput(index)}
-              className='hover:bg-red-50 transition-colors duration-200 p-1 min-w-0 h-7 w-7 rounded-full'
-              aria-label='删除输入框'
-            >
-              <IoCloseCircle size={16} />
-            </Button>
-          </div>
-        ))}
+                  return validator?.(val)
+                }}
+              />
+              <Button
+                variant='light'
+                color='danger'
+                key={`delete-${itemKey}`}
+                onPress={() => handleDeleteInput(index)}
+                className='hover:bg-red-50 transition-colors duration-200 p-1 min-w-0 h-7 w-7 rounded-full'
+                aria-label='删除输入框'
+              >
+                <IoCloseCircle size={16} />
+              </Button>
+            </div>
+          )
+        })}
       </div>
     </div>
   )

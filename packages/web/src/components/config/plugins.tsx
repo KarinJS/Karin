@@ -14,15 +14,22 @@ import { createInput, createInputGroup } from '@/components/heroui/inputs'
 import { Accordion as HeroAccordion, AccordionItem as HeroAccordionItem } from '@heroui/accordion'
 
 import type { JSX } from 'react'
-import type { AccordionProProps, AccordionProps, CheckboxGroupProps, ComponentConfig } from 'node-karin'
+import type {
+  AccordionProProps,
+  AccordionProps,
+  CheckboxGroupProps,
+  ComponentConfig,
+  GetConfigResponse
+} from 'node-karin'
+import { request } from '@/lib/request'
 
 type CreateResultFnc = (key: string, value: (v: string, k: string) => void) => void
 
 /**
  * 动态渲染插件配置组件
- * @param configProps - 插件配置
+ * @param props - 组件属性
  */
-export const DashboardPage = (configProps: ComponentConfig[]) => {
+export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProps, info }) => {
   let result: Record<string, any> = {}
   let newErrors: Record<string, string> = {}
   /** 用于存储渲染错误信息 */
@@ -91,16 +98,40 @@ export const DashboardPage = (configProps: ComponentConfig[]) => {
    * 处理表单提交
    * @param e - 表单提交事件
    */
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     const formValues = Object.fromEntries(formData)
+    console.log('formValues:', formValues)
 
-    if (handleFormResult(formValues) === null) return
+    const processedResult = handleFormResult(formValues)
+    if (processedResult === null) return
 
     setErrors({})
-    console.log('result:', result)
-    return result
+
+    try {
+      const response = await request.serverPost<Record<string, any>, Record<string, any>>(
+        '/api/v1/plugin/config/save',
+        {
+          name: info.name,
+          type: info.type,
+          config: processedResult
+        }
+      )
+
+      if (response.success) {
+        toast.success(response.message || '保存成功')
+      } else {
+        toast.error(response.message || '保存失败')
+        console.error('保存配置失败:', response)
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '未知错误'
+      toast.error(`保存配置失败: ${errorMessage}`)
+      console.error('保存配置出错:', error)
+    }
+
+    return processedResult
   }
 
   /**
@@ -248,6 +279,7 @@ export const DashboardPage = (configProps: ComponentConfig[]) => {
                     ...v,
                     defaultSelected: item[v.key]
                   })
+                  return
                 }
 
                 if (v.componentType === 'input-group') {
@@ -302,10 +334,12 @@ export const DashboardPage = (configProps: ComponentConfig[]) => {
 
         /** 开关 */
         if (val.componentType === 'switch') {
-          createResultFnc(val.key, (value: string) => {
-            result[val.key] = value
+          const k = subKey ? `${subKey}${val.key}` : val.key
+          createResultFnc(k, (value: string) => {
+            console.log('value:', value)
+            result[k] = value === 'true'
           })
-          return list.push(createSwitch(val))
+          return list.push(createSwitch({ ...val, key: k }))
         }
 
         /** 单选框组 */
@@ -376,12 +410,12 @@ export const DashboardPage = (configProps: ComponentConfig[]) => {
         <div className='p-4 flex flex-col gap-2'>
           {/* 头部信息区域 */}
           <div className='flex items-center'>
-            <Avatar src='https://avatar.vercel.sh/ikenxuan' size='sm' radius='full' />
+            <Avatar src={info?.author?.[0]?.avatar || `https://avatar.vercel.sh/${info?.name || 'ikenxuan'}`} size='sm' radius='full' />
             <div className='flex flex-col ml-3'>
               <div className='text-sm font-medium text-default-900'>
-                插件名称
+                {info.name || '插件名称'}
               </div>
-              <div className='text-xs text-default-500'>基本信息展示</div>
+              <div className='text-xs text-default-500'>{info.description || '这个人很懒，什么都没写...'}</div>
             </div>
           </div>
 

@@ -1,6 +1,7 @@
 import { Switch as HeroSwitch } from '@heroui/switch'
 import type { JSX } from 'react'
 import type { SwitchProps } from 'node-karin'
+import { useState } from 'react'
 
 /**
  * 渲染开关组件
@@ -20,18 +21,24 @@ export const createSwitch = (props: SwitchProps): JSX.Element => {
     ...options
   } = props
 
+  const [isSelected, setIsSelected] = useState(props.defaultSelected ?? false)
+
   return (
     <div className='flex flex-col gap-2 mx-2' key={`div-${key}`}>
       {props.label && <label className='block text-sm font-medium text-gray-700'>{props.label}</label>}
       {props.description && <span className='text-xs text-gray-500'>{props.description}</span>}
       <div className='flex items-center gap-2'>
         {startText && <span>{startText}</span>}
+        <input
+          type='hidden'
+          name={key}
+          value={isSelected.toString()}
+        />
         <HeroSwitch
           key={key}
           {...options}
-          name={key}
           className={componentClassName}
-          defaultSelected={props.defaultSelected}
+          onValueChange={setIsSelected}
         >
           {endText}
         </HeroSwitch>

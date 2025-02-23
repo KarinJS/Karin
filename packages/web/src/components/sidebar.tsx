@@ -1,7 +1,7 @@
 import { siteConfig } from '@/config/site'
 import clsx from 'clsx'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaChevronRight } from 'react-icons/fa6'
 import { ThemeSwitch } from '@/components/theme-switch.tsx'
@@ -9,6 +9,7 @@ import { useMediaQuery } from 'react-responsive'
 import { IoMenu, IoClose } from 'react-icons/io5'
 import { useLocalStorageState } from 'ahooks'
 import key from '@/consts/key'
+import { Icon } from './ui/icon'
 
 const menuItemVariants = {
   hidden: {
@@ -486,20 +487,26 @@ export default function Sidebar () {
                           exit='hidden'
                           className='overflow-hidden ml-4'
                         >
-                          {item.children.map((child, childIndex) => (
-                            <NavLink
-                              key={child.href}
-                              to={child.href}
-                              className={({ isActive }) =>
-                                clsx(
-                                  'block py-2 px-3 text-sm text-default-600 hover:text-primary rounded-lg transition-colors',
-                                  {
-                                    '!text-primary bg-primary/5': isActive,
-                                  }
-                                )}
-                            >
-                              {child.label}
-                            </NavLink>
+                          {item.children.map((child) => (
+                            <Fragment key={child.href}>
+                              <NavLink
+                                key={child.href}
+                                to={{
+                                  pathname: child.href,
+                                  search: `?type=${child.type || ''}`
+                                }}
+                                className={({ isActive }) =>
+                                  clsx(
+                                    'flex items-center gap-2 py-2 px-3 text-sm text-default-600 hover:text-primary rounded-lg transition-colors',
+                                    {
+                                      '!text-primary bg-primary/5': isActive,
+                                    }
+                                  )}
+                              >
+                                {child.icon && <Icon name={child.icon?.name || ''} size={child.icon?.size} color={child.icon?.color} />}
+                                {child.label}
+                              </NavLink>
+                            </Fragment>
                           ))}
                         </motion.div>
                       )}

@@ -6,7 +6,7 @@ import { IoSettingsOutline } from 'react-icons/io5'
 import { RiPlugLine } from 'react-icons/ri'
 import { VscJson, VscCopy, VscOutput, VscSymbolString } from 'react-icons/vsc'
 import { request } from '@/lib/request'
-import { DynamicRender } from '../heroui/main'
+// import { DynamicRender } from '../heroui/main'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
 import { useForm, FormProvider } from 'react-hook-form'
 import type { ComponentConfig } from '../heroui/types'
@@ -28,30 +28,30 @@ interface PluginConfigProps {
 
 // 提取常量
 const MODAL_CLASS_NAMES = {
-  base: "bg-white dark:bg-gray-900",
-  header: "border-b border-gray-100 dark:border-gray-800",
-  footer: "border-t border-gray-100 dark:border-gray-800"
+  base: 'bg-white dark:bg-gray-900',
+  header: 'border-b border-gray-100 dark:border-gray-800',
+  footer: 'border-t border-gray-100 dark:border-gray-800'
 }
 
 const BUTTON_COMMON_STYLES = 'px-5 h-10 min-w-[88px] font-medium'
 
 // 抽离子组件
 const LoadingState = () => (
-  <div className="h-full flex items-center justify-center">
-    <div className="flex flex-col items-center gap-3">
-      <Spinner size="md" color="primary" />
-      <p className="text-gray-500 dark:text-gray-400 text-sm">正在加载配置...</p>
+  <div className='h-full flex items-center justify-center'>
+    <div className='flex flex-col items-center gap-3'>
+      <Spinner size='md' color='primary' />
+      <p className='text-gray-500 dark:text-gray-400 text-sm'>正在加载配置...</p>
     </div>
   </div>
 )
 
 const EmptyState = () => (
-  <div className="h-full flex flex-col items-center justify-center">
-    <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-50 dark:bg-gray-800">
-      <RiPlugLine className="text-2xl text-gray-400 dark:text-gray-500" />
+  <div className='h-full flex flex-col items-center justify-center'>
+    <div className='w-16 h-16 flex items-center justify-center rounded-full bg-gray-50 dark:bg-gray-800'>
+      <RiPlugLine className='text-2xl text-gray-400 dark:text-gray-500' />
     </div>
-    <h3 className="mt-4 text-gray-900 dark:text-gray-100 font-medium">暂无配置项</h3>
-    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1.5">该插件当前没有需要配置的选项</p>
+    <h3 className='mt-4 text-gray-900 dark:text-gray-100 font-medium'>暂无配置项</h3>
+    <p className='text-sm text-gray-500 dark:text-gray-400 mt-1.5'>该插件当前没有需要配置的选项</p>
   </div>
 )
 
@@ -131,11 +131,11 @@ export const PluginConfig = memo(({ open, name, type, onClose }: PluginConfigPro
     if (!configs.length) return <EmptyState />
 
     return (
-      <div className="h-full space-y-4 overflow-y-auto custom-scrollbar">
-        <div className="p-6 bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 transition-colors">
+      <div className='h-full space-y-4 overflow-y-auto custom-scrollbar'>
+        <div className='p-6 bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 transition-colors'>
           <FormProvider {...methods}>
-            <form id="plugin-config-form" onSubmit={handleSubmit(onSubmit)}>
-              <DynamicRender configs={configs} onChange={handleConfigChange} />
+            <form id='plugin-config-form' onSubmit={handleSubmit(onSubmit)}>
+              {/* <DynamicRender configs={configs} onChange={handleConfigChange} /> */}
             </form>
           </FormProvider>
         </div>
@@ -150,58 +150,58 @@ export const PluginConfig = memo(({ open, name, type, onClose }: PluginConfigPro
       <Modal
         isOpen={open}
         onOpenChange={onClose}
-        size="4xl"
-        scrollBehavior="inside"
+        size='4xl'
+        scrollBehavior='inside'
         classNames={MODAL_CLASS_NAMES}
       >
-        <ModalContent className="max-h-[85vh]">
-          <ModalHeader className="shrink-0">
-            <div className="flex items-center py-1 px-1">
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 flex items-center justify-center rounded-lg bg-blue-50/80 dark:bg-blue-900/20 transition-colors">
-                  <IoSettingsOutline className="text-base text-blue-600/90 dark:text-blue-400" />
+        <ModalContent className='max-h-[85vh]'>
+          <ModalHeader className='shrink-0'>
+            <div className='flex items-center py-1 px-1'>
+              <div className='flex items-center gap-2.5'>
+                <div className='w-7 h-7 flex items-center justify-center rounded-lg bg-blue-50/80 dark:bg-blue-900/20 transition-colors'>
+                  <IoSettingsOutline className='text-base text-blue-600/90 dark:text-blue-400' />
                 </div>
                 <div>
-                  <h2 className="text-[15px] font-medium text-gray-900 dark:text-gray-100 leading-[18px]">
+                  <h2 className='text-[15px] font-medium text-gray-900 dark:text-gray-100 leading-[18px]'>
                     {name}
                   </h2>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-[14px]">
+                  <p className='text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-[14px]'>
                     插件配置与管理
                   </p>
                 </div>
               </div>
             </div>
           </ModalHeader>
-          <ModalBody className="flex-1 overflow-auto">
-            <div className="h-[480px] py-5">{renderContent}</div>
+          <ModalBody className='flex-1 overflow-auto'>
+            <div className='h-[480px] py-5'>{renderContent}</div>
           </ModalBody>
-          <ModalFooter className="shrink-0 py-3">
-            <div className="flex justify-end gap-2">
+          <ModalFooter className='shrink-0 py-3'>
+            <div className='flex justify-end gap-2'>
               <Button
-                color="default"
-                variant="bordered"
-                size="md"
+                color='default'
+                variant='bordered'
+                size='md'
                 onPress={() => setShowJsonModal(true)}
                 className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
-                startContent={<VscJson className="text-lg" />}
+                startContent={<VscJson className='text-lg' />}
               >
                 配置详情
               </Button>
               <Button
-                color="default"
-                variant="bordered"
-                size="md"
+                color='default'
+                variant='bordered'
+                size='md'
                 onPress={onClose}
                 className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
               >
                 取消
               </Button>
               <Button
-                type="submit"
-                form="plugin-config-form"
-                color="primary"
-                variant="flat"
-                size="md"
+                type='submit'
+                form='plugin-config-form'
+                color='primary'
+                variant='flat'
+                size='md'
                 isDisabled={!configs.length}
                 className={`${BUTTON_COMMON_STYLES} bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400`}
               >
@@ -215,22 +215,22 @@ export const PluginConfig = memo(({ open, name, type, onClose }: PluginConfigPro
       <Modal
         isOpen={showJsonModal}
         onOpenChange={() => setShowJsonModal(false)}
-        size="2xl"
-        scrollBehavior="inside"
+        size='2xl'
+        scrollBehavior='inside'
         classNames={MODAL_CLASS_NAMES}
       >
         <ModalContent>
-          <ModalHeader className="shrink-0">
-            <div className="flex items-center py-1 px-1">
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 flex items-center justify-center rounded-lg bg-blue-50/80 dark:bg-blue-900/20 transition-colors">
-                  <VscJson className="text-base text-blue-600/90 dark:text-blue-400" />
+          <ModalHeader className='shrink-0'>
+            <div className='flex items-center py-1 px-1'>
+              <div className='flex items-center gap-2.5'>
+                <div className='w-7 h-7 flex items-center justify-center rounded-lg bg-blue-50/80 dark:bg-blue-900/20 transition-colors'>
+                  <VscJson className='text-base text-blue-600/90 dark:text-blue-400' />
                 </div>
                 <div>
-                  <h2 className="text-[15px] font-medium text-gray-900 dark:text-gray-100 leading-[18px]">
+                  <h2 className='text-[15px] font-medium text-gray-900 dark:text-gray-100 leading-[18px]'>
                     配置详情
                   </h2>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-[14px]">
+                  <p className='text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-[14px]'>
                     当前插件的配置信息
                   </p>
                 </div>
@@ -238,50 +238,50 @@ export const PluginConfig = memo(({ open, name, type, onClose }: PluginConfigPro
             </div>
           </ModalHeader>
           <ModalBody>
-            <pre className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg overflow-auto text-sm font-mono">
+            <pre className='bg-gray-50 dark:bg-gray-800 p-4 rounded-lg overflow-auto text-sm font-mono'>
               {JSON.stringify(configDataRef.current, null, 2)}
             </pre>
           </ModalBody>
           <ModalFooter>
-            <div className="flex justify-end gap-2">
+            <div className='flex justify-end gap-2'>
               <Button
-                color="default"
-                variant="bordered"
-                size="md"
+                color='default'
+                variant='bordered'
+                size='md'
                 onPress={() => {
                   console.log('Plugin Configuration:', configDataRef.current)
                 }}
                 className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
-                startContent={<VscOutput className="text-lg" />}
+                startContent={<VscOutput className='text-lg' />}
               >
                 正常打印
               </Button>
               <Button
-                color="default"
-                variant="bordered"
-                size="md"
+                color='default'
+                variant='bordered'
+                size='md'
                 onPress={() => {
                   console.log('Plugin Configuration:', JSON.stringify(configDataRef.current, null, 2))
                 }}
                 className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
-                startContent={<VscSymbolString className="text-lg" />}
+                startContent={<VscSymbolString className='text-lg' />}
               >
                 纯文本打印
               </Button>
               <Button
-                color="default"
-                variant="bordered"
-                size="md"
+                color='default'
+                variant='bordered'
+                size='md'
                 onPress={handleCopyConfig}
                 className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
-                startContent={<VscCopy className="text-lg" />}
+                startContent={<VscCopy className='text-lg' />}
               >
                 复制
               </Button>
               <Button
-                color="primary"
-                variant="flat"
-                size="md"
+                color='primary'
+                variant='flat'
+                size='md'
                 onPress={() => setShowJsonModal(false)}
                 className={`${BUTTON_COMMON_STYLES} bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400`}
               >

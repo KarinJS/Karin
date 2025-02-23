@@ -10,6 +10,7 @@ import { createServerErrorResponse, createSuccessResponse } from '@/server/utils
 import type { Apps } from '@/types/plugin'
 import type { RequestHandler } from 'express'
 import type { PkgData } from '@/utils/fs/pkg'
+import type { GetConfigResponse, LocalApiResponse } from '@/types/server/local'
 
 interface BaseConfig {
   /** 插件类型 */
@@ -102,7 +103,7 @@ const loadConfig = async (configPath: string) => {
     `${pathToFileURL(configPath).toString()}${isDev() ? '?t=' + Date.now() : ''}`
   ) as {
     default: {
-      info: Record<string, any>
+      info: LocalApiResponse
       components: () => any
       save: (config: Record<string, any>) =>
         { success: boolean, message: string } |
@@ -113,37 +114,56 @@ const loadConfig = async (configPath: string) => {
 }
 
 /**
+ * 传入type id 返回web.config配置
+ * @param type 插件类型
+ * @param id 插件id
+ * @param fnc 配置文件不符合要求时回调
+ * @returns web.config配置
+ */
+export const getWebConfig = async (type: Apps, id: string, fnc?: () => void) => {
+  /** 只支持git npm */
+  if (!['git', 'npm'].includes(type)) {
+    return null
+  }
+
+  const webConfig = getConfigPath({ type, name: id })
+
+  if (!webConfig) {
+    return null
+  }
+
+  /** 获取文件名称 不包含后缀 */
+  const baseName = path.basename(webConfig, path.extname(webConfig))
+  if (baseName !== 'web.config') {
+    return null
+  }
+
+  return await loadConfig(webConfig)
+}
+
+/**
  * 获取插件配置 不存在则返回null
  * @param req 请求
  * @param res 响应
  */
 const getConfig: RequestHandler = async (req, res) => {
   const options = req.body as BaseConfig
-
-  /** 只支持git npm */
-  if (!['git', 'npm'].includes(options.type)) {
-    createServerErrorResponse(res, '不支持的插件类型')
+  if (!options.type || !options.name) {
+    createServerErrorResponse(res, '参数错误')
     return
   }
 
-  const webConfig = getConfigPath(options)
-
-  if (!webConfig) {
-    createSuccessResponse(res, null)
-    return
-  }
-
-  /** 获取文件名称 不包含后缀 */
-  const baseName = path.basename(webConfig, path.extname(webConfig))
-  if (baseName !== 'web.config') {
+  const config = await getWebConfig(options.type, options.name, () => {
     logger.error(`[plugin] 插件${options.name}的web配置文件名称不正确: 需要以 web.config 命名`)
     createSuccessResponse(res, null)
-    return
+  })
+
+  if (!config) {
+    return createServerErrorResponse(res, '参数错误')
   }
 
   const list: Record<string, any>[] = []
-  const { components } = await loadConfig(webConfig)
-  let result = components()
+  let result = config.components()
   result = util.types.isPromise(result) ? await result : result
 
   result.forEach((item: any) => {
@@ -156,7 +176,12 @@ const getConfig: RequestHandler = async (req, res) => {
     }
   })
 
-  createSuccessResponse(res, list)
+  const data: GetConfigResponse = {
+    options: list as GetConfigResponse['options'],
+    info: config.info
+  }
+
+  createSuccessResponse(res, data)
 }
 
 /**
@@ -166,7 +191,7 @@ const getConfig: RequestHandler = async (req, res) => {
 const saveConfig: RequestHandler = async (req, res) => {
   const options = req.body as BaseConfig & { config: Record<string, any> }
   const configPath = getConfigPath(options)
-  if (!configPath) return
+  if (!configPath) return createServerErrorResponse(res, '参数错误')
 
   const { save } = await loadConfig(configPath)
   const result = save(options.config)

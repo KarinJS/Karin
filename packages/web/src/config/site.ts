@@ -2,7 +2,23 @@ import { MdSpaceDashboard, MdExtension, MdStore } from 'react-icons/md'
 import { RiSettings2Fill } from 'react-icons/ri'
 // import { FiCodesandbox } from 'react-icons/fi'
 import { BsWindowSidebar } from 'react-icons/bs'
+import { request } from '@/lib/request'
+
+import type { LocalApiResponse } from 'node-karin'
 export type SiteConfig = typeof siteConfig
+
+/**
+ * 获取已安装的插件列表
+ */
+const getInstalledPlugins = async () => {
+  const list = await request.serverPost<LocalApiResponse[], null>('/api/v1/plugin/local') || []
+  return list.map((item) => ({
+    label: item.name,
+    href: `/plugins/${item.id}`,
+    icon: item.icon,
+    type: item.type
+  }))
+}
 
 export const siteConfig = {
   name: 'KarinJS WebUI',
@@ -27,20 +43,7 @@ export const siteConfig = {
       Icon: MdExtension,
       label: '插件配置',
       href: '/plugins',
-      children: [
-        {
-          label: '插件1',
-          href: '/plugins/plugin1',
-        },
-        {
-          label: '插件2',
-          href: '/plugins/plugin2',
-        },
-        {
-          label: '插件3',
-          href: '/plugins/plugin3',
-        }
-      ]
+      children: await getInstalledPlugins(),
     },
     // {
     //   Icon: FiCodesandbox,
