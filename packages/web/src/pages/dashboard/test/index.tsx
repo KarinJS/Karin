@@ -4,12 +4,13 @@ import { Card } from '@heroui/card'
 import { Button } from '@heroui/button'
 import { Avatar } from '@heroui/avatar'
 import { toast } from 'react-hot-toast'
-import { createCheckboxGroup } from '@/components/heroui/checkboxs'
-import { ConfigDetailModal, BUTTON_COMMON_STYLES } from './printConfig'
-import { createInput, createInputGroup } from '@/components/heroui/inputs'
+import { MdWarning } from 'react-icons/md'
 import { createDivider } from '@/components/heroui/dividers'
 import { createSwitch } from '@/components/heroui/switchs'
 import { createRadioGroup } from '@/components/heroui/radioGroups'
+import { createCheckboxGroup } from '@/components/heroui/checkboxs'
+import { ConfigDetailModal, BUTTON_COMMON_STYLES } from './printConfig'
+import { createInput, createInputGroup } from '@/components/heroui/inputs'
 import { Accordion as HeroAccordion, AccordionItem as HeroAccordionItem } from '@heroui/accordion'
 
 import type { JSX } from 'react'
@@ -17,182 +18,15 @@ import type { AccordionProProps, AccordionProps, CheckboxGroupProps, ComponentCo
 
 type CreateResultFnc = (key: string, value: (v: string, k: string) => void) => void
 
-const input: ComponentConfig[] = [
-  {
-    componentType: 'input',
-    label: '姓名',
-    key: 'name',
-    placeholder: '请输入您的姓名',
-    type: 'text',
-    isRequired: true,
-    autoComplete: 'name',
-    defaultValue: '张三'
-  },
-  {
-    componentType: 'input',
-    label: '密码',
-    key: 'password',
-    placeholder: '请输入您的密码',
-    type: 'password',
-    isRequired: true,
-    autoComplete: 'current-password',
-    defaultValue: '123456'
-  },
-  {
-    componentType: 'input',
-    label: '邮箱',
-    key: 'email',
-    placeholder: '请输入您的邮箱',
-    type: 'email',
-    defaultValue: 'admin@karin.fun',
-    isRequired: true,
-  },
-  {
-    componentType: 'divider',
-    key: 'divider',
-  },
-  {
-    componentType: 'switch',
-    key: 'agree',
-    defaultSelected: true,
-    label: '用户协议',
-    description: '是否同意用户协议',
-
-  },
-  {
-    componentType: 'divider',
-    key: 'divider-11',
-  },
-  {
-    componentType: 'radio-group',
-    label: '性别',
-    key: 'gender',
-    defaultValue: 'male',
-    radio: [
-      {
-        label: '男',
-        value: 'male',
-        componentType: 'radio',
-        key: 'male'
-      },
-      {
-        label: '女',
-        value: 'female',
-        componentType: 'radio',
-        key: 'female'
-      }
-    ]
-  },
-  {
-    componentType: 'divider',
-    key: 'divider-1',
-  },
-  {
-    componentType: 'checkbox-group',
-    label: '爱好',
-    key: 'hobby',
-    checkbox: [
-      {
-        componentType: 'checkbox',
-        label: '篮球',
-        value: 'basketball',
-        key: 'basketball'
-      },
-      {
-        componentType: 'checkbox',
-        label: '足球',
-        value: 'football',
-        key: 'football'
-      },
-      {
-        componentType: 'checkbox',
-        label: '羽毛球',
-        value: 'badminton',
-        key: 'badminton'
-      }
-    ]
-  },
-  {
-    componentType: 'divider',
-    key: 'divider-2',
-  },
-  {
-    componentType: 'input-group',
-    label: '爱好',
-    key: 'hobby-group',
-    data: ['篮球', '足球', '羽毛球', '排球', '网球'],
-    description: '请输入您的爱好',
-    template: {
-      componentType: 'input',
-      label: '爱好',
-      key: '',
-      placeholder: '请输入您的爱好',
-      type: 'text'
-    }
-  },
-  {
-    componentType: 'divider',
-    key: 'divider-3',
-  },
-  {
-    componentType: 'accordion',
-    label: '爱好',
-    key: 'hobby-accordion',
-    children: [
-      {
-        componentType: 'accordion-item',
-        key: 'hobby-accordion-item',
-        children: [
-          {
-            componentType: 'input',
-            label: '爱好',
-            key: 'accordion-input',
-            isRequired: true,
-            defaultValue: '篮球'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    componentType: 'accordion-pro',
-    label: '手风琴pro',
-    key: 'accordion-pro',
-    data: [
-      {
-        'accordion-pro-name': '张三',
-        'accordion-pro-age': 18,
-      },
-      {
-        'accordion-pro-name': '李四',
-        'accordion-pro-age': 20,
-      }
-    ],
-    children: {
-      key: 'accordion-pro-item',
-      children: [
-        {
-          componentType: 'input',
-          label: '名称',
-          key: 'accordion-pro-name',
-        },
-        {
-          componentType: 'input',
-          label: '年龄',
-          key: 'accordion-pro-age',
-        }
-      ]
-    }
-  }
-]
-
 /**
- * 动态渲染插件配置页面
- * @returns 仪表盘页面
+ * 动态渲染插件配置组件
+ * @param configProps - 插件配置
  */
 export const DashboardPage = (configProps: ComponentConfig[]) => {
   let result: Record<string, any> = {}
   let newErrors: Record<string, string> = {}
+  /** 用于存储渲染错误信息 */
+  const errorMessages: { key: string, error: Error }[] = []
   const list: Record<string, (v: string, k: string) => void> = {}
   const [errors, setErrors] = React.useState<Record<string, string>>({})
   const [showJsonModal, setShowJsonModal] = React.useState(false)
@@ -284,7 +118,6 @@ export const DashboardPage = (configProps: ComponentConfig[]) => {
     disableAccordionRecursion: boolean = false
   ) => {
     const list: JSX.Element[] = []
-
     /**
      * 构建手风琴
      * @param val - 手风琴配置
@@ -306,7 +139,7 @@ export const DashboardPage = (configProps: ComponentConfig[]) => {
         ...options
       } = val
       return list.push(
-        <div className={className || 'flex flex-col gap-4 w-full mx-2'} key={key}>
+        <div className={className || 'flex flex-col gap-4 max-w-[calc(100%-1rem)] mx-2'} key={key}>
           <div className='flex justify-between items-center'>
             <span className='text-default-500 text-md mt-2'>{label || '手风琴'}</span>
           </div>
@@ -384,7 +217,7 @@ export const DashboardPage = (configProps: ComponentConfig[]) => {
       } = children
 
       return list.push(
-        <div className={className || 'flex flex-col gap-4 w-full mx-2'} key={`div-${key}`}>
+        <div className={className || 'flex flex-col gap-4 max-w-[calc(100%-1rem)] mx-2'} key={`div-${key}`}>
           <div className='flex justify-between items-center'>
             <span className='text-default-500 text-md mt-2'>{label}</span>
           </div>
@@ -452,77 +285,83 @@ export const DashboardPage = (configProps: ComponentConfig[]) => {
     }
 
     options.forEach(val => {
-      /** 分割线 */
-      if (val.componentType === 'divider') {
-        return list.push(createDivider(val))
-      }
+      try {
+        /** 分割线 */
+        if (val.componentType === 'divider') {
+          return list.push(createDivider(val))
+        }
 
-      /** 输入框 */
-      if (val.componentType === 'input') {
-        const k = subKey ? `${subKey}${val.key}` : val.key
-        createResultFnc(k, (value: string) => {
-          result[k] = value
-        })
-        return list.push(createInput({ ...val, key: k }))
-      }
-
-      /** 开关 */
-      if (val.componentType === 'switch') {
-        createResultFnc(val.key, (value: string) => {
-          result[val.key] = value
-        })
-        return list.push(createSwitch(val))
-      }
-
-      /** 单选框组 */
-      if (val.componentType === 'radio-group') {
-        const k = subKey ? `${subKey}${val.key}` : val.key
-        createResultFnc(k, (value: string) => {
-          result[k] = value
-        })
-        return list.push(createRadioGroup({ ...val, key: k }))
-      }
-
-      /** 复选框组 */
-      if (val.componentType === 'checkbox-group') {
-        const option: CheckboxGroupProps = val
-        val.checkbox.forEach((v, index) => {
-          const k = subKey ? `${subKey}${val.key}` : v.key
-          createResultFnc(k, (value: string, sourceKey: string) => {
-            if (!result[val.key]) {
-              result[val.key] = {}
-              val.checkbox.forEach(v => {
-                result[val.key][k] = v.defaultSelected ?? false
-              })
-            }
-            result[val.key][sourceKey] = !!value
+        /** 输入框 */
+        if (val.componentType === 'input') {
+          const k = subKey ? `${subKey}${val.key}` : val.key
+          createResultFnc(k, (value: string) => {
+            result[k] = value
           })
-          option.checkbox[index] = { ...v, key: k }
-        })
-        return list.push(createCheckboxGroup(option))
-      }
+          return list.push(createInput({ ...val, key: k }))
+        }
 
-      /** 输入框组 */
-      if (val.componentType === 'input-group') {
-        const k = subKey ? `${subKey}${val.key}` : val.key
-        createResultFnc(k, (value: string) => {
-          if (!result[k]) result[k] = []
-          result[k] = JSON.parse(value)
-        })
-        return list.push(createInputGroup({ ...val, key: k }))
-      }
+        /** 开关 */
+        if (val.componentType === 'switch') {
+          createResultFnc(val.key, (value: string) => {
+            result[val.key] = value
+          })
+          return list.push(createSwitch(val))
+        }
 
-      /** 手风琴 */
-      if (val.componentType === 'accordion') {
-        return createAccordion(val)
-      }
+        /** 单选框组 */
+        if (val.componentType === 'radio-group') {
+          const k = subKey ? `${subKey}${val.key}` : val.key
+          createResultFnc(k, (value: string) => {
+            result[k] = value
+          })
+          return list.push(createRadioGroup({ ...val, key: k }))
+        }
 
-      /** 手风琴pro */
-      if (val.componentType === 'accordion-pro') {
-        return createAccordionPro(val)
-      }
+        /** 复选框组 */
+        if (val.componentType === 'checkbox-group') {
+          const option: CheckboxGroupProps = val
+          val.checkbox.forEach((v, index) => {
+            const k = subKey ? `${subKey}${val.key}` : v.key
+            createResultFnc(k, (value: string, sourceKey: string) => {
+              if (!result[val.key]) {
+                result[val.key] = {}
+                val.checkbox.forEach(v => {
+                  result[val.key][k] = v.defaultSelected ?? false
+                })
+              }
+              result[val.key][sourceKey] = !!value
+            })
+            option.checkbox[index] = { ...v, key: k }
+          })
+          return list.push(createCheckboxGroup(option))
+        }
 
-      console.error(`[${val.componentType}] 不支持的组件类型`)
+        /** 输入框组 */
+        if (val.componentType === 'input-group') {
+          const k = subKey ? `${subKey}${val.key}` : val.key
+          createResultFnc(k, (value: string) => {
+            if (!result[k]) result[k] = []
+            result[k] = JSON.parse(value)
+          })
+          return list.push(createInputGroup({ ...val, key: k }))
+        }
+
+        /** 手风琴 */
+        if (val.componentType === 'accordion') {
+          return createAccordion(val)
+        }
+
+        /** 手风琴pro */
+        if (val.componentType === 'accordion-pro') {
+          return createAccordionPro(val)
+        }
+
+        console.error(`[${val.componentType}] 不支持的组件类型`)
+      } catch (error) {
+        console.error(`[${val.componentType}] 渲染失败`)
+        console.error(error)
+        errorMessages.push({ key: val.key, error: error as Error })
+      }
     })
 
     return list
@@ -532,19 +371,22 @@ export const DashboardPage = (configProps: ComponentConfig[]) => {
     <div className='flex flex-col w-full h-screen'>
       <Card
         shadow='sm'
-        className='border-b p-4 mb-0.5 rounded-lg border-gray-300'
+        className='border-b mb-1 rounded-lg border-gray-300'
       >
-        <div className='flex justify-between items-start'>
-          <div className='flex justify-center items-center whitespace-nowrap'>
-            <Avatar src='https://avatar.vercel.sh/ikenxuan' size='md' radius='full' />
-            <div className='flex flex-col ml-4'>
-              <div className='text-base flex items-center'>
+        <div className='p-4 flex flex-col gap-2'>
+          {/* 头部信息区域 */}
+          <div className='flex items-center'>
+            <Avatar src='https://avatar.vercel.sh/ikenxuan' size='sm' radius='full' />
+            <div className='flex flex-col ml-3'>
+              <div className='text-sm font-medium text-default-900'>
                 插件名称
               </div>
-              <div className='text-sm text-gray-600'>基本信息展示</div>
+              <div className='text-xs text-default-500'>基本信息展示</div>
             </div>
           </div>
-          <div className='flex gap-2'>
+
+          {/* 操作按钮区域 */}
+          <div className='flex gap-2 justify-center sm:justify-end border-t border-gray-100 pt-3 mt-2'>
             <ConfigDetailModal
               showJsonModal={showJsonModal}
               setShowJsonModal={setShowJsonModal}
@@ -554,7 +396,7 @@ export const DashboardPage = (configProps: ComponentConfig[]) => {
               type='submit'
               color='primary'
               variant='flat'
-              size='md'
+              size='sm'
               className={`${BUTTON_COMMON_STYLES} bg-blue-50 hover:bg-blue-100 text-blue-600`}
               onPress={() => {
                 const form = document.getElementById('dashboard-form')
@@ -573,17 +415,32 @@ export const DashboardPage = (configProps: ComponentConfig[]) => {
       >
         <Form
           id='dashboard-form'
-          className='flex gap-4'
+          className='flex flex-col w-full'
           validationErrors={errors}
           onSubmit={onSubmit}
         >
-          <div className='mb-4 px-6 py-4 w-full min-w-[500px]'>
-            {renderConfig(input, createResultFnc)}
+          <div className='mb-4 px-4 sm:px-6 py-4 w-full'>
+            {renderConfig(configProps, createResultFnc)}
           </div>
+          {errorMessages.length > 0 && (
+            <Card
+              shadow='lg'
+              className='flex flex-col gap-6 mx-12 my-2 bg-red-100 border border-red-300 rounded-lg p-4 max-w-8xl'
+            >
+              <div className='text-red-600 font-bold text-xl flex items-center gap-2'>
+                <MdWarning className='w-6 h-6' />
+                错误信息
+              </div>
+              {errorMessages.map((msg, index) => (
+                <div key={index} className='flex flex-col mb-4'>
+                  <div className='text-red-500 text-lg'>组件渲染错误: {msg.key}</div>
+                  <pre className='text-sm text-gray-700 bg-gray-200 p-3 rounded-md overflow-x-auto'>{msg.error.stack}</pre>
+                </div>
+              ))}
+            </Card>
+          )}
         </Form>
       </Card>
     </div>
   )
 }
-
-export default DashboardPage
