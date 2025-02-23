@@ -1,6 +1,7 @@
 import './config'
 import './admin'
 import './install'
+import './local'
 import path from 'node:path'
 import { testGithub } from './test-url'
 import { getPlugins } from '@/plugin/list'
