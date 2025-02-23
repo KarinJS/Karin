@@ -22,17 +22,17 @@ export interface DynamicFormProps {
   setExpandedSections: (sections: Set<Key>) => void
 }
 
-function EmptyTip({ fields }: { fields: unknown[] }) {
+function EmptyTip ({ fields }: { fields: unknown[] }) {
   return (
     fields.length === 0 && (
-      <div className="text-sm text-content4-foreground text-center col-span-2">
+      <div className='text-sm text-content4-foreground text-center col-span-2'>
         暂无数据，点击上方按钮添加
       </div>
     )
   )
 }
 
-function ArrayField({
+function ArrayField ({
   control,
   field,
   fullPath,
@@ -50,33 +50,33 @@ function ArrayField({
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className='flex flex-row items-center justify-between'>
         <h2>{field.label}</h2>
         <Button
-          type="button"
-          color="primary"
-          size="sm"
-          radius="full"
+          type='button'
+          color='primary'
+          size='sm'
+          radius='full'
           startContent={<MdAdd />}
           onPress={() => append(field.defaultValue ?? '')}
         >
           添加
         </Button>
       </CardHeader>
-      <CardBody className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <CardBody className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <EmptyTip fields={fields} />
         {fields.map((item, index) => (
-          <div key={item.id} className="flex items-center space-x-2">
+          <div key={item.id} className='flex items-center space-x-2'>
             <Input
               type={field.elementType}
               {...register(`${fullPath}.${index}`)}
-              className="flex-1"
+              className='flex-1'
             />
             <Button
-              type="button"
-              size="sm"
-              radius="full"
-              color="danger"
+              type='button'
+              size='sm'
+              radius='full'
+              color='danger'
               startContent={<MdDelete />}
               onPress={() => remove(index)}
             >
@@ -89,7 +89,7 @@ function ArrayField({
   )
 }
 
-function ObjectArrayField({
+function ObjectArrayField ({
   control,
   field,
   fullPath,
@@ -107,14 +107,14 @@ function ObjectArrayField({
   const safeFields = field.fields || []
 
   return (
-    <Card className="p-4">
-      <CardHeader className="flex flex-row items-center justify-between">
+    <Card className='p-4'>
+      <CardHeader className='flex flex-row items-center justify-between'>
         <h2>{field.label}</h2>
         <Button
-          type="button"
-          color="primary"
-          size="sm"
-          radius="full"
+          type='button'
+          color='primary'
+          size='sm'
+          radius='full'
           startContent={<MdAdd />}
           onPress={() => append({})}
         >
@@ -123,7 +123,7 @@ function ObjectArrayField({
       </CardHeader>
       <CardBody>
         <EmptyTip fields={fields} />
-        <Accordion key={field.key} className="mb-4 p-4 border rounded" selectionMode="multiple">
+        <Accordion key={field.key} className='mb-4 p-4 border rounded' selectionMode='multiple'>
           {fields.map((item, index) => {
             const _item = item as Record<string, string>
             return (
@@ -141,11 +141,11 @@ function ObjectArrayField({
                   </React.Fragment>
                 ))}
                 <Button
-                  type="button"
-                  size="sm"
-                  color="danger"
+                  type='button'
+                  size='sm'
+                  color='danger'
                   onPress={() => remove(index)}
-                  className="mt-2"
+                  className='mt-2'
                 >
                   删除
                 </Button>
@@ -175,7 +175,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     // 创建一个通用的描述渲染函数
     const renderDescription = (description?: string) => {
       if (!description) return null
-      return <div className="text-sm text-content4-foreground mt-1">{description}</div>
+      return <div className='text-sm text-content4-foreground mt-1'>{description}</div>
     }
 
     switch (field.type) {
@@ -189,7 +189,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
         return (
           <Accordion
             key={key}
-            selectionMode="multiple"
+            selectionMode='multiple'
             selectedKeys={expandedSections}
             onSelectionChange={keys => {
               if (typeof keys === 'string') {
@@ -206,7 +206,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
             }}
           >
             <AccordionItem key={field.key} title={field.label} textValue={field.label}>
-              <div className="space-y-4">
+              <div className='space-y-4'>
                 {field.children.map((subField, subIndex) => (
                   <React.Fragment key={subField.key ?? subIndex}>
                     {renderField(subField)}
@@ -224,7 +224,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
             label={field.label}
             defaultValue={field.defaultValue}
             {...register(fullPath, { required: field.required })}
-            className="w-full"
+            className='w-full'
             errorMessage={errors[field.key]?.message?.toString()}
             description={field.description}
           />
@@ -235,10 +235,10 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
           <Input
             key={key}
             label={field.label}
-            type="number"
+            type='number'
             defaultValue={field.defaultValue?.toString()}
             {...register(fullPath, { required: field.required })}
-            className="w-full"
+            className='w-full'
             description={field.description}
           />
         )
@@ -253,7 +253,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
 
       case 'checkbox':
         return (
-          <Card key={key} shadow="sm">
+          <Card key={key} shadow='sm'>
             <CheckboxGroup
               label={field.label}
               defaultValue={field.defaultValue?.map(String)}
@@ -274,7 +274,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
 
       case 'radio':
         return (
-          <Card key={key} shadow="sm">
+          <Card key={key} shadow='sm'>
             <CardBody>
               <RadioGroup
                 label={field.label}
@@ -303,7 +303,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
             {...register(fullPath)}
           >
             {option => (
-              <SelectItem key={option.value} value={option.value.toString()}>
+              <SelectItem key={option.value}>
                 {option.label}
               </SelectItem>
             )}
@@ -334,16 +334,16 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
 
       case 'object':
         return (
-          <Card key={key} className="p-4">
-            <CardHeader className="flex flex-row items-center justify-between">
+          <Card key={key} className='p-4'>
+            <CardHeader className='flex flex-row items-center justify-between'>
               <div>
                 <h2>{field.label}</h2>
                 {field.description && (
-                  <div className="text-sm text-content4-foreground">{field.description}</div>
+                  <div className='text-sm text-content4-foreground'>{field.description}</div>
                 )}
               </div>
             </CardHeader>
-            <CardBody className="space-y-4">
+            <CardBody className='space-y-4'>
               {field.fields.map((subField, subIndex) => (
                 <React.Fragment key={subField.key ?? subIndex}>
                   {renderField(subField, fullPath)}
