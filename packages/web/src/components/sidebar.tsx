@@ -1,3 +1,4 @@
+/* eslint-disable @stylistic/indent */
 import { siteConfig, initSiteConfig } from '@/config/site'
 import clsx from 'clsx'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
@@ -10,6 +11,7 @@ import { IoMenu, IoClose } from 'react-icons/io5'
 import { useLocalStorageState } from 'ahooks'
 import key from '@/consts/key'
 import { Icon } from './ui/icon'
+import { Spinner } from '@heroui/spinner'
 
 const menuItemVariants = {
   hidden: {
@@ -78,20 +80,16 @@ export default function Sidebar () {
   )
   const [show, setShow] = useState(true)
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [pluginsLoading, setPluginsLoading] = useState(true)
   const isNotSmallScreen = useMediaQuery({ minWidth: 768 })
   const location = useLocation()
   const navigate = useNavigate()
 
   useEffect(() => {
     initSiteConfig().then(() => {
-      setIsLoading(false)
+      setPluginsLoading(false)
     })
   }, [])
-
-  if (isLoading) {
-    return null
-  }
 
   return (
     <motion.div className='h-full fixed md:relative z-50'>
@@ -466,7 +464,7 @@ export default function Sidebar () {
                       <item.Icon />
                     </motion.div>
                     <motion.div
-                      className='whitespace-nowrap overflow-hidden text-sm relative z-10 flex-1'
+                      className='whitespace-nowrap overflow-hidden text-sm relative z-10 flex-1 flex items-center gap-2'
                       initial={{
                         width: isCollapsed ? 0 : 'auto',
                       }}
@@ -475,6 +473,17 @@ export default function Sidebar () {
                       }}
                     >
                       {item.label}
+                      {item.href === '/plugins' && (
+                        <>
+                          {pluginsLoading
+                            ? (
+                              <Spinner className='w-10 h-4 text-primary' variant='wave' size='md' />
+                            )
+                            : (
+                              <span className='text-success text-base'>✓</span>
+                            )}
+                        </>
+                      )}
                     </motion.div>
                     {item.children && !isCollapsed && (
                       <motion.div
@@ -498,27 +507,33 @@ export default function Sidebar () {
                           exit='hidden'
                           className='overflow-hidden ml-4'
                         >
-                          {item.children.map((child) => (
-                            <Fragment key={child.href}>
-                              <NavLink
-                                key={child.href}
-                                to={{
-                                  pathname: child.href,
-                                  search: `?type=${child.type || ''}`
-                                }}
-                                className={({ isActive }) =>
-                                  clsx(
-                                    'flex items-center gap-2 py-2 px-3 text-sm text-default-600 hover:text-primary rounded-lg transition-colors',
-                                    {
-                                      '!text-primary bg-primary/5': isActive,
-                                    }
-                                  )}
-                              >
-                                {child.icon && <Icon name={child.icon?.name || ''} size={child.icon?.size} color={child.icon?.color} />}
-                                {child.label}
-                              </NavLink>
-                            </Fragment>
-                          ))}
+                          {pluginsLoading && item.href === '/plugins'
+                            ? (
+                              <div className='flex items-center justify-center py-4'>
+                                <Spinner className='w-2 h-4 text-primary -ml-7' variant='dots' size='lg' />
+                              </div>
+                            )
+                            : (item.children.map((child) => (
+                              <Fragment key={child.href}>
+                                <NavLink
+                                  to={{
+                                    pathname: child.href,
+                                    search: `?type=${child.type || ''}`
+                                  }}
+                                  className={({ isActive }) =>
+                                    clsx(
+                                      'flex items-center gap-2 py-2 px-3 text-sm text-default-600 hover:text-primary rounded-lg transition-colors',
+                                      {
+                                        '!text-primary bg-primary/5': isActive,
+                                      }
+                                    )}
+                                >
+                                  {child.icon && <Icon name={child.icon?.name || ''} size={child.icon?.size} color={child.icon?.color} />}
+                                  {child.label}
+                                </NavLink>
+                              </Fragment>
+                            ))
+                            )}
                         </motion.div>
                       )}
                     </AnimatePresence>

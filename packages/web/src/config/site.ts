@@ -82,6 +82,8 @@ const defaultSiteConfig: SiteConfigType = {
 export const siteConfig: SiteConfigType = { ...defaultSiteConfig }
 
 export const initSiteConfig = async () => {
+  // 延迟5秒 用于测试
+  await new Promise(resolve => setTimeout(resolve, 5000))
   const plugins = await getInstalledPlugins()
   const pluginConfigIndex = siteConfig.navItems.findIndex(item => item.href === '/plugins')
   if (pluginConfigIndex !== -1) {
