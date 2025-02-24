@@ -26,7 +26,6 @@ export const createSwitch = (props: SwitchProps): JSX.Element => {
   return (
     <div className='flex flex-col gap-2 mx-2' key={`div-${key}`}>
       {props.label && <label className='block text-sm font-medium text-gray-700'>{props.label}</label>}
-      {props.description && <span className='text-xs text-gray-500'>{props.description}</span>}
       <div className='flex items-center gap-2'>
         {startText && <span>{startText}</span>}
         <input
@@ -43,6 +42,7 @@ export const createSwitch = (props: SwitchProps): JSX.Element => {
           {endText}
         </HeroSwitch>
       </div>
+      {props.description && <span className='text-xs text-gray-500'>{props.description}</span>}
     </div>
   )
 }

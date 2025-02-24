@@ -198,7 +198,7 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
                   key={key}
                   title={title || '手风琴默认标题'}
                   subtitle={subtitle || '手风琴默认副标题'}
-                  className={componentClassName}
+                  className={componentClassName || 'mx-2'}
                   textValue={`textValue-${key}-${index}`}
                 >
                   {renderConfig(
@@ -211,6 +211,7 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
               )
             }).filter(Boolean)}
           </HeroAccordion>
+          <div className='h-2' />
         </div>
       )
     }
