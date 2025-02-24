@@ -1,6 +1,12 @@
-import { directHandler, friendHandler, groupHandler, groupTempHandler, guildHandler } from '../handler/message'
 import { friendNoticeHandler, groupNoticeHandler } from '../handler/notice'
 import { friendRequestHandler, groupRequestHandler } from '../handler/request'
+import {
+  directHandler,
+  friendHandler,
+  groupHandler,
+  groupTempHandler,
+  guildHandler
+} from '../handler/message'
 import {
   FriendMessage,
   GroupMessage,
@@ -42,8 +48,6 @@ import type {
   DirectMessageOptions,
   GuildMessageOptions,
   GroupTempMessageOptions,
-} from '@/types/event'
-import type {
   ReceiveLikeOptions,
   FriendIncreaseOptions,
   FriendDecreaseOptions,
@@ -65,8 +69,6 @@ import type {
   GroupMessageReactionOptions,
   GroupLuckKingOptions,
   GroupHonorChangedOptions,
-} from '@/types/event'
-import type {
   PrivateApplyRequestOptions,
   GroupApplyRequestOptions,
   GroupInviteRequestOptions,

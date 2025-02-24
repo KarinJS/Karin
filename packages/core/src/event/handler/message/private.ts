@@ -19,6 +19,7 @@ import {
 import type { Message } from '@/types/event'
 import type { DirectMessage, FriendMessage } from '../../message'
 import { Permission } from '../other/permission'
+import { hooksEmit } from '@/hooks/messaeg'
 
 /**
  * @description 好友消息处理器
@@ -36,11 +37,14 @@ export const friendHandler = async (ctx: FriendMessage) => {
   initEmit(ctx)
   initPrint(ctx, 'friend', '好友消息')
 
+  /** 消息钩子 */
+  hooksEmit.friend(ctx)
+  hooksEmit.message(ctx)
+
   const context = CTX(ctx)
   if (context) return ctx
 
   const filter = privateFilterEvent(ctx, config, friend, privateCD(friend, ctx.userId))
-  // TODO: 中间件实现
 
   if (filter) {
     privateDeal(ctx, friend, (plugin: typeof cache.command[number]) => {
@@ -68,12 +72,15 @@ export const directHandler = async (ctx: DirectMessage) => {
   initEmit(ctx)
   initPrint(ctx, 'direct', '频道私信')
 
+  /** 消息钩子 */
+  hooksEmit.direct(ctx)
+  hooksEmit.message(ctx)
+
   const context = CTX(ctx)
   if (context) return ctx
 
   const cd = privateCD(friend, ctx.userId)
   const filter = privateFilterEvent(ctx, config, friend, cd)
-  // TODO: 中间件实现
 
   if (filter) {
     privateDeal(ctx, friend, (plugin: typeof cache.command[number]) => {

@@ -21,6 +21,7 @@ import {
 import type { Message } from '@/types/event'
 import type { GroupMessage, GroupTempMessage, GuildMessage } from '../../message'
 import { Permission } from '../other/permission'
+import { hooksEmit } from '@/hooks/messaeg'
 
 /**
  * @description 群聊消息处理器
@@ -40,12 +41,15 @@ export const groupHandler = async (ctx: GroupMessage) => {
   initEmit(ctx)
   initPrint(ctx, 'group', '群消息', isPrint ? 'info' : 'debug')
 
+  /** 消息钩子 */
+  hooksEmit.group(ctx)
+  hooksEmit.message(ctx)
+
   const context = CTX(ctx)
   if (context) return ctx
 
   const cd = groupsCD(group, ctx.groupId, ctx.userId)
   const filter = groupFilterEvent(ctx, config, group, cd)
-  // TODO: 中间件实现
 
   if (filter) {
     groupsDeal(ctx, group, isPrint, (plugin: typeof cache.command[number]) => {
@@ -79,6 +83,10 @@ export const groupTempHandler = async (ctx: GroupTempMessage) => {
   initAlias(ctx, group.alias)
   initEmit(ctx)
   initPrint(ctx, 'groupTemp', '群临时消息')
+
+  /** 消息钩子 */
+  hooksEmit.groupTemp(ctx)
+  hooksEmit.message(ctx)
 
   const context = CTX(ctx)
   if (context) return ctx
@@ -115,6 +123,10 @@ export const guildHandler = async (ctx: GuildMessage) => {
 
   const context = CTX(ctx)
   if (context) return ctx
+
+  /** 消息钩子 */
+  hooksEmit.guild(ctx)
+  hooksEmit.message(ctx)
 
   const cd = groupsCD(group, `${ctx.guildId}:${ctx.channelId}`, ctx.userId)
   const filter = groupFilterEvent(ctx, config, group, cd)
