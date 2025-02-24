@@ -4,6 +4,8 @@ import { cache } from '@/plugin/cache'
 import { listeners } from '@/core/internal'
 import { context as CTX } from '../other/context'
 import { config as cfg, getFriendCfg } from '@/utils/config'
+import { Permission } from '../other/permission'
+import { hooksEmit } from '@/hooks/messaeg'
 import {
   log,
   initAlias,
@@ -16,10 +18,19 @@ import {
   disableViaPluginBlacklist,
 } from '../other/handler'
 
-import type { Message } from '@/types/event'
+import type { Plugin } from '@/plugin/class'
+import type { Message, MessageEventMap } from '@/types/event'
 import type { DirectMessage, FriendMessage } from '../../message'
-import { Permission } from '../other/permission'
-import { hooksEmit } from '@/hooks/messaeg'
+
+/**
+ * @description 类型守卫函数：检查对象是否包含指定的方法
+ */
+const hasMethod = (
+  obj: Plugin<keyof MessageEventMap>,
+  methodName: string
+): obj is Plugin<keyof MessageEventMap> & Record<string, Function> => {
+  return typeof obj[methodName as keyof Plugin<keyof MessageEventMap>] === 'function'
+}
 
 /**
  * @description 好友消息处理器
@@ -169,7 +180,7 @@ const privateCmd = async (
       if (next === false && result === false) next = true
     } else {
       const App = new plugin.Cls()
-      if (typeof App?.[plugin.file.method as keyof typeof App] !== 'function') {
+      if (!hasMethod(App, plugin.file.method)) {
         logger.debug(`[${plugin.pkg.name}][${plugin.file.method}] 方法不存在`)
         return true
       }
@@ -177,7 +188,7 @@ const privateCmd = async (
       App.e = ctx
       App.next = () => { next = true }
       App.reply = App.e.reply.bind(App.e)
-      const result = await (App as any)[plugin.file.method](App.e)
+      const result = await App[plugin.file.method](App.e)
       if (next === false && result === false) next = true
     }
 

@@ -1,7 +1,6 @@
 import util from 'node:util'
 import { lockProp } from '@/utils/system/lock'
-import { segment } from '@/utils/message'
-import { makeMessage, createRawMessage } from '@/utils/message'
+import { segment, makeMessage, createRawMessage } from '@/utils/message'
 
 import type { AdapterType, SendMsgResults } from '@/types/adapter'
 import type {
@@ -69,62 +68,63 @@ export abstract class BaseEvent<T extends EventParent> {
     this.isAdmin = false
 
     this.reply = async (elements, options) => {
-      /** 参数归一化 */
-      const message = makeMessage(elements)
+      try {
+        /** 参数归一化 */
+        const message = makeMessage(elements)
 
-      const at = options?.at ?? false
-      const reply = options?.reply ?? false
-      const recallMsg = options?.recallMsg ?? 0
-      // const retryCount = options?.retryCount ?? 0
+        const at = options?.at ?? false
+        const reply = options?.reply ?? false
+        const recallMsg = options?.recallMsg ?? 0
 
-      /** 加入at */
-      if (at && !this.isPrivate) {
-        message.unshift(segment.at(this.userId))
+        /** 加入at */
+        if (at && !this.isPrivate) {
+          message.unshift(segment.at(this.userId))
+        }
+
+        /** 加入引用回复 */
+        if (reply && 'message_id' in this) {
+          message.unshift(segment.reply(this.message_id as string))
+        }
+
+        let result: SendMsgResults = {
+          messageId: '',
+          time: 0,
+          messageTime: 0,
+          rawData: {},
+          /** @deprecated 已废弃，请使用 messageId */
+          message_id: '',
+        }
+
+        /** 先发 提升速度 */
+        const request = this.#srcReply(message)
+        const { raw } = createRawMessage(message)
+        if (this.isGroup) {
+          this.selfId !== 'console' && logger.bot('info', this.selfId, `${logger.green(`Send Group ${this.contact.peer}: `)}${raw.replace(/\n/g, '\\n')}`)
+        } else {
+          this.selfId !== 'console' && logger.bot('info', this.selfId, `${logger.green(`Send private ${this.contact.peer}: `)}${raw.replace(/\n/g, '\\n')}`)
+        }
+
+        /** 发送消息 */
+        result = util.types.isPromise(request) ? await request : request
+        result.message_id = result.messageId
+
+        /** 快速撤回 */
+        if (recallMsg > 0 && result.messageId) {
+          setTimeout(() => {
+            this.bot.recallMsg(this.contact, result.messageId)
+          }, recallMsg * 1000)
+        }
+
+        return result
+      } catch (error) {
+        const retryCount = options?.retryCount ?? 0
+        /** 重试reply */
+        if (retryCount > 0) {
+          return this.reply(elements, { ...options, retryCount: retryCount - 1 })
+        }
+
+        throw error
       }
-
-      /** 加入引用回复 */
-      if (reply && 'message_id' in this) {
-        message.unshift(segment.reply(this.message_id as string))
-      }
-
-      // TODO: 重试机制 收到消息中间键
-      // karin.emit(SEND_MSG, this.contact)
-
-      let result: SendMsgResults = {
-        messageId: '',
-        time: 0,
-        messageTime: 0,
-        rawData: {},
-        /** @deprecated 已废弃，请使用 messageId */
-        message_id: '',
-      }
-
-      // /** 先调用中间件 */
-      // if (await MiddlewareHandler(cache.middleware.replyMsg, this, message)) {
-      //   return result
-      // }
-
-      /** 先发 提升速度 */
-      const request = this.#srcReply(message)
-      const { raw } = createRawMessage(message)
-      if (this.isGroup) {
-        this.selfId !== 'console' && logger.bot('info', this.selfId, `${logger.green(`Send Group ${this.contact.peer}: `)}${raw.replace(/\n/g, '\\n')}`)
-      } else {
-        this.selfId !== 'console' && logger.bot('info', this.selfId, `${logger.green(`Send private ${this.contact.peer}: `)}${raw.replace(/\n/g, '\\n')}`)
-      }
-
-      /** 发送消息 */
-      result = util.types.isPromise(request) ? await request : request
-      result.message_id = result.messageId
-
-      /** 快速撤回 */
-      if (recallMsg > 0 && result.messageId) {
-        setTimeout(() => {
-          this.bot.recallMsg(this.contact, result.messageId)
-        }, recallMsg * 1000)
-      }
-
-      return result
     }
 
     lockProp(this, 'reply')

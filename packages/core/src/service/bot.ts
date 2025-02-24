@@ -1,14 +1,13 @@
 import { segment } from '@/utils/message'
-import { makeMessageLog } from '@/utils/common'
-import { listeners } from '@/core/internal/listeners'
-import { makeMessage } from '@/utils/common'
 import { SEND_MSG } from '@/utils/fs/key'
+import { hooksEmit } from '@/hooks/sendMsg'
+import { listeners } from '@/core/internal/listeners'
+import { makeMessageLog, makeMessage } from '@/utils/common'
 
-import type { SendMsgResults } from '@/types/adapter'
 import type { Contact } from '@/types/event'
 import type { AdapterBase } from '@/adapter/base'
 import type { Elements, ForwardOptions, NodeElement } from '@/types/segment'
-import type { AdapterCommunication, AdapterProtocol, AdapterType } from '@/types/adapter'
+import type { SendMsgResults, AdapterCommunication, AdapterProtocol, AdapterType } from '@/types/adapter'
 
 let index = 0
 const list: { index: number, bot: AdapterType }[] = []
@@ -151,16 +150,39 @@ export const registerBot = (type: AdapterCommunication, bot: AdapterBase) => {
   list.push({ index: id, bot })
 
   /**
-   * @description 重写转发消息方法 添加中间件
+   * @description 重写
    */
-  const sendForwardMsg = bot.sendForwardMsg
-  bot.sendForwardMsg = async (contact: Contact, elements: Array<NodeElement>, options?: ForwardOptions) => {
-    // TODO: 重写转发消息方法 添加中间件
-    // /** 先调用中间件 */
-    // if (await MiddlewareHandler(cache.middleware.forwardMsg, bot, contact, elements)) {
-    //   return { messageId: '', forwardId: '' }
-    // }
-    return sendForwardMsg.call(bot, contact, elements, options)
+  const originSendMsg = bot.sendMsg
+  const originSendForwardMsg = bot.sendForwardMsg
+
+  bot.sendMsg = async (
+    contact: Contact,
+    elements: Array<Elements>,
+    retryCount?: number
+  ) => {
+    const hook = await hooksEmit.message(contact, elements, retryCount)
+    if (!hook) return { messageId: '', time: -1, rawData: '', message_id: '', messageTime: -1 }
+
+    /** 重试sendMsg */
+    try {
+      const result = await originSendMsg.call(bot, contact, elements, retryCount)
+      return result
+    } catch (error) {
+      if (typeof retryCount === 'number' && retryCount > 0) {
+        return bot.sendMsg(contact, elements, retryCount - 1)
+      }
+      throw error
+    }
+  }
+
+  bot.sendForwardMsg = async (
+    contact: Contact,
+    elements: Array<NodeElement>,
+    options?: ForwardOptions
+  ) => {
+    const hook = await hooksEmit.forward(contact, elements, options)
+    if (!hook) return { messageId: '', forwardId: '' }
+    return originSendForwardMsg.call(bot, contact, elements, options)
   }
 
   setTimeout(async () => {

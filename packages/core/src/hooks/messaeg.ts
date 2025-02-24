@@ -1,5 +1,6 @@
 import lodash from 'lodash'
 import { isPromise } from 'util/types'
+import { cache, createHookId } from './cache'
 
 import type {
   FriendMessage,
@@ -9,36 +10,15 @@ import type {
   GroupTempMessage
 } from '@/event'
 import type { Message } from '@/types/event/event'
-import type { HookItem, HookCallback, HookOptions, HookCache, UnionMessage } from '@/types/hooks/message'
-
-/** 钩子计数器 */
-let hookId = 0
-
-/**
- * 存储钩子
- */
-const cache: HookCache = {
-  message: [],
-  friend: [],
-  group: [],
-  guild: [],
-  direct: [],
-  groupTemp: []
-}
-
-/**
- * 创建新的钩子ID
- */
-const createHookId = () => ++hookId
-
+import type { MessageHookItem, HookCallback, HookOptions, UnionMessage } from '@/types/hooks/message'
 /**
  * 添加钩子并排序
  */
-function addHook<T extends UnionMessage> (
-  list: HookItem<T>[],
+const addHook = <T extends UnionMessage> (
+  list: MessageHookItem<T>[],
   callback: HookCallback<T>,
   options: HookOptions = {}
-) {
+) => {
   const id = createHookId()
   list.push({
     id,
@@ -59,9 +39,9 @@ export const message = Object.assign(
    * @returns 钩子ID
    */
   (callback: HookCallback<Message>, options: HookOptions = {}) => {
-    const { id, list } = addHook(cache.message, callback, options)
+    const { id, list } = addHook(cache.message.message, callback, options)
     logger.mark(`[hooks] 添加全部消息钩子: ${id}`)
-    cache.message = list
+    cache.message.message = list
     return id
   },
   {
@@ -72,9 +52,9 @@ export const message = Object.assign(
      * @returns 钩子ID
      */
     friend (callback: HookCallback<FriendMessage>, options: HookOptions = {}) {
-      const { id, list } = addHook(cache.friend, callback, options)
+      const { id, list } = addHook(cache.message.friend, callback, options)
       logger.mark(`[hooks] 添加好友消息钩子: ${id}`)
-      cache.friend = list
+      cache.message.friend = list
       return id
     },
     /**
@@ -84,9 +64,9 @@ export const message = Object.assign(
      * @returns 钩子ID
      */
     group (callback: HookCallback<GroupMessage>, options: HookOptions = {}) {
-      const { id, list } = addHook(cache.group, callback, options)
+      const { id, list } = addHook(cache.message.group, callback, options)
       logger.mark(`[hooks] 添加群消息钩子: ${id}`)
-      cache.group = list
+      cache.message.group = list
       return id
     },
     /**
@@ -96,9 +76,9 @@ export const message = Object.assign(
      * @returns 钩子ID
      */
     guild (callback: HookCallback<GuildMessage>, options: HookOptions = {}) {
-      const { id, list } = addHook(cache.guild, callback, options)
+      const { id, list } = addHook(cache.message.guild, callback, options)
       logger.mark(`[hooks] 添加频道消息钩子: ${id}`)
-      cache.guild = list
+      cache.message.guild = list
       return id
     },
     /**
@@ -108,9 +88,9 @@ export const message = Object.assign(
      * @returns 钩子ID
      */
     direct (callback: HookCallback<DirectMessage>, options: HookOptions = {}) {
-      const { id, list } = addHook(cache.direct, callback, options)
+      const { id, list } = addHook(cache.message.direct, callback, options)
       logger.mark(`[hooks] 添加临时消息钩子: ${id}`)
-      cache.direct = list
+      cache.message.direct = list
       return id
     },
     /**
@@ -120,9 +100,9 @@ export const message = Object.assign(
      * @returns 钩子ID
      */
     groupTemp (callback: HookCallback<GroupTempMessage>, options: HookOptions = {}) {
-      const { id, list } = addHook(cache.groupTemp, callback, options)
+      const { id, list } = addHook(cache.message.groupTemp, callback, options)
       logger.mark(`[hooks] 添加群临时消息钩子: ${id}`)
-      cache.groupTemp = list
+      cache.message.groupTemp = list
       return id
     },
     /**
@@ -131,12 +111,12 @@ export const message = Object.assign(
      */
     remove (id: number) {
       logger.mark(`[hooks] 移除钩子: ${id}`)
-      cache.message = cache.message.filter(item => item.id !== id)
-      cache.friend = cache.friend.filter(item => item.id !== id)
-      cache.group = cache.group.filter(item => item.id !== id)
-      cache.guild = cache.guild.filter(item => item.id !== id)
-      cache.direct = cache.direct.filter(item => item.id !== id)
-      cache.groupTemp = cache.groupTemp.filter(item => item.id !== id)
+      cache.message.message = cache.message.message.filter(item => item.id !== id)
+      cache.message.friend = cache.message.friend.filter(item => item.id !== id)
+      cache.message.group = cache.message.group.filter(item => item.id !== id)
+      cache.message.guild = cache.message.guild.filter(item => item.id !== id)
+      cache.message.direct = cache.message.direct.filter(item => item.id !== id)
+      cache.message.groupTemp = cache.message.groupTemp.filter(item => item.id !== id)
     },
   }
 )
@@ -149,7 +129,7 @@ export const message = Object.assign(
  */
 const emitHooks = async <T extends UnionMessage> (
   event: T,
-  hooks: HookItem<T>[]
+  hooks: MessageHookItem<T>[]
 ): Promise<boolean> => {
   let isNext = false
   for (const hook of hooks) {
@@ -171,40 +151,40 @@ export const hooksEmit = {
    * @param event 消息事件
    * @returns 是否继续正常流程
    */
-  message: (event: Message) => emitHooks(event, cache.message),
+  message: (event: Message) => emitHooks(event, cache.message.message),
 
   /**
    * 触发好友消息钩子
    * @param event 好友消息事件
    * @returns 是否继续正常流程
    */
-  friend: (event: FriendMessage) => emitHooks(event, cache.friend),
+  friend: (event: FriendMessage) => emitHooks(event, cache.message.friend),
 
   /**
    * 触发群消息钩子
    * @param event 群消息事件
    * @returns 是否继续正常流程
    */
-  group: (event: GroupMessage) => emitHooks(event, cache.group),
+  group: (event: GroupMessage) => emitHooks(event, cache.message.group),
 
   /**
    * 触发频道消息钩子
    * @param event 频道消息事件
    * @returns 是否继续正常流程
    */
-  guild: (event: GuildMessage) => emitHooks(event, cache.guild),
+  guild: (event: GuildMessage) => emitHooks(event, cache.message.guild),
 
   /**
    * 触发私聊消息钩子
    * @param event 私聊消息事件
    * @returns 是否继续正常流程
    */
-  direct: (event: DirectMessage) => emitHooks(event, cache.direct),
+  direct: (event: DirectMessage) => emitHooks(event, cache.message.direct),
 
   /**
    * 触发群临时消息钩子
    * @param event 群临时消息事件
    * @returns 是否继续正常流程
    */
-  groupTemp: (event: GroupTempMessage) => emitHooks(event, cache.groupTemp)
+  groupTemp: (event: GroupTempMessage) => emitHooks(event, cache.message.groupTemp)
 }
