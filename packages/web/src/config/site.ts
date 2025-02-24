@@ -11,7 +11,7 @@ export interface NavItem {
   label: string
   href: string
   children?: {
-    label?: string
+    id: string
     href: string
     icon?: {
       name?: string
@@ -34,6 +34,7 @@ export interface SiteConfigType {
 const getInstalledPlugins = async () => {
   const list = await request.serverPost<LocalApiResponse[], null>('/api/v1/plugin/local') || []
   return list.map((item) => ({
+    id: item.id,
     label: item.name,
     href: `/plugins/${item.id}`,
     icon: item.icon,
@@ -82,8 +83,6 @@ const defaultSiteConfig: SiteConfigType = {
 export const siteConfig: SiteConfigType = { ...defaultSiteConfig }
 
 export const initSiteConfig = async () => {
-  // 延迟5秒 用于测试
-  await new Promise(resolve => setTimeout(resolve, 5000))
   const plugins = await getInstalledPlugins()
   const pluginConfigIndex = siteConfig.navItems.findIndex(item => item.href === '/plugins')
   if (pluginConfigIndex !== -1) {

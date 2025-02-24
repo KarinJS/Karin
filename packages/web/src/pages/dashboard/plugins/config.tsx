@@ -103,5 +103,5 @@ export default function PluginConfigPage () {
     )
   }
 
-  return <DashboardPage options={config.options} info={{ ...config.info, type }} />
+  return <DashboardPage options={config.options} info={{ ...config.info, type, id: config.info.id || name }} />
 }

@@ -529,7 +529,7 @@ export default function Sidebar () {
                                     )}
                                 >
                                   {child.icon && <Icon name={child.icon?.name || ''} size={child.icon?.size} color={child.icon?.color} />}
-                                  {child.label}
+                                  {child.id || child.href.split('/').pop()}
                                 </NavLink>
                               </Fragment>
                             ))

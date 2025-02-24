@@ -102,7 +102,6 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     const formValues = Object.fromEntries(formData)
-    console.log('formValues:', formValues)
 
     const processedResult = handleFormResult(formValues)
     if (processedResult === null) return
@@ -337,7 +336,6 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
         if (val.componentType === 'switch') {
           const k = subKey ? `${subKey}${val.key}` : val.key
           createResultFnc(k, (value: string) => {
-            console.log('value:', value)
             result[k] = value === 'true'
           })
           return list.push(createSwitch({ ...val, key: k }))

@@ -268,9 +268,6 @@ const filterApp = async (files: fs.Dirent[], list: string[]) => {
 
     list.push(`app:${v.name}`)
   }))
-
-  const root = await requireFile('./package.json')
-  if (root.name && root.karin) list.push(`root:${root.name}`)
 }
 
 const filterGit = async (files: fs.Dirent[], list: string[]) => {
@@ -280,6 +277,9 @@ const filterGit = async (files: fs.Dirent[], list: string[]) => {
     if (!fs.existsSync(path.join(dir, v.name, 'package.json'))) return
     list.push(`git:${v.name}`)
   }))
+
+  const root = await requireFile('./package.json')
+  if (root.name && root.karin) list.push(`root:${root.name}`)
 }
 
 const filterPkg = async (list: string[]) => {
