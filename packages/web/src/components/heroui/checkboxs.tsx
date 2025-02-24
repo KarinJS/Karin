@@ -20,7 +20,7 @@ export const createCheckboxGroup = (props: CheckboxGroupProps): JSX.Element => {
     ...options
   } = props
   return (
-    <div className={componentClassName || 'flex items-center gap-2 mx-2'} key={`div-${key}`}>
+    <div className={componentClassName || 'flex items-center gap-2 p-2'} key={`div-${key}`}>
       <HeroCheckboxGroup
         key={key}
         orientation='horizontal'

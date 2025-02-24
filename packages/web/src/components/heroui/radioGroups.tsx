@@ -18,7 +18,7 @@ export const createRadioGroup = (props: RadioGroupProps): JSX.Element => {
   } = props
 
   return (
-    <div className={className || 'flex items-center gap-2 mx-2'} key={`div-${key}`}>
+    <div className={className || 'flex items-center gap-2 p-2'} key={`div-${key}`}>
       <HeroRadioGroup
         key={key}
         orientation='horizontal'

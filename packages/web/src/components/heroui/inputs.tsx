@@ -15,7 +15,7 @@ import type { InputProps, InputGroupProps } from 'node-karin'
 const generateDivClassName = (props: InputProps): string => {
   if (props.className && typeof props.className === 'string') return props.className
   if (props.width || props.height) return `w-${props.width || 200}px h-${props.height || 40}px`
-  return 'inline-flex px-2 mb-2 mt-2'
+  return 'inline-flex p-2'
 }
 
 /**
@@ -140,7 +140,7 @@ export const createInputGroup = (props: InputGroupProps) => {
       key={instanceId.current}
       className={
         props.className ||
-        'w-full rounded-2xl px-2 transition-colors'
+        'w-full rounded-2xl p-2 transition-colors'
       }
     >
       <input

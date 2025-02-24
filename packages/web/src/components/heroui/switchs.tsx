@@ -24,7 +24,7 @@ export const createSwitch = (props: SwitchProps): JSX.Element => {
   const [isSelected, setIsSelected] = useState(props.defaultSelected ?? false)
 
   return (
-    <div className='flex flex-col gap-1 m-2 ' key={`div-${key}`}>
+    <div className='flex flex-col gap-1 p-2 ' key={`div-${key}`}>
       {props.label && <label className='block text-sm font-medium text-gray-700'>{props.label}</label>}
       <div className='flex items-center gap-2'>
         {startText && <span>{startText}</span>}
