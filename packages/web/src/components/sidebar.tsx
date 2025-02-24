@@ -472,7 +472,7 @@ export default function Sidebar () {
                         width: isCollapsed ? 0 : 'auto',
                       }}
                     >
-                      {item.label}
+                      <span className='select-none'>{item.label}</span>
                       {item.href === '/plugins' && (
                         <>
                           {pluginsLoading
@@ -505,7 +505,7 @@ export default function Sidebar () {
                           initial='hidden'
                           animate='visible'
                           exit='hidden'
-                          className='overflow-hidden ml-4'
+                          className='overflow-hidden mx-2'
                         >
                           {pluginsLoading && item.href === '/plugins'
                             ? (
@@ -522,7 +522,7 @@ export default function Sidebar () {
                                   }}
                                   className={({ isActive }) =>
                                     clsx(
-                                      'flex items-center gap-2 py-2 px-3 text-sm text-default-600 hover:text-primary rounded-lg transition-colors',
+                                      'mb-2 flex items-center gap-2 py-2 px-3 text-sm text-default-600 hover:text-primary rounded-lg transition-colors',
                                       {
                                         '!text-primary bg-primary/5': isActive,
                                       }
