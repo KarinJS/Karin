@@ -258,7 +258,7 @@ export function PluginInfoModal ({
               )}
               {plugin.type.toLowerCase() !== 'app' && (
                 <Link
-                  href={`/plugins/${plugin.name}?type=${plugin.type.toLowerCase()}`}
+                  href={`../plugins/${plugin.name}?type=${plugin.type.toLowerCase()}`}
                   color='secondary'
                   className='inline-flex items-center gap-2 px-3 py-1 text-sm font-medium rounded-lg bg-secondary-100 text-secondary-700 hover:bg-secondary-200'
                 >
