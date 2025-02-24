@@ -1,6 +1,6 @@
 import { Input as HeroInput } from '@heroui/input'
 import { createValidator } from './utils'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, lazy, Suspense } from 'react'
 import { Button } from '@heroui/button'
 import { IoCloseCircle } from 'react-icons/io5'
 import { toast } from 'react-hot-toast'
@@ -50,15 +50,11 @@ export const createInput = (props: InputProps): JSX.Element => {
 }
 
 /**
- * 渲染输入框组 组件
- * @param props - 输入框组属性
- * @returns 渲染后的输入框组组件
+ * 输入框组组件
  */
-export const createInputGroup = (props: InputGroupProps) => {
-  const { key, template, data } = props
-
-  // 使用 key 作为组件实例的唯一标识
-  const instanceId = useRef(key)
+const InputGroup = (props: InputGroupProps) => {
+  const { template, data, key: k } = props
+  const key = k
 
   // 确保初始数据格式正确
   const initialData = (data || []).map(item =>
@@ -137,7 +133,7 @@ export const createInputGroup = (props: InputGroupProps) => {
 
   return (
     <div
-      key={instanceId.current}
+      key={key}
       className={
         props.className ||
         'w-full rounded-2xl p-3 sm:p-4 transition-colors'
@@ -145,7 +141,7 @@ export const createInputGroup = (props: InputGroupProps) => {
     >
       <input
         type='hidden'
-        name={instanceId.current}
+        name={key}
         value={JSON.stringify(groupValue)}
       />
 
@@ -161,7 +157,7 @@ export const createInputGroup = (props: InputGroupProps) => {
             {groupValue.length}{maxInputs !== 0 ? `/${maxInputs}` : ''}
           </span>
           <Button
-            key={`${instanceId.current}-add-input`}
+            key={`${key}-add-input`}
             variant='solid'
             color='primary'
             size='sm'
@@ -185,7 +181,7 @@ export const createInputGroup = (props: InputGroupProps) => {
         }}
       >
         {groupValue.map((value, index) => {
-          const itemKey = `${instanceId.current}-${index}`
+          const itemKey = `${key}-${index}`
           return (
             <div key={itemKey} className='grid grid-cols-[1fr,auto] items-center gap-1'>
               <HeroInput
@@ -219,5 +215,24 @@ export const createInputGroup = (props: InputGroupProps) => {
         })}
       </div>
     </div>
+  )
+}
+
+// 创建懒加载组件
+const LazyInputGroup = lazy(() => Promise.resolve({ default: InputGroup }))
+
+/**
+ * 渲染输入框组 组件
+ */
+export const createInputGroup = (props: InputGroupProps): JSX.Element => {
+  return (
+    <Suspense fallback={
+      <div className='w-full h-[200px] flex items-center justify-center'>
+        <span className='text-gray-500'>加载中...</span>
+      </div>
+    }
+    >
+      <LazyInputGroup {...props} key={props.key} />
+    </Suspense>
   )
 }

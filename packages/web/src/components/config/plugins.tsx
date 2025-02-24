@@ -237,6 +237,14 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
         ...options
       } = val
 
+      const [forceKey, setForceKey] = React.useState(0)
+
+      const handleDeleteItem = (index: number) => {
+        data.splice(index, 1)
+        if (result[key]) result[key].splice(index, 1)
+        setForceKey(prev => prev + 1)
+      }
+
       // 根据data来填充模板 形成对应的子组件children
       const {
         children: childrenConfig,
@@ -251,9 +259,23 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
         <div className={className || 'flex flex-col gap-4 max-w-[calc(100%-1rem)] mx-2'} key={`div-${key}`}>
           <div className='flex justify-between items-center'>
             <span className='text-default-500 text-md mt-2'>{label}</span>
+            <button
+              type='button'
+              onClick={() => {
+                if (!Array.isArray(data) || data.length === 0) {
+                  data.push({})
+                } else {
+                  data.push(data[0])
+                }
+                setForceKey(prev => prev + 1)
+              }}
+              className='px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
+            >
+              添加新卡片
+            </button>
           </div>
           <HeroAccordion
-            key={`accordion-pro-${key}`}
+            key={`accordion-pro-${key}-${forceKey}`}
             {...options}
             className={componentClassName || 'border border-default-200 rounded-lg p-1'}
             keepContentMounted
@@ -261,7 +283,6 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
             {data.map((item, index) => {
               const props: ComponentConfig[] = []
               childrenConfig.forEach(v => {
-                if (typeof item[v.key] === 'undefined') return
                 if (
                   v.componentType === 'input' ||
                   v.componentType === 'checkbox-group' ||
@@ -269,7 +290,7 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
                 ) {
                   props.push({
                     ...v,
-                    defaultValue: item[v.key]
+                    defaultValue: item[v.key] ?? ''
                   })
                   return
                 }
@@ -277,7 +298,7 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
                 if (v.componentType === 'switch') {
                   props.push({
                     ...v,
-                    defaultSelected: item[v.key]
+                    defaultSelected: item[v.key] ?? false
                   })
                   return
                 }
@@ -285,7 +306,7 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
                 if (v.componentType === 'input-group') {
                   props.push({
                     ...v,
-                    data: item[v.key]
+                    data: item[v.key] ?? []
                   })
                   return
                 }
@@ -297,9 +318,31 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
                 <HeroAccordionItem
                   {...childrenOptions}
                   className={childrenClassName || 'mx-2'}
-                  key={`accordion-pro-item-${item.key}-${index}`}
+                  key={`accordion-pro-item-${item.key}-${index}-${forceKey}`}
                   textValue={`textValue-${item.key}-${index}`}
-                  title={item.title || title || '手风琴默认标题'}
+                  title={
+                    <div className='flex justify-between items-center w-full pr-4'>
+                      <span>{item.title || title || '手风琴默认标题'}</span>
+                      <div
+                        role='button'
+                        tabIndex={0}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleDeleteItem(index)
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            handleDeleteItem(index)
+                          }
+                        }}
+                        className='px-2 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors cursor-pointer'
+                      >
+                        删除
+                      </div>
+                    </div>
+                  }
                   subtitle={item.subtitle || subtitle || '手风琴默认副标题'}
                 >
                   {renderConfig(
