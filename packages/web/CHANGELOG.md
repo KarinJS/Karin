@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.3.9](https://github.com/KarinJS/Karin/compare/web-v1.3.8...web-v1.3.9) (2025-02-24)
+
+
+### 🐛 Bug Fixes
+
+* ... ([804090b](https://github.com/KarinJS/Karin/commit/804090b7191a636237831a9de552c97cc431159f))
+* 修正web 插件配置按钮跳转 ([0f49a85](https://github.com/KarinJS/Karin/commit/0f49a85395eae4e1d904e57f7f883036aee7628d))
+* 神经 ([9340d2b](https://github.com/KarinJS/Karin/commit/9340d2b6809f5440674a32fd4e89e30d90c8f088))
+
+
+### 💄 Styles
+
+* 优化插件配置按钮的加载状态 ([52e50b8](https://github.com/KarinJS/Karin/commit/52e50b84ec72e03fde59f0f641015fecdf0c7b76))
+* 间距、按钮描述 ([e95329f](https://github.com/KarinJS/Karin/commit/e95329f215af013b997512684409729050995336))
+
 ## [1.3.8](https://github.com/KarinJS/Karin/compare/web-v1.3.7...web-v1.3.8) (2025-02-23)
 
 

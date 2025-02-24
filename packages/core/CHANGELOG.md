@@ -1,5 +1,14 @@
 # 更新日志
 
+## [1.3.17](https://github.com/KarinJS/Karin/compare/core-v1.3.16...core-v1.3.17) (2025-02-24)
+
+
+### 🐛 Bug Fixes
+
+* 完善未匹配到插件的hook ([ba1869c](https://github.com/KarinJS/Karin/commit/ba1869c25d072be5832b26a7e0e0cd6602cabb8f))
+* 完善消息hooks ([0896237](https://github.com/KarinJS/Karin/commit/089623798bc508eca0753cd6cac108f3585c9654))
+* 完善消息发送hook ([cb65ebe](https://github.com/KarinJS/Karin/commit/cb65ebeff4242b8d320d5bac4f9e3977cda2732c))
+
 ## [1.3.16](https://github.com/KarinJS/Karin/compare/core-v1.3.15...core-v1.3.16) (2025-02-23)
 
 
