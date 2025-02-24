@@ -404,7 +404,7 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
     <div className='flex flex-col w-full h-screen'>
       <Card
         shadow='sm'
-        className='border-b mb-1 rounded-lg border-gray-300'
+        className='border-b mb-1 rounded-lg border-gray-300 dark:border-gray-600'
       >
         <div className='p-4 flex flex-col gap-2'>
           {/* 头部信息区域 */}
@@ -419,7 +419,7 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
           </div>
 
           {/* 操作按钮区域 */}
-          <div className='flex gap-2 justify-center sm:justify-end border-t border-gray-100 pt-3 mt-2'>
+          <div className='flex gap-2 justify-center sm:justify-end border-t border-gray-100 dark:border-gray-600 pt-3 mt-2'>
             <ConfigDetailModal
               showJsonModal={showJsonModal}
               setShowJsonModal={setShowJsonModal}
@@ -428,9 +428,10 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
             <Button
               type='submit'
               color='primary'
-              variant='flat'
+              variant='solid'
+              radius='md'
               size='sm'
-              className={`${BUTTON_COMMON_STYLES} bg-blue-50 hover:bg-blue-100 text-blue-600`}
+              className={`${BUTTON_COMMON_STYLES}`}
               onPress={() => {
                 const form = document.getElementById('dashboard-form')
                 if (form instanceof HTMLFormElement) return form.requestSubmit()
@@ -444,7 +445,7 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options: configProp
       </Card>
       <Card
         shadow='sm'
-        className='flex-1 rounded-lg shadow-md mb-2 border border-gray-200 overflow-auto'
+        className='flex-1 rounded-lg shadow-md mb-2 border border-gray-200 dark:border-gray-600 overflow-auto'
       >
         <Form
           id='dashboard-form'

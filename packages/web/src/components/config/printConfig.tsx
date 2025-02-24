@@ -42,7 +42,7 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
     <>
       <Button
         color='default'
-        variant='bordered'
+        variant='solid'
         size='md'
         onPress={() => {
           const form = document.getElementById('dashboard-form')
@@ -54,7 +54,7 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
             console.error('表单元素不存在')
           }
         }}
-        className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
+        className={`${BUTTON_COMMON_STYLES}`}
         startContent={<VscJson className='text-lg' />}
       >
         配置详情
