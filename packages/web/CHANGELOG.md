@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.10](https://github.com/KarinJS/Karin/compare/web-v1.3.9...web-v1.3.10) (2025-02-24)
+
+
+### 🐛 Bug Fixes
+
+* 兼容性提升 ([d22b68a](https://github.com/KarinJS/Karin/commit/d22b68a7600d419c4c2571e21893d2d36011df25))
+
 ## [1.3.9](https://github.com/KarinJS/Karin/compare/web-v1.3.8...web-v1.3.9) (2025-02-24)
 
 
