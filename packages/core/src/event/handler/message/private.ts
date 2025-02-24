@@ -5,7 +5,8 @@ import { listeners } from '@/core/internal'
 import { context as CTX } from '../other/context'
 import { config as cfg, getFriendCfg } from '@/utils/config'
 import { Permission } from '../other/permission'
-import { hooksEmit } from '@/hooks/messaeg'
+import { hooksMessageEmit } from '@/hooks/messaeg'
+import { hooksEmptyMessageEmit } from '@/hooks/emptyMessage'
 import {
   log,
   initAlias,
@@ -49,8 +50,8 @@ export const friendHandler = async (ctx: FriendMessage) => {
   initPrint(ctx, 'friend', '好友消息')
 
   /** 消息钩子 */
-  hooksEmit.friend(ctx)
-  hooksEmit.message(ctx)
+  hooksMessageEmit.friend(ctx)
+  hooksMessageEmit.message(ctx)
 
   const context = CTX(ctx)
   if (context) return ctx
@@ -84,8 +85,8 @@ export const directHandler = async (ctx: DirectMessage) => {
   initPrint(ctx, 'direct', '频道私信')
 
   /** 消息钩子 */
-  hooksEmit.direct(ctx)
-  hooksEmit.message(ctx)
+  hooksMessageEmit.direct(ctx)
+  hooksMessageEmit.message(ctx)
 
   const context = CTX(ctx)
   if (context) return ctx
@@ -139,8 +140,9 @@ const privateDeal = async (
 
   /** 未找到匹配插件 */
   log(ctx.userId, `未找到匹配到相应插件: ${ctx.messageId}`)
-  // TODO: 中间件实现
-  // MiddlewareHandler(cache.middleware.notFoundMsg, this.event)
+
+  /** 触发未找到匹配插件消息钩子 */
+  hooksEmptyMessageEmit.emptyMessage(ctx)
 }
 
 /**

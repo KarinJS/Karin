@@ -81,7 +81,10 @@ const emitHooks = async <T extends NormalMessageCallback | ForwardMessageCallbac
   return isNext
 }
 
-export const hooksEmit: {
+/**
+ * 发送消息钩子触发器
+ */
+export const hooksSendMsgEmit: {
   message: HookEmitMessage
   forward: HookEmitForward
 } = {

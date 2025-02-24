@@ -96,5 +96,7 @@ export interface HookCache {
     message: SendMsgHookItem<NormalMessageCallback>[]
     /** 转发消息 */
     forward: SendMsgHookItem<ForwardMessageCallback>[]
-  }
+  },
+  /** 未找到匹配插件消息钩子 */
+  emptyMessage: MessageHookItem<Message>[]
 }

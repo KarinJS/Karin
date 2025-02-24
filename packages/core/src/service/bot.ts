@@ -1,6 +1,6 @@
 import { segment } from '@/utils/message'
 import { SEND_MSG } from '@/utils/fs/key'
-import { hooksEmit } from '@/hooks/sendMsg'
+import { hooksSendMsgEmit } from '@/hooks/sendMsg'
 import { listeners } from '@/core/internal/listeners'
 import { makeMessageLog, makeMessage } from '@/utils/common'
 
@@ -160,7 +160,7 @@ export const registerBot = (type: AdapterCommunication, bot: AdapterBase) => {
     elements: Array<Elements>,
     retryCount?: number
   ) => {
-    const hook = await hooksEmit.message(contact, elements, retryCount)
+    const hook = await hooksSendMsgEmit.message(contact, elements, retryCount)
     if (!hook) return { messageId: '', time: -1, rawData: '', message_id: '', messageTime: -1 }
 
     /** 重试sendMsg */
@@ -180,7 +180,7 @@ export const registerBot = (type: AdapterCommunication, bot: AdapterBase) => {
     elements: Array<NodeElement>,
     options?: ForwardOptions
   ) => {
-    const hook = await hooksEmit.forward(contact, elements, options)
+    const hook = await hooksSendMsgEmit.forward(contact, elements, options)
     if (!hook) return { messageId: '', forwardId: '' }
     return originSendForwardMsg.call(bot, contact, elements, options)
   }
@@ -246,12 +246,6 @@ export const sendMsg = async (
   let result: any = {}
   /** 标准化 */
   const NewElements = makeMessage(elements)
-
-  /** 先调用中间件 */
-  // TODO: 未完成 中间件
-  // if (await MiddlewareHandler(cache.middleware.sendMsg, selfId, contact, NewElements)) {
-  //   return result
-  // }
 
   const bot = getBot(selfId)
   if (!bot) throw new Error('发送消息失败: 未找到对应Bot实例')

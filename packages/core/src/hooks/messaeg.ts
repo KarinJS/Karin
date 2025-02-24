@@ -11,6 +11,7 @@ import type {
 } from '@/event'
 import type { Message } from '@/types/event/event'
 import type { MessageHookItem, HookCallback, HookOptions, UnionMessage } from '@/types/hooks/message'
+
 /**
  * 添加钩子并排序
  */
@@ -145,7 +146,7 @@ const emitHooks = async <T extends UnionMessage> (
 /**
  * 触发消息钩子
  */
-export const hooksEmit = {
+export const hooksMessageEmit = {
   /**
    * 触发消息钩子
    * @param event 消息事件

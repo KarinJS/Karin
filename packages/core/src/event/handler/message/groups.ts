@@ -3,6 +3,9 @@ import { groupsCD } from '../other/cd'
 import { cache } from '@/plugin/cache'
 import { context as CTX } from '../other/context'
 import { listeners } from '@/core/internal'
+import { Permission } from '../other/permission'
+import { hooksMessageEmit } from '@/hooks/messaeg'
+import { hooksEmptyMessageEmit } from '@/hooks/emptyMessage'
 import { config as cfg, getGroupCfg, getGuildCfg } from '@/utils/config'
 import {
   initAlias,
@@ -20,8 +23,6 @@ import {
 
 import type { Message } from '@/types/event'
 import type { GroupMessage, GroupTempMessage, GuildMessage } from '../../message'
-import { Permission } from '../other/permission'
-import { hooksEmit } from '@/hooks/messaeg'
 
 /**
  * @description 群聊消息处理器
@@ -42,8 +43,8 @@ export const groupHandler = async (ctx: GroupMessage) => {
   initPrint(ctx, 'group', '群消息', isPrint ? 'info' : 'debug')
 
   /** 消息钩子 */
-  hooksEmit.group(ctx)
-  hooksEmit.message(ctx)
+  hooksMessageEmit.group(ctx)
+  hooksMessageEmit.message(ctx)
 
   const context = CTX(ctx)
   if (context) return ctx
@@ -85,8 +86,8 @@ export const groupTempHandler = async (ctx: GroupTempMessage) => {
   initPrint(ctx, 'groupTemp', '群临时消息')
 
   /** 消息钩子 */
-  hooksEmit.groupTemp(ctx)
-  hooksEmit.message(ctx)
+  hooksMessageEmit.groupTemp(ctx)
+  hooksMessageEmit.message(ctx)
 
   const context = CTX(ctx)
   if (context) return ctx
@@ -125,8 +126,8 @@ export const guildHandler = async (ctx: GuildMessage) => {
   if (context) return ctx
 
   /** 消息钩子 */
-  hooksEmit.guild(ctx)
-  hooksEmit.message(ctx)
+  hooksMessageEmit.guild(ctx)
+  hooksMessageEmit.message(ctx)
 
   const cd = groupsCD(group, `${ctx.guildId}:${ctx.channelId}`, ctx.userId)
   const filter = groupFilterEvent(ctx, config, group, cd)
@@ -184,7 +185,9 @@ const groupsDeal = async (
 
   /** 未找到匹配插件 */
   log(ctx.userId, `未找到匹配到相应插件: ${ctx.messageId}`)
-  // TODO: 中间件实现
+
+  /** 触发未找到匹配插件消息钩子 */
+  hooksEmptyMessageEmit.emptyMessage(ctx)
 }
 
 /**
