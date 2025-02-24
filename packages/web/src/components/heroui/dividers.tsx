@@ -42,7 +42,7 @@ export const createDivider = (props: DividerProps): JSX.Element => {
 
     return (
       <Fragment key={`${key}-Fragment`}>
-        <div key={key} className={`${transparent ? 'opacity-0' : ''} ${componentClassName || ''} flex items-center`}>
+        <div key={key} className={`${transparent ? 'opacity-0' : ''} ${componentClassName || ''} flex items-center py-4`}>
           <div className={leftWidth}>
             <HeroDivider {...options} />
           </div>

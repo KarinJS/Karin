@@ -140,7 +140,7 @@ export const createInputGroup = (props: InputGroupProps) => {
       key={instanceId.current}
       className={
         props.className ||
-        'w-full rounded-2xl p-3 sm:p-4 transition-colors'
+        'w-full rounded-2xl px-2 transition-colors'
       }
     >
       <input
@@ -176,7 +176,7 @@ export const createInputGroup = (props: InputGroupProps) => {
 
       <div
         ref={containerRef}
-        className='grid gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-xl min-h-[100px] transition-colors'
+        className='grid gap-4 p-2 border border-gray-200 dark:border-gray-700 rounded-xl min-h-[100px] transition-colors'
         style={{
           maxHeight: `calc((60px * ${maxRows}) + (1rem * ${maxRows}))`,
           gridTemplateColumns: columns,
