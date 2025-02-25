@@ -1,7 +1,7 @@
 /* eslint-disable @stylistic/indent */
 import { siteConfig, initSiteConfig } from '@/config/site'
 import clsx from 'clsx'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaChevronRight } from 'react-icons/fa6'
@@ -12,6 +12,7 @@ import { useLocalStorageState } from 'ahooks'
 import key from '@/consts/key'
 import { Icon } from './ui/icon'
 import { Spinner } from '@heroui/spinner'
+import { Button } from '@heroui/button'
 
 const menuItemVariants = {
   hidden: {
@@ -480,7 +481,7 @@ export default function Sidebar () {
                               <Spinner className='w-10 h-4 text-primary' variant='wave' size='md' />
                             )
                             : (
-                              <span className='text-success text-base'>✓</span>
+                              <span className='text-success text-base select-none'>✓</span>
                             )}
                         </>
                       )}
@@ -515,22 +516,14 @@ export default function Sidebar () {
                             )
                             : (item.children.map((child) => (
                               <Fragment key={child.href}>
-                                <NavLink
-                                  to={{
-                                    pathname: child.href,
-                                    search: `?type=${child.type || ''}`
-                                  }}
-                                  className={({ isActive }) =>
-                                    clsx(
-                                      'mb-2 flex items-center gap-2 py-2 px-3 text-sm text-default-600 hover:text-primary rounded-lg transition-colors',
-                                      {
-                                        '!text-primary bg-primary/5': isActive,
-                                      }
-                                    )}
+                                <Button
+                                  variant='light' fullWidth
+                                  className='flex items-start justify-start gap-2 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary rounded-lg'
+                                  onPress={() => navigate(`${child.href}?type=${child.type || ''}`)}
                                 >
                                   {child.icon && <Icon name={child.icon?.name || ''} size={child.icon?.size} color={child.icon?.color} />}
                                   {child.id || child.href.split('/').pop()}
-                                </NavLink>
+                                </Button>
                               </Fragment>
                             ))
                             )}
