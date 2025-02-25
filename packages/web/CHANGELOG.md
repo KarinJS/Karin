@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.3.11](https://github.com/KarinJS/Karin/compare/web-v1.3.10...web-v1.3.11) (2025-02-25)
+
+
+### 🐛 Bug Fixes
+
+* build error ([ba3d270](https://github.com/KarinJS/Karin/commit/ba3d2704c542fb2dafe45f31bd5e076453337deb))
+* 路由切换不重载页面 ([f1d0a58](https://github.com/KarinJS/Karin/commit/f1d0a58936ea7940234a665ece877f66b4cff139))
+* 跳转到插件配置页面时自动展开侧边栏 `插件配置` 的子菜单 ([b799026](https://github.com/KarinJS/Karin/commit/b799026284c14f982c5c75957d89605cc7fdfdb4))
+
+
+### ⚡️ Performance
+
+* document.title ([233108a](https://github.com/KarinJS/Karin/commit/233108a97744c89e0c760cc6cca7cc22af40dc2f))
+* 点击logo返回主页 ([9118c72](https://github.com/KarinJS/Karin/commit/9118c72b6811ca076f126e793e99b6261ab75c3a))
+
+
+### 💄 Styles
+
+* 优化侧边栏插件列表样式 ([1339e66](https://github.com/KarinJS/Karin/commit/1339e66e4c0762ae1433581d968a4ff31db1faa1))
+* 优化侧边栏样式布局 ([d8c930c](https://github.com/KarinJS/Karin/commit/d8c930c04b4f1a095b3521b6f40744bcf09ed421))
+* 开关间距 ([fb2d626](https://github.com/KarinJS/Karin/commit/fb2d62623a7872d185f5b16dc4da3d3eb3e37b19))
+* 插件配置页深色模式样式失效 ([3baac79](https://github.com/KarinJS/Karin/commit/3baac798637861033772c86652f6fe8f1bb943ca))
+
 ## [1.3.10](https://github.com/KarinJS/Karin/compare/web-v1.3.9...web-v1.3.10) (2025-02-24)
 
 
