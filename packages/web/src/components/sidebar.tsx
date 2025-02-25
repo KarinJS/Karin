@@ -79,10 +79,10 @@ export default function Sidebar () {
       defaultValue: false,
     }
   )
-  const [show, setShow] = useState(true)
+  const isNotSmallScreen = useMediaQuery({ minWidth: 768 })
+  const [show, setShow] = useState(isNotSmallScreen)
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null)
   const [pluginsLoading, setPluginsLoading] = useState(true)
-  const isNotSmallScreen = useMediaQuery({ minWidth: 768 })
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -117,7 +117,7 @@ export default function Sidebar () {
       >
         <div className='flex p-2 pb-0 flex-shrink-0 flex-grow-0 items-center justify-between md:!p-0.5 md:justify-center'>
           <motion.div
-            className='aspect-square bg-primary/5 text-primary text-xl rounded-full w-10 md:!w-0 md:!h-0 overflow-hidden flex justify-center items-center cursor-default md:cursor-pointer flex-grow-0 flex-shrink-0 transition-all hover:bg-primary/10'
+            className='z-10 aspect-square bg-primary/5 text-primary text-xl rounded-full w-10 md:!w-0 md:!h-0 overflow-hidden flex justify-center items-center cursor-default md:cursor-pointer flex-grow-0 flex-shrink-0 transition-all hover:bg-primary/10'
             onClick={() => setShow(!show)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
