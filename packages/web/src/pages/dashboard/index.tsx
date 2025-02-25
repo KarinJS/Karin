@@ -15,8 +15,14 @@ import useDialog from '@/hooks/use-dialog'
 import { VscBracketError } from 'react-icons/vsc'
 import { getSystemStatus } from '@/lib/status'
 import SystemStatusDisplay from '@/components/system_display_card'
+import Counter from '@/components/Counter'
 
-function OnlineStatus() {
+const generatePlaces = (value: number): number[] => {
+  const digits = Math.floor(value).toString().length
+  return Array.from({ length: digits }, (_, i) => 10 ** (digits - 1 - i))
+}
+
+function OnlineStatus () {
   const { error } = useRequest(
     () =>
       request.serverGet<{
@@ -27,9 +33,9 @@ function OnlineStatus() {
     },
   )
   return (
-    <div className="ml-4 flex items-center gap-2">
-      <div className={clsx('rounded-full w-4 h-4', !!error ? 'bg-red-500' : 'bg-green-500')}></div>
-      <div>{!!error ? '离线' : '在线'}</div>
+    <div className='ml-4 flex items-center gap-2'>
+      <div className={clsx('rounded-full w-4 h-4', error ? 'bg-red-500' : 'bg-green-500')} />
+      <div>{error ? '离线' : '在线'}</div>
     </div>
   )
 }
@@ -38,25 +44,25 @@ export interface StatusItemProps {
   title: string
   value: React.ReactNode
 }
-function StatusItem({ title, value }: StatusItemProps) {
+function StatusItem ({ title, value }: StatusItemProps) {
   return (
-    <div className="flex shadow-small rounded-full bg-primary-50 bg-opacity-20 overflow-hidden items-center gap-2">
-      <div className="w-24 py-2 px-4 bg-gradient-to-r from-primary-100 to-primary-100/0 text-primary font-bold">
-        {title}
-      </div>
-      {typeof value === 'boolean' ? (value ? '是' : '否') : value || '--'}
-    </div>
+    <Card className='py-4'>
+      <CardHeader className='py-0 px-4 flex-col items-start'>
+        <p className='text-tiny text-primary/80 uppercase font-bold'>{title}</p>
+        <h4 className='font-bold text-black/80 dark:text-white/80 text-large'>{typeof value === 'boolean' ? (value ? '是' : '否') : value || '--'}</h4>
+      </CardHeader>
+    </Card>
   )
 }
 
-function Status() {
+function Status () {
   const { data, error } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'), {
     pollingInterval: 1000,
   })
   if (error || !data) {
     return (
-      <div className="flex flex-col justify-center items-center gap-2">
-        <div className="text-danger text-4xl">
+      <div className='flex flex-col justify-center items-center gap-2'>
+        <div className='text-danger text-4xl'>
           <VscBracketError />
         </div>
         <div>请求错误</div>
@@ -65,32 +71,46 @@ function Status() {
   }
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-6">
-      <StatusItem title="名称" value={data.name.toUpperCase()} />
-      <StatusItem title="PID" value={data.pid} />
-      <StatusItem title="PM2 ID" value={data.pm2_id} />
-      <StatusItem title="运行时间" value={`${Math.floor(data.uptime)}秒`} />
-      <StatusItem title="版本" value={data.version} />
-      <StatusItem title="开发模式" value={data.karin_dev} />
+    <div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-6'>
+      <StatusItem title='名称' value={data.name.toUpperCase()} />
+      <StatusItem title='PID' value={data.pid} />
+      <StatusItem title='PM2 ID' value={data.pm2_id} />
       <StatusItem
-        title="语言"
+        title='运行时间' value={
+          <div className='flex items-center mt-2 gap-2'>
+            <Counter
+              className='flex items-center gap-1 text-black/80 dark:text-white/80'
+              value={Math.floor(data.uptime)}
+              fontSize={20}
+              places={generatePlaces(Math.floor(data.uptime))}
+            />
+            <span className='text-black/80 dark:text-white/80'>秒</span>
+          </div>
+        }
+      />
+      <StatusItem title='版本' value={data.version} />
+      <StatusItem title='开发模式' value={data.karin_dev} />
+      <StatusItem
+        title='语言'
         value={
-          <div className="flex items-center gap-1">
-            {data.karin_lang === 'js' ? (
-              <SiJavascript className="text-lg text-yellow-500" />
-            ) : (
-              <SiTypescript className="text-lg text-blue-700" />
-            )}
+          <div className='flex items-center gap-1'>
+            {data.karin_lang === 'js'
+              ? (
+                <SiJavascript className='text-lg text-yellow-500' />
+              )
+              : (
+                <SiTypescript className='text-lg text-blue-700' />
+              )}
             {data.karin_lang.toUpperCase()}
           </div>
         }
       />
-      <StatusItem title="运行环境" value={data.karin_runtime} />
+      <StatusItem title='运行环境' value={data.karin_runtime} />
     </div>
   )
 }
 
-function SystemStatusCard() {
+function SystemStatusCard () {
   const [systemStatus, setSystemStatus] = useState<SystemStatus>()
   const getStatus = useCallback(() => {
     try {
@@ -111,7 +131,7 @@ function SystemStatusCard() {
   return <SystemStatusDisplay data={systemStatus} />
 }
 
-function ControlButtons() {
+function ControlButtons () {
   const [running, setRunning] = useState(false)
   const navigate = useNavigate()
   const dialog = useDialog()
@@ -164,27 +184,27 @@ function ControlButtons() {
   }
 
   return (
-    <div className="flex gap-2 ml-auto">
-      <Tooltip content="重启" showArrow>
+    <div className='flex gap-2 ml-auto'>
+      <Tooltip content='重启' showArrow>
         <Button
-          className="btn btn-primary text-lg"
+          className='btn btn-primary text-lg'
           isIconOnly
-          radius="full"
-          color="primary"
-          variant="flat"
+          radius='full'
+          color='primary'
+          variant='flat'
           isDisabled={running}
           onPress={onRestart}
         >
           <RiRestartLine />
         </Button>
       </Tooltip>
-      <Tooltip content="关机" showArrow>
+      <Tooltip content='关机' showArrow>
         <Button
-          className="btn btn-primary text-lg"
+          className='btn btn-primary text-lg'
           isIconOnly
-          radius="full"
-          color="primary"
-          variant="shadow"
+          radius='full'
+          color='primary'
+          variant='shadow'
           isDisabled={running}
           onPress={onShutDown}
         >
@@ -195,11 +215,11 @@ function ControlButtons() {
   )
 }
 
-export default function IndexPage() {
+export default function IndexPage () {
   return (
-    <section className="flex flex-col gap-4 pt-20 md:pt-8">
-      <Card shadow="sm">
-        <CardHeader className="pl-6 pr-8 pb-4 pt-6">
+    <section className='flex flex-col gap-4 pt-20 md:pt-8'>
+      <Card shadow='sm'>
+        <CardHeader className='pl-6 pr-8 pb-4 pt-6'>
           <div
             className={title({
               size: 'sm',
@@ -211,11 +231,11 @@ export default function IndexPage() {
           <OnlineStatus />
           <ControlButtons />
         </CardHeader>
-        <CardBody className="px-6 pb-6">
+        <CardBody className='px-6 pb-6'>
           <Status />
         </CardBody>
       </Card>
-      <Card shadow="sm">
+      <Card shadow='sm'>
         <CardBody>
           <SystemStatusCard />
         </CardBody>
