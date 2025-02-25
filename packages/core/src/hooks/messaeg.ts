@@ -139,8 +139,9 @@ const emitHooks = async <T extends UnionMessage> (
     })
     if (isPromise(result)) await result
     if (!isNext) return false
+    isNext = false
   }
-  return isNext
+  return true
 }
 
 /**

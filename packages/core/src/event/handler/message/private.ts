@@ -50,8 +50,16 @@ export const friendHandler = async (ctx: FriendMessage) => {
   initPrint(ctx, 'friend', '好友消息')
 
   /** 消息钩子 */
-  hooksMessageEmit.friend(ctx)
-  hooksMessageEmit.message(ctx)
+  const hook = await hooksMessageEmit.friend(ctx)
+  if (!hook) {
+    logger.debug(`[${ctx.logFnc}] 好友消息钩子返回false 跳过当前事件: ${ctx.eventId}`)
+    return
+  }
+  const hook2 = await hooksMessageEmit.message(ctx)
+  if (!hook2) {
+    logger.debug(`[${ctx.logFnc}] 消息钩子返回false 跳过当前事件: ${ctx.eventId}`)
+    return
+  }
 
   const context = CTX(ctx)
   if (context) return ctx
@@ -85,8 +93,16 @@ export const directHandler = async (ctx: DirectMessage) => {
   initPrint(ctx, 'direct', '频道私信')
 
   /** 消息钩子 */
-  hooksMessageEmit.direct(ctx)
-  hooksMessageEmit.message(ctx)
+  const hook = await hooksMessageEmit.direct(ctx)
+  if (!hook) {
+    logger.debug(`[${ctx.logFnc}] 频道私信消息钩子返回false 跳过当前事件: ${ctx.eventId}`)
+    return
+  }
+  const hook2 = await hooksMessageEmit.message(ctx)
+  if (!hook2) {
+    logger.debug(`[${ctx.logFnc}] 消息钩子返回false 跳过当前事件: ${ctx.eventId}`)
+    return
+  }
 
   const context = CTX(ctx)
   if (context) return ctx

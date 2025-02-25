@@ -38,8 +38,9 @@ export interface MessageHookItem<T extends UnionMessage> {
  * @param contact 联系人
  * @param elements 消息元素
  * @param retryCount 重试次数
+ * @param next 继续执行下一个钩子的函数
  */
-export type BaseMessageCallback<T> = (contact: Contact, elements: Array<Elements>, retryCount?: number) => T | Promise<T>
+export type BaseMessageCallback<T> = (contact: Contact, elements: Array<Elements>, retryCount: number, next: HookNext) => T | Promise<T>
 
 /**
  * 接收普通消息发送回调类型 这个由开发者调用
@@ -56,8 +57,9 @@ export type HookEmitMessage = BaseMessageCallback<boolean>
  * @param contact 联系人
  * @param elements 消息元素
  * @param options 转发选项
+ * @param next 继续执行下一个钩子的函数
  */
-export type BaseForwardCallback<T> = (contact: Contact, elements: Array<NodeElement>, options?: ForwardOptions) => T | Promise<T>
+export type BaseForwardCallback<T> = (contact: Contact, elements: Array<NodeElement>, options: ForwardOptions | undefined, next: HookNext) => T | Promise<T>
 
 /**
  * 接收转发消息回调类型 这个由开发者调用

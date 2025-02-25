@@ -43,8 +43,16 @@ export const groupHandler = async (ctx: GroupMessage) => {
   initPrint(ctx, 'group', '群消息', isPrint ? 'info' : 'debug')
 
   /** 消息钩子 */
-  hooksMessageEmit.group(ctx)
-  hooksMessageEmit.message(ctx)
+  const hook = await hooksMessageEmit.group(ctx)
+  if (!hook) {
+    logger.debug(`[${ctx.logFnc}] 群消息钩子返回false 跳过当前事件: ${ctx.eventId}`)
+    return
+  }
+  const hook2 = await hooksMessageEmit.message(ctx)
+  if (!hook2) {
+    logger.debug(`[${ctx.logFnc}] 消息钩子返回false 跳过当前事件: ${ctx.eventId}`)
+    return
+  }
 
   const context = CTX(ctx)
   if (context) return ctx
@@ -86,8 +94,16 @@ export const groupTempHandler = async (ctx: GroupTempMessage) => {
   initPrint(ctx, 'groupTemp', '群临时消息')
 
   /** 消息钩子 */
-  hooksMessageEmit.groupTemp(ctx)
-  hooksMessageEmit.message(ctx)
+  const hook = await hooksMessageEmit.groupTemp(ctx)
+  if (!hook) {
+    logger.debug(`[${ctx.logFnc}] 群临时消息钩子返回false 跳过当前事件: ${ctx.eventId}`)
+    return
+  }
+  const hook2 = await hooksMessageEmit.message(ctx)
+  if (!hook2) {
+    logger.debug(`[${ctx.logFnc}] 消息钩子返回false 跳过当前事件: ${ctx.eventId}`)
+    return
+  }
 
   const context = CTX(ctx)
   if (context) return ctx
