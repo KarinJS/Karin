@@ -90,7 +90,12 @@ export default function Sidebar () {
     initSiteConfig().then(() => {
       setPluginsLoading(false)
     })
-  }, [])
+    siteConfig.navItems.forEach((item) => {
+      if (item.children?.some(child => location.pathname === child.href)) {
+        setExpandedMenu(item.href)
+      }
+    })
+  }, [location.pathname, siteConfig.navItems])
 
   return (
     <motion.div className='h-full fixed md:relative z-50'>
@@ -514,18 +519,25 @@ export default function Sidebar () {
                                 <Spinner className='w-2 h-4 text-primary -ml-7' variant='dots' size='lg' />
                               </div>
                             )
-                            : (item.children.map((child) => (
-                              <Fragment key={child.href}>
-                                <Button
-                                  variant='light' fullWidth
-                                  className='flex items-start justify-start gap-2 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary rounded-lg'
-                                  onPress={() => navigate(`${child.href}?type=${child.type || ''}`)}
-                                >
-                                  {child.icon && <Icon name={child.icon?.name || ''} size={child.icon?.size} color={child.icon?.color} />}
-                                  {child.id || child.href.split('/').pop()}
-                                </Button>
-                              </Fragment>
-                            ))
+                            : (item.children
+                              .sort((a, b) => a.id.localeCompare(b.id)) // 不重新排序的话，插件按钮会自己乱序
+                              .map((child) => (
+                                <Fragment key={child.id}>
+                                  <Button
+                                    variant='light' fullWidth
+                                    className={clsx(
+                                      'flex items-start justify-start gap-2 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary rounded-lg',
+                                      {
+                                        '!text-primary bg-primary/5': location.pathname === child.href
+                                      }
+                                    )}
+                                    onPress={() => navigate(`${child.href}?type=${child.type || ''}`)}
+                                  >
+                                    {child.icon && <Icon name={child.icon?.name || ''} size={child.icon?.size} color={child.icon?.color} />}
+                                    {child.id || child.href.split('/').pop()}
+                                  </Button>
+                                </Fragment>
+                              ))
                             )}
                         </motion.div>
                       )}
