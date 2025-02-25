@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.3.19](https://github.com/KarinJS/Karin/compare/core-v1.3.18...core-v1.3.19) (2025-02-25)
+
+
+### 🐛 Bug Fixes
+
+* hook ([3647bb2](https://github.com/KarinJS/Karin/commit/3647bb2db51d09a7ad94c33a78abb42455300abe))
+
 ## [1.3.18](https://github.com/KarinJS/Karin/compare/core-v1.3.17...core-v1.3.18) (2025-02-24)
 
 
