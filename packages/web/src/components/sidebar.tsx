@@ -185,6 +185,7 @@ export default function Sidebar () {
                   className='relative z-10 w-full h-full flex items-center justify-center'
                   whileHover={{ scale: 1.1 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                  onClick={() => navigate('/')}
                 >
                   <svg
                     viewBox='0 0 24 24'
@@ -235,7 +236,8 @@ export default function Sidebar () {
 
               {/* Karin 文字 */}
               <motion.div
-                className='font-medium text-base relative'
+                className='font-medium text-base relative select-none cursor-pointer'
+                onClick={() => navigate('/')}
               >
                 <motion.div
                   className='relative flex items-center'
@@ -481,12 +483,9 @@ export default function Sidebar () {
                       <span className='select-none'>{item.label}</span>
                       {item.href === '/plugins' && (
                         <>
-                          {pluginsLoading
-                            ? (
+                          {pluginsLoading &&
+                            (
                               <Spinner className='w-10 h-4 text-primary' variant='wave' size='md' />
-                            )
-                            : (
-                              <span className='text-success text-base select-none'>✓</span>
                             )}
                         </>
                       )}
