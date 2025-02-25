@@ -1,7 +1,7 @@
 import { MdSpaceDashboard, MdExtension, MdStore } from 'react-icons/md'
 import { RiSettings2Fill } from 'react-icons/ri'
 // import { FiCodesandbox } from 'react-icons/fi'
-import { BsWindowSidebar } from 'react-icons/bs'
+import { BsInfoCircleFill } from 'react-icons/bs'
 import { request } from '@/lib/request'
 
 import type { LocalApiResponse } from 'node-karin'
@@ -48,12 +48,12 @@ const defaultSiteConfig: SiteConfigType = {
   navItems: [
     {
       Icon: MdSpaceDashboard,
-      label: '总览',
+      label: '基础信息',
       href: '/',
     },
     {
       Icon: RiSettings2Fill,
-      label: '配置',
+      label: '配置信息',
       href: '/config',
     },
     {
@@ -69,12 +69,12 @@ const defaultSiteConfig: SiteConfigType = {
     },
     // {
     //   Icon: FiCodesandbox,
-    //   label: '沙箱',
+    //   label: '沙箱调试',
     //   href: '/sandbox',
     // },
     {
-      Icon: BsWindowSidebar,
-      label: '关于',
+      Icon: BsInfoCircleFill,
+      label: '关于我们',
       href: '/about',
     },
   ],
