@@ -21,35 +21,11 @@ export interface InputValue extends BaseValue {
 }
 
 /**
- * 输入框组初始值类型
- */
-export interface InputGroupValue extends BaseValue {
-  key: 'input-group'
-  value: string[]
-}
-
-/**
- * 开关初始值类型
- */
-export interface SwitchValue extends BaseValue {
-  key: 'switch'
-  value: boolean
-}
-
-/**
- * 单选框初始值类型
- */
-export interface RadioGroupValue extends BaseValue {
-  key: 'radio-group'
-  value: string
-}
-
-/**
  * 多选框初始值类型
  */
 export interface CheckboxGroupValue extends BaseValue {
   key: 'checkbox-group'
-  value: boolean[]
+  value: string[]
 }
 
 /**
@@ -71,7 +47,7 @@ export interface AccordionProValue extends BaseValue {
 /**
  * 联合初始值类型
  */
-export type Value = InputValue | InputGroupValue | SwitchValue | RadioGroupValue | CheckboxGroupValue | AccordionValue | AccordionProValue
+export type Value = InputValue | CheckboxGroupValue | AccordionValue | AccordionProValue
 
 /**
  * initDefaultValues函数返回值类型
@@ -98,34 +74,12 @@ export const initDefaultValues = (
       return
     }
 
-    if (option.componentType === 'switch') {
-      defaultValues[option.key] = {
-        key: 'switch',
-        value: option.defaultSelected ?? false
-      }
-      return
-    }
-
-    if (option.componentType === 'radio-group') {
-      defaultValues[option.key] = {
-        key: 'radio-group',
-        value: option.defaultValue ?? ''
-      }
-      return
-    }
-
     if (option.componentType === 'checkbox-group') {
+      const selectedValues = option.defaultValue || []
+
       defaultValues[option.key] = {
         key: 'checkbox-group',
-        value: option.checkbox.map((item) => item.defaultSelected ?? false)
-      }
-      return
-    }
-
-    if (option.componentType === 'input-group') {
-      defaultValues[option.key] = {
-        key: 'input-group',
-        value: option.data || []
+        value: selectedValues
       }
       return
     }
@@ -142,10 +96,40 @@ export const initDefaultValues = (
     }
 
     if (option.componentType === 'accordion-pro') {
-      if (!isAccordion) return
       defaultValues[option.key] = {
         key: 'accordion-pro',
-        value: option.data?.map((item) => ({ value: item })) ?? []
+        value: option.data?.map((item) => {
+          const formattedItem: Record<string, Value> = {}
+
+          // 获取子组件配置的映射关系
+          const childConfigMap: Record<string, ComponentConfig> = {}
+          if (option.children?.children && Array.isArray(option.children.children)) {
+            option.children.children.forEach(child => {
+              childConfigMap[child.key] = child as ComponentConfig
+            })
+          }
+
+          for (const [key, value] of Object.entries(item)) {
+            const childConfig = childConfigMap[key]
+
+            // 根据子组件类型正确格式化值
+            if (childConfig?.componentType === 'checkbox-group') {
+              // 处理复选框组，直接使用值数组
+              formattedItem[key] = {
+                key: 'checkbox-group',
+                value: Array.isArray(value) ? value : []
+              }
+            } else {
+              // 默认处理为input类型
+              formattedItem[key] = {
+                key: 'input',
+                value: value as string
+              }
+            }
+          }
+
+          return formattedItem
+        }) ?? []
       }
       return
     }
