@@ -16,6 +16,14 @@ import { VscBracketError } from 'react-icons/vsc'
 import { getSystemStatus } from '@/lib/status'
 import SystemStatusDisplay from '@/components/system_display_card'
 import Counter from '@/components/counter.tsx'
+import RotatingText from '@/components/RotatingText'
+
+function karinData () {
+  const { data, error } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'), {
+    pollingInterval: 1000,
+  })
+  return { data, error }
+}
 
 const generatePlaces = (value: number): number[] => {
   const digits = Math.floor(value).toString().length
@@ -32,10 +40,27 @@ function OnlineStatus () {
       pollingInterval: 1000,
     },
   )
+  const { data } = karinData()
+  const msg = []
+  data?.version && msg.push(`v ${data.version}`)
+  error ? msg.push('离线') : msg.push('在线')
+
   return (
     <div className='ml-4 flex items-center gap-2'>
       <div className={clsx('rounded-full w-4 h-4', error ? 'bg-red-500' : 'bg-green-500')} />
-      <div>{error ? '离线' : '在线'}</div>
+      {/* <div>{error ? '离线' : '在线'}</div> */}
+      <RotatingText
+        texts={msg}
+        mainClassName='px-2 bg-cyan-300 text-black overflow-hidden justify-center rounded-lg'
+        staggerFrom='last'
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '-120%' }}
+        staggerDuration={0.025}
+        splitLevelClassName='overflow-hidden'
+        transition={{ type: 'spring', damping: 30, stiffness: 400 }}
+        rotationInterval={2000}
+      />
     </div>
   )
 }
@@ -56,9 +81,7 @@ function StatusItem ({ title, value }: StatusItemProps) {
 }
 
 function Status () {
-  const { data, error } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'), {
-    pollingInterval: 1000,
-  })
+  const { data, error } = karinData()
   if (error || !data) {
     return (
       <div className='flex flex-col justify-center items-center gap-2'>
