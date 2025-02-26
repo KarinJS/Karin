@@ -105,7 +105,9 @@ function Status () {
     pollingInterval: 1000,
   })
   const localPluginsList = useRequest(() => request.serverPost<LocalApiResponse[], {}>('/api/v1/plugin/local'))
-  const botList = useRequest(() => request.serverGet<Array<AdapterType>>('/api/v1/utils/get/bots'))
+  const botList = useRequest(() => request.serverGet<Array<AdapterType>>('/api/v1/utils/get/bots'), {
+    pollingInterval: 5000,
+  })
   if (error || !data) {
     return (
       <div className='flex flex-col justify-center items-center gap-2'>
