@@ -2,10 +2,16 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import reactScan from '@react-scan/vite-plugin-react-scan'
+import viteCompression from 'vite-plugin-compression'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), tsconfigPaths(), reactScan()],
+  plugins: [
+    react(),
+    tsconfigPaths(),
+    reactScan(),
+    viteCompression({ deleteOriginFile: true })
+  ],
   base: '/web/',
   build: {
     emptyOutDir: true,

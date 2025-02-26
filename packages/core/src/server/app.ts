@@ -1,8 +1,10 @@
+import fs from 'node:fs'
 import path from 'node:path'
 import express from 'express'
 import { createServer } from 'node:http'
 import { router } from './api/router'
 import { listeners } from '@/core/internal/listeners'
+import getMimeType from './utils/getMimeType'
 
 import type root from '@/root'
 import type { Express } from 'express'
@@ -79,6 +81,22 @@ export const initExpress = async (
   port: number,
   host: string,
 ) => {
+  const webDir = path.join(dir.karinDir, 'dist/web')
+  app.use('/web', (req, res, next) => {
+    const filePath = path.join(webDir, req.path)
+    const gzipPath = `${filePath}.gz`
+
+    // 检查 gzip 文件是否存在
+    if (fs.existsSync(gzipPath)) {
+      res.set({
+        'Content-Encoding': 'gzip',
+        'Content-Type': getMimeType(req.path),
+      })
+      req.url = `${req.url}.gz` // 修改请求路径
+    }
+
+    express.static(webDir)(req, res, next)
+  })
   await import('./api/index')
   await import('./ws')
   app.use('/api/v1', router)
