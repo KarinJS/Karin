@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.3.20](https://github.com/KarinJS/Karin/compare/core-v1.3.19...core-v1.3.20) (2025-02-26)
+
+
+### 🐛 Bug Fixes
+
+* middleware ([8a7896e](https://github.com/KarinJS/Karin/commit/8a7896ebec77716069d9a31dc3db2da6669ca0c4))
+
 ## [1.3.19](https://github.com/KarinJS/Karin/compare/core-v1.3.18...core-v1.3.19) (2025-02-25)
 
 
