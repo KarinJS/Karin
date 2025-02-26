@@ -4,7 +4,6 @@ import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
 import clsx from 'clsx'
 import type { KarinStatus, SystemStatus } from '@/types/server'
-import { SiJavascript, SiTypescript } from 'react-icons/si'
 import { Button } from '@heroui/button'
 import { RiRestartLine, RiShutDownLine } from 'react-icons/ri'
 import { Tooltip } from '@heroui/tooltip'
@@ -17,12 +16,22 @@ import { getSystemStatus } from '@/lib/status'
 import SystemStatusDisplay from '@/components/system_display_card'
 import Counter from '@/components/counter.tsx'
 import RotatingText from '@/components/RotatingText'
+import SplitText from '@/components/SplitText'
+import type { AdapterType, LocalApiResponse } from 'node-karin'
+import { BiCubeAlt, BiHomeAlt, BiUser } from 'react-icons/bi'
+import { IconType } from 'react-icons/lib'
 
-function karinData () {
-  const { data, error } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'), {
-    pollingInterval: 1000,
-  })
-  return { data, error }
+interface IconMap {
+  [key: string]: IconType
+}
+
+const iconMap: IconMap = {
+  名称: BiCubeAlt,
+  PID: BiHomeAlt,
+  'PM2 ID': BiUser,
+  运行时间: BiUser,
+  插件数量: BiUser,
+  // 可以根据需要添加更多的映射
 }
 
 const generatePlaces = (value: number): number[] => {
@@ -40,9 +49,9 @@ function OnlineStatus () {
       pollingInterval: 1000,
     },
   )
-  const { data } = karinData()
+  const { data } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'))
   const msg = []
-  data?.version && msg.push(`v ${data.version}`)
+  data?.version && msg.push(data.version)
   error ? msg.push('离线') : msg.push('在线')
 
   return (
@@ -70,18 +79,27 @@ export interface StatusItemProps {
   value: React.ReactNode
 }
 function StatusItem ({ title, value }: StatusItemProps) {
+  const IconComponent = iconMap[title] || BiCubeAlt
   return (
     <Card className='py-4 transition-transform hover:-translate-y-1'>
       <CardHeader className='py-0 px-4 flex-col items-start'>
-        <p className='text-tiny text-primary/80 uppercase font-bold'>{title}</p>
-        <h4 className='mt-2 font-bold text-black/70 dark:text-white/80 text-large'>{typeof value === 'boolean' ? (value ? '是' : '否') : value || '--'}</h4>
+        <div className='flex items-center gap-2'>
+          <IconComponent />
+          <SplitText className='text-tiny text-primary/80 uppercase font-bold' text={title} delay={0.5} />
+        </div>
+        {/* <p className='text-tiny text-primary/80 uppercase font-bold'>{title}</p> */}
+        <h4 className='mt-2 font-bold text-black/70 dark:text-white/80 text-large'>{value || '--'}</h4>
       </CardHeader>
     </Card>
   )
 }
 
 function Status () {
-  const { data, error } = karinData()
+  const { data, error } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'), {
+    pollingInterval: 1000,
+  })
+  const localPluginsList = useRequest(() => request.serverPost<LocalApiResponse, {}>('/api/v1/plugin/local'))
+  const botList = useRequest(() => request.serverGet<Array<AdapterType>>('/api/v1/utils/get/bots'))
   if (error || !data) {
     return (
       <div className='flex flex-col justify-center items-center gap-2'>
@@ -102,7 +120,7 @@ function Status () {
         title='运行时间' value={
           <div className='flex items-center gap-2'>
             <Counter
-              className='flex items-center gap-1 text-black/70 dark:text-white/80'
+              className='flex items-center gap-0 text-black/70 dark:text-white/80'
               value={Math.floor(data.uptime)}
               fontSize={20}
               places={generatePlaces(Math.floor(data.uptime))}
@@ -111,7 +129,9 @@ function Status () {
           </div>
         }
       />
-      <StatusItem title='版本' value={data.version} />
+      <StatusItem title='插件数量' value={localPluginsList.data?.length || '--'} />
+      <StatusItem title='BOT数量' value={botList.data?.length} />
+      {/* <StatusItem title='版本' value={data.version} />
       <StatusItem title='开发模式' value={data.karin_dev} />
       <StatusItem
         title='语言'
@@ -128,7 +148,7 @@ function Status () {
           </div>
         }
       />
-      <StatusItem title='运行环境' value={data.karin_runtime} />
+      <StatusItem title='运行环境' value={data.karin_runtime} /> */}
     </div>
   )
 }
@@ -242,19 +262,22 @@ export default function IndexPage () {
   return (
     <section className='flex flex-col gap-4 pt-20 md:pt-8'>
       <Card shadow='sm'>
-        <CardHeader className='pl-6 pr-8 pb-4 pt-6'>
+        <CardHeader className='px-6 pt-6 pb-0'>
           <div
             className={title({
               size: 'sm',
               color: 'blue',
             })}
           >
-            Karin
+            <SplitText
+              text='Karin'
+              className='text-4xl'
+            />
           </div>
           <OnlineStatus />
           <ControlButtons />
         </CardHeader>
-        <CardBody className='px-6 pb-6'>
+        <CardBody className='px-6 py-6'>
           <Status />
         </CardBody>
       </Card>
