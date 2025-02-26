@@ -151,6 +151,7 @@ export const createAccordion = (
                   options={(childrenConfig || []) as ComponentConfig[]}
                   register={createPrefixedRegister(index)}
                   control={control}
+                  basePath={`${key}.value.${index}`}
                 />
               </div>
             </HeroAccordionItem>
