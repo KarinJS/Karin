@@ -98,7 +98,7 @@ function Status () {
   const { data, error } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'), {
     pollingInterval: 1000,
   })
-  const localPluginsList = useRequest(() => request.serverPost<LocalApiResponse, {}>('/api/v1/plugin/local'))
+  const localPluginsList = useRequest(() => request.serverPost<LocalApiResponse[], {}>('/api/v1/plugin/local'))
   const botList = useRequest(() => request.serverGet<Array<AdapterType>>('/api/v1/utils/get/bots'))
   if (error || !data) {
     return (
