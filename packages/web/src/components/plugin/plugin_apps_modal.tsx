@@ -5,6 +5,8 @@ import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
 import { FaEye, FaTrash } from 'react-icons/fa6'
 import { toast } from 'react-hot-toast'
+import Editor from '@monaco-editor/react'
+import { useTheme } from '@/hooks/use-theme'
 
 interface Props {
   isOpen: boolean
@@ -59,51 +61,52 @@ export function PluginAppsModal ({ isOpen, onClose, pluginName }: Props) {
   }, [isOpen, pluginName])
 
   const apps = response || []
+  const { isDark } = useTheme()
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size="3xl"
-      scrollBehavior="inside"
+      size='3xl'
+      scrollBehavior='inside'
     >
       <ModalContent>
         <ModalHeader>
-          <h3 className="text-lg font-semibold">应用列表</h3>
+          <h3 className='text-lg font-semibold'>应用列表</h3>
         </ModalHeader>
-        <ModalBody className="py-6">
+        <ModalBody className='py-6'>
           {loading ? (
-            <div className="text-center py-4">加载中...</div>
+            <div className='text-center py-4'>加载中...</div>
           ) : (
-            <div className="space-y-4">
+            <div className='space-y-4'>
               {apps.map((app) => (
                 <div
                   key={app}
-                  className="flex items-center justify-between p-3 bg-default-50 rounded-lg"
+                  className='flex items-center justify-between p-3 bg-default-50 rounded-lg'
                 >
-                  <div className="flex-1 mr-4">
-                    <h4 className="text-sm font-medium">{app}</h4>
+                  <div className='flex-1 mr-4'>
+                    <h4 className='text-sm font-medium'>{app}</h4>
                   </div>
-                  <div className="flex gap-2">
+                  <div className='flex gap-2'>
                     <Button
                       isIconOnly
-                      size="sm"
-                      variant="light"
-                      color="primary"
+                      size='sm'
+                      variant='light'
+                      color='primary'
                       isLoading={fileOpLoading}
                       onPress={() => handleFileOperation(app, 'read')}
                     >
-                      <FaEye className="text-base" />
+                      <FaEye className='text-base' />
                     </Button>
                     <Button
                       isIconOnly
-                      size="sm"
-                      variant="light"
-                      color="danger"
+                      size='sm'
+                      variant='light'
+                      color='danger'
                       isLoading={fileOpLoading}
                       onPress={() => handleFileOperation(app, 'delete')}
                     >
-                      <FaTrash className="text-base" />
+                      <FaTrash className='text-base' />
                     </Button>
                   </div>
                 </div>
@@ -114,17 +117,22 @@ export function PluginAppsModal ({ isOpen, onClose, pluginName }: Props) {
                 <Modal
                   isOpen={fileContent !== undefined}
                   onClose={() => setFileContent(undefined)}
-                  size="4xl"
-                  scrollBehavior="inside"
+                  size='full'
+                  scrollBehavior='inside'
                 >
                   <ModalContent>
                     <ModalHeader>
-                      <h3 className="text-lg font-semibold">文件内容</h3>
+                      <h3 className='text-lg font-semibold'>文件内容</h3>
                     </ModalHeader>
                     <ModalBody>
-                      <pre className="bg-default-50 p-4 rounded-lg overflow-x-auto">
-                        <code>{fileContent || ''}</code>
-                      </pre>
+                      <Editor
+                        language='javascript'
+                        theme={isDark ? 'vs-dark' : 'vs'}
+                        value={fileContent || ''}
+                        options={{
+                          readOnly: true
+                        }}
+                      />
                     </ModalBody>
                   </ModalContent>
                 </Modal>
@@ -135,4 +143,4 @@ export function PluginAppsModal ({ isOpen, onClose, pluginName }: Props) {
       </ModalContent>
     </Modal>
   )
-} 
+}

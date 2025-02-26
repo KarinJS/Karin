@@ -41,6 +41,7 @@
     "@heroui/theme": "2.4.9",
     "@heroui/tooltip": "^2.2.7",
     "@hookform/resolvers": "^3.10.0",
+    "@monaco-editor/react": "^4.7.0",
     "@react-aria/visually-hidden": "3.8.19",
     "@react-spring/web": "^9.7.5",
     "@react-types/shared": "3.27.0",
