@@ -5,7 +5,7 @@ import { request } from '@/lib/request'
 import clsx from 'clsx'
 import type { KarinStatus, SystemStatus } from '@/types/server'
 import { Button } from '@heroui/button'
-import { RiRestartLine, RiShutDownLine } from 'react-icons/ri'
+import { RiRestartLine, RiShutDownLine, RiFunctionAddLine, RiRobot2Line } from 'react-icons/ri'
 import { Tooltip } from '@heroui/tooltip'
 import { useState, useCallback, useEffect } from 'react'
 import toast from 'react-hot-toast'
@@ -18,8 +18,12 @@ import Counter from '@/components/counter.tsx'
 import RotatingText from '@/components/RotatingText'
 import SplitText from '@/components/SplitText'
 import type { AdapterType, LocalApiResponse } from 'node-karin'
-import { BiCubeAlt, BiHomeAlt, BiUser } from 'react-icons/bi'
+import { BiCubeAlt, BiHomeAlt } from 'react-icons/bi'
+import { IoMdTime } from 'react-icons/io'
 import { IconType } from 'react-icons/lib'
+import { GiHighGrass } from 'react-icons/gi'
+import { BsBoxes } from 'react-icons/bs'
+import { TbVersions } from 'react-icons/tb'
 
 interface IconMap {
   [key: string]: IconType
@@ -28,10 +32,12 @@ interface IconMap {
 const iconMap: IconMap = {
   名称: BiCubeAlt,
   PID: BiHomeAlt,
-  'PM2 ID': BiUser,
-  运行时间: BiUser,
-  插件数量: BiUser,
-  // 可以根据需要添加更多的映射
+  'PM2 ID': GiHighGrass,
+  运行时间: IoMdTime,
+  插件数量: RiFunctionAddLine,
+  BOT数量: RiRobot2Line,
+  运行环境: BsBoxes,
+  版本: TbVersions,
 }
 
 const generatePlaces = (value: number): number[] => {
@@ -131,24 +137,8 @@ function Status () {
       />
       <StatusItem title='插件数量' value={localPluginsList.data?.length || '--'} />
       <StatusItem title='BOT数量' value={botList.data?.length} />
-      {/* <StatusItem title='版本' value={data.version} />
-      <StatusItem title='开发模式' value={data.karin_dev} />
-      <StatusItem
-        title='语言'
-        value={
-          <div className='flex items-center gap-1'>
-            {data.karin_lang === 'js'
-              ? (
-                <SiJavascript className='text-lg text-yellow-500' />
-              )
-              : (
-                <SiTypescript className='text-lg text-blue-700' />
-              )}
-            {data.karin_lang.toUpperCase()}
-          </div>
-        }
-      />
-      <StatusItem title='运行环境' value={data.karin_runtime} /> */}
+      <StatusItem title='版本' value={data.version} />
+      <StatusItem title='运行环境' value={data.karin_runtime} />
     </div>
   )
 }

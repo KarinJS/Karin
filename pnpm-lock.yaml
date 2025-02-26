@@ -153,7 +153,7 @@ importers:
         version: 0.11.9(eslint@9.21.0(jiti@1.21.7))(typescript@5.7.3)
       node-karin:
         specifier: latest
-        version: 1.3.19
+        version: 1.3.20
       tsc-alias:
         specifier: ^1.8.10
         version: 1.8.10
@@ -348,6 +348,9 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.17)
+      three:
+        specifier: ^0.173.0
+        version: 0.173.0
       zod:
         specifier: ^3.24.1
         version: 3.24.2
@@ -370,6 +373,9 @@ importers:
       '@types/react-dom':
         specifier: 19.0.2
         version: 19.0.2(@types/react@19.0.7)
+      '@types/three':
+        specifier: ^0.173.0
+        version: 0.173.0
       '@vitejs/plugin-react-swc':
         specifier: ^3.7.2
         version: 3.8.0(@swc/helpers@0.5.15)(vite@6.1.1(@types/node@22.10.7)(jiti@1.21.7)(sass@1.85.0)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
@@ -2400,6 +2406,9 @@ packages:
   '@tanstack/virtual-core@3.11.3':
     resolution: {integrity: sha512-v2mrNSnMwnPJtcVqNvV0c5roGCBqeogN8jDtgtuHCphdwBasOZ17x8UV8qpHUh+u0MLfX43c0uUHKje0s+Zb0w==}
 
+  '@tweenjs/tween.js@23.1.3':
+    resolution: {integrity: sha512-vJmvvwFxYuGnF2axRtPYocag6Clbb5YS7kLL+SO/TeVFzHqDIWrNKYtcsPMibjDx9O+bu+psAy9NKfWklassUA==}
+
   '@types/body-parser@1.19.5':
     resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
 
@@ -2477,8 +2486,17 @@ packages:
   '@types/serve-static@1.15.7':
     resolution: {integrity: sha512-W8Ym+h8nhuRwaKPaDw34QUkwsGi6Rc4yYqvKFo5rm2FUEhCFbzVWrxXUxuKK8TASjWsysJY0nsmNCGhCOIsrOw==}
 
+  '@types/stats.js@0.17.3':
+    resolution: {integrity: sha512-pXNfAD3KHOdif9EQXZ9deK82HVNaXP5ZIF5RP2QG6OQFNTaY2YIetfrE9t528vEreGQvEPRDDc8muaoYeK0SxQ==}
+
+  '@types/three@0.173.0':
+    resolution: {integrity: sha512-KtNjfI/CRB6JVKIVeZM1R3GYDX2wkoV2itNcQu2j4d7qkhjGOuB+s2oF6jl9mztycDLGMtrAnJQYxInC8Bb20A==}
+
   '@types/use-sync-external-store@0.0.6':
     resolution: {integrity: sha512-zFDAD+tlpf2r4asuHEj0XH6pY6i0g5NeAHPn+15wk3BV6JA69eERFXC1gyGThDkVa1zCyKr5jox1+2LbV/AMLg==}
+
+  '@types/webxr@0.5.21':
+    resolution: {integrity: sha512-geZIAtLzjGmgY2JUi6VxXdCrTb99A7yP49lxLr2Nm/uIK0PkkxcEi4OGhoGDO4pxCf3JwGz2GiJL2Ej4K2bKaA==}
 
   '@types/ws@8.5.14':
     resolution: {integrity: sha512-bd/YFLW+URhBzMXurx7lWByOu+xzU9+kb3RboOteXYDfW+tr+JZa99OyNmPINEGB/ahzKrEuc8rcv4gnpJmxTw==}
@@ -2534,6 +2552,9 @@ packages:
     resolution: {integrity: sha512-T4sHPvS+DIqDP51ifPqa9XIRAz/kIvIi8oXcnOZZgHmMotgmmdxe/DD5tMFlt5nuIRzT0/QuiwmKlH0503Aapw==}
     peerDependencies:
       vite: ^4 || ^5 || ^6
+
+  '@webgpu/types@0.1.54':
+    resolution: {integrity: sha512-81oaalC8LFrXjhsczomEQ0u3jG+TqE6V9QHLA8GNZq/Rnot0KDugu3LhSYSlie8tSdooAN1Hov05asrUUp9qgg==}
 
   abstract-level@2.0.2:
     resolution: {integrity: sha512-pPJixmXk/kTKLB2sSue7o4Uj6TlLD2XfaP2gWZomHVCC6cuUGX/VslQqKG1yZHfXwBb/3lS6oSTMPGzh1P1iig==}
@@ -3282,6 +3303,9 @@ packages:
       picomatch:
         optional: true
 
+  fflate@0.8.2:
+    resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
+
   file-entry-cache@8.0.0:
     resolution: {integrity: sha512-XXTUwCvisa5oacNGRP9SfNtYBNAMi+RPwBFmblZEF7N7swHYQS6/Zfk7SRwx4D5j3CH211YNRco1DEMNVfZCnQ==}
     engines: {node: '>=16.0.0'}
@@ -3856,6 +3880,9 @@ packages:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
     engines: {node: '>= 8'}
 
+  meshoptimizer@0.18.1:
+    resolution: {integrity: sha512-ZhoIoL7TNV4s5B6+rx5mC//fw8/POGyNxS/DZyCJeiZ12ScLfVwRE/GfsxwiTkMYYD5DmK2/JXnEVXqL4rF+Sw==}
+
   methods@1.1.2:
     resolution: {integrity: sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==}
     engines: {node: '>= 0.6'}
@@ -3965,8 +3992,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  node-karin@1.3.19:
-    resolution: {integrity: sha512-5hZZNiVvbnqBhnbOpZq0QOhLbXmazb7T7Hhwtm9U9s73DNeYUVP7ioaJyKk8G+YiIeFWyF0WQXr9c3lUIeXSdw==}
+  node-karin@1.3.20:
+    resolution: {integrity: sha512-7XWtyanorZpABFZU4DBOqjI8+KNQ0Q9kA0oYSiJ5AOwUk8CvquDNNvKJ/1v1t9wKXolx0pRHcWcRtQkxeJT1jA==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -4693,6 +4720,9 @@ packages:
 
   thenify@3.3.1:
     resolution: {integrity: sha512-RVZSIV5IG10Hk3enotrhvz0T9em6cyHBLkH/YAZuKqd8hRkKhSfCGIcP2KUY0EPxndzANBmNllzWPwak+bheSw==}
+
+  three@0.173.0:
+    resolution: {integrity: sha512-AUwVmViIEUgBwxJJ7stnF0NkPpZxx1aZ6WiAbQ/Qq61h6I9UR4grXtZDmO8mnlaNORhHnIBlXJ1uBxILEKuVyw==}
 
   tinyexec@0.3.2:
     resolution: {integrity: sha512-KQQR9yN7R5+OSwaK0XQoj22pwHoTlgYqmUscPYoknOoWCWfj/5/ABTMRi69FrKU5ffPVh5QcFikpWJI/P1ocHA==}
@@ -7700,6 +7730,8 @@ snapshots:
 
   '@tanstack/virtual-core@3.11.3': {}
 
+  '@tweenjs/tween.js@23.1.3': {}
+
   '@types/body-parser@1.19.5':
     dependencies:
       '@types/connect': 3.4.38
@@ -7797,7 +7829,20 @@ snapshots:
       '@types/node': 22.10.7
       '@types/send': 0.17.4
 
+  '@types/stats.js@0.17.3': {}
+
+  '@types/three@0.173.0':
+    dependencies:
+      '@tweenjs/tween.js': 23.1.3
+      '@types/stats.js': 0.17.3
+      '@types/webxr': 0.5.21
+      '@webgpu/types': 0.1.54
+      fflate: 0.8.2
+      meshoptimizer: 0.18.1
+
   '@types/use-sync-external-store@0.0.6': {}
+
+  '@types/webxr@0.5.21': {}
 
   '@types/ws@8.5.14':
     dependencies:
@@ -7886,6 +7931,8 @@ snapshots:
       vite: 6.1.1(@types/node@22.10.7)(jiti@1.21.7)(sass@1.85.0)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
     transitivePeerDependencies:
       - '@swc/helpers'
+
+  '@webgpu/types@0.1.54': {}
 
   abstract-level@2.0.2:
     dependencies:
@@ -8848,6 +8895,8 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.2
 
+  fflate@0.8.2: {}
+
   file-entry-cache@8.0.0:
     dependencies:
       flat-cache: 4.0.1
@@ -9398,6 +9447,8 @@ snapshots:
 
   merge2@1.4.1: {}
 
+  meshoptimizer@0.18.1: {}
+
   methods@1.1.2: {}
 
   micromatch@4.0.8:
@@ -9528,7 +9579,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  node-karin@1.3.19:
+  node-karin@1.3.20:
     dependencies:
       '@types/express': 4.17.21
       '@types/lodash': 4.17.15
@@ -10370,6 +10421,8 @@ snapshots:
   thenify@3.3.1:
     dependencies:
       any-promise: 1.3.0
+
+  three@0.173.0: {}
 
   tinyexec@0.3.2: {}
 
