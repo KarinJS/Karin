@@ -47,7 +47,7 @@ function OnlineStatus () {
 
   return (
     <div className='ml-4 flex items-center gap-2'>
-      <div className={clsx('rounded-full w-4 h-4', error ? 'bg-red-500' : 'bg-green-500')} />
+      <div className={clsx('rounded-full w-4 h-4', error ? 'bg-red-400' : 'bg-green-400')} />
       {/* <div>{error ? '离线' : '在线'}</div> */}
       <RotatingText
         texts={msg}
