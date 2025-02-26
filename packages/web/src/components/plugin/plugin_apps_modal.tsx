@@ -7,6 +7,7 @@ import { FaEye, FaTrash } from 'react-icons/fa6'
 import { toast } from 'react-hot-toast'
 import Editor from '@monaco-editor/react'
 import { useTheme } from '@/hooks/use-theme'
+import { MdOutlineSaveAlt } from 'react-icons/md'
 
 interface Props {
   isOpen: boolean
@@ -16,6 +17,7 @@ interface Props {
 
 export function PluginAppsModal ({ isOpen, onClose, pluginName }: Props) {
   const [fileContent, setFileContent] = useState<string | undefined>(undefined)
+  const [editedContent, setEditedContent] = useState<string | undefined>(undefined)
 
   // 处理文件操作
   const { loading: fileOpLoading, run: handleFileOperation } = useRequest(
@@ -31,6 +33,7 @@ export function PluginAppsModal ({ isOpen, onClose, pluginName }: Props) {
       onSuccess: (result, [_, operation]) => {
         if (operation === 'read') {
           setFileContent(result || '')
+          setEditedContent(result || '')
         } else if (operation === 'delete') {
           toast.success('文件删除成功')
           // 刷新文件列表
@@ -40,6 +43,18 @@ export function PluginAppsModal ({ isOpen, onClose, pluginName }: Props) {
       onError: (error) => {
         toast.error(error.message || '操作失败')
       },
+    }
+  )
+
+  // TODO:保存文件
+  const { loading: saveLoading, run: saveFile } = useRequest(
+    async (fileName: string, content: string) => {
+      // 这里是保存操作的占位符，后端未适配时可先给出提示
+      toast.success('保存操作已触发，等待后端适配')
+      return Promise.resolve()
+    },
+    {
+      manual: true
     }
   )
 
@@ -113,25 +128,48 @@ export function PluginAppsModal ({ isOpen, onClose, pluginName }: Props) {
               ))}
 
               {/* 文件内容预览模态框 */}
-              {fileContent !== undefined && (
+              {editedContent !== undefined && (
                 <Modal
-                  isOpen={fileContent !== undefined}
-                  onClose={() => setFileContent(undefined)}
+                  isOpen={editedContent !== undefined}
+                  onClose={() => {
+                    setFileContent(undefined)
+                    setEditedContent(undefined)
+                  }}
                   size='full'
                   scrollBehavior='inside'
                 >
                   <ModalContent>
                     <ModalHeader>
-                      <h3 className='text-lg font-semibold'>文件内容</h3>
+                      <h3 className='text-lg font-semibold mr-4'>文件内容</h3>
+                      <Button
+                        className='w-20 h-7 text-xs font-bold'
+                        isIconOnly
+                        size='md'
+                        variant='flat'
+                        color='primary'
+                        isLoading={saveLoading}
+                        startContent={<MdOutlineSaveAlt className='mr-1' />}
+                        onPress={() => {
+                          if (fileContent && editedContent) {
+                            // 这里可以获取当前文件名，假设文件名在 fileContent 读取时已经保存
+                            // 这里简单假设文件名是之前读取的最后一个文件名，可根据实际情况修改
+                            const currentFileName = apps[apps.length - 1]
+                            saveFile(currentFileName, editedContent)
+                          }
+                        }}
+                      >
+                        保存
+                      </Button>
                     </ModalHeader>
                     <ModalBody>
                       <Editor
                         language='javascript'
                         theme={isDark ? 'vs-dark' : 'vs'}
-                        value={fileContent || ''}
+                        value={editedContent || ''}
                         options={{
-                          readOnly: true
+                          readOnly: false
                         }}
+                        onChange={(newValue) => setEditedContent(newValue)}
                       />
                     </ModalBody>
                   </ModalContent>
