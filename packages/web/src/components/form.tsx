@@ -10,22 +10,22 @@ export interface FormProps extends HeroUIFormProps {
   >
 }
 
-export function Form(props: FormProps) {
+export function Form (props: FormProps) {
   const { errors, validationErrors, ...rest } = props
   const errorTips = errors
     ? Object.keys(errors).reduce(
-        (
-          acc: {
-            [key: string]: string
-          },
-          key,
-        ) => {
-          acc[key] = errors[key].message || ''
-          return acc
+      (
+        acc: {
+          [key: string]: string
         },
-        {},
-      )
+        key,
+      ) => {
+        acc[key] = errors[key].message || ''
+        return acc
+      },
+      {},
+    )
     : {}
   const errs = validationErrors ?? errorTips
-  return <HeroUIForm {...rest} validationErrors={errs} validationBehavior="aria" />
+  return <HeroUIForm {...rest} validationErrors={errs} validationBehavior='aria' />
 }

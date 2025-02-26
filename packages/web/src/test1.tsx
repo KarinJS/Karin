@@ -1,6 +1,6 @@
 import toast from 'react-hot-toast'
 import { useForm, FormProvider } from 'react-hook-form'
-import { initDefaultValues } from './components/config/values'
+import { DefaultValues, initDefaultValues } from './components/config/values'
 import { Form } from '@heroui/form'
 import { RenderComponent } from './components/config/render'
 import type { ComponentConfig } from 'node-karin'
@@ -8,12 +8,45 @@ import { Button } from '@heroui/button'
 
 export default function Parent () {
   const options: ComponentConfig[] = [
+    // {
+    //   key: 'parent-field',
+    //   componentType: 'input',
+    //   componentClassName: 'w-full',
+    //   defaultValue: 'test'
+    // },
     {
-      key: 'parent-field',
-      componentType: 'input',
-      componentClassName: 'w-full',
-      defaultValue: 'test'
+      key: 'input-group',
+      componentType: 'input-group',
+      label: '输入框组',
+      description: '这是一个输入框组',
+      template: {
+        key: 'input',
+        componentType: 'input',
+        componentClassName: 'w-full',
+      },
+      data: ['1', '2', '3'],
     },
+    // {
+    //   key: 'accordion',
+    //   componentType: 'accordion',
+    //   label: '手风琴',
+    //   description: '这是一个手风琴组件',
+    //   children: [
+    //     {
+    //       key: 'accordion-item',
+    //       componentType: 'accordion-item',
+    //       description: '这是一个手风琴项',
+    //       children: [
+    //         {
+    //           key: 'accordion-item-input',
+    //           componentType: 'input',
+    //           componentClassName: 'w-full',
+    //           defaultValue: '',
+    //         },
+    //       ],
+    //     },
+    //   ],
+    // },
     {
       key: 'accordion-pro',
       componentType: 'accordion-pro',
@@ -24,13 +57,13 @@ export default function Parent () {
         description: '这是一个手风琴项',
         children: [
           {
-            key: 'accordion-pro-item-input',
+            key: 'input',
             componentType: 'input',
             componentClassName: 'w-full',
             defaultValue: '',
           },
           {
-            key: 'checkbox-group-pro',
+            key: 'checkbox-group',
             componentType: 'checkbox-group',
             componentClassName: 'w-full',
             defaultValue: [],
@@ -49,16 +82,30 @@ export default function Parent () {
               },
             ],
           },
+          {
+            key: 'input-group',
+            componentType: 'input-group',
+            label: '输入框组',
+            description: '这是一个输入框组',
+            template: {
+              key: 'pro-input',
+              componentType: 'input',
+              componentClassName: 'w-full',
+            },
+            data: [],
+          },
         ],
       },
       data: [
         {
-          'accordion-pro-item-input': '1',
-          'checkbox-group-pro': ['1'],
+          input: '1',
+          'checkbox-group': ['1'],
+          'input-group': ['1', '2', '3'],
         },
         {
-          'accordion-pro-item-input': '3',
-          'checkbox-group-pro': ['2'],
+          input: '3',
+          'checkbox-group': ['2'],
+          'input-group': ['3', '4', '5'],
         },
       ],
     },
@@ -69,8 +116,9 @@ export default function Parent () {
   })
 
   /** 提交表单 */
-  const onSubmit = (data) => {
+  const onSubmit = (data: DefaultValues) => {
     console.log('完整表单数据:', JSON.stringify(data, null, 2))
+    console.log('data:', data)
     toast.success('表单提交成功！')
   }
 

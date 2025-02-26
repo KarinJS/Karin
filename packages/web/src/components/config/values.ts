@@ -21,6 +21,30 @@ export interface InputValue extends BaseValue {
 }
 
 /**
+ * 输入框组初始值类型
+ */
+export interface InputGroupValue extends BaseValue {
+  key: 'input-group'
+  value: string[]
+}
+
+/**
+ * 开关初始值类型
+ */
+export interface SwitchValue extends BaseValue {
+  key: 'switch'
+  value: boolean
+}
+
+/**
+ * 单选框初始值类型
+ */
+export interface RadioGroupValue extends BaseValue {
+  key: 'radio-group'
+  value: string
+}
+
+/**
  * 多选框初始值类型
  */
 export interface CheckboxGroupValue extends BaseValue {
@@ -47,7 +71,7 @@ export interface AccordionProValue extends BaseValue {
 /**
  * 联合初始值类型
  */
-export type Value = InputValue | CheckboxGroupValue | AccordionValue | AccordionProValue
+export type Value = InputValue | InputGroupValue | SwitchValue | RadioGroupValue | CheckboxGroupValue | AccordionValue | AccordionProValue
 
 /**
  * initDefaultValues函数返回值类型
@@ -74,12 +98,36 @@ export const initDefaultValues = (
       return
     }
 
+    if (option.componentType === 'switch') {
+      defaultValues[option.key] = {
+        key: 'switch',
+        value: option.defaultSelected ?? false
+      }
+      return
+    }
+
+    if (option.componentType === 'radio-group') {
+      defaultValues[option.key] = {
+        key: 'radio-group',
+        value: option.defaultValue ?? ''
+      }
+      return
+    }
+
     if (option.componentType === 'checkbox-group') {
       const selectedValues = option.defaultValue || []
 
       defaultValues[option.key] = {
         key: 'checkbox-group',
         value: selectedValues
+      }
+      return
+    }
+
+    if (option.componentType === 'input-group') {
+      defaultValues[option.key] = {
+        key: 'input-group',
+        value: option.data || []
       }
       return
     }
@@ -109,25 +157,59 @@ export const initDefaultValues = (
             })
           }
 
-          for (const [key, value] of Object.entries(item)) {
-            const childConfig = childConfigMap[key]
+          Object.entries(item).forEach(([key, value]) => {
+            const config = childConfigMap[key]
+            if (!config) {
+              console.error(`[accordion-pro] 组件的子组件配置中不存在key为${key}的组件`)
+              return
+            }
 
-            // 根据子组件类型正确格式化值
-            if (childConfig?.componentType === 'checkbox-group') {
-              // 处理复选框组，直接使用值数组
+            if (config.componentType === 'input') {
+              formattedItem[key] = {
+                key: 'input',
+                value: value ?? ''
+              }
+              return
+            }
+
+            if (config.componentType === 'switch') {
+              formattedItem[key] = {
+                key: 'switch',
+                value: value ?? false
+              }
+              return
+            }
+
+            if (config.componentType === 'radio-group') {
+              formattedItem[key] = {
+                key: 'radio-group',
+                value: value ?? ''
+              }
+              return
+            }
+
+            if (config.componentType === 'checkbox-group') {
               formattedItem[key] = {
                 key: 'checkbox-group',
                 value: Array.isArray(value) ? value : []
               }
-            } else {
-              // 默认处理为input类型
-              formattedItem[key] = {
-                key: 'input',
-                value: value as string
-              }
+              return
             }
-          }
 
+            if (config.componentType === 'input-group') {
+              console.log('value:', value)
+              formattedItem[key] = {
+                key: 'input-group',
+                value: Array.isArray(value)
+                  ? value.map(item => String(item))
+                  : []
+              }
+              return
+            }
+
+            console.log(`[不支持的组件] ${config.componentType} 组件未实现默认值初始化`)
+          })
+          console.log('formattedItem:', formattedItem)
           return formattedItem
         }) ?? []
       }
@@ -136,6 +218,7 @@ export const initDefaultValues = (
 
     console.error(`[不支持的组件] ${option.componentType} 组件未实现默认值初始化`)
   })
+
   console.log('defaultValues:', defaultValues)
   return defaultValues
 }
