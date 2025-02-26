@@ -1,8 +1,14 @@
-import { defineConfig } from 'vite'
+import { defineConfig, normalizePath } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import reactScan from '@react-scan/vite-plugin-react-scan'
 import viteCompression from 'vite-plugin-compression'
+import { viteStaticCopy } from 'vite-plugin-static-copy'
+import path from 'node:path'
+
+const monacoEditorPath = normalizePath(
+  path.resolve(__dirname, 'node_modules/monaco-editor/min/vs')
+)
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -10,7 +16,15 @@ export default defineConfig({
     react(),
     tsconfigPaths(),
     reactScan(),
-    viteCompression({ deleteOriginFile: true })
+    viteCompression({ deleteOriginFile: true }),
+    viteStaticCopy({
+      targets: [
+        {
+          src: monacoEditorPath,
+          dest: 'monaco-editor/min',
+        }
+      ]
+    })
   ],
   base: '/web/',
   build: {

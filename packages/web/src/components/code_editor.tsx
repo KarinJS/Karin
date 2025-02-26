@@ -1,33 +1,33 @@
-import Editor, { OnMount } from '@monaco-editor/react'
+import Editor, { loader, OnMount } from '@monaco-editor/react'
 import React from 'react'
 import { useTheme } from '@/hooks/use-theme'
 import * as monaco from 'monaco-editor'
-// import TsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
-// import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
+import TsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
+import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 
-// self.MonacoEnvironment = {
-//   getWorker (_: unknown, label: string) {
-//     if (label === 'typescript' || label === 'javascript') {
-//       return new TsWorker()
-//     }
-//     return new EditorWorker()
-//   }
-// }
+self.MonacoEnvironment = {
+  getWorker (_: unknown, label: string) {
+    if (label === 'typescript' || label === 'javascript') {
+      return new TsWorker()
+    }
+    return new EditorWorker()
+  }
+}
 
-// monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true)
+monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true)
 
-// loader.config({
-//   monaco,
-//   paths: {
-//     vs: '/webui/monaco-editor/min/vs'
-//   }
-// })
+loader.config({
+  monaco,
+  paths: {
+    vs: '/web/monaco-editor/min/vs'
+  }
+})
 
-// loader.config({
-//   'vs/nls': {
-//     availableLanguages: { '*': 'zh-cn' }
-//   }
-// })
+loader.config({
+  'vs/nls': {
+    availableLanguages: { '*': 'zh-cn' }
+  }
+})
 
 export interface CodeEditorProps extends React.ComponentProps<typeof Editor> {
   test?: string
