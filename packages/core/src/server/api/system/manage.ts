@@ -1,6 +1,6 @@
-import { router } from './router'
+import { router } from '../router'
 import { restartDirect } from '@/utils/system/restart'
-import { createSuccessResponse } from '../utils/response'
+import { createSuccessResponse } from '../../utils/response'
 
 import type { RequestHandler } from 'express'
 

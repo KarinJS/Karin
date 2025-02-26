@@ -12,15 +12,15 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     `body: ${JSON.stringify(req.body)}\n`
   )
 
-  if (req.path.startsWith('/api')) {
-    if (req.path === '/api/v1/ping' || req.path.startsWith('/api/v1/console')) {
-      next()
-      return
-    }
-    if (!auth.getAuth(req)) {
-      createUnauthorizedResponse(res, '错误的token')
-      return
-    }
+  if (req.path === '/ping' || req.path.startsWith('/console')) {
+    next()
+    return
+  }
+
+  if (!auth.getAuth(req)) {
+    createUnauthorizedResponse(res, '错误的token')
+    logger.error(`[express][${req.ip}] 鉴权错误: /api/v1/${req.path}`)
+    return
   }
 
   next()
