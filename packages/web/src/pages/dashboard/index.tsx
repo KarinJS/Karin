@@ -46,7 +46,7 @@ export interface StatusItemProps {
 }
 function StatusItem ({ title, value }: StatusItemProps) {
   return (
-    <Card className='py-4'>
+    <Card className='py-4 transition-transform hover:-translate-y-1'>
       <CardHeader className='py-0 px-4 flex-col items-start'>
         <p className='text-tiny text-primary/80 uppercase font-bold'>{title}</p>
         <h4 className='mt-2 font-bold text-black/70 dark:text-white/80 text-large'>{typeof value === 'boolean' ? (value ? '是' : '否') : value || '--'}</h4>

@@ -519,15 +519,17 @@ export default function Sidebar () {
                               </div>
                             )
                             : (item.children
-                              .sort((a, b) => a.id.localeCompare(b.id)) // 不重新排序的话，插件按钮会自己乱序
-                              .map((child) => (
+                              .sort((a, b) => a.id.localeCompare(b.id))
+                              .map((child, index) => (
                                 <Fragment key={child.id}>
                                   <Button
                                     variant='light' fullWidth
                                     className={clsx(
-                                      'flex items-start justify-start gap-2 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary rounded-lg',
+                                      'flex items-start justify-start gap-2 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary',
+                                      'transition-transform hover:-translate-y-[2px]',
                                       {
-                                        '!text-primary bg-primary/5': location.pathname === child.href
+                                        '!text-primary bg-primary/5': location.pathname === child.href,
+                                        'mt-2': index === 0,
                                       }
                                     )}
                                     onPress={() => navigate(`${child.href}?type=${child.type || ''}`)}
