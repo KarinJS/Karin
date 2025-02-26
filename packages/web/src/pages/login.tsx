@@ -13,6 +13,7 @@ import { Form } from '@/components/form'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import BlurText from '@/components/BlurText'
+import Aurora from '@/components/Aurora'
 
 export default function LoginPage () {
   const navigate = useNavigate()
@@ -43,9 +44,12 @@ export default function LoginPage () {
     <div className='relative min-h-screen w-full overflow-hidden bg-[#f8f9ff] dark:bg-neutral-950 flex justify-center items-center'>
       {/* 装饰性背景元素 */}
       <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-        <div className='absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-violet-200/30 to-transparent rounded-full blur-3xl dark:from-violet-900/20' />
-        <div className='absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-blue-200/30 to-transparent rounded-full blur-3xl dark:from-blue-900/20' />
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('/web/grid.svg')] opacity-[0.02]" />
+        <Aurora
+          colorStops={['#ff304f', '#feff89', '#fafaf6']}
+          blend={1}
+          amplitude={0.7}
+          speed={0.5}
+        />
       </div>
 
       {/* 主要内容 */}
@@ -55,7 +59,7 @@ export default function LoginPage () {
         transition={{ duration: 0.5 }}
         className='w-[90%] max-w-[400px] relative z-10'
       >
-        <div className='relative bg-white/70 dark:bg-neutral-900/70 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 dark:border-neutral-800/50'>
+        <div className='relative bg-white/20 dark:bg-neutral-900/20 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 dark:border-neutral-800/20'>
           <div className='p-8 flex flex-col items-center'>
             {/* Logo和标题区域 */}
             <div className='flex flex-col items-center space-y-6 mb-12'>
@@ -154,8 +158,7 @@ export default function LoginPage () {
                     <Input
                       type='password'
                       label='密码'
-                      className='w-full bg-white/50 dark:bg-neutral-800/50 backdrop-blur-sm border-neutral-200/50 dark:border-neutral-700/50 focus:border-violet-500 dark:focus:border-violet-500 transition-all duration-200'
-                      placeholder='请输入密码'
+                      labelPlacement='outside'
                       {...field}
                     />
                   )}

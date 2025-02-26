@@ -49,7 +49,7 @@ function StatusItem ({ title, value }: StatusItemProps) {
     <Card className='py-4'>
       <CardHeader className='py-0 px-4 flex-col items-start'>
         <p className='text-tiny text-primary/80 uppercase font-bold'>{title}</p>
-        <h4 className='mt-2 font-bold text-black/80 dark:text-white/80 text-large'>{typeof value === 'boolean' ? (value ? '是' : '否') : value || '--'}</h4>
+        <h4 className='mt-2 font-bold text-black/70 dark:text-white/80 text-large'>{typeof value === 'boolean' ? (value ? '是' : '否') : value || '--'}</h4>
       </CardHeader>
     </Card>
   )
@@ -79,12 +79,12 @@ function Status () {
         title='运行时间' value={
           <div className='flex items-center gap-2'>
             <Counter
-              className='flex items-center gap-1 text-black/80 dark:text-white/80'
+              className='flex items-center gap-1 text-black/70 dark:text-white/80'
               value={Math.floor(data.uptime)}
               fontSize={20}
               places={generatePlaces(Math.floor(data.uptime))}
             />
-            <span className='text-black/80 dark:text-white/80'>秒</span>
+            <span className='text-black/70 dark:text-white/80'>秒</span>
           </div>
         }
       />
