@@ -12,8 +12,7 @@ import toast from 'react-hot-toast'
 import { Form } from '@/components/form'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import BlurText from '@/components/BlurText'
-import Aurora from '@/components/Aurora'
+import SplashCursor from '@/components/SplashCursor'
 
 export default function LoginPage () {
   const navigate = useNavigate()
@@ -44,12 +43,9 @@ export default function LoginPage () {
     <div className='relative min-h-screen w-full overflow-hidden bg-[#f8f9ff] dark:bg-neutral-950 flex justify-center items-center'>
       {/* 装饰性背景元素 */}
       <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-        <Aurora
-          colorStops={['#ff304f', '#feff89', '#fafaf6']}
-          blend={1}
-          amplitude={0.7}
-          speed={0.5}
-        />
+        <div className='absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-violet-200/30 to-transparent rounded-full blur-3xl dark:from-violet-900/20' />
+        <div className='absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-blue-200/30 to-transparent rounded-full blur-3xl dark:from-blue-900/20' />
+        <div className="absolute top-0 left-0 w-full h-full bg-[url('/web/grid.svg')] opacity-[0.02]" />
       </div>
 
       {/* 主要内容 */}
@@ -125,17 +121,12 @@ export default function LoginPage () {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className='flex flex-col items-center space-y-2'
+                className='text-center space-y-2'
               >
-                <BlurText
-                  text='Karin WebUI'
-                  delay={100}
-                  animateBy='letters'
-                  direction='top'
-                  className='text-black/90 dark:text-white/80 select-none text-2xl font-bold bg-gradient-to-r'
-                />
-
-                <p className='text-sm text-neutral-500 dark:text-neutral-400 select-none'>
+                <h1 className='text-2xl font-bold bg-gradient-to-r from-violet-500 to-blue-500 bg-clip-text text-transparent'>
+                  Karin WebUI
+                </h1>
+                <p className='text-sm text-neutral-500 dark:text-neutral-400'>
                   欢迎回来，请输入密码继续
                 </p>
               </motion.div>
@@ -158,7 +149,8 @@ export default function LoginPage () {
                     <Input
                       type='password'
                       label='密码'
-                      labelPlacement='outside'
+                      className='rounded-xl w-full bg-white/50 dark:bg-neutral-800/50 backdrop-blur-sm border-neutral-200/50 dark:border-neutral-700/50 focus:border-violet-500 dark:focus:border-violet-500 transition-all duration-200'
+                      placeholder='请输入密码'
                       {...field}
                     />
                   )}
@@ -253,6 +245,7 @@ export default function LoginPage () {
           </div>
         </motion.div>
       </motion.div>
+      <SplashCursor />
     </div>
   )
 }
