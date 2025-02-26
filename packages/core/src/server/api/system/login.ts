@@ -1,5 +1,5 @@
-import { createSuccessResponse } from '../utils/response'
-import { router } from './router'
+import { router } from '../router'
+import { createSuccessResponse } from '../../utils/response'
 import type { RequestHandler } from 'express'
 
 const loginRouter: RequestHandler = async (_req, res) => {
