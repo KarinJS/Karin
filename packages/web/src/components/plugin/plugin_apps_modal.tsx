@@ -49,8 +49,8 @@ export function PluginAppsModal ({ isOpen, onClose, pluginName }: Props) {
   // TODO:保存文件
   const { loading: saveLoading, run: saveFile } = useRequest(
     async (fileName: string, content: string) => {
-      // 这里是保存操作的占位符，后端未适配时可先给出提示
-      toast.success('保存操作已触发，等待后端适配')
+      console.log(fileName, content)
+      toast.success(fileName + '保存操作已触发，等待后端适配')
       return Promise.resolve()
     },
     {
