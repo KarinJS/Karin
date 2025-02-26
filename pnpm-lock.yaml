@@ -303,6 +303,9 @@ importers:
       lucide-react:
         specifier: ^0.473.0
         version: 0.473.0(react@19.0.0)
+      monaco-editor:
+        specifier: ^0.52.2
+        version: 0.52.2
       ogl:
         specifier: ^1.0.11
         version: 1.0.11

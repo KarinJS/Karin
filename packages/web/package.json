@@ -55,6 +55,7 @@
     "framer-motion": "^11.18.0",
     "lodash.isequal": "^4.5.0",
     "lucide-react": "^0.473.0",
+    "monaco-editor": "^0.52.2",
     "ogl": "^1.0.11",
     "qface": "^1.4.1",
     "quill": "^2.0.3",
