@@ -1,5 +1,4 @@
 import store from '@/store'
-import { ToastProvider } from '@heroui/toast'
 import DialogProvider from '@/contexts/dialog'
 import { HeroUIProvider } from '@heroui/system'
 import { useHref, useNavigate } from 'react-router-dom'
@@ -22,7 +21,6 @@ export function Provider ({ children }: { children: React.ReactNode }) {
       <HeroUIProvider navigate={navigate} useHref={useHref}>
         <DialogProvider>
           <Toaster />
-          <ToastProvider />
           {children}
         </DialogProvider>
       </HeroUIProvider>
