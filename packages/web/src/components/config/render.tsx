@@ -10,6 +10,7 @@ import type { JSX } from 'react'
 import type { DefaultValues, Value } from './values'
 import type { Control, UseFormRegister } from 'react-hook-form'
 import type { AccordionProProps, AccordionProps, ComponentConfig } from 'node-karin'
+import { createErrorCard } from '../heroui/error'
 
 /**
  * 表单控制器类型
@@ -33,43 +34,50 @@ export const RenderComponent: React.FC<{
   const list: JSX.Element[] = []
 
   options.forEach((option) => {
-    if (option.componentType === 'divider') {
-      list.push(createDivider(option))
-      return
-    }
+    try {
+      if (option.componentType === 'divider') {
+        list.push(createDivider(option))
+        return
+      }
 
-    if (option.componentType === 'input') {
-      list.push(createInput(option, register))
-      return
-    }
+      if (option.componentType === 'input') {
+        list.push(createInput(option, register))
+        return
+      }
 
-    if (option.componentType === 'switch') {
-      list.push(createSwitch(option, register))
-      return
-    }
+      if (option.componentType === 'switch') {
+        list.push(createSwitch(option, register))
+        return
+      }
 
-    if (option.componentType === 'radio-group') {
-      list.push(createRadioGroup(option, register))
-      return
-    }
+      if (option.componentType === 'radio-group') {
+        list.push(createRadioGroup(option, control, basePath))
+        return
+      }
 
-    if (option.componentType === 'input-group') {
-      list.push(createInputGroup(option, register, control, basePath))
-      return
-    }
+      if (option.componentType === 'input-group') {
+        list.push(createInputGroup(option, control, basePath))
+        return
+      }
 
-    if (option.componentType === 'checkbox-group') {
-      list.push(createCheckboxGroup(option, register, control, basePath))
-      return
-    }
+      if (option.componentType === 'checkbox-group') {
+        list.push(createCheckboxGroup(option, control, basePath))
+        return
+      }
 
-    if (option.componentType === 'accordion') {
-      list.push(createAccordion(option, register, control))
-      return
-    }
+      if (option.componentType === 'accordion') {
+        list.push(createAccordion(option, register, control))
+        return
+      }
 
-    if (option.componentType === 'accordion-pro') {
-      list.push(createAccordionPro(option, register, control))
+      if (option.componentType === 'accordion-pro') {
+        list.push(createAccordionPro(option, register, control))
+        return
+      }
+
+      throw new Error(`未知的组件类型: ${option.componentType}`)
+    } catch (error) {
+      list.push(createErrorCard('组件渲染错误', error as Error))
     }
   })
 
@@ -175,7 +183,7 @@ export const createAccordionPro = (
   register: FormRegister,
   control: FormControl
 ): JSX.Element => {
-  const { fields, append, remove } = useFieldArray<any>({
+  const { fields, append, remove } = useFieldArray<DefaultValues>({
     control,
     name: `${option.key}.value`,
   })
@@ -202,62 +210,118 @@ export const createAccordionPro = (
 
   /**
    * 添加新项
+   * 根据模板生成一个空数据
    */
   const handleAddItem = () => {
-    if (!data || data.length === 0) {
-      // 如果没有数据，创建一个空对象
-      const emptyItem: Record<string, Value> = {}
-      // 遍历子组件配置，为每个子组件创建默认值
-      if (template.children && Array.isArray(template.children)) {
-        template.children.forEach(child => {
-          if (child.componentType === 'input') {
-            emptyItem[child.key] = {
-              key: 'input',
-              value: child.defaultValue || ''
-            }
-          }
-          if (child.componentType === 'checkbox-group') {
-            emptyItem[child.key] = {
-              key: 'checkbox-group',
-              value: []
-            }
-          }
-          if (child.componentType === 'input-group') {
-            emptyItem[child.key] = {
-              key: 'input-group',
-              value: child.data || []
-            }
-          }
-        })
+    const emptyItem: Record<string, Value> = {}
+    template.children.forEach(child => {
+      if (child.componentType === 'input') {
+        emptyItem[child.key] = { key: 'input', value: '' }
+        return
       }
-      append(emptyItem)
-    } else {
-      // 如果有数据，复制第一项的结构
-      const firstItemStructure: Record<string, Value> = {}
-      if (template.children && Array.isArray(template.children)) {
-        template.children.forEach(child => {
-          if (child.componentType === 'input') {
-            firstItemStructure[child.key] = {
-              key: 'input',
-              value: ''
-            }
-          }
-          if (child.componentType === 'checkbox-group') {
-            firstItemStructure[child.key] = {
-              key: 'checkbox-group',
-              value: []
-            }
-          }
-          if (child.componentType === 'input-group') {
-            firstItemStructure[child.key] = {
-              key: 'input-group',
-              value: child.data || []
-            }
-          }
-        })
+      if (child.componentType === 'input-group') {
+        emptyItem[child.key] = { key: 'input-group', value: [''] }
+        return
       }
-      append(firstItemStructure)
-    }
+      if (child.componentType === 'checkbox-group') {
+        emptyItem[child.key] = { key: 'checkbox-group', value: [] }
+        return
+      }
+      if (child.componentType === 'radio-group') {
+        emptyItem[child.key] = { key: 'radio-group', value: '' }
+        return
+      }
+      if (child.componentType === 'switch') {
+        emptyItem[child.key] = { key: 'switch', value: false }
+      }
+    })
+
+    append(emptyItem)
+  }
+
+  /**
+   * 渲染手风琴pro卡片
+   * @param id - 卡片id
+   * @param key - 卡片key
+   * @param index - 卡片索引
+   * @param control - 控制器
+   * @param remove - 删除卡片
+   * @param data - 卡片数据
+   * @param template - 卡片模板
+   * @param createPrefixedRegister - 递归注册器
+   */
+  const createAccordionProCard = (
+    id: string,
+    key: string,
+    index: number,
+    control: FormControl,
+    remove: (index: number) => void,
+    data: AccordionProProps['data'],
+    template: AccordionProProps['children'],
+    createPrefixedRegister: (index: number) => FormRegister,
+  ) => {
+    const {
+      key: ___,
+      className,
+      componentClassName,
+      title,
+      subtitle,
+      children: childrenConfig,
+      ...itemOptions
+    } = template
+
+    return (
+      <HeroAccordionItem
+        {...itemOptions}
+        key={id}
+        title={
+          <div className='flex justify-between items-center w-full pr-4'>
+            <span>{
+              data &&
+                data[index]
+                ? (data[index].title || title || '手风琴默认标题')
+                : '手风琴默认标题'
+            }
+            </span>
+            <div
+              role='button'
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation()
+                remove(index)
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  remove(index)
+                }
+              }}
+              className='px-2 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors cursor-pointer'
+            >
+              删除
+            </div>
+          </div>
+        }
+        subtitle={
+          data &&
+            data[index]
+            ? (data[index].subtitle || subtitle || '手风琴默认副标题')
+            : '手风琴默认副标题'
+        }
+        className={componentClassName || 'mx-2'}
+        textValue={`textValue-${key}-${index}`}
+      >
+        <div className={className || 'flex flex-col gap-4 p-2'}>
+          <RenderComponent
+            options={(childrenConfig || []) as ComponentConfig[]}
+            register={createPrefixedRegister(index)}
+            control={control}
+            basePath={`${key}.value.${index}`}
+          />
+        </div>
+      </HeroAccordionItem>
+    )
   }
 
   return (
@@ -278,59 +342,17 @@ export const createAccordionPro = (
         {...options}
         keepContentMounted
       >
-        {fields.map((field, index) => {
-          const {
-            key: ___,
-            className,
-            componentClassName,
-            title,
-            subtitle,
-            children: childrenConfig,
-            ...itemOptions
-          } = template
-
-          return (
-            <HeroAccordionItem
-              {...itemOptions}
-              key={field.id}
-              title={
-                <div className='flex justify-between items-center w-full pr-4'>
-                  <span>{data && data[index] ? (data[index].title || title || '手风琴默认标题') : '手风琴默认标题'}</span>
-                  <div
-                    role='button'
-                    tabIndex={0}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      remove(index)
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        remove(index)
-                      }
-                    }}
-                    className='px-2 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors cursor-pointer'
-                  >
-                    删除
-                  </div>
-                </div>
-              }
-              subtitle={data && data[index] ? (data[index].subtitle || subtitle || '手风琴默认副标题') : '手风琴默认副标题'}
-              className={componentClassName || 'mx-2'}
-              textValue={`textValue-${key}-${index}`}
-            >
-              <div className={className || 'flex flex-col gap-4 p-2'}>
-                <RenderComponent
-                  options={(childrenConfig || []) as ComponentConfig[]}
-                  register={createPrefixedRegister(index)}
-                  control={control}
-                  basePath={`${key}.value.${index}`}
-                />
-              </div>
-            </HeroAccordionItem>
-          )
-        }).filter(Boolean)}
+        {/* 渲染手风琴pro卡片 */}
+        {fields.map((field, index) => createAccordionProCard(
+          field.id,
+          key,
+          index,
+          control,
+          remove,
+          data,
+          template,
+          createPrefixedRegister
+        )).filter(Boolean)}
       </HeroAccordion>
       <div className='h-2' />
     </div>

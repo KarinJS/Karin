@@ -25,7 +25,6 @@ import GroupNotice from '@/pages/dashboard/sandbox/contact/group_notice'
 import GroupChatTest from '@/pages/dashboard/sandbox/group'
 import RequireAuth from '@/components/auth/RequireAuth'
 import PluginConfigPage from '@/pages/dashboard/plugins/config'
-import Test from '@/test1'
 
 // Main App
 function App () {
@@ -44,7 +43,6 @@ function App () {
         <Route element={<ConfigPage />} path='/config' />
         <Route element={<PluginMarketPage />} path='/plugins/list' />
         <Route element={<PluginConfigPage />} path='/plugins/:name' />
-        <Route element={<Test />} path='/test' />
         <Route element={<SandboxPage />} path='/sandbox'>
           <Route element={<Navigate to='/sandbox/chat' />} path='' />
           <Route path='chat'>

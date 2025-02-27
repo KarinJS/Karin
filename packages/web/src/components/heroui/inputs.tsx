@@ -27,14 +27,16 @@ const generateDivClassName = (props: InputProps): string => {
  * @param register - 表单注册器
  * @returns 渲染后的输入框组件
  */
-export const createInput = (props: InputProps, register: FormRegister): JSX.Element => {
+export const createInput = (
+  props: InputProps,
+  register: FormRegister
+): JSX.Element => {
   const { componentType: _, className, componentClassName, key, ...options } = props
   const validator = props.rules ? createValidator(props.rules) : undefined
 
   return (
     <div className={generateDivClassName(props)} key={`div-${key}`}>
       <HeroInput
-        key={key}
         {...options}
         {...register(`${key}.value`)}
         className={componentClassName || 'w-[300px]'}
@@ -56,29 +58,30 @@ export const createInput = (props: InputProps, register: FormRegister): JSX.Elem
 /**
  * 输入框组组件
  * @param props - 输入框组属性
- * @param register - 表单注册器
  * @param control - 表单控制器
  * @param basePath - 基础路径
  * @returns 输入框组组件
  */
 export const createInputGroup = (
   props: InputGroupProps,
-  register: FormRegister,
   control: FormControl,
   basePath?: string
 ): JSX.Element => {
   const { template, key } = props
   const { componentType: __, key: ___, componentClassName, ...templateOptions } = template
+  /** 验证器 */
   const validator = template.rules ? createValidator(template.rules) : undefined
 
-  const itemsPerRow = props.itemsPerRow || 5
-  const maxRows = props.maxRows || 5
+  /** 最大输入框数量 */
   const maxInputs = props.maxInputs ?? 100
+  /** 每行输入框数量 */
+  const itemsPerRow = props.itemsPerRow || 5
+  /** 最大行数 */
+  const maxRows = props.maxRows || 5
+  /** 字段路径 */
+  const name = basePath ? `${basePath}.${key}.value` : `${key}.value`
 
   const [columns, setColumns] = useState('1fr')
-
-  // 构建完整的字段路径
-  const fieldPath = basePath ? `${basePath}.${key}.value` : `${key}.value`
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(min-width: 640px)')
@@ -96,7 +99,7 @@ export const createInputGroup = (
   return (
     <div key={key} className={props.className || 'w-full rounded-2xl p-2 transition-colors'}>
       <Controller
-        name={fieldPath}
+        name={name}
         control={control}
         defaultValue={defaultValue}
         render={({ field: { value = defaultValue, onChange } }) => {

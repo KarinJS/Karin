@@ -9,7 +9,10 @@ import type { FormRegister } from '../config/render'
  * @param register - 表单注册器
  * @returns 渲染后的输入框组件
  */
-export const createSwitch = (props: SwitchProps, register: FormRegister): JSX.Element => {
+export const createSwitch = (
+  props: SwitchProps,
+  register: FormRegister
+): JSX.Element => {
   const {
     componentType: _,
     key,
@@ -17,6 +20,7 @@ export const createSwitch = (props: SwitchProps, register: FormRegister): JSX.El
     endText,
     className,
     componentClassName,
+    defaultSelected,
     ...options
   } = props
 
@@ -29,6 +33,7 @@ export const createSwitch = (props: SwitchProps, register: FormRegister): JSX.El
           key={key}
           {...options}
           className={componentClassName}
+          defaultSelected={defaultSelected ?? false}
           {...register(`${key}.value`)}
         >
           {endText}
