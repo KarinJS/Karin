@@ -86,6 +86,9 @@
     "ws": "8.18.0",
     "yaml": "2.7.0"
   },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.9"
+  },
   "peerDependencies": {
     "node-karin": "workspace:*"
   },
@@ -200,8 +203,5 @@
       "types": "./dist/module/yaml.d.ts",
       "require": "./dist/module/yaml.cjs"
     }
-  },
-  "devDependencies": {
-    "@types/jsonwebtoken": "^9.0.9"
   }
 }

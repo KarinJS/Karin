@@ -1,64 +1,65 @@
 import { authKey } from '@/utils/config'
-import jwt from 'jsonwebtoken'
-import type { Request } from 'express'
-import { level } from '@/index'
-import crypto from 'node:crypto'
+import { verifyJwt } from '../utils/jwt'
+import {
+  createAccessTokenExpiredResponse,
+  createServerErrorResponse,
+  createUnauthorizedResponse,
+  HTTPStatusCode
+} from '../utils/response'
+import type { Request, Response } from 'express'
 
-/**
- * 用户登录鉴权
- * @param req 请求对象
- * @returns
- */
-export const loginAuth = async (req: Request): Promise<boolean> => {
-  const token = req?.headers?.password as string
-  if (!token) return false
-  const uToken = authKey()
-  const hashedData = crypto.createHash('sha256').update(uToken).digest('hex')
-  if (token === hashedData) {
-    const payload = { userId: uToken, passWord: hashedData }
-    const jwtToken = await setToken2Level(payload, payload.userId)
-    await level.set(`HTTP_AUTH_TOKEN:${uToken}`, jwtToken)
-    return true
-  }
-  return false
+enum AuthErrorType {
+  MissingToken = '鉴权失败: 缺少authorization',
+  MissingUserId = '鉴权失败: 缺少x-user-id'
 }
 
 /**
- * 生成 JWT 令牌
- * @param payload payload
- * @param token 鉴权密钥
- * @returns JWT 令牌
+ * 统一的token验证函数
+ * @param token 令牌
+ * @param userId 用户id
+ * @param res 响应
+ * @returns 是否验证成功
  */
-const setToken2Level = async (payload: { userId: string, passWord: string }, token: string): Promise<string> => {
-  const secretKey = jwt.sign(payload, token, { expiresIn: '3h' })
-  await level.set(`HTTP_AUTH_TOKEN:${payload.userId}`, secretKey)
-  return secretKey
-}
-
-/**
- * 验证 JWT 令牌
- * @param secreKey 加密后的 JWT 令牌
- * @param token 鉴权密钥
- * @returns 该 JWT 令牌是否匹配该密钥
- */
-const verifyToken = async (secreKey: string, token: string): Promise<{ status: boolean, newToken?: string }> => {
-  const uToken = authKey()
-  const cacheSecreKey = await level.get(`HTTP_AUTH_TOKEN:${uToken}`)
-
-  if (secreKey === cacheSecreKey || token === uToken) {
-    try {
-      const isValid = !!jwt.verify(secreKey, token)
-      if (!isValid) return { status: false }
-      return { status: true }
-    } catch {
-      logger.debug(logger.yellow('网页登录令牌已过期，将重新重新生成令牌'))
-      const newsecreKey = crypto.createHash('sha256').update(token).digest('hex')
-      const payload = { userId: uToken, passWord: newsecreKey }
-      const newJwtToken = await setToken2Level(payload, payload.userId)
-      return { status: true, newToken: newJwtToken }
-    }
+const verifyToken = async (
+  token: string | undefined,
+  userId: string | undefined,
+  res: Response
+): Promise<boolean> => {
+  if (!token) {
+    createUnauthorizedResponse(res, AuthErrorType.MissingToken)
+    return false
   }
-  return { status: false }
+
+  if (!userId) {
+    /** 尝试明文密码验证 */
+    if (authKey() === token) return true
+    createUnauthorizedResponse(res, AuthErrorType.MissingUserId)
+    return false
+  }
+
+  /** 验证jwt */
+  const verifyStatus = verifyJwt(token, userId)
+  /** JWT验证成功 */
+  if (verifyStatus.status === HTTPStatusCode.OK) return true
+
+  /** JWT验证失败后尝试明文密码 */
+  if (authKey() === token) return true
+
+  /** 处理各种错误情况 */
+  switch (verifyStatus.status) {
+    case HTTPStatusCode.Unauthorized:
+      createUnauthorizedResponse(res, verifyStatus.data)
+      return false
+    case HTTPStatusCode.AccessTokenExpired:
+      createAccessTokenExpiredResponse(res)
+      return false
+    case HTTPStatusCode.InternalServerError:
+      createServerErrorResponse(res, verifyStatus.data)
+      return false
+    default:
+      createServerErrorResponse(res, '服务器内部错误')
+      return false
+  }
 }
 
 /**
@@ -70,24 +71,22 @@ export const auth = {
    * get请求鉴权
    * @description 支持请求头中携带`Authorization`字段
    * @description 支持请求参数中携带`token`字段
+   * @description 支持明文密码
    */
-  getAuth: async (req: Request) => {
-    const secreKey = req?.headers?.authorization?.replace('Bearer ', '') || req?.query?.token as string
-    if (!secreKey) return { status: false }
-    const uToken = authKey()
-    const verifyStatus = await verifyToken(secreKey, uToken)
-    return verifyStatus
+  getAuth: async (req: Request, res: Response) => {
+    const token = req?.headers?.authorization?.replace('Bearer ', '') || req?.query?.token as string
+    const userId = req?.headers?.['x-user-id'] as string
+    return verifyToken(token, userId, res)
   },
 
   /**
    * post请求鉴权
    * @description 仅支持请求头中携带`Authorization`字段
+   * @description 除了支持jwt之外，还支持明文密码
    */
-  postAuth: async (req: Request) => {
-    const secreKey = req?.headers?.authorization?.replace('Bearer ', '')
-    if (!secreKey) return { status: false }
-    const uToken = authKey()
-    const verifyStatus = await verifyToken(secreKey, uToken)
-    return verifyStatus
-  },
+  postAuth: async (req: Request, res: Response) => {
+    const token = req?.headers?.authorization?.replace('Bearer ', '')
+    const userId = req?.headers?.['x-user-id'] as string
+    return verifyToken(token, userId, res)
+  }
 }

@@ -1,7 +1,13 @@
-import { auth, loginAuth } from './auth'
-import { createResponse, createUnauthorizedResponse, HTTPStatusCode } from './utils/response'
+import { auth } from './auth'
+import { createMethodNotAllowedResponse, } from './utils/response'
 import type { Request, Response, NextFunction } from 'express'
 
+/**
+ * 鉴权中间件
+ * @param req 请求
+ * @param res 响应
+ * @param next 下一个中间件
+ */
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   logger.trace(
     '[express] 收到请求: \n' +
@@ -12,30 +18,26 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     `body: ${JSON.stringify(req.body)}\n`
   )
 
-  const checkResult = await auth.getAuth(req) || await auth.postAuth(req)
-  /** 是否鉴权通过 */
-  const Pass = checkResult.status
-
-  if (req.path === '/ping' || req.path.startsWith('/console')) {
+  /** 白名单 */
+  if (
+    req.path === '/ping' ||
+    req.path === '/login' ||
+    req.path === '/refresh' ||
+    req.path.startsWith('/console')
+  ) {
     next()
     return
   }
 
-  const loginPass = await loginAuth(req)
-  if (!loginPass && req.path === '/login') {
-    createResponse(res, HTTPStatusCode.InternalServerError, { e: 'HTTP 鉴权密钥错误' }, 'HTTP 鉴权密钥错误')
+  if (req.method === 'POST') {
+    const verify = await auth.postAuth(req, res)
+    if (!verify) return
+  } else if (req.method === 'GET') {
+    const verify = await auth.getAuth(req, res)
+    if (!verify) return
+  } else {
+    createMethodNotAllowedResponse(res)
     return
-  }
-
-  if (!Pass && req.path !== '/login') {
-    createUnauthorizedResponse(res, '鉴权失败 / check failed')
-    logger.error(`[express][${req.ip}] 鉴权错误: /api/v1/${req.path}`)
-    return
-  }
-
-  // 如果响应内有新的令牌，则传递给前端
-  if (checkResult.newToken) {
-    res.setHeader('authorization', checkResult.newToken)
   }
 
   next()

@@ -18,6 +18,10 @@ export enum HTTPStatusCode {
   PayloadTooLarge = 413,
   /** 服务器错误 */
   InternalServerError = 500,
+  /** 访问令牌已过期 */
+  AccessTokenExpired = 419,
+  /** 刷新令牌已过期 */
+  RefreshTokenExpired = 420,
 }
 
 /**
@@ -39,6 +43,7 @@ export const createResponse = <T> (res: Response, code: HTTPStatusCode, data?: T
     `data: ${JSON.stringify(data)}\n` +
     `message: ${message}\n`
   )
+
   res.status(code).json({
     code,
     data,
@@ -72,6 +77,30 @@ export const createSuccessResponse = <T> (res: Response, data?: T, message = '�
  */
 export const createUnauthorizedResponse = (res: Response, message = '未登录') => {
   return createResponse(res, HTTPStatusCode.Unauthorized, null, message)
+}
+
+/**
+ * 创建访问令牌已过期响应
+ * @param res 响应
+ * @param message 消息
+ * @returns 响应
+ * @example createAccessTokenExpiredResponse(res)
+ * @example createAccessTokenExpiredResponse(res, '访问令牌已过期')
+ */
+export const createAccessTokenExpiredResponse = (res: Response, message = '访问令牌已过期') => {
+  return createResponse(res, HTTPStatusCode.AccessTokenExpired, null, message)
+}
+
+/**
+ * 创建刷新令牌已过期响应
+ * @param res 响应
+ * @param message 消息
+ * @returns 响应
+ * @example createRefreshTokenExpiredResponse(res)
+ * @example createRefreshTokenExpiredResponse(res, '刷新令牌已过期')
+ */
+export const createRefreshTokenExpiredResponse = (res: Response, message = '刷新令牌已过期') => {
+  return createResponse(res, HTTPStatusCode.RefreshTokenExpired, null, message)
 }
 
 /**

@@ -20,7 +20,7 @@ export const checkRequestTimeout = (navigate: (to: string) => void) => {
     const currentTimestamp = Date.now()
     if (currentTimestamp - lastRequestTimestamp > REQUEST_TIMEOUT) {
       // 超时，清空 token
-      localStorage.removeItem(key.token)
+      localStorage.removeItem(key.accessToken)
 
       // 显示提示信息
       const toastOptions: ExtendedToastOptions = {
