@@ -25,6 +25,8 @@ import GroupNotice from '@/pages/dashboard/sandbox/contact/group_notice'
 import GroupChatTest from '@/pages/dashboard/sandbox/group'
 import RequireAuth from '@/components/auth/RequireAuth'
 import PluginConfigPage from '@/pages/dashboard/plugins/config'
+// 404 Page
+import NotFoundPage from '@/pages/404'
 
 // Main App
 function App () {
@@ -98,6 +100,7 @@ function App () {
           <Route element={<GroupChatTest />} path='group' />
         </Route>
         <Route element={<AboutPage />} path='/about' />
+        <Route path='*' element={<NotFoundPage />} />
       </Route>
     </Routes>
   )

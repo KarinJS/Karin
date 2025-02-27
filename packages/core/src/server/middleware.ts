@@ -1,5 +1,5 @@
 import { auth } from './auth'
-import { createUnauthorizedResponse } from './utils/response'
+import { createServerErrorResponse, createUnauthorizedResponse } from './utils/response'
 import type { Request, Response, NextFunction } from 'express'
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -12,13 +12,20 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     `body: ${JSON.stringify(req.body)}\n`
   )
 
+  const Pass = auth.getAuth(req) || auth.postAuth(req)
+
   if (req.path === '/ping' || req.path.startsWith('/console')) {
     next()
     return
   }
 
-  if (!auth.getAuth(req)) {
-    createUnauthorizedResponse(res, '错误的token')
+  if (!Pass && req.path === '/login') {
+    createServerErrorResponse(res, 'HTTP 鉴权密钥错误')
+    return
+  }
+
+  if (!Pass) {
+    createUnauthorizedResponse(res, '鉴权失败 / check failed')
     logger.error(`[express][${req.ip}] 鉴权错误: /api/v1/${req.path}`)
     return
   }
