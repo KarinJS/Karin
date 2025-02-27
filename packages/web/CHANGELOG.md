@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/KarinJS/Karin/compare/web-v1.3.12...web-v1.4.0) (2025-02-27)
+
+
+### ✨ Features
+
+* jwt ([#284](https://github.com/KarinJS/Karin/issues/284)) ([9f4c2d8](https://github.com/KarinJS/Karin/commit/9f4c2d831fb57f1d4b2ac2417cec366753f419ab))
+
 ## [1.3.12](https://github.com/KarinJS/Karin/compare/web-v1.3.11...web-v1.3.12) (2025-02-27)
 
 
