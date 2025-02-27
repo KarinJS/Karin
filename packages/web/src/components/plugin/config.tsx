@@ -9,7 +9,7 @@ import { request } from '@/lib/request'
 // import { DynamicRender } from '../heroui/main'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
 import { useForm, FormProvider } from 'react-hook-form'
-import type { ComponentConfig } from '../heroui/types'
+import type { ComponentConfig } from 'node-karin'
 
 interface GetConfigRequest {
   name: string
