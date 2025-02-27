@@ -1,9 +1,0 @@
-import { router } from '../router'
-import { createSuccessResponse } from '../../utils/response'
-import type { RequestHandler } from 'express'
-
-const loginRouter: RequestHandler = async (_req, res) => {
-  createSuccessResponse(res, null, '登录成功')
-}
-
-router.post('/login', loginRouter)

@@ -58,6 +58,7 @@ function OnlineStatus () {
       }>('/api/v1/ping'),
     {
       pollingInterval: 1000,
+      ready: location.pathname === '/dashboard',
     },
   )
   const { data } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'))
@@ -110,10 +111,12 @@ function StatusItem ({ title, value }: StatusItemProps) {
 function Status () {
   const { data, error } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'), {
     pollingInterval: 1000,
+    ready: location.pathname === '/dashboard',
   })
   const localPluginsList = useRequest(() => request.serverPost<LocalApiResponse[], {}>('/api/v1/plugin/local'))
   const botList = useRequest(() => request.serverGet<Array<AdapterType>>('/api/v1/utils/get/bots'), {
     pollingInterval: 5000,
+    ready: location.pathname === '/dashboard',
   })
   if (error || !data) {
     return (

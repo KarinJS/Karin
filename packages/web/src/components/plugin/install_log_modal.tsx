@@ -66,20 +66,20 @@ export function InstallLogModal ({ isOpen, onClose, taskId, plugin, task: initia
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size="2xl"
-      isDismissable={true}
+      size='2xl'
+      isDismissable
     >
       <ModalContent>
-        <ModalHeader className="flex gap-1">
+        <ModalHeader className='flex gap-1'>
           <span>{getTitle()}</span>
-          <span className="font-mono text-primary-500">{plugin.name}</span>
+          <span className='font-mono text-primary-500'>{plugin.name}</span>
         </ModalHeader>
 
         <ModalBody>
-          <div className="h-[400px] w-full overflow-auto">
-            <div className="font-mono text-sm whitespace-pre-wrap">
+          <div className='h-[400px] w-full overflow-auto'>
+            <div className='font-mono text-sm whitespace-pre-wrap'>
               {currentTask?.logs?.map((log, index) => (
-                <div key={index} className="py-0.5">
+                <div key={index} className='py-0.5'>
                   {log}
                 </div>
               ))}
@@ -90,14 +90,14 @@ export function InstallLogModal ({ isOpen, onClose, taskId, plugin, task: initia
 
         <ModalFooter>
           <Button
-            variant="light"
+            variant='light'
             onPress={handleMinimize}
             startContent={<FaWindowMinimize />}
           >
             最小化
           </Button>
           <Button
-            color="primary"
+            color='primary'
             onPress={onClose}
           >
             关闭

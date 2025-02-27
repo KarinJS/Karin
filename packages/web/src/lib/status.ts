@@ -1,17 +1,20 @@
+import key from '@/consts/key'
 import { SystemStatus } from '@/types/server'
 import { EventSourcePolyfill } from 'event-source-polyfill'
 
-export function getSystemStatus(writer: (data: SystemStatus) => void) {
-  const token = localStorage.getItem('token')
-  if (!token) {
+export function getSystemStatus (writer: (data: SystemStatus) => void) {
+  const token = localStorage.getItem(key.accessToken)
+  const userId = localStorage.getItem(key.userId)
+  if (!token || !userId) {
     throw new Error('未登录')
   }
-  const _token = JSON.parse(token)
+
   const eventSource = new EventSourcePolyfill(
     '/api/v1/status/system',
     {
       headers: {
-        Authorization: `Bearer ${_token}`,
+        Authorization: `Bearer ${token}`,
+        'x-user-id': userId,
         Accept: 'text/event-stream'
       },
       withCredentials: true

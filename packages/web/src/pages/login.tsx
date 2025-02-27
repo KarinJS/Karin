@@ -1,40 +1,67 @@
+import { z } from 'zod'
+import key from '@/consts/key.ts'
+import toast from 'react-hot-toast'
 import { Input } from '@heroui/input'
 import { Button } from '@heroui/button'
 import { Image } from '@heroui/image'
 import { request } from '@/lib/request'
-import { useLocalStorageState } from 'ahooks'
-import key from '@/consts/key.ts'
 import { Controller, useForm } from 'react-hook-form'
 import { loginSchema } from '@/schema/user'
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import toast from 'react-hot-toast'
 import { Form } from '@/components/form'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import SplashCursor from '@/components/SplashCursor'
+// import SplashCursor from '@/components/SplashCursor'
 
+/**
+ * sha256
+ * @param authKey 鉴权秘钥
+ */
+const generateHash = async (authKey: string) => {
+  const encoder = new TextEncoder()
+  const data = encoder.encode(authKey)
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('')
+  return hashHex
+}
+
+/**
+ * 登录页面
+ * @returns 登录页面
+ */
 export default function LoginPage () {
   const navigate = useNavigate()
   const location = useLocation()
   const from = location.state?.from?.pathname || '/'
-  const [_, setToken] = useLocalStorageState<string>(key.token, {
-    defaultValue: '',
-  })
+
   const form = useForm<z.infer<typeof loginSchema>>({
-    defaultValues: {
-      token: '',
-    },
+    defaultValues: { token: '', },
     resolver: zodResolver(loginSchema),
   })
+
+  /**
+   * 登录
+   * @param data 登录数据
+   */
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
-    setToken(data.token)
     try {
-      await request.post('/api/v1/login')
+      const authorization = await generateHash(data.token)
+      const response = await request.serverPost<{
+        userId: string,
+        accessToken: string
+        refreshToken: string
+      }, { authorization: string }>('/api/v1/login', { authorization })
+
+      localStorage.setItem(key.userId, response.userId)
+      localStorage.setItem(key.accessToken, response.accessToken)
+      localStorage.setItem(key.refreshToken, response.refreshToken)
+
       toast.success('登录成功')
       navigate(from, { replace: true })
     } catch (error) {
       const err = error as Error
+      console.error(err)
       toast.error(`登录失败: ${err.message}`)
     }
   }
@@ -245,7 +272,7 @@ export default function LoginPage () {
           </div>
         </motion.div>
       </motion.div>
-      <SplashCursor />
+      {/* <SplashCursor /> */}
     </div>
   )
 }
