@@ -28,7 +28,7 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({ className, classNames }) => 
   }, [isMounted])
 
   // Prevent Hydration Mismatch
-  if (!isMounted) return <div className="w-6 h-6" />
+  if (!isMounted) return <div className='w-6 h-6' />
 
   return (
     <Component
