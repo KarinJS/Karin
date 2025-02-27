@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 // Dashboard Page
 // Layout
@@ -27,10 +27,29 @@ import RequireAuth from '@/components/auth/RequireAuth'
 import PluginConfigPage from '@/pages/dashboard/plugins/config'
 // 404 Page
 import NotFoundPage from '@/pages/404'
+import { checkRequestTimeout } from './components/auth/back2Login'
 
 // Main App
 function App () {
   const location = useLocation()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    let intervalId: string | number | NodeJS.Timeout | undefined
+    const startInterval = () => {
+      intervalId = setInterval(() => {
+        if (location.pathname !== '/web/login') {
+          checkRequestTimeout(navigate)
+        }
+      }, 1000)
+    }
+
+    startInterval()
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [location, navigate])
 
   useEffect(() => {
     const path = location.pathname

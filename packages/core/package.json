@@ -76,6 +76,7 @@
     "commander": "^13.0.0",
     "dotenv": "^16.4.7",
     "express": "4.21.2",
+    "jsonwebtoken": "^9.0.2",
     "level": "9.0.0",
     "lodash": "4.17.21",
     "log4js": "6.9.1",
@@ -199,5 +200,8 @@
       "types": "./dist/module/yaml.d.ts",
       "require": "./dist/module/yaml.cjs"
     }
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.9"
   }
 }

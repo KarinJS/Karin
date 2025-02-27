@@ -5,8 +5,8 @@ import key from '@/consts/key.ts'
 import type { ServerResponse } from '@/types/server'
 
 export interface ServerRequest extends AxiosInstance {
-  serverGet<T>(url: string, config?: AxiosRequestConfig): Promise<T>
-  serverPost<T, R>(url: string, data?: R, config?: AxiosRequestConfig): Promise<T>
+  serverGet<T> (url: string, config?: AxiosRequestConfig): Promise<T>
+  serverPost<T, R> (url: string, data?: R, config?: AxiosRequestConfig): Promise<T>
 }
 
 export const request: ServerRequest = axios.create({
@@ -14,6 +14,7 @@ export const request: ServerRequest = axios.create({
 }) as ServerRequest
 
 request.interceptors.request.use(config => {
+  recordRequestInfo()
   const token = localStorage.getItem(key.token)
 
   if (token) {
@@ -25,6 +26,11 @@ request.interceptors.request.use(config => {
 
 request.interceptors.response.use(
   response => {
+    const authorizationHeader = response.headers['authorization']
+    if (authorizationHeader) {
+      // 将 token 存储到本地存储
+      localStorage.setItem(key.token, JSON.stringify(authorizationHeader))
+    }
     return response
   },
   err => {
@@ -33,7 +39,7 @@ request.interceptors.response.use(
       if (token && JSON.parse(token) && err.config.url !== '/api/login') {
         localStorage.removeItem(key.token)
       }
-      if(err.config.url !== '/api/login') {
+      if (err.config.url !== '/api/login') {
         window.location.href = '/web/login'
       }
     }
@@ -43,17 +49,18 @@ request.interceptors.response.use(
   },
 )
 
-request.serverGet = async <T>(url: string, config?: AxiosRequestConfig) => {
+request.serverGet = async <T> (url: string, config?: AxiosRequestConfig) => {
   const response = await request.get<unknown, AxiosResponse<ServerResponse<T>>>(url, config)
   return response.data.data
 }
 
-request.serverPost = async <T, R>(url: string, data?: R, config?: AxiosRequestConfig) => {
+request.serverPost = async <T, R> (url: string, data?: R, config?: AxiosRequestConfig) => {
   const response = await request.post<R, AxiosResponse<ServerResponse<T>>>(url, data, config)
   return response.data.data
 }
 
 export const requestServerWithFetch = async (url: string, options: RequestInit) => {
+  recordRequestInfo()
   const token = localStorage.getItem(key.token)
   if (token) {
     options.headers = {
@@ -62,5 +69,16 @@ export const requestServerWithFetch = async (url: string, options: RequestInit) 
     }
   }
   const response = await fetch(url, options)
+  const authorizationHeader = response.headers.get('authorization')
+  if (authorizationHeader) {
+    // 将 token 存储到本地存储
+    localStorage.setItem(key.token, JSON.stringify(authorizationHeader))
+  }
   return response
+}
+
+const FINAL_REQUEST = 'FINAL_REQUEST'
+/** 记录最后一次请求时间 */
+function recordRequestInfo () {
+  localStorage.setItem(FINAL_REQUEST, Date.now().toString())
 }

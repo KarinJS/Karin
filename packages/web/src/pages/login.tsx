@@ -14,11 +14,16 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import SplashCursor from '@/components/SplashCursor'
 
+// type loginResponse = {
+//   data: { authorization: string }
+//   message: string
+//   status: number
+// }
 export default function LoginPage () {
   const navigate = useNavigate()
   const location = useLocation()
   const from = location.state?.from?.pathname || '/'
-  const [_, setToken] = useLocalStorageState<string>(key.token, {
+  const [_, setCookie] = useLocalStorageState<string>(key.token, {
     defaultValue: '',
   })
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -28,9 +33,23 @@ export default function LoginPage () {
     resolver: zodResolver(loginSchema),
   })
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
-    setToken(data.token)
     try {
-      await request.post('/api/v1/login')
+      const encoder = new TextEncoder()
+      const dataArray = encoder.encode(data.token)
+
+      // 使用 window.crypto.subtle.digest 进行 SHA - 256 哈希计算
+      const hashBuffer = await window.crypto.subtle.digest('SHA-256', dataArray)
+
+      // 将哈希结果转换为十六进制字符串
+      const hashArray = Array.from(new Uint8Array(hashBuffer))
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+      setCookie(hashHex)
+
+      const response = await request.serverPost<any, { password: string }>('/api/v1/login', { password: hashHex }, {
+        headers: { password: hashHex }
+      })
+
+      setCookie(response.authorization)
       toast.success('登录成功')
       navigate(from, { replace: true })
     } catch (error) {
