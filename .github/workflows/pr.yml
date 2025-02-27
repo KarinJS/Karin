@@ -13,6 +13,8 @@ permissions:
 jobs:
   # 设置 release-please 任务
   release-please:
+    # 只允许仓库成员触发自动构建
+    if: github.event.pull_request.head.repo.full_name == github.repository
     # 设置任务运行环境为 ubuntu-latest
     runs-on: ubuntu-latest
     steps:
