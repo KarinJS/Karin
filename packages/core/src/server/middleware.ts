@@ -12,7 +12,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     `body: ${JSON.stringify(req.body)}\n`
   )
 
-  const Pass = auth.getAuth(req)
+  const Pass = auth.getAuth(req) || auth.postAuth(req)
 
   if (req.path === '/ping' || req.path.startsWith('/console')) {
     next()
