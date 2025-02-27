@@ -157,21 +157,9 @@ jobs:
       - name: 发布到 GitHub Package Registry
         if: steps.check-permission.outputs.result == 'true'
         id: publish
-        run: |
-          # 检查 RELEASE token 是否存在
-          if [ -z "${{ secrets.RELEASE }}" ]; then
-            echo "错误: RELEASE token 未设置"
-            exit 1
-          fi
-          
-          echo "RELEASE token 长度: ${#NODE_AUTH_TOKEN}"
-          
-          pnpm --filter node-karin run pub-beta || {
-            echo "发布到 GitHub Package Registry 失败"
-            exit 1
-          }
+        run: pnpm --filter node-karin run pub-beta
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.RELEASE }}
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
         continue-on-error: true
 
       # 在 PR 上发布构建完成或失败信息
