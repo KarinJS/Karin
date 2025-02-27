@@ -39,7 +39,7 @@ export class AdapterServerOneBot11 extends WsAdapterOneBot11 {
       })
     } catch (error) {
       this.socket.close()
-      throw new Error(`[onebot11][${this.adapter.communication}] 连接失败: ${this.adapter.address}`)
+      throw new Error(`[onebot11][${this.adapter.communication}] 连接失败: ${this.adapter.address}`, { cause: error })
     }
   }
 

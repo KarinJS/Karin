@@ -1,7 +1,7 @@
 /* eslint-disable @stylistic/indent */
 import { siteConfig, initSiteConfig } from '@/config/site'
 import clsx from 'clsx'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaChevronRight } from 'react-icons/fa6'
@@ -12,6 +12,7 @@ import { useLocalStorageState } from 'ahooks'
 import key from '@/consts/key'
 import { Icon } from './ui/icon'
 import { Spinner } from '@heroui/spinner'
+import { Button } from '@heroui/button'
 
 const menuItemVariants = {
   hidden: {
@@ -89,7 +90,12 @@ export default function Sidebar () {
     initSiteConfig().then(() => {
       setPluginsLoading(false)
     })
-  }, [])
+    siteConfig.navItems.forEach((item) => {
+      if (item.children?.some(child => location.pathname === child.href)) {
+        setExpandedMenu(item.href)
+      }
+    })
+  }, [location.pathname, siteConfig.navItems])
 
   return (
     <motion.div className='h-full fixed md:relative z-50'>
@@ -179,6 +185,7 @@ export default function Sidebar () {
                   className='relative z-10 w-full h-full flex items-center justify-center'
                   whileHover={{ scale: 1.1 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                  onClick={() => navigate('/')}
                 >
                   <svg
                     viewBox='0 0 24 24'
@@ -229,7 +236,8 @@ export default function Sidebar () {
 
               {/* Karin 文字 */}
               <motion.div
-                className='font-medium text-base relative'
+                className='font-medium text-base relative select-none cursor-pointer'
+                onClick={() => navigate('/')}
               >
                 <motion.div
                   className='relative flex items-center'
@@ -475,12 +483,9 @@ export default function Sidebar () {
                       <span className='select-none'>{item.label}</span>
                       {item.href === '/plugins' && (
                         <>
-                          {pluginsLoading
-                            ? (
+                          {pluginsLoading &&
+                            (
                               <Spinner className='w-10 h-4 text-primary' variant='wave' size='md' />
-                            )
-                            : (
-                              <span className='text-success text-base'>✓</span>
                             )}
                         </>
                       )}
@@ -513,26 +518,25 @@ export default function Sidebar () {
                                 <Spinner className='w-2 h-4 text-primary -ml-7' variant='dots' size='lg' />
                               </div>
                             )
-                            : (item.children.map((child) => (
-                              <Fragment key={child.href}>
-                                <NavLink
-                                  to={{
-                                    pathname: child.href,
-                                    search: `?type=${child.type || ''}`
-                                  }}
-                                  className={({ isActive }) =>
-                                    clsx(
-                                      'mb-2 flex items-center gap-2 py-2 px-3 text-sm text-default-600 hover:text-primary rounded-lg transition-colors',
+                            : (item.children
+                              .sort((a, b) => a.id.localeCompare(b.id)) // 不重新排序的话，插件按钮会自己乱序
+                              .map((child) => (
+                                <Fragment key={child.id}>
+                                  <Button
+                                    variant='light' fullWidth
+                                    className={clsx(
+                                      'flex items-start justify-start gap-2 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary rounded-lg',
                                       {
-                                        '!text-primary bg-primary/5': isActive,
+                                        '!text-primary bg-primary/5': location.pathname === child.href
                                       }
                                     )}
-                                >
-                                  {child.icon && <Icon name={child.icon?.name || ''} size={child.icon?.size} color={child.icon?.color} />}
-                                  {child.id || child.href.split('/').pop()}
-                                </NavLink>
-                              </Fragment>
-                            ))
+                                    onPress={() => navigate(`${child.href}?type=${child.type || ''}`)}
+                                  >
+                                    {child.icon && <Icon name={child.icon?.name || ''} size={child.icon?.size} color={child.icon?.color} />}
+                                    {child.id || child.href.split('/').pop()}
+                                  </Button>
+                                </Fragment>
+                              ))
                             )}
                         </motion.div>
                       )}

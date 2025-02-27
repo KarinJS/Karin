@@ -8,6 +8,7 @@ export default defineConfig({
   plugins: [react(), tsconfigPaths(), reactScan()],
   base: '/web/',
   build: {
+    emptyOutDir: true,
     outDir: '../core/dist/web',
   },
   server: {

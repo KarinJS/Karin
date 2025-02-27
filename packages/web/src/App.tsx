@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 // Dashboard Page
 // Layout
 import DashboardLayout from '@/pages/dashboard/layout'
@@ -16,7 +17,6 @@ import AboutPage from '@/pages/dashboard/about'
 // Login Page
 import LoginPage from '@/pages/login'
 // Test Page
-// import TestCanvas from '@/pages/dashboard/test'
 import ChatDetail from '@/pages/dashboard/sandbox/chat/detail'
 import DefaultPage from '@/components/default_page'
 import FriendRequest from '@/pages/dashboard/sandbox/contact/friend_request'
@@ -28,6 +28,46 @@ import PluginConfigPage from '@/pages/dashboard/plugins/config'
 
 // Main App
 function App () {
+  const location = useLocation()
+
+  useEffect(() => {
+    const path = location.pathname
+    let title = '未知页面'
+
+    switch (true) {
+      case path === '/':
+        title = '基础信息'
+        break
+      case path === '/config':
+        title = '配置信息'
+        break
+      case path === '/plugins/list':
+        title = '插件市场'
+        break
+      case path.startsWith('/plugins/'):
+        title = '插件配置'
+        break
+      case path === '/sandbox':
+        title = '沙箱调试'
+        break
+      case path.startsWith('/sandbox/chat'):
+        title = '沙箱 | [聊天]'
+        break
+      case path.startsWith('/sandbox/contact'):
+        title = '沙箱 | [联系人]'
+        break
+      case path === '/about':
+        title = '关于我们'
+        break
+      case path === '/login':
+        title = '登录'
+        break
+      default:
+        title = '未知页面'
+    }
+    document.title = title += ' - Karin WebUI'
+  }, [location])
+
   return (
     <Routes>
       <Route path='/login' element={<LoginPage />} />

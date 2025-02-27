@@ -7,9 +7,8 @@ import type {
   NormalMessageCallback,
   ForwardMessageCallback,
   SendMsgHookItem,
-  HookEmitMessage,
-  HookEmitForward,
 } from '@/types/hooks/message'
+import type { Contact, Elements, ForwardOptions, NodeElement } from '@/types'
 
 const addHook = <T extends NormalMessageCallback | ForwardMessageCallback> (
   list: SendMsgHookItem<T>[],
@@ -70,24 +69,29 @@ export const sendMsg = {
  */
 const emitHooks = async <T extends NormalMessageCallback | ForwardMessageCallback> (
   hooks: SendMsgHookItem<T>[],
-  callback: (hook: SendMsgHookItem<T>) => void | Promise<void>
+  callback: (hook: SendMsgHookItem<T>, next: () => void) => void | Promise<void>
 ): Promise<boolean> => {
-  const isNext = false
+  let shouldContinue = false
+
   for (const hook of hooks) {
-    const result = callback(hook)
+    const next = () => {
+      shouldContinue = true
+    }
+
+    const result = callback(hook, next)
     if (isPromise(result)) await result
-    if (!isNext) return false
+
+    if (!shouldContinue) return false
+    shouldContinue = false // 重置状态，等待下一个钩子的next调用
   }
-  return isNext
+
+  return true // 如果所有钩子都执行完毕，返回true继续正常流程
 }
 
 /**
  * 发送消息钩子触发器
  */
-export const hooksSendMsgEmit: {
-  message: HookEmitMessage
-  forward: HookEmitForward
-} = {
+export const hooksSendMsgEmit = {
   /**
    * 触发普通消息钩子
    * @param contact 联系人
@@ -95,10 +99,10 @@ export const hooksSendMsgEmit: {
    * @param retryCount 重试次数
    * @returns 是否继续正常流程
    */
-  message: async (contact, elements, retryCount) => {
+  message: async (contact: Contact, elements: Array<Elements>, retryCount: number = 0) => {
     return emitHooks<NormalMessageCallback>(
       cache.sendMsg.message,
-      (hook) => hook.callback(contact, elements, retryCount)
+      (hook, next) => hook.callback(contact, elements, retryCount, next)
     )
   },
   /**
@@ -108,10 +112,10 @@ export const hooksSendMsgEmit: {
    * @param options 转发选项
    * @returns 是否继续正常流程
    */
-  forward: async (contact, elements, options) => {
+  forward: async (contact: Contact, elements: Array<NodeElement>, options?: ForwardOptions) => {
     return emitHooks<ForwardMessageCallback>(
       cache.sendMsg.forward,
-      (hook) => hook.callback(contact, elements, options)
+      (hook, next) => hook.callback(contact, elements, options, next)
     )
   }
 }
