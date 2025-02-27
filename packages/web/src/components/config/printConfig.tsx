@@ -17,7 +17,7 @@ let print: Record<string, any> | null = null
 interface ConfigDetailModalProps {
   showJsonModal: boolean
   setShowJsonModal: (show: boolean) => void
-  handleFormResult: (formValues: Record<string, FormDataEntryValue>) => Record<string, any> | null
+  handleFormResult: () => Record<string, any> | null
 }
 
 /**
@@ -35,7 +35,10 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
   }
 
   const handleSomeEvent = () => {
-    setShowJsonModal(true)
+    print = handleFormResult()
+    if (print) {
+      setShowJsonModal(true)
+    }
   }
 
   return (
@@ -49,6 +52,8 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
           if (form instanceof HTMLFormElement) {
             if (form.checkValidity()) {
               handleSomeEvent()
+            } else {
+              form.reportValidity() // 显示验证信息
             }
           } else {
             console.error('表单元素不存在')
@@ -91,16 +96,7 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
           </ModalHeader>
           <ModalBody>
             <pre className='bg-gray-50 dark:bg-gray-800 p-4 rounded-lg overflow-auto text-sm font-mono'>
-              {(() => {
-                const formElement = document.getElementById('dashboard-form')
-                if (formElement instanceof HTMLFormElement) {
-                  const formData = new FormData(formElement)
-                  const formEntries = Object.fromEntries(formData)
-                  print = handleFormResult(formEntries)
-                  return JSON.stringify(print, null, 2)
-                }
-                return JSON.stringify(print, null, 2)
-              })()}
+              {JSON.stringify(print, null, 2)}
             </pre>
           </ModalBody>
           <ModalFooter>
