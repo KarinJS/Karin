@@ -194,7 +194,7 @@ const RotatingText = forwardRef<RotatingTextRef, RotatingTextProps>(
     return (
       <motion.span
         className={cn(
-          '!bg-primary-400 flex flex-wrap whitespace-pre-wrap relative font-bold text-default-50',
+          'flex flex-wrap whitespace-pre-wrap relative',
           mainClassName
         )}
         {...rest}

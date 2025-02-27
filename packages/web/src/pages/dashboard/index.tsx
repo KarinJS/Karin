@@ -5,7 +5,7 @@ import { request } from '@/lib/request'
 import clsx from 'clsx'
 import type { KarinStatus, SystemStatus } from '@/types/server'
 import { Button } from '@heroui/button'
-import { RiRestartLine, RiShutDownLine, RiFunctionAddLine, RiRobot2Line } from 'react-icons/ri'
+import { RiRestartLine, RiShutDownLine } from 'react-icons/ri'
 import { Tooltip } from '@heroui/tooltip'
 import { useState, useCallback, useEffect } from 'react'
 import toast from 'react-hot-toast'
@@ -18,26 +18,31 @@ import Counter from '@/components/counter.tsx'
 import RotatingText from '@/components/RotatingText'
 import SplitText from '@/components/SplitText'
 import type { AdapterType, LocalApiResponse } from 'node-karin'
-import { BiCubeAlt, BiHomeAlt } from 'react-icons/bi'
-import { IoMdTime } from 'react-icons/io'
-import { IconType } from 'react-icons/lib'
-import { GiHighGrass } from 'react-icons/gi'
-import { BsBoxes } from 'react-icons/bs'
-import { TbVersions } from 'react-icons/tb'
+import {
+  Tag,
+  Cpu,
+  Server,
+  Clock,
+  Puzzle,
+  Bot,
+  Terminal,
+  GitBranch,
+  LucideIcon
+} from 'lucide-react'
 
 interface IconMap {
-  [key: string]: IconType
+  [key: string]: LucideIcon
 }
 
 const iconMap: IconMap = {
-  名称: BiCubeAlt,
-  PID: BiHomeAlt,
-  'PM2 ID': GiHighGrass,
-  运行时间: IoMdTime,
-  插件数量: RiFunctionAddLine,
-  BOT数量: RiRobot2Line,
-  运行环境: BsBoxes,
-  版本: TbVersions,
+  名称: Tag,
+  PID: Cpu,
+  'PM2 ID': Server,
+  运行时间: Clock,
+  插件数量: Puzzle,
+  BOT数量: Bot,
+  运行环境: Terminal,
+  版本: GitBranch,
 }
 
 const generatePlaces = (value: number): number[] => {
@@ -62,11 +67,14 @@ function OnlineStatus () {
 
   return (
     <div className='ml-4 flex items-center gap-2'>
-      <div className={clsx('rounded-full w-4 h-4', error ? 'bg-red-400' : 'bg-green-400')} />
-      {/* <div>{error ? '离线' : '在线'}</div> */}
+      <div className={clsx(
+        'rounded-full w-2 h-2',
+        error ? 'bg-danger' : 'bg-success'
+      )}
+      />
       <RotatingText
         texts={msg}
-        mainClassName='px-2 bg-cyan-300 text-black overflow-hidden justify-center rounded-lg'
+        mainClassName='text-default-500 text-sm hover:text-primary transition-colors'
         staggerFrom='last'
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
@@ -74,7 +82,7 @@ function OnlineStatus () {
         staggerDuration={0.025}
         splitLevelClassName='overflow-hidden'
         transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-        rotationInterval={2000}
+        rotationInterval={4000}
       />
     </div>
   )
@@ -85,16 +93,15 @@ export interface StatusItemProps {
   value: React.ReactNode
 }
 function StatusItem ({ title, value }: StatusItemProps) {
-  const IconComponent = iconMap[title] || BiCubeAlt
+  const IconComponent = iconMap[title] || Tag
   return (
-    <Card className='py-4 transition-transform hover:-translate-y-1'>
-      <CardHeader className='py-0 px-4 flex-col items-start'>
+    <Card className='transition-all hover:bg-default-100 dark:hover:bg-default-50 shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-default-200 dark:border-default-100'>
+      <CardHeader className='px-4 py-3 flex-col items-start'>
         <div className='flex items-center gap-2'>
-          <IconComponent />
-          <SplitText className='text-tiny text-primary/80 uppercase font-bold' text={title} delay={0.5} />
+          <IconComponent className='w-5 h-5 text-primary' />
+          <p className='text-sm text-primary'>{title}</p>
         </div>
-        {/* <p className='text-tiny text-primary/80 uppercase font-bold'>{title}</p> */}
-        <h4 className='mt-2 font-bold text-black/70 dark:text-white/80 text-large'>{value || '--'}</h4>
+        <div className='mt-2 text-default-800 dark:text-default-200'>{value || '--'}</div>
       </CardHeader>
     </Card>
   )
@@ -121,19 +128,20 @@ function Status () {
 
   return (
     <div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-6'>
-      <StatusItem title='名称' value={data.name.toUpperCase()} />
+      <StatusItem title='名称' value={data.name} />
       <StatusItem title='PID' value={data.pid} />
       <StatusItem title='PM2 ID' value={data.pm2_id} />
       <StatusItem
-        title='运行时间' value={
-          <div className='flex items-center gap-2'>
+        title='运行时间'
+        value={
+          <div className='flex items-center gap-2 font-normal'>
             <Counter
-              className='flex items-center gap-0 text-black/70 dark:text-white/80'
+              className='flex items-center gap-0 text-inherit font-normal'
               value={Math.floor(data.uptime)}
               fontSize={20}
               places={generatePlaces(Math.floor(data.uptime))}
             />
-            <span className='text-black/70 dark:text-white/80'>秒</span>
+            <span className='font-normal'>秒</span>
           </div>
         }
       />

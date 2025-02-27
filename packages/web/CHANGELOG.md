@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.12](https://github.com/KarinJS/Karin/compare/web-v1.3.11...web-v1.3.12) (2025-02-27)
+
+
+### 💄 Styles
+
+* 优化前端样式 ([#283](https://github.com/KarinJS/Karin/issues/283)) ([0c4745d](https://github.com/KarinJS/Karin/commit/0c4745d299d49f3a93f6d5dba8f55b5a3bc71f33))
+
+
+### ♻️ Code Refactoring
+
+* 使用react-hook-form重构前端配置页面 ([#281](https://github.com/KarinJS/Karin/issues/281)) ([8dc953e](https://github.com/KarinJS/Karin/commit/8dc953e430c9eafe67f25ae95a598921bbc4ce22))
+
 ## [1.3.11](https://github.com/KarinJS/Karin/compare/web-v1.3.10...web-v1.3.11) (2025-02-25)
 
 
