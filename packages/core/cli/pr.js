@@ -47,7 +47,6 @@ const version = () => {
   console.log(`当前版本: ${pkg.version}`)
   updateVersion(pkg)
   console.log(`更新后版本: ${pkg.version}`)
-  pkg.publishConfig.registry = 'https://npm.pkg.github.com'
   writePkg(pkg)
   console.log('package.json 写入成功')
   setEnvVariables(pkg)

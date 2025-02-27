@@ -15,6 +15,7 @@ jobs:
   release-please:
     # 只允许仓库成员触发自动构建
     if: github.event.pull_request.head.repo.full_name == github.repository
+    # 设置任务运行环境为 ubuntu-latest
     runs-on: ubuntu-latest
     steps:
       - name: 检出代码
@@ -30,8 +31,8 @@ jobs:
         with:
           # 设置 Node.js 版本
           node-version: 20
-          # 设置为 GitHub Package Registry
-          registry-url: 'https://npm.pkg.github.com'
+          # 设置 npm 源
+          registry-url: "https://registry.npmjs.org"
           # 添加 pnpm 缓存支持
           cache: pnpm
       # 使用 pnpm 安装依赖
@@ -66,11 +67,23 @@ jobs:
           }
         continue-on-error: true
       # 发布到 npm
-      - name: 发布到 GitHub Package Registry
+      - name: 发布到 npm
         id: publish
-        run: cd packages/core && npm publish --access public --tag beta --registry https://npm.pkg.github.com/
+        run: |
+          # 检查 NPM_TOKEN 是否存在
+          if [ -z "${{ secrets.NPM_TOKEN }}" ]; then
+            echo "错误: NPM_TOKEN 未设置"
+            exit 1
+          fi
+          
+          echo "NPM_TOKEN 长度: ${#NODE_AUTH_TOKEN}"
+          
+          pnpm --filter node-karin run pub-beta || {
+            echo "发布到 npm 失败"
+            exit 1
+          }
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         continue-on-error: true
       # 在 PR 上发布构建完成或失败信息
       - name: 发布评论
@@ -94,7 +107,7 @@ jobs:
             ERROR_MESSAGE+=$'修订版本号失败！\n\n'
           fi
           if [ "$PUBLISH_STATUS" = "failure" ]; then
-            ERROR_MESSAGE+=$'发布到 GitHub Package Registry 失败！\n\n'
+            ERROR_MESSAGE+=$'发布到 npm 失败！\n\n'
           fi
 
           if [ ! -z "$ERROR_MESSAGE" ]; then
