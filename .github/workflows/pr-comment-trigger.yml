@@ -1,44 +1,127 @@
-name: PR
+name: PR Comment Trigger
 
-# 监听 PR 相关事件
+# 监听 PR 评论事件
 on:
-  pull_request:
-    # 监听 PR 被打开、重新打开和推送事件
-    types: [opened, reopened, synchronize]
+  issue_comment:
+    types: [created]
 
-# 赋予 release-please-action 权限
 permissions:
   contents: write
   pull-requests: write
+
 jobs:
-  # 设置 release-please 任务
-  release-please:
-    # 只允许仓库成员触发自动构建
-    if: github.event.pull_request.head.repo.full_name == github.repository
+  process-comment:
+    # 只在 PR 上的评论且评论内容为 "/build" 时运行
+    if: |
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '/run-build')
     runs-on: ubuntu-latest
     steps:
+      # 首先检查评论者是否有仓库写入权限
+      - name: 检查评论者权限
+        id: check-permission
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            try {
+              const { data: permission } = await github.rest.repos.getCollaboratorPermissionLevel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                username: context.payload.comment.user.login
+              });
+              
+              // 只允许有 admin 或 write 权限的用户触发构建
+              const hasPermission = ['admin', 'write'].includes(permission.permission);
+              console.log(`用户 ${context.payload.comment.user.login} 的权限级别: ${permission.permission}`);
+              console.log(`是否有权限触发构建: ${hasPermission}`);
+              return hasPermission;
+            } catch (error) {
+              console.log(`获取权限失败: ${error}`);
+              return false;
+            }
+
+      # 如果没有权限，则回复评论并退出
+      - name: 回复无权限信息
+        if: steps.check-permission.outputs.result == 'false'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ 你没有触发构建的权限。只有仓库成员可以使用 `/run-build` 命令。'
+            });
+
+      # 如果有权限，获取 PR 详情
+      - name: 获取 PR 详情
+        if: steps.check-permission.outputs.result == 'true'
+        id: get-pr
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: pullRequest } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            
+            return {
+              head_sha: pullRequest.head.sha,
+              head_ref: pullRequest.head.ref,
+              head_repo: pullRequest.head.repo.full_name
+            };
+
+      # 回复开始构建的消息
+      - name: 回复开始构建信息
+        if: steps.check-permission.outputs.result == 'true'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🔄 构建已触发，正在处理...'
+            });
+
+      # 检出 PR 代码
       - name: 检出代码
+        if: steps.check-permission.outputs.result == 'true'
         uses: actions/checkout@v4
+        with:
+          ref: ${{ fromJSON(steps.get-pr.outputs.result).head_sha }}
+          repository: ${{ fromJSON(steps.get-pr.outputs.result).head_repo }}
+          fetch-depth: 0
+
       # 设置 pnpm
       - name: 设置 pnpm
+        if: steps.check-permission.outputs.result == 'true'
         uses: pnpm/action-setup@v2
         with:
           version: 8
+
       # 设置 Node.js 环境
       - name: 设置 Node.js 环境
+        if: steps.check-permission.outputs.result == 'true'
         uses: actions/setup-node@v4
         with:
-          # 设置 Node.js 版本
           node-version: 20
-          # 设置为 GitHub Package Registry
           registry-url: 'https://npm.pkg.github.com'
-          # 添加 pnpm 缓存支持
           cache: pnpm
+
       # 使用 pnpm 安装依赖
       - name: 安装依赖
+        if: steps.check-permission.outputs.result == 'true'
         run: pnpm install
+
       # 构建输出
       - name: 构建输出
+        if: steps.check-permission.outputs.result == 'true'
         id: build
         run: |
           pnpm run build:all > build.log 2>&1 || {
@@ -46,18 +129,22 @@ jobs:
             cat build.log
             exit 1
           }
-        continue-on-error: true # 捕获失败并允许后续步骤运行
+        continue-on-error: true
+
       # 获取当前 PR 编号并设置环境变量
       - name: 获取 PR 编号
+        if: steps.check-permission.outputs.result == 'true'
         id: get_pr
         run: |
-          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV || {
+          echo "PR_NUMBER=${{ github.event.issue.number }}" >> $GITHUB_ENV || {
             echo "获取 PR 编号失败"
             exit 1
           }
         continue-on-error: true
+
       # 自动修改 package.json 的版本号、删除开发、对等依赖
       - name: 修订版本号
+        if: steps.check-permission.outputs.result == 'true'
         id: version
         run: |
           pnpm --filter node-karin run pr || {
@@ -65,17 +152,19 @@ jobs:
             exit 1
           }
         continue-on-error: true
+
       # 发布到 npm
       - name: 发布到 GitHub Package Registry
+        if: steps.check-permission.outputs.result == 'true'
         id: publish
         run: |
-          # 检查 GITHUB_TOKEN 是否存在
+          # 检查 RELEASE token 是否存在
           if [ -z "${{ secrets.RELEASE }}" ]; then
-            echo "错误: GITHUB_TOKEN 未设置"
+            echo "错误: RELEASE token 未设置"
             exit 1
           fi
           
-          echo "GITHUB_TOKEN 长度: ${#NODE_AUTH_TOKEN}"
+          echo "RELEASE token 长度: ${#NODE_AUTH_TOKEN}"
           
           pnpm --filter node-karin run pub-beta || {
             echo "发布到 GitHub Package Registry 失败"
@@ -84,8 +173,10 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.RELEASE }}
         continue-on-error: true
+
       # 在 PR 上发布构建完成或失败信息
       - name: 发布评论
+        if: steps.check-permission.outputs.result == 'true'
         run: |
           # 收集所有步骤的状态
           BUILD_STATUS="${{ steps.build.outcome }}"
@@ -120,8 +211,10 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE }}
+
       # 撤回历史评论 保留最新的3条评论
       - name: 撤回历史评论
+        if: steps.check-permission.outputs.result == 'true'
         run: |
           # 获取当前PR的所有评论
           comments=$(gh pr view ${{ env.PR_NUMBER }} --json comments)
