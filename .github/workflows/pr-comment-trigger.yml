@@ -157,7 +157,7 @@ jobs:
       - name: 发布到 GitHub Package Registry
         if: steps.check-permission.outputs.result == 'true'
         id: publish
-        run: cd packages/core && npm publish --access public --tag beta --registry https://npm.pkg.github.com/
+        run: pnpm --filter node-karin run pub-beta
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
         continue-on-error: true
