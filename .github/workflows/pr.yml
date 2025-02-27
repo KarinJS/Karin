@@ -68,9 +68,21 @@ jobs:
       # 发布到 npm
       - name: 发布到 GitHub Package Registry
         id: publish
-        run: pnpm --filter node-karin run pub-beta
+        run: |
+          # 检查 GITHUB_TOKEN 是否存在
+          if [ -z "${{ secrets.RELEASE }}" ]; then
+            echo "错误: GITHUB_TOKEN 未设置"
+            exit 1
+          fi
+          
+          echo "GITHUB_TOKEN 长度: ${#NODE_AUTH_TOKEN}"
+          
+          pnpm --filter node-karin run pub-beta || {
+            echo "发布到 GitHub Package Registry 失败"
+            exit 1
+          }
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          NODE_AUTH_TOKEN: ${{ secrets.RELEASE }}
         continue-on-error: true
       # 在 PR 上发布构建完成或失败信息
       - name: 发布评论
