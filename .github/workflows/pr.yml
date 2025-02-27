@@ -68,7 +68,7 @@ jobs:
       # 发布到 npm
       - name: 发布到 GitHub Package Registry
         id: publish
-        run: pnpm --filter node-karin run pub-beta
+        run: cd packages/core && npm publish --access public --tag beta --registry https://npm.pkg.github.com/
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
         continue-on-error: true
