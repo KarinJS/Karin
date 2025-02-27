@@ -27,7 +27,7 @@ const updateVersion = (pkg) => {
   const list = pkg.version.split('.')
   const shortHash = process.env.GITHUB_SHA?.substring(0, 7) || 'unknown'
   list[2] = `${Number(list[2]) + 1}`
-  pkg.version = `${process.env.GITHUB_REPOSITORY_OWNER}/${list.join('.')}-pr.${process.env.PR_NUMBER}.${shortHash}`
+  pkg.version = `${list.join('.')}-pr.${process.env.PR_NUMBER}.${shortHash}`
 }
 
 /**
