@@ -4,7 +4,7 @@ import { Button } from '@heroui/button'
 import { Chip } from '@heroui/chip'
 import { TbApps } from 'react-icons/tb'
 import { FaGear, FaGithub, FaGitter, FaNpm } from 'react-icons/fa6'
-import { Link } from 'react-router-dom'
+import { Link } from '@heroui/link'
 import type { pluginLists } from '@/types/plugins'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
@@ -259,7 +259,8 @@ export function PluginInfoModal ({
               )}
               {plugin.type.toLowerCase() !== 'app' && (
                 <Link
-                  to={`../plugins/${plugin.name}?type=${plugin.type.toLowerCase()}`}
+                  href={`../plugins/${plugin.name}?type=${plugin.type.toLowerCase()}`}
+                  color='secondary'
                   className='inline-flex items-center gap-2 px-3 py-1 text-sm font-medium rounded-lg bg-secondary-100 text-secondary-700 hover:bg-secondary-200'
                 >
                   <FaGear />
