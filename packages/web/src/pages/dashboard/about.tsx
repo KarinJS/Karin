@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Code, Github, MessageCircle, Star, GitPullRequest, GitFork, MessageSquare, Users, Sparkles, Zap, Heart, Target, Code2, Puzzle, LayoutDashboard, GitBranch, GitCommit, Tag, AlertCircle, CheckCircle } from 'lucide-react'
+import { Code, Github, MessageCircle, Star, GitPullRequest, GitFork, MessageSquare, Users, Sparkles, Zap, Heart, Target, Code2, Puzzle, LayoutDashboard, GitBranch, GitCommit, Tag } from 'lucide-react'
 import { Button } from '@heroui/button'
 import axios from 'axios'
 import { useInView } from 'react-intersection-observer'
@@ -56,8 +56,6 @@ const getPackageInfo = async (name: string) => {
   }
 }
 
-const npmData = await getPackageInfo('node-karin')
-
 const AboutUs = () => {
   const [repoStats, setRepoStats] = useState<RepoStats>({
     stars: 0,
@@ -65,7 +63,7 @@ const AboutUs = () => {
     pullRequests: 0,
     contributors: [],
     lastCommit: new Date(),
-    latestRelease: npmData?.version,
+    latestRelease: 'N/A',
   })
 
   const [hasRepoData, sethasRepoData] = useState<boolean>(false)
@@ -89,13 +87,15 @@ const AboutUs = () => {
           axios.get('https://api.github.com/repos/KarinJS/Karin/commits?per_page=1'),
         ])
 
+        const npmData = await getPackageInfo('node-karin')
+
         setRepoStats({
           stars: repoData.data.stargazers_count,
           forks: repoData.data.forks_count,
           pullRequests: repoData.data.open_issues_count,
           contributors: contributorsData.data,
           lastCommit: new Date(commitsData.data[0].commit.author.date),
-          latestRelease: npmData ? npmData.version : 'N/A',
+          latestRelease: npmData?.version || 'N/A',
         })
         sethasRepoData(true)
       } catch (error) {
@@ -226,7 +226,7 @@ const AboutUs = () => {
                     {
                       icon: <Tag className='h-5 w-5' />,
                       label: '最新版本',
-                      value: repoStats.latestRelease,
+                      value: hasRepoData ? repoStats.latestRelease : 'N/A',
                       color: 'text-pink-500',
                     },
                   ].map((stat, index) => (
