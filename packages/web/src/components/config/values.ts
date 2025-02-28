@@ -80,17 +80,22 @@ export type DefaultValues = Record<string, Value>
 
 /**
  * 基础组件初始值
+ * @param defaultValues - 默认值对象
+ * @param option - 组件配置
+ * @param isAccordion - 是否是手风琴组件
+ * @param data - 手风琴pro数据
  */
 const initValue = (
   defaultValues: DefaultValues,
   option: ComponentConfig,
-  isAccordion: boolean = false
+  isAccordion: boolean = false,
+  data?: any,
 ) => {
   if (option.componentType === 'divider') return
   if (option.componentType === 'input') {
     defaultValues[option.key] = {
       key: 'input',
-      value: option.value ?? option.defaultValue ?? ''
+      value: data ?? option.value ?? option.defaultValue ?? ''
     }
     return
   }
@@ -98,7 +103,7 @@ const initValue = (
   if (option.componentType === 'switch') {
     defaultValues[option.key] = {
       key: 'switch',
-      value: option.defaultSelected ?? false
+      value: data ?? option.defaultSelected ?? false
     }
     return
   }
@@ -106,7 +111,7 @@ const initValue = (
   if (option.componentType === 'radio-group') {
     defaultValues[option.key] = {
       key: 'radio-group',
-      value: option.defaultValue ?? ''
+      value: data ?? option.defaultValue ?? ''
     }
     return
   }
@@ -116,7 +121,7 @@ const initValue = (
 
     defaultValues[option.key] = {
       key: 'checkbox-group',
-      value: selectedValues
+      value: data ?? selectedValues
     }
     return
   }
@@ -124,7 +129,7 @@ const initValue = (
   if (option.componentType === 'input-group') {
     defaultValues[option.key] = {
       key: 'input-group',
-      value: option.data || []
+      value: data || option.data || []
     }
     return
   }
@@ -168,7 +173,7 @@ const initValue = (
         })
       }
 
-      Object.entries(item).forEach(([key]) => {
+      Object.entries(item).forEach(([key, value]) => {
         if (key === 'title' || key === 'subtitle') return
         const config = childConfigMap[key]
         if (!config) {
@@ -176,7 +181,7 @@ const initValue = (
           return
         }
 
-        initValue(val, config, true)
+        initValue(val, config, true, value)
       })
 
       value.push(val)
@@ -230,7 +235,7 @@ const resultValue = (
     option.value.forEach((item) => {
       const val: DefaultValues = {}
       Object.entries(item).forEach(([key, value]) => {
-        val[key] = value
+        resultValue(val, key, value, true)
       })
       result[key].push(val)
     })
@@ -248,6 +253,7 @@ const resultValue = (
 export const getComponentValue = (options: ComponentConfig[]): DefaultValues => {
   const defaultValues: DefaultValues = {}
   options.forEach((option) => initValue(defaultValues, option))
+  console.log('defaultValues', defaultValues)
   return defaultValues
 }
 
