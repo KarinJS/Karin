@@ -75,7 +75,7 @@ function OnlineStatus () {
       />
       <RotatingText
         texts={msg}
-        ClassName='px-3 m:px-1 md:px-2 bg-primary-400 text-default-50 font-bold rounded-lg'
+        ClassName='px-3 sm:px-1 md:px-2 bg-primary-400 text-default-50 font-bold rounded-lg'
         staggerFrom='last'
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
