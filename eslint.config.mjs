@@ -22,6 +22,7 @@ const ignores = [
   'packages/module',
   'packages/core/dist',
   'packages/types/index.d.ts',
+  'packages/web/public',
 ]
 
 const options = neostandard({

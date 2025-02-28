@@ -14,16 +14,39 @@ import { motion } from 'framer-motion'
 // import SplashCursor from '@/components/SplashCursor'
 
 /**
+ * 加载外部 SHA256 脚本
+ */
+const loadSha256Script = () => {
+  return new Promise<void>((resolve, reject) => {
+    const script = document.createElement('script')
+    script.src = '/web/sha256.min.js'
+    script.onload = () => resolve()
+    script.onerror = () => reject(new Error('Failed to load SHA256 script'))
+    document.head.appendChild(script)
+  })
+}
+
+/**
  * sha256
  * @param authKey 鉴权秘钥
  */
 const generateHash = async (authKey: string) => {
-  const encoder = new TextEncoder()
-  const data = encoder.encode(authKey)
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('')
-  return hashHex
+  try {
+    const encoder = new TextEncoder()
+    const data = encoder.encode(authKey)
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+    const hashArray = Array.from(new Uint8Array(hashBuffer))
+    const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('')
+    return hashHex
+  } catch (error) {
+    // 降级使用外部 SHA256 库
+    // @ts-ignore
+    if (typeof sha256 !== 'function') {
+      await loadSha256Script()
+    }
+    // @ts-ignore
+    return sha256(authKey)
+  }
 }
 
 /**
