@@ -38,7 +38,7 @@ export interface RotatingTextProps
   auto?: boolean
   splitBy?: string
   onNext?: (index: number) => void
-  mainClassName?: string
+  ClassName?: string
   splitLevelClassName?: string
   elementLevelClassName?: string
 }
@@ -60,7 +60,7 @@ const RotatingText = forwardRef<RotatingTextRef, RotatingTextProps>(
       auto = true,
       splitBy = 'characters',
       onNext,
-      mainClassName,
+      ClassName,
       splitLevelClassName,
       elementLevelClassName,
       ...rest
@@ -195,7 +195,7 @@ const RotatingText = forwardRef<RotatingTextRef, RotatingTextProps>(
       <motion.span
         className={cn(
           'flex flex-wrap whitespace-pre-wrap relative',
-          mainClassName
+          ClassName
         )}
         {...rest}
         layout

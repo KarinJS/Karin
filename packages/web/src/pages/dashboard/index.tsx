@@ -75,7 +75,7 @@ function OnlineStatus () {
       />
       <RotatingText
         texts={msg}
-        mainClassName='text-default-500 text-sm hover:text-primary transition-colors'
+        ClassName='px-3 m:px-1 md:px-2 bg-primary-400 text-default-50 font-bold rounded-lg'
         staggerFrom='last'
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
@@ -104,7 +104,7 @@ function StatusItem ({ title, value }: StatusItemProps) {
           <IconComponent className='w-5 h-5 text-primary' />
           <p className='text-sm text-primary select-none'>{title}</p>
         </div>
-        <div className='mt-2 text-default-800 dark:text-default-200'>{value || '--'}</div>
+        <div className='mt-2 text-default-800'>{value || '--'}</div>
       </CardHeader>
     </Card>
   )
