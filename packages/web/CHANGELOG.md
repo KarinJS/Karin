@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.4.1](https://github.com/KarinJS/Karin/compare/web-v1.4.0...web-v1.4.1) (2025-02-28)
+
+
+### 🐛 Bug Fixes
+
+* sha256兼容性提升 ([e5c5c5c](https://github.com/KarinJS/Karin/commit/e5c5c5cb73e45d249a7f8041ce35c48250bfd69e))
+* 我恨手风琴 ([229fc24](https://github.com/KarinJS/Karin/commit/229fc247458e29afcddf68cf813e50fa0f2a3544))
+
+
+### 💄 Styles
+
+* 状态卡片 ([062ceb3](https://github.com/KarinJS/Karin/commit/062ceb3830bec19f3eebd521baa17ba443f2bfa2))
+
 ## [1.4.0](https://github.com/KarinJS/Karin/compare/web-v1.3.12...web-v1.4.0) (2025-02-27)
 
 
