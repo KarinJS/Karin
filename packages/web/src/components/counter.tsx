@@ -89,7 +89,7 @@ export default function Counter ({
   fontSize = 100,
   places = [100000, 10000, 1000, 100, 10, 1],
   className,
-  fontWeight = 'bold',
+  fontWeight = 'inherit',
   counterStyle,
   digitStyle,
 }: CounterProps) {

@@ -58,7 +58,7 @@ function OnlineStatus () {
       }>('/api/v1/ping'),
     {
       pollingInterval: 1000,
-      ready: location.pathname === '/dashboard',
+      // ready: location.pathname === '/dashboard',
     },
   )
   const { data } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'))
@@ -96,11 +96,13 @@ export interface StatusItemProps {
 function StatusItem ({ title, value }: StatusItemProps) {
   const IconComponent = iconMap[title] || Tag
   return (
-    <Card className='transition-all hover:bg-default-100 dark:hover:bg-default-50 shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-default-200 dark:border-default-100'>
+    <Card
+      className='transition-all duration-150 ease-in-out hover:bg-default-100 dark:hover:bg-default-100 hover:translate-y-[-4px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-default-200 dark:border-default-100 cursor-pointer'
+    >
       <CardHeader className='px-4 py-3 flex-col items-start'>
         <div className='flex items-center gap-2'>
           <IconComponent className='w-5 h-5 text-primary' />
-          <p className='text-sm text-primary'>{title}</p>
+          <p className='text-sm text-primary select-none'>{title}</p>
         </div>
         <div className='mt-2 text-default-800 dark:text-default-200'>{value || '--'}</div>
       </CardHeader>
@@ -111,12 +113,10 @@ function StatusItem ({ title, value }: StatusItemProps) {
 function Status () {
   const { data, error } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'), {
     pollingInterval: 1000,
-    ready: location.pathname === '/dashboard',
   })
   const localPluginsList = useRequest(() => request.serverPost<LocalApiResponse[], {}>('/api/v1/plugin/local'))
   const botList = useRequest(() => request.serverGet<Array<AdapterType>>('/api/v1/utils/get/bots'), {
     pollingInterval: 5000,
-    ready: location.pathname === '/dashboard',
   })
   if (error || !data) {
     return (
@@ -137,14 +137,14 @@ function Status () {
       <StatusItem
         title='运行时间'
         value={
-          <div className='flex items-center gap-2 font-normal'>
+          <div className='flex items-center gap-2 '>
             <Counter
-              className='flex items-center gap-0 text-inherit font-normal'
+              className='flex items-center gap-0'
               value={Math.floor(data.uptime)}
               fontSize={20}
               places={generatePlaces(Math.floor(data.uptime))}
             />
-            <span className='font-normal'>秒</span>
+            <span>秒</span>
           </div>
         }
       />
