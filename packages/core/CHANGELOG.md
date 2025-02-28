@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.4.1](https://github.com/KarinJS/Karin/compare/core-v1.4.0...core-v1.4.1) (2025-02-28)
+
+
+### 🐛 Bug Fixes
+
+* 发版 ([ee46097](https://github.com/KarinJS/Karin/commit/ee4609716831ae7eac3f89ee222958903e8302c1))
+
 ## [1.4.0](https://github.com/KarinJS/Karin/compare/core-v1.3.21...core-v1.4.0) (2025-02-27)
 
 
