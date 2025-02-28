@@ -32,7 +32,7 @@ export default defineConfig({
     outDir: '../core/dist/web',
   },
   server: {
-    host: false,
+    host: true,
     hmr: {
       overlay: true,
     },

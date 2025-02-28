@@ -16,7 +16,6 @@ import AboutPage from '@/pages/dashboard/about'
 // ----------
 // Login Page
 import LoginPage from '@/pages/login'
-// Test Page
 import ChatDetail from '@/pages/dashboard/sandbox/chat/detail'
 import DefaultPage from '@/components/default_page'
 import FriendRequest from '@/pages/dashboard/sandbox/contact/friend_request'
@@ -27,6 +26,7 @@ import RequireAuth from '@/components/auth/RequireAuth'
 import PluginConfigPage from '@/pages/dashboard/plugins/config'
 // 404 Page
 import NotFoundPage from '@/pages/404'
+import TestPage from './test'
 
 // Main App
 function App () {
@@ -83,6 +83,7 @@ function App () {
       >
         <Route element={<IndexPage />} path='' />
         <Route element={<ConfigPage />} path='/config' />
+        <Route element={<TestPage />} path='/test' />
         <Route element={<PluginMarketPage />} path='/plugins/list' />
         <Route element={<PluginConfigPage />} path='/plugins/:name' />
         <Route element={<SandboxPage />} path='/sandbox'>
