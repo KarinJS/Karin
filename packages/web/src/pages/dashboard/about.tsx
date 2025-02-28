@@ -1,45 +1,74 @@
 import { useEffect, useState } from 'react'
-import {
-  Bot,
-  Code,
-  Github,
-  MessageCircle,
-  Star,
-  GitPullRequest,
-  GitFork,
-  MessageSquare,
-  Users,
-  Sparkles,
-  Zap,
-  Heart,
-} from 'lucide-react'
+import { Code, Github, MessageCircle, Star, GitPullRequest, GitFork, MessageSquare, Users, Sparkles, Zap, Heart, Target, Code2, Puzzle, LayoutDashboard, GitBranch, GitCommit, Tag, AlertCircle, CheckCircle } from 'lucide-react'
 import { Button } from '@heroui/button'
 import axios from 'axios'
 import { useInView } from 'react-intersection-observer'
 import CountUp from '@/components/CountUp'
 import { Tooltip } from '@heroui/tooltip'
 import { motion } from 'framer-motion'
+import { useRequest } from 'ahooks'
+import { KarinStatus } from '@/types/server'
+import { request } from '@/lib/request'
+import toast from 'react-hot-toast'
+import { Skeleton } from '@heroui/skeleton'
 
 interface RepoStats {
   stars: number
   forks: number
   pullRequests: number
-  discussions: number
   contributors: Array<{
     avatar_url: string
     login: string
     html_url: string
   }>
+  lastCommit: Date
+  latestRelease: string
 }
+
+/**
+ * 获取npm包的基本信息
+ * @param name npm包名
+ */
+const getPackageInfo = async (name: string) => {
+  const registry = [
+    'https://registry.npmjs.org',
+    'https://registry.npmmirror.com',
+  ]
+
+  const registryList = registry.map((item) => `${item}/${name}`)
+
+  try {
+    const registryResult = await Promise.race(registryList.map((item) => axios.get(item, { timeout: 5000 })))
+
+    if (registryResult.status === 200) {
+      /** 最新版本 */
+      const latest = registryResult.data['dist-tags'].latest
+      /** 包大小 */
+      const size = registryResult.data.versions[latest].dist.unpackedSize
+      /** 更新时间: 2025-02-07T07:02:10.971Z 格式为 ISO 8601 */
+      const updated = registryResult.data.time.modified
+
+      return { version: latest, size, updated }
+    }
+  } catch (error) {
+    const { data } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'))
+    return { version: data?.version, size: 0, updated: '' }
+  }
+}
+
+const npmData = await getPackageInfo('node-karin')
 
 const AboutUs = () => {
   const [repoStats, setRepoStats] = useState<RepoStats>({
     stars: 0,
     forks: 0,
     pullRequests: 0,
-    discussions: 0,
     contributors: [],
+    lastCommit: new Date(),
+    latestRelease: npmData?.version,
   })
+
+  const [hasRepoData, sethasRepoData] = useState<boolean>(false)
 
   const { ref: statsRef, inView: statsInView } = useInView({
     triggerOnce: true,
@@ -54,20 +83,24 @@ const AboutUs = () => {
   useEffect(() => {
     const fetchRepoStats = async () => {
       try {
-        const [repoData, contributorsData] = await Promise.all([
+        const [repoData, contributorsData, commitsData] = await Promise.all([
           axios.get('https://api.github.com/repos/KarinJS/Karin'),
-          axios.get('https://api.github.com/repos/KarinJS/Karin/contributors?per_page=10'),
+          axios.get('https://api.github.com/repos/KarinJS/Karin/contributors?per_page=50'),
+          axios.get('https://api.github.com/repos/KarinJS/Karin/commits?per_page=1'),
         ])
 
         setRepoStats({
           stars: repoData.data.stargazers_count,
           forks: repoData.data.forks_count,
           pullRequests: repoData.data.open_issues_count,
-          discussions: 0,
           contributors: contributorsData.data,
+          lastCommit: new Date(commitsData.data[0].commit.author.date),
+          latestRelease: npmData ? npmData.version : 'N/A',
         })
+        sethasRepoData(true)
       } catch (error) {
-        console.error('Error fetching repo stats:', error)
+        sethasRepoData(false)
+        toast.error('仓库统计数据获取失败 ~')
       }
     }
 
@@ -93,7 +126,7 @@ const AboutUs = () => {
 
   return (
     <div className='min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white'>
-      {/* Hero Section with Animated Elements */}
+      {/* 首屏 */}
       <section className='py-16 md:py-24 overflow-hidden relative'>
         <div className='container mx-auto px-4 relative'>
           <div className='max-w-7xl mx-auto'>
@@ -153,71 +186,68 @@ const AboutUs = () => {
 
               <motion.div
                 ref={statsRef}
-                className='grid grid-cols-2 gap-4'
+                className='grid gap-4'
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <motion.div
-                  className='bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg p-6 flex items-center justify-center shadow-sm hover:shadow-md hover:border-primary-500 dark:hover:border-primary-500 transition-all'
-                  whileHover={{ y: -5 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className='text-center'>
-                    <div className='flex items-center justify-center mb-2'>
-                      <Star className='h-8 w-8 text-yellow-500' />
-                    </div>
-                    <CountUp
-                      from={0}
-                      to={repoStats.stars}
-                      separator=','
-                      direction='up'
-                      duration={2}
-                      className='text-3xl font-bold'
-                    />
-                    <div className='text-sm text-gray-600 dark:text-gray-400'>Stars</div>
-                  </div>
-                </motion.div>
-
-                <div className='grid grid-rows-3 gap-4'>
+                <div className='grid gap-4 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2'>
                   {[
+                    {
+                      icon: <Star className='h-5 w-5' />,
+                      label: 'Stars',
+                      value: hasRepoData ? repoStats.stars : 'N/A',
+                      color: 'text-yellow-500',
+                    },
                     {
                       icon: <GitFork className='h-5 w-5' />,
                       label: 'Forks',
-                      value: repoStats.forks,
+                      value: hasRepoData ? repoStats.forks : 'N/A',
                       color: 'text-blue-500',
                     },
                     {
                       icon: <GitPullRequest className='h-5 w-5' />,
                       label: 'PRs',
-                      value: repoStats.pullRequests,
+                      value: hasRepoData ? repoStats.pullRequests : 'N/A',
                       color: 'text-green-500',
                     },
                     {
                       icon: <Users className='h-5 w-5' />,
                       label: '贡献者',
-                      value: repoStats.contributors.length,
+                      value: hasRepoData ? repoStats.contributors.length : 'N/A',
                       color: 'text-primary-500',
+                    },
+                    {
+                      icon: <GitCommit className='h-5 w-5' />,
+                      label: '最后提交',
+                      value: hasRepoData ? repoStats.lastCommit.toISOString().split('T')[0] : 'N/A',
+                      color: 'text-purple-500',
+                    },
+                    {
+                      icon: <Tag className='h-5 w-5' />,
+                      label: '最新版本',
+                      value: repoStats.latestRelease,
+                      color: 'text-pink-500',
                     },
                   ].map((stat, index) => (
                     <motion.div
                       key={index}
-                      className='bg-white dark:bg-black p-4 rounded-lg flex items-center space-x-3 shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500'
-                      whileHover={{ y: -5, transition: { type: 'spring', stiffness: 300, damping: 10 } }}
-                      transition={{ duration: 0.2 }}
-                      whileTap={{ scale: 0.98 }}
+                      className='bg-white dark:bg-black p-4 rounded-lg flex items-center space-x-3 shadow-sm border border-gray-200 dark:border-gray-800 hover:border-primary-500'
+                      whileHover={{ y: -5 }}
+                      transition={{ type: 'spring', stiffness: 300 }}
                     >
                       <div className={`${stat.color}`}>{stat.icon}</div>
                       <div>
-                        <CountUp
-                          from={0}
-                          to={stat.value}
-                          separator=','
-                          direction='up'
-                          duration={2}
-                          className='text-2xl font-bold'
-                        />
-                        <div className='text-sm text-gray-600 dark:text-gray-400'>{stat.label}</div>
+                        <div className='text-2xl font-bold select-none'>
+                          {typeof stat.value === 'number'
+                            ? (
+                              <CountUp from={0} to={stat.value} separator=',' duration={2} />
+                            )
+                            : (
+                              stat.value
+                            )}
+                        </div>
+                        <div className='text-sm text-gray-600 dark:text-gray-400 select-none'>{stat.label}</div>
                       </div>
                     </motion.div>
                   ))}
@@ -228,8 +258,8 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* Features Section with Animated Cards */}
-      <section className='py-16 relative overflow-hidden bg-gray-50 dark:bg-gray-950' ref={featuresRef}>
+      {/* 功能介绍 */}
+      <section className='py-16 relative overflow-hidden' ref={featuresRef}>
         <div className='container mx-auto px-8 relative'>
           <div className='max-w-7xl mx-auto'>
             <motion.div
@@ -247,34 +277,48 @@ const AboutUs = () => {
             </motion.div>
 
             <motion.div
-              className='grid grid-cols-1 md:grid-cols-3 gap-8'
+              className='grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-8'
               variants={container}
               initial='hidden'
               animate={featuresInView ? 'show' : 'hidden'}
             >
               {[
                 {
-                  icon: <Bot className='h-10 w-10 text-primary-500' />,
-                  title: '简单易用',
-                  description: '无需复杂的编程知识，通过直观的界面和丰富的模板，快速构建您的机器人应用。',
-                },
-                {
                   icon: <Zap className='h-10 w-10 text-yellow-500' />,
-                  title: '高性能',
-                  description: '基于现代技术栈构建，确保您的机器人应用运行流畅，响应迅速。',
+                  title: '🚀 轻量 · 高效',
+                  description: '极简设计，资源占用少，让你的机器人运行更流畅。',
                 },
                 {
-                  icon: <Heart className='h-10 w-10 text-red-500' />,
-                  title: '完全开源',
-                  description: '所有代码完全开源，您可以自由查看、修改和贡献，共同打造更好的机器人开发生态。',
+                  icon: <Target className='h-10 w-10 text-green-500' />,
+                  title: '🎯 简单 · 强大',
+                  description: '5分钟即可上手，内置丰富的功能，让开发过程充满乐趣。',
+                },
+                {
+                  icon: <Code2 className='h-10 w-10 text-blue-500' />,
+                  title: '💪 TypeScript 加持',
+                  description: '基于 TypeScript 构建，代码提示完善，告别烦人的类型错误。',
+                },
+                {
+                  icon: <Puzzle className='h-10 w-10 text-purple-500' />,
+                  title: '🎨 模块化插件系统',
+                  description: '插件配置简单，即插即用，轻松扩展功能。',
+                },
+                {
+                  icon: <LayoutDashboard className='h-10 w-10 text-indigo-500' />,
+                  title: '🔧 可视化管理',
+                  description: '提供 Web 管理界面，可视化操作，提升开发体验。',
+                },
+                {
+                  icon: <GitBranch className='h-10 w-10 text-pink-500' />,
+                  title: '🌟 持续进化',
+                  description: '正处于积极开发阶段，持续添加新功能，欢迎参与贡献。',
                 },
               ].map((feature, index) => (
                 <motion.div
                   key={index}
-                  className='bg-white dark:bg-black rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-gray-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500 group'
+                  className='bg-white dark:bg-black rounded-xl overflow-hidden shadow-sm hover:shadow-lg border border-gray-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500 group'
                   variants={item}
-                  whileHover={{ y: -10, transition: { type: 'spring', stiffness: 300, damping: 10 } }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ y: -5, transition: { type: 'spring', stiffness: 300, damping: 10 } }}
                   transition={{ duration: 0.2 }}
                 >
                   <div className='h-2 bg-primary-500' />
@@ -292,7 +336,7 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* Contributors Section */}
+      {/* 开发者列表 */}
       <section className='py-16 bg-white dark:bg-black'>
         <div className='container mx-auto px-4'>
           <div className='max-w-7xl mx-auto'>
@@ -318,39 +362,54 @@ const AboutUs = () => {
               transition={{ staggerChildren: 0.1, delayChildren: 0.1 }}
               viewport={{ once: true }}
             >
-              {repoStats.contributors.map((contributor, index) => (
-                <motion.a
-                  key={index}
-                  href={contributor.html_url}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  className='block'
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  whileHover={{ y: -8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 10 } }}
-                  whileTap={{ scale: 0.9 }}
-                  transition={{ duration: 0.2 }}
-                  viewport={{ once: true }}
-                >
-                  <Tooltip content={contributor.login}>
-                    <div className='relative group'>
-                      <div className='absolute -inset-0.5 bg-primary-500 rounded-full blur opacity-0 group-hover:opacity-70 transition duration-300' />
-                      <img
-                        src={contributor.avatar_url || 'https://avatar.vercel.sh/0'}
-                        alt={contributor.login}
-                        className='relative w-16 h-16 rounded-full border-2 border-white dark:border-gray-800 group-hover:border-primary-500 transition-colors'
-                      />
-                    </div>
-                  </Tooltip>
-                </motion.a>
-              ))}
+              {hasRepoData
+                ? repoStats.contributors.map((contributor, index) => (
+                  <motion.a
+                    key={index}
+                    href={contributor.html_url}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='block'
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    whileHover={{ y: -8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 10 } }}
+                    whileTap={{ scale: 0.9 }}
+                    transition={{ duration: 0.2 }}
+                    viewport={{ once: true }}
+                  >
+                    <Tooltip content={contributor.login} offset={18}>
+                      <div className='relative group'>
+                        <div className='absolute -inset-0.5 bg-primary-500 rounded-full blur opacity-0 group-hover:opacity-70 transition duration-300' />
+                        <img
+                          src={contributor.avatar_url || 'https://avatar.vercel.sh/0'}
+                          alt={contributor.login}
+                          className='relative w-16 h-16 rounded-full border-2 border-white dark:border-gray-800 group-hover:border-primary-500 transition-colors'
+                        />
+                      </div>
+                    </Tooltip>
+
+                  </motion.a>
+                ))
+                : Array.from({ length: 10 }).map((_, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    whileHover={{ y: -8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 10 } }}
+                    whileTap={{ scale: 0.9 }}
+                    transition={{ duration: 0.2 }}
+                    viewport={{ once: true }}
+                  >
+                    <Skeleton className='w-16 h-16 rounded-full' />
+                  </motion.div>
+                ))}
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* About Project Section with Animated Text */}
-      <section className='py-16 bg-gray-50 dark:bg-gray-950'>
+      {/* 关于 Karin */}
+      <section className='py-16'>
         <div className='container mx-auto px-4'>
           <div className='max-w-7xl mx-auto'>
             <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 items-center'>
@@ -365,11 +424,11 @@ const AboutUs = () => {
                   <Heart className='h-4 w-4 mr-2' />
                   我们的故事
                 </div>
-                <h2 className='text-3xl md:text-4xl font-bold'>关于项目</h2>
+                <h2 className='text-3xl md:text-4xl font-bold'>关于 Karin</h2>
                 <div className='space-y-4 text-gray-600 dark:text-gray-400'>
                   <p>
-                    我们的机器人框架是一个始于 2023 年的开源项目，由一群热爱机器人技术的开发者发起。该框架基于
-                    TypeScript（ts）构建，旨在降低机器人开发的门槛。
+                    Karin 机器人框架是一个始于 2023 年的开源项目，由一群热爱机器人技术的开发者发起。该框架基于 Node.js 开发，使用
+                    TypeScript + React 构建，旨在降低机器人开发的门槛。
                   </p>
                   <p>
                     通过提供一套完整的工具链和丰富的文档，我们希望让更多人能够参与到机器人技术的创新中来，无论是教育、研究还是商业应用场景下，都能借助这个框架轻松开展机器人相关的开发工作。
@@ -382,19 +441,15 @@ const AboutUs = () => {
 
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                 <motion.div
-                  className='bg-white dark:bg-black p-6 rounded-xl shadow-sm hover:shadow-lg transition-all border border-gray-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500'
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
-                  viewport={{ once: true }}
-                  whileHover={{ y: -10 }}
-                  whileTap={{ scale: 0.98 }}
+                  className='bg-white dark:bg-black p-6 rounded-xl shadow-sm hover:shadow-lg border border-gray-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500'
+                  whileHover={{ y: -5 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
                 >
                   <MessageCircle className='h-8 w-8 text-primary-500 mb-4' />
                   <h3 className='text-xl font-bold mb-2'>社区交流</h3>
                   <p className='text-gray-600 dark:text-gray-400 mb-4'>加入我们的用户交流群，与其他开发者分享经验。</p>
                   <div className='space-x-3'>
-                    <Button as='a' href='#' size='sm' variant='ghost' color='secondary' radius='full'>
+                    <Button as='a' href='#' size='sm' variant='shadow' color='secondary' radius='full'>
                       Discord
                     </Button>
                     <Button
@@ -411,13 +466,9 @@ const AboutUs = () => {
                 </motion.div>
 
                 <motion.div
-                  className='bg-white dark:bg-black p-6 rounded-xl shadow-sm hover:shadow-lg transition-all border border-gray-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500'
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.2 }}
-                  viewport={{ once: true }}
-                  whileHover={{ y: -10 }}
-                  whileTap={{ scale: 0.98 }}
+                  className='bg-white dark:bg-black p-6 rounded-xl shadow-sm hover:shadow-lg border border-gray-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500'
+                  whileHover={{ y: -5 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
                 >
                   <MessageSquare className='h-8 w-8 text-primary-500 mb-4' />
                   <h3 className='text-xl font-bold mb-2'>问题反馈</h3>
@@ -441,7 +492,7 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* Footer with Animated Elements */}
+      {/* 页脚 */}
       <footer className='py-12 border-t border-gray-200 dark:border-gray-800'>
         <div className='container mx-auto px-4'>
           <div className='max-w-7xl mx-auto'>
