@@ -17,6 +17,7 @@ import {
   Save,
   Settings2
 } from 'lucide-react'
+import { getAdapterComponent } from './adapter'
 
 // Tab项配置
 const tabItems = [
@@ -89,6 +90,7 @@ export default function TestPage () {
     <Button
       color='primary'
       size='sm'
+      variant='flat'
       startContent={<Save size={18} />}
       className={!showText ? 'min-w-0 p-2' : ''}
     >
@@ -179,11 +181,7 @@ export default function TestPage () {
 
       {/* 下方内容区域卡片 */}
       <Card className='p-6'>
-        {tabItems.map(item => (
-          selectedTab === item.key && (
-            <div key={item.key}>{item.label}内容区域</div>
-          )
-        ))}
+        {getAdapterComponent()}
       </Card>
     </div>
   )

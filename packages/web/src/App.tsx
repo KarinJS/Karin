@@ -34,40 +34,22 @@ function App () {
 
   useEffect(() => {
     const path = location.pathname
-    let title = '未知页面'
+    const map = {
+      '/': '基础信息',
+      '/config': '配置信息',
+      '/plugins/list': '插件市场',
+      '/plugins/:name': '插件配置',
+      '/sandbox': '沙箱调试',
+      '/sandbox/chat': '沙箱 | [聊天]',
+      '/sandbox/contact': '沙箱 | [联系人]',
+      '/about': '关于我们',
+      '/login': '登录'
+    } as Record<string, string>
 
-    switch (true) {
-      case path === '/':
-        title = '基础信息'
-        break
-      case path === '/config':
-        title = '配置信息'
-        break
-      case path === '/plugins/list':
-        title = '插件市场'
-        break
-      case path.startsWith('/plugins/'):
-        title = '插件配置'
-        break
-      case path === '/sandbox':
-        title = '沙箱调试'
-        break
-      case path.startsWith('/sandbox/chat'):
-        title = '沙箱 | [聊天]'
-        break
-      case path.startsWith('/sandbox/contact'):
-        title = '沙箱 | [联系人]'
-        break
-      case path === '/about':
-        title = '关于我们'
-        break
-      case path === '/login':
-        title = '登录'
-        break
-      default:
-        title = '未知页面'
-    }
-    document.title = title += ' - Karin WebUI'
+    document.title = `${map[path]
+      ? map[path]
+      : '无人问津的角落...'
+      } - Karin WebUI | 永远相信美好的事情即将发生`
   }, [location])
 
   return (
