@@ -10,6 +10,8 @@ import { useMediaQuery } from 'react-responsive'
 import { Icon } from './ui/icon'
 import { Spinner } from '@heroui/spinner'
 import { Button } from '@heroui/button'
+import { LuLogIn } from 'react-icons/lu'
+import toast from 'react-hot-toast'
 
 const menuItemVariants = {
   hidden: {
@@ -520,12 +522,26 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
           <div className='flex-grow-0 flex-shrink-0 py-2 px-4 mb-2 flex flex-col gap-2'>
             <ThemeSwitch
               classNames={{
-                wrapper: '!text-default-600',
-                base: 'w-full h-full',
+                wrapper: '!text-primary',
               }}
             >
               切换主题
             </ThemeSwitch>
+            <Button
+              startContent={<LuLogIn className='w-5 h-5' />}
+              radius='full'
+              variant='light'
+              color='primary'
+              onPress={() => {
+                localStorage.removeItem('userId')
+                localStorage.removeItem('accessToken')
+                localStorage.removeItem('refreshToken')
+                toast.success('退出登录成功！')
+                navigate('/login')
+              }}
+            >
+              退出登录
+            </Button>
           </div>
         </motion.div>
       </motion.div>

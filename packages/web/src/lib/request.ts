@@ -43,7 +43,6 @@ export const request: ServerRequest = axios.create({
 }) as ServerRequest
 
 request.interceptors.request.use(config => {
-  recordRequestInfo()
   const token = localStorage.getItem(key.accessToken)
   const userId = localStorage.getItem(key.userId)
 
@@ -164,9 +163,3 @@ request.serverPost = async <T, R> (url: string, data: R = {} as R, config?: Axio
 //   }
 //   return response
 // }
-
-const FINAL_REQUEST = 'FINAL_REQUEST'
-/** 记录最后一次请求时间 */
-function recordRequestInfo () {
-  localStorage.setItem(FINAL_REQUEST, Date.now().toString())
-}

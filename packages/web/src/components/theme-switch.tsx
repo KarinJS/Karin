@@ -14,7 +14,7 @@ export interface ThemeSwitchProps {
   children?: ReactNode
 }
 
-export const ThemeSwitch: FC<ThemeSwitchProps> = ({ className, classNames, children }) => {
+export const ThemeSwitch: FC<ThemeSwitchProps> = ({ classNames, children }) => {
   const [isMounted, setIsMounted] = useState(false)
   const { theme, toggleTheme } = useTheme()
 
@@ -30,11 +30,6 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({ className, classNames, child
       radius='full'
       variant='light'
       color='primary'
-      className={clsx(
-        'w-full flex items-center justify-center gap-2 px-2 py-2 rounded-lg hover:bg-default-100',
-        className,
-        classNames?.base,
-      )}
     >
       <div
         className={clsx(
