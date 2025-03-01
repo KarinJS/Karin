@@ -54,7 +54,7 @@ export default function DashboardLayout () {
         {/* 顶部导航栏 */}
         <motion.div
           className={clsx(
-            'sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md',
+            'sticky top-0 z-40 w-full bg-opacity-50 backdrop-blur-md',
             'border-b border-divider shadow-sm flex items-center justify-between',
             'px-4 py-2'
           )}
@@ -67,27 +67,18 @@ export default function DashboardLayout () {
               onClick={() => setIsOpen(!isOpen)}
               className={clsx('p-2 rounded-lg text-xs transition-colors')}
             >
-              {isOpen
-                ? <RiMenuUnfold2Line className='w-5 h-5' />
-                : <IoMenu className='w-5 h-5' />}
+              <div className='flex items-center gap-4'>
+                {isOpen
+                  ? <RiMenuUnfold2Line className='w-5 h-5' />
+                  : <IoMenu className='w-5 h-5' />}
+                {/* 标题 */}
+                <motion.h1 className='text-lg'>
+                  {title}
+                </motion.h1>
+              </div>
+
             </motion.button>
 
-            {/* 动画标题 */}
-            <AnimatePresence mode='popLayout'>
-              <motion.h1
-                key={currentMainPath}
-                className='text-lg font-medium'
-                initial={{ opacity: 0, y: 10 }} // 初始状态：向下偏移
-                animate={{ opacity: 1, y: 0 }} // 进入动画：向上滑入
-                exit={{ opacity: 0, y: -10 }} // 退出动画：向上滑出
-                transition={{
-                  default: { ease: 'easeInOut', duration: 0.1 },
-                  exit: { duration: 0.3 } // 退出动画持续时间更长
-                }}
-              >
-                {title}
-              </motion.h1>
-            </AnimatePresence>
           </div>
         </motion.div>
 

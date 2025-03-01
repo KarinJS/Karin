@@ -170,7 +170,7 @@ importers:
         version: 0.11.9(eslint@9.21.0(jiti@1.21.7))(typescript@5.7.3)
       node-karin:
         specifier: latest
-        version: 1.4.1
+        version: 1.4.2
       tsc-alias:
         specifier: ^1.8.10
         version: 1.8.10
@@ -4091,8 +4091,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  node-karin@1.4.1:
-    resolution: {integrity: sha512-vBu0JixVSP/SlEHSh7u1aNSJ1c/oVbTCE3lAzijNFfak5ITj6GLIGb6Mp0H5QOvyXrqu01B+TFyQRRnmP5dFyQ==}
+  node-karin@1.4.2:
+    resolution: {integrity: sha512-QcjnktblOTE/+GIrPJajpfbu7EktkBQPhVAcXtwACC1Tue6nQQJIlAaWnnEaP23XGBeX5PkEX4vSZjBWEPEp2Q==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -9787,7 +9787,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  node-karin@1.4.1:
+  node-karin@1.4.2:
     dependencies:
       '@types/express': 4.17.21
       '@types/lodash': 4.17.15

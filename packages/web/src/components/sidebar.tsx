@@ -12,6 +12,7 @@ import { Spinner } from '@heroui/spinner'
 import { Button } from '@heroui/button'
 import { LuLogIn } from 'react-icons/lu'
 import toast from 'react-hot-toast'
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
 
 const menuItemVariants = {
   hidden: {
@@ -62,6 +63,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
   const isNotSmallScreen = useMediaQuery({ minWidth: 768 })
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null)
   const [pluginsLoading, setPluginsLoading] = useState(true)
+  const [showsingOut, setShowsingOut] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -84,18 +86,19 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
           'md:bg-transparent md:static shadow-md md:shadow-none rounded-r-md md:rounded-none',
         )}
         initial={{ width: 0 }}
-        animate={{ width: isOpen ? '16rem' : 0 }}
-        transition={{
-          type: isOpen ? 'spring' : 'tween',
-          stiffness: 150,
-          damping: isOpen ? 15 : 10
-        }}
+        animate={{ width: isOpen ? '15rem' : 0 }}
+        // 开了卡炸
+        // transition={{
+        //   type: isOpen ? 'spring' : 'tween',
+        //   stiffness: 200,
+        //   damping: isOpen ? 15 : 10
+        // }}
         style={{ overflow: 'hidden' }}
       >
         <motion.div
           className={clsx(
             'h-full bg-background/80 backdrop-blur-md border-r border-divider',
-            'flex flex-col gap-4 overflow-hidden pt-4'
+            'flex flex-col gap-6 overflow-hidden pt-4'
           )}
         >
 
@@ -403,7 +406,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                 >
                   <div
                     className={clsx(
-                      'block text-default-600 hover:text-primary rounded-xl w-max hover:bg-default-100/50 transition-all cursor-default md:cursor-pointer group',
+                      'block text-default-600 hover:text-primary rounded-xl hover:bg-default-100/50 transition-all cursor-default md:cursor-pointer group',
                       {
                         '!text-primary bg-primary/5 font-medium ring-1 ring-primary/10':
                           location.pathname === item.href ||
@@ -412,14 +415,14 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                     )}
                   >
                     <motion.div
-                      className='flex items-center gap-3 py-2.5 overflow-hidden relative'
+                      className='flex items-center gap-6 py-2.5 overflow-hidden relative'
                       initial={{
-                        width: 200,
+                        // width: 200,
                         paddingLeft: 16,
                         paddingRight: 16,
                       }}
                       animate={{
-                        width: 200,
+                        // width: 200,
                         paddingLeft: 16,
                         paddingRight: 16,
                       }}
@@ -440,7 +443,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                         <item.Icon />
                       </motion.div>
                       <motion.div
-                        className='whitespace-nowrap overflow-hidden text-sm relative z-10 flex-1 flex items-center gap-2'
+                        className='whitespace-nowrap overflow-hidden text-base relative z-10 flex-1 flex items-center gap-2'
                         initial={{
                           width: 'auto',
                         }}
@@ -448,7 +451,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                           width: 'auto',
                         }}
                       >
-                        <span className='select-none'>{item.label}</span>
+                        <span className='select-none '>{item.label}</span>
                         {item.href === '/plugins' && (
                           <>
                             {pluginsLoading &&
@@ -533,11 +536,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
               variant='light'
               color='primary'
               onPress={() => {
-                localStorage.removeItem('userId')
-                localStorage.removeItem('accessToken')
-                localStorage.removeItem('refreshToken')
-                toast.success('退出登录成功！')
-                navigate('/login')
+                setShowsingOut(true)
               }}
             >
               退出登录
@@ -549,7 +548,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
       {/* 移动端遮罩层 */}
       {!isNotSmallScreen && isOpen && (
         <motion.div
-          className='z-[49] fixed inset-0 bg-black/30 dark:bg-black/70'
+          className='z-[49] fixed inset-0'
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -557,6 +556,49 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
           onClick={onToggle}
         />
       )}
+
+      {/* 删除注销登录弹窗 */}
+      <Modal
+        isOpen={showsingOut}
+        size='sm'
+      >
+        <ModalContent>
+          <ModalHeader>
+            <h3 className='text-lg font-semibold'>确认注销登录</h3>
+          </ModalHeader>
+          <ModalBody>
+            <p className='text-sm text-default-600'>
+              您确定要注销登录吗？
+              <br />
+              注销后需重新登录才可进入
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <div className='flex gap-2'>
+              <Button
+                color='default'
+                variant='light'
+                onPress={() => setShowsingOut(false)}
+              >
+                取消
+              </Button>
+              <Button
+                color='danger'
+                onPress={() => {
+                  localStorage.removeItem('userId')
+                  localStorage.removeItem('accessToken')
+                  localStorage.removeItem('refreshToken')
+                  toast.success('退出登录成功！')
+                  navigate('/login')
+                  setShowsingOut(false)
+                }}
+              >
+                确认
+              </Button>
+            </div>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   )
 }
