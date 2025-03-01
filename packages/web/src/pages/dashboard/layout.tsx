@@ -1,6 +1,6 @@
 import Sidebar from '@/components/sidebar.tsx'
 import { Outlet, useLocation } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import clsx from 'clsx'
 import { IoMenu } from 'react-icons/io5'
@@ -18,26 +18,86 @@ function getMainPath (pathname: string): string {
 }
 
 export default function DashboardLayout () {
-  const [isOpen, setIsOpen] = useState(true)
+  const [touchStartX, setTouchStartX] = useState(0)
+  const [isOpen, setIsOpen] = useState(false)
   const isNotSmallScreen = useMediaQuery({ minWidth: 768 })
   const location = useLocation()
   const title = getPageTitle(location.pathname)
 
   const [currentMainPath, setCurrentMainPath] = useState(getMainPath(location.pathname))
+  const [touchStartY, setTouchStartY] = useState(0)
+  const [touchStartTime, setTouchStartTime] = useState(0)
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (isNotSmallScreen) return
+    const touch = e.touches[0]
+    setTouchStartX(touch.clientX)
+    setTouchStartY(touch.clientY)
+    setTouchStartTime(Date.now())
+  }, [isNotSmallScreen])
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (isNotSmallScreen || isOpen) return
+
+    const touch = e.touches[0]
+    if (!touch) return
+
+    // 计算滑动速度和方向
+    const deltaX = touch.clientX - touchStartX
+    const deltaY = Math.abs(touch.clientY - touchStartY)
+    const velocityX = Math.abs(deltaX) / (Date.now() - touchStartTime)
+
+    // console.log('滑动参数:', {
+    //   deltaX,
+    //   deltaY,
+    //   velocity: velocityX.toFixed(2),
+    //   direction: deltaX > 0 ? 'right' : 'left'
+    // })
+
+    // 触发条件
+    if (
+      deltaX > 35 && // 滑动距离
+      deltaY < 50 && // 垂直容差
+      velocityX > 0.5 && // 滑动速度
+      deltaX > Math.abs(deltaY) * 1.5 // 横向主导
+    ) {
+      // console.log('✅ 全屏滑动触发')
+      setIsOpen(true)
+    }
+  }, [isNotSmallScreen, isOpen, touchStartX, touchStartY, touchStartTime])
+
+  useEffect(() => {
+    // 大屏幕默认展开侧边栏
+    if (isNotSmallScreen) {
+      setIsOpen(true)
+    }
+  }, [isNotSmallScreen])
 
   useEffect(() => {
     setCurrentMainPath(getMainPath(location.pathname))
   }, [location])
 
   return (
-    <div className='relative flex h-screen w-full overflow-hidden'>
+    <div
+      className='relative flex h-screen w-full overflow-hidden'
+      style={{
+        height: '100dvh'
+      }}
+    >
       {/* 侧边栏 */}
       <Sidebar isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} />
 
       {/* 主内容区域 */}
       <motion.main
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={() => setTouchStartX(0)}
+        style={{
+          touchAction: 'manipulation',
+          WebkitOverflowScrolling: 'touch'
+        }}
         className={clsx(
-          'overflow-y-auto flex flex-col',
+          'overflow-y-auto flex flex-col  touch-auto',
           isNotSmallScreen ? 'flex-1' : 'w-full'
         )}
         initial={false}

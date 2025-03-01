@@ -98,8 +98,9 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
         <motion.div
           className={clsx(
             'h-full bg-background/80 backdrop-blur-md border-r border-divider',
-            'flex flex-col gap-6 overflow-hidden pt-4'
+            'flex flex-col gap-6 overflow-hidden pt-4 touch-none'
           )}
+          onTouchStart={(e) => e.stopPropagation()} // 阻止事件冒泡
         >
 
           {/* Logo 相关代码 */}
@@ -548,7 +549,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
       {/* 移动端遮罩层 */}
       {!isNotSmallScreen && isOpen && (
         <motion.div
-          className='z-[49] fixed inset-0'
+          className='z-[49] fixed inset-0 touch-none'
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -560,7 +561,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
       {/* 删除注销登录弹窗 */}
       <Modal
         isOpen={showsingOut}
-        size='sm'
+        size='lg'
       >
         <ModalContent>
           <ModalHeader>

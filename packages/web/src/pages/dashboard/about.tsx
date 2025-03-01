@@ -1,73 +1,121 @@
+'use client'
+
 import { useEffect, useState } from 'react'
-import { Code, Github, MessageCircle, Star, GitPullRequest, GitFork, MessageSquare, Users, Sparkles, Zap, Heart, Target, Code2, Puzzle, LayoutDashboard, GitBranch, GitCommit, Tag } from 'lucide-react'
+import {
+  Code,
+  Github,
+  MessageCircle,
+  Star,
+  GitPullRequest,
+  GitFork,
+  MessageSquare,
+  Users,
+  Sparkles,
+  Zap,
+  Heart,
+  Target,
+  Code2,
+  Puzzle,
+  LayoutDashboard,
+  GitBranch,
+  GitCommit,
+  Tag,
+  Eye,
+  MessageSquareText,
+  Clock,
+  BookOpen,
+  FileCode2,
+  GitMerge,
+  GitPullRequestClosed,
+} from 'lucide-react'
 import { Button } from '@heroui/button'
 import axios from 'axios'
 import { useInView } from 'react-intersection-observer'
 import CountUp from '@/components/CountUp'
 import { Tooltip } from '@heroui/tooltip'
 import { motion } from 'framer-motion'
-import { useRequest } from 'ahooks'
-import { KarinStatus } from '@/types/server'
-import { request } from '@/lib/request'
 import toast from 'react-hot-toast'
 import { Skeleton } from '@heroui/skeleton'
+import { testGithub } from '@/lib/test-url'
 
 interface RepoStats {
   stars: number
   forks: number
-  pullRequests: number
+  openIssues: number
+  closedIssues: number
+  watchers: number
   contributors: Array<{
     avatar_url: string
     login: string
     html_url: string
   }>
   lastCommit: Date
-  latestRelease: string
+  latestRelease: {
+    name: string
+    tag_name: string
+    published_at: string
+  }
+  license: string
+  discussions: number
+  description: string
+  language: string
+  openPullRequests: number
+  mergedPullRequests: number
+  closedPullRequests: number
 }
 
 /**
- * 获取npm包的基本信息
- * @param name npm包名
+ * 计算时间差
+ * @param dateString ISO格式的时间字符串
+ * @returns 格式化的时间差
  */
-const getPackageInfo = async (name: string) => {
-  const registry = [
-    'https://registry.npmjs.org',
-    'https://registry.npmmirror.com',
-  ]
+const timeAgo = (dateString: string): string => {
+  const now = new Date()
+  const past = new Date(dateString)
+  const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000)
 
-  const registryList = registry.map((item) => `${item}/${name}`)
+  if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`
 
-  try {
-    const registryResult = await Promise.race(registryList.map((item) => axios.get(item, { timeout: 5000 })))
+  const diffInMinutes = Math.floor(diffInSeconds / 60)
+  if (diffInMinutes < 60) return `${diffInMinutes} ${diffInMinutes === 1 ? 'minute' : 'minutes'} ago`
 
-    if (registryResult.status === 200) {
-      /** 最新版本 */
-      const latest = registryResult.data['dist-tags'].latest
-      /** 包大小 */
-      const size = registryResult.data.versions[latest].dist.unpackedSize
-      /** 更新时间: 2025-02-07T07:02:10.971Z 格式为 ISO 8601 */
-      const updated = registryResult.data.time.modified
+  const diffInHours = Math.floor(diffInMinutes / 60)
+  if (diffInHours < 24) return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`
 
-      return { version: latest, size, updated }
-    }
-  } catch (error) {
-    const { data } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'))
-    return { version: data?.version, size: 0, updated: '' }
-  }
+  const diffInDays = Math.floor(diffInHours / 24)
+  if (diffInDays < 30) return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`
+
+  const diffInMonths = Math.floor(diffInDays / 30)
+  if (diffInMonths < 12) return `${diffInMonths} ${diffInMonths === 1 ? 'month' : 'months'} ago`
+
+  const diffInYears = Math.floor(diffInMonths / 12)
+  return `${diffInYears} ${diffInYears === 1 ? 'year' : 'years'} ago`
 }
 
 const AboutUs = () => {
   const [repoStats, setRepoStats] = useState<RepoStats>({
     stars: 0,
     forks: 0,
-    pullRequests: 0,
+    openIssues: 0,
+    closedIssues: 0,
+    watchers: 0,
     contributors: [],
     lastCommit: new Date(),
-    latestRelease: 'N/A',
+    latestRelease: {
+      name: 'N/A',
+      tag_name: 'N/A',
+      published_at: new Date().toISOString(),
+    },
+    license: 'MIT',
+    discussions: 0,
+    description: '',
+    language: 'TypeScript',
+    openPullRequests: 0,
+    mergedPullRequests: 0,
+    closedPullRequests: 0,
   })
 
   const [hasRepoData, sethasRepoData] = useState<boolean>(false)
-
   const { ref: statsRef, inView: statsInView } = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -81,21 +129,73 @@ const AboutUs = () => {
   useEffect(() => {
     const fetchRepoStats = async () => {
       try {
-        const [repoData, contributorsData, commitsData] = await Promise.all([
-          axios.get('https://api.github.com/repos/KarinJS/Karin'),
-          axios.get('https://api.github.com/repos/KarinJS/Karin/contributors?per_page=50'),
-          axios.get('https://api.github.com/repos/KarinJS/Karin/commits?per_page=1'),
+        /** Github RAW代理 */
+        const proxyFn = await testGithub()
+
+        const [
+          repoData,
+          commitsData,
+          contributorsData,
+          discussionsData,
+          latestReleaseData,
+          licenseData,
+          watchData,
+          issuesOpenData,
+          issuesClosedData,
+          pullsOpenData,
+          pullsClosedData,
+        ] = await Promise.all([
+          /** 获取仓库状态 */
+          axios.get(proxyFn('https://raw.githubusercontent.com/KarinJS/repo-status/main/data/Karin.json')),
+          /** 提交信息 */
+          axios.get(proxyFn('https://raw.githubusercontent.com/KarinJS/repo-status/main/data/commits.json')),
+          /** 贡献者信息 */
+          axios.get(proxyFn('https://raw.githubusercontent.com/KarinJS/repo-status/main/data/contributors.json')),
+          /** 仓库讨论信息 */
+          axios.get(proxyFn('https://raw.githubusercontent.com/KarinJS/repo-status/main/data/discussions.json')),
+          /** 最新版本 */
+          axios.get(proxyFn('https://raw.githubusercontent.com/KarinJS/repo-status/main/data/releases.json')),
+          /** 许可证信息 */
+          axios.get(proxyFn('https://raw.githubusercontent.com/KarinJS/repo-status/main/data/license.json')),
+          /** 关注 */
+          axios.get(proxyFn('https://raw.githubusercontent.com/KarinJS/repo-status/main/data/subscribers.json')),
+          /** issues打开信息 */
+          axios.get(proxyFn('https://raw.githubusercontent.com/KarinJS/repo-status/main/data/issue_open.json')),
+          /** issues关闭信息 */
+          axios.get(proxyFn('https://raw.githubusercontent.com/KarinJS/repo-status/main/data/issue_closed.json')),
+          /** pr打开信息 */
+          axios.get(proxyFn('https://raw.githubusercontent.com/KarinJS/repo-status/main/data/pr_open.json')),
+          /** pr关闭信息 */
+          axios.get(proxyFn('https://raw.githubusercontent.com/KarinJS/repo-status/main/data/pr_closed.json')),
         ])
 
-        const npmData = await getPackageInfo('node-karin')
+        const openIssues = issuesOpenData.data.length
+        const closedIssues = issuesClosedData.data.length
+
+        const openPullRequests = pullsOpenData.data.length
+        const mergedPullRequests = pullsClosedData.data.length
+        const closedPullRequests = pullsClosedData.data.length
 
         setRepoStats({
           stars: repoData.data.stargazers_count,
           forks: repoData.data.forks_count,
-          pullRequests: repoData.data.open_issues_count,
+          openIssues,
+          closedIssues,
+          watchers: watchData.data.length,
           contributors: contributorsData.data,
           lastCommit: new Date(commitsData.data[0].commit.author.date),
-          latestRelease: npmData?.version || 'N/A',
+          latestRelease: {
+            name: latestReleaseData.data[0]?.name || 'Initial Release',
+            tag_name: latestReleaseData.data[0]?.tag_name || 'v0.1.0',
+            published_at: latestReleaseData.data[0]?.published_at || new Date().toISOString(),
+          },
+          license: licenseData.data.license?.name || 'MIT',
+          discussions: discussionsData.data.length,
+          description: repoData.data.description || '开源 NodeJS 机器人框架，让机器人开发变得简单有趣',
+          language: repoData.data.language || 'TypeScript',
+          openPullRequests,
+          mergedPullRequests,
+          closedPullRequests,
         })
         sethasRepoData(true)
       } catch (error) {
@@ -127,8 +227,8 @@ const AboutUs = () => {
   return (
     <div className='min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white'>
       {/* 首屏 */}
-      <section className='py-16 md:py-24 overflow-hidden relative'>
-        <div className='container mx-auto px-4 relative'>
+      <section className='py-14 overflow-hidden relative'>
+        <div className='container mx-auto px-8 relative'>
           <div className='max-w-7xl mx-auto'>
             <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 items-center'>
               <motion.div
@@ -186,71 +286,275 @@ const AboutUs = () => {
 
               <motion.div
                 ref={statsRef}
-                className='grid gap-4'
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <div className='grid gap-4 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2'>
-                  {[
-                    {
-                      icon: <Star className='h-5 w-5' />,
-                      label: 'Stars',
-                      value: hasRepoData ? repoStats.stars : 'N/A',
-                      color: 'text-yellow-500',
-                    },
-                    {
-                      icon: <GitFork className='h-5 w-5' />,
-                      label: 'Forks',
-                      value: hasRepoData ? repoStats.forks : 'N/A',
-                      color: 'text-blue-500',
-                    },
-                    {
-                      icon: <GitPullRequest className='h-5 w-5' />,
-                      label: 'PRs',
-                      value: hasRepoData ? repoStats.pullRequests : 'N/A',
-                      color: 'text-green-500',
-                    },
-                    {
-                      icon: <Users className='h-5 w-5' />,
-                      label: '贡献者',
-                      value: hasRepoData ? repoStats.contributors.length : 'N/A',
-                      color: 'text-primary-500',
-                    },
-                    {
-                      icon: <GitCommit className='h-5 w-5' />,
-                      label: '最后提交',
-                      value: hasRepoData ? repoStats.lastCommit.toISOString().split('T')[0] : 'N/A',
-                      color: 'text-purple-500',
-                    },
-                    {
-                      icon: <Tag className='h-5 w-5' />,
-                      label: '最新版本',
-                      value: hasRepoData ? repoStats.latestRelease : 'N/A',
-                      color: 'text-pink-500',
-                    },
-                  ].map((stat, index) => (
-                    <motion.div
-                      key={index}
-                      className='bg-white dark:bg-black p-4 rounded-lg flex items-center space-x-3 shadow-sm border border-gray-200 dark:border-gray-800 hover:border-primary-500'
-                      whileHover={{ y: -5 }}
-                      transition={{ type: 'spring', stiffness: 300 }}
-                    >
-                      <div className={`${stat.color}`}>{stat.icon}</div>
-                      <div>
-                        <div className='text-2xl font-bold select-none'>
-                          {typeof stat.value === 'number'
-                            ? (
-                              <CountUp from={0} to={stat.value} separator=',' duration={2} />
-                            )
-                            : (
-                              stat.value
-                            )}
-                        </div>
-                        <div className='text-sm text-gray-600 dark:text-gray-400 select-none'>{stat.label}</div>
+                {/* GitHub-style repository card */}
+                <div className='border dark:border-gray-800 rounded-lg overflow-hidden bg-white dark:bg-neutral-900 shadow-sm'>
+                  {/* Header */}
+                  <div className='border-b dark:border-gray-800 p-4'>
+                    <div className='flex items-center'>
+                      <div className='min-w-10 min-h-10 rounded-md bg-primary-100 flex items-center justify-center text-primary-600 mr-3'>
+                        <Code2 className='w-6 h-6' />
                       </div>
-                    </motion.div>
-                  ))}
+                      <div>
+                        <h3 className='text-xl font-semibold flex items-center'>
+                          <span>KarinJS / </span>
+                          <span className='font-bold text-primary-500'>Karin</span>
+                        </h3>
+                        <p className='text-sm text-gray-600 dark:text-gray-400'>
+                          {hasRepoData ? repoStats.description : '开源 NodeJS 机器人框架，让机器人开发变得简单有趣'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Stats */}
+                  <div className='p-4'>
+                    <div className='flex flex-wrap gap-4'>
+                      <div className='flex items-center'>
+                        <div className='flex items-center text-gray-700 dark:text-gray-300'>
+                          <Star className='w-4 h-4 mr-1' fill='currentColor' />
+                          <span className='font-semibold mr-1'>
+                            {hasRepoData
+                              ? (
+                                <CountUp from={0} to={repoStats.stars} separator=',' duration={2} />
+                              )
+                              : (
+                                <Skeleton className='w-8 h-4' />
+                              )}
+                          </span>
+                          <span className='text-gray-600 dark:text-gray-400 text-sm'>stars</span>
+                        </div>
+                      </div>
+
+                      <div className='flex items-center'>
+                        <div className='flex items-center text-gray-700 dark:text-gray-300'>
+                          <GitFork className='w-4 h-4 mr-1' />
+                          <span className='font-semibold mr-1'>
+                            {hasRepoData
+                              ? (
+                                <CountUp from={0} to={repoStats.forks} separator=',' duration={2} />
+                              )
+                              : (
+                                <Skeleton className='w-8 h-4' />
+                              )}
+                          </span>
+                          <span className='text-gray-600 dark:text-gray-400 text-sm'>forks</span>
+                        </div>
+                      </div>
+
+                      <div className='flex items-center'>
+                        <div className='flex items-center text-gray-700 dark:text-gray-300'>
+                          <Eye className='w-4 h-4 mr-1' />
+                          <span className='font-semibold mr-1'>
+                            {hasRepoData
+                              ? (
+                                <CountUp from={0} to={repoStats.watchers} separator=',' duration={2} />
+                              )
+                              : (
+                                <Skeleton className='w-8 h-4' />
+                              )}
+                          </span>
+                          <span className='text-gray-600 dark:text-gray-400 text-sm'>watchers</span>
+                        </div>
+                      </div>
+
+                      <div className='flex items-center'>
+                        <div className='flex items-center text-gray-700 dark:text-gray-300'>
+                          <GitPullRequest className='w-4 h-4 mr-1' />
+                          <span className='font-semibold mr-1'>
+                            {hasRepoData
+                              ? (
+                                <CountUp from={0} to={repoStats.openIssues} separator=',' duration={2} />
+                              )
+                              : (
+                                <Skeleton className='w-8 h-4' />
+                              )}
+                          </span>
+                          <span className='text-gray-600 dark:text-gray-400 text-sm'>open issues</span>
+                        </div>
+                      </div>
+
+                      {hasRepoData && repoStats.discussions > 0 && (
+                        <div className='flex items-center'>
+                          <div className='flex items-center text-gray-700 dark:text-gray-300'>
+                            <MessageSquareText className='w-4 h-4 mr-1' />
+                            <span className='font-semibold mr-1'>
+                              <CountUp from={0} to={repoStats.discussions} separator=',' duration={2} />
+                            </span>
+                            <span className='text-gray-600 dark:text-gray-400 text-sm'>discussions</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Additional stats */}
+                    <div className='mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                      <div className='border dark:border-gray-800 rounded-md p-3'>
+                        <div className='text-sm font-medium mb-2'>Issues</div>
+                        <div className='flex flex-col xs:flex-row items-start xs:items-center xs:justify-between space-y-2 xs:space-y-0'>
+                          <div className='flex items-center text-sm'>
+                            <GitPullRequestClosed className='w-4 h-4 mr-2 text-green-500 flex-shrink-0' />
+                            <span className='truncate'>
+                              Closed: {hasRepoData ? <CountUp from={0} to={repoStats.closedIssues} separator=',' duration={2} /> : <Skeleton className='w-8 h-4' />}
+                            </span>
+                          </div>
+                          <div className='flex items-center text-sm'>
+                            <GitPullRequest className='w-4 h-4 mr-2 text-red-500 flex-shrink-0' />
+                            <span className='truncate'>
+                              Open: {hasRepoData ? <CountUp from={0} to={repoStats.openIssues} separator=',' duration={2} /> : <Skeleton className='w-8 h-4' />}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className='border dark:border-gray-800 rounded-md p-3'>
+                        <div className='text-sm font-medium mb-2'>Pull Requests</div>
+                        <div className='flex flex-col xs:flex-row items-start xs:items-center xs:justify-between space-y-2 xs:space-y-0'>
+                          <div className='flex items-center text-sm'>
+                            <GitMerge className='w-4 h-4 mr-2 text-purple-500 flex-shrink-0' />
+                            <span className='truncate'>
+                              Merged: {hasRepoData ? <CountUp from={0} to={repoStats.mergedPullRequests} separator=',' duration={2} /> : <Skeleton className='w-8 h-4' />}
+                            </span>
+                          </div>
+                          <div className='flex items-center text-sm'>
+                            <GitPullRequest className='w-4 h-4 mr-2 text-blue-500 flex-shrink-0' />
+                            <span className='truncate'>
+                              Open: {hasRepoData ? <CountUp from={0} to={repoStats.openPullRequests} separator=',' duration={2} /> : <Skeleton className='w-8 h-4' />}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* GitHub-style release section */}
+                    <div className='mt-4 border dark:border-gray-800 rounded-md overflow-hidden'>
+                      <div className='bg-gray-50 dark:bg-gray-900 px-3 py-2 border-b dark:border-gray-800 flex items-center justify-between'>
+                        <div className='flex items-center'>
+                          <Tag className='w-4 h-4 mr-2 text-gray-600 dark:text-gray-400' />
+                          <span className='text-sm font-medium'>Releases</span>
+                        </div>
+                      </div>
+
+                      <div className='p-3'>
+                        {hasRepoData
+                          ? (
+                            <div className='flex items-start'>
+                              <div className='flex-shrink-0 mt-1'>
+                                <Tag className='w-5 h-5 text-green-600 dark:text-green-400' />
+                              </div>
+                              <div className='ml-2'>
+                                <div className='flex items-center'>
+                                  <a
+                                    href={`https://github.com/KarinJS/Karin/releases/tag/${repoStats.latestRelease.tag_name}`}
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                    className='text-primary-500 font-semibold hover:underline'
+                                  >
+                                    {repoStats.latestRelease.name || repoStats.latestRelease.tag_name}
+                                  </a>
+                                  <span className='ml-2 text-xs px-1.5 py-0.5 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 rounded-full'>
+                                    Latest
+                                  </span>
+                                </div>
+                                <div className='flex items-center mt-1 text-xs text-gray-600 dark:text-gray-400'>
+                                  <span className='font-medium'>{repoStats.latestRelease.tag_name}</span>
+                                  <span className='mx-1'>•</span>
+                                  <Clock className='w-3 h-3 mr-1' />
+                                  <span>{timeAgo(repoStats.latestRelease.published_at)}</span>
+                                </div>
+                              </div>
+                            </div>
+                          )
+                          : (
+                            <div className='space-y-2'>
+                              <Skeleton className='w-full h-5' />
+                              <Skeleton className='w-2/3 h-4' />
+                            </div>
+                          )}
+                      </div>
+                    </div>
+
+                    {/* Additional GitHub-style sections */}
+                    <div className='mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                      <div className='border dark:border-gray-800 rounded-md p-3'>
+                        <div className='flex items-center text-sm font-medium mb-2'>
+                          <BookOpen className='w-4 h-4 mr-2 text-gray-600 dark:text-gray-400' />
+                          <span>About</span>
+                        </div>
+                        <div className='text-xs text-gray-600 dark:text-gray-400 space-y-2'>
+                          <div className='flex items-center'>
+                            <FileCode2 className='w-3.5 h-3.5 mr-2 flex-shrink-0' />
+                            <span className='truncate'>{hasRepoData ? repoStats.language : 'TypeScript'}</span>
+                          </div>
+                          <div className='flex items-center'>
+                            <GitCommit className='w-3.5 h-3.5 mr-2 flex-shrink-0' />
+                            <span className='truncate'>
+                              Last commit: {hasRepoData ? repoStats.lastCommit.toISOString().split('T')[0] : 'N/A'}
+                            </span>
+                          </div>
+                          <div className='flex items-center'>
+                            <Users className='w-3.5 h-3.5 mr-2 flex-shrink-0' />
+                            <span className='truncate'>
+                              {hasRepoData ? repoStats.contributors.length : '?'} contributors
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className='border dark:border-gray-800 rounded-md p-3'>
+                        <div className='flex items-center text-sm font-medium mb-2'>
+                          <GitBranch className='w-4 h-4 mr-2 text-gray-600 dark:text-gray-400' />
+                          <span>Repository</span>
+                        </div>
+                        <div className='space-y-2'>
+                          <Button
+                            as='a'
+                            href='https://github.com/KarinJS/Karin'
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            size='sm'
+                            variant='flat'
+                            radius='full'
+                            className='w-full text-xs h-8'
+                          >
+                            <Github className='w-3.5 h-3.5 mr-1.5' />
+                            View on GitHub
+                          </Button>
+                          <Button
+                            as='a'
+                            href='https://github.com/KarinJS/Karin/stargazers'
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            size='sm'
+                            variant='flat'
+                            radius='full'
+                            className='w-full text-xs h-8'
+                          >
+                            <Star className='w-3.5 h-3.5 mr-1.5' />
+                            Star
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className='mt-4 flex flex-wrap gap-2'>
+                      <span className='inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'>
+                        NodeJS
+                      </span>
+                      <span className='inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300'>
+                        TypeScript
+                      </span>
+                      <span className='inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300'>
+                        React
+                      </span>
+                      <span className='inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 dark:bg-green-900/50 dark:text-green-300'>
+                        {hasRepoData ? repoStats.license : 'MIT'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             </div>
@@ -258,9 +562,9 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* 功能介绍 */}
+      {/* 功能介绍 - 移动端友好的卡片布局 */}
       <section className='py-16 relative overflow-hidden' ref={featuresRef}>
-        <div className='container mx-auto px-8 relative'>
+        <div className='container mx-auto px-4 relative'>
           <div className='max-w-7xl mx-auto'>
             <motion.div
               className='text-center mb-16'
@@ -277,61 +581,75 @@ const AboutUs = () => {
             </motion.div>
 
             <motion.div
-              className='grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-8'
+              className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4'
               variants={container}
               initial='hidden'
               animate={featuresInView ? 'show' : 'hidden'}
             >
               {[
                 {
-                  icon: <Zap className='h-10 w-10 text-yellow-500' />,
+                  icon: <Zap className='h-6 w-6 text-yellow-500' />,
                   title: '🚀 轻量 · 高效',
-                  description: '极简设计，资源占用少，让你的机器人运行更流畅。',
+                  description: '极简设计，资源占用少',
                 },
                 {
-                  icon: <Target className='h-10 w-10 text-green-500' />,
+                  icon: <Target className='h-6 w-6 text-green-500' />,
                   title: '🎯 简单 · 强大',
-                  description: '5分钟即可上手，内置丰富的功能，让开发过程充满乐趣。',
+                  description: '5分钟即可上手开发',
                 },
                 {
-                  icon: <Code2 className='h-10 w-10 text-blue-500' />,
-                  title: '💪 TypeScript 加持',
-                  description: '基于 TypeScript 构建，代码提示完善，告别烦人的类型错误。',
+                  icon: <Code2 className='h-6 w-6 text-blue-500' />,
+                  title: '💪 TypeScript',
+                  description: '完善的类型支持',
                 },
                 {
-                  icon: <Puzzle className='h-10 w-10 text-purple-500' />,
-                  title: '🎨 模块化插件系统',
-                  description: '插件配置简单，即插即用，轻松扩展功能。',
+                  icon: <Puzzle className='h-6 w-6 text-purple-500' />,
+                  title: '🎨 模块化',
+                  description: '插件配置简单易用',
                 },
                 {
-                  icon: <LayoutDashboard className='h-10 w-10 text-indigo-500' />,
-                  title: '🔧 可视化管理',
-                  description: '提供 Web 管理界面，可视化操作，提升开发体验。',
+                  icon: <LayoutDashboard className='h-6 w-6 text-indigo-500' />,
+                  title: '🔧 可视化',
+                  description: 'Web 管理界面',
                 },
                 {
-                  icon: <GitBranch className='h-10 w-10 text-pink-500' />,
+                  icon: <GitBranch className='h-6 w-6 text-pink-500' />,
                   title: '🌟 持续进化',
-                  description: '正处于积极开发阶段，持续添加新功能，欢迎参与贡献。',
+                  description: '欢迎参与贡献',
                 },
               ].map((feature, index) => (
                 <motion.div
                   key={index}
-                  className='bg-white dark:bg-black rounded-xl overflow-hidden shadow-sm hover:shadow-lg border border-gray-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500 group'
+                  className='bg-white dark:bg-black rounded-lg overflow-hidden shadow-sm border border-gray-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500 group'
                   variants={item}
                   whileHover={{ y: -5, transition: { type: 'spring', stiffness: 300, damping: 10 } }}
                   transition={{ duration: 0.2 }}
                 >
-                  <div className='h-2 bg-primary-500' />
-                  <div className='p-6'>
-                    <div className='rounded-full w-16 h-16 flex items-center justify-center bg-gray-100 dark:bg-gray-900 mb-6 group-hover:scale-110 transition-transform'>
+                  <div className='h-1 bg-primary-500' />
+                  <div className='p-4'>
+                    <div className='rounded-full w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-gray-900 mb-3 group-hover:scale-110 transition-transform'>
                       {feature.icon}
                     </div>
-                    <h3 className='text-xl font-bold mb-3'>{feature.title}</h3>
-                    <p className='text-gray-600 dark:text-gray-400'>{feature.description}</p>
+                    <h3 className='text-base font-bold mb-1'>{feature.title}</h3>
+                    <p className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>{feature.description}</p>
                   </div>
                 </motion.div>
               ))}
             </motion.div>
+
+            {/* 添加查看更多功能特性的按钮 */}
+            <div className='mt-8 text-center'>
+              <Button
+                as='a'
+                href='https://docs.karin.fun/features'
+                color='primary'
+                variant='flat'
+                radius='full'
+                className='group'
+              >
+                查看更多特性
+              </Button>
+            </div>
           </div>
         </div>
       </section>
@@ -383,11 +701,10 @@ const AboutUs = () => {
                         <img
                           src={contributor.avatar_url || 'https://avatar.vercel.sh/0'}
                           alt={contributor.login}
-                          className='relative w-16 h-16 rounded-full border-2 border-white dark:border-gray-800 group-hover:border-primary-500 transition-colors'
+                          className='relative w-12 h-12 rounded-full border-2 border-white dark:border-gray-800 group-hover:border-primary-500 transition-colors'
                         />
                       </div>
                     </Tooltip>
-
                   </motion.a>
                 ))
                 : Array.from({ length: 10 }).map((_, index) => (
@@ -400,7 +717,7 @@ const AboutUs = () => {
                     transition={{ duration: 0.2 }}
                     viewport={{ once: true }}
                   >
-                    <Skeleton className='w-16 h-16 rounded-full' />
+                    <Skeleton className='w-12 h-12 rounded-full' />
                   </motion.div>
                 ))}
             </motion.div>
@@ -427,8 +744,8 @@ const AboutUs = () => {
                 <h2 className='text-3xl md:text-4xl font-bold'>关于 Karin</h2>
                 <div className='space-y-4 text-gray-600 dark:text-gray-400'>
                   <p>
-                    Karin 机器人框架是一个始于 2023 年的开源项目，由一群热爱机器人技术的开发者发起。该框架基于 Node.js 开发，使用
-                    TypeScript + React 构建，旨在降低机器人开发的门槛。
+                    Karin 机器人框架是一个始于 2023 年的开源项目，由一群热爱机器人技术的开发者发起。该框架基于 Node.js
+                    开发，使用 TypeScript + React 构建，旨在降低机器人开发的门槛。
                   </p>
                   <p>
                     通过提供一套完整的工具链和丰富的文档，我们希望让更多人能够参与到机器人技术的创新中来，无论是教育、研究还是商业应用场景下，都能借助这个框架轻松开展机器人相关的开发工作。
@@ -448,7 +765,7 @@ const AboutUs = () => {
                   <MessageCircle className='h-8 w-8 text-primary-500 mb-4' />
                   <h3 className='text-xl font-bold mb-2'>社区交流</h3>
                   <p className='text-gray-600 dark:text-gray-400 mb-4'>加入我们的用户交流群，与其他开发者分享经验。</p>
-                  <div className='space-x-3'>
+                  <div className='gap-2 grid grid-cols-2'>
                     <Button as='a' href='#' size='sm' variant='shadow' color='secondary' radius='full'>
                       Discord
                     </Button>
@@ -482,6 +799,7 @@ const AboutUs = () => {
                     variant='shadow'
                     radius='full'
                     color='primary'
+                    fullWidth
                   >
                     提交 Issue
                   </Button>
