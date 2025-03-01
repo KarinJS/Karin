@@ -38,7 +38,6 @@ const ConfigPage: React.FC = () => {
         type: activeTab.toString(),
       })
 
-
       setConfigStructure(res.struct)
       // 检查是否有section类型的字段
       setHasSections(res.struct.some(field => field.type === 'section'))
@@ -97,41 +96,41 @@ const ConfigPage: React.FC = () => {
   }
 
   return (
-    <section className="pt-20 md:pt-8">
-      <div className="max-w-2xl mx-auto flex items-center sticky top-0 z-20 bg-content1 rounded-b-3xl bg-opacity-50 backdrop-blur-md py-4 px-2 overflow-hidden mb-4 gap-2">
+    <section>
+      <div className='max-w-2xl mx-auto flex items-center sticky top-0 z-20 bg-content1 rounded-b-3xl bg-opacity-50 backdrop-blur-md py-4 px-2 overflow-hidden mb-4 gap-2'>
         <Tabs
-          className="w-auto flex flex-shrink flex-grow overflow-x-auto"
+          className='w-auto flex flex-shrink flex-grow overflow-x-auto'
           selectedKey={activeTab}
           onSelectionChange={setActiveTab}
-          radius="full"
+          radius='full'
         >
-          <Tab key="config" title="基础配置" />
-          <Tab key="adapter" title="适配器" />
-          <Tab key="groups" title="群聊和频道" />
-          <Tab key="privates" title="好友和频道私信" />
-          <Tab key="render" title="渲染配置" />
-          <Tab key="pm2" title="pm2配置" />
-          <Tab key="redis" title="redis配置" />
-          <Tab key="env" title="环境变量" />
+          <Tab key='config' title='基础配置' />
+          <Tab key='adapter' title='适配器' />
+          <Tab key='groups' title='群聊和频道' />
+          <Tab key='privates' title='好友和频道私信' />
+          <Tab key='render' title='渲染配置' />
+          <Tab key='pm2' title='pm2配置' />
+          <Tab key='redis' title='redis配置' />
+          <Tab key='env' title='环境变量' />
         </Tabs>
-        <div className="flex gap-2 ml-auto flex-grow-0 flex-shrink-0 items-center">
+        <div className='flex gap-2 ml-auto flex-grow-0 flex-shrink-0 items-center'>
           {hasSections && (
             <Button
               color={expandedSections.size > 0 ? 'primary' : 'default'}
               startContent={<MdUnfoldLess />}
-              radius="full"
-              size="sm"
-              variant="flat"
+              radius='full'
+              size='sm'
+              variant='flat'
               onPress={toggleAllSections}
             >
               {expandedSections.size > 0 ? '全部折叠' : '全部展开'}
             </Button>
           )}
           <Button
-            color="primary"
+            color='primary'
             startContent={<MdSave />}
             isLoading={loading}
-            radius="full"
+            radius='full'
             onPress={() => handleSubmit(onSubmit)()}
           >
             保存
@@ -139,25 +138,27 @@ const ConfigPage: React.FC = () => {
         </div>
       </div>
 
-      {configStructure.length === 0 ? (
-        <div className="max-w-2xl mx-auto flex items-center justify-center h-96">
-          <Spinner className="mx-auto" />
-        </div>
-      ) : (
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="max-w-2xl mx-auto flex flex-col gap-4 px-2 pb-10"
-        >
-          <DynamicForm
-            register={register}
-            control={control}
-            errors={errors}
-            formConfig={configStructure}
-            expandedSections={expandedSections}
-            setExpandedSections={setExpandedSections}
-          />
-        </form>
-      )}
+      {configStructure.length === 0
+        ? (
+          <div className='max-w-2xl mx-auto flex items-center justify-center h-96'>
+            <Spinner className='mx-auto' />
+          </div>
+        )
+        : (
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className='max-w-2xl mx-auto flex flex-col gap-4 px-2 pb-10'
+          >
+            <DynamicForm
+              register={register}
+              control={control}
+              errors={errors}
+              formConfig={configStructure}
+              expandedSections={expandedSections}
+              setExpandedSections={setExpandedSections}
+            />
+          </form>
+        )}
     </section>
   )
 }

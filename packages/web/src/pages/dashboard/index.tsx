@@ -263,7 +263,7 @@ function ControlButtons () {
 
 export default function IndexPage () {
   return (
-    <section className='flex flex-col gap-4 pt-20 md:pt-8'>
+    <section className='flex flex-col gap-4'>
       <Card shadow='sm'>
         <CardHeader className='px-6 pt-6 pb-0'>
           <div
