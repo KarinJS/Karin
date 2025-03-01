@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import type React from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button } from '@heroui/button'
 import DynamicForm from '@/components/dynamic_form'
-import { FormField } from '@/types/config'
+import type { FormField } from '@/types/config'
 import { Spinner } from '@heroui/spinner'
 import { Tab, Tabs } from '@heroui/tabs'
 import toast from 'react-hot-toast'
 import { request } from '@/lib/request'
-import { Key } from '@react-types/shared'
+import type { Key } from '@react-types/shared'
 import { MdSave, MdUnfoldLess } from 'react-icons/md'
 
 // 动态表单组件
@@ -40,11 +41,9 @@ const ConfigPage: React.FC = () => {
 
       setConfigStructure(res.struct)
       // 检查是否有section类型的字段
-      setHasSections(res.struct.some(field => field.type === 'section'))
+      setHasSections(res.struct.some((field) => field.type === 'section'))
       // 默认展开所有section
-      const sectionKeys = res.struct
-        .filter(field => field.type === 'section')
-        .map(field => field.key)
+      const sectionKeys = res.struct.filter((field) => field.type === 'section').map((field) => field.key)
       setExpandedSections(new Set(sectionKeys))
 
       reset(res.value)
@@ -65,13 +64,10 @@ const ConfigPage: React.FC = () => {
     }
     setLoading(true)
     try {
-      await request.serverPost<null, { type: string; data: Record<string, unknown> }>(
-        '/api/v1/config/set',
-        {
-          type: activeTab.toString(),
-          data,
-        },
-      )
+      await request.serverPost<null, { type: string; data: Record<string, unknown> }>('/api/v1/config/set', {
+        type: activeTab.toString(),
+        data,
+      })
       toast.success('保存配置成功')
       fetchConfig()
     } catch (error) {
@@ -88,16 +84,14 @@ const ConfigPage: React.FC = () => {
       setExpandedSections(new Set())
     } else {
       // 全部展开
-      const sectionKeys = configStructure
-        .filter(field => field.type === 'section')
-        .map(field => field.key)
+      const sectionKeys = configStructure.filter((field) => field.type === 'section').map((field) => field.key)
       setExpandedSections(new Set(sectionKeys))
     }
   }
 
   return (
     <section>
-      <div className='max-w-2xl mx-auto flex items-center sticky top-0 z-20 bg-content1 rounded-b-3xl bg-opacity-50 backdrop-blur-md py-4 px-2 overflow-hidden mb-4 gap-2'>
+      <div className='max-w-2xl mx-auto flex items-center sticky top-[53px] z-20 bg-content1 rounded-b-3xl bg-opacity-50 backdrop-blur-md py-4 px-2 overflow-hidden mb-4 gap-2'>
         <Tabs
           className='w-auto flex flex-shrink flex-grow overflow-x-auto'
           selectedKey={activeTab}
@@ -145,10 +139,7 @@ const ConfigPage: React.FC = () => {
           </div>
         )
         : (
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className='max-w-2xl mx-auto flex flex-col gap-4 px-2 pb-10'
-          >
+          <form onSubmit={handleSubmit(onSubmit)} className='max-w-2xl mx-auto flex flex-col gap-4 px-2 pb-10'>
             <DynamicForm
               register={register}
               control={control}
