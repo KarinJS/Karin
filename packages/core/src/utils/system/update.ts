@@ -52,18 +52,26 @@ export const checkPkgUpdate = async (name: string): Promise<
  * @param name 包名
  */
 export const getPkgVersion = async (name: string): Promise<string> => {
-  const { status, stdout, error } = await exec(`npm list ${name} --depth=0`)
-  if (status) {
-    if (error?.stack?.toString().includes('empty')) {
+  const { stdout, error } = await exec(`npm list ${name} --depth=0`)
+  if (stdout) {
+    const data = stdout.toString()
+    // node-karin@1.4.1 D:\\Github\\Karin-dev\\packages\\core\n└── @karinjs/plugin-basic@ extraneous
+    if (data.includes('empty') || data.includes('extraneous')) {
+      throw new Error(`获取失败，${name} 未安装`)
+    }
+    const reg = new RegExp(`${name}@(\\d+\\.\\d+\\.\\d+)`, 'gm')
+    const result = reg.exec(data)
+    if (result?.[1]) return result[1]
+  }
+
+  if (error) {
+    if (error?.stack?.toString().includes('empty') || error?.stack?.toString().includes('extraneous')) {
       throw new Error(`获取失败，${name} 未安装`)
     }
     throw error
   }
 
-  const reg = new RegExp(`${name}@(\\d+\\.\\d+\\.\\d+)`, 'gm')
-  const result = reg.exec(stdout.toString())
-  if (result?.[1]) return result[1]
-
+  /** 兜底 使用package.json中的版本号 */
   const pkg = await getPkg()
   return pkg?.dependencies?.[name] || pkg?.devDependencies?.[name] || pkg?.peerDependencies?.[name]
 }
@@ -78,7 +86,7 @@ export const getRemotePkgVersion = async (name: string, tag = 'latest') => {
 
   const { status, stdout, error } = await exec(cmd)
   if (!status) {
-    if (error?.stack?.toString().includes('empty')) {
+    if (error?.stack?.toString().includes('empty') || error?.stack?.toString().includes('extraneous')) {
       throw new Error(`获取失败，${name} 未安装`)
     }
     throw error
