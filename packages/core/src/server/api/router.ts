@@ -1,6 +1,5 @@
 import express, { Router } from 'express'
-
-import { authMiddleware } from '../middleware'
+import { authMiddleware } from '@/server/auth/middleware'
 
 /**
  * karin-api 路由

@@ -1,26 +1,33 @@
 import { router } from './router'
 import { listeners, statusListener } from '@/core/internal'
 import { createSuccessResponse } from '../utils/response'
+import {
+  WS_CLOSE_ONEBOT,
+  WS_CLOSE_PUPPETEER,
+  WS_CONNECTION_ONEBOT,
+  WS_CONNECTION_PUPPETEER
+} from '@/utils/fs/key'
 
 import type { SystemStatus } from '@/types/system/status'
 import type { RequestHandler } from 'express'
+import { isDev } from '@/env'
 
 const wsOneBotSet = new Set<WebSocket>()
 const wsPuppeteerSet = new Set<WebSocket>()
 
-listeners.on('ws:connection:onebot', (socket: WebSocket) => {
+listeners.on(WS_CONNECTION_ONEBOT, (socket: WebSocket) => {
   wsOneBotSet.add(socket)
 })
 
-listeners.on('ws:connection:puppeteer', (socket: WebSocket) => {
+listeners.on(WS_CONNECTION_PUPPETEER, (socket: WebSocket) => {
   wsPuppeteerSet.add(socket)
 })
 
-listeners.on('ws:close:onebot', (socket: WebSocket) => {
+listeners.on(WS_CLOSE_ONEBOT, (socket: WebSocket) => {
   wsOneBotSet.delete(socket)
 })
 
-listeners.on('ws:close:puppeteer', (socket: WebSocket) => {
+listeners.on(WS_CLOSE_PUPPETEER, (socket: WebSocket) => {
   wsPuppeteerSet.delete(socket)
 })
 
@@ -41,7 +48,7 @@ const statusRouter: RequestHandler = (_req, res) => {
     pm2_id: process.env.pm_id || '',
     uptime: process.uptime(),
     version: process.env.KARIN_VERSION,
-    karin_dev: process.env.NODE_ENV === 'development',
+    karin_dev: isDev(),
     karin_lang: process.env.RUNTIME === 'tsx' ? 'ts' : 'js',
     karin_runtime: process.env.RUNTIME,
   }

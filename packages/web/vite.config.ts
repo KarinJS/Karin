@@ -32,13 +32,7 @@ export default defineConfig({
     outDir: '../core/dist/web',
   },
   server: {
-    host: false,
-    hmr: {
-      overlay: true,
-    },
-    watch: {
-      usePolling: true,
-    },
+    host: true,
     proxy: {
       '/api': {
         target: 'http://localhost:7777',

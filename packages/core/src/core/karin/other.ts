@@ -1,5 +1,6 @@
 import { EventEmitter } from 'node:events'
 import { listeners } from '../internal'
+import { WS_CONNECTION } from '@/utils/fs/key'
 import { getAllBot, getAllBotList, getBot, getBotCount } from '@/service/bot'
 
 import type { WebSocket } from 'ws'
@@ -230,18 +231,12 @@ class Other extends EventEmitter {
  */
 const events = () => {
   /** ws建立新链接 */
-  listeners.on('ws:connection', (socket: WebSocket, request: IncomingMessage) => {
-    const key = `ws:connection:${request.url || '/'}`
-    debug(`on ws:connection host: ${request.headers.host} url: ${request.url}`)
-
-    /** 查询是否有对应的监听器在监听此key */
-    if (!other.listenerCount(key)) {
-      socket.close()
-      logger.warn(`[server][webSocket] 连接断开 未找到绑定的路由: ${request.url || '/'}`)
-      return
-    }
-
-    other.emit(key, socket, request)
+  listeners.on(WS_CONNECTION, (
+    socket: WebSocket,
+    request: IncomingMessage,
+    call: () => void
+  ) => {
+    other.emit(WS_CONNECTION, socket, request, call)
   })
 
   /** 文件发送变动 */

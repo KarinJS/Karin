@@ -83,9 +83,8 @@ export default function LoginPage () {
       toast.success('登录成功')
       navigate(from, { replace: true })
     } catch (error) {
-      const err = error as Error
-      console.error(err)
-      toast.error(`登录失败: ${err.message}`)
+      console.error(error)
+      toast.error(`登录失败: ${(error as Error).message}`)
     }
   }
 

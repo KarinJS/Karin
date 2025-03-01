@@ -1,6 +1,7 @@
 import { WebSocketRender } from './ws'
 import { render } from '@/utils/config/file/render'
 import { listeners } from '@/core/internal'
+import { WS_CONNECTION_PUPPETEER } from '@/utils/fs/key'
 import type { WebSocket } from 'ws'
 import type { IncomingMessage } from 'node:http'
 
@@ -40,7 +41,12 @@ export class WebSocketServerRenderer extends WebSocketRender {
   }
 }
 
-listeners.on('ws:connection:puppeteer', (socket: WebSocket, request: IncomingMessage) => {
+listeners.on(WS_CONNECTION_PUPPETEER, (
+  socket: WebSocket,
+  request: IncomingMessage,
+  call: () => void
+) => {
+  call()
   const server = new WebSocketServerRenderer(socket, request)
   if (!server.connection()) return
 

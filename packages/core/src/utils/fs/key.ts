@@ -6,3 +6,20 @@ export const SEND_MSG = 'karin:count:send'
 export const EVENT_COUNT = 'karin:count:fnc'
 /** 文件变动 */
 export const FILE_CHANGE = 'karin:file:change'
+/** 传递ws连接 */
+export const WS_CONNECTION = 'ws:connection'
+/** 传递onebot ws连接 */
+export const WS_CONNECTION_ONEBOT = 'ws:connection:onebot'
+/** 传递puppeteer ws连接 */
+export const WS_CONNECTION_PUPPETEER = 'ws:connection:puppeteer'
+/** 传递sandbox ws连接 */
+export const WS_CONNECTION_SANDBOX = 'ws:connection:sandbox'
+
+/** 传递ws关闭 */
+export const WS_CLOSE = 'ws:close'
+/** 传递onebot ws关闭 */
+export const WS_CLOSE_ONEBOT = 'ws:close:onebot'
+/** 传递puppeteer ws关闭 */
+export const WS_CLOSE_PUPPETEER = 'ws:close:puppeteer'
+/** 传递sandbox ws关闭 */
+export const WS_CLOSE_SANDBOX = 'ws:close:sandbox'

@@ -1,6 +1,7 @@
 import { listeners } from '@/core/internal'
-import { adapter } from '@/utils/config/file/adapter'
 import { registerHttpBot } from './post/register'
+import { WS_CONNECTION_ONEBOT } from '@/utils/fs/key'
+import { adapter } from '@/utils/config/file/adapter'
 import { AdapterServerOneBot11, HttpAdapterOneBot11 } from './connect'
 import { createOneBot11Client } from '@/adapter/onebot/connect/client'
 
@@ -11,7 +12,12 @@ export * from '@/adapter/onebot/types'
 export type { AdapterOneBot } from '@/adapter/onebot/core/base'
 
 const createServer = async () => {
-  listeners.on('ws:connection:onebot', (socket: WebSocket, request: IncomingMessage) => {
+  listeners.on(WS_CONNECTION_ONEBOT, (
+    socket: WebSocket,
+    request: IncomingMessage,
+    call: () => void
+  ) => {
+    call()
     new AdapterServerOneBot11(socket, request).init()
   })
 
