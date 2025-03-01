@@ -3,11 +3,9 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import clsx from 'clsx'
-import { IoMenu, IoClose } from 'react-icons/io5'
+import { IoMenu } from 'react-icons/io5'
 import { useMediaQuery } from 'react-responsive'
 import { getPageTitle } from '@/lib/utils'
-import { MdMenuOpen } from 'react-icons/md'
-import { Button } from '@heroui/button'
 import { RiMenuUnfold2Line } from 'react-icons/ri'
 
 export default function DashboardLayout () {
