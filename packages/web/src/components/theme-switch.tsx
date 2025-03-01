@@ -1,10 +1,12 @@
-import { FC, useState, useEffect, ReactNode } from 'react'
+import { useState, useEffect, ReactNode } from 'react'
 import { SwitchProps } from '@heroui/switch'
 import clsx from 'clsx'
 
 import { useTheme } from '@/hooks/use-theme'
 import { SunFilledIcon, MoonFilledIcon } from '@/components/icons'
 import { Button } from '@heroui/button'
+
+import type { FC } from 'react'
 
 export interface ThemeSwitchProps {
   className?: string
