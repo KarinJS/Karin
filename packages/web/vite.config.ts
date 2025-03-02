@@ -16,7 +16,7 @@ export default defineConfig({
     react(),
     tsconfigPaths(),
     reactScan(),
-    viteCompression({ deleteOriginFile: true }),
+    viteCompression({ deleteOriginFile: true, verbose: false }),
     viteStaticCopy({
       targets: [
         {

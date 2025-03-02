@@ -42,7 +42,7 @@ const getInstalledPlugins = async () => {
   }))
 }
 
-const defaultSiteConfig: SiteConfigType = {
+export const defaultSiteConfig: SiteConfigType = {
   name: 'KarinJS WebUI',
   description: 'KarinJS WebUI.',
   navItems: [

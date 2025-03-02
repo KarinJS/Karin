@@ -253,7 +253,6 @@ const resultValue = (
 export const getComponentValue = (options: ComponentConfig[]): DefaultValues => {
   const defaultValues: DefaultValues = {}
   options.forEach((option) => initValue(defaultValues, option))
-  console.log('defaultValues', defaultValues)
   return defaultValues
 }
 

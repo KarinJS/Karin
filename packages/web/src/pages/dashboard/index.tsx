@@ -69,13 +69,13 @@ function OnlineStatus () {
   return (
     <div className='ml-4 flex items-center gap-2'>
       <div className={clsx(
-        'rounded-full w-2 h-2',
+        'rounded-full w-3 h-3',
         error ? 'bg-danger' : 'bg-success'
       )}
       />
       <RotatingText
         texts={msg}
-        mainClassName='text-default-500 text-sm hover:text-primary transition-colors'
+        ClassName='px-3 sm:px-1 md:px-2 bg-primary-400 text-default-50 font-bold rounded-lg'
         staggerFrom='last'
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
@@ -104,7 +104,7 @@ function StatusItem ({ title, value }: StatusItemProps) {
           <IconComponent className='w-5 h-5 text-primary' />
           <p className='text-sm text-primary select-none'>{title}</p>
         </div>
-        <div className='mt-2 text-default-800 dark:text-default-200'>{value || '--'}</div>
+        <div className='mt-2 text-2xl text-default-800 font-mono font-bold'>{value || '--'}</div>
       </CardHeader>
     </Card>
   )
@@ -141,7 +141,7 @@ function Status () {
             <Counter
               className='flex items-center gap-0'
               value={Math.floor(data.uptime)}
-              fontSize={20}
+              fontSize={24}
               places={generatePlaces(Math.floor(data.uptime))}
             />
             <span>秒</span>
@@ -263,7 +263,7 @@ function ControlButtons () {
 
 export default function IndexPage () {
   return (
-    <section className='flex flex-col gap-4 pt-20 md:pt-8'>
+    <section className='flex flex-col gap-4'>
       <Card shadow='sm'>
         <CardHeader className='px-6 pt-6 pb-0'>
           <div
