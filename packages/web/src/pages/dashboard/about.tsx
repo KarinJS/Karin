@@ -37,6 +37,7 @@ import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { Skeleton } from '@heroui/skeleton'
 import { testGithub } from '@/lib/test-url'
+import ShinyText from '@/components/ShinyText'
 
 interface RepoStats {
   stars: number
@@ -521,7 +522,7 @@ const AboutUs = () => {
                             className='w-full text-xs h-8'
                           >
                             <Github className='w-3.5 h-3.5 mr-1.5' />
-                            View on GitHub
+                            <ShinyText text='View on GitHub' disabled={false} speed={4} />
                           </Button>
                           <Button
                             as='a'
@@ -534,7 +535,7 @@ const AboutUs = () => {
                             className='w-full text-xs h-8'
                           >
                             <Star className='w-3.5 h-3.5 mr-1.5' />
-                            Star
+                            <ShinyText text='Star' disabled={false} speed={4} />
                           </Button>
                         </div>
                       </div>
