@@ -70,10 +70,7 @@ export default function LoginPage () {
     resolver: zodResolver(loginSchema),
   })
 
-  const [showSplashCursor, setShowSplashCursor] = useState(() => {
-    const saved = localStorage.getItem(key.splashCursor)
-    return saved ? JSON.parse(saved) : true
-  })
+  const [showSplashCursor, setShowSplashCursor] = useState(false)
 
   /**
    * 登录
