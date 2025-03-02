@@ -11,7 +11,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Form } from '@/components/form'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-// import SplashCursor from '@/components/SplashCursor'
+import SplashCursor from '@/components/SplashCursor'
+import { KeyRound, Wind } from 'lucide-react'
+import { ThemeSwitch } from '@/components/theme-switch'
+import { useState } from 'react'
+import clsx from 'clsx'
+import { Tooltip } from '@heroui/tooltip'
+import { useTheme } from 'ahooks'
 
 /**
  * 加载外部 SHA256 脚本
@@ -57,10 +63,16 @@ export default function LoginPage () {
   const navigate = useNavigate()
   const location = useLocation()
   const from = location.state?.from?.pathname || '/'
+  const { theme } = useTheme()
 
   const form = useForm<z.infer<typeof loginSchema>>({
     defaultValues: { token: '', },
     resolver: zodResolver(loginSchema),
+  })
+
+  const [showSplashCursor, setShowSplashCursor] = useState(() => {
+    const saved = localStorage.getItem(key.splashCursor)
+    return saved ? JSON.parse(saved) : true
   })
 
   /**
@@ -106,6 +118,41 @@ export default function LoginPage () {
         className='w-[90%] max-w-[400px] relative z-10'
       >
         <div className='relative bg-white/20 dark:bg-neutral-900/20 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 dark:border-neutral-800/20'>
+          <div className='absolute top-4 right-4 flex flex-col gap-3'>
+            {/* 主题切换按钮 */}
+            <Tooltip content={theme === 'dark' ? '切换浅色模式' : '切换深色模式'} delay={1} closeDelay={1}>
+              <ThemeSwitch />
+            </Tooltip>
+            {/* 开启湍流动画效果 */}
+            <Tooltip content={showSplashCursor ? '关闭湍流动画' : '开启湍流动画'} placement='bottom' delay={1} closeDelay={1}>
+              <Button
+                onPress={() => {
+                  const newState = !showSplashCursor
+                  setShowSplashCursor(newState)
+                }}
+                radius='full'
+                variant='light'
+                color='primary'
+              >
+                <div
+                  className={clsx(
+                    'w-auto h-auto',
+                    'bg-transparent',
+                    'rounded-lg',
+                    'flex items-center justify-center',
+                    'group-data-[selected=true]:bg-transparent',
+                    '!text-default-500',
+                    'pt-px',
+                    'px-0',
+                    'mx-0',
+                  )}
+                >
+                  <Wind />
+                </div>
+
+              </Button>
+            </Tooltip>
+          </div>
           <div className='p-8 flex flex-col items-center'>
             {/* Logo和标题区域 */}
             <div className='flex flex-col items-center space-y-6 mb-12'>
@@ -174,10 +221,10 @@ export default function LoginPage () {
                 className='text-center space-y-2'
               >
                 <h1 className='text-2xl font-bold bg-gradient-to-r from-violet-500 to-blue-500 bg-clip-text text-transparent'>
-                  Karin WebUI
+                  Karin
                 </h1>
                 <p className='text-sm text-neutral-500 dark:text-neutral-400'>
-                  欢迎回来，请输入密码继续
+                  欢迎回来，请输入密钥继续
                 </p>
               </motion.div>
             </div>
@@ -198,9 +245,11 @@ export default function LoginPage () {
                   render={({ field }) => (
                     <Input
                       type='password'
-                      label='密码'
+                      label='密钥'
                       className='rounded-xl w-full bg-white/50 dark:bg-neutral-800/50 backdrop-blur-sm border-neutral-200/50 dark:border-neutral-700/50 focus:border-violet-500 dark:focus:border-violet-500 transition-all duration-200'
-                      placeholder='请输入密码'
+                      placeholder='请输入 HTTP 鉴权密钥'
+                      autoComplete='current-password'
+                      startContent={<KeyRound className='text-default-400 w-5 h-5' />}
                       {...field}
                     />
                   )}
@@ -295,7 +344,7 @@ export default function LoginPage () {
           </div>
         </motion.div>
       </motion.div>
-      {/* <SplashCursor /> */}
+      {showSplashCursor && <SplashCursor />}
     </div>
   )
 }

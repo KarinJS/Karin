@@ -225,7 +225,7 @@ const AboutUs = () => {
   }
 
   return (
-    <div className='min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white'>
+    <div className='min-h-screen'>
       {/* 首屏 */}
       <section className='py-14 overflow-hidden relative'>
         <div className='container mx-auto px-8 relative'>
@@ -625,8 +625,7 @@ const AboutUs = () => {
                   whileHover={{ y: -5, transition: { type: 'spring', stiffness: 300, damping: 10 } }}
                   transition={{ duration: 0.2 }}
                 >
-                  <div className='h-1 bg-primary-500' />
-                  <div className='p-4'>
+                  <div className='p-6'>
                     <div className='rounded-full w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-gray-900 mb-3 group-hover:scale-110 transition-transform'>
                       {feature.icon}
                     </div>
@@ -641,7 +640,7 @@ const AboutUs = () => {
             <div className='mt-8 text-center'>
               <Button
                 as='a'
-                href='https://docs.karin.fun/features'
+                href='https://docs.karin.fun/other/changelog'
                 color='primary'
                 variant='flat'
                 radius='full'
@@ -655,7 +654,7 @@ const AboutUs = () => {
       </section>
 
       {/* 开发者列表 */}
-      <section className='py-16 bg-white dark:bg-black'>
+      <section className='py-16'>
         <div className='container mx-auto px-4'>
           <div className='max-w-7xl mx-auto'>
             <motion.div
