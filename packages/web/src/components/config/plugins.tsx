@@ -61,9 +61,7 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) =>
     const form = document.getElementById('dashboard-form')
     if (form instanceof HTMLFormElement && form.checkValidity()) {
       const currentValues = methods.getValues()
-      console.log('currentValues:', currentValues)
       const data = getComponentResult(currentValues)
-      console.log('data:', data)
       return data
     }
     return null

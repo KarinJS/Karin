@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/KarinJS/Karin/compare/web-v1.4.1...web-v1.4.2) (2025-03-01)
+
+
+### 🐛 Bug Fixes
+
+* 登录api增加阈值 fix [#288](https://github.com/KarinJS/Karin/issues/288) ([116ed45](https://github.com/KarinJS/Karin/commit/116ed45b0cf9c6e4980d6810c8b4569edee1a0a2))
+
 ## [1.4.1](https://github.com/KarinJS/Karin/compare/web-v1.4.0...web-v1.4.1) (2025-02-28)
 
 

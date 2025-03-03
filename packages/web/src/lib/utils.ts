@@ -1,10 +1,6 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
-export function cn (...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-
 import type { Op } from 'quill'
 
 import type { Elements } from '@/types/segment'
@@ -12,6 +8,52 @@ import type { EmojiValue } from '@/components/sandbox/chat_input/formats/emoji_b
 import type { ImageValue } from '@/components/sandbox/chat_input/formats/image_blot'
 import type { ReplyBlockValue } from '@/components/sandbox/chat_input/formats/reply_blot'
 
+/**
+ * 根据路径获取页面标题
+ * @param pathname location.pathname 页面路由
+ * @returns
+ */
+export const getPageTitle = (pathname: string) => {
+  let title = '未知页面'
+
+  switch (true) {
+    case pathname === '/':
+      title = '基础信息'
+      break
+    case pathname === '/config':
+      title = '配置信息'
+      break
+    case pathname === '/plugins/list':
+      title = '插件市场'
+      break
+    case pathname.startsWith('/plugins/'):
+      title = '插件配置'
+      break
+    case pathname === '/sandbox':
+      title = '沙箱调试'
+      break
+    case pathname.startsWith('/sandbox/chat'):
+      title = '沙箱 | [聊天]'
+      break
+    case pathname.startsWith('/sandbox/contact'):
+      title = '沙箱 | [联系人]'
+      break
+    case pathname === '/about':
+      title = '关于我们'
+      break
+    case pathname === '/login':
+      title = '登录'
+      break
+    default:
+      title = '未知页面'
+  }
+
+  return title
+}
+
+export function cn (...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
 
 /**
  * 判断是否为URI

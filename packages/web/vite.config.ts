@@ -16,7 +16,7 @@ export default defineConfig({
     react(),
     tsconfigPaths(),
     reactScan(),
-    viteCompression({ deleteOriginFile: true }),
+    viteCompression({ deleteOriginFile: true, verbose: false }),
     viteStaticCopy({
       targets: [
         {
@@ -33,12 +33,6 @@ export default defineConfig({
   },
   server: {
     host: true,
-    hmr: {
-      overlay: true,
-    },
-    watch: {
-      usePolling: true,
-    },
     proxy: {
       '/api': {
         target: 'http://localhost:7777',

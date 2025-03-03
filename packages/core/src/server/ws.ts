@@ -1,9 +1,53 @@
 import { server } from './app'
-import { WebSocketServer } from 'ws'
+import { WebSocketServer, type WebSocket } from 'ws'
 import { listeners } from '@/core/internal'
+import {
+  WS_CLOSE,
+  WS_CLOSE_ONEBOT,
+  WS_CLOSE_PUPPETEER,
+  WS_CONNECTION,
+  WS_CONNECTION_ONEBOT,
+  WS_CONNECTION_PUPPETEER,
+  WS_CONNECTION_SANDBOX
+} from '@/utils/fs/key'
+import type { IncomingMessage } from 'node:http'
 
 /** ws 服务 */
 export const wss: WebSocketServer = new WebSocketServer({ server })
+
+/**
+ * 发送ws连接 如果5秒内无函数影响 则主动断开连接
+ * @param key 事件名
+ * @param socket 连接
+ * @param request 请求
+ */
+export const emitEvent = (
+  key: string,
+  socket: WebSocket,
+  request: IncomingMessage,
+) => {
+  /** 是否关闭 */
+  let isClose = true
+  /** 回调 调用后代表有函数接管 */
+  const call = () => {
+    isClose = false
+    timer && clearTimeout(timer)
+  }
+
+  /** 定时器 3秒后自动断开连接 */
+  const timer = setTimeout(() => {
+    if (!isClose) return
+    socket.close()
+    logger.warn(
+      '[WebSocket] 链接无函数接管 已自动断开' +
+      `ip: ${request.socket.remoteAddress}\n` +
+      `host: ${request.headers.host}${request.url}\n` +
+      `headers: ${JSON.stringify(request.headers, null, 2)}`
+    )
+  }, 3000)
+
+  listeners.emit(key, socket, request, call)
+}
 
 wss.on('error', (error: NodeJS.ErrnoException) => {
   if (error.code === 'EADDRINUSE') {
@@ -17,46 +61,48 @@ wss.on('error', (error: NodeJS.ErrnoException) => {
 
 /** 监听 ws 连接 */
 wss.on('connection', (socket, request) => {
-  debug(`wss:connection host: ${request.headers.host} url: ${request.url}`)
-  logger.debug(`[WebSocketServer] host: ${request.headers.host} url: ${request.url}`)
+  logger.mark(`[WebSocket] ${logger.green('connection')}:\n` +
+    `ip: ${request.socket.remoteAddress}\n` +
+    `host: ${request.headers.host}${request.url}\n` +
+    `headers: ${JSON.stringify(request.headers, null, 2)}`
+  )
 
   if (
     request.url === '/' ||
     request.url === '/onebot/v11/ws' ||
     request.url === '/onebot/v11/ws/'
   ) {
-    listeners.emit('ws:connection:onebot', socket, request)
+    emitEvent(WS_CONNECTION_ONEBOT, socket, request)
 
     socket.on('close', (code, reason) => {
-      listeners.emit('ws:close:onebot', socket, request, code, reason)
+      listeners.emit(WS_CLOSE_ONEBOT, socket, request, code, reason)
     })
 
     return
   }
 
   if (request.url === '/puppeteer') {
-    listeners.emit('ws:connection:puppeteer', socket, request)
+    emitEvent(WS_CONNECTION_PUPPETEER, socket, request)
 
     socket.once('close', (code, reason) => {
-      listeners.emit('ws:close:puppeteer', socket, request, code, reason)
+      listeners.emit(WS_CLOSE_PUPPETEER, socket, request, code, reason)
     })
 
     return
   }
 
   if (request.url?.startsWith('/sandbox')) {
-    listeners.emit('ws:connection:sandbox', socket, request)
+    emitEvent(WS_CONNECTION_SANDBOX, socket, request)
 
-    socket.once('close', (code, reason) => {
-      listeners.emit('ws:close:sandbox', socket, request, code, reason)
-    })
+    // socket.once('close', (code, reason) => {
+    //   listeners.emit(WS_CLOSE_SANDBOX, socket, request, code, reason)
+    // })
 
     return
   }
 
-  listeners.emit('ws:connection', socket, request)
-
+  emitEvent(WS_CONNECTION, socket, request)
   socket.on('close', (code, reason) => {
-    listeners.emit('ws:close', socket, request, code, reason)
+    listeners.emit(WS_CLOSE, socket, request, code, reason)
   })
 })

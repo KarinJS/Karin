@@ -1,5 +1,13 @@
 # 更新日志
 
+## [1.4.2](https://github.com/KarinJS/Karin/compare/core-v1.4.1...core-v1.4.2) (2025-03-01)
+
+
+### 🐛 Bug Fixes
+
+* fix [#287](https://github.com/KarinJS/Karin/issues/287) 提供兼容性 ([1ac554f](https://github.com/KarinJS/Karin/commit/1ac554fcb7b60aacb31fcfc4c5107fd84c1c9ae3))
+* 登录api增加阈值 fix [#288](https://github.com/KarinJS/Karin/issues/288) ([116ed45](https://github.com/KarinJS/Karin/commit/116ed45b0cf9c6e4980d6810c8b4569edee1a0a2))
+
 ## [1.4.1](https://github.com/KarinJS/Karin/compare/core-v1.4.0...core-v1.4.1) (2025-02-28)
 
 

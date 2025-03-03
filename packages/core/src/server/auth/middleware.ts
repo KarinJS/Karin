@@ -1,5 +1,5 @@
-import { auth } from './auth'
-import { createMethodNotAllowedResponse, } from './utils/response'
+import { auth } from '@/server/auth'
+import { createMethodNotAllowedResponse } from '@/server/utils/response'
 import type { Request, Response, NextFunction } from 'express'
 
 /**

@@ -7,14 +7,33 @@ import {
   createServerErrorResponse,
   createSuccessResponse
 } from '@/server/utils/response'
+import { FriendMessageOptions, GroupMessageOptions, Sex } from '@/types/event'
+import { createFriendMessage, createGroupMessage } from '@/event/create'
+import { uploadAvatar } from '@/service/sandbox/avatar'
+import {
+  addFriend,
+  addFriendHistory,
+  addGroup,
+  addGroupHistory,
+  addGroupMember,
+  buildMessageId,
+  deleteFriend,
+  deleteGroup,
+  deleteGroupMember,
+  getAccountInfo,
+  getFriendHistory,
+  getGroupHistory,
+  recallMessage,
+  updateAccountInfo,
+  updateFriend,
+  updateGroup,
+  updateGroupMember
+} from '@/service/sandbox/db'
+import { WS_CONNECTION_SANDBOX } from '@/utils/fs/key'
 
 import type WebSocket from 'ws'
 import type { RequestHandler } from 'express'
 import type { IncomingMessage } from 'node:http'
-import { FriendMessageOptions, GroupMessageOptions, Sex } from '@/types/event'
-import { addFriend, addFriendHistory, addGroup, addGroupHistory, addGroupMember, buildMessageId, deleteFriend, deleteGroup, deleteGroupMember, getAccountInfo, getFriendHistory, getGroupHistory, recallMessage, updateAccountInfo, updateFriend, updateGroup, updateGroupMember } from '@/service/sandbox/db'
-import { createFriendMessage, createGroupMessage } from '@/event/create'
-import { uploadAvatar } from '@/service/sandbox/avatar'
 
 /** 适配器状态 */
 let adapter: AdapterSandbox | undefined
@@ -475,7 +494,12 @@ const getSandboxUrlRouter: RequestHandler = async (req, res) => {
 }
 
 const main = () => {
-  listeners.on('ws:connection:sandbox', async (socket: WebSocket, request: IncomingMessage) => {
+  listeners.on(WS_CONNECTION_SANDBOX, async (
+    socket: WebSocket,
+    request: IncomingMessage,
+    call: () => void
+  ) => {
+    call()
     try {
       /** 鉴权 */
       const url = new URL(request.url || '', `http://${request.headers.host}`)
