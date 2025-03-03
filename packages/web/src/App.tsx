@@ -27,29 +27,14 @@ import PluginConfigPage from '@/pages/dashboard/plugins/config'
 // 404 Page
 import NotFoundPage from '@/pages/404'
 import TestPage from './test'
+import { getPageTitle } from '@/lib/utils'
 
 // Main App
 function App () {
   const location = useLocation()
 
   useEffect(() => {
-    const path = location.pathname
-    const map = {
-      '/': '基础信息',
-      '/config': '配置信息',
-      '/plugins/list': '插件市场',
-      '/plugins/:name': '插件配置',
-      '/sandbox': '沙箱调试',
-      '/sandbox/chat': '沙箱 | [聊天]',
-      '/sandbox/contact': '沙箱 | [联系人]',
-      '/about': '关于我们',
-      '/login': '登录'
-    } as Record<string, string>
-
-    document.title = `${map[path]
-      ? map[path]
-      : '无人问津的角落...'
-      } - Karin WebUI | 永远相信美好的事情即将发生`
+    document.title = getPageTitle(location.pathname) + ' - Karin WebUI | 永远相信美好的事情即将发生'
   }, [location])
 
   return (

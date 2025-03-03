@@ -31,12 +31,17 @@ const tabItems = [
 
 export default function TestPage () {
   const [selectedTab, setSelectedTab] = useState('basic')
-  // 添加useRef来跟踪滚动容器
+  /** 跟踪滚动容器 用于移动端 */
   const tabsContainerRef = useRef<HTMLDivElement>(null)
-  // 用于存储滚动位置
+  /** 存储滚动位置 用于移动端 */
   const scrollPositionRef = useRef(0)
+  /** 表单引用 用于触发适配器组件中的表单提交 */
+  const formRef = useRef<HTMLFormElement>(null)
 
-  // 处理Tab变化
+  /**
+   * 处理Tab变化
+   * @param key 当前选中的Tab
+   */
   const handleTabChange = (key: string | number) => {
     // 在改变tab之前保存当前滚动位置
     if (tabsContainerRef.current) {
@@ -45,7 +50,9 @@ export default function TestPage () {
     setSelectedTab(key as string)
   }
 
-  // 在tab变化后恢复滚动位置
+  /**
+   * 在tab变化后恢复滚动位置
+   */
   useEffect(() => {
     if (tabsContainerRef.current) {
       // 设置回之前保存的位置
@@ -53,7 +60,18 @@ export default function TestPage () {
     }
   }, [selectedTab])
 
-  // 设置按钮下拉菜单内容
+  /**
+   * 处理保存按钮点击事件
+   */
+  const handleSaveClick = () => {
+    if (formRef.current) {
+      formRef.current.requestSubmit()
+    }
+  }
+
+  /**
+   * 设置按钮下拉菜单内容
+   */
   const SettingsDropdownContent = () => (
     <DropdownMenu>
       <DropdownItem key='preview' startContent={<Eye size={18} />}>
@@ -68,7 +86,11 @@ export default function TestPage () {
     </DropdownMenu>
   )
 
-  // 统一的设置按钮
+  /**
+   * 统一的设置按钮
+   * @param showText 是否显示文本
+   * @returns 设置按钮
+   */
   const SettingsButton = ({ showText = true }) => (
     <Dropdown>
       <DropdownTrigger>
@@ -85,7 +107,11 @@ export default function TestPage () {
     </Dropdown>
   )
 
-  // 统一的保存按钮
+  /**
+   * 统一的保存按钮
+   * @param showText 是否显示文本
+   * @returns 保存按钮
+   */
   const SaveButton = ({ showText = true }) => (
     <Button
       color='primary'
@@ -93,12 +119,17 @@ export default function TestPage () {
       variant='flat'
       startContent={<Save size={18} />}
       className={!showText ? 'min-w-0 p-2' : ''}
+      onPress={handleSaveClick}
     >
       保存
     </Button>
   )
 
-  // 操作按钮组
+  /**
+   * 操作按钮组
+   * @param showText 是否显示文本
+   * @returns 操作按钮组
+   */
   const ActionButtons = ({ showText = true }) => (
     <div className='flex items-center gap-2 shrink-0'>
       <SettingsButton showText={showText} />
@@ -106,7 +137,10 @@ export default function TestPage () {
     </div>
   )
 
-  // PC端布局
+  /**
+   * PC端布局
+   * @returns PC端布局
+   */
   const DesktopLayout = () => (
     <div className='hidden md:flex items-center justify-between gap-4'>
       <Tabs
@@ -130,7 +164,10 @@ export default function TestPage () {
     </div>
   )
 
-  // 移动端布局
+  /**
+   * 移动端布局
+   * @returns 移动端布局
+   */
   const MobileLayout = () => (
     <div className='md:hidden flex flex-col gap-4'>
       <div className='flex items-center justify-between'>
@@ -163,6 +200,35 @@ export default function TestPage () {
     </div>
   )
 
+  const data = {
+    console: {
+      isLocal: true,
+      token: '',
+      host: ''
+    },
+    onebot: {
+      ws_server: {
+        enable: true,
+        timeout: 120
+      },
+      ws_client: [
+        {
+          enable: false,
+          url: 'ws://127.0.0.1:7778',
+          token: ''
+        }
+      ],
+      http_server: [
+        {
+          enable: false,
+          self_id: 'default',
+          url: 'http://127.0.0.1:6099',
+          token: ''
+        }
+      ]
+    }
+  }
+
   return (
     <div className='p-4 space-y-4'>
       {/* 头部卡片 */}
@@ -181,7 +247,7 @@ export default function TestPage () {
 
       {/* 下方内容区域卡片 */}
       <Card className='p-6'>
-        {getAdapterComponent()}
+        {getAdapterComponent(data, formRef)}
       </Card>
     </div>
   )
