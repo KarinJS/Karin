@@ -59,7 +59,7 @@ export const InternalAccordion: FC<{
                 </div>
               </div>
             }
-            className='mb-2'
+            className='mb-2 mx-2'
           >
             {render(index)}
           </AccordionItem>

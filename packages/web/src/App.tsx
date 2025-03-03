@@ -28,6 +28,7 @@ import PluginConfigPage from '@/pages/dashboard/plugins/config'
 import NotFoundPage from '@/pages/404'
 import TestPage from './test'
 import { getPageTitle } from '@/lib/utils'
+import ScrollToTop from './components/common/ScrollToTop'
 
 // Main App
 function App () {
@@ -38,39 +39,42 @@ function App () {
   }, [location])
 
   return (
-    <Routes>
-      <Route path='/login' element={<LoginPage />} />
-      <Route
-        element={
-          <RequireAuth>
-            <DashboardLayout />
-          </RequireAuth>
-        }
-        path='/'
-      >
-        <Route element={<IndexPage />} path='' />
-        <Route element={<ConfigPage />} path='/config' />
-        <Route element={<TestPage />} path='/test' />
-        <Route element={<PluginMarketPage />} path='/plugins/list' />
-        <Route element={<PluginConfigPage />} path='/plugins/:name' />
-        <Route element={<SandboxPage />} path='/sandbox'>
-          <Route element={<Navigate to='/sandbox/chat' />} path='' />
-          <Route path='chat'>
-            <Route element={<DefaultPage />} path='' />
-            <Route element={<ChatDetail />} path=':type/:id' />
+    <>
+      <Routes>
+        <Route path='/login' element={<LoginPage />} />
+        <Route
+          element={
+            <RequireAuth>
+              <DashboardLayout />
+            </RequireAuth>
+          }
+          path='/'
+        >
+          <Route element={<IndexPage />} path='' />
+          <Route element={<ConfigPage />} path='/config' />
+          <Route element={<TestPage />} path='/test' />
+          <Route element={<PluginMarketPage />} path='/plugins/list' />
+          <Route element={<PluginConfigPage />} path='/plugins/:name' />
+          <Route element={<SandboxPage />} path='/sandbox'>
+            <Route element={<Navigate to='/sandbox/chat' />} path='' />
+            <Route path='chat'>
+              <Route element={<DefaultPage />} path='' />
+              <Route element={<ChatDetail />} path=':type/:id' />
+            </Route>
+            <Route path='contact/*'>
+              <Route element={<DefaultPage />} path='' />
+              <Route element={<FriendRequest />} path='friend_request' />
+              <Route element={<GroupNotice />} path='group_notice' />
+              <Route element={<UserDetail />} path=':id' />
+            </Route>
+            <Route element={<GroupChatTest />} path='group' />
           </Route>
-          <Route path='contact/*'>
-            <Route element={<DefaultPage />} path='' />
-            <Route element={<FriendRequest />} path='friend_request' />
-            <Route element={<GroupNotice />} path='group_notice' />
-            <Route element={<UserDetail />} path=':id' />
-          </Route>
-          <Route element={<GroupChatTest />} path='group' />
+          <Route element={<AboutPage />} path='/about' />
+          <Route path='*' element={<NotFoundPage />} />
         </Route>
-        <Route element={<AboutPage />} path='/about' />
-        <Route path='*' element={<NotFoundPage />} />
-      </Route>
-    </Routes>
+      </Routes>
+      <ScrollToTop />
+    </>
   )
 }
 

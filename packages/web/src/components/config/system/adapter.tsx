@@ -54,7 +54,7 @@ export const getAdapterComponent = (
 
   const isLocal = methods.watch('console.isLocal')
 
-  const onSubmit = (formData: any) => {
+  const onSubmit = (formData: Adapters) => {
     const finalData = {
       ...formData,
       console: {

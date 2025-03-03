@@ -1,7 +1,7 @@
 import { request } from '@/lib/request'
 import { useEffect, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
-import { DashboardPage } from '@/components/config/plugins'
+import { DashboardPage } from '@/components/config/plugin/plugins'
 import type { GetConfigResponse } from 'node-karin'
 import { Spinner } from '@heroui/spinner'
 import { Card, CardBody, CardHeader } from '@heroui/card'

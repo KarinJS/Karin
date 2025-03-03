@@ -1,16 +1,16 @@
 import { useFieldArray } from 'react-hook-form'
-import { createDivider } from '../heroui/dividers'
-import { createSwitch } from '../heroui/switchs'
-import { createRadioGroup } from '../heroui/radioGroups'
-import { createCheckboxGroup } from '../heroui/checkboxs'
-import { createInput, createInputGroup } from '../heroui/inputs'
+import { createDivider } from '../../heroui/dividers'
+import { createSwitch } from '../../heroui/switchs'
+import { createRadioGroup } from '../../heroui/radioGroups'
+import { createCheckboxGroup } from '../../heroui/checkboxs'
+import { createInput, createInputGroup } from '../../heroui/inputs'
 import { Accordion as HeroAccordion, AccordionItem as HeroAccordionItem } from '@heroui/accordion'
 
 import type { JSX } from 'react'
 import type { DefaultValues, Value } from './values'
 import type { Control, UseFormRegister } from 'react-hook-form'
 import type { AccordionProProps, AccordionProps, ComponentConfig } from 'node-karin'
-import { createErrorCard } from '../heroui/error'
+import { createErrorCard } from '../../heroui/error'
 
 /**
  * 表单控制器类型

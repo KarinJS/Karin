@@ -6,8 +6,8 @@ import { Controller } from 'react-hook-form'
 
 import type { JSX } from 'react'
 import type { CheckboxGroupProps, CheckboxProps } from 'node-karin'
-import type { FormControl } from '../config/render'
-import type { DefaultValues } from '../config/values'
+import type { FormControl } from '../config/plugin/render'
+import type { DefaultValues } from '../config/plugin/values'
 
 /**
  * 渲染复选框组件

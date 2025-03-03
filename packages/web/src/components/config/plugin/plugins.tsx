@@ -26,7 +26,6 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) =>
    */
   const onSubmit = async (data: DefaultValues) => {
     console.log('完整表单数据:', JSON.stringify(data, null, 2))
-    console.log('data:', data)
     const componentResult = getComponentResult(data)
 
     try {

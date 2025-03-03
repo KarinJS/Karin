@@ -1,7 +1,7 @@
 import { Switch as HeroSwitch } from '@heroui/switch'
 import type { JSX } from 'react'
 import type { SwitchProps } from 'node-karin'
-import type { FormRegister } from '../config/render'
+import type { FormRegister } from '../config/plugin/render'
 
 /**
  * 渲染开关组件

@@ -2,7 +2,7 @@ import { Card } from '@heroui/card'
 import { Tabs, Tab } from '@heroui/tabs'
 import { Button } from '@heroui/button'
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/dropdown'
-import { useState, useRef, useEffect } from 'react'
+import { lazy, useState, useRef, useEffect, Suspense } from 'react'
 import {
   Settings,
   Plug,
@@ -17,20 +17,19 @@ import {
   Save,
   Settings2
 } from 'lucide-react'
-import { getAdapterComponent } from './adapter'
 
 // Tab项配置
 const tabItems = [
-  { key: 'basic', icon: Settings, label: '基本配置' },
+  { key: 'config', icon: Settings, label: '基本配置' },
   { key: 'adapter', icon: Plug, label: '适配器' },
   { key: 'group', icon: Users, label: '群聊频道' },
   { key: 'private', icon: MessageSquare, label: '好友私信' },
-  { key: 'renderer', icon: Palette, label: '渲染器' },
+  { key: 'render', icon: Palette, label: '渲染器' },
   { key: 'pm2', icon: Server, label: 'PM2' },
 ]
 
 export default function TestPage () {
-  const [selectedTab, setSelectedTab] = useState('basic')
+  const [selectedTab, setSelectedTab] = useState('config')
   /** 跟踪滚动容器 用于移动端 */
   const tabsContainerRef = useRef<HTMLDivElement>(null)
   /** 存储滚动位置 用于移动端 */
@@ -200,7 +199,7 @@ export default function TestPage () {
     </div>
   )
 
-  const data = {
+  const adapter = {
     console: {
       isLocal: true,
       token: '',
@@ -229,6 +228,120 @@ export default function TestPage () {
     }
   }
 
+  const render = {
+    ws_server: {
+      enable: true
+    },
+    ws_client: [
+      {
+        enable: false,
+        url: 'ws://127.0.0.1:7005/ws',
+        token: '123456'
+      }
+    ],
+    http_server: [
+      {
+        enable: false,
+        url: 'http://127.0.0.1:7005',
+        token: '123456'
+      }
+    ]
+  }
+
+  const config = {
+    master: [
+      'console'
+    ],
+    admin: [],
+    user: {
+      enable_list: [],
+      disable_list: []
+    },
+    friend: {
+      enable: true,
+      enable_list: [],
+      disable_list: [],
+      log_enable_list: [],
+      log_disable_list: []
+    },
+    group: {
+      enable: true,
+      enable_list: [],
+      disable_list: [],
+      log_enable_list: [],
+      log_disable_list: []
+    },
+    directs: {
+      enable: true,
+      enable_list: [],
+      disable_list: [],
+      log_enable_list: [],
+      log_disable_list: []
+    },
+    guilds: {
+      enable: true,
+      enable_list: [],
+      disable_list: [],
+      log_enable_list: [],
+      log_disable_list: []
+    },
+    channels: {
+      enable: true,
+      enable_list: [],
+      disable_list: [],
+      log_enable_list: [],
+      log_disable_list: []
+    }
+  }
+
+  /**
+   * 渲染内容区域
+   * @returns 渲染的组件
+   */
+  const renderContent = (key: string) => {
+    const tips = <div>加载中...</div>
+    if (key === 'adapter') {
+      const AdapterComponent = lazy(() => import('@/components/config/system/adapter')
+        .then(module => ({
+          default: () => module.getAdapterComponent(adapter, formRef)
+        })))
+
+      return (
+        <Suspense fallback={tips}>
+          <AdapterComponent />
+        </Suspense>
+      )
+    }
+
+    if (key === 'render') {
+      const RenderComponent = lazy(() => import('@/components/config/system/render')
+        .then(module => ({
+          default: () => module.getRenderComponent(render, formRef)
+        })))
+
+      return (
+        <Suspense fallback={tips}>
+          <RenderComponent />
+        </Suspense>
+      )
+    }
+
+    if (key === 'config') {
+      const ConfigComponent = lazy(() => import('@/components/config/system/config')
+        .then(module => ({
+          default: () => module.getConfigComponent(config, formRef)
+        })))
+
+      return (
+        <Suspense fallback={tips}>
+          <ConfigComponent />
+        </Suspense>
+      )
+    }
+
+    return null
+  }
+
   return (
     <div className='p-4 space-y-4'>
       {/* 头部卡片 */}
@@ -247,7 +360,7 @@ export default function TestPage () {
 
       {/* 下方内容区域卡片 */}
       <Card className='p-6'>
-        {getAdapterComponent(data, formRef)}
+        {renderContent(selectedTab)}
       </Card>
     </div>
   )

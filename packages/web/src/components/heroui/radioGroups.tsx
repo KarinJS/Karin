@@ -2,7 +2,7 @@ import { Radio as HeroRadio, RadioGroup as HeroRadioGroup } from '@heroui/radio'
 import { Controller } from 'react-hook-form'
 import type { JSX } from 'react'
 import type { RadioGroupProps } from 'node-karin'
-import type { FormControl } from '../config/render'
+import type { FormControl } from '../config/plugin/render'
 
 /**
  * 渲染单选框组件
