@@ -100,7 +100,7 @@ export const getRenderComponent = (
             description='管理puppeteer的WebSocket客户端 也就是正向WebSocket'
             title='WebSocket 客户端'
             render={(index: number) => (
-              <div className='flex flex-col gap-4 p-2'>
+              <div className='flex flex-col gap-2 p-2'>
                 <Switch
                   className='p-2 rounded-lg bg-gray-50/50 mb-3'
                   {...methods.register(`ws_client.${index}.enable`)}
@@ -141,7 +141,7 @@ export const getRenderComponent = (
             description='管理puppeteer的HTTP Api'
             title='HTTP Api'
             render={(index: number) => (
-              <div className='flex flex-col gap-4 p-2'>
+              <div className='flex flex-col p-2'>
                 <Switch
                   className='p-2 rounded-lg bg-gray-50/50 mb-3'
                   {...methods.register(`http_server.${index}.enable`)}

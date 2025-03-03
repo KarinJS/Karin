@@ -1,8 +1,9 @@
 import { Card } from '@heroui/card'
 import { Tabs, Tab } from '@heroui/tabs'
 import { Button } from '@heroui/button'
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/dropdown'
+import { useParams, useNavigate } from 'react-router-dom'
 import { lazy, useState, useRef, useEffect, Suspense } from 'react'
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/dropdown'
 import {
   Settings,
   Plug,
@@ -15,8 +16,10 @@ import {
   FoldVertical,
   RotateCw,
   Save,
-  Settings2
+  Settings2,
+  Database
 } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 // Tab项配置
 const tabItems = [
@@ -25,11 +28,15 @@ const tabItems = [
   { key: 'group', icon: Users, label: '群聊频道' },
   { key: 'private', icon: MessageSquare, label: '好友私信' },
   { key: 'render', icon: Palette, label: '渲染器' },
+  { key: 'redis', icon: Database, label: 'Redis' },
   { key: 'pm2', icon: Server, label: 'PM2' },
 ]
 
 export default function TestPage () {
-  const [selectedTab, setSelectedTab] = useState('config')
+  const { tab } = useParams()
+  const navigate = useNavigate()
+  const [selectedTab, setSelectedTab] = useState(tab || 'config')
+  const [refreshKey, setRefreshKey] = useState(0)
   /** 跟踪滚动容器 用于移动端 */
   const tabsContainerRef = useRef<HTMLDivElement>(null)
   /** 存储滚动位置 用于移动端 */
@@ -47,6 +54,8 @@ export default function TestPage () {
       scrollPositionRef.current = tabsContainerRef.current.scrollLeft
     }
     setSelectedTab(key as string)
+    // 更新 URL
+    navigate(`/test/${key}`)
   }
 
   /**
@@ -69,17 +78,37 @@ export default function TestPage () {
   }
 
   /**
+   * 处理刷新按钮点击事件
+   */
+  const handleRefresh = () => {
+    setRefreshKey(prev => prev + 1)
+    toast.success('刷新成功')
+  }
+
+  /**
    * 设置按钮下拉菜单内容
    */
   const SettingsDropdownContent = () => (
     <DropdownMenu>
-      <DropdownItem key='preview' startContent={<Eye size={18} />}>
+      <DropdownItem
+        key='preview'
+        startContent={<Eye size={18} />}
+        onPress={() => toast.error('暂不支持预览配置')}
+      >
         预览配置
       </DropdownItem>
-      <DropdownItem key='fold' startContent={<FoldVertical size={18} />}>
+      <DropdownItem
+        key='fold'
+        startContent={<FoldVertical size={18} />}
+        onPress={() => toast.error('暂不支持全部折叠')}
+      >
         全部折叠
       </DropdownItem>
-      <DropdownItem key='refresh' startContent={<RotateCw size={18} />}>
+      <DropdownItem
+        key='refresh'
+        startContent={<RotateCw size={18} />}
+        onPress={handleRefresh}
+      >
         刷新
       </DropdownItem>
     </DropdownMenu>
@@ -294,59 +323,158 @@ export default function TestPage () {
     }
   }
 
+  const pm2 = {
+    lines: 1000,
+    apps: [
+      {
+        name: 'karin',
+        script: 'index.js',
+        autorestart: true,
+        max_restarts: 60,
+        max_memory_restart: '1G',
+        restart_delay: 2000,
+        merge_logs: true,
+        error_file: './@karinjs/logs/pm2_error.log',
+        out_file: './@karinjs/logs/pm2_out.log'
+      }
+    ]
+  }
+
+  const redis = {
+    url: 'redis://127.0.0.1:6379',
+    socket: {
+      host: '127.0.0.1',
+      port: 6379
+    },
+    username: '',
+    password: '',
+    database: 0
+  }
+
+  const group = [
+    {
+      key: 'default',
+      cd: 0,
+      mode: 0,
+      alias: ['karin'],
+      enable: [],
+      disable: [],
+      member_enable: [],
+      member_disable: [],
+      userCD: 0
+    },
+    {
+      key: 'Bot:selfId',
+      cd: 0,
+      mode: 0,
+      alias: [],
+      enable: [],
+      disable: [],
+      member_enable: [],
+      member_disable: [],
+      userCD: 0
+    },
+    {
+      key: 'Bot:selfId:groupId',
+      cd: 0,
+      mode: 0,
+      alias: [],
+      enable: [],
+      disable: [],
+      member_enable: [],
+      member_disable: [],
+      userCD: 0
+    },
+    {
+      key: 'Bot:selfId:guildId',
+      cd: 0,
+      mode: 0,
+      alias: [],
+      enable: [],
+      disable: [],
+      member_enable: [],
+      member_disable: [],
+      userCD: 0
+    },
+    {
+      key: 'Bot:selfId:guildId:channelId',
+      cd: 0,
+      mode: 0,
+      alias: [],
+      enable: [],
+      disable: [],
+      member_enable: [],
+      member_disable: [],
+      userCD: 0
+    }
+  ]
+
   /**
-   * 渲染内容区域
-   * @returns 渲染的组件
+   * 懒加载
+   * @param key 当前选中的Tab
+   * @returns 懒加载的组件
    */
-  const renderContent = (key: string) => {
-    const tips = <div>加载中...</div>
-    if (key === 'adapter') {
+  const LazyLoad = (tsb: string) => {
+    if (tsb === 'adapter') {
       const AdapterComponent = lazy(() => import('@/components/config/system/adapter')
         .then(module => ({
           default: () => module.getAdapterComponent(adapter, formRef)
         })))
 
-      return (
-        <Suspense fallback={tips}>
-          <AdapterComponent />
-        </Suspense>
-      )
+      return <AdapterComponent />
     }
 
-    if (key === 'render') {
+    if (tsb === 'render') {
       const RenderComponent = lazy(() => import('@/components/config/system/render')
         .then(module => ({
           default: () => module.getRenderComponent(render, formRef)
         })))
 
-      return (
-        <Suspense fallback={tips}>
-          <RenderComponent />
-        </Suspense>
-      )
+      return <RenderComponent />
     }
 
-    if (key === 'config') {
+    if (tsb === 'config') {
       const ConfigComponent = lazy(() => import('@/components/config/system/config')
         .then(module => ({
           default: () => module.getConfigComponent(config, formRef)
         })))
 
-      return (
-        <Suspense fallback={tips}>
-          <ConfigComponent />
-        </Suspense>
-      )
+      return <ConfigComponent />
     }
 
-    return null
+    if (tsb === 'redis') {
+      const RedisComponent = lazy(() => import('@/components/config/system/redis')
+        .then(module => ({
+          default: () => module.getRedisComponent(redis, formRef)
+        })))
+
+      return <RedisComponent />
+    }
+
+    if (tsb === 'pm2') {
+      const PM2Component = lazy(() => import('@/components/config/system/pm2')
+        .then(module => ({
+          default: () => module.getPm2Component(pm2, formRef)
+        })))
+
+      return <PM2Component />
+    }
+
+    if (tsb === 'group') {
+      const GroupComponent = lazy(() => import('@/components/config/system/group')
+        .then(module => ({
+          default: () => module.getGroupComponent(group, formRef)
+        })))
+
+      return <GroupComponent />
+    }
   }
 
   return (
     <div className='p-4 space-y-4'>
       {/* 头部卡片 */}
       <Card className='p-6'>
-        <div className='flex flex-col gap-4'>
+        <div className='flex flex-col gap-2'>
           {/* PC端标题 - 仅在PC端显示 */}
           <div className='hidden md:flex items-center gap-2'>
             <Cpu size={24} className='text-primary-500' />
@@ -360,7 +488,11 @@ export default function TestPage () {
 
       {/* 下方内容区域卡片 */}
       <Card className='p-6'>
-        {renderContent(selectedTab)}
+        <Suspense fallback={<div>加载中...</div>}>
+          <div key={refreshKey}>
+            {LazyLoad(selectedTab)}
+          </div>
+        </Suspense>
       </Card>
     </div>
   )

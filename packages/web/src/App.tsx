@@ -52,7 +52,10 @@ function App () {
         >
           <Route element={<IndexPage />} path='' />
           <Route element={<ConfigPage />} path='/config' />
-          <Route element={<TestPage />} path='/test' />
+          <Route element={<TestPage />} path='/test/*'>
+            <Route element={<Navigate to='/test/system' />} path='' />
+            <Route element={<TestPage />} path=':tab' />
+          </Route>
           <Route element={<PluginMarketPage />} path='/plugins/list' />
           <Route element={<PluginConfigPage />} path='/plugins/:name' />
           <Route element={<SandboxPage />} path='/sandbox'>

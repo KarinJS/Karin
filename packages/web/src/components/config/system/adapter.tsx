@@ -110,7 +110,7 @@ export const getAdapterComponent = (
               </Switch>
             </div>
 
-            <div className='grid md:grid-cols-2 grid-cols-1 gap-y-8 md:gap-x-12'>
+            <div className='grid md:grid-cols-2 grid-cols-1 gap-y-4 md:gap-x-12'>
               <Input
                 label='资源文件的访问地址'
                 {...methods.register('console.host')}
@@ -216,7 +216,7 @@ export const getAdapterComponent = (
               description='管理OneBot11协议的WebSocket客户端 也就是正向WebSocket'
               title='WebSocket 客户端'
               render={(index: number) => (
-                <div className='flex flex-col gap-4 p-2'>
+                <div className='flex flex-col gap-2 p-2'>
                   <Switch
                     className='p-2 rounded-lg bg-gray-50/50 mb-3'
                     {...methods.register(`onebot.ws_client.${index}.enable`)}
@@ -257,7 +257,7 @@ export const getAdapterComponent = (
               description='管理OneBot11协议的HTTP POST服务端'
               title='HTTP 服务端'
               render={(index: number) => (
-                <div className='flex flex-col gap-4 p-2'>
+                <div className='flex flex-col gap-2 p-2'>
                   <Switch
                     className='p-2 rounded-lg bg-gray-50/50 mb-3'
                     {...methods.register(`onebot.http_server.${index}.enable`)}

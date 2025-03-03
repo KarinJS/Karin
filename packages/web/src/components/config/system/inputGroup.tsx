@@ -7,7 +7,6 @@ import { Controller } from 'react-hook-form'
 
 import type { JSX } from 'react'
 import type { Control } from 'react-hook-form'
-import type { Config } from 'node-karin'
 
 /**
  * 输入框组组件
@@ -23,7 +22,7 @@ export const createInputGroup = (
   defaultValue: string[],
   label: string,
   description: string,
-  control: Control<Config, any>,
+  control: Control<any, any>,
 ): JSX.Element => {
   /** 最大输入框数量 */
   const maxInputs = 100
