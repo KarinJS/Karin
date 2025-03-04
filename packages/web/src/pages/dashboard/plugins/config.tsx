@@ -37,7 +37,10 @@ export default function PluginConfigPage () {
       setError(null)
       const result = await request.serverPost<GetConfigResponse, GetConfigRequest>(
         '/api/v1/plugin/config/get',
-        { name, type }
+        {
+          name: name.includes('@') ? name.replace(/-/, '/') : name,
+          type
+        }
       )
       setConfig(result)
     } catch (error) {

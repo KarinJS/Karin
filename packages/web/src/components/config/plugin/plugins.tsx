@@ -32,7 +32,7 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) =>
       const response = await request.serverPost<Record<string, any>, Record<string, any>>(
         '/api/v1/plugin/config/save',
         {
-          name: info.id,
+          name: info.id.includes('@') ? info.id.replace(/-/, '/') : info.id,
           type: info.type,
           config: componentResult
         }
