@@ -504,7 +504,13 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                                           'mt-2': index === 0,
                                         }
                                       )}
-                                      onPress={() => navigate(`${child.href}?type=${child.type || ''}`)}
+                                      onPress={() => {
+                                        // 处理组织名称
+                                        const href = child.href
+                                          .replace('/plugins/', '')
+                                          .replace(/\//g, '-')
+                                        navigate(`/plugins/${href}?type=${child.type || ''}`)
+                                      }}
                                     >
                                       {child.icon && <Icon name={child.icon?.name || ''} size={child.icon?.size} color={child.icon?.color} />}
                                       {child.id || child.href.split('/').pop()}

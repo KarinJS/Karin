@@ -1,4 +1,5 @@
 import { Switch as HeroSwitch } from '@heroui/switch'
+import { cn } from '@/lib/utils'
 import type { JSX } from 'react'
 import type { SwitchProps } from 'node-karin'
 import type { FormRegister } from '../config/plugin/render'
@@ -16,8 +17,6 @@ export const createSwitch = (
   const {
     componentType: _,
     key,
-    startText,
-    endText,
     className,
     componentClassName,
     defaultSelected,
@@ -25,21 +24,32 @@ export const createSwitch = (
   } = props
 
   return (
-    <div className='flex flex-col gap-1 p-2 ' key={`div-${key}`}>
-      {props.label && <label className='block text-sm font-medium text-gray-700'>{props.label}</label>}
-      <div className='flex items-center gap-2'>
-        {startText && <span>{startText}</span>}
-        <HeroSwitch
-          key={key}
-          {...options}
-          className={componentClassName}
-          defaultSelected={defaultSelected ?? false}
-          {...register(`${key}.value`)}
-        >
-          {endText}
-        </HeroSwitch>
-      </div>
-      {props.description && <span className='text-xs text-gray-500'>{props.description}</span>}
+    <div className={className || 'inline-block p-1'}>
+      <HeroSwitch
+        key={key}
+        {...options}
+        className={cn(
+          'inline-flex flex-row-reverse items-center',
+          'cursor-pointer rounded-lg border',
+          'border-gray-200',
+          `data-[selected=true]:border-${options.color || 'primary'}`,
+          'p-4',
+          'hover:bg-gray-50',
+          'w-[320px]',
+          className
+        )}
+        defaultSelected={defaultSelected ?? false}
+        {...register(`${key}.value`)}
+      >
+        <div className='flex-shrink'>
+          {props.label && (
+            <p className='font-medium text-base mb-2'>{props.label}</p>
+          )}
+          {props.description && (
+            <p className='text-xs text-gray-500'>{props.description}</p>
+          )}
+        </div>
+      </HeroSwitch>
     </div>
   )
 }
