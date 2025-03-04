@@ -28,7 +28,7 @@ export const InternalAccordion: FC<{
           onPress={add}
           className='px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
         >
-          添加新卡片
+          添加
         </Button>
       </div>
       <Accordion className='w-full border border-default-200 rounded-lg px-2 py-1'>

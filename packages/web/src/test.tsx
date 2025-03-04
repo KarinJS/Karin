@@ -355,7 +355,7 @@ export default function TestPage () {
     {
       key: 'default',
       cd: 0,
-      mode: 0,
+      mode: 0 as 0 | 1 | 2 | 3 | 4 | 5 | 6,
       alias: ['karin'],
       enable: [],
       disable: [],
@@ -366,7 +366,7 @@ export default function TestPage () {
     {
       key: 'Bot:selfId',
       cd: 0,
-      mode: 0,
+      mode: 0 as 0 | 1 | 2 | 3 | 4 | 5 | 6,
       alias: [],
       enable: [],
       disable: [],
@@ -377,7 +377,7 @@ export default function TestPage () {
     {
       key: 'Bot:selfId:groupId',
       cd: 0,
-      mode: 0,
+      mode: 0 as 0 | 1 | 2 | 3 | 4 | 5 | 6,
       alias: [],
       enable: [],
       disable: [],
@@ -388,7 +388,7 @@ export default function TestPage () {
     {
       key: 'Bot:selfId:guildId',
       cd: 0,
-      mode: 0,
+      mode: 0 as 0 | 1 | 2 | 3 | 4 | 5 | 6,
       alias: [],
       enable: [],
       disable: [],
@@ -399,7 +399,7 @@ export default function TestPage () {
     {
       key: 'Bot:selfId:guildId:channelId',
       cd: 0,
-      mode: 0,
+      mode: 0 as 0 | 1 | 2 | 3 | 4 | 5 | 6,
       alias: [],
       enable: [],
       disable: [],
@@ -487,7 +487,7 @@ export default function TestPage () {
       </Card>
 
       {/* 下方内容区域卡片 */}
-      <Card className='p-6'>
+      <Card className='p-0'>
         <Suspense fallback={<div>加载中...</div>}>
           <div key={refreshKey}>
             {LazyLoad(selectedTab)}
