@@ -1,7 +1,7 @@
 import { request } from '@/lib/request'
 import toast from 'react-hot-toast'
 
-import type { ConfigType } from '@/test'
+import type { ConfigType } from '@/pages/dashboard/config/index'
 
 /**
  * 保存系统配置

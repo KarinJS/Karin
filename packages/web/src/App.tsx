@@ -6,7 +6,7 @@ import DashboardLayout from '@/pages/dashboard/layout'
 // HomePage
 import IndexPage from '@/pages/dashboard'
 // Config Page
-import ConfigPage from '@/pages/dashboard/config'
+import ConfigPage from '@/pages/dashboard/config/index'
 // Plugin Market
 import PluginMarketPage from '@/pages/dashboard/plugins'
 // Sandbox Page
@@ -26,7 +26,6 @@ import RequireAuth from '@/components/auth/RequireAuth'
 import PluginConfigPage from '@/pages/dashboard/plugins/config'
 // 404 Page
 import NotFoundPage from '@/pages/404'
-import TestPage from './test'
 import { getPageTitle } from '@/lib/utils'
 import ScrollToTop from './components/common/ScrollToTop'
 
@@ -51,10 +50,9 @@ function App () {
           path='/'
         >
           <Route element={<IndexPage />} path='' />
-          <Route element={<ConfigPage />} path='/config' />
-          <Route element={<TestPage />} path='/test/*'>
-            <Route element={<Navigate to='/test/system' />} path='' />
-            <Route element={<TestPage />} path=':tab' />
+          <Route element={<ConfigPage />} path='/config/*'>
+            <Route element={<Navigate to='/config/system' />} path='' />
+            <Route element={<ConfigPage />} path=':tab' />
           </Route>
           <Route element={<PluginMarketPage />} path='/plugins/list' />
           <Route element={<PluginConfigPage />} path='/plugins/:name' />
