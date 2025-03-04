@@ -5,6 +5,7 @@ import { Input } from '@heroui/input'
 import { Switch } from '@heroui/switch'
 import { Tooltip } from '@heroui/tooltip'
 import { Divider } from '@heroui/divider'
+import { useLocation } from 'react-router-dom'
 import { InternalAccordion } from './accordion'
 import { NumberInput } from '@heroui/number-input'
 import { Terminal, Bot, Network, Server } from 'lucide-react'
@@ -199,6 +200,17 @@ const getAdapterComponent = (
                 {...methods.register('onebot.ws_server.timeout')}
                 defaultValue={data.onebot.ws_server.timeout}
                 placeholder='请输入请求回调等待时间'
+                description={
+                  <>
+                    如果你需要配置WebSocketServer的鉴权秘钥 请跳转到
+                    <a
+                      href='./env'
+                      className='text-primary font-medium hover:underline'
+                    > 环境变量
+                    </a>
+                    选项卡哦
+                  </>
+                }
                 isRequired
                 color='primary'
               />
