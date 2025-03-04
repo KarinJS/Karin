@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.4.5](https://github.com/KarinJS/Karin/compare/core-v1.4.4...core-v1.4.5) (2025-03-04)
+
+
+### 🐛 Bug Fixes
+
+* pub error ([0bfc6dc](https://github.com/KarinJS/Karin/commit/0bfc6dcb4603f4002b1b90400a6e8fd2e68f34ba))
+
 ## [1.4.4](https://github.com/KarinJS/Karin/compare/core-v1.4.3...core-v1.4.4) (2025-03-04)
 
 
