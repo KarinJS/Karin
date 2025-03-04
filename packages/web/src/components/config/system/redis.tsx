@@ -2,6 +2,7 @@ import { Input } from '@heroui/input'
 import { Form } from '@heroui/form'
 import { useForm, FormProvider } from 'react-hook-form'
 import { NumberInput } from '@heroui/number-input'
+import { saveConfig } from './save'
 
 import type { PM2 } from 'node-karin'
 
@@ -11,7 +12,7 @@ import type { PM2 } from 'node-karin'
  * @param formRef 表单引用，用于外部触发表单提交
  * @returns 适配器组件
  */
-export const getRedisComponent = (
+const getRedisComponent = (
   data: Record<string, any>,
   formRef: React.RefObject<HTMLFormElement | null>
 ) => {
@@ -55,7 +56,7 @@ export const getRedisComponent = (
   ]
 
   const onSubmit = (formData: Record<string, any>) => {
-    console.log('表单提交:', formData)
+    saveConfig('redis', formData)
   }
 
   return (
@@ -117,3 +118,5 @@ export const getRedisComponent = (
     </FormProvider>
   )
 }
+
+export default getRedisComponent

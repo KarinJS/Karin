@@ -1,3 +1,4 @@
+import { saveConfig } from './save'
 import { Divider } from '@heroui/divider'
 import { Form } from '@heroui/form'
 import { Switch } from '@heroui/switch'
@@ -14,7 +15,7 @@ import type { Config } from 'node-karin'
  * @param formRef 表单引用，用于外部触发表单提交
  * @returns 基本配置组件
  */
-export const getConfigComponent = (
+const getConfigComponent = (
   data: Config,
   formRef: React.RefObject<HTMLFormElement | null>
 ) => {
@@ -239,7 +240,7 @@ export const getConfigComponent = (
   ]
 
   const onSubmit = (formData: Config) => {
-    console.log('表单提交:', formData)
+    saveConfig('config', formData)
   }
 
   return (
@@ -314,3 +315,5 @@ export const getConfigComponent = (
     </FormProvider>
   )
 }
+
+export default getConfigComponent

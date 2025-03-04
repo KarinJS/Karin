@@ -5,7 +5,7 @@ import { Switch } from '@heroui/switch'
 import { Terminal, Network, Server } from 'lucide-react'
 import { useForm, FormProvider, useFieldArray } from 'react-hook-form'
 import { InternalAccordion } from './accordion'
-
+import { saveConfig } from './save'
 import type { Renders } from 'node-karin'
 
 /**
@@ -14,7 +14,7 @@ import type { Renders } from 'node-karin'
  * @param formRef 表单引用，用于外部触发表单提交
  * @returns 适配器组件
  */
-export const getRenderComponent = (
+const getRenderComponent = (
   data: Renders,
   formRef: React.RefObject<HTMLFormElement | null>
 ) => {
@@ -40,7 +40,7 @@ export const getRenderComponent = (
   })
 
   const onSubmit = (formData: Renders) => {
-    console.log('表单提交:', formData)
+    saveConfig('render', formData)
   }
 
   const addWsClient = () => {
@@ -174,3 +174,5 @@ export const getRenderComponent = (
     </FormProvider>
   )
 }
+
+export default getRenderComponent

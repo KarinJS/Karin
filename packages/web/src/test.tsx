@@ -1,7 +1,9 @@
 import { Card } from '@heroui/card'
+import toast from 'react-hot-toast'
+import { request } from '@/lib/request'
 import { Tabs, Tab } from '@heroui/tabs'
 import { Button } from '@heroui/button'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { lazy, useState, useRef, useEffect, Suspense } from 'react'
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/dropdown'
 import {
@@ -19,23 +21,38 @@ import {
   Settings2,
   Database
 } from 'lucide-react'
-import toast from 'react-hot-toast'
+
+export type ConfigType = 'config' | 'env' | 'adapter' | 'groups' | 'privates' | 'render' | 'redis' | 'pm2'
 
 // Tab项配置
 const tabItems = [
   { key: 'config', icon: Settings, label: '基本配置' },
   { key: 'env', icon: Settings2, label: '环境变量' },
   { key: 'adapter', icon: Plug, label: '适配器' },
-  { key: 'group', icon: Users, label: '群聊频道' },
-  { key: 'private', icon: MessageSquare, label: '好友私信' },
+  { key: 'groups', icon: Users, label: '群聊频道' },
+  { key: 'privates', icon: MessageSquare, label: '好友私信' },
   { key: 'render', icon: Palette, label: '渲染器' },
   { key: 'redis', icon: Database, label: 'Redis' },
   { key: 'pm2', icon: Server, label: 'PM2' },
 ]
 
+/**
+ * 加载状态组件
+ */
+const LoadingState = () => (
+  <div className='flex flex-col items-center justify-center p-8 space-y-4'>
+    <div className='relative w-12 h-12'>
+      <div className='absolute top-0 left-0 w-full h-full border-4 border-primary-200 rounded-full animate-ping opacity-75' />
+      <div className='absolute top-0 left-0 w-full h-full border-4 border-t-primary-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin' />
+    </div>
+    <p className='text-gray-600 animate-pulse'>正在加载配置...</p>
+  </div>
+)
+
 export default function TestPage () {
   const { tab } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const [selectedTab, setSelectedTab] = useState(tab || 'config')
   const [refreshKey, setRefreshKey] = useState(0)
   /** 跟踪滚动容器 用于移动端 */
@@ -44,6 +61,9 @@ export default function TestPage () {
   const scrollPositionRef = useRef(0)
   /** 表单引用 用于触发适配器组件中的表单提交 */
   const formRef = useRef<HTMLFormElement>(null)
+  const [loading, setLoading] = useState(false)
+  // 添加错误状态管理
+  const [error, setError] = useState<string | null>(null)
 
   /**
    * 处理Tab变化
@@ -55,8 +75,11 @@ export default function TestPage () {
       scrollPositionRef.current = tabsContainerRef.current.scrollLeft
     }
     setSelectedTab(key as string)
-    // 更新 URL
-    navigate(`/test/${key}`)
+
+    // 获取当前路径的基础部分
+    const basePath = location.pathname.split('/')[1]
+    // 更新 URL,使用动态的基础路径
+    navigate(`/${basePath}/${key}`)
   }
 
   /**
@@ -70,12 +93,33 @@ export default function TestPage () {
   }, [selectedTab])
 
   /**
-   * 处理保存按钮点击事件
+   * 获取指定类型的配置数据
+   * @param type 配置类型
    */
-  const handleSaveClick = () => {
-    if (formRef.current) {
-      formRef.current.requestSubmit()
+  const fetchConfig = async <T = any> (type: string): Promise<T> => {
+    setLoading(true)
+    setError(null) // 重置错误状态
+    try {
+      const response = await request.serverPost<Record<string, any>, { type: string }>(
+        '/api/v1/config/new/get',
+        { type }
+      )
+      return response as T
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : '加载配置失败'
+      setError(errorMessage)
+      toast.error(`配置加载失败: ${errorMessage}`)
+      throw err // 继续抛出错误，以便LazyLoad可以捕获
+    } finally {
+      setLoading(false)
     }
+  }
+
+  /**
+   * 触发表单提交保存
+   */
+  const handleSaveClick = async () => {
+    formRef.current!.requestSubmit()
   }
 
   /**
@@ -235,311 +279,106 @@ export default function TestPage () {
     </div>
   )
 
-  const adapter = {
-    console: {
-      isLocal: true,
-      token: '',
-      host: ''
-    },
-    onebot: {
-      ws_server: {
-        enable: true,
-        timeout: 120
-      },
-      ws_client: [
-        {
-          enable: false,
-          url: 'ws://127.0.0.1:7778',
-          token: ''
-        }
-      ],
-      http_server: [
-        {
-          enable: false,
-          self_id: 'default',
-          url: 'http://127.0.0.1:6099',
-          token: ''
-        }
-      ]
-    }
-  }
-
-  const render = {
-    ws_server: {
-      enable: true
-    },
-    ws_client: [
-      {
-        enable: false,
-        url: 'ws://127.0.0.1:7005/ws',
-        token: '123456'
-      }
-    ],
-    http_server: [
-      {
-        enable: false,
-        url: 'http://127.0.0.1:7005',
-        token: '123456'
-      }
-    ]
-  }
-
-  const config = {
-    master: [
-      'console'
-    ],
-    admin: [],
-    user: {
-      enable_list: [],
-      disable_list: []
-    },
-    friend: {
-      enable: true,
-      enable_list: [],
-      disable_list: [],
-      log_enable_list: [],
-      log_disable_list: []
-    },
-    group: {
-      enable: true,
-      enable_list: [],
-      disable_list: [],
-      log_enable_list: [],
-      log_disable_list: []
-    },
-    directs: {
-      enable: true,
-      enable_list: [],
-      disable_list: [],
-      log_enable_list: [],
-      log_disable_list: []
-    },
-    guilds: {
-      enable: true,
-      enable_list: [],
-      disable_list: [],
-      log_enable_list: [],
-      log_disable_list: []
-    },
-    channels: {
-      enable: true,
-      enable_list: [],
-      disable_list: [],
-      log_enable_list: [],
-      log_disable_list: []
-    }
-  }
-
-  const pm2 = {
-    lines: 1000,
-    apps: [
-      {
-        name: 'karin',
-        script: 'index.js',
-        autorestart: true,
-        max_restarts: 60,
-        max_memory_restart: '1G',
-        restart_delay: 2000,
-        merge_logs: true,
-        error_file: './@karinjs/logs/pm2_error.log',
-        out_file: './@karinjs/logs/pm2_out.log'
-      }
-    ]
-  }
-
-  const redis = {
-    url: 'redis://127.0.0.1:6379',
-    socket: {
-      host: '127.0.0.1',
-      port: 6379
-    },
-    username: '',
-    password: '',
-    database: 0
-  }
-
-  const group = [
-    {
-      key: 'default',
-      cd: 0,
-      mode: 0 as 0 | 1 | 2 | 3 | 4 | 5 | 6,
-      alias: ['karin'],
-      enable: [],
-      disable: [],
-      member_enable: [],
-      member_disable: [],
-      userCD: 0
-    },
-    {
-      key: 'Bot:selfId',
-      cd: 0,
-      mode: 0 as 0 | 1 | 2 | 3 | 4 | 5 | 6,
-      alias: [],
-      enable: [],
-      disable: [],
-      member_enable: [],
-      member_disable: [],
-      userCD: 0
-    },
-    {
-      key: 'Bot:selfId:groupId',
-      cd: 0,
-      mode: 0 as 0 | 1 | 2 | 3 | 4 | 5 | 6,
-      alias: [],
-      enable: [],
-      disable: [],
-      member_enable: [],
-      member_disable: [],
-      userCD: 0
-    },
-    {
-      key: 'Bot:selfId:guildId',
-      cd: 0,
-      mode: 0 as 0 | 1 | 2 | 3 | 4 | 5 | 6,
-      alias: [],
-      enable: [],
-      disable: [],
-      member_enable: [],
-      member_disable: [],
-      userCD: 0
-    },
-    {
-      key: 'Bot:selfId:guildId:channelId',
-      cd: 0,
-      mode: 0 as 0 | 1 | 2 | 3 | 4 | 5 | 6,
-      alias: [],
-      enable: [],
-      disable: [],
-      member_enable: [],
-      member_disable: [],
-      userCD: 0
-    }
-  ]
-
-  const privates = [
-    {
-      key: 'default',
-      cd: 0,
-      mode: 0 as 0 | 2 | 3 | 5 | 6,
-      alias: [],
-      enable: [],
-      disable: []
-    },
-    {
-      key: 'Bot:selfId',
-      cd: 0,
-      mode: 0 as 0 | 2 | 3 | 5 | 6,
-      alias: [],
-      enable: [],
-      disable: []
-    },
-    {
-      key: 'Bot:selfId:userId',
-      cd: 0,
-      mode: 0 as 0 | 2 | 3 | 5 | 6,
-      alias: [],
-      enable: [],
-      disable: []
-    }
-  ]
-
-  const env: Record<string, { value: string, comment: string }> = {
-    HTTP_ENABLE: { value: 'true', comment: '# 是否启用HTTP' },
-    HTTP_PORT: { value: '7777', comment: '# HTTP监听端口' },
-    HTTP_HOST: { value: '0.0.0.0', comment: '# HTTP监听地址' },
-    HTTP_AUTH_KEY: { value: 'abc123', comment: '# HTTP鉴权秘钥 仅用于karin自身Api' },
-    WS_SERVER_AUTH_KEY: { value: '', comment: '# ws_server鉴权秘钥' },
-    REDIS_ENABLE: { value: 'true', comment: '# 是否启用Redis 关闭后将使用内部虚拟Redis' },
-    PM2_RESTART: { value: 'true', comment: '# 重启是否调用pm2 如果不调用则会直接关机 此配置适合有进程守护的程序' },
-    LOG_LEVEL: { value: 'info', comment: '# 日志等级' },
-    LOG_DAYS_TO_KEEP: { value: '7', comment: '# 日志保留天数' },
-    LOG_MAX_LOG_SIZE: { value: '0', comment: '# 日志文件最大大小 如果此项大于0则启用日志分割' },
-    LOG_FNC_COLOR: { value: '', comment: '# E1D919"' },
-    LOG_MAX_CONNECTIONS: { value: '5', comment: '# 日志实时Api最多支持同时连接数' },
-    FFMPEG_PATH: { value: '', comment: '# ffmpeg' },
-    FFPROBE_PATH: { value: '', comment: '# ffprobe' },
-    FFPLAY_PATH: { value: '', comment: '# ffplay' },
-    RUNTIME: { value: 'tsx', comment: '# 这里请勿修改' },
-    NODE_ENV: { value: 'development', comment: '' }
-  }
-
   /**
    * 懒加载
-   * @param key 当前选中的Tab
+   * @param tab 当前选中的Tab
    * @returns 懒加载的组件
    */
   const LazyLoad = (tab: string) => {
-    if (tab === 'adapter') {
-      const AdapterComponent = lazy(() => import('@/components/config/system/adapter')
-        .then(module => ({
-          default: () => module.getAdapterComponent(adapter, formRef)
-        })))
+    // 提前定义组件导入函数，但不立即执行
+    const getComponent = (configType: ConfigType) => {
+      const componentMap = {
+        config: () => import('@/components/config/system/config'),
+        env: () => import('@/components/config/system/env'),
+        adapter: () => import('@/components/config/system/adapter'),
+        render: () => import('@/components/config/system/render'),
+        redis: () => import('@/components/config/system/redis'),
+        pm2: () => import('@/components/config/system/pm2'),
+        groups: () => import('@/components/config/system/group'),
+        privates: () => import('@/components/config/system/private')
+      }
 
-      return <AdapterComponent />
+      return componentMap[configType] || null
     }
 
-    if (tab === 'render') {
-      const RenderComponent = lazy(() => import('@/components/config/system/render')
-        .then(module => ({
-          default: () => module.getRenderComponent(render, formRef)
-        })))
+    // 使用useEffect来控制数据获取和组件加载
+    const [configData, setConfigData] = useState<any>(null)
+    const [dataLoaded, setDataLoaded] = useState(false)
 
-      return <RenderComponent />
+    // 确保只在组件挂载时或tab变化时执行一次数据获取
+    useEffect(() => {
+      // 重置状态
+      setDataLoaded(false)
+      setConfigData(null)
+
+      // 先获取数据
+      fetchConfig(tab)
+        .then(data => {
+          setConfigData(data)
+          setDataLoaded(true)
+        })
+        .catch(() => {
+          // 错误已经在fetchConfig中处理和设置
+          setDataLoaded(false)
+        })
+    }, [tab]) // 当tab变化时重新获取数据
+
+    if (loading) {
+      return <LoadingState />
     }
 
-    if (tab === 'config') {
-      const ConfigComponent = lazy(() => import('@/components/config/system/config')
-        .then(module => ({
-          default: () => module.getConfigComponent(config, formRef)
-        })))
-
-      return <ConfigComponent />
+    if (error) {
+      return (
+        <div className='p-4 text-danger'>
+          <h3 className='font-bold'>加载失败</h3>
+          <p>{error}</p>
+          <Button
+            color='primary'
+            className='mt-4'
+            onPress={() => {
+              setError(null)
+              setRefreshKey(prev => prev + 1)
+            }}
+          >
+            重试
+          </Button>
+        </div>
+      )
     }
 
-    if (tab === 'redis') {
-      const RedisComponent = lazy(() => import('@/components/config/system/redis')
-        .then(module => ({
-          default: () => module.getRedisComponent(redis, formRef)
-        })))
-
-      return <RedisComponent />
+    // 数据加载成功后，再懒加载组件
+    if (!dataLoaded) {
+      return (
+        <div className='flex flex-col items-center justify-center p-8 space-y-4'>
+          <div className='relative w-12 h-12'>
+            <div className='absolute top-0 left-0 w-full h-full border-4 border-primary-200 rounded-full animate-ping opacity-75' />
+            <div className='absolute top-0 left-0 w-full h-full border-4 border-t-primary-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin' />
+          </div>
+          <p className='text-gray-600 animate-pulse'>正在准备配置数据...</p>
+        </div>
+      )
     }
 
-    if (tab === 'pm2') {
-      const PM2Component = lazy(() => import('@/components/config/system/pm2')
-        .then(module => ({
-          default: () => module.getPm2Component(pm2, formRef)
-        })))
+    // 确保类型安全的组件加载
+    const loadComponentWithData = () => {
+      const importFn = getComponent(tab as ConfigType)
 
-      return <PM2Component />
+      if (!importFn) {
+        return Promise.resolve({
+          default: () => <div className='p-4'>未知的配置类型</div>
+        })
+      }
+
+      return importFn().then(module => {
+        return {
+          default: () => module.default(configData, formRef)
+        }
+      })
     }
 
-    if (tab === 'group') {
-      const GroupComponent = lazy(() => import('@/components/config/system/group')
-        .then(module => ({
-          default: () => module.getGroupComponent(group, formRef)
-        })))
+    const DynamicComponent = lazy(loadComponentWithData)
 
-      return <GroupComponent />
-    }
-
-    if (tab === 'private') {
-      const PrivateComponent = lazy(() => import('@/components/config/system/private')
-        .then(module => ({
-          default: () => module.getPrivateComponent(privates, formRef)
-        })))
-
-      return <PrivateComponent />
-    }
-
-    if (tab === 'env') {
-      const EnvComponent = lazy(() => import('@/components/config/system/env')
-        .then(module => ({
-          default: () => module.getEnvComponent(env, formRef)
-        })))
-
-      return <EnvComponent />
-    }
+    return <DynamicComponent />
   }
 
   return (
@@ -560,7 +399,7 @@ export default function TestPage () {
 
       {/* 下方内容区域卡片 */}
       <Card className='p-0'>
-        <Suspense fallback={<div>加载中...</div>}>
+        <Suspense fallback={<LoadingState />}>
           <div key={refreshKey}>
             {LazyLoad(selectedTab)}
           </div>

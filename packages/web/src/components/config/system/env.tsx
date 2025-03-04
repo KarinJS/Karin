@@ -4,7 +4,7 @@ import { useForm, FormProvider, useFieldArray } from 'react-hook-form'
 import { Button } from '@heroui/button'
 import { X } from 'lucide-react'
 import { getSystemEnvComponent } from './system-env'
-
+import { saveConfig } from './save'
 type EnvField = {
   key: string
   value: string
@@ -43,7 +43,7 @@ export const SYSTEM_ENV_KEYS = [
  * @param data 环境变量数据
  * @param formRef 表单引用
  */
-export const getEnvComponent = (
+const getEnvComponent = (
   data: Record<string, { value: string, comment: string }>,
   formRef: React.RefObject<HTMLFormElement | null>
 ) => {
@@ -99,7 +99,8 @@ export const getEnvComponent = (
         acc[key] = { value, comment }
         return acc
       }, {} as Record<string, { value: string, comment: string }>)
-    console.log('表单提交:', result)
+
+    saveConfig('env', result)
   }
 
   return (
@@ -175,3 +176,5 @@ export const getEnvComponent = (
     </FormProvider>
   )
 }
+
+export default getEnvComponent

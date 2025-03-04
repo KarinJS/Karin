@@ -8,6 +8,7 @@ import { RadioGroup, Radio } from '@heroui/radio'
 import { AddPrivateConfigDialog } from './addPrivateConfig'
 import { Accordion, AccordionItem } from '@heroui/accordion'
 import { useForm, FormProvider, useFieldArray, Controller } from 'react-hook-form'
+import { saveConfig } from './save'
 import { cn } from '@/lib/utils'
 
 import type { Privates } from 'node-karin'
@@ -19,15 +20,16 @@ import type { RadioProps } from '@heroui/radio'
  * @param formRef 表单引用，用于外部触发表单提交
  * @returns 基本配置组件
  */
-export const getPrivateComponent = (
+const getPrivateComponent = (
   data: Privates,
   formRef: React.RefObject<HTMLFormElement | null>
 ) => {
   const methods = useForm({
     defaultValues: {
-      values: data.map((item) => ({
-        ...item,
-        mode: item.mode + ''
+      values: Object.entries(data).map(([key, value]) => ({
+        ...value,
+        mode: value.mode + '',
+        key
       }))
     }
   })
@@ -64,11 +66,12 @@ export const getPrivateComponent = (
   const onSubmit = (formData: any) => {
     const data = formData.values.map((item: any) => ({
       ...item,
-      cd: Number(item.cd),
-      userCD: Number(item.userCD),
-      mode: Number(item.mode)
+      cd: Number(item.cd) ?? 0,
+      userCD: Number(item.userCD) ?? 0,
+      mode: Number(item.mode) ?? 0
     }))
-    console.log('表单提交:', data)
+
+    saveConfig('privates', data)
   }
 
   // 添加自定义 Radio 组件
@@ -262,3 +265,5 @@ export const getPrivateComponent = (
     </FormProvider>
   )
 }
+
+export default getPrivateComponent

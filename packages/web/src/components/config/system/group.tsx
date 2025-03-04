@@ -9,7 +9,7 @@ import { AddConfigDialog } from './addGroupConfig'
 import { Accordion, AccordionItem } from '@heroui/accordion'
 import { useForm, FormProvider, useFieldArray, Controller } from 'react-hook-form'
 import { cn } from '@/lib/utils'
-
+import { saveConfig } from './save'
 import type { Groups } from 'node-karin'
 import type { RadioProps } from '@heroui/radio'
 
@@ -19,15 +19,16 @@ import type { RadioProps } from '@heroui/radio'
  * @param formRef 表单引用，用于外部触发表单提交
  * @returns 基本配置组件
  */
-export const getGroupComponent = (
+const getGroupComponent = (
   data: Groups,
   formRef: React.RefObject<HTMLFormElement | null>
 ) => {
   const methods = useForm({
     defaultValues: {
-      values: data.map((item) => ({
-        ...item,
-        mode: item.mode + ''
+      values: Object.entries(data).map(([key, value]) => ({
+        ...value,
+        mode: value.mode + '',
+        key
       }))
     }
   })
@@ -67,11 +68,12 @@ export const getGroupComponent = (
   const onSubmit = (formData: any) => {
     const data = formData.values.map((item: any) => ({
       ...item,
-      cd: Number(item.cd),
-      userCD: Number(item.userCD),
-      mode: Number(item.mode)
+      cd: Number(item.cd) ?? 0,
+      userCD: Number(item.userCD) ?? 0,
+      mode: Number(item.mode) ?? 0
     }))
-    console.log('表单提交:', data)
+
+    saveConfig('groups', data)
   }
 
   // 添加自定义 Radio 组件
@@ -302,3 +304,5 @@ export const getGroupComponent = (
     </FormProvider>
   )
 }
+
+export default getGroupComponent

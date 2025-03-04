@@ -202,8 +202,8 @@ export const writeEnv = (
 
   data.forEach((item) => {
     const { key, value, comment } = item
-    if (!key || !value || typeof key !== 'string' || typeof value !== 'string') {
-      logger.error('[writeEnv]', 'key 和 value 必须为字符串')
+    if (!key || typeof key !== 'string' || typeof value !== 'string') {
+      logger.error('[writeEnv]', 'key 必须为字符串')
       return
     }
 

@@ -3,7 +3,7 @@ import { Form } from '@heroui/form'
 import { useForm, FormProvider } from 'react-hook-form'
 import { NumberInput } from '@heroui/number-input'
 import { Switch } from '@heroui/switch'
-
+import { saveConfig } from './save'
 import type { PM2 } from 'node-karin'
 
 /**
@@ -12,7 +12,7 @@ import type { PM2 } from 'node-karin'
  * @param formRef 表单引用，用于外部触发表单提交
  * @returns 适配器组件
  */
-export const getPm2Component = (
+const getPm2Component = (
   data: PM2,
   formRef: React.RefObject<HTMLFormElement | null>
 ) => {
@@ -91,7 +91,8 @@ export const getPm2Component = (
       apps: data.apps
     }
     result.apps[0] = formData.apps
-    console.log('表单提交:', result)
+
+    saveConfig('pm2', result)
   }
 
   return (
@@ -158,3 +159,5 @@ export const getPm2Component = (
     </FormProvider>
   )
 }
+
+export default getPm2Component

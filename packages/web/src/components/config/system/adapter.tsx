@@ -1,13 +1,14 @@
+import { useState } from 'react'
+import { saveConfig } from './save'
+import { Form } from '@heroui/form'
 import { Input } from '@heroui/input'
+import { Switch } from '@heroui/switch'
 import { Tooltip } from '@heroui/tooltip'
 import { Divider } from '@heroui/divider'
-import { Form } from '@heroui/form'
-import { Switch } from '@heroui/switch'
-import { useState } from 'react'
-import { Terminal, Bot, Network, Server } from 'lucide-react'
-import { NumberInput } from '@heroui/number-input'
-import { useForm, FormProvider, useFieldArray } from 'react-hook-form'
 import { InternalAccordion } from './accordion'
+import { NumberInput } from '@heroui/number-input'
+import { Terminal, Bot, Network, Server } from 'lucide-react'
+import { useForm, FormProvider, useFieldArray } from 'react-hook-form'
 
 import type { Adapters } from 'node-karin'
 
@@ -17,7 +18,7 @@ import type { Adapters } from 'node-karin'
  * @param formRef 表单引用，用于外部触发表单提交
  * @returns 适配器组件
  */
-export const getAdapterComponent = (
+const getAdapterComponent = (
   data: Adapters,
   formRef: React.RefObject<HTMLFormElement | null>
 ) => {
@@ -62,7 +63,7 @@ export const getAdapterComponent = (
         host: formData.console.host ? `${protocol}://${formData.console.host}` : ''
       }
     }
-    console.log('表单提交:', finalData)
+    saveConfig('adapter', finalData)
   }
 
   const addWsClient = () => {
@@ -298,3 +299,4 @@ export const getAdapterComponent = (
     </FormProvider>
   )
 }
+export default getAdapterComponent
