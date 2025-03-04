@@ -27,8 +27,8 @@ interface FormData {
  */
 const CONFIG_MODES = {
   group: [
-    { value: 'single', label: '单独添加群号' },
-    { value: 'withBot', label: '指定Bot和群号' }
+    { value: 'single', label: '添加单个群配置' },
+    { value: 'withBot', label: '添加指定Bot下的群配置' }
   ],
   channel: [
     { value: 'guildOnly', label: '配置单个频道' },

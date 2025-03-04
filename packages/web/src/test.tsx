@@ -409,6 +409,33 @@ export default function TestPage () {
     }
   ]
 
+  const privates = [
+    {
+      key: 'default',
+      cd: 0,
+      mode: 0 as 0 | 2 | 3 | 5 | 6,
+      alias: [],
+      enable: [],
+      disable: []
+    },
+    {
+      key: 'Bot:selfId',
+      cd: 0,
+      mode: 0 as 0 | 2 | 3 | 5 | 6,
+      alias: [],
+      enable: [],
+      disable: []
+    },
+    {
+      key: 'Bot:selfId:userId',
+      cd: 0,
+      mode: 0 as 0 | 2 | 3 | 5 | 6,
+      alias: [],
+      enable: [],
+      disable: []
+    }
+  ]
+
   /**
    * 懒加载
    * @param key 当前选中的Tab
@@ -467,6 +494,15 @@ export default function TestPage () {
         })))
 
       return <GroupComponent />
+    }
+
+    if (tsb === 'private') {
+      const PrivateComponent = lazy(() => import('@/components/config/system/private')
+        .then(module => ({
+          default: () => module.getPrivateComponent(privates, formRef)
+        })))
+
+      return <PrivateComponent />
     }
   }
 

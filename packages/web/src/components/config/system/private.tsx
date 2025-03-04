@@ -5,12 +5,12 @@ import { Button } from '@heroui/button'
 import { createInputGroup } from './inputGroup'
 import { NumberInput } from '@heroui/number-input'
 import { RadioGroup, Radio } from '@heroui/radio'
-import { AddConfigDialog } from './addGroupConfig'
+import { AddPrivateConfigDialog } from './addPrivateConfig'
 import { Accordion, AccordionItem } from '@heroui/accordion'
 import { useForm, FormProvider, useFieldArray, Controller } from 'react-hook-form'
 import { cn } from '@/lib/utils'
 
-import type { Groups } from 'node-karin'
+import type { Privates } from 'node-karin'
 import type { RadioProps } from '@heroui/radio'
 
 /**
@@ -19,8 +19,8 @@ import type { RadioProps } from '@heroui/radio'
  * @param formRef 表单引用，用于外部触发表单提交
  * @returns 基本配置组件
  */
-export const getGroupComponent = (
-  data: Groups,
+export const getPrivateComponent = (
+  data: Privates,
   formRef: React.RefObject<HTMLFormElement | null>
 ) => {
   const methods = useForm({
@@ -51,13 +51,10 @@ export const getGroupComponent = (
     append({
       key: config,
       cd: 0,
-      userCD: 0,
       mode: '0',
       alias: [],
       enable: [],
       disable: [],
-      member_enable: [],
-      member_disable: []
     })
 
     toast.success(`已添加配置: ${config}`)
@@ -162,19 +159,8 @@ export const getGroupComponent = (
                           {...methods.register(`values.${index}.cd`)}
                           color='primary'
                           label='全局冷却时间'
-                          placeholder='群聊、频道中所有消息冷却时间，单位秒，0则无限制'
-                          description='群聊、频道中所有消息冷却时间，单位秒，0则无限制'
-                          min={0}
-                          max={10000}
-                          isRequired
-                        />
-                        {/* @ts-ignore */}
-                        <NumberInput
-                          {...methods.register(`values.${index}.userCD`)}
-                          color='primary'
-                          label='单个用户冷却时间'
-                          placeholder='群聊、频道中 每个人的消息冷却时间，单位秒，0则无限制'
-                          description='群聊、频道中 每个人的消息冷却时间，单位秒，0则无限制'
+                          placeholder='全部好友事件的冷却时间，单位秒，0则无限制'
+                          description='全部好友事件的冷却时间，单位秒，0则无限制'
                           min={0}
                           max={10000}
                           isRequired
@@ -207,10 +193,10 @@ export const getGroupComponent = (
                               默认
                             </CustomRadio>
                             <CustomRadio
-                              value='1'
-                              description='仅在被@时响应消息'
+                              value='3'
+                              description='只响应使用别名的消息'
                             >
-                              仅@机器人
+                              仅回应别名
                             </CustomRadio>
                             <CustomRadio
                               value='6'
@@ -225,20 +211,8 @@ export const getGroupComponent = (
                               仅回应管理员
                             </CustomRadio>
                             <CustomRadio
-                              value='3'
-                              description='只响应使用别名的消息'
-                            >
-                              仅回应别名
-                            </CustomRadio>
-                            <CustomRadio
-                              value='4'
-                              description='使用别名或@机器人时响应'
-                            >
-                              别名或@机器人
-                            </CustomRadio>
-                            <CustomRadio
                               value='5'
-                              description='主人管理员无限制，反之需别名或@'
+                              description='主人管理员无限制，反之需别名'
                             >
                               管理无限制
                             </CustomRadio>
@@ -270,20 +244,6 @@ export const getGroupComponent = (
                         '黑名单中的插件、功能不会响应 例如: `karin-plugin-test:app.js` `karin-plugin-test:测试转发`',
                         methods.control
                       )}
-                      {createInputGroup(
-                        `values.${index}.member_enable`,
-                        val.member_enable,
-                        '群、频道成员单独白名单',
-                        '群、频道成员单独白名单',
-                        methods.control
-                      )}
-                      {createInputGroup(
-                        `values.${index}.member_disable`,
-                        val.member_disable,
-                        '群、频道成员单独黑名单',
-                        '群、频道成员单独黑名单',
-                        methods.control
-                      )}
                     </div>
                   </div>
                 </AccordionItem>
@@ -294,7 +254,7 @@ export const getGroupComponent = (
       </Form>
 
       {/* 确保对话框在最外层渲染，避免被其他元素遮挡 */}
-      <AddConfigDialog
+      <AddPrivateConfigDialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         onConfirm={handleAddConfig}
