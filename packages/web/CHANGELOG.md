@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.3](https://github.com/KarinJS/Karin/compare/web-v1.4.2...web-v1.4.3) (2025-03-04)
+
+
+### 💄 Styles
+
+* 关于我们页面样式 ([#289](https://github.com/KarinJS/Karin/issues/289)) ([f39f9e6](https://github.com/KarinJS/Karin/commit/f39f9e670583734f6db5e160dd67116893cd67bb))
+
+
+### ♻️ Code Refactoring
+
+* 重构框架配置页面 ([#292](https://github.com/KarinJS/Karin/issues/292)) ([e718144](https://github.com/KarinJS/Karin/commit/e7181441b2b4c86b1f557a8e17c735e2396817f8))
+
 ## [1.4.2](https://github.com/KarinJS/Karin/compare/web-v1.4.1...web-v1.4.2) (2025-03-01)
 
 
