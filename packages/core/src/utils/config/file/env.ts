@@ -44,7 +44,7 @@ const parser = (content: string) => {
       value = value.replace(/^"|"$/g, '')
     }
 
-    list.push({ key, value, comment })
+    list.push({ key, value, comment: comment.replace(/\\r|\\n/g, '').trim() })
   })
 
   /** 返回对象 */
@@ -126,7 +126,7 @@ export const authKey = () => {
 
 /**
  * @public 公开Api
- * @description 修改`.env`文件
+ * @description 修改`.env`文件 此方法仅允许写入单个键值对 如需写入多个键值对和注释 请使用`writeEnv`方法
  * @param data - 需要更新的环境变量键值对
  * @returns 是否更新成功
  */
@@ -184,6 +184,58 @@ export const env = (): Env => {
   })
 
   return env as unknown as Env
+}
+
+/**
+ * 写入单个或多个环境变量
+ * @param data 要写入的环境变量
+ * @param cwd env文件路径 默认系统.env文件
+ * @param isCover 如果键已经存在 是否覆盖已有的值 默认否
+ */
+export const writeEnv = (
+  data: { key: string, value: string, comment: string } | { key: string, value: string, comment: string }[],
+  cwd: string = path.join(process.cwd(), '.env'),
+  isCover: boolean = false
+) => {
+  const env = getEnv(cwd)
+  if (!Array.isArray(data)) data = [data]
+
+  data.forEach((item) => {
+    const { key, value, comment } = item
+    if (!key || typeof key !== 'string' || typeof value !== 'string') {
+      logger.error('[writeEnv]', 'key 必须为字符串')
+      return
+    }
+
+    if (env[key]) {
+      if (!isCover) {
+        logger.debug(`[writeEnv] key: ${key} 已存在 跳过`)
+        return
+      }
+    }
+
+    env[key] = {
+      value,
+      comment: comment || env?.[key]?.comment || '',
+    }
+  })
+
+  const content = Object.entries(env)
+    .map(([key, value]) => {
+      /** 统一处理value前后的注释 */
+      const val = /^".*"$/.test(value.value) ? value.value : `"${value.value}"`
+
+      if (value.comment) {
+        const comment = /^#/.test(value.comment) ? value.comment : `# ${value.comment}`
+        return `${comment}\n${key}=${val}`
+      }
+
+      return `${key}=${val}`
+    })
+    .join('\n')
+
+  fs.writeFileSync(cwd, content)
+  dotenv.config({ path: cwd, override: true })
 }
 
 export default initEnv

@@ -1,9 +1,9 @@
 import type { Radio, RadioGroupProps } from '@/types/components'
 
 /**
- * 创建复选框配置
+ * 创建单选框配置
  * @param key 唯一标识符
- * @param config 复选框配置（可选）
+ * @param config 单选框配置（可选）
  */
 const createRadio = (
   key: string,
@@ -16,9 +16,9 @@ const createRadio = (
 })
 
 /**
- * 创建复选框组配置
+ * 创建单选框组配置
  * @param key 唯一标识符
- * @param config 复选框组配置（可选）
+ * @param config 单选框组配置（可选）
  */
 const createRadioGroup = (
   key: string,

@@ -42,7 +42,7 @@ export const setYaml = <T extends keyof FileListMap> (
 }
 
 /**
- * @description 修改框架配置
+ * @description 修改框架配置 修改系统配置
  * @param name 文件名称
  * @param data 配置数据
  */

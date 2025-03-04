@@ -1,3 +1,7 @@
+/**
+ * @deprecated 2025年3月4日21:32:48 请使用新的配置页面
+ */
+
 import { router } from '../router'
 import { createSuccessResponse } from '@/server/utils/response'
 import { config, adapter, groups, privates, render, pm2, redis, env } from '@/utils/config'

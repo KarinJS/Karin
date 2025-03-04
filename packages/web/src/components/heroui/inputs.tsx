@@ -8,7 +8,7 @@ import { Controller } from 'react-hook-form'
 
 import type { JSX } from 'react'
 import type { InputProps, InputGroupProps } from 'node-karin'
-import type { FormControl, FormRegister } from '../config/render'
+import type { FormControl, FormRegister } from '../config/plugin/render'
 
 /**
  * 生成div的className

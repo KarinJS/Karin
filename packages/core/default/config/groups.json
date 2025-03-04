@@ -1,47 +1,67 @@
-{
-  "default": {
+[
+  {
+    "key": "default",
     "cd": 0,
+    "userCD": 0,
     "mode": 0,
     "alias": [],
     "enable": [],
     "disable": [],
     "member_enable": [],
-    "member_disable": []
+    "member_disable": [],
+    "memberEnable": [],
+    "memberDisable": []
   },
-  "Bot:selfId": {
+  {
+    "key": "Bot:selfId",
     "cd": 0,
+    "userCD": 0,
     "mode": 0,
     "alias": [],
     "enable": [],
     "disable": [],
     "member_enable": [],
-    "member_disable": []
+    "member_disable": [],
+    "memberEnable": [],
+    "memberDisable": []
   },
-  "Bot:selfId:groupId": {
+  {
+    "key": "Bot:selfId:groupId",
     "cd": 0,
+    "userCD": 0,
     "mode": 0,
     "alias": [],
     "enable": [],
     "disable": [],
     "member_enable": [],
-    "member_disable": []
+    "member_disable": [],
+    "memberEnable": [],
+    "memberDisable": []
   },
-  "Bot:selfId:guildId": {
+  {
+    "key": "Bot:selfId:guildId",
     "cd": 0,
+    "userCD": 0,
     "mode": 0,
     "alias": [],
     "enable": [],
     "disable": [],
     "member_enable": [],
-    "member_disable": []
+    "member_disable": [],
+    "memberEnable": [],
+    "memberDisable": []
   },
-  "Bot:selfId:guildId:channelId": {
+  {
+    "key": "Bot:selfId:guildId:channelId",
     "cd": 0,
+    "userCD": 0,
     "mode": 0,
     "alias": [],
     "enable": [],
     "disable": [],
     "member_enable": [],
-    "member_disable": []
+    "member_disable": [],
+    "memberEnable": [],
+    "memberDisable": []
   }
-}
+]
