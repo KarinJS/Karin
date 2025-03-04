@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.5](https://github.com/KarinJS/Karin/compare/web-v1.4.4...web-v1.4.5) (2025-03-04)
+
+
+### 🐛 Bug Fixes
+
+* 组织名称修正 ([45e7ad7](https://github.com/KarinJS/Karin/commit/45e7ad7a9dfc799892480ff6963853231319e952))
+
 ## [1.4.4](https://github.com/KarinJS/Karin/compare/web-v1.4.3...web-v1.4.4) (2025-03-04)
 
 
