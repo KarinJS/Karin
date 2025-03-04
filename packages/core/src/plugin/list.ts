@@ -2,13 +2,14 @@ import fs from 'node:fs'
 import path from 'node:path'
 import lodash from 'lodash'
 import { isTsx } from '@/env'
-import { filesByExt } from '@/utils/fs/path'
+import { createAddEnv } from './env'
 import { pluginDir as dir } from '@/root'
+import { filesByExt } from '@/utils/fs/path'
+import { writeEnv } from '@/utils/config/file/env'
 import { requireFile, requireFileSync } from '@/utils/fs/require'
 
 import type { PkgData, PkgEnv } from '@/utils/fs/pkg'
 import type { GetPluginType, PkgInfo, GetPluginReturn } from '@/types/plugin'
-import { createAddEnv } from './env'
 
 /**
  * 缓存
@@ -119,8 +120,8 @@ const getPluginsInfo = async (list: string[], isForce: boolean, isFirst: boolean
     }
   }))
 
-  /** 处理环境变量 同步 */
-
+  /** 处理环境变量 同步写入 */
+  env && writeEnv(env)
   return info
 }
 
