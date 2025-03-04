@@ -33,8 +33,5 @@
   },
   "peerDependencies": {
     "@karinjs/karin-types": "workspace:*"
-  },
-  "dependencies": {
-    "@heroui/number-input": "^2.0.3"
   }
 }

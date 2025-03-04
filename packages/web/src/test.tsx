@@ -24,6 +24,7 @@ import toast from 'react-hot-toast'
 // Tab项配置
 const tabItems = [
   { key: 'config', icon: Settings, label: '基本配置' },
+  { key: 'env', icon: Settings2, label: '环境变量' },
   { key: 'adapter', icon: Plug, label: '适配器' },
   { key: 'group', icon: Users, label: '群聊频道' },
   { key: 'private', icon: MessageSquare, label: '好友私信' },
@@ -170,25 +171,31 @@ export default function TestPage () {
    * @returns PC端布局
    */
   const DesktopLayout = () => (
-    <div className='hidden md:flex items-center justify-between gap-4'>
-      <Tabs
-        selectedKey={selectedTab}
-        onSelectionChange={handleTabChange}
-        className='w-full'
-      >
-        {tabItems.map(({ key, icon: Icon, label }) => (
-          <Tab
-            key={key}
-            title={
-              <div className='flex items-center gap-2'>
-                <Icon size={18} />
-                <span>{label}</span>
-              </div>
-            }
-          />
-        ))}
-      </Tabs>
-      <ActionButtons showText />
+    <div className='hidden md:flex items-center gap-4 w-full'>
+      {/* 添加一个容器来包裹Tabs，使其可以水平滚动 */}
+      <div className='flex-1 overflow-x-auto'>
+        <Tabs
+          selectedKey={selectedTab}
+          onSelectionChange={handleTabChange}
+          className='min-w-fit'
+        >
+          {tabItems.map(({ key, icon: Icon, label }) => (
+            <Tab
+              key={key}
+              title={
+                <div className='flex items-center gap-2 whitespace-nowrap'>
+                  <Icon size={18} />
+                  <span>{label}</span>
+                </div>
+              }
+            />
+          ))}
+        </Tabs>
+      </div>
+      {/* 按钮组添加shrink-0防止被压缩 */}
+      <div className='shrink-0'>
+        <ActionButtons showText />
+      </div>
     </div>
   )
 
@@ -436,13 +443,33 @@ export default function TestPage () {
     }
   ]
 
+  const env: Record<string, { value: string, comment: string }> = {
+    HTTP_ENABLE: { value: 'true', comment: '# 是否启用HTTP' },
+    HTTP_PORT: { value: '7777', comment: '# HTTP监听端口' },
+    HTTP_HOST: { value: '0.0.0.0', comment: '# HTTP监听地址' },
+    HTTP_AUTH_KEY: { value: 'abc123', comment: '# HTTP鉴权秘钥 仅用于karin自身Api' },
+    WS_SERVER_AUTH_KEY: { value: '', comment: '# ws_server鉴权秘钥' },
+    REDIS_ENABLE: { value: 'true', comment: '# 是否启用Redis 关闭后将使用内部虚拟Redis' },
+    PM2_RESTART: { value: 'true', comment: '# 重启是否调用pm2 如果不调用则会直接关机 此配置适合有进程守护的程序' },
+    LOG_LEVEL: { value: 'info', comment: '# 日志等级' },
+    LOG_DAYS_TO_KEEP: { value: '7', comment: '# 日志保留天数' },
+    LOG_MAX_LOG_SIZE: { value: '0', comment: '# 日志文件最大大小 如果此项大于0则启用日志分割' },
+    LOG_FNC_COLOR: { value: '', comment: '# E1D919"' },
+    LOG_MAX_CONNECTIONS: { value: '5', comment: '# 日志实时Api最多支持同时连接数' },
+    FFMPEG_PATH: { value: '', comment: '# ffmpeg' },
+    FFPROBE_PATH: { value: '', comment: '# ffprobe' },
+    FFPLAY_PATH: { value: '', comment: '# ffplay' },
+    RUNTIME: { value: 'tsx', comment: '# 这里请勿修改' },
+    NODE_ENV: { value: 'development', comment: '' }
+  }
+
   /**
    * 懒加载
    * @param key 当前选中的Tab
    * @returns 懒加载的组件
    */
-  const LazyLoad = (tsb: string) => {
-    if (tsb === 'adapter') {
+  const LazyLoad = (tab: string) => {
+    if (tab === 'adapter') {
       const AdapterComponent = lazy(() => import('@/components/config/system/adapter')
         .then(module => ({
           default: () => module.getAdapterComponent(adapter, formRef)
@@ -451,7 +478,7 @@ export default function TestPage () {
       return <AdapterComponent />
     }
 
-    if (tsb === 'render') {
+    if (tab === 'render') {
       const RenderComponent = lazy(() => import('@/components/config/system/render')
         .then(module => ({
           default: () => module.getRenderComponent(render, formRef)
@@ -460,7 +487,7 @@ export default function TestPage () {
       return <RenderComponent />
     }
 
-    if (tsb === 'config') {
+    if (tab === 'config') {
       const ConfigComponent = lazy(() => import('@/components/config/system/config')
         .then(module => ({
           default: () => module.getConfigComponent(config, formRef)
@@ -469,7 +496,7 @@ export default function TestPage () {
       return <ConfigComponent />
     }
 
-    if (tsb === 'redis') {
+    if (tab === 'redis') {
       const RedisComponent = lazy(() => import('@/components/config/system/redis')
         .then(module => ({
           default: () => module.getRedisComponent(redis, formRef)
@@ -478,7 +505,7 @@ export default function TestPage () {
       return <RedisComponent />
     }
 
-    if (tsb === 'pm2') {
+    if (tab === 'pm2') {
       const PM2Component = lazy(() => import('@/components/config/system/pm2')
         .then(module => ({
           default: () => module.getPm2Component(pm2, formRef)
@@ -487,7 +514,7 @@ export default function TestPage () {
       return <PM2Component />
     }
 
-    if (tsb === 'group') {
+    if (tab === 'group') {
       const GroupComponent = lazy(() => import('@/components/config/system/group')
         .then(module => ({
           default: () => module.getGroupComponent(group, formRef)
@@ -496,13 +523,22 @@ export default function TestPage () {
       return <GroupComponent />
     }
 
-    if (tsb === 'private') {
+    if (tab === 'private') {
       const PrivateComponent = lazy(() => import('@/components/config/system/private')
         .then(module => ({
           default: () => module.getPrivateComponent(privates, formRef)
         })))
 
       return <PrivateComponent />
+    }
+
+    if (tab === 'env') {
+      const EnvComponent = lazy(() => import('@/components/config/system/env')
+        .then(module => ({
+          default: () => module.getEnvComponent(env, formRef)
+        })))
+
+      return <EnvComponent />
     }
   }
 

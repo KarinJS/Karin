@@ -4,6 +4,16 @@ import { cache } from '@/plugin/cache'
 import { createRequire } from 'module'
 import { requireFileSync } from './require'
 
+/** pkg环境变量类型 */
+export interface PkgEnv {
+  /** 变量名 */
+  key: string
+  /** 变量值 */
+  value: string
+  /** 变量注释 */
+  comment: string
+}
+
 /** package.json类型 */
 export interface PkgData {
   /** 插件名称 */
@@ -27,6 +37,8 @@ export interface PkgData {
     static?: string | string[]
     /** 基本文件夹结构 */
     files?: string[]
+    /** 环境变量配置 */
+    env?: PkgEnv[]
   }
   [key: string]: any
 }

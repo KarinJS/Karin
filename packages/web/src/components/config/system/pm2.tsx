@@ -2,9 +2,9 @@ import { Input } from '@heroui/input'
 import { Form } from '@heroui/form'
 import { useForm, FormProvider } from 'react-hook-form'
 import { NumberInput } from '@heroui/number-input'
+import { Switch } from '@heroui/switch'
 
 import type { PM2 } from 'node-karin'
-import { Switch } from '@heroui/switch'
 
 /**
  * 获取pm2组件

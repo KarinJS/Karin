@@ -58,7 +58,7 @@ export class LoaderPlugin {
     const entryPromises: Promise<any>[] = []
 
     /** 并发加载所有插件 */
-    const list = await getPlugins('all', true)
+    const list = await getPlugins('all', true, false, true)
     debug('debug: getPlugins', list)
 
     await Promise.all(list.map(async (pkg) => {
@@ -198,7 +198,7 @@ export class LoaderPlugin {
   private async loaderMain (name: string, file: string, isRefresh = false) {
     try {
       await import(`file://${file}${isRefresh ? `?t=${Date.now()}` : ''}`)
-    } catch (error: any) {
+    } catch (error) {
       errorHandler.loaderPlugin(name, file, error)
     }
   }

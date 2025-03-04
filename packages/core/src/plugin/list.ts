@@ -6,7 +6,9 @@ import { filesByExt } from '@/utils/fs/path'
 import { pluginDir as dir } from '@/root'
 import { requireFile, requireFileSync } from '@/utils/fs/require'
 
+import type { PkgData, PkgEnv } from '@/utils/fs/pkg'
 import type { GetPluginType, PkgInfo, GetPluginReturn } from '@/types/plugin'
+import { createAddEnv } from './env'
 
 /**
  * 缓存
@@ -28,7 +30,8 @@ const cache: {
 export const getPlugins = async<T extends boolean = false> (
   type: GetPluginType,
   isInfo?: T,
-  isForce: boolean = false
+  isForce: boolean = false,
+  isFirst: boolean = false
 ): Promise<GetPluginReturn<T>> => {
   if (isForce) {
     delete cache.list
@@ -79,7 +82,7 @@ export const getPlugins = async<T extends boolean = false> (
   setTimeout(() => delete cache?.list?.[type], 60 * 1000)
   if (!isInfo) return list as GetPluginReturn<T>
 
-  const info = await getPluginsInfo(list, isForce)
+  const info = await getPluginsInfo(list, isForce, isFirst)
   cache.info[type] = info
   setTimeout(() => delete cache?.info?.[type], 60 * 1000)
   return info as GetPluginReturn<T>
@@ -89,9 +92,11 @@ export const getPlugins = async<T extends boolean = false> (
  * 获取插件详细信息
  * @param list 插件名称列表
  */
-const getPluginsInfo = async (list: string[], isForce: boolean): Promise<PkgInfo[]> => {
+const getPluginsInfo = async (list: string[], isForce: boolean, isFirst: boolean): Promise<PkgInfo[]> => {
   const info: PkgInfo[] = []
   const ext = isTsx() ? ['.ts', '.js'] : ['.js']
+
+  const env: PkgEnv[] | null = isFirst ? [] : null
 
   await Promise.allSettled(list.map(async (v) => {
     const [type, name] = v.split(':')
@@ -104,15 +109,17 @@ const getPluginsInfo = async (list: string[], isForce: boolean): Promise<PkgInfo
 
     if (type === 'git' || type === 'root') {
       const file = type === 'root' ? process.cwd() : path.join(dir, name)
-      await getGitInfo(info, file, name, ext, isForce)
+      await getGitInfo(info, file, name, ext, isForce, env)
       return
     }
 
     if (type === 'npm') {
       const file = path.join(process.cwd(), 'node_modules', name)
-      await getNpmInfo(info, file, name, isForce)
+      await getNpmInfo(info, file, name, isForce, env)
     }
   }))
+
+  /** 处理环境变量 同步 */
 
   return info
 }
@@ -162,19 +169,24 @@ const getAppInfo = async (info: PkgInfo[], dir: string, name: string, ext: strin
  * @param name 插件名称
  * @param ext 文件后缀
  * @param isForce 是否强制更新缓存
+ * @param env 收集插件的环境变量配置
  */
 const getGitInfo = async (
   info: PkgInfo[],
   dir: string,
   name: string,
   ext: string[],
-  isForce: boolean
+  isForce: boolean,
+  env: PkgEnv[] | null
 ) => {
-  const pkg = await requireFile(path.join(dir, 'package.json'))
+  const pkg = await requireFile<PkgData>(path.join(dir, 'package.json'))
   if (!pkg || !pkg.karin) {
     info.push(createPkg('git', name, dir, [], [], isForce))
     return
   }
+
+  /** 收集环境变量 */
+  Array.isArray(pkg.env) && createAddEnv(env)(pkg.name, pkg.env)
 
   /** app的绝对路径列表 */
   const apps: string[] = []
@@ -212,11 +224,13 @@ const getGitInfo = async (
  * @param dir 插件目录
  * @param name 插件名称
  * @param isForce 是否强制更新缓存
+ * @param env 收集插件的环境变量配置
  */
 const getNpmInfo = async (
   info: PkgInfo[],
   dir: string, name: string,
-  isForce: boolean
+  isForce: boolean,
+  env: PkgEnv[] | null
 ) => {
   const ext = '.js'
   const apps: string[] = []
@@ -227,6 +241,9 @@ const getNpmInfo = async (
     info.push(createPkg('npm', name, dir, [], [], isForce))
     return
   }
+
+  /** 收集环境变量 */
+  Array.isArray(pkg.env) && createAddEnv(env)(pkg.name, pkg.env)
 
   const files: string[] = []
   if (typeof pkg.karin.apps === 'string') {
