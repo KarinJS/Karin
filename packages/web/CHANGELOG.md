@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.4](https://github.com/KarinJS/Karin/compare/web-v1.4.3...web-v1.4.4) (2025-03-04)
+
+
+### 🐛 Bug Fixes
+
+* 修复在组织下的npm包名称在web下跳转错误的问题 ([4c64c8c](https://github.com/KarinJS/Karin/commit/4c64c8c82a3776e19448dea1973080844b5f2dba))
+
 ## [1.4.3](https://github.com/KarinJS/Karin/compare/web-v1.4.2...web-v1.4.3) (2025-03-04)
 
 
