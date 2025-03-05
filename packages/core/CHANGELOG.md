@@ -1,5 +1,18 @@
 # 更新日志
 
+## [1.4.6](https://github.com/KarinJS/Karin/compare/core-v1.4.5...core-v1.4.6) (2025-03-05)
+
+
+### 🐛 Bug Fixes
+
+* 修复插件页面跳转 修复web在夜间模式下某些样式问题 ([aa8734e](https://github.com/KarinJS/Karin/commit/aa8734e74d064a86b88256c53768dfaae9bdf70a))
+* 实时日志 ([d3512b2](https://github.com/KarinJS/Karin/commit/d3512b20ea08e348390f7fbfde0046e133595a14))
+
+
+### 💄 Styles
+
+* tabs ([9369507](https://github.com/KarinJS/Karin/commit/9369507dc16a561fa69eafd95af07c62bfc6dce9))
+
 ## [1.4.5](https://github.com/KarinJS/Karin/compare/core-v1.4.4...core-v1.4.5) (2025-03-04)
 
 
