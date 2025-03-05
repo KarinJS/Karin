@@ -1,7 +1,8 @@
-import { MdSpaceDashboard, MdExtension, MdStore } from 'react-icons/md'
+import { MdSpaceDashboard, MdExtension, MdStore, MdOutlineArticle } from 'react-icons/md'
 import { RiSettings2Fill } from 'react-icons/ri'
 // import { FiCodesandbox } from 'react-icons/fi'
 import { BsInfoCircleFill } from 'react-icons/bs'
+
 import { request } from '@/lib/request'
 
 import type { LocalApiResponse } from 'node-karin'
@@ -72,6 +73,11 @@ export const defaultSiteConfig: SiteConfigType = {
     //   label: '沙箱调试',
     //   href: '/sandbox',
     // },
+    {
+      Icon: MdOutlineArticle,
+      label: '系统日志',
+      href: '/log',
+    },
     {
       Icon: BsInfoCircleFill,
       label: '关于我们',

@@ -35,7 +35,8 @@ export const getPageTitle = (pathname: string) => {
     '/sandbox/chat': '沙箱 | [聊天]',
     '/sandbox/contact': '沙箱 | [联系人]',
     '/about': '关于我们',
-    '/login': '登录'
+    '/login': '登录',
+    '/log': '实时日志'
   } as Record<string, string>
 
   return `${map?.[pathname] ?? '无人问津的角落...'}`
