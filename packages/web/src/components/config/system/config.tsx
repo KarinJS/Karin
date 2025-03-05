@@ -284,7 +284,7 @@ const getConfigComponent = (
                   >
 
                     {item.isSwitch && (
-                      <div className='inline-flex items-center gap-3 p-3 rounded-lg border border-gray-200 mb-3'>
+                      <div className='inline-flex items-center gap-3 p-3 rounded-lg border border-default-200 mb-3'>
                         <div className='flex flex-col gap-0.5'>
                           <span className='text-sm font-medium'>{item.event}</span>
                           <span className='text-xs text-gray-500'>是否启用{item.event}</span>

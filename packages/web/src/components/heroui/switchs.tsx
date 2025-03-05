@@ -31,10 +31,10 @@ export const createSwitch = (
         className={cn(
           'inline-flex flex-row-reverse items-center',
           'cursor-pointer rounded-lg border',
-          'border-gray-200',
+          'border-default-200',
           `data-[selected=true]:border-${options.color || 'primary'}`,
           'p-4',
-          'hover:bg-gray-50',
+          'hover:bg-default-100',
           'w-[320px]',
           className
         )}

@@ -104,7 +104,7 @@ const getPm2Component = (
       >
         <div className='w-full max-w-full px-6 py-4 space-y-4'>
           <div className='grid md:grid-cols-2 grid-cols-1 md:gap-x-12'>
-            <div className='inline-flex items-center gap-3 p-3 rounded-lg border border-gray-200 mb-3'>
+            <div className='inline-flex items-center gap-3 p-3 rounded-lg border border-default-200 mb-3'>
               <div className='flex flex-col gap-0.5'>
                 <span className='text-sm font-medium'>进程守护</span>
                 <span className='text-xs text-gray-500'>崩溃后是否自动重启</span>
@@ -114,7 +114,7 @@ const getPm2Component = (
                 color='success'
               />
             </div>
-            <div className='inline-flex items-center gap-3 p-3 rounded-lg border border-gray-200 mb-3'>
+            <div className='inline-flex items-center gap-3 p-3 rounded-lg border border-default-200 mb-3'>
               <div className='flex flex-col gap-0.5'>
                 <span className='text-sm font-medium'>合并日志</span>
                 <span className='text-xs text-gray-500'>是否合并日志</span>

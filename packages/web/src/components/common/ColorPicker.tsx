@@ -20,7 +20,7 @@ const ColorPicker: FC<ColorPickerProps> = ({
   onChange
 }) => {
   return (
-    <div className='flex flex-col md:flex-row items-center gap-2 p-4 rounded-lg border border-gray-200'>
+    <div className='flex flex-col md:flex-row items-center gap-2 p-4 rounded-lg border border-default-200'>
       {/* 颜色预览和值 */}
       <div className='flex items-center gap-3 flex-shrink-0'>
         <div
@@ -37,7 +37,7 @@ const ColorPicker: FC<ColorPickerProps> = ({
       </div>
 
       {/* 纵向分隔线 - 添加高度和颜色 */}
-      <div className='hidden md:block h-[80px] w-px bg-gray-200 mx-2' />
+      <div className='hidden md:block h-[80px] w-px bg-default-200 mx-2' />
 
       {/* 操作按钮组 */}
       <div className='flex flex-col gap-2 flex-1 md:max-w-[240px]'>

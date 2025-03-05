@@ -48,16 +48,16 @@ const tabItems = [
  * 加载状态组件
  */
 const LoadingState = () => (
-  <div className="flex flex-col items-center justify-center p-8 space-y-4">
-    <div className="relative w-12 h-12">
-      <div className="absolute top-0 left-0 w-full h-full border-4 border-primary-200 rounded-full animate-ping opacity-75" />
-      <div className="absolute top-0 left-0 w-full h-full border-4 border-t-primary-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin" />
+  <div className='flex flex-col items-center justify-center p-8 space-y-4'>
+    <div className='relative w-12 h-12'>
+      <div className='absolute top-0 left-0 w-full h-full border-4 border-primary-200 rounded-full animate-ping opacity-75' />
+      <div className='absolute top-0 left-0 w-full h-full border-4 border-t-primary-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin' />
     </div>
-    <p className="text-gray-600 animate-pulse">正在加载配置...</p>
+    <p className='text-gray-600 animate-pulse'>正在加载配置...</p>
   </div>
 )
 
-export default function TestPage() {
+export default function TestPage () {
   const { tab } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
@@ -104,7 +104,7 @@ export default function TestPage() {
    * 获取指定类型的配置数据
    * @param type 配置类型
    */
-  const fetchConfig = async <T = any,>(type: string): Promise<T> => {
+  const fetchConfig = async <T = any,> (type: string): Promise<T> => {
     setLoading(true)
     setError(null) // 重置错误状态
     try {
@@ -144,20 +144,20 @@ export default function TestPage() {
   const SettingsDropdownContent = () => (
     <DropdownMenu>
       <DropdownItem
-        key="preview"
+        key='preview'
         startContent={<Eye size={18} />}
         onPress={() => toast.error('暂不支持预览配置')}
       >
         预览配置
       </DropdownItem>
       <DropdownItem
-        key="fold"
+        key='fold'
         startContent={<FoldVertical size={18} />}
         onPress={() => toast.error('暂不支持全部折叠')}
       >
         全部折叠
       </DropdownItem>
-      <DropdownItem key="refresh" startContent={<RotateCw size={18} />} onPress={handleRefresh}>
+      <DropdownItem key='refresh' startContent={<RotateCw size={18} />} onPress={handleRefresh}>
         刷新
       </DropdownItem>
     </DropdownMenu>
@@ -172,8 +172,8 @@ export default function TestPage() {
     <Dropdown>
       <DropdownTrigger>
         <Button
-          variant="bordered"
-          size="sm"
+          variant='bordered'
+          size='sm'
           startContent={<Settings2 size={18} />}
           className={!showText ? 'min-w-0 p-2' : ''}
         >
@@ -191,9 +191,9 @@ export default function TestPage() {
    */
   const SaveButton = ({ showText = true }) => (
     <Button
-      color="primary"
-      size="sm"
-      variant="flat"
+      color='primary'
+      size='sm'
+      variant='flat'
       startContent={<Save size={18} />}
       className={!showText ? 'min-w-0 p-2' : ''}
       onPress={handleSaveClick}
@@ -208,7 +208,7 @@ export default function TestPage() {
    * @returns 操作按钮组
    */
   const ActionButtons = ({ showText = true }) => (
-    <div className="flex items-center gap-2 shrink-0">
+    <div className='flex items-center gap-2 shrink-0'>
       <SettingsButton showText={showText} />
       <SaveButton showText={showText} />
     </div>
@@ -219,15 +219,15 @@ export default function TestPage() {
    * @returns PC端布局
    */
   const DesktopLayout = () => (
-    <div className="hidden md:flex items-center gap-4 w-full">
+    <div className='hidden md:flex items-center gap-4 w-full'>
       {/* 添加一个容器来包裹Tabs，使其可以水平滚动 */}
-      <div className="flex-1 overflow-hidden">
-        <Tabs selectedKey={selectedTab} onSelectionChange={handleTabChange} className="w-full">
+      <div className='flex-1 overflow-hidden'>
+        <Tabs selectedKey={selectedTab} onSelectionChange={handleTabChange} className='w-full'>
           {tabItems.map(({ key, icon: Icon, label }) => (
             <Tab
               key={key}
               title={
-                <div className="flex items-center gap-2 whitespace-nowrap">
+                <div className='flex items-center gap-2 whitespace-nowrap'>
                   <Icon size={18} />
                   <span>{label}</span>
                 </div>
@@ -237,7 +237,7 @@ export default function TestPage() {
         </Tabs>
       </div>
       {/* 按钮组添加shrink-0防止被压缩 */}
-      <div className="shrink-0">
+      <div className='shrink-0'>
         <ActionButtons showText />
       </div>
     </div>
@@ -248,22 +248,22 @@ export default function TestPage() {
    * @returns 移动端布局
    */
   const MobileLayout = () => (
-    <div className="md:hidden flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Cpu size={24} className="text-primary-500" />
-          <h2 className="text-xl font-semibold text-gray-800">系统配置</h2>
+    <div className='md:hidden flex flex-col gap-4'>
+      <div className='flex items-center justify-between'>
+        <div className='flex items-center gap-2'>
+          <Cpu size={24} className='text-primary-500' />
+          <h2 className='text-xl font-semibol'>系统配置</h2>
         </div>
         <ActionButtons showText={false} />
       </div>
 
-      <div className="w-full overflow-hidden" ref={tabsContainerRef}>
-        <Tabs selectedKey={selectedTab} onSelectionChange={handleTabChange} className="w-full">
+      <div className='w-full overflow-hidden' ref={tabsContainerRef}>
+        <Tabs selectedKey={selectedTab} onSelectionChange={handleTabChange} className='w-full'>
           {tabItems.map(({ key, icon: Icon, label }) => (
             <Tab
               key={key}
               title={
-                <div className="flex items-center gap-2 whitespace-nowrap">
+                <div className='flex items-center gap-2 whitespace-nowrap'>
                   <Icon size={18} />
                   <span>{label}</span>
                 </div>
@@ -325,12 +325,12 @@ export default function TestPage() {
 
     if (error) {
       return (
-        <div className="p-4 text-danger">
-          <h3 className="font-bold">加载失败</h3>
+        <div className='p-4 text-danger'>
+          <h3 className='font-bold'>加载失败</h3>
           <p>{error}</p>
           <Button
-            color="primary"
-            className="mt-4"
+            color='primary'
+            className='mt-4'
             onPress={() => {
               setError(null)
               setRefreshKey(prev => prev + 1)
@@ -345,12 +345,12 @@ export default function TestPage() {
     // 数据加载成功后，再懒加载组件
     if (!dataLoaded) {
       return (
-        <div className="flex flex-col items-center justify-center p-8 space-y-4">
-          <div className="relative w-12 h-12">
-            <div className="absolute top-0 left-0 w-full h-full border-4 border-primary-200 rounded-full animate-ping opacity-75" />
-            <div className="absolute top-0 left-0 w-full h-full border-4 border-t-primary-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin" />
+        <div className='flex flex-col items-center justify-center p-8 space-y-4'>
+          <div className='relative w-12 h-12'>
+            <div className='absolute top-0 left-0 w-full h-full border-4 border-primary-200 rounded-full animate-ping opacity-75' />
+            <div className='absolute top-0 left-0 w-full h-full border-4 border-t-primary-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin' />
           </div>
-          <p className="text-gray-600 animate-pulse">正在准备配置数据...</p>
+          <p className='text-gray-600 animate-pulse'>正在准备配置数据...</p>
         </div>
       )
     }
@@ -361,7 +361,7 @@ export default function TestPage() {
 
       if (!importFn) {
         return Promise.resolve({
-          default: () => <div className="p-4">未知的配置类型</div>,
+          default: () => <div className='p-4'>未知的配置类型</div>,
         })
       }
 
@@ -378,14 +378,14 @@ export default function TestPage() {
   }
 
   return (
-    <div className="p-4 space-y-4">
+    <div className='p-4 space-y-4'>
       {/* 头部卡片 */}
-      <Card className="p-6">
-        <div className="flex flex-col gap-2">
+      <Card className='p-6'>
+        <div className='flex flex-col gap-2'>
           {/* PC端标题 - 仅在PC端显示 */}
-          <div className="hidden md:flex items-center gap-2">
-            <Cpu size={24} className="text-primary-500" />
-            <h2 className="text-xl font-semibold text-gray-800">系统配置</h2>
+          <div className='hidden md:flex items-center gap-2'>
+            <Cpu size={24} className='text-primary-500' />
+            <h2 className='text-xl font-semibold'>系统配置</h2>
           </div>
 
           <MobileLayout />
@@ -394,7 +394,7 @@ export default function TestPage() {
       </Card>
 
       {/* 下方内容区域卡片 */}
-      <Card className="p-0">
+      <Card className='p-0'>
         <Suspense fallback={<LoadingState />}>
           <div key={refreshKey}>{LazyLoad(selectedTab)}</div>
         </Suspense>

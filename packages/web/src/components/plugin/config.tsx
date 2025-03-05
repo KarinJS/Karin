@@ -182,7 +182,7 @@ export const PluginConfig = memo(({ open, name, type, onClose }: PluginConfigPro
                 variant='bordered'
                 size='md'
                 onPress={() => setShowJsonModal(true)}
-                className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
+                className={`${BUTTON_COMMON_STYLES} hover:bg-gray-50 border-default-200 dark:hover:bg-gray-800`}
                 startContent={<VscJson className='text-lg' />}
               >
                 配置详情
@@ -192,7 +192,7 @@ export const PluginConfig = memo(({ open, name, type, onClose }: PluginConfigPro
                 variant='bordered'
                 size='md'
                 onPress={onClose}
-                className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
+                className={`${BUTTON_COMMON_STYLES} hover:bg-gray-50 border-default-200 dark:hover:bg-gray-800`}
               >
                 取消
               </Button>
@@ -251,7 +251,7 @@ export const PluginConfig = memo(({ open, name, type, onClose }: PluginConfigPro
                 onPress={() => {
                   console.log('Plugin Configuration:', configDataRef.current)
                 }}
-                className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
+                className={`${BUTTON_COMMON_STYLES} border-default-200 hover:bg-gray-50 dark:hover:bg-gray-800`}
                 startContent={<VscOutput className='text-lg' />}
               >
                 正常打印
@@ -263,7 +263,7 @@ export const PluginConfig = memo(({ open, name, type, onClose }: PluginConfigPro
                 onPress={() => {
                   console.log('Plugin Configuration:', JSON.stringify(configDataRef.current, null, 2))
                 }}
-                className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
+                className={`${BUTTON_COMMON_STYLES} border-default-200 hover:bg-gray-50 dark:hover:bg-gray-800`}
                 startContent={<VscSymbolString className='text-lg' />}
               >
                 纯文本打印
@@ -273,7 +273,7 @@ export const PluginConfig = memo(({ open, name, type, onClose }: PluginConfigPro
                 variant='bordered'
                 size='md'
                 onPress={handleCopyConfig}
-                className={`${BUTTON_COMMON_STYLES} border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800`}
+                className={`${BUTTON_COMMON_STYLES} border-default-200 hover:bg-gray-50 border-default-200 dark:hover:bg-gray-800`}
                 startContent={<VscCopy className='text-lg' />}
               >
                 复制
