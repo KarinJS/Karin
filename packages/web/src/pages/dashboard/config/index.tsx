@@ -252,7 +252,7 @@ export default function TestPage () {
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-2'>
           <Cpu size={24} className='text-primary-500' />
-          <h2 className='text-xl font-semibol'>系统配置</h2>
+          <h2 className='text-xl font-semibold'>系统配置</h2>
         </div>
         <ActionButtons showText={false} />
       </div>
