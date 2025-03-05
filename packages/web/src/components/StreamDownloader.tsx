@@ -41,7 +41,6 @@ export const StreamDownloader: React.FC<StreamDownloaderProps> = ({
   onStart,
   onComplete,
   onError,
-  onProgress,
   size = 'sm',
   variant = 'flat',
   color = 'primary',

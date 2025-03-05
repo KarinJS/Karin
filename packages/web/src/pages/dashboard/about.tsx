@@ -265,7 +265,7 @@ const AboutUs = () => {
                     size='lg'
                     variant='shadow'
                     radius='full'
-                    className='group bg-white dark:bg-black border border-gray-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500 transition-colors'
+                    className='group bg-white dark:bg-black border border-default-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500 transition-colors'
                   >
                     <Github className='h-5 w-5 mr-2 group-hover:rotate-12 transition-transform' />
                     GitHub
@@ -621,7 +621,7 @@ const AboutUs = () => {
               ].map((feature, index) => (
                 <motion.div
                   key={index}
-                  className='bg-white dark:bg-black rounded-lg overflow-hidden shadow-sm border border-gray-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500 group'
+                  className='bg-white dark:bg-black rounded-lg overflow-hidden shadow-sm border border-default-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500 group'
                   variants={item}
                   whileHover={{ y: -5, transition: { type: 'spring', stiffness: 300, damping: 10 } }}
                   transition={{ duration: 0.2 }}
@@ -758,7 +758,7 @@ const AboutUs = () => {
 
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                 <motion.div
-                  className='bg-white dark:bg-black p-6 rounded-xl shadow-sm hover:shadow-lg border border-gray-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500'
+                  className='bg-white dark:bg-black p-6 rounded-xl shadow-sm hover:shadow-lg border border-default-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500'
                   whileHover={{ y: -5 }}
                   transition={{ type: 'spring', stiffness: 300 }}
                 >
@@ -783,7 +783,7 @@ const AboutUs = () => {
                 </motion.div>
 
                 <motion.div
-                  className='bg-white dark:bg-black p-6 rounded-xl shadow-sm hover:shadow-lg border border-gray-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500'
+                  className='bg-white dark:bg-black p-6 rounded-xl shadow-sm hover:shadow-lg border border-default-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500'
                   whileHover={{ y: -5 }}
                   transition={{ type: 'spring', stiffness: 300 }}
                 >
@@ -811,7 +811,7 @@ const AboutUs = () => {
       </section>
 
       {/* 页脚 */}
-      <footer className='py-12 border-t border-gray-200 dark:border-gray-800'>
+      <footer className='py-12 border-t border-default-200 dark:border-gray-800'>
         <div className='container mx-auto px-4'>
           <div className='max-w-7xl mx-auto'>
             <div className='flex flex-col md:flex-row justify-between items-center'>

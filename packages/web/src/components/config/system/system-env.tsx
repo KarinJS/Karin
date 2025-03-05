@@ -19,7 +19,7 @@ export const getSystemEnvComponent = (
   return (
     <div className='w-full max-w-full px-4 py-2 space-y-4'>
       {/* HTTP 配置组 */}
-      <div className='p-4 rounded-lg border border-gray-200'>
+      <div className='p-4 rounded-lg border border-default-200'>
         <h3 className='text-sm font-medium mb-3'>HTTP 配置</h3>
         <div className='grid md:grid-cols-2 gap-4'>
           {/* @ts-ignore */}
@@ -64,10 +64,10 @@ export const getSystemEnvComponent = (
       </div>
 
       {/* 系统开关配置组 */}
-      <div className='p-4 rounded-lg border border-gray-200'>
+      <div className='p-4 rounded-lg border border-default-200'>
         <h3 className='text-sm font-medium mb-3'>系统开关</h3>
         <div className='grid md:grid-cols-2 gap-4'>
-          <div className='inline-flex items-center justify-between p-3 rounded-lg border border-gray-200'>
+          <div className='inline-flex items-center justify-between p-3 rounded-lg border border-default-200'>
             <div className='flex flex-col gap-0.5'>
               <span className='text-sm font-medium'>Redis</span>
               <span className='text-xs text-gray-500'>是否启用 Redis</span>
@@ -77,7 +77,7 @@ export const getSystemEnvComponent = (
               color='success'
             />
           </div>
-          <div className='inline-flex items-center justify-between p-3 rounded-lg border border-gray-200'>
+          <div className='inline-flex items-center justify-between p-3 rounded-lg border border-default-200'>
             <div className='flex flex-col gap-0.5'>
               <span className='text-sm font-medium'>PM2 重启</span>
               <span className='text-xs text-gray-500'>重启时是否调用 PM2</span>
@@ -91,7 +91,7 @@ export const getSystemEnvComponent = (
       </div>
 
       {/* 日志配置组 */}
-      <div className='p-4 rounded-lg border border-gray-200'>
+      <div className='p-4 rounded-lg border border-default-200'>
         <h3 className='text-sm font-medium mb-3'>日志配置</h3>
         <div className='space-y-4'>
           {/* 日志函数颜色选择器 */}
@@ -229,7 +229,7 @@ export const getSystemEnvComponent = (
       </div>
 
       {/* FFmpeg 配置组 */}
-      <div className='p-4 rounded-lg border border-gray-200'>
+      <div className='p-4 rounded-lg border border-default-200'>
         <h3 className='text-sm font-medium mb-3'>FFmpeg 配置</h3>
         <div className='grid md:grid-cols-1 gap-4'>
           <Input
@@ -257,7 +257,7 @@ export const getSystemEnvComponent = (
       </div>
 
       {/* 运行时配置组 */}
-      <div className='p-4 rounded-lg border border-gray-200'>
+      <div className='p-4 rounded-lg border border-default-200'>
         <h3 className='text-sm font-medium mb-3'>运行时配置</h3>
         <div className='flex flex-col gap-4'>
           <Controller
@@ -336,7 +336,7 @@ export const getSystemEnvComponent = (
             )}
           />
           {/* tsx监察者模式 */}
-          <div className='inline-flex items-center justify-between p-3 rounded-lg border border-gray-200'>
+          <div className='inline-flex items-center justify-between p-3 rounded-lg border border-default-200'>
             <div className='flex flex-col gap-0.5'>
               <span className='text-sm font-medium'>TSX Watch</span>
               <span className='text-xs text-gray-500'>是否启用 TSX 监听模式</span>

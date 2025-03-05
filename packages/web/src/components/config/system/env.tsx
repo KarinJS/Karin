@@ -254,7 +254,7 @@ const getEnvComponent = (
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                className='p-2 rounded-lg border border-gray-200 relative'
+                className='p-2 rounded-lg border border-default-200 relative'
               >
                 <div className='grid md:grid-cols-3 grid-cols-1 gap-2'>
                   <Input

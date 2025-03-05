@@ -160,13 +160,13 @@ const getAdapterComponent = (
                 content={
                   <div className='space-y-2 p-2'>
                     <p>用于接收来自OneBot11协议的 WebSocket 连接</p>
-                    <p className='text-xs text-gray-300'>1.打开此项开关</p>
-                    <p className='text-xs text-gray-300'>2.将会启用一个挂载在HTTP端口上的WebSocket服务器</p>
-                    <p className='text-xs text-gray-300'>3.通过组合HTTP端口，可以创建一个反向链接</p>
-                    <p className='text-xs text-gray-300'>4. 如HTTP端口为7777，则反向链接为 <code className='text-xs text-gray-300 text-blue-500'>ws://127.0.0.1:7777</code></p>
+                    <p className='text-xs text-default-500 '>1.打开此项开关</p>
+                    <p className='text-xs text-default-500 '>2.将会启用一个挂载在HTTP端口上的WebSocket服务器</p>
+                    <p className='text-xs text-default-500 '>3.通过组合HTTP端口，可以创建一个反向链接</p>
+                    <p className='text-xs text-default-500 '>4. 如HTTP端口为7777，则反向链接为 <code className='text-xs text-blue-500'>ws://127.0.0.1:7777</code></p>
                     <br />
                     <p>理解这里最简单的方法就是:</p>
-                    <p className='text-xs text-gray-300'>
+                    <p className='text-xs text-default-500 '>
                       karin开启了一个WebSocket服务器，并监听7777端口
                       然后karin等着协议端来疯狂连接，俗称诶c...
                     </p>
@@ -177,6 +177,8 @@ const getAdapterComponent = (
                 classNames={{
                   content: 'p-0'
                 }}
+                delay={0}
+                closeDelay={0}
               >
                 <Switch
                   className='p-2 rounded-lg'
@@ -230,7 +232,7 @@ const getAdapterComponent = (
               render={(index: number) => (
                 <div className='flex flex-col gap-2 p-2'>
                   <Switch
-                    className='p-2 rounded-lg bg-gray-50/50 mb-3'
+                    className='p-2 rounded-lg bg-default-200/50 mb-3'
                     {...methods.register(`onebot.ws_client.${index}.enable`)}
                     color='success'
                   >
@@ -271,7 +273,7 @@ const getAdapterComponent = (
               render={(index: number) => (
                 <div className='flex flex-col gap-2 p-2'>
                   <Switch
-                    className='p-2 rounded-lg bg-gray-50/50 mb-3'
+                    className='p-2 rounded-lg bg-default-200/50 mb-3'
                     {...methods.register(`onebot.http_server.${index}.enable`)}
                     color='success'
                   >

@@ -462,7 +462,7 @@ export default function MarketPage () {
                 classNames={{
                   base: 'max-w-[240px]',
                   input: 'text-xs',
-                  inputWrapper: 'h-7 border-gray-200 dark:border-gray-700'
+                  inputWrapper: 'h-7 border-default-200'
                 }}
                 placeholder='搜索插件...'
                 value={searchQuery}

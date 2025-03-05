@@ -99,7 +99,7 @@ export const createInputGroup = (
                 </div>
 
                 <div
-                  className='grid gap-4 p-2 border border-gray-200 dark:border-gray-700 rounded-xl min-h-[100px] transition-colors'
+                  className='grid gap-4 p-2 border border-default-200 rounded-xl min-h-[100px] transition-colors'
                   style={{
                     maxHeight: `calc((60px * ${maxRows}) + (1rem * ${maxRows}))`,
                     gridTemplateColumns: columns,
