@@ -1,2 +1,5 @@
 packages:
-  - 'packages/**'
+  - packages/*
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@swc/core'
