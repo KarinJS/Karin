@@ -1,13 +1,24 @@
 import axios from 'axios'
 import key from '@/consts/key.ts'
 import { toast } from 'react-hot-toast'
+import { EventSourcePolyfill } from 'event-source-polyfill'
 
 import type { ServerResponse } from '@/types/server'
+import type { EventSourcePolyfillInit } from 'event-source-polyfill'
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 
 export interface ServerRequest extends AxiosInstance {
   serverGet<T> (url: string, config?: AxiosRequestConfig): Promise<T>
   serverPost<T, R> (url: string, data?: R, config?: AxiosRequestConfig): Promise<T>
+}
+
+/** 缓存token */
+const cacheToken: {
+  token: string | null
+  userId: string | null
+} = {
+  token: null,
+  userId: null
 }
 
 /**
@@ -37,25 +48,6 @@ const refreshAccessToken = async () => {
     return false
   }
 }
-
-export const request: ServerRequest = axios.create({
-  timeout: 10000,
-}) as ServerRequest
-
-request.interceptors.request.use(config => {
-  const token = localStorage.getItem(key.accessToken)
-  const userId = localStorage.getItem(key.userId)
-
-  if (token) {
-    config.headers['Authorization'] = `Bearer ${token}`
-  }
-
-  if (userId) {
-    config.headers['x-user-id'] = userId
-  }
-
-  return config
-})
 
 /** 防抖 */
 let isRedirecting = false
@@ -87,6 +79,8 @@ const redirectToLogin = (message: string) => {
 
 /** 清除本地认证数据 */
 const clearLocalAuthData = () => {
+  cacheToken.token = null
+  cacheToken.userId = null
   localStorage.removeItem(key.userId)
   localStorage.removeItem(key.refreshToken)
   localStorage.removeItem(key.accessToken)
@@ -118,6 +112,42 @@ const handleAuthError = async (error: any) => {
   return false
 }
 
+/**
+ * 获取token和userId 优先从缓存中获取
+ */
+export const getToken = () => {
+  if (cacheToken.token && cacheToken.userId) {
+    return cacheToken
+  }
+
+  const token = localStorage.getItem(key.accessToken)
+  const userId = localStorage.getItem(key.userId)
+
+  cacheToken.token = token
+  cacheToken.userId = userId
+  return { token, userId }
+}
+
+/**
+ * axios实例
+ */
+export const request: ServerRequest = axios.create({
+  timeout: 10000,
+}) as ServerRequest
+
+request.interceptors.request.use(config => {
+  const { token, userId } = getToken()
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`
+  }
+
+  if (userId) {
+    config.headers['x-user-id'] = userId
+  }
+
+  return config
+})
+
 request.interceptors.response.use(
   response => response,
   async error => {
@@ -146,20 +176,33 @@ request.serverPost = async <T, R> (url: string, data: R = {} as R, config?: Axio
   return response.data.data
 }
 
-// export const requestServerWithFetch = async (url: string, options: RequestInit) => {
-//   recordRequestInfo()
-//   const token = localStorage.getItem(key.accessToken)
-//   if (token) {
-//     options.headers = {
-//       ...options.headers,
-//       Authorization: `Bearer ${token}`,
-//     }
-//   }
-//   const response = await fetch(url, options)
-//   const authorizationHeader = response.headers.get('authorization')
-//   if (authorizationHeader) {
-//     // 将 token 存储到本地存储
-//     localStorage.setItem(key.accessToken, JSON.stringify(authorizationHeader))
-//   }
-//   return response
-// }
+/**
+ * EventSourcePolyfill
+ * @param url - 请求地址
+ * @param options - 请求配置
+ * @description 无需配置headers，会自动添加token和userId
+ * @description 默认Accept为text/event-stream
+ */
+export const eventSourcePolyfill = (
+  url: string,
+  options: EventSourcePolyfillInit = {}
+) => {
+  if (!options.headers) {
+    options.headers = {}
+  }
+
+  const { token, userId } = getToken()
+  if (token) {
+    options.headers['Authorization'] = `Bearer ${token}`
+  }
+
+  if (userId) {
+    options.headers['x-user-id'] = userId
+  }
+
+  if (!options.headers?.Accept) {
+    options.headers.Accept = 'text/event-stream'
+  }
+
+  return new EventSourcePolyfill(url, options)
+}

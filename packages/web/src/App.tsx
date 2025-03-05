@@ -28,6 +28,7 @@ import PluginConfigPage from '@/pages/dashboard/plugins/config'
 import NotFoundPage from '@/pages/404'
 import { getPageTitle } from '@/lib/utils'
 import ScrollToTop from './components/common/ScrollToTop'
+import LogPage from '@/pages/dashboard/log'
 
 // Main App
 function App () {
@@ -70,6 +71,7 @@ function App () {
             </Route>
             <Route element={<GroupChatTest />} path='group' />
           </Route>
+          <Route element={<LogPage />} path='/log' />
           <Route element={<AboutPage />} path='/about' />
           <Route path='*' element={<NotFoundPage />} />
         </Route>
