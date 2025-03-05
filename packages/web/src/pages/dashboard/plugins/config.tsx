@@ -1,22 +1,24 @@
 import { request } from '@/lib/request'
 import { useEffect, useState } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { DashboardPage } from '@/components/config/plugin/plugins'
-import type { GetConfigResponse } from 'node-karin'
 import { Spinner } from '@heroui/spinner'
 import { Card, CardBody, CardHeader } from '@heroui/card'
 import { Button } from '@heroui/button'
 import { FaRotateRight } from 'react-icons/fa6'
+
+import type { GetConfigResponse } from 'node-karin'
 
 interface GetConfigRequest {
   name: string
   type: 'git' | 'npm' | 'app'
 }
 
-// http://localhost:5173/web/plugins/karin-plugin-demo?type=git
+// http://localhost:5173/web/plugins/config?name=karin-plugin-demo&type=git
+// http://localhost:5173/web/plugins/config?name=@karinjs/karin-plugin-demo&type=npm
 export default function PluginConfigPage () {
-  const { name = '' } = useParams<{ name: string }>()
   const [searchParams] = useSearchParams()
+  const name = searchParams.get('name')
   const type = searchParams.get('type') as GetConfigRequest['type'] | null
   const [config, setConfig] = useState<GetConfigResponse>({
     options: [],
@@ -38,7 +40,7 @@ export default function PluginConfigPage () {
       const result = await request.serverPost<GetConfigResponse, GetConfigRequest>(
         '/api/v1/plugin/config/get',
         {
-          name: name.includes('@') ? name.replace(/-/, '/') : name,
+          name,
           type
         }
       )

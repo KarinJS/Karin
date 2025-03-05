@@ -121,7 +121,12 @@ const getPluginsInfo = async (list: string[], isForce: boolean, isFirst: boolean
   }))
 
   /** 处理环境变量 同步写入 */
-  env && writeEnv(env)
+  if (env && env.length) {
+    logger.debug('[getPluginsInfo] 处理环境变量 同步写入', JSON.stringify(env, null, 2))
+    writeEnv(env)
+  } else {
+    logger.debug('[getPluginsInfo] 处理环境变量 未收集到环境变量 跳过写入')
+  }
   return info
 }
 

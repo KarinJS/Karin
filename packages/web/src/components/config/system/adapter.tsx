@@ -144,7 +144,7 @@ const getAdapterComponent = (
                 placeholder='请输入 Token'
                 required={!isLocal}
                 isRequired={!isLocal}
-                className='p-2 rounded-lg bg-gray-50/50'
+                className='p-2 rounded-lg'
                 color='primary'
               />
             </div>
@@ -179,7 +179,7 @@ const getAdapterComponent = (
                 }}
               >
                 <Switch
-                  className='p-2 rounded-lg bg-gray-50/50'
+                  className='p-2 rounded-lg'
                   {...methods.register('onebot.ws_server.enable')}
                   defaultChecked={data.onebot.ws_server.enable}
                   color='success'

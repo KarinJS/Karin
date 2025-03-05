@@ -14,8 +14,16 @@ import type { ReplyBlockValue } from '@/components/sandbox/chat_input/formats/re
  * @returns 页面标题
  */
 export const getPageTitle = (pathname: string) => {
-  if (pathname.includes('/config/')) {
-    pathname = '/config'
+  if (pathname.startsWith('/config/')) {
+    return '配置信息'
+  }
+
+  if (pathname.startsWith('/plugins/')) {
+    return '插件配置'
+  }
+
+  if (pathname.startsWith('/sandbox/')) {
+    return '沙箱调试'
   }
 
   const map = {

@@ -22,11 +22,17 @@ interface BaseConfig {
 /**
  * 从package.json中获取web配置路径
  * @param pkg package.json内容
- * @param baseDir 基础目录
+ * @param baseDir 插件根目录
  * @returns web配置路径或null
  */
 const getWebConfigPathFromPkg = (pkg: PkgData, baseDir: string): string | null => {
   if (!pkg.karin) return null
+
+  /** 如果该插件处于node_modules中 视其为正式插件的环境 仅加载web */
+  if (baseDir.includes('node_modules')) {
+    if (pkg.karin.web) return path.join(baseDir, pkg.karin.web)
+    return null
+  }
 
   if (isTsx() && pkg.karin['ts-web']) {
     return path.join(baseDir, pkg.karin['ts-web'])

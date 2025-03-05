@@ -30,20 +30,33 @@ const parser = (content: string) => {
     let comment = ''
     let [key, value] = line.split('=').map((item) => item.trim())
 
-    /** value 存在#说明是注释 */
+    /**
+     * 这里包含#的用2种情况
+     * 1. 写在后续的注释
+     * 2. 在value中 但是被包裹在""中
+     */
     if (value.includes('#')) {
-      const arr = value.split('#').map((item) => item.trim())
-      comment = arr.length > 1 ? `# ${arr[1]}` : ''
-      value = arr[0].replace(/^"|"$/g, '')
-    } else {
-      /** 不存在则获取上一行内容 查看是否为注释: 开始带# */
-      const data = obj[index - 1]
-      if (data.startsWith('#')) {
-        comment = data
+      /** 提取""中的内容 */
+      const data = value.match(/^".*"$/)
+      if (data) {
+        /** 说明在一行之中同时包含value和 #注释 */
+        value = data[0]
+        comment = value.replace(value, '') || ''
+      } else {
+        /** 如果提取不到 则说明不包含""的value 但是包含注释 */
+        const arr = value.split('#').map((item) => item.trim())
+        comment = arr.length > 1 ? `# ${arr[1]}` : ''
+        value = arr[0]
       }
-      value = value.replace(/^"|"$/g, '')
     }
 
+    /** 如果comment为空 尝试获取上一行的 */
+    if (!comment) {
+      const data = obj[index - 1]?.trim()
+      if (data?.startsWith('#')) comment = data
+    }
+
+    value = value?.replace(/^"|"$/g, '') || ''
     list.push({ key, value, comment: comment.replace(/\\r|\\n/g, '').trim() })
   })
 
@@ -194,33 +207,35 @@ export const env = (): Env => {
  */
 export const writeEnv = (
   data: { key: string, value: string, comment: string } | { key: string, value: string, comment: string }[],
-  cwd: string = path.join(process.cwd(), '.env'),
+  cwd?: string,
   isCover: boolean = false
 ) => {
+  if (!cwd) cwd = path.join(process.cwd(), '.env')
   const env = getEnv(cwd)
+  const result = { ...env }
   if (!Array.isArray(data)) data = [data]
 
   data.forEach((item) => {
     const { key, value, comment } = item
-    if (!key || typeof key !== 'string' || typeof value !== 'string') {
+    if (!key || typeof key !== 'string') {
       logger.error('[writeEnv]', 'key 必须为字符串')
       return
     }
 
-    if (env[key]) {
+    if (result[key]) {
       if (!isCover) {
         logger.debug(`[writeEnv] key: ${key} 已存在 跳过`)
         return
       }
     }
 
-    env[key] = {
+    result[key] = {
       value,
-      comment: comment || env?.[key]?.comment || '',
+      comment: comment || result?.[key]?.comment || '',
     }
   })
 
-  const content = Object.entries(env)
+  const content = Object.entries(result)
     .map(([key, value]) => {
       /** 统一处理value前后的注释 */
       const val = /^".*"$/.test(value.value) ? value.value : `"${value.value}"`

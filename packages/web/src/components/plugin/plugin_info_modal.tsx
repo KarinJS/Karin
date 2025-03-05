@@ -260,7 +260,8 @@ export function PluginInfoModal ({
               )}
               {plugin.type.toLowerCase() !== 'app' && (
                 <NavLink
-                  to={`../plugins/${plugin.name}?type=${plugin.type.toLowerCase()}`}
+                  // 插件市场 点击跳转插件配置页面
+                  to={`../plugins/config?name=${plugin.name}&type=${plugin.type.toLowerCase()}`}
                   className='inline-flex items-center gap-2 px-3 py-1 text-sm font-medium rounded-lg bg-secondary-100 text-secondary-700 hover:bg-secondary-200'
                 >
                   <FaGear />

@@ -5,14 +5,86 @@ import { Button } from '@heroui/button'
 import { X } from 'lucide-react'
 import { getSystemEnvComponent } from './system-env'
 import { saveConfig } from './save'
-type EnvField = {
+
+interface SystemEnvsField {
+  HTTP_PORT: {
+    value: number
+    comment: string
+  }
+  HTTP_HOST: {
+    value: string
+    comment: string
+  }
+  HTTP_AUTH_KEY: {
+    value: string
+    comment: string
+  }
+  WS_SERVER_AUTH_KEY: {
+    value: string
+    comment: string
+  }
+  REDIS_ENABLE: {
+    value: boolean
+    comment: string
+  }
+  PM2_RESTART: {
+    value: boolean
+    comment: string
+  }
+  TSX_WATCH: {
+    value: boolean
+    comment: string
+  }
+  LOG_LEVEL: {
+    value: 'all' | 'trace' | 'debug' | 'mark' | 'info' | 'warn' | 'error' | 'fatal' | 'off'
+    comment: string
+  }
+  LOG_DAYS_TO_KEEP: {
+    value: number
+    comment: string
+  }
+  LOG_MAX_LOG_SIZE: {
+    value: number
+    comment: string
+  }
+  LOG_FNC_COLOR: {
+    value: string
+    comment: string
+  }
+  LOG_MAX_CONNECTIONS: {
+    value: number
+    comment: string
+  }
+  FFMPEG_PATH: {
+    value: string
+    comment: string
+  }
+  FFPROBE_PATH: {
+    value: string
+    comment: string
+  }
+  FFPLAY_PATH: {
+    value: string
+    comment: string
+  }
+  RUNTIME: {
+    value: 'node' | 'tsx' | 'pm2'
+    comment: string
+  }
+  NODE_ENV: {
+    value: 'development' | 'production' | 'test'
+    comment: string
+  }
+}
+
+export type EnvField = {
   key: string
   value: string
   comment: string
 }
 
-type EnvFormData = {
-  systemEnvs: EnvField[]  // 系统环境变量
+export type EnvFormData = {
+  systemEnvs: SystemEnvsField  // 系统环境变量
   customEnvs: EnvField[]  // 自定义环境变量
 }
 
@@ -47,21 +119,91 @@ const getEnvComponent = (
   data: Record<string, { value: string, comment: string }>,
   formRef: React.RefObject<HTMLFormElement | null>
 ) => {
-  const methods = useForm<EnvFormData>({
-    defaultValues: {
-      systemEnvs: Object.entries(data)
-        .filter(([key]) => SYSTEM_ENV_KEYS.includes(key))
-        .map(([key, value]) => ({
-          key,
-          ...value
-        })),
-      customEnvs: Object.entries(data)
-        .filter(([key]) => !SYSTEM_ENV_KEYS.includes(key))
-        .map(([key, value]) => ({
-          key,
-          ...value
-        }))
+  /** 区分系统环境变量和自定义环境变量 */
+  const customEnvs: EnvField[] = []
+  const systemEnvs: SystemEnvsField = {
+    HTTP_PORT: {
+      value: Number(data.HTTP_PORT?.value) || 7777,
+      comment: data.HTTP_PORT?.comment || ''
+    },
+    HTTP_HOST: {
+      value: data.HTTP_HOST?.value || '0.0.0.0',
+      comment: data.HTTP_HOST?.comment || ''
+    },
+    HTTP_AUTH_KEY: {
+      value: data.HTTP_AUTH_KEY?.value || '',
+      comment: data.HTTP_AUTH_KEY?.comment || ''
+    },
+    WS_SERVER_AUTH_KEY: {
+      value: data.WS_SERVER_AUTH_KEY?.value || '',
+      comment: data.WS_SERVER_AUTH_KEY?.comment || ''
+    },
+    REDIS_ENABLE: {
+      value: data.REDIS_ENABLE?.value === 'true',
+      comment: data.REDIS_ENABLE?.comment || ''
+    },
+    PM2_RESTART: {
+      value: data.PM2_RESTART?.value === 'true',
+      comment: data.PM2_RESTART?.comment || ''
+    },
+    TSX_WATCH: {
+      value: data.TSX_WATCH?.value === 'true',
+      comment: data.TSX_WATCH?.comment || ''
+    },
+    LOG_LEVEL: {
+      value: data.LOG_LEVEL?.value as SystemEnvsField['LOG_LEVEL']['value'] || 'info',
+      comment: data.LOG_LEVEL?.comment || ''
+    },
+    LOG_DAYS_TO_KEEP: {
+      value: Number(data.LOG_DAYS_TO_KEEP?.value) || 7,
+      comment: data.LOG_DAYS_TO_KEEP?.comment || ''
+    },
+    LOG_MAX_LOG_SIZE: {
+      value: Number(data.LOG_MAX_LOG_SIZE?.value) || 0,
+      comment: data.LOG_MAX_LOG_SIZE?.comment || ''
+    },
+    LOG_FNC_COLOR: {
+      value: data.LOG_FNC_COLOR?.value || '#E1D919',
+      comment: data.LOG_FNC_COLOR?.comment || ''
+    },
+    LOG_MAX_CONNECTIONS: {
+      value: Number(data.LOG_MAX_CONNECTIONS?.value) || 5,
+      comment: data.LOG_MAX_CONNECTIONS?.comment || ''
+    },
+    FFMPEG_PATH: {
+      value: data.FFMPEG_PATH?.value || '',
+      comment: data.FFMPEG_PATH?.comment || ''
+    },
+    FFPROBE_PATH: {
+      value: data.FFPROBE_PATH?.value || '',
+      comment: data.FFPROBE_PATH?.comment || ''
+    },
+    FFPLAY_PATH: {
+      value: data.FFPLAY_PATH?.value || '',
+      comment: data.FFPLAY_PATH?.comment || ''
+    },
+    RUNTIME: {
+      value: data.RUNTIME?.value as SystemEnvsField['RUNTIME']['value'] || 'tsx',
+      comment: data.RUNTIME?.comment || ''
+    },
+    NODE_ENV: {
+      value: data.NODE_ENV?.value as SystemEnvsField['NODE_ENV']['value'] || 'development',
+      comment: data.NODE_ENV?.comment || ''
     }
+  }
+
+  /** 排除掉系统预设的环境变量 */
+  Object.entries(data).forEach(([key, value]) => {
+    if (SYSTEM_ENV_KEYS.includes(key)) return
+    customEnvs.push({
+      key,
+      value: value.value,
+      comment: value.comment
+    })
+  })
+
+  const methods = useForm<EnvFormData>({
+    defaultValues: { systemEnvs, customEnvs }
   })
 
   const { fields, append, remove } = useFieldArray({
@@ -70,35 +212,17 @@ const getEnvComponent = (
   })
 
   // 获取系统环境变量组件
-  const SystemEnvComponent = getSystemEnvComponent(
-    {
-      HTTP_PORT: Number(data.HTTP_PORT?.value) || 7777,
-      HTTP_HOST: data.HTTP_HOST?.value || '0.0.0.0',
-      HTTP_AUTH_KEY: data.HTTP_AUTH_KEY?.value || '',
-      WS_SERVER_AUTH_KEY: data.WS_SERVER_AUTH_KEY?.value || '',
-      REDIS_ENABLE: data.REDIS_ENABLE?.value === 'true',
-      PM2_RESTART: data.PM2_RESTART?.value === 'true',
-      TSX_WATCH: data.TSX_WATCH?.value === 'true',
-      LOG_LEVEL: (data.LOG_LEVEL?.value || 'info') as any,
-      LOG_DAYS_TO_KEEP: Number(data.LOG_DAYS_TO_KEEP?.value) || 7,
-      LOG_MAX_LOG_SIZE: Number(data.LOG_MAX_LOG_SIZE?.value) || 0,
-      LOG_FNC_COLOR: data.LOG_FNC_COLOR?.value || '#E1D919',
-      LOG_MAX_CONNECTIONS: Number(data.LOG_MAX_CONNECTIONS?.value) || 5,
-      FFMPEG_PATH: data.FFMPEG_PATH?.value || '',
-      FFPROBE_PATH: data.FFPROBE_PATH?.value || '',
-      FFPLAY_PATH: data.FFPLAY_PATH?.value || '',
-      RUNTIME: (data.RUNTIME?.value || 'tsx') as any,
-      NODE_ENV: (data.NODE_ENV?.value || 'development') as any
-    },
-    formRef
-  )
+  const SystemEnvComponent = getSystemEnvComponent(methods)
 
   const onSubmit = (formData: EnvFormData) => {
-    const result = [...formData.systemEnvs, ...formData.customEnvs]
-      .reduce((acc, { key, value, comment }) => {
-        acc[key] = { value, comment }
-        return acc
-      }, {} as Record<string, { value: string, comment: string }>)
+    const result: Record<string, { value: string, comment: string }> = {}
+
+    Object.entries(formData.systemEnvs).forEach(([key, value]) => {
+      result[key] = { value: value.value, comment: value.comment }
+    })
+    formData.customEnvs.forEach(({ key, value, comment }) => {
+      result[key] = { value, comment }
+    })
 
     saveConfig('env', result)
   }

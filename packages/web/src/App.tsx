@@ -55,7 +55,7 @@ function App () {
             <Route element={<ConfigPage />} path=':tab' />
           </Route>
           <Route element={<PluginMarketPage />} path='/plugins/list' />
-          <Route element={<PluginConfigPage />} path='/plugins/:name' />
+          <Route element={<PluginConfigPage />} path='/plugins/config' />
           <Route element={<SandboxPage />} path='/sandbox'>
             <Route element={<Navigate to='/sandbox/chat' />} path='' />
             <Route path='chat'>

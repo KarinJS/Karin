@@ -86,7 +86,7 @@ const saveConfig: RequestHandler = async (req, res) => {
         value: value.value,
         comment: value.comment
       }))
-      writeEnv(result)
+      writeEnv(result, undefined, true)
       return true
     }
 

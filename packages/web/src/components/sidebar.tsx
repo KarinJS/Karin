@@ -505,11 +505,9 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                                         }
                                       )}
                                       onPress={() => {
-                                        // 处理组织名称
-                                        const href = child.href
-                                          .replace('/plugins/', '')
-                                          .replace(/\//g, '-')
-                                        navigate(`/plugins/${href}?type=${child.type || ''}`)
+                                        // 插件配置页面跳转
+                                        // http://localhost:5173/web/plugins/config?name=@karinjs/karin-plugin-demo&type=npm
+                                        navigate(`/plugins/config?name=${child.id}&type=${child.type || ''}`)
                                       }}
                                     >
                                       {child.icon && <Icon name={child.icon?.name || ''} size={child.icon?.size} color={child.icon?.color} />}

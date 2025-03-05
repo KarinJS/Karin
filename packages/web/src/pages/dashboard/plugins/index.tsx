@@ -1,3 +1,4 @@
+/* eslint-disable @stylistic/indent */
 import isEqual from 'lodash.isequal'
 import { BadgeCheck } from 'lucide-react'
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react'
