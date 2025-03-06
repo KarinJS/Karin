@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.7](https://github.com/KarinJS/Karin/compare/web-v1.4.6...web-v1.4.7) (2025-03-06)
+
+
+### 🐛 Bug Fixes
+
+* build error ([2197afc](https://github.com/KarinJS/Karin/commit/2197afc1b46da3985a63d29434dbcc62f76901f4))
+* hmr ([c09f423](https://github.com/KarinJS/Karin/commit/c09f4231d53d26ac1e3643ba18dd7dab10d032cc))
+
 ## [1.4.6](https://github.com/KarinJS/Karin/compare/web-v1.4.5...web-v1.4.6) (2025-03-05)
 
 
