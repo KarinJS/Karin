@@ -36,6 +36,8 @@ export const defaultConfig: {
           self_id: 'default',
           url: 'http://127.0.0.1:6099',
           token: '',
+          api_token: '',
+          post_token: '',
         },
       ],
     },

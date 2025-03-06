@@ -99,6 +99,7 @@ export const requireFileSync: RequireFunctionSync = (filePath, options = {}) => 
  * @param force 是否强制读取，不使用缓存
  * @param now 当前时间
  * @param ex 过期时间
+ * @param readCache 是否只读缓存
  */
 const fileReady = (absPath: string, now: number, force: boolean, ex: number, readCache?: boolean) => {
   if (!force) {

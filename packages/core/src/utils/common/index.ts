@@ -1,15 +1,15 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { tempPath } from '@/root'
-import Axios, { AxiosError } from 'axios'
 import { YamlEditor } from '@/utils/fs/yaml'
 import { ffprobe, ffmpeg } from '@/utils/system/ffmpeg'
-import { formatTime as FormatTime } from '@/utils/system/time'
 import { getPlugins as GetPlugin } from '@/plugin/list'
+import { formatTime as FormatTime } from '@/utils/system/time'
+import Axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
 
-import { AxiosRequestConfig, AxiosResponse } from 'axios'
 // import { getAppPlugins, getNpmPlugins as GetNpmPlugins, getGitPlugins as GetGitPlugins } from '@/plugin/index'
 
+export * from './number'
 export { sleep } from './sleep'
 export { uptime } from './uptime'
 export { downFile, absPath } from '@/utils/fs/file'

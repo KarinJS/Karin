@@ -7,6 +7,8 @@ import { requireFileSync } from '../../fs/require'
 import { FILE_CHANGE } from '@/utils/fs'
 import { listeners } from '@/core/internal/listeners'
 import type { Env } from '@/types/config/env'
+import { disconnectAll } from '@/adapter/onebot/connect'
+import { updateJwt } from '@/server/utils/jwt'
 
 /**
  * 自定义解析器
@@ -79,11 +81,22 @@ const parser = (content: string) => {
 const initEnv = () => {
   const name = '.env'
   const file = `${process.cwd()}/${name}`
+  getEnv()
 
   watch<ReturnType<typeof parser>>(file, (old, data) => {
     dotenv.config({ path: file, override: true })
     process.env.RUNTIME = data.RUNTIME.value as 'node' | 'pm2' | 'tsx' || 'node'
     logger.level = process.env.LOG_LEVEL || 'info'
+
+    if (old?.WS_SERVER_AUTH_KEY?.value !== data?.WS_SERVER_AUTH_KEY?.value) {
+      logger.warn('[hmr] WebSocket服务器鉴权秘钥已更新')
+      disconnectAll()
+    }
+
+    if (old?.HTTP_AUTH_KEY?.value !== data?.HTTP_AUTH_KEY?.value) {
+      logger.warn('[hmr] HTTP鉴权秘钥已更新')
+      updateJwt()
+    }
 
     const options = { file, old, data }
     listeners.emit(FILE_CHANGE, options)

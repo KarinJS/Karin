@@ -1,8 +1,9 @@
+import './api/api'
 import { listeners } from '@/core/internal'
 import { registerHttpBot } from './post/register'
 import { WS_CONNECTION_ONEBOT } from '@/utils/fs/key'
 import { adapter } from '@/utils/config/file/adapter'
-import { AdapterServerOneBot11, HttpAdapterOneBot11 } from './connect'
+import { AdapterServerOneBot11 } from './connect'
 import { createOneBot11Client } from '@/adapter/onebot/connect/client'
 
 import type { WebSocket } from 'ws'
@@ -28,7 +29,10 @@ const createServer = async () => {
   })
 }
 
-const createClient = async () => {
+/**
+ * @description 初始化OneBot11客户端
+ */
+export const createClient = async () => {
   const cfg = adapter()
   if (!cfg.onebot.ws_client || !Array.isArray(cfg.onebot.ws_client)) return
 
@@ -38,7 +42,7 @@ const createClient = async () => {
   }
 }
 
-const createHttp = async () => {
+export const createHttp = async () => {
   const cfg = adapter()
   if (!cfg.onebot.http_server || !Array.isArray(cfg.onebot.http_server)) return
 
@@ -50,9 +54,7 @@ const createHttp = async () => {
         continue
       }
 
-      registerHttpBot(data.self_id, data.token)
-      const adapter = new HttpAdapterOneBot11(data.self_id, data.url, data.token)
-      await adapter.init()
+      registerHttpBot(data.self_id, data.url, data.api_token, data.post_token)
     } catch (error) {
       logger.error(error)
     }

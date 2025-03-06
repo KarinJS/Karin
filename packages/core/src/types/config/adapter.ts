@@ -37,8 +37,12 @@ export interface Adapters {
       self_id: string
       /** http服务的地址 */
       url: string
-      /** http服务的鉴权令牌 */
+      /** @deprecated http服务的鉴权令牌  */
       token: string
+      /** 用于发送Api请求的鉴权Token 如果协议端没有设置无需填写 */
+      api_token: string
+      /** 用于验证请求合法的Token 如果协议端没有设置无需填写 */
+      post_token: string
     }[]
   }
 }

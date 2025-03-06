@@ -1,7 +1,10 @@
 import { watch } from '../../fs/watch'
-import { requireFileSync } from '../../fs/require'
 import { FILE_CHANGE } from '@/utils/fs'
+import { diffArray } from '@/utils/common/number'
+import { requireFileSync } from '../../fs/require'
 import { listeners } from '@/core/internal/listeners'
+import { registerHttpBot, unregisterHttpBot } from '@/adapter/onebot/post/register'
+import { createOneBot11Client, disconnectOneBot11Client } from '@/adapter/onebot/connect'
 
 import type { Adapters } from '@/types/config'
 
@@ -31,7 +34,8 @@ const format = (data: Adapters) => {
       http_server: data.onebot.http_server.map(v => ({
         ...v,
         self_id: String(v.self_id),
-        token: String(v.token),
+        api_token: String(v?.api_token) || String(v.token),
+        post_token: String(v.post_token),
       })),
 
     },
@@ -59,7 +63,32 @@ const initAdapter = (dir: string,) => {
     const options = { file: name, old, data: cache }
     listeners.emit(FILE_CHANGE, options)
     listeners.emit(`${FILE_CHANGE}:${name}`, options)
+    hmrOneBot(old, data)
   }, { type: 'json' })
+}
+
+/**
+ * @internal
+ * @description 热重载
+ * @param old 旧配置
+ * @param data 新配置
+ */
+const hmrOneBot = (old: Adapters, data: Adapters) => {
+  const client = diffArray(
+    Array.isArray(old?.onebot?.ws_client) ? old?.onebot?.ws_client : [],
+    Array.isArray(data?.onebot?.ws_client) ? data?.onebot?.ws_client : []
+  )
+
+  client.removed.forEach(v => disconnectOneBot11Client(v.url))
+  client.added.forEach(v => v.enable && createOneBot11Client(v.url, v.token))
+
+  const http = diffArray(
+    Array.isArray(old?.onebot?.http_server) ? old?.onebot?.http_server : [],
+    Array.isArray(data?.onebot?.http_server) ? data?.onebot?.http_server : []
+  )
+
+  http.removed.forEach(v => unregisterHttpBot(v.self_id))
+  http.added.forEach(v => v.enable && registerHttpBot(v.self_id, v.url, v.api_token, v.post_token))
 }
 
 /**

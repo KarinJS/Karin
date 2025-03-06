@@ -122,3 +122,10 @@ export const refreshAccessToken = (userId: string) => {
   const accessToken = jwt.sign({ userId }, secretOrPrivateKey, { expiresIn: EXPIRES_IN })
   return accessToken
 }
+
+/**
+ * 更新缓存
+ */
+export const updateJwt = () => {
+  secretOrPrivateKey = crypto.createHash('sha256').update(authKey()).digest('hex')
+}

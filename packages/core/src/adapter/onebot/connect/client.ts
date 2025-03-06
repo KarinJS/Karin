@@ -1,6 +1,12 @@
 import WebSocket from 'ws'
 import { WsAdapterOneBot11 } from './ws'
-import { unregisterBot } from '@/service/bot'
+import { getAllBot, unregisterBot } from '@/service/bot'
+import type { AdapterType } from '@/types/adapter/class'
+
+/**
+ * 重连次数映射表 用于热重载管理
+ */
+const reconnectAttemptsMap = new Map<WebSocket, number>()
 
 export class AdapterClientOneBot11 extends WsAdapterOneBot11 {
   token?: string
@@ -44,11 +50,14 @@ export const createOneBot11Client = async (url: string, token?: string) => {
         onebot && unregisterBot('index', onebot.adapter.index)
         onebot && logger.bot('info', onebot.selfId, `连接关闭: ${onebot.adapter.address}`)
       } finally {
-        reconnect(url, token)
+        /** 重连次数 */
+        const count = reconnectAttemptsMap.get(socket) ?? 0
+        count > 0 && reconnect(url, token)
       }
     })
 
     socket.on('open', () => {
+      reconnectAttemptsMap.set(socket, 1)
       onebot = new AdapterClientOneBot11(socket, url, token ?? null)
       onebot.init()
     })
@@ -64,6 +73,30 @@ export const createOneBot11Client = async (url: string, token?: string) => {
     logger.error(error)
     reconnect(url, token)
   }
+}
+
+/**
+ * 判断是否为OneBot11客户端
+ * @param bot 适配器实例
+ */
+const isOneBot11Client = (bot: AdapterType): bot is AdapterClientOneBot11 => {
+  return bot.adapter.communication === 'webSocketClient'
+}
+
+/**
+ * 断开指定客户端
+ * @param url 连接地址
+ */
+export const disconnectOneBot11Client = (url: string) => {
+  const list = getAllBot()
+  list.forEach(bot => {
+    if (bot.adapter.address === url && isOneBot11Client(bot)) {
+      if (reconnectAttemptsMap.has(bot.socket)) {
+        reconnectAttemptsMap.delete(bot.socket)
+        bot?.socket?.close()
+      }
+    }
+  })
 }
 
 /**

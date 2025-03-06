@@ -296,10 +296,18 @@ const getAdapterComponent = (
                     color='primary'
                   />
                   <Input
-                    label='Token'
-                    description='用于发送Api请求的鉴权Token 如果协议端没有设置无需填写'
-                    {...methods.register(`onebot.http_server.${index}.token`)}
-                    placeholder='请输入 Token'
+                    label='用于发送Api请求的鉴权Token'
+                    description='用于发送Api请求的鉴权Token 也就是协议端的api_token'
+                    {...methods.register(`onebot.http_server.${index}.api_token`)}
+                    placeholder='请输入用于发送Api请求的鉴权Token'
+                    className='p-2 rounded-lg w-full'
+                    color='primary'
+                  />
+                  <Input
+                    label='用于验证请求合法的Token'
+                    description='用于验证请求合法的Token 也就是协议端的上报事件的post_token'
+                    {...methods.register(`onebot.http_server.${index}.post_token`)}
+                    placeholder='请输入用于验证请求合法的Token'
                     className='p-2 rounded-lg w-full'
                     color='primary'
                   />

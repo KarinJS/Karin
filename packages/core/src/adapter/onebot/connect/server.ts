@@ -1,7 +1,9 @@
-import { webSocketServerToken } from '@/utils/config/file/adapter'
 import { WsAdapterOneBot11 } from './ws'
+import { getAllBot } from '@/service/bot'
+import { webSocketServerToken } from '@/utils/config/file/adapter'
 import type { WebSocket } from 'ws'
 import type { IncomingMessage } from 'node:http'
+import type { AdapterType } from '@/types/adapter/class'
 
 export class AdapterServerOneBot11 extends WsAdapterOneBot11 {
   /** websocket实例 */
@@ -44,6 +46,13 @@ export class AdapterServerOneBot11 extends WsAdapterOneBot11 {
   }
 
   /**
+   * 断开连接
+   */
+  public disconnect () {
+    this.socket.close()
+  }
+
+  /**
    * @description 鉴权
    * @returns 返回`true`表示鉴权成功
    */
@@ -64,4 +73,17 @@ export class AdapterServerOneBot11 extends WsAdapterOneBot11 {
     this.logger('debug', `鉴权成功: ${auth}`)
     return true
   }
+}
+
+/**
+ * 断开全部连接
+ */
+export const disconnectAll = () => {
+  const isOneBot11 = (bot: AdapterType): bot is AdapterServerOneBot11 => {
+    return bot.adapter.communication === 'webSocketServer'
+  }
+  const list = getAllBot().filter(isOneBot11)
+  list.forEach(bot => {
+    bot.disconnect()
+  })
 }

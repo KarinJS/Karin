@@ -1,22 +1,46 @@
-import { listeners } from '@/core/internal'
-import type { Adapters } from '@/types/config'
+import { getAllBot } from '@/service/bot'
+import { HttpAdapterOneBot11 } from '../connect'
+import type { AdapterType } from '@/types/adapter/class'
+
+type val = {
+  apiToken: string | null
+  postToken: string | null
+}
 
 /** http post bot列表 */
-const botList = new Map<string, { token: string, isAuth: true } | { token: null, isAuth: false }>()
+const botMap = new Map<string, val>()
 
 /**
  * @description 注册一个http post bot
  * @param selfId 机器人ID
- * @param token 鉴权token 用于校验请求是否合法
+ * @param url 机器人地址
+ * @param apiToken 用于发送Api请求的鉴权Token
+ * @param postToken 用于验证请求合法的Token
  */
-export const registerHttpBot = (selfId: string, token?: string) => {
-  if (!token) {
-    botList.set(selfId, { token: null, isAuth: false })
-  } else {
-    botList.set(selfId, { token, isAuth: true })
-  }
+export const registerHttpBot = async (
+  selfId: string,
+  url: string,
+  apiToken?: string,
+  postToken?: string
+) => {
+  botMap.set(
+    selfId,
+    {
+      apiToken: apiToken || null,
+      postToken: postToken || null,
+    })
 
   logger.debug(`[service][onebot-post][注册Bot] ${selfId}`)
+  const adapter = new HttpAdapterOneBot11(selfId, url)
+  await adapter.init()
+}
+
+/**
+ * 获取一个http post bot
+ * @param selfId 机器人ID
+ */
+export const getHttpBot = (selfId: string) => {
+  return botMap.get(selfId)
 }
 
 /**
@@ -24,54 +48,39 @@ export const registerHttpBot = (selfId: string, token?: string) => {
  * @param selfId 机器人ID
  */
 export const unregisterHttpBot = (selfId: string) => {
-  botList.delete(selfId)
-  logger.debug(`[service][onebot-post][卸载Bot] ${selfId}`)
+  botMap.delete(selfId)
+
+  const isHttpOnebot = (bot: AdapterType): bot is HttpAdapterOneBot11 => {
+    return bot.adapter.communication === 'http'
+  }
+
+  const list = getAllBot().filter(isHttpOnebot)
+  list.forEach(bot => {
+    if (bot.selfId === selfId) {
+      bot?.uninstall()
+    }
+  })
 }
 
 /**
- * @description 获取鉴权token
+ * @description 获取事件验证Token
  * @param selfId 机器人ID
  */
-export const getHttpBotToken = (selfId: string) => {
-  return botList.get(selfId)
+export const getHttpBotPostToken = (selfId: string) => {
+  return botMap.get(selfId)?.postToken
 }
 
 /**
- * @description 更新鉴权token
+ * @description 获取Api请求Token
  * @param selfId 机器人ID
- * @param token 鉴权token
  */
-export const updateHttpBotToken = (selfId: string, token?: string) => {
-  const bot = botList.get(selfId)
-  if (!bot) return
-  if (!token) {
-    botList.set(selfId, { token: null, isAuth: false })
-    return
-  }
-
-  botList.set(selfId, { token, isAuth: true })
+export const getHttpBotApiToken = (selfId: string) => {
+  return botMap.get(selfId)?.apiToken
 }
 
-listeners.on('file:change', (type: string, _: Adapters, data: Adapters) => {
-  if (type !== 'adapter') return
-
-  if (!data.onebot.http_server || !Array.isArray(data.onebot.http_server)) {
-    logger.debug('没有配置onebotHttp 已跳过')
-    return true
-  }
-
-  for (const options of data.onebot.http_server) {
-    let { self_id: selfId, url, token } = options
-    if (selfId === 'default') {
-      continue
-    }
-
-    selfId = String(selfId)
-    token = String(token)
-    if (!selfId || !url || !url.startsWith('http')) {
-      logger.bot('error', selfId, '请配置正确的 onebot http 信息')
-      continue
-    }
-    updateHttpBotToken(selfId, token)
-  }
-})
+/**
+ * 获取全部http post bot selfId
+ */
+export const getAllHttpBotSelfId = () => {
+  return Array.from(botMap.keys())
+}
