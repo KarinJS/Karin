@@ -79,7 +79,9 @@ const getAdapterComponent = (
       enable: false,
       self_id: 'default',
       url: '',
-      token: ''
+      token: '',
+      api_token: '',
+      post_token: ''
     })
   }
 
