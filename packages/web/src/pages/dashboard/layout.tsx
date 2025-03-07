@@ -1,6 +1,6 @@
 import Sidebar from '@/components/sidebar.tsx'
 import { Outlet, useLocation } from 'react-router-dom'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import clsx from 'clsx'
 import { IoMenu } from 'react-icons/io5'
@@ -18,53 +18,53 @@ function getMainPath (pathname: string): string {
 }
 
 export default function DashboardLayout () {
-  const [touchStartX, setTouchStartX] = useState(0)
+  // const [touchStartX, setTouchStartX] = useState(0)
   const [isOpen, setIsOpen] = useState(false)
   const isNotSmallScreen = useMediaQuery({ minWidth: 768 })
   const location = useLocation()
   const title = getPageTitle(location.pathname)
 
   const [currentMainPath, setCurrentMainPath] = useState(getMainPath(location.pathname))
-  const [touchStartY, setTouchStartY] = useState(0)
-  const [touchStartTime, setTouchStartTime] = useState(0)
+  // const [touchStartY, setTouchStartY] = useState(0)
+  // const [touchStartTime, setTouchStartTime] = useState(0)
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (isNotSmallScreen) return
-    const touch = e.touches[0]
-    setTouchStartX(touch.clientX)
-    setTouchStartY(touch.clientY)
-    setTouchStartTime(Date.now())
-  }, [isNotSmallScreen])
+  // const handleTouchStart = useCallback((e: React.TouchEvent) => {
+  //   if (isNotSmallScreen) return
+  //   const touch = e.touches[0]
+  //   setTouchStartX(touch.clientX)
+  //   setTouchStartY(touch.clientY)
+  //   setTouchStartTime(Date.now())
+  // }, [isNotSmallScreen])
 
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (isNotSmallScreen || isOpen) return
+  // const handleTouchMove = useCallback((e: React.TouchEvent) => {
+  //   if (isNotSmallScreen || isOpen) return
 
-    const touch = e.touches[0]
-    if (!touch) return
+  //   const touch = e.touches[0]
+  //   if (!touch) return
 
-    // 计算滑动速度和方向
-    const deltaX = touch.clientX - touchStartX
-    const deltaY = Math.abs(touch.clientY - touchStartY)
-    const velocityX = Math.abs(deltaX) / (Date.now() - touchStartTime)
+  //   // 计算滑动速度和方向
+  //   const deltaX = touch.clientX - touchStartX
+  //   const deltaY = Math.abs(touch.clientY - touchStartY)
+  //   const velocityX = Math.abs(deltaX) / (Date.now() - touchStartTime)
 
-    // console.log('滑动参数:', {
-    //   deltaX,
-    //   deltaY,
-    //   velocity: velocityX.toFixed(2),
-    //   direction: deltaX > 0 ? 'right' : 'left'
-    // })
+  //   // console.log('滑动参数:', {
+  //   //   deltaX,
+  //   //   deltaY,
+  //   //   velocity: velocityX.toFixed(2),
+  //   //   direction: deltaX > 0 ? 'right' : 'left'
+  //   // })
 
-    // 触发条件
-    if (
-      deltaX > 35 && // 滑动距离
-      deltaY < 50 && // 垂直容差
-      velocityX > 0.5 && // 滑动速度
-      deltaX > Math.abs(deltaY) * 1.5 // 横向主导
-    ) {
-      // console.log('✅ 全屏滑动触发')
-      setIsOpen(true)
-    }
-  }, [isNotSmallScreen, isOpen, touchStartX, touchStartY, touchStartTime])
+  //   // 触发条件
+  //   if (
+  //     deltaX > 35 && // 滑动距离
+  //     deltaY < 50 && // 垂直容差
+  //     velocityX > 0.9 && // 滑动速度
+  //     deltaX > Math.abs(deltaY) * 1.5 // 横向主导
+  //   ) {
+  //     // console.log('✅ 全屏滑动触发')
+  //     setIsOpen(true)
+  //   }
+  // }, [isNotSmallScreen, isOpen, touchStartX, touchStartY, touchStartTime])
 
   useEffect(() => {
     // 大屏幕默认展开侧边栏
@@ -89,9 +89,9 @@ export default function DashboardLayout () {
 
       {/* 主内容区域 */}
       <motion.main
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={() => setTouchStartX(0)}
+        // onTouchStart={handleTouchStart}
+        // onTouchMove={handleTouchMove}
+        // onTouchEnd={() => setTouchStartX(0)}
         style={{
           touchAction: 'manipulation',
           WebkitOverflowScrolling: 'touch'
@@ -106,9 +106,9 @@ export default function DashboardLayout () {
           x: isOpen && !isNotSmallScreen ? 240 : 0
         }}
         transition={{
-          type: 'spring',
-          stiffness: 400,
-          damping: 30
+          type: 'tween',
+          ease: [0.00, 0.00, 0.00, 1.00],
+          duration: 0.3
         }}
       >
         {/* 顶部导航栏 */}
@@ -120,12 +120,16 @@ export default function DashboardLayout () {
           )}
           initial={{ y: -50 }}
           animate={{ y: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          transition={{
+            type: 'tween',
+            ease: [0.00, 0.00, 0.00, 1.00],
+            duration: 0.3
+          }}
         >
           <div className='flex items-center gap-3'>
             <motion.button
               onClick={() => setIsOpen(!isOpen)}
-              className={clsx('p-2 rounded-lg text-xs transition-colors')}
+              className={clsx('p-2 rounded-lg text-xs')}
             >
               <div className='flex items-center gap-4'>
                 {isOpen
@@ -150,10 +154,9 @@ export default function DashboardLayout () {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.9 }}
           transition={{
-            type: 'spring',
-            stiffness: 100,
-            damping: 10,
-            ease: [0.25, 0.1, 0.25, 1], // 调整淡出动画的缓动曲线
+            type: 'tween',
+            ease: [0.00, 0.00, 0.00, 1.00],
+            duration: 0.3
           }}
         >
           <AnimatePresence mode='popLayout'>

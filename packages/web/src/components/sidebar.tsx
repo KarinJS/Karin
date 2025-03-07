@@ -44,8 +44,9 @@ const subMenuVariants = {
     height: 'auto',
     opacity: 1,
     transition: {
-      duration: 0.3,
-      ease: 'easeInOut',
+      type: 'tween',
+      ease: [0.00, 0.00, 0.00, 1.00],
+      duration: 0.3
     }
   }
 }
@@ -87,12 +88,11 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
         )}
         initial={{ width: 0 }}
         animate={{ width: isOpen ? '15rem' : 0 }}
-        // 开了卡炸
-        // transition={{
-        //   type: isOpen ? 'spring' : 'tween',
-        //   stiffness: 200,
-        //   damping: isOpen ? 15 : 10
-        // }}
+        transition={{
+          type: 'tween',
+          duration: 0.3,
+          ease: [0.00, 0.00, 0.00, 1.00],
+        }}
         style={{ overflow: 'hidden' }}
       >
         <motion.div
@@ -131,9 +131,9 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                       rotate: 360,
                     }}
                     transition={{
-                      duration: 8,
-                      repeat: Infinity,
-                      ease: 'linear'
+                      type: 'tween',
+                      ease: [0.00, 0.00, 0.00, 1.00],
+                      duration: 0.3
                     }}
                   />
 
@@ -144,9 +144,9 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                       rotate: -360,
                     }}
                     transition={{
-                      duration: 12,
-                      repeat: Infinity,
-                      ease: 'linear'
+                      type: 'tween',
+                      ease: [0.00, 0.00, 0.00, 1.00],
+                      duration: 0.3
                     }}
                   />
 
@@ -172,10 +172,9 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                         initial={{ pathLength: 0 }}
                         animate={{ pathLength: 1 }}
                         transition={{
-                          duration: 2,
-                          ease: 'easeInOut',
-                          repeat: Infinity,
-                          repeatType: 'reverse'
+                          type: 'tween',
+                          ease: [0.00, 0.00, 0.00, 1.00],
+                          duration: 0.3
                         }}
                       />
                       <motion.path
@@ -186,11 +185,9 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                         initial={{ pathLength: 0 }}
                         animate={{ pathLength: 1 }}
                         transition={{
-                          duration: 1.5,
-                          ease: 'easeInOut',
-                          repeat: Infinity,
-                          repeatType: 'reverse',
-                          delay: 0.5
+                          type: 'tween',
+                          ease: [0.00, 0.00, 0.00, 1.00],
+                          duration: 0.3
                         }}
                       />
                     </svg>
@@ -215,9 +212,9 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                       scale: [1, 1.02, 1],
                     }}
                     transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: 'easeInOut'
+                      type: 'tween',
+                      ease: [0.00, 0.00, 0.00, 1.00],
+                      duration: 0.3
                     }}
                   >
                     {/* k */}
@@ -321,8 +318,9 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                       initial={{ scaleX: 0 }}
                       animate={{ scaleX: 1 }}
                       transition={{
-                        duration: 0.8,
-                        ease: 'easeOut'
+                        type: 'tween',
+                        ease: [0.00, 0.00, 0.00, 1.00],
+                        duration: 0.3
                       }}
                     />
 
@@ -333,10 +331,9 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                         x: ['-100%', '400%'],
                       }}
                       transition={{
-                        duration: 2,
-                        ease: 'easeInOut',
-                        repeat: Infinity,
-                        repeatDelay: 0.5
+                        type: 'tween',
+                        ease: [0.00, 0.00, 0.00, 1.00],
+                        duration: 0.3
                       }}
                     />
 
@@ -347,9 +344,9 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                         x: ['-100%', '600%'],
                       }}
                       transition={{
-                        duration: 2.5,
-                        ease: 'linear',
-                        repeat: Infinity,
+                        type: 'tween',
+                        ease: [0.00, 0.00, 0.00, 1.00],
+                        duration: 0.3
                       }}
                     />
 
@@ -361,10 +358,9 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                         opacity: [0, 0.9, 0],
                       }}
                       transition={{
-                        duration: 2,
-                        ease: 'easeInOut',
-                        repeat: Infinity,
-                        repeatDelay: 0.5
+                        type: 'tween',
+                        ease: [0.00, 0.00, 0.00, 1.00],
+                        duration: 0.3
                       }}
                     />
                   </div>
@@ -391,7 +387,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
           {/* 导航菜单 */}
           <div
             className={clsx(
-              'flex-1 p-2 px-2 pt-0 flex flex-col gap-2 overflow-y-auto hide-scrollbar',
+              'flex-1 p-2 px-2 pt-[1px] flex flex-col gap-2 overflow-y-auto hide-scrollbar',
               'px-4'
             )}
           >
