@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.4.7](https://github.com/KarinJS/Karin/compare/core-v1.4.6...core-v1.4.7) (2025-03-06)
+
+
+### 🐛 Bug Fixes
+
+* hmr ([c09f423](https://github.com/KarinJS/Karin/commit/c09f4231d53d26ac1e3643ba18dd7dab10d032cc))
+
 ## [1.4.6](https://github.com/KarinJS/Karin/compare/core-v1.4.5...core-v1.4.6) (2025-03-05)
 
 
