@@ -13,6 +13,7 @@ import { Button } from '@heroui/button'
 import { LuLogIn } from 'react-icons/lu'
 import toast from 'react-hot-toast'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
+import { ScrollShadow } from '@heroui/scroll-shadow'
 
 const menuItemVariants = {
   hidden: {
@@ -391,135 +392,137 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
               'px-4'
             )}
           >
-            <AnimatePresence>
-              {siteConfig.navItems.map((item, index) => (
-                <motion.div
-                  key={item.href}
-                  variants={menuItemVariants}
-                  initial='hidden'
-                  animate='visible'
-                  exit='exit'
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <div
-                    className={clsx(
-                      'block text-default-600 hover:text-primary rounded-xl hover:bg-default-100/50 transition-all cursor-default md:cursor-pointer group',
-                      {
-                        '!text-primary bg-primary/5 font-medium ring-1 ring-primary/10':
-                          location.pathname === item.href ||
-                          (item.children?.some(child => location.pathname === child.href)),
-                      }
-                    )}
+            <ScrollShadow hideScrollBar>
+              <AnimatePresence>
+                {siteConfig.navItems.map((item, index) => (
+                  <motion.div
+                    key={item.href}
+                    variants={menuItemVariants}
+                    initial='hidden'
+                    animate='visible'
+                    exit='exit'
+                    transition={{ delay: index * 0.05 }}
                   >
-                    <motion.div
-                      className='flex items-center gap-6 py-2.5 overflow-hidden relative'
-                      initial={{
-                        // width: 200,
-                        paddingLeft: 16,
-                        paddingRight: 16,
-                      }}
-                      animate={{
-                        // width: 200,
-                        paddingLeft: 16,
-                        paddingRight: 16,
-                      }}
-                      whileHover={{ x: 4 }}
-                      onClick={() => {
-                        if (item.children) {
-                          setExpandedMenu(expandedMenu === item.href ? null : item.href)
-                        } else {
-                          navigate(item.href)
+                    <div
+                      className={clsx(
+                        'mb-2 block text-default-600 hover:text-primary rounded-xl hover:bg-default-100/50 transition-all cursor-default md:cursor-pointer group',
+                        {
+                          '!text-primary bg-primary/5 font-medium ring-1 ring-primary/10':
+                            location.pathname === item.href ||
+                            (item.children?.some(child => location.pathname === child.href)),
                         }
-                      }}
+                      )}
                     >
                       <motion.div
-                        className='text-xl relative z-10'
-                        whileHover={{ scale: 1.1 }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-                      >
-                        <item.Icon />
-                      </motion.div>
-                      <motion.div
-                        className='whitespace-nowrap overflow-hidden text-base relative z-10 flex-1 flex items-center gap-2'
+                        className='flex items-center gap-6 py-2.5 overflow-hidden relative'
                         initial={{
-                          width: 'auto',
+                          // width: 200,
+                          paddingLeft: 16,
+                          paddingRight: 16,
                         }}
                         animate={{
-                          width: 'auto',
+                          // width: 200,
+                          paddingLeft: 16,
+                          paddingRight: 16,
+                        }}
+                        whileHover={{ x: 4 }}
+                        onClick={() => {
+                          if (item.children) {
+                            setExpandedMenu(expandedMenu === item.href ? null : item.href)
+                          } else {
+                            navigate(item.href)
+                          }
                         }}
                       >
-                        <span className='select-none '>{item.label}</span>
-                        {item.href === '/plugins' && (
-                          <>
-                            {pluginsLoading &&
-                              (
-                                <Spinner className='w-10 h-4 text-primary' variant='wave' size='md' />
-                              )}
-                          </>
-                        )}
-                      </motion.div>
-                      {item.children && (
                         <motion.div
-                          initial={{ rotate: 0 }}
-                          animate={{ rotate: expandedMenu === item.href ? 90 : 0 }}
-                          transition={{ duration: 0.2 }}
+                          className='text-xl relative z-10'
+                          whileHover={{ scale: 1.1 }}
+                          transition={{ type: 'spring', stiffness: 400, damping: 10 }}
                         >
-                          <FaChevronRight className='w-3 h-3' />
+                          <item.Icon />
                         </motion.div>
-                      )}
-                    </motion.div>
-
-                    {/* 子菜单 */}
-                    {item.children && (
-                      <AnimatePresence>
-                        {expandedMenu === item.href && (
+                        <motion.div
+                          className='whitespace-nowrap overflow-hidden text-base relative z-10 flex-1 flex items-center gap-2'
+                          initial={{
+                            width: 'auto',
+                          }}
+                          animate={{
+                            width: 'auto',
+                          }}
+                        >
+                          <span className='select-none '>{item.label}</span>
+                          {item.href === '/plugins' && (
+                            <>
+                              {pluginsLoading &&
+                                (
+                                  <Spinner className='w-10 h-4 text-primary' variant='wave' size='md' />
+                                )}
+                            </>
+                          )}
+                        </motion.div>
+                        {item.children && (
                           <motion.div
-                            variants={subMenuVariants}
-                            initial='hidden'
-                            animate='visible'
-                            exit='hidden'
-                            className='overflow-hidden mx-2'
+                            initial={{ rotate: 0 }}
+                            animate={{ rotate: expandedMenu === item.href ? 90 : 0 }}
+                            transition={{ duration: 0.2 }}
                           >
-                            {pluginsLoading && item.href === '/plugins'
-                              ? (
-                                <div className='flex items-center justify-center py-4'>
-                                  <Spinner className='w-2 h-4 text-primary -ml-7' variant='dots' size='lg' />
-                                </div>
-                              )
-                              : (item.children
-                                .sort((a, b) => a.id.localeCompare(b.id))
-                                .map((child, index) => (
-                                  <Fragment key={child.id}>
-                                    <Button
-                                      variant='light' fullWidth
-                                      className={clsx(
-                                        'flex items-start justify-start gap-2 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary',
-                                        'transition-transform hover:-translate-y-[2px]',
-                                        {
-                                          '!text-primary bg-primary/5': location.pathname === child.href,
-                                          'mt-2': index === 0,
-                                        }
-                                      )}
-                                      onPress={() => {
-                                        // 插件配置页面跳转
-                                        // http://localhost:5173/web/plugins/config?name=@karinjs/karin-plugin-demo&type=npm
-                                        navigate(`/plugins/config?name=${child.id}&type=${child.type || ''}`)
-                                      }}
-                                    >
-                                      {child.icon && <Icon name={child.icon?.name || ''} size={child.icon?.size} color={child.icon?.color} />}
-                                      {child.id || child.href.split('/').pop()}
-                                    </Button>
-                                  </Fragment>
-                                ))
-                              )}
+                            <FaChevronRight className='w-3 h-3' />
                           </motion.div>
                         )}
-                      </AnimatePresence>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
+                      </motion.div>
+
+                      {/* 子菜单 */}
+                      {item.children && (
+                        <AnimatePresence>
+                          {expandedMenu === item.href && (
+                            <motion.div
+                              variants={subMenuVariants}
+                              initial='hidden'
+                              animate='visible'
+                              exit='hidden'
+                              className='overflow-hidden mx-2'
+                            >
+                              {pluginsLoading && item.href === '/plugins'
+                                ? (
+                                  <div className='flex items-center justify-center py-4'>
+                                    <Spinner className='w-2 h-4 text-primary -ml-7' variant='dots' size='lg' />
+                                  </div>
+                                )
+                                : (item.children
+                                  .sort((a, b) => a.id.localeCompare(b.id))
+                                  .map((child, index) => (
+                                    <Fragment key={child.id}>
+                                      <Button
+                                        variant='light' fullWidth
+                                        className={clsx(
+                                          'flex items-start justify-start gap-2 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary',
+                                          'transition-transform hover:-translate-y-[2px]',
+                                          {
+                                            '!text-primary bg-primary/5': location.pathname === child.href,
+                                            'mt-2': index === 0,
+                                          }
+                                        )}
+                                        onPress={() => {
+                                          // 插件配置页面跳转
+                                          // http://localhost:5173/web/plugins/config?name=@karinjs/karin-plugin-demo&type=npm
+                                          navigate(`/plugins/config?name=${child.id}&type=${child.type || ''}`)
+                                        }}
+                                      >
+                                        {child.icon && <Icon name={child.icon?.name || ''} size={child.icon?.size} color={child.icon?.color} />}
+                                        {child.id || child.href.split('/').pop()}
+                                      </Button>
+                                    </Fragment>
+                                  ))
+                                )}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </ScrollShadow>
           </div>
 
           {/* 底部按钮 */}
