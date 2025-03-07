@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.4.8](https://github.com/KarinJS/Karin/compare/core-v1.4.7...core-v1.4.8) (2025-03-07)
+
+
+### 🐛 Bug Fixes
+
+* 启动时依赖缺失不打印依赖的问题 ([5d1d98a](https://github.com/KarinJS/Karin/commit/5d1d98a584e03fcf66652d15dbe532e88429dea7))
+
 ## [1.4.7](https://github.com/KarinJS/Karin/compare/core-v1.4.6...core-v1.4.7) (2025-03-06)
 
 
