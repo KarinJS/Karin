@@ -29,6 +29,12 @@ import {
   GitBranch,
   LucideIcon
 } from 'lucide-react'
+import { LuInfo } from 'react-icons/lu'
+import { getPackageInfo } from '@/lib/utils'
+import axios from 'axios'
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
+import { testGithub } from '@/lib/test-url'
+import Markdown from '@/components/Markdown'
 
 interface IconMap {
   [key: string]: LucideIcon
@@ -111,6 +117,19 @@ function StatusItem ({ title, value }: StatusItemProps) {
 }
 
 function Status () {
+  const [isChangelogOpen, setIsChangelogOpen] = useState(false)
+  const [proxyFn, setProxyFn] = useState<Function>(() => (url: string) => url)
+
+  /** Changelog 请求 */
+  const changelog = useRequest(
+    () => axios.get(proxyFn('https://raw.githubusercontent.com/KarinJS/Karin/main/packages/core/CHANGELOG.md'))
+      .then(res => res.data),
+    {
+      manual: true,
+      ready: !!proxyFn // 等待代理函数就绪
+    }
+  )
+
   const { data, error } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'), {
     pollingInterval: 1000,
   })
@@ -118,6 +137,29 @@ function Status () {
   const botList = useRequest(() => request.serverGet<Array<AdapterType>>('/api/v1/utils/get/bots'), {
     pollingInterval: 5000,
   })
+  const npmVersion = useRequest(
+    async () => await getPackageInfo('node-karin'),
+    { onError: () => console.log('npm版本检测失败') }
+  )
+  /** 版本比较 */
+  const shouldUpdate = (current: string, latest: string) => {
+    /** 清理版本号中的非语义化字符（保留数字和点） */
+    const clean = (v: string) => v.replace(/[^0-9.]/g, '').match(/^(\d+\.?){1,3}/)?.[0] || '0.0.0'
+
+    /** 拆分版本号并转换为数字数组 */
+    const toNumbers = (version: string) =>
+      version.split('.').map(Number).concat([0, 0, 0]).slice(0, 3)
+
+    const currentParts = toNumbers(clean(current))
+    const latestParts = toNumbers(clean(latest))
+
+    for (let i = 0; i < 3; i++) {
+      if (latestParts[i] > currentParts[i]) return true
+      if (latestParts[i] < currentParts[i]) return false
+    }
+    return false
+  }
+
   if (error || !data) {
     return (
       <div className='flex flex-col justify-center items-center gap-2'>
@@ -150,7 +192,85 @@ function Status () {
       />
       <StatusItem title='插件数量' value={localPluginsList.data?.length || '--'} />
       <StatusItem title='BOT数量' value={botList.data?.length} />
-      <StatusItem title='版本' value={data.version} />
+      <StatusItem
+        title='版本'
+        value={
+          <div className='flex items-center gap-2'>
+            {npmVersion.data && (
+              <>
+                <span>{data.version}</span>
+                {shouldUpdate(data.version, npmVersion.data.latest) && (
+                  <>
+                    <LuInfo
+                      className='text-danger animate-pulse cursor-help'
+                      onClick={() => {
+                        setIsChangelogOpen(true)
+                        changelog.run()
+                      }}
+                    />
+                    <Modal
+                      isOpen={isChangelogOpen}
+                      onOpenChange={(isOpen) => {
+                        setIsChangelogOpen(isOpen)
+                        if (isOpen) {
+                          testGithub().then(fn => {
+                            setProxyFn(() => fn)
+                            changelog.run() // 确保在代理函数更新后再发起请求
+                          })
+                        }
+                      }}
+                      size='2xl'
+                    >
+                      <ModalContent>
+                        <ModalHeader className='border-b'>
+                          <div className='flex items-center gap-2'>
+                            <span>新版本 {npmVersion.data.latest} 可用</span>
+                            <span className='text-default-400 text-sm'>
+                              (当前版本：{data.version})
+                            </span>
+                          </div>
+                        </ModalHeader>
+                        <ModalBody className='max-h-[60vh] overflow-y-auto'>
+                          {changelog.loading
+                            ? (
+                              <div className='text-center py-4'>加载更新日志中...</div>
+                            )
+                            : (
+                              <Markdown content={changelog.data} />
+                            )}
+                          {changelog.error && (
+                            <div className='text-danger'>无法加载更新日志</div>
+                          )}
+                        </ModalBody>
+                        <ModalFooter>
+                          <Button
+                            color='primary'
+                            variant='shadow'
+                            onPress={() => setIsChangelogOpen(false)}
+                          >
+                            关闭
+                          </Button>
+                        </ModalFooter>
+                      </ModalContent>
+                    </Modal>
+                  </>
+                )}
+              </>
+            )}
+            {npmVersion.error && (
+              <Tooltip
+                content='版本检测失败'
+                classNames={{
+                  base: 'scale-75 origin-top-right',
+                  content: 'text-xs'
+                }}
+              >
+                <span className='text-default-400 cursor-help'>⚠️</span>
+              </Tooltip>
+            )}
+          </div>
+        }
+      />
       <StatusItem title='运行环境' value={data.karin_runtime} />
     </div>
   )

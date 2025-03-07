@@ -7,6 +7,7 @@ import type { Elements } from '@/types/segment'
 import type { EmojiValue } from '@/components/sandbox/chat_input/formats/emoji_blot'
 import type { ImageValue } from '@/components/sandbox/chat_input/formats/image_blot'
 import type { ReplyBlockValue } from '@/components/sandbox/chat_input/formats/reply_blot'
+import axios from 'axios'
 
 /**
  * 根据路径获取页面标题
@@ -165,4 +166,36 @@ export function formatNumber (num: number): string {
   const firstDecimal = Math.floor(twoDecimal) / 10
   const value = Math.round(firstDecimal * 10) / 10
   return value.toFixed(1).endsWith('.0') ? `${Math.floor(value)}M` : `${value.toFixed(1)}M`
+}
+
+/**
+ * 获取npm包的基本信息
+ * @param name npm包名
+ */
+export const getPackageInfo = async (name: string) => {
+  const registry = [
+    'https://registry.npmjs.org',
+    'https://registry.npmmirror.com',
+  ]
+
+  const registryList = registry.map((item) => `${item}/${name}`)
+
+  try {
+    const registryResult = await Promise.race(registryList.map((item) => axios.get(item, { timeout: 5000 })))
+
+    if (registryResult.status === 200) {
+      /** 最新版本 */
+      const latest = registryResult.data['dist-tags'].latest
+      /** 包大小 */
+      const size = registryResult.data.versions[latest].dist.unpackedSize
+      /** 更新时间: 2025-02-07T07:02:10.971Z 格式为 ISO 8601 */
+      const updated = registryResult.data.time.modified
+
+      return { latest, size, updated }
+    }
+  } catch (error) {
+    console.error(`[getPackageInfo] ${name} 获取包信息失败:`)
+    console.error(error)
+  }
+  return { latest: null, size: 0, updated: '' }
 }
