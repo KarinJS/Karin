@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.8](https://github.com/KarinJS/Karin/compare/web-v1.4.7...web-v1.4.8) (2025-03-07)
+
+
+### 🐛 Bug Fixes
+
+* 暂时移除右滑呼出侧边栏 ([b115a44](https://github.com/KarinJS/Karin/commit/b115a441f8d250bfd607853a70fb9e0959461416))
+
 ## [1.4.7](https://github.com/KarinJS/Karin/compare/web-v1.4.6...web-v1.4.7) (2025-03-06)
 
 

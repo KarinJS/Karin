@@ -14,7 +14,7 @@ const loaderPlugin = (name: string, file: string, error: unknown) => {
   const pkg = /Cannot find package '(.+?)'/.exec(error as string)?.[1]
   if (pkg) {
     const key = `${name}.${pkg}`
-    if (!missing.has(key)) return
+    if (missing.has(key)) return
     missing.set(key, { name, file, depend: pkg })
   } else {
     logger.error(`载入插件错误：${logger.red(`${name}/${path.basename(file)}`)}`)
