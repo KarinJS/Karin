@@ -122,7 +122,7 @@ function Status () {
 
   /** Changelog 请求 */
   const changelog = useRequest(
-    () => axios.get(proxyFn('https://raw.githubusercontent.com/KarinJS/Karin/main/packages/core/CHANGELOG.md'))
+    () => axios.get(proxyFn('https://raw.githubusercontent.com/KarinJS/Karin/main/packages/core/CHANGELOG.md'), { timeout: 10000 })
       .then(res => res.data),
     {
       manual: true,
