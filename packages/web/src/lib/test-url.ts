@@ -15,7 +15,10 @@ export const githubMirror = [
   'https://gh.zhaojun.im/',
   'https://gh-proxy.com',
   'https://ghfast.top',
-  'https://ghp.ci/'
+  'https://ghp.ci/',
+  'https://ghproxy.com',
+  'https://ghp.ci',
+  'https://ghgo.xyz',
 ]
 
 /**
@@ -26,35 +29,49 @@ export const speedTest = async () => {
   const list = [github, ...githubMirror]
   const controllers = list.map(() => new AbortController())
 
-  const promises = list.map(async (host, index) => {
-    try {
-      const startTime = Date.now()
-      const url = host === github ? testUrl : `${host}/${testUrl}`
-      await axios.get(url, { signal: controllers[index].signal, timeout: 2 * 1000 })
-      const endTime = Date.now()
+  // 添加官方源保底结果
+  const fallbackResult = {
+    code: true,
+    host: github,
+    time: Infinity
+  }
 
-      /** 中断其他请求 */
-      controllers.forEach((controller, i) => {
-        if (i !== index) controller.abort()
+  try {
+    const results = await Promise.all(
+      list.map(async (host, index) => {
+        try {
+          const startTime = Date.now()
+          const url = host === github ? testUrl : `${host}/${testUrl}`
+          await axios.get(url, {
+            signal: controllers[index].signal,
+            timeout: 2 * 1000
+          })
+
+          controllers.forEach((controller, i) => {
+            if (i !== index) controller.abort()
+          })
+
+          return {
+            code: true,
+            host,
+            time: Date.now() - startTime
+          }
+        } catch {
+          return {
+            code: false,
+            host,
+            time: Infinity
+          }
+        }
       })
+    )
 
-      return {
-        code: true,
-        host,
-        time: endTime - startTime,
-      }
-    } catch {
-      return {
-        code: false,
-        host,
-        time: 999999,
-      }
-    }
-  })
-
-  // 等待所有请求完成或被中断，返回最快的有效结果
-  const results = await Promise.all(promises)
-  return results.filter(Boolean).sort((a, b) => a.time - b.time)[0] || null
+    // 优先选择有效的非官方源，最后使用官方源
+    return [...results.filter(r => r.code), fallbackResult]
+      .sort((a, b) => a.time - b.time)[0]
+  } catch {
+    return fallbackResult
+  }
 }
 
 /**
@@ -63,8 +80,20 @@ export const speedTest = async () => {
  * - 否则则返回替换函数
  */
 export const testGithub = async () => {
-  const list = await Promise.all(Array.from({ length: 3 }, () => speedTest()))
-  const { host } = list.filter(Boolean).sort((a, b) => a.time - b.time)[0] || null
-  if (host === github) return (url: string) => url
-  return (url: string) => `${host}/${url}`
+  try {
+    const list = await Promise.all(Array.from({ length: 3 }, () => speedTest().catch(() => null)))
+
+    // 筛选有效结果并添加官方源保底
+    const validResults = list.filter((item): item is Exclude<typeof item, null> => Boolean(item))
+    const fallback = { code: true, host: github, time: Infinity }
+    const fastest = [...validResults, fallback].sort((a, b) => a.time - b.time)[0]
+
+    return (url: string) => {
+      // 始终包含官方源兜底
+      return fastest.host === github ? url : `${fastest.host}/${url}`
+    }
+  } catch {
+    // 彻底失败时返回原始处理函数
+    return (url: string) => url
+  }
 }

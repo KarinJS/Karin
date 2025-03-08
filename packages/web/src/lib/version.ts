@@ -4,7 +4,6 @@
  * @returns 版本号数字
  */
 export const versionToNumber = (version: string): number => {
-  console.log(version)
   const finalVersionString = version.replace(/^.*?v/, '')
 
   const versionArray = finalVersionString.split('.')

@@ -124,10 +124,10 @@ function StatusItem ({ title, value }: StatusItemProps) {
 function Status () {
   const [isChangelogOpen, setIsChangelogOpen] = useState(false)
   const [updateTip, setUpdateTip] = useState(false)
-  const [proxyFn, setProxyFn] = useState<Function>(() => (url: string) => url)
+  const [proxyFn, setProxyFn] = useState(() => (url: string) => url)
   const [npmLatest, setNpmLatest] = useState(false)
   const [hasCheckedNpm, setHasCheckedNpm] = useState(false)
-  const [isLoadingRelease, setIsLoadingRelease] = useState(false) // 新增加载状态
+  const [isLoadingRelease, setIsLoadingRelease] = useState(false)
 
   // 获取运行状态
   const { data, error } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'), {
@@ -138,14 +138,11 @@ function Status () {
     pollingInterval: 5000,
   })
 
-  // 在组件加载时，调用一次 testGithub 并缓存 proxyFn
-  useEffect(() => {
-    async function initProxy () {
-      const fn = await testGithub()
-      setProxyFn(fn)
-    }
-    initProxy()
-  }, [])
+  const handleTooltipClick = () => {
+    testGithub().then(fn => setProxyFn(fn))
+    fetchRelease()
+    setIsChangelogOpen(true)
+  }
 
   useEffect(() => {
     if (data?.version && !hasCheckedNpm) {
@@ -169,12 +166,12 @@ function Status () {
     async () => {
       setIsLoadingRelease(true) // 开始加载时设置为 true
       try {
-        const response = await axios.get<GithubRelease[]>(
-          proxyFn('https://raw.githubusercontent.com/KarinJS/repo-status/main/data/releases.json')
-        )
+        const url = proxyFn('https://raw.githubusercontent.com/karinjs/repo-status/refs/heads/main/data/releases.json')
+        console.log('fetchRelease', url)
+        const response = await axios.get<GithubRelease[]>(url)
         return response.data
       } finally {
-        setIsLoadingRelease(false) // 请求完成或失败后设置为 false
+        setIsLoadingRelease(false)
       }
     },
     { manual: true, onError: () => console.log('版本检测失败') }
@@ -244,10 +241,7 @@ function Status () {
               >
                 <LuInfo
                   className='text-danger animate-pulse cursor-help'
-                  onClick={() => {
-                    setIsChangelogOpen(true)
-                    fetchRelease()
-                  }}
+                  onClick={handleTooltipClick}
                 />
               </Tooltip>
             )}
@@ -288,7 +282,7 @@ function Status () {
                     {middleVersions.map((versionInfo) => (
                       <div
                         key={versionInfo.tag_name}
-                        className='p-5 bg-default-100 rounded-md shadow-md mb-5'
+                        className='p-5 bg-default-50 rounded-md shadow-md mb-5'
                       >
                         <div className='mb-2'>
                           {(function () {
