@@ -288,22 +288,22 @@ function Status () {
                       >
                         <div className='mb-2'>
                           {(function () {
-                            let tagName = 'core'
+                            let tagName = '本体'
                             let color: 'primary' | 'default' | 'secondary' | 'success' | 'warning' | 'danger' = 'primary'
                             switch (true) {
                               case versionInfo.tag_name.includes('core'):
-                                tagName = 'core'
+                                tagName = '本体'
                                 break
                               case versionInfo.tag_name.includes('web'):
-                                tagName = 'web'
+                                tagName = 'WEB 界面'
                                 color = 'warning'
                                 break
                               case versionInfo.tag_name.includes('cli'):
-                                tagName = 'cli'
+                                tagName = '命令行工具'
                                 color = 'secondary'
                                 break
                               case versionInfo.tag_name.includes('create'):
-                                tagName = 'create-karin'
+                                tagName = '脚手架'
                                 color = 'success'
                             }
                             return (
