@@ -215,9 +215,15 @@ function Status () {
                     >
                       <LuInfo
                         className='text-danger animate-pulse cursor-help'
-                        onClick={() => {
-                          setIsChangelogOpen(true)
-                          changelog.run()
+                        onClick={async () => {
+                          try {
+                            const fn = await testGithub()
+                            setProxyFn(fn)
+                            setIsChangelogOpen(true)
+                            changelog.run()
+                          } catch (error) {
+                            console.error('Failed to set proxy function:', error)
+                          }
                         }}
                       />
                     </Tooltip>
@@ -225,12 +231,6 @@ function Status () {
                       isOpen={isChangelogOpen}
                       onOpenChange={(isOpen) => {
                         setIsChangelogOpen(isOpen)
-                        if (isOpen) {
-                          testGithub().then(fn => {
-                            setProxyFn(() => fn)
-                            changelog.run() // 确保在代理函数更新后再发起请求
-                          })
-                        }
                       }}
                       size='2xl'
                     >

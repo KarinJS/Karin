@@ -564,6 +564,9 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
       {/* 删除注销登录弹窗 */}
       <Modal
         isOpen={showsingOut}
+        onOpenChange={(isOpen) => {
+          setShowsingOut(isOpen)
+        }}
         size='lg'
       >
         <ModalContent>
