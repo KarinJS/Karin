@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { createBrotliDecompress } from 'node:zlib'
 import express from 'express'
 import { createServer } from 'node:http'
 import { router } from './api/router'
@@ -85,27 +86,31 @@ export const initExpress = async (
   app.use('/web', (req, res, next) => {
     const filePath = path.join(webDir, req.path)
     const brPath = `${filePath}.br`
+    const acceptEncoding = req.headers['accept-encoding'] || ''
 
-    // 检查Brotli文件是否存在
     if (fs.existsSync(brPath)) {
-      res.set({
-        'Content-Encoding': 'br',
-        'Content-Type': getMimeType(filePath),
-      })
-      req.url = `${req.url}.br`
-      return express.static(webDir)(req, res, next)
+      if (acceptEncoding.includes('br')) {
+        // 客户端支持 Brotli，直接返回 br 文件
+        res.set({
+          'Content-Encoding': 'br',
+          'Content-Type': getMimeType(req.path),
+        })
+        req.url = `${req.url}.br`
+        return express.static(webDir)(req, res, next)
+      } else {
+        // 客户端不支持 Brotli，动态解压后返回原始内容（异步）
+        res.set({
+          'Content-Encoding': 'identity',
+          'Content-Type': getMimeType(req.path),
+        })
+        const readStream = fs.createReadStream(brPath)
+        const decompressStream = createBrotliDecompress()
+        readStream.pipe(decompressStream).pipe(res)
+        return
+      }
     }
 
-    // 检查.br文件是否存在
-    if (fs.existsSync(brPath)) {
-      res.set({
-        'Content-Encoding': 'br',
-        'Content-Type': getMimeType(filePath),
-      })
-      req.url = `${req.url}.br`
-    }
-
-    express.static(webDir)(req, res, next)
+    next()
   })
   await import('./api/index')
   await import('./ws')
