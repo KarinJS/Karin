@@ -84,15 +84,25 @@ export const initExpress = async (
   const webDir = path.join(dir.karinDir, 'dist/web')
   app.use('/web', (req, res, next) => {
     const filePath = path.join(webDir, req.path)
-    const gzipPath = `${filePath}.gz`
+    const brPath = `${filePath}.br`
 
-    // 检查 gzip 文件是否存在
-    if (fs.existsSync(gzipPath)) {
+    // 检查Brotli文件是否存在
+    if (fs.existsSync(brPath)) {
       res.set({
-        'Content-Encoding': 'gzip',
-        'Content-Type': getMimeType(req.path),
+        'Content-Encoding': 'br',
+        'Content-Type': getMimeType(filePath),
       })
-      req.url = `${req.url}.gz` // 修改请求路径
+      req.url = `${req.url}.br`
+      return express.static(webDir)(req, res, next)
+    }
+
+    // 检查.br文件是否存在
+    if (fs.existsSync(brPath)) {
+      res.set({
+        'Content-Encoding': 'br',
+        'Content-Type': getMimeType(filePath),
+      })
+      req.url = `${req.url}.br`
     }
 
     express.static(webDir)(req, res, next)

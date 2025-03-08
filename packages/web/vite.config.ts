@@ -5,6 +5,7 @@ import reactScan from '@react-scan/vite-plugin-react-scan'
 import viteCompression from 'vite-plugin-compression'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import path from 'node:path'
+import * as zlib from 'node:zlib'
 
 const monacoEditorPath = normalizePath(
   path.resolve(__dirname, 'node_modules/monaco-editor/min/vs')
@@ -16,7 +17,17 @@ export default defineConfig({
     react(),
     tsconfigPaths(),
     reactScan(),
-    viteCompression({ deleteOriginFile: true, verbose: false }),
+    viteCompression({
+      deleteOriginFile: true,
+      verbose: false,
+      algorithm: 'brotliCompress',
+      ext: '.br',
+      compressionOptions: {
+        params: {
+          [zlib.constants.BROTLI_PARAM_QUALITY]: 11
+        }
+      }
+    }),
     viteStaticCopy({
       targets: [
         {
