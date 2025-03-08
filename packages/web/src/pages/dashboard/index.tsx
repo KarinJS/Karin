@@ -201,13 +201,26 @@ function Status () {
                 <span>{data.version}</span>
                 {shouldUpdate(data.version, npmVersion.data.latest) && (
                   <>
-                    <LuInfo
-                      className='text-danger animate-pulse cursor-help'
-                      onClick={() => {
-                        setIsChangelogOpen(true)
-                        changelog.run()
-                      }}
-                    />
+                    <Tooltip
+                      delay={0}
+                      closeDelay={0}
+                      placement='bottom-start'
+                      content={
+                        <div className='px-1 py-2'>
+                          新版本
+                          <span className='text-green-400 font-bold'>{npmVersion.data.latest}</span>
+                          可用
+                        </div>
+                      }
+                    >
+                      <LuInfo
+                        className='text-danger animate-pulse cursor-help'
+                        onClick={() => {
+                          setIsChangelogOpen(true)
+                          changelog.run()
+                        }}
+                      />
+                    </Tooltip>
                     <Modal
                       isOpen={isChangelogOpen}
                       onOpenChange={(isOpen) => {
