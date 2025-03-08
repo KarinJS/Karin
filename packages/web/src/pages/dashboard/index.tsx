@@ -35,7 +35,7 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@herou
 import { testGithub } from '@/lib/test-url'
 import Markdown from '@/components/Markdown'
 import { GithubRelease } from '@/types/release'
-import { compareVersion } from '@/lib/version'
+import { compareVersion, extractUpdateLogs } from '@/lib/version'
 import { Chip } from '@heroui/chip'
 import { getPackageInfo } from '@/lib/utils'
 import { ScrollShadow } from '@heroui/scroll-shadow'
@@ -177,6 +177,8 @@ function Status () {
     { manual: true, onError: () => console.log('版本检测失败') }
   )
 
+  const updateLogs = releaseData ? extractUpdateLogs(releaseData, data?.version!) : []
+
   if (error || !data) {
     return (
       <div className='flex flex-col justify-center items-center gap-2'>
@@ -189,9 +191,9 @@ function Status () {
   }
 
   const middleVersions: GithubRelease[] = []
-  if (releaseData) {
-    for (let i = 0; i < releaseData.length; i++) {
-      const versionInfo = releaseData[i]
+  if (updateLogs) {
+    for (let i = 0; i < updateLogs.length; i++) {
+      const versionInfo = updateLogs[i]
       if (compareVersion(versionInfo.tag_name, data.version) > 0) {
         middleVersions.push(versionInfo)
       } else {

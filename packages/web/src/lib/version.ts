@@ -1,12 +1,14 @@
+import type { GithubRelease } from '@/types/release'
+
 /**
  * 版本号转为数字
  * @param version 版本号
  * @returns 版本号数字
  */
 export const versionToNumber = (version: string): number => {
-  const finalVersionString = version.replace(/^.*?v/, '')
-
-  const versionArray = finalVersionString.split('.')
+  // 去掉前缀
+  const versionWithoutPrefix = version.replace(/^[a-zA-Z]+-v/, '')
+  const versionArray = versionWithoutPrefix.split('.')
   const versionNumber =
     parseInt(versionArray[2]) +
     parseInt(versionArray[1]) * 100 +
@@ -34,4 +36,33 @@ export const compareVersion = (version1: string, version2: string): number => {
   }
 
   return versionNumber1 > versionNumber2 ? 1 : -1
+}
+
+/**
+ * 判断是否是主包版本
+ * @param version 版本号
+ * @returns 是否是主包版本
+ */
+export const isCoreVersion = (version: string): boolean => {
+  return version.startsWith('core-v')
+}
+
+/**
+ * 提取从当前 core 版本到最新 core 版本之间的所有更新日志
+ * @param releases 所有版本信息
+ * @param currentCoreVersion 当前 core 版本
+ * @returns 更新日志
+ */
+export const extractUpdateLogs = (releases: GithubRelease[], currentCoreVersion: string): GithubRelease[] => {
+  // 找到最新 core 版本
+  releases
+    .filter(release => isCoreVersion(release.tag_name))
+    .reduce((latest, current) => {
+      return compareVersion(current.tag_name, latest.tag_name) > 0 ? current : latest
+    }, { tag_name: currentCoreVersion } as GithubRelease)
+
+  // 提取从当前 core 版本到最新 core 版本之间的所有更新日志
+  return releases.filter(release => {
+    return compareVersion(release.tag_name, currentCoreVersion) > 0
+  })
 }
