@@ -75,6 +75,7 @@
     "react-responsive": "^10.0.0",
     "react-router-dom": "^7.1.2",
     "rehype-highlight": "^7.0.2",
+    "remark-gfm": "^4.0.1",
     "streamsaver": "^2.0.6",
     "tailwind-merge": "^2.6.0",
     "tailwind-variants": "^0.3.0",
