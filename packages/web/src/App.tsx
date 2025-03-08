@@ -4,7 +4,7 @@ import RequireAuth from '@/components/auth/RequireAuth'
 import { getPageTitle } from '@/lib/utils'
 import ScrollToTop from './components/common/ScrollToTop'
 
-// 使用lazy动态导入页面组件
+const LoadingPage = lazy(() => import('@/pages/loading'))
 const DashboardLayout = lazy(() => import('@/pages/dashboard/layout'))
 const IndexPage = lazy(() => import('@/pages/dashboard'))
 const ConfigPage = lazy(() => import('@/pages/dashboard/config/index'))
@@ -31,7 +31,7 @@ function App () {
   }, [location])
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingPage />}>
       <Routes>
         <Route path='/login' element={<LoginPage />} />
         <Route
