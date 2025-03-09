@@ -61,6 +61,18 @@ const generatePlaces = (value: number): number[] => {
   return Array.from({ length: digits }, (_, i) => 10 ** (digits - 1 - i))
 }
 
+function getWindowSizeCategory () {
+  const width = window.innerWidth
+
+  if (width < 768) {
+    return 'sm'
+  } else if (width >= 768 && width < 1024) {
+    return 'md'
+  } else {
+    return 'lg'
+  }
+}
+
 function OnlineStatus () {
   const { error } = useRequest(
     () =>
@@ -110,12 +122,12 @@ function StatusItem ({ title, value }: StatusItemProps) {
     <Card
       className='transition-all duration-150 ease-in-out hover:bg-default-100 dark:hover:bg-default-100 hover:translate-y-[-4px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-default-200 dark:border-default-100 cursor-pointer'
     >
-      <CardHeader className='px-4 py-3 flex-col items-start'>
+      <CardHeader className='px-2.5 py-1.5 md:px-2.5 md:py-2 lg:px-4 lg:py-3  flex-col items-start'>
         <div className='flex items-center gap-2'>
-          <IconComponent className='w-5 h-5 text-primary' />
+          <IconComponent className='w-4 h-4 lg:w-5 lg:h-5 text-primary' />
           <p className='text-sm text-primary select-none'>{title}</p>
         </div>
-        <div className='mt-2 text-2xl text-default-800 font-mono font-bold'>{value || '--'}</div>
+        <div className='mt-1 md:mt-2 lg:mt-3 text-lg md:text-xl lg:text-2xl text-default-800 font-mono font-bold'>{value || '--'}</div>
       </CardHeader>
     </Card>
   )
@@ -203,7 +215,7 @@ function Status () {
   }
 
   return (
-    <div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-6'>
+    <div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-2 md:gap-x-6 md:gap-y-4 lg:gap-x-8 lg:gap-y-6'>
       <StatusItem title='名称' value={data.name} />
       <StatusItem title='PID' value={data.pid} />
       <StatusItem title='PM2 ID' value={data.pm2_id} />
@@ -214,7 +226,19 @@ function Status () {
             <Counter
               className='flex items-center gap-0'
               value={Math.floor(data.uptime)}
-              fontSize={24}
+              fontSize={(() => {
+                const size = getWindowSizeCategory()
+                switch (size) {
+                  case 'sm':
+                    return 18
+                  case 'md':
+                    return 20
+                  case 'lg':
+                    return 24
+                  default:
+                    return 24
+                }
+              })()}
               places={generatePlaces(Math.floor(data.uptime))}
             />
             <span>秒</span>
