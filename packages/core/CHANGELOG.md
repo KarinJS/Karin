@@ -1,5 +1,18 @@
 # 更新日志
 
+## [1.5.0](https://github.com/KarinJS/Karin/compare/core-v1.4.8...core-v1.5.0) (2025-03-09)
+
+
+### ✨ Features
+
+* 新增主页更新提示、快速更新本体入口、首次加载页面动画 ([#301](https://github.com/KarinJS/Karin/issues/301)) ([3f7efc5](https://github.com/KarinJS/Karin/commit/3f7efc52fdcf2f9b5708800e57c88b6658034817))
+
+
+### 📦️ Build System
+
+* **deps:** bump axios from 1.7.9 to 1.8.2 ([#303](https://github.com/KarinJS/Karin/issues/303)) ([04d337b](https://github.com/KarinJS/Karin/commit/04d337be3981722807395d1e9e1e1c632c2175b4))
+* **deps:** bump axios from 1.7.9 to 1.8.2 in /packages/core ([#302](https://github.com/KarinJS/Karin/issues/302)) ([c2e3379](https://github.com/KarinJS/Karin/commit/c2e3379670a56c2bd1abd88fbe6315766a479348))
+
 ## [1.4.8](https://github.com/KarinJS/Karin/compare/core-v1.4.7...core-v1.4.8) (2025-03-07)
 
 

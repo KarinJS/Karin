@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.5.0](https://github.com/KarinJS/Karin/compare/web-v1.4.8...web-v1.5.0) (2025-03-09)
+
+
+### ✨ Features
+
+* 新增主页更新提示、快速更新本体入口、首次加载页面动画 ([#301](https://github.com/KarinJS/Karin/issues/301)) ([3f7efc5](https://github.com/KarinJS/Karin/commit/3f7efc52fdcf2f9b5708800e57c88b6658034817))
+
+
+### 💄 Styles
+
+* 侧边栏滚动上下添加渐隐 ([42285c2](https://github.com/KarinJS/Karin/commit/42285c23b752bce1e1bf043dc3b64b0ac89e3e1b))
+
+
+### 📦️ Build System
+
+* **deps:** bump axios from 1.7.9 to 1.8.2 ([#303](https://github.com/KarinJS/Karin/issues/303)) ([04d337b](https://github.com/KarinJS/Karin/commit/04d337be3981722807395d1e9e1e1c632c2175b4))
+
 ## [1.4.8](https://github.com/KarinJS/Karin/compare/web-v1.4.7...web-v1.4.8) (2025-03-07)
 
 
