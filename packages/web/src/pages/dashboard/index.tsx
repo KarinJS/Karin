@@ -3,7 +3,7 @@ import { Card, CardBody, CardHeader } from '@heroui/card'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
 import clsx from 'clsx'
-import type { KarinStatus, SystemStatus } from '@/types/server'
+import type { KarinStatus, NetworkStatus, SystemStatus } from '@/types/server'
 import { Button } from '@heroui/button'
 import { RiRestartLine, RiShutDownLine } from 'react-icons/ri'
 import { Tooltip } from '@heroui/tooltip'
@@ -40,6 +40,7 @@ import { getPackageInfo } from '@/lib/utils'
 import { ScrollShadow } from '@heroui/scroll-shadow'
 import { Spinner } from '@heroui/spinner'
 import { FullScreenLoader } from '@/components/FullScreenLoader'
+import NetworkMonitor from '@/components/NetworkMonitor'
 
 interface IconMap {
   [key: string]: LucideIcon
@@ -556,9 +557,34 @@ export default function IndexPage () {
       </Card>
       <Card shadow='sm'>
         <CardBody>
+          <NetworkMonitorCard />
+        </CardBody>
+      </Card>
+      <Card shadow='sm'>
+        <CardBody>
           <SystemStatusCard />
         </CardBody>
       </Card>
     </section>
+  )
+}
+
+function NetworkMonitorCard () {
+  const { data } = useRequest(() => request.serverGet<NetworkStatus>('/api/v1/status/network'), {
+    pollingInterval: 2000,
+  })
+  if (!data) {
+    <div className='flex flex-col justify-center items-center gap-2'>
+      <div className='text-danger text-4xl'>
+        <VscBracketError />
+      </div>
+      <div>请求错误</div>
+    </div>
+  }
+  return (
+    <NetworkMonitor
+      title='网络监控'
+      networkData={data!}
+    />
   )
 }
