@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { createBrotliDecompress } from 'node:zlib'
 import express from 'express'
 import { createServer } from 'node:http'
 import { router } from './api/router'
@@ -84,18 +85,32 @@ export const initExpress = async (
   const webDir = path.join(dir.karinDir, 'dist/web')
   app.use('/web', (req, res, next) => {
     const filePath = path.join(webDir, req.path)
-    const gzipPath = `${filePath}.gz`
+    const brPath = `${filePath}.br`
+    const acceptEncoding = req.headers['accept-encoding'] || ''
 
-    // 检查 gzip 文件是否存在
-    if (fs.existsSync(gzipPath)) {
-      res.set({
-        'Content-Encoding': 'gzip',
-        'Content-Type': getMimeType(req.path),
-      })
-      req.url = `${req.url}.gz` // 修改请求路径
+    if (fs.existsSync(brPath)) {
+      if (acceptEncoding.includes('br')) {
+        // 客户端支持 Brotli，直接返回 br 文件
+        res.set({
+          'Content-Encoding': 'br',
+          'Content-Type': getMimeType(req.path),
+        })
+        req.url = `${req.url}.br`
+        return express.static(webDir)(req, res, next)
+      } else {
+        // 客户端不支持 Brotli，动态解压后返回原始内容（异步）
+        res.set({
+          'Content-Encoding': 'identity',
+          'Content-Type': getMimeType(req.path),
+        })
+        const readStream = fs.createReadStream(brPath)
+        const decompressStream = createBrotliDecompress()
+        readStream.pipe(decompressStream).pipe(res)
+        return
+      }
     }
 
-    express.static(webDir)(req, res, next)
+    next()
   })
   await import('./api/index')
   await import('./ws')

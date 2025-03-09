@@ -1,34 +1,26 @@
-import { useEffect } from 'react'
+import { useEffect, Suspense, lazy } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
-// Dashboard Page
-// Layout
-import DashboardLayout from '@/pages/dashboard/layout'
-// HomePage
-import IndexPage from '@/pages/dashboard'
-// Config Page
-import ConfigPage from '@/pages/dashboard/config/index'
-// Plugin Market
-import PluginMarketPage from '@/pages/dashboard/plugins'
-// Sandbox Page
-import SandboxPage from '@/pages/dashboard/sandbox'
-// About Page
-import AboutPage from '@/pages/dashboard/about'
-// ----------
-// Login Page
-import LoginPage from '@/pages/login'
-import ChatDetail from '@/pages/dashboard/sandbox/chat/detail'
-import DefaultPage from '@/components/default_page'
-import FriendRequest from '@/pages/dashboard/sandbox/contact/friend_request'
-import UserDetail from '@/pages/dashboard/sandbox/contact/detail'
-import GroupNotice from '@/pages/dashboard/sandbox/contact/group_notice'
-import GroupChatTest from '@/pages/dashboard/sandbox/group'
 import RequireAuth from '@/components/auth/RequireAuth'
-import PluginConfigPage from '@/pages/dashboard/plugins/config'
-// 404 Page
-import NotFoundPage from '@/pages/404'
 import { getPageTitle } from '@/lib/utils'
 import ScrollToTop from './components/common/ScrollToTop'
-import LogPage from '@/pages/dashboard/log'
+
+const LoadingPage = lazy(() => import('@/pages/loading'))
+const DashboardLayout = lazy(() => import('@/pages/dashboard/layout'))
+const IndexPage = lazy(() => import('@/pages/dashboard'))
+const ConfigPage = lazy(() => import('@/pages/dashboard/config/index'))
+const PluginMarketPage = lazy(() => import('@/pages/dashboard/plugins'))
+const SandboxPage = lazy(() => import('@/pages/dashboard/sandbox'))
+const AboutPage = lazy(() => import('@/pages/dashboard/about'))
+const LoginPage = lazy(() => import('@/pages/login'))
+const ChatDetail = lazy(() => import('@/pages/dashboard/sandbox/chat/detail'))
+const DefaultPage = lazy(() => import('@/components/default_page'))
+const FriendRequest = lazy(() => import('@/pages/dashboard/sandbox/contact/friend_request'))
+const UserDetail = lazy(() => import('@/pages/dashboard/sandbox/contact/detail'))
+const GroupNotice = lazy(() => import('@/pages/dashboard/sandbox/contact/group_notice'))
+const GroupChatTest = lazy(() => import('@/pages/dashboard/sandbox/group'))
+const PluginConfigPage = lazy(() => import('@/pages/dashboard/plugins/config'))
+const NotFoundPage = lazy(() => import('@/pages/404'))
+const LogPage = lazy(() => import('@/pages/dashboard/log'))
 
 // Main App
 function App () {
@@ -39,7 +31,7 @@ function App () {
   }, [location])
 
   return (
-    <>
+    <Suspense fallback={<LoadingPage />}>
       <Routes>
         <Route path='/login' element={<LoginPage />} />
         <Route
@@ -77,7 +69,7 @@ function App () {
         </Route>
       </Routes>
       <ScrollToTop />
-    </>
+    </Suspense>
   )
 }
 
