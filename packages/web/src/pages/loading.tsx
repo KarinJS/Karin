@@ -37,13 +37,7 @@ export default function LoadingScreen ({ onLoadingComplete, minDisplayTime = 200
 
   // 模拟加载进度动画
   useEffect(() => {
-    const loadingTexts = [
-      '初始化中...',
-      '加载资源中...',
-      '资源加载完成...',
-      '最终处理中...',
-      '即将完成...'
-    ]
+    const loadingTexts = ['初始化中...', '加载资源中...', '资源加载完成...', '最终处理中...', '即将完成...']
 
     let currentProgress = 0
     const interval = setInterval(() => {
@@ -91,51 +85,35 @@ export default function LoadingScreen ({ onLoadingComplete, minDisplayTime = 200
 
   return (
     <div className='relative h-screen w-screen overflow-hidden'>
-      {/* 背景颜色块 - 圆形动画 */}
+      {/* 背景颜色块 */}
       <motion.div
-        className='absolute w-[400px] h-[400px] rounded-full bg-pink-400 opacity-70'
-        animate={{
-          x: [0, 30, -20, 10, 0],
-          y: [0, -20, 30, 10, 0],
-        }}
+        className='absolute w-[600px] h-[600px] rounded-full bg-pink-400 opacity-70'
+        initial={{ x: -600, y: -600 }}
+        animate={{ x: 0, y: 0 }}
         transition={{
-          duration: 20,
+          duration: 3,
+          ease: [0.0, 0.0, 0.0, 1.0], // cubic-bezier(0.00, 0.00, 0.00, 1.00)
           repeat: Number.POSITIVE_INFINITY,
-          repeatType: 'reverse',
+          repeatType: 'mirror',
         }}
-        style={{ top: '25%', left: '25%' }}
+        style={{ top: '40%', left: '40%' }}
       />
 
       <motion.div
-        className='absolute w-[500px] h-[500px] rounded-full bg-blue-400 opacity-70'
-        animate={{
-          x: [0, -40, 20, -10, 0],
-          y: [0, 30, -20, -10, 0],
-        }}
+        className='absolute w-[700px] h-[700px] rounded-full bg-blue-400 opacity-70'
+        initial={{ x: 600, y: 600 }}
+        animate={{ x: 0, y: 0 }}
         transition={{
-          duration: 25,
+          duration: 3,
+          ease: [0.0, 0.0, 0.0, 1.0], // cubic-bezier(0.00, 0.00, 0.00, 1.00)
           repeat: Number.POSITIVE_INFINITY,
-          repeatType: 'reverse',
+          repeatType: 'mirror',
         }}
-        style={{ bottom: '25%', right: '25%' }}
-      />
-
-      <motion.div
-        className='absolute w-[300px] h-[300px] rounded-full bg-purple-400 opacity-50'
-        animate={{
-          x: [0, 20, -30, 10, 0],
-          y: [0, -30, -10, 20, 0],
-        }}
-        transition={{
-          duration: 18,
-          repeat: Number.POSITIVE_INFINITY,
-          repeatType: 'reverse',
-        }}
-        style={{ top: '75%', left: '50%' }}
+        style={{ bottom: '40%', right: '40%' }}
       />
 
       {/* 毛玻璃效果层 */}
-      <div className='absolute inset-0 backdrop-blur-3xl bg-white/10' />
+      <div className='absolute inset-0 backdrop-blur-[192px]' />
 
       {/* 内容层 */}
       <div className='absolute inset-0 flex flex-col items-center justify-center px-4'>
@@ -174,7 +152,6 @@ export default function LoadingScreen ({ onLoadingComplete, minDisplayTime = 200
           {loadingText}
         </motion.div>
 
-        {/* 鼓励性文字 */}
         <div className={`absolute bottom-8 ${textColor} text-sm sm:text-base animate-pulse`}>
           永远相信美好的事情即将发生
         </div>
