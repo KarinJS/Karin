@@ -9,7 +9,6 @@ import { RiRestartLine, RiShutDownLine } from 'react-icons/ri'
 import { Tooltip } from '@heroui/tooltip'
 import { useState, useCallback, useEffect } from 'react'
 import toast from 'react-hot-toast'
-import { useNavigate } from 'react-router-dom'
 import useDialog from '@/hooks/use-dialog'
 import { VscBracketError } from 'react-icons/vsc'
 import { getSystemStatus } from '@/lib/status'
@@ -40,6 +39,7 @@ import { Chip } from '@heroui/chip'
 import { getPackageInfo } from '@/lib/utils'
 import { ScrollShadow } from '@heroui/scroll-shadow'
 import { Spinner } from '@heroui/spinner'
+import { FullScreenLoader } from '@/components/FullScreenLoader'
 
 interface IconMap {
   [key: string]: LucideIcon
@@ -133,6 +133,71 @@ function StatusItem ({ title, value }: StatusItemProps) {
   )
 }
 
+function UpdateButtons ({ handleCloseModal }: { handleCloseModal: () => void }) {
+  const [running, setRunning] = useState(false)
+  const dialog = useDialog()
+  const onUpdate = async () => {
+    dialog.confirm({
+      title: '更新',
+      content: '确认更新吗',
+      onConfirm: async () => {
+        try {
+          try {
+            setRunning(true)
+            const { status } = await request.serverGet<{ status: 'ok' | 'failed' }>('/api/v1/system/update', { timeout: 30000 })
+            if (status === 'ok') {
+              toast.success('更新成功，正在重启......')
+              await request.serverPost('/api/v1/restart')
+              await new Promise(resolve => {
+                const interval = setInterval(async () => {
+                  try {
+                    await request.serverGet('/api/v1/ping')
+                    clearInterval(interval)
+                    resolve(null)
+                  } catch (e) {
+                    console.error(e)
+                  }
+                }, 2000)
+              })
+              toast.success('重启成功')
+              window.location.reload()
+            }
+          } catch (e: any) {
+            toast.error(e.message)
+          }
+        } catch (e) {
+          console.log(e)
+          toast.error('重启失败')
+        } finally {
+          setRunning(false)
+        }
+      },
+    })
+  }
+
+  return (
+    <div className='flex gap-2 ml-auto'>
+      {running && <FullScreenLoader />}
+      <Button
+        color='primary'
+        variant='shadow'
+        isDisabled={running}
+        onPress={onUpdate}
+      >
+        更新
+      </Button>
+      <Button
+        color='danger'
+        variant='shadow'
+        isDisabled={running}
+        onPress={handleCloseModal}
+      >
+        关闭
+      </Button>
+    </div>
+  )
+}
+
 function Status () {
   const [isChangelogOpen, setIsChangelogOpen] = useState(false)
   const [updateTip, setUpdateTip] = useState(false)
@@ -214,6 +279,11 @@ function Status () {
     }
   }
 
+  // 将关闭方法传递给 UpdateButtons
+  const handleCloseModal = () => {
+    setIsChangelogOpen(false)
+  }
+
   return (
     <div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-2 md:gap-x-6 md:gap-y-4 lg:gap-x-8 lg:gap-y-6'>
       <StatusItem title='名称' value={data.name} />
@@ -281,7 +351,7 @@ function Status () {
         onOpenChange={(isOpen) => {
           setIsChangelogOpen(isOpen)
         }}
-        size='2xl'
+        size='4xl'
       >
         <ModalContent>
           <ModalHeader className='border-b'>
@@ -350,13 +420,7 @@ function Status () {
           </ModalBody>
 
           <ModalFooter>
-            <Button
-              color='primary'
-              variant='shadow'
-              onPress={() => setIsChangelogOpen(false)}
-            >
-              关闭
-            </Button>
+            <UpdateButtons handleCloseModal={handleCloseModal} />
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -386,7 +450,6 @@ function SystemStatusCard () {
 
 function ControlButtons () {
   const [running, setRunning] = useState(false)
-  const navigate = useNavigate()
   const dialog = useDialog()
   const onRestart = async () => {
     dialog.confirm({
@@ -425,7 +488,7 @@ function ControlButtons () {
         try {
           setRunning(true)
           await request.serverPost('/api/v1/exit')
-          navigate('/login')
+          window.location.reload()
           toast.success('关机成功')
         } catch (e) {
           toast.error('关机失败')
