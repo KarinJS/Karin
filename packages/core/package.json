@@ -71,7 +71,7 @@
     "@types/node-schedule": "^2.1.7",
     "@types/ws": "^8.5.12",
     "art-template": "4.13.2",
-    "axios": "1.7.9",
+    "axios": "1.8.2",
     "chalk": "5.4.1",
     "chokidar": "3.6.0",
     "commander": "^13.0.0",
