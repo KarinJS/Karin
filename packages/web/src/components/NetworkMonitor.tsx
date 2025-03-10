@@ -5,9 +5,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import * as echarts from 'echarts'
 import { useTheme } from '@/hooks/use-theme'
 import { Card, CardBody, CardHeader } from '@heroui/card'
-import { Chip } from '@heroui/chip'
 import type { NetworkStatus } from '@/types/server'
 import { LuNetwork } from 'react-icons/lu'
+import { ArrowDownCircle, ArrowUpCircle, Download, Upload } from 'lucide-react'
 
 interface NetworkMonitorProps {
   title?: string
@@ -162,60 +162,106 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
 
       const option: echarts.EChartsOption = {
         darkMode: theme === 'dark',
+        animation: true,
+        animationDuration: 300,
+        animationEasing: 'quadraticInOut',
+        animationThreshold: 2000,
+        progressiveThreshold: 3000,
+        progressive: 200,
         tooltip: {
           trigger: 'axis',
           formatter: (params: any) => {
             const index = params[0].dataIndex
-            // 使用 displayData 而不是 filteredData
             const data = displayData[index]
             const time = formatTime(data.timestamp)
-
-            // 修复：确保参数存在再访问其值
             let uploadText = ''
             let downloadText = ''
 
             params.forEach((param: any) => {
               if (param.seriesName === '上传') {
-                uploadText = `<div>上传: ${formatSpeed(param.value)}</div>`
+                uploadText = `<div class="flex items-center gap-1"><span class="inline-block w-2 h-2 rounded-full bg-green-500"></span>上传: ${formatSpeed(param.value)}</div>`
               } else if (param.seriesName === '下载') {
-                downloadText = `<div>下载: ${formatSpeed(param.value)}</div>`
+                downloadText = `<div class="flex items-center gap-1"><span class="inline-block w-2 h-2 rounded-full bg-blue-500"></span>下载: ${formatSpeed(param.value)}</div>`
               }
             })
 
             return `
-              <div>
-                <div>时间: ${time}</div>
-                ${uploadText}
-                ${downloadText}
+              <div class="p-2 backdrop-blur-3xl">
+                <div class="text-sm font-medium mb-1 text-foreground/90">时间: ${time}</div>
+                <div class="space-y-1 text-sm text-default-900">
+                  ${uploadText}
+                  ${downloadText}
+                </div>
               </div>
             `
           },
-          backgroundColor: theme === 'dark' ? 'rgba(50, 50, 50, 0.7)' : 'rgba(255, 255, 255, 0.7)',
-          borderColor: theme === 'dark' ? '#555' : '#ddd',
+          backgroundColor: 'transparent',
+          borderWidth: 0,
           textStyle: {
             color: theme === 'dark' ? '#fff' : '#333',
           },
+          extraCssText: 'backdrop-filter: blur(8px);',
         },
         legend: {
           data: ['上传', '下载'],
-          textStyle: {
-            color: theme === 'dark' ? '#ddd' : '#333',
-          },
-          icon: 'roundRect',
-          itemWidth: 12,
-          itemHeight: 12,
-          itemGap: 20,
+          icon: 'roundRect',  // 改为圆角矩形图标
+          itemWidth: 16,      // 增加图标宽度
+          itemHeight: 8,      // 保持高度适中
+          itemGap: 24,
           right: '5%',
           top: '2%',
-          // 恢复图例选中状态
           selected: legendSelected,
+          itemStyle: {
+            borderWidth: 1,
+            borderColor: theme === 'dark' ? '#555' : '#ddd',
+            borderRadius: 2,
+            shadowBlur: 2,
+            shadowColor: 'rgba(0,0,0,0.1)'
+          },
+          emphasis: {
+            selectorLabel: {
+              fontWeight: 'bold',
+              color: theme === 'dark' ? '#fff' : '#000'
+            }
+          },
+          formatter: function (name) {
+            // 检查图例是否被选中，如果未选中则添加删除线效果
+            const isSelected = legendSelected[name] !== false // 默认为true
+            if (isSelected) {
+              return `{a|${name}}`
+            } else {
+              return `{b|${name}}`
+            }
+          },
+          textStyle: {
+            rich: {
+              a: {
+                fontSize: 12,
+                lineHeight: 20,
+                color: theme === 'dark' ? '#ddd' : '#333',
+                padding: [0, 0, 0, 5]
+              },
+              b: {
+                fontSize: 12,
+                lineHeight: 20,
+                color: theme === 'dark' ? '#777' : '#999', // 灰色
+                padding: [0, 0, 0, 5],
+              }
+            }
+          },
+          tooltip: {
+            show: true,
+            formatter: function (param) {
+              return `隐藏/显示${param.name}数据`
+            }
+          }
         },
         grid: {
-          left: '4%',
-          right: '5%',
+          left: '6%',
+          right: '6%',
           bottom: '18%',
-          top: '18%',    // 从15%增加到18%，为标题和单位提供更多空间
-          containLabel: true,
+          top: '18%',
+          containLabel: true
         },
         xAxis: {
           type: 'category',
@@ -226,61 +272,83 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
             interval: 4,
             color: theme === 'dark' ? '#ddd' : '#333',
             fontSize: 11,
-            margin: 24,     // 刻度标签距离x轴的距离
+            margin: 24,
           },
           axisLine: {
             lineStyle: {
-              color: theme === 'dark' ? '#555' : '#ddd',
+              color: theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+              width: 1,
             },
+          },
+          axisTick: {
+            show: false,
           },
         },
         yAxis: {
           type: 'value',
           name: yAxisUnit,
           nameLocation: 'end',
-          nameGap: 22,      // 从15增加到22，增加单位与轴的距离
+          nameGap: 22,
           nameTextStyle: {
             color: theme === 'dark' ? '#ddd' : '#333',
             fontSize: 12,
-            padding: [0, 0, 8, 0],  // 底部padding从5增加到8
+            padding: [0, 0, 8, 0]
           },
           axisLabel: {
-            formatter: (value: number) => {
-              return (value / yAxisDivisor).toFixed(1)
-            },
+            formatter: (value: number) => (value / yAxisDivisor).toFixed(1),
             color: theme === 'dark' ? '#ddd' : '#333',
             fontSize: 11,
-            margin: 14,     // 从10增加到14，增加标签与轴的距离
+            margin: 14
           },
+          splitNumber: 6,
           splitLine: {
             lineStyle: {
-              color: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-              type: 'dashed',
-            },
+              color: theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+              type: [4, 4]
+            }
           },
-          minInterval: maxValue / 5, // Ensures at least 5 intervals on the y-axis
+          axisTick: {
+            show: false
+          },
+          axisLine: {
+            show: false
+          }
         },
-        // 修改数据缩放组件配置
         dataZoom: [
           {
             type: 'slider',
             show: true,
             xAxisIndex: [0],
-            // 如果有保存的缩放状态，则使用它，否则使用默认值
             start: dataZoomStart !== undefined ? dataZoomStart : 0,
             end: dataZoomEnd !== undefined ? dataZoomEnd : 100,
-            height: 35, // 增加高度到35
-            bottom: 5, // 底部间距
-            borderColor: theme === 'dark' ? '#555' : '#ddd',
-            textStyle: {
-              color: theme === 'dark' ? '#ddd' : '#333',
-            },
+            height: 32,
+            bottom: 8,
+            borderColor: 'transparent',
+            backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+            fillerColor: theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
             handleStyle: {
-              color: theme === 'dark' ? '#aaa' : '#666',
-              borderColor: theme === 'dark' ? '#aaa' : '#666',
+              color: theme === 'dark' ? '#666' : '#ddd',
+              borderColor: theme === 'dark' ? '#888' : '#ccc',
             },
-            fillerColor: theme === 'dark' ? 'rgba(120, 120, 120, 0.2)' : 'rgba(200, 200, 200, 0.2)',
-            // 设置时间选择器的数据范围为所有数据
+            moveHandleStyle: {
+              color: theme === 'dark' ? '#888' : '#999',
+            },
+            selectedDataBackground: {
+              lineStyle: {
+                color: 'transparent',
+              },
+              areaStyle: {
+                color: 'transparent',
+              },
+            },
+            emphasis: {
+              handleLabel: {
+                show: true,
+              },
+              handleStyle: {
+                borderColor: theme === 'dark' ? '#aaa' : '#999',
+              },
+            },
             startValue: allData.length > 0 ? formatTime(allData[0].timestamp) : undefined,
             endValue: allData.length > 0 ? formatTime(allData[allData.length - 1].timestamp) : undefined,
           },
@@ -289,12 +357,9 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
             xAxisIndex: [0],
             start: dataZoomStart !== undefined ? dataZoomStart : 0,
             end: dataZoomEnd !== undefined ? dataZoomEnd : 100,
-            // 禁用主图表区域的滚轮缩放
             zoomOnMouseWheel: false,
             moveOnMouseWheel: false,
-            // 禁用主图表区域的鼠标拖拽缩放
             zoomLock: true,
-            // 可以保留鼠标平移功能
             preventDefaultMouseMove: false,
           },
         ],
@@ -302,70 +367,86 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
           {
             name: '上传',
             type: 'line',
-            // 移除 stack 属性，避免堆叠导致的问题
-            // stack: '总量',
-            smooth: 0.5,
-            smoothMonotone: 'x',
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 8,
+            showSymbol: true,
             areaStyle: {
-              opacity: 0.3,
+              opacity: 0.15,
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: theme === 'dark' ? 'rgba(76, 175, 80, 0.6)' : 'rgba(76, 175, 80, 0.6)' },
-                { offset: 1, color: theme === 'dark' ? 'rgba(76, 175, 80, 0.1)' : 'rgba(76, 175, 80, 0.1)' },
-              ]),
+                { offset: 0, color: theme === 'dark' ? 'rgba(52, 211, 153, 0.5)' : 'rgba(52, 211, 153, 0.8)' },
+                { offset: 1, color: theme === 'dark' ? 'rgba(52, 211, 153, 0.05)' : 'rgba(52, 211, 153, 0.1)' }
+              ])
             },
             emphasis: {
               focus: 'series',
+              scale: false,
               itemStyle: {
-                shadowBlur: 10,
-                shadowColor: 'rgba(76, 175, 80, 0.5)',
-              },
+                color: '#34D399',
+                borderWidth: 2,
+                shadowColor: 'rgba(52, 211, 153, 0.5)',
+                shadowBlur: 15
+              }
             },
             data: displayData.map((item) => item.upload),
             itemStyle: {
-              color: '#4caf50',
+              color: '#34D399',
               borderWidth: 2,
+              shadowColor: 'rgba(52, 211, 153, 0.3)',
+              shadowBlur: 10
             },
             lineStyle: {
               width: 3,
-              shadowColor: 'rgba(76, 175, 80, 0.3)',
-              shadowBlur: 10,
+              color: '#34D399',
+              shadowColor: 'rgba(52, 211, 153, 0.3)',
+              shadowBlur: 10
             },
-            symbolSize: 6,
+            animationDuration: 1000,
+            animationEasing: 'cubicInOut',
+            animationDelay: (idx: number) => idx * 50
           },
           {
             name: '下载',
             type: 'line',
-            // 移除 stack 属性，避免堆叠导致的问题
-            // stack: '总量',
-            smooth: 0.5,
-            smoothMonotone: 'x',
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 6,
+            showSymbol: true, // 修改为true，显示每个数据点的标记
             areaStyle: {
-              opacity: 0.3,
+              opacity: 0.15,
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: theme === 'dark' ? 'rgba(33, 150, 243, 0.6)' : 'rgba(33, 150, 243, 0.6)' },
-                { offset: 1, color: theme === 'dark' ? 'rgba(33, 150, 243, 0.1)' : 'rgba(33, 150, 243, 0.1)' },
-              ]),
+                { offset: 0, color: theme === 'dark' ? 'rgba(59, 130, 246, 0.5)' : 'rgba(59, 130, 246, 0.8)' },
+                { offset: 1, color: theme === 'dark' ? 'rgba(59, 130, 246, 0.05)' : 'rgba(59, 130, 246, 0.1)' }
+              ])
             },
             emphasis: {
               focus: 'series',
+              scale: true,
               itemStyle: {
-                shadowBlur: 10,
-                shadowColor: 'rgba(33, 150, 243, 0.5)',
-              },
+                color: '#3B82F6',
+                borderWidth: 2,
+                shadowColor: 'rgba(59, 130, 246, 0.5)',
+                shadowBlur: 15
+              }
             },
             data: displayData.map((item) => item.download),
             itemStyle: {
-              color: '#2196f3',
+              color: '#3B82F6',
               borderWidth: 2,
+              shadowColor: 'rgba(59, 130, 246, 0.3)',
+              shadowBlur: 10
             },
             lineStyle: {
               width: 3,
-              shadowColor: 'rgba(33, 150, 243, 0.3)',
-              shadowBlur: 10,
+              color: '#3B82F6',
+              shadowColor: 'rgba(59, 130, 246, 0.3)',
+              shadowBlur: 10
             },
-            symbolSize: 6,
-          },
-        ],
+            animationDuration: 1000,
+            animationEasing: 'cubicInOut',
+            animationDelay: (idx: number) => idx * 50
+          }
+        ]
       }
 
       // 使用 notMerge: false 来合并配置而不是完全替换
@@ -376,62 +457,50 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
     }
   }, [networkData, theme])
 
+  /** 渲染网络状态卡片 */
+  const renderNetworkCard = (
+    title: string,
+    value: number,
+    formatFunc: (val: number) => string,
+    icon: React.ReactNode
+  ) => {
+    const formattedText = formatFunc(value)
+    const [valueText, unitText] = formattedText.split(' ')
+
+    return (
+      <div className='p-4 rounded-lg bg-default-50 shadow-md hover:shadow-lg transition-all duration-300'>
+        <div className='text-xs font-normal text-gray-500 dark:text-gray-400 mb-2'>{title}</div>
+        <div className='flex items-center justify-between'>
+          <div>
+            <span className='text-sm lg:text-2xl font-medium text-gray-800 dark:text-gray-200'>{valueText}</span>
+            <span className='text-xs lg:text-xl font-light text-gray-500 dark:text-gray-400 ml-2'>{unitText}</span>
+          </div>
+          {icon}
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <Card className='w-full shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden'>
-      <CardHeader className='pb-2 border-b'>
+    <Card className='w-full bg-gradient-to-br from-background/40 to-background/10 backdrop-blur-lg border-1 border-default-200/50 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden'>
+      <CardHeader className='pb-2 border-b border-default-200/30'>
         <div className='flex justify-between items-center'>
-          <h2 className='text-lg font-semibold flex items-center gap-1 text-primary-400'>
-            <LuNetwork className='text-xl' />
+          <h2 className='text-lg font-semibold flex items-center gap-2 text-foreground/90'>
+            <LuNetwork className='text-xl text-primary' />
             {title}
           </h2>
         </div>
       </CardHeader>
       <CardBody>
-        <div className='grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-2 mb-4'>
-          <div className='flex flex-col items-center justify-center p-2 bg-primary/5 rounded-lg shadow-sm border border-primary/10 transition-all duration-300 hover:shadow hover:bg-primary/10'>
-            <div className='text-xs font-medium text-primary mb-1'>当前上传</div>
-            <Chip
-              variant='bordered'
-              size='sm'
-              className='bg-green-100 text-green-800 dark:bg-green-900/60 dark:text-green-200 border-green-300 dark:border-green-700 font-medium'
-            >
-              {formatSpeed(currentUpload)}
-            </Chip>
-          </div>
-          <div className='flex flex-col items-center justify-center p-2 bg-primary/5 rounded-lg shadow-sm border border-primary/10 transition-all duration-300 hover:shadow hover:bg-primary/10'>
-            <div className='text-xs font-medium text-primary mb-1'>当前下载</div>
-            <Chip
-              variant='bordered'
-              size='sm'
-              className='bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200 border-blue-300 dark:border-blue-700 font-medium'
-            >
-              {formatSpeed(currentDownload)}
-            </Chip>
-          </div>
-          <div className='flex flex-col items-center justify-center p-2 bg-primary/5 rounded-lg shadow-sm border border-primary/10 transition-all duration-300 hover:shadow hover:bg-primary/10'>
-            <div className='text-xs font-medium text-primary mb-1'>总上传</div>
-            <Chip
-              variant='bordered'
-              size='sm'
-              className='bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200 border-amber-300 dark:border-amber-700 font-medium'
-            >
-              {formatDataSize(totalSent)}
-            </Chip>
-          </div>
-          <div className='flex flex-col items-center justify-center p-2 bg-primary/5 rounded-lg shadow-sm border border-primary/10 transition-all duration-300 hover:shadow hover:bg-primary/10'>
-            <div className='text-xs font-medium text-primary mb-1'>总下载</div>
-            <Chip
-              variant='bordered'
-              size='sm'
-              className='bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-200 border-purple-300 dark:border-purple-700 font-medium'
-            >
-              {formatDataSize(totalReceived)}
-            </Chip>
-          </div>
+        <div className='grid grid-cols-2 md:grid-cols-4 gap-3 mb-4'>
+          {renderNetworkCard('当前上传', currentUpload, formatSpeed, <ArrowUpCircle className='h-4 w-4 lg:h-6 lg:w-6 text-green-500' />)}
+          {renderNetworkCard('当前下载', currentDownload, formatSpeed, <ArrowDownCircle className='h-4 w-4 lg:h-6 lg:w-6 text-blue-500' />)}
+          {renderNetworkCard('总接收', totalSent, formatDataSize, <Upload className='h-4 w-4 lg:h-6 lg:w-6 text-amber-500' />)}
+          {renderNetworkCard('总发送', totalReceived, formatDataSize, <Download className='h-4 w-4 lg:h-6 lg:w-6 text-purple-500' />)}
         </div>
         <div
           ref={chartRef}
-          className='rounded-lg border border-primary/10 p-2 w-full max-w-full overflow-hidden'
+          className='rounded-xl border border-default-200/30 bg-gradient-to-br from-background/60 to-background/30 backdrop-blur-sm p-4 w-full max-w-full overflow-hidden'
           style={{ height: '350px' }}
         />
       </CardBody>
