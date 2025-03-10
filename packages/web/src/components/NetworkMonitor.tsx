@@ -5,16 +5,29 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import * as echarts from 'echarts'
 import { useTheme } from '@/hooks/use-theme'
 import { Card, CardBody, CardHeader } from '@heroui/card'
-import type { NetworkStatus } from '@/types/server'
-import { LuNetwork } from 'react-icons/lu'
 import { ArrowDownCircle, ArrowUpCircle, Download, Upload } from 'lucide-react'
+import type { NetworkStatus } from '@/types/server'
+import { Switch } from '@heroui/switch'
+import { Chip } from '@heroui/chip'
+
+// 限制最大数据点数量
+const MAX_DATA_POINTS = 100
 
 interface NetworkMonitorProps {
-  title?: string
   networkData: NetworkStatus
+  enablePolling: boolean
+  onPollingChange: (value: boolean) => void
+  showChart: boolean
+  onShowChartChange: (value: boolean) => void
 }
 
-const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控', networkData: propNetworkData }) => {
+const NetworkMonitor: React.FC<NetworkMonitorProps> = ({
+  networkData: propNetworkData,
+  enablePolling,
+  onPollingChange,
+  showChart,
+  onShowChartChange
+}) => {
   const chartRef = useRef<HTMLDivElement>(null)
   const chartInstance = useRef<echarts.ECharts | null>(null)
   const { theme } = useTheme()
@@ -58,6 +71,9 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
 
   // 获取网络数据 - 修改为使用传入的 networkData
   const fetchNetworkData = useCallback(() => {
+    // 如果禁用了轮询，则不处理数据
+    if (!enablePolling) return
+
     try {
       const now = Date.now()
       lastFetchTime.current = now
@@ -75,8 +91,8 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
         const timestamp = Date.now()
 
         setNetworkData((prev) => {
-          // 保留所有历史数据
-          return [
+          // 限制数据点数量，保留最新的 MAX_DATA_POINTS 个
+          const newData = [
             ...prev,
             {
               timestamp,
@@ -86,28 +102,25 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
               totalReceived,
             },
           ]
+
+          return newData.slice(-MAX_DATA_POINTS)
         })
       }
     } catch (error) {
       console.error('处理网络数据失败:', error)
     }
-  }, [propNetworkData]) // 添加 propNetworkData 作为依赖
+  }, [propNetworkData, enablePolling]) // 添加 enablePolling 作为依赖
 
   useEffect(() => {
-    if (chartRef.current) {
-      // 添加移动设备适配选项
+    if (chartRef.current && showChart) {
+      // 移除不必要的配置，优化性能
       const initOptions: echarts.EChartsInitOpts = {
         renderer: 'canvas',
-        useDirtyRect: true,
+        // 减少不必要的脏矩形检测，优化性能
+        useDirtyRect: false,
         devicePixelRatio: window.devicePixelRatio,
       }
       chartInstance.current = echarts.init(chartRef.current, null, initOptions)
-
-      // 添加图例切换事件监听
-      chartInstance.current.on('legendselectchanged', function (params) {
-        // 这里不需要做任何事情，只需确保事件被正确处理
-        console.log('Legend select changed:', params)
-      })
 
       // 设置响应式
       const observer = new ResizeObserver(() => {
@@ -121,7 +134,13 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
         observer.disconnect()
       }
     }
-  }, [])
+
+    // 如果图表不显示，则清理图表实例
+    if (!showChart && chartInstance.current) {
+      chartInstance.current.dispose()
+      chartInstance.current = null
+    }
+  }, [showChart])
 
   // 添加这个 useEffect 来监听 propNetworkData 变化并调用 fetchNetworkData
   useEffect(() => {
@@ -131,331 +150,174 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
   }, [propNetworkData, fetchNetworkData])
 
   useEffect(() => {
-    if (chartInstance.current) {
-      // 保存当前的缩放状态和图例选中状态
-      const currentOption = chartInstance.current.getOption()
-      const dataZoomStart = (currentOption?.dataZoom as any)?.[0]?.start
-      const dataZoomEnd = (currentOption?.dataZoom as any)?.[0]?.end
+    // 如果不显示图表或没有图表实例，则不更新
+    if (!showChart || !chartInstance.current || networkData.length === 0) return
 
-      // 保存图例选中状态
-      const legendSelected = (currentOption?.legend as any)?.[0]?.selected || {}
+    // 保存当前的缩放状态和图例选中状态
+    const currentOption = chartInstance.current.getOption()
+    const dataZoomStart = (currentOption?.dataZoom as any)?.[0]?.start
+    const dataZoomEnd = (currentOption?.dataZoom as any)?.[0]?.end
+    const legendSelected = (currentOption?.legend as any)?.[0]?.selected || {}
 
-      // 所有数据用于时间选择器
-      const allData = networkData
+    // 用于显示的数据
+    const displayData = networkData.slice(-20)
 
-      // 只取最新的20个数据点用于主图表显示
-      const displayData = networkData.length > 20 ? networkData.slice(networkData.length - 20) : networkData
+    // 确定Y轴的单位
+    const maxValue = Math.max(...displayData.map((item) => Math.max(item.upload, item.download)))
+    let yAxisUnit = 'B/s'
+    let yAxisDivisor = 1
 
-      // 确定Y轴的单位
-      const maxValue = Math.max(...displayData.map((item) => Math.max(item.upload, item.download)))
-
-      let yAxisUnit = 'B/s'
-      let yAxisDivisor = 1
-
-      if (maxValue >= 1024 * 1024) {
-        yAxisUnit = 'MB/s'
-        yAxisDivisor = 1024 * 1024
-      } else if (maxValue >= 1024) {
-        yAxisUnit = 'KB/s'
-        yAxisDivisor = 1024
-      }
-
-      const option: echarts.EChartsOption = {
-        darkMode: theme === 'dark',
-        animation: true,
-        animationDuration: 300,
-        animationEasing: 'quadraticInOut',
-        animationThreshold: 2000,
-        progressiveThreshold: 3000,
-        progressive: 200,
-        tooltip: {
-          trigger: 'axis',
-          formatter: (params: any) => {
-            const index = params[0].dataIndex
-            const data = displayData[index]
-            const time = formatTime(data.timestamp)
-            let uploadText = ''
-            let downloadText = ''
-
-            params.forEach((param: any) => {
-              if (param.seriesName === '上传') {
-                uploadText = `<div class="flex items-center gap-1"><span class="inline-block w-2 h-2 rounded-full bg-green-500"></span>上传: ${formatSpeed(param.value)}</div>`
-              } else if (param.seriesName === '下载') {
-                downloadText = `<div class="flex items-center gap-1"><span class="inline-block w-2 h-2 rounded-full bg-blue-500"></span>下载: ${formatSpeed(param.value)}</div>`
-              }
-            })
-
-            return `
-              <div class="p-2 backdrop-blur-3xl">
-                <div class="text-sm font-medium mb-1 text-foreground/90">时间: ${time}</div>
-                <div class="space-y-1 text-sm text-default-900">
-                  ${uploadText}
-                  ${downloadText}
-                </div>
-              </div>
-            `
-          },
-          backgroundColor: 'transparent',
-          borderWidth: 0,
-          textStyle: {
-            color: theme === 'dark' ? '#fff' : '#333',
-          },
-          extraCssText: 'backdrop-filter: blur(8px);',
-        },
-        legend: {
-          data: ['上传', '下载'],
-          icon: 'roundRect',  // 改为圆角矩形图标
-          itemWidth: 16,      // 增加图标宽度
-          itemHeight: 8,      // 保持高度适中
-          itemGap: 24,
-          right: '5%',
-          top: '2%',
-          selected: legendSelected,
-          itemStyle: {
-            borderWidth: 1,
-            borderColor: theme === 'dark' ? '#555' : '#ddd',
-            borderRadius: 2,
-            shadowBlur: 2,
-            shadowColor: 'rgba(0,0,0,0.1)'
-          },
-          emphasis: {
-            selectorLabel: {
-              fontWeight: 'bold',
-              color: theme === 'dark' ? '#fff' : '#000'
-            }
-          },
-          formatter: function (name) {
-            // 检查图例是否被选中，如果未选中则添加删除线效果
-            const isSelected = legendSelected[name] !== false // 默认为true
-            if (isSelected) {
-              return `{a|${name}}`
-            } else {
-              return `{b|${name}}`
-            }
-          },
-          textStyle: {
-            rich: {
-              a: {
-                fontSize: 12,
-                lineHeight: 20,
-                color: theme === 'dark' ? '#ddd' : '#333',
-                padding: [0, 0, 0, 5]
-              },
-              b: {
-                fontSize: 12,
-                lineHeight: 20,
-                color: theme === 'dark' ? '#777' : '#999', // 灰色
-                padding: [0, 0, 0, 5],
-              }
-            }
-          },
-          tooltip: {
-            show: true,
-            formatter: function (param) {
-              return `隐藏/显示${param.name}数据`
-            }
-          }
-        },
-        grid: {
-          left: '6%',
-          right: '6%',
-          bottom: '18%',
-          top: '18%',
-          containLabel: true
-        },
-        xAxis: {
-          type: 'category',
-          boundaryGap: false,
-          data: displayData.map((item) => formatTime(item.timestamp)),
-          axisLabel: {
-            show: true,
-            interval: 4,
-            color: theme === 'dark' ? '#ddd' : '#333',
-            fontSize: 11,
-            margin: 24,
-          },
-          axisLine: {
-            lineStyle: {
-              color: theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
-              width: 1,
-            },
-          },
-          axisTick: {
-            show: false,
-          },
-        },
-        yAxis: {
-          type: 'value',
-          name: yAxisUnit,
-          nameLocation: 'end',
-          nameGap: 22,
-          nameTextStyle: {
-            color: theme === 'dark' ? '#ddd' : '#333',
-            fontSize: 12,
-            padding: [0, 0, 8, 0]
-          },
-          axisLabel: {
-            formatter: (value: number) => (value / yAxisDivisor).toFixed(1),
-            color: theme === 'dark' ? '#ddd' : '#333',
-            fontSize: 11,
-            margin: 14
-          },
-          splitNumber: 6,
-          splitLine: {
-            lineStyle: {
-              color: theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
-              type: [4, 4]
-            }
-          },
-          axisTick: {
-            show: false
-          },
-          axisLine: {
-            show: false
-          }
-        },
-        dataZoom: [
-          {
-            type: 'slider',
-            show: true,
-            xAxisIndex: [0],
-            start: dataZoomStart !== undefined ? dataZoomStart : 0,
-            end: dataZoomEnd !== undefined ? dataZoomEnd : 100,
-            height: 32,
-            bottom: 8,
-            borderColor: 'transparent',
-            backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
-            fillerColor: theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
-            handleStyle: {
-              color: theme === 'dark' ? '#666' : '#ddd',
-              borderColor: theme === 'dark' ? '#888' : '#ccc',
-            },
-            moveHandleStyle: {
-              color: theme === 'dark' ? '#888' : '#999',
-            },
-            selectedDataBackground: {
-              lineStyle: {
-                color: 'transparent',
-              },
-              areaStyle: {
-                color: 'transparent',
-              },
-            },
-            emphasis: {
-              handleLabel: {
-                show: true,
-              },
-              handleStyle: {
-                borderColor: theme === 'dark' ? '#aaa' : '#999',
-              },
-            },
-            startValue: allData.length > 0 ? formatTime(allData[0].timestamp) : undefined,
-            endValue: allData.length > 0 ? formatTime(allData[allData.length - 1].timestamp) : undefined,
-          },
-          {
-            type: 'inside',
-            xAxisIndex: [0],
-            start: dataZoomStart !== undefined ? dataZoomStart : 0,
-            end: dataZoomEnd !== undefined ? dataZoomEnd : 100,
-            zoomOnMouseWheel: false,
-            moveOnMouseWheel: false,
-            zoomLock: true,
-            preventDefaultMouseMove: false,
-          },
-        ],
-        series: [
-          {
-            name: '上传',
-            type: 'line',
-            smooth: true,
-            symbol: 'circle',
-            symbolSize: 8,
-            showSymbol: true,
-            areaStyle: {
-              opacity: 0.15,
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: theme === 'dark' ? 'rgba(52, 211, 153, 0.5)' : 'rgba(52, 211, 153, 0.8)' },
-                { offset: 1, color: theme === 'dark' ? 'rgba(52, 211, 153, 0.05)' : 'rgba(52, 211, 153, 0.1)' }
-              ])
-            },
-            emphasis: {
-              focus: 'series',
-              scale: false,
-              itemStyle: {
-                color: '#34D399',
-                borderWidth: 2,
-                shadowColor: 'rgba(52, 211, 153, 0.5)',
-                shadowBlur: 15
-              }
-            },
-            data: displayData.map((item) => item.upload),
-            itemStyle: {
-              color: '#34D399',
-              borderWidth: 2,
-              shadowColor: 'rgba(52, 211, 153, 0.3)',
-              shadowBlur: 10
-            },
-            lineStyle: {
-              width: 3,
-              color: '#34D399',
-              shadowColor: 'rgba(52, 211, 153, 0.3)',
-              shadowBlur: 10
-            },
-            animationDuration: 1000,
-            animationEasing: 'cubicInOut',
-            animationDelay: (idx: number) => idx * 50
-          },
-          {
-            name: '下载',
-            type: 'line',
-            smooth: true,
-            symbol: 'circle',
-            symbolSize: 6,
-            showSymbol: true, // 修改为true，显示每个数据点的标记
-            areaStyle: {
-              opacity: 0.15,
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: theme === 'dark' ? 'rgba(59, 130, 246, 0.5)' : 'rgba(59, 130, 246, 0.8)' },
-                { offset: 1, color: theme === 'dark' ? 'rgba(59, 130, 246, 0.05)' : 'rgba(59, 130, 246, 0.1)' }
-              ])
-            },
-            emphasis: {
-              focus: 'series',
-              scale: true,
-              itemStyle: {
-                color: '#3B82F6',
-                borderWidth: 2,
-                shadowColor: 'rgba(59, 130, 246, 0.5)',
-                shadowBlur: 15
-              }
-            },
-            data: displayData.map((item) => item.download),
-            itemStyle: {
-              color: '#3B82F6',
-              borderWidth: 2,
-              shadowColor: 'rgba(59, 130, 246, 0.3)',
-              shadowBlur: 10
-            },
-            lineStyle: {
-              width: 3,
-              color: '#3B82F6',
-              shadowColor: 'rgba(59, 130, 246, 0.3)',
-              shadowBlur: 10
-            },
-            animationDuration: 1000,
-            animationEasing: 'cubicInOut',
-            animationDelay: (idx: number) => idx * 50
-          }
-        ]
-      }
-
-      // 使用 notMerge: false 来合并配置而不是完全替换
-      chartInstance.current.setOption(option, { notMerge: false })
-
-      // 强制重新渲染图表以应用新主题
-      chartInstance.current.resize()
+    if (maxValue >= 1024 * 1024) {
+      yAxisUnit = 'MB/s'
+      yAxisDivisor = 1024 * 1024
+    } else if (maxValue >= 1024) {
+      yAxisUnit = 'KB/s'
+      yAxisDivisor = 1024
     }
-  }, [networkData, theme])
+
+    // 简化图表配置，减少不必要的视觉效果
+    const option: echarts.EChartsOption = {
+      darkMode: theme === 'dark',
+      // 减少动画效果
+      animation: true,
+      animationDuration: 200, // 减少动画时间
+      animationEasing: 'linear', // 使用更简单的缓动函数
+      tooltip: {
+        trigger: 'axis',
+        formatter: (params: any) => {
+          const index = params[0].dataIndex
+          const data = displayData[index]
+          const time = formatTime(data.timestamp)
+          let uploadText = ''
+          let downloadText = ''
+
+          params.forEach((param: any) => {
+            if (param.seriesName === '上传') {
+              uploadText = `<div><span class="inline-block w-2 h-2 rounded-full bg-green-500"></span>上传: ${formatSpeed(param.value)}</div>`
+            } else if (param.seriesName === '下载') {
+              downloadText = `<div><span class="inline-block w-2 h-2 rounded-full bg-blue-500"></span>下载: ${formatSpeed(param.value)}</div>`
+            }
+          })
+
+          return `
+            <div class="p-2">
+              <div class="text-sm font-medium mb-1">时间: ${time}</div>
+              <div class="space-y-1 text-sm">
+                ${uploadText}
+                ${downloadText}
+              </div>
+            </div>
+          `
+        },
+      },
+      legend: {
+        data: ['上传', '下载'],
+        icon: 'rect',
+        itemWidth: 12,
+        itemHeight: 6,
+        itemGap: 20,
+        right: '5%',
+        top: '2%',
+        selected: legendSelected,
+      },
+      grid: {
+        left: '6%',
+        right: '6%',
+        bottom: '18%',
+        top: '18%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: displayData.map((item) => formatTime(item.timestamp)),
+        axisLabel: {
+          show: true,
+          interval: 4,
+          fontSize: 11,
+        },
+      },
+      yAxis: {
+        type: 'value',
+        name: yAxisUnit,
+        nameLocation: 'end',
+        nameGap: 20,
+        axisLabel: {
+          formatter: (value: number) => (value / yAxisDivisor).toFixed(1),
+          fontSize: 11,
+        },
+        splitNumber: 4, // 减少分割线数量
+      },
+      dataZoom: [
+        {
+          type: 'slider',
+          show: true,
+          xAxisIndex: [0],
+          start: dataZoomStart !== undefined ? dataZoomStart : 0,
+          end: dataZoomEnd !== undefined ? dataZoomEnd : 100,
+          height: 30,
+          bottom: 8,
+        },
+        {
+          type: 'inside',
+          xAxisIndex: [0],
+          start: dataZoomStart !== undefined ? dataZoomStart : 0,
+          end: dataZoomEnd !== undefined ? dataZoomEnd : 100,
+          zoomOnMouseWheel: false,
+        },
+      ],
+      series: [
+        {
+          name: '上传',
+          type: 'line',
+          smooth: true,
+          symbol: 'circle',
+          // 减少符号大小
+          symbolSize: 4,
+          // 减少显示的数据点
+          showSymbol: false, // 只在悬停时显示
+          sampling: 'lttb', // 使用LTTB采样算法减少数据点
+          areaStyle: {
+            opacity: 0.1, // 降低不透明度
+          },
+          data: displayData.map((item) => item.upload),
+          itemStyle: {
+            color: '#34D399',
+          },
+          lineStyle: {
+            width: 2, // 减小线宽
+            color: '#34D399',
+          },
+          // 简化动画
+          animationDuration: 300,
+        },
+        {
+          name: '下载',
+          type: 'line',
+          smooth: true,
+          symbol: 'circle',
+          symbolSize: 4,
+          showSymbol: false,
+          sampling: 'lttb',
+          areaStyle: {
+            opacity: 0.1,
+          },
+          data: displayData.map((item) => item.download),
+          itemStyle: {
+            color: '#3B82F6',
+          },
+          lineStyle: {
+            width: 2,
+            color: '#3B82F6',
+          },
+          animationDuration: 300,
+        }
+      ]
+    }
+
+    // 使用节流更新图表，减少渲染频率
+    chartInstance.current.setOption(option, { notMerge: false })
+  }, [networkData, theme, showChart])
 
   /** 渲染网络状态卡片 */
   const renderNetworkCard = (
@@ -468,43 +330,38 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
     const [valueText, unitText] = formattedText.split(' ')
 
     return (
-      <div className='p-4 rounded-lg bg-default-50 shadow-md hover:shadow-lg transition-all duration-300'>
-        <div className='text-xs font-normal text-gray-500 dark:text-gray-400 mb-2'>{title}</div>
-        <div className='flex items-center justify-between'>
-          <div>
-            <span className='text-sm lg:text-2xl font-medium text-gray-800 dark:text-gray-200'>{valueText}</span>
-            <span className='text-xs lg:text-xl font-light text-gray-500 dark:text-gray-400 ml-2'>{unitText}</span>
+      <Card className='transition-all duration-150 ease-in-out hover:bg-default-100 dark:hover:bg-default-100 hover:translate-y-[-4px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-default-200 dark:border-default-100 cursor-pointer'>
+        <CardHeader className='px-2.5 py-1.5 md:px-2.5 md:py-2 lg:px-4 lg:py-3 flex-col items-start'>
+          <div className='flex items-center gap-2'>
+            {icon && <div className='w-4 h-4 lg:w-5 lg:h-5 text-primary'>{icon}</div>}
+            <p className='text-sm text-primary select-none'>{title}</p>
           </div>
-          {icon}
-        </div>
-      </div>
+          <div className='mt-1 md:mt-2 lg:mt-3 text-lg md:text-xl lg:text-2xl text-default-800 font-mono font-bold'>
+            <span>{valueText}</span>
+            <span className='text-base ml-1'>{unitText}</span>
+          </div>
+        </CardHeader>
+      </Card>
     )
   }
 
   return (
-    <Card className='w-full bg-gradient-to-br from-background/40 to-background/10 backdrop-blur-lg border-1 border-default-200/50 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden'>
-      <CardHeader className='pb-2 border-b border-default-200/30'>
-        <div className='flex justify-between items-center'>
-          <h2 className='text-lg font-semibold flex items-center gap-2 text-foreground/90'>
-            <LuNetwork className='text-xl text-primary' />
-            {title}
-          </h2>
-        </div>
-      </CardHeader>
-      <CardBody>
-        <div className='grid grid-cols-2 md:grid-cols-4 gap-3 mb-4'>
-          {renderNetworkCard('当前上传', currentUpload, formatSpeed, <ArrowUpCircle className='h-4 w-4 lg:h-6 lg:w-6 text-green-500' />)}
-          {renderNetworkCard('当前下载', currentDownload, formatSpeed, <ArrowDownCircle className='h-4 w-4 lg:h-6 lg:w-6 text-blue-500' />)}
-          {renderNetworkCard('总接收', totalSent, formatDataSize, <Download className='h-4 w-4 lg:h-6 lg:w-6 text-amber-500' />)}
-          {renderNetworkCard('总发送', totalReceived, formatDataSize, <Upload className='h-4 w-4 lg:h-6 lg:w-6 text-purple-500' />)}
-        </div>
+    <div className='w-full'>
+      <div className='grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 md:gap-x-6 md:gap-y-4 lg:gap-x-8 lg:gap-y-6'>
+        {renderNetworkCard('当前上传', currentUpload, formatSpeed, <ArrowUpCircle />)}
+        {renderNetworkCard('当前下载', currentDownload, formatSpeed, <ArrowDownCircle />)}
+        {renderNetworkCard('总发送', totalSent, formatDataSize, <Upload />)}
+        {renderNetworkCard('总接收', totalReceived, formatDataSize, <Download />)}
+      </div>
+
+      {showChart && (
         <div
           ref={chartRef}
-          className='rounded-xl border border-default-200/30 bg-gradient-to-br from-background/60 to-background/30 backdrop-blur-sm p-4 w-full max-w-full overflow-hidden'
-          style={{ height: '350px' }}
+          className='rounded-xl border border-default-200/30 bg-default-50 p-3 w-full overflow-hidden mt-4'
+          style={{ height: '300px' }}
         />
-      </CardBody>
-    </Card>
+      )}
+    </div>
   )
 }
 

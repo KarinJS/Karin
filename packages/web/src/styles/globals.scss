@@ -1,5 +1,3 @@
-@use './font.scss';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -25,6 +23,7 @@
 
 .ql-editor {
   padding: 0 0.5rem;
+
   img {
     @apply inline-block;
   }
@@ -38,14 +37,17 @@
   .hide-scrollbar {
     scrollbar-width: none;
     -ms-overflow-style: none;
+
     &::-webkit-scrollbar {
       @apply w-0 h-0 bg-transparent;
       display: none;
     }
+
     &::-webkit-scrollbar-thumb {
       @apply w-0 h-0 bg-transparent;
       display: none;
     }
+
     &::-webkit-scrollbar-track {
       @apply w-0 h-0 bg-transparent;
       display: none;
@@ -81,6 +83,7 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -113,35 +116,42 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
-    font-family: 'MiSans', 'Arial', 'Helvetica', 'Verdana', 'Trebuchet MS', 'Geneva', 'Lucida Sans Unicode', 'Tahoma', sans-serif;
   }
+
   $clip-path-circle: circle(0 at 0 100%);
   $clip-path-circle-active: circle(141.4% at 0 100%);
+
   .clip-path-circle {
     overflow: hidden;
     animation: clip-path-circle-reverse 0.3s ease-in-out forwards;
   }
+
   .clip-path-circle-active {
     overflow: hidden;
     animation: clip-path-circle 0.3s ease-in-out forwards;
   }
+
   @keyframes clip-path-circle {
     0% {
       -webkit-clip-path: $clip-path-circle;
       clip-path: $clip-path-circle;
     }
+
     100% {
       -webkit-clip-path: $clip-path-circle-active;
       clip-path: $clip-path-circle-active;
     }
   }
+
   @keyframes clip-path-circle-reverse {
     0% {
       -webkit-clip-path: $clip-path-circle-active;
       clip-path: $clip-path-circle-active;
     }
+
     100% {
       -webkit-clip-path: $clip-path-circle;
       clip-path: $clip-path-circle;

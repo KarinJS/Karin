@@ -7,7 +7,7 @@ import type { KarinStatus, NetworkStatus, SystemStatus } from '@/types/server'
 import { Button } from '@heroui/button'
 import { RiRestartLine, RiShutDownLine } from 'react-icons/ri'
 import { Tooltip } from '@heroui/tooltip'
-import { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import useDialog from '@/hooks/use-dialog'
 import { VscBracketError } from 'react-icons/vsc'
@@ -28,7 +28,7 @@ import {
   GitBranch,
   LucideIcon
 } from 'lucide-react'
-import { LuInfo } from 'react-icons/lu'
+import { LuInfo, LuNetwork } from 'react-icons/lu'
 import axios from 'axios'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
 import { testGithub } from '@/lib/test-url'
@@ -41,6 +41,7 @@ import { ScrollShadow } from '@heroui/scroll-shadow'
 import { Spinner } from '@heroui/spinner'
 import { FullScreenLoader } from '@/components/FullScreenLoader'
 import NetworkMonitor from '@/components/NetworkMonitor'
+import { Switch } from '@heroui/switch'
 
 interface IconMap {
   [key: string]: LucideIcon
@@ -134,6 +135,41 @@ function StatusItem ({ title, value }: StatusItemProps) {
   )
 }
 
+// 使用 React.memo 包装 StatusItem 组件，只在 props 变化时重新渲染
+const MemoizedStatusItem = React.memo(StatusItem)
+
+// 单独抽离运行时间组件，因为它需要频繁更新
+function UptimeStatusItem ({ uptime }: { uptime: number }) {
+  return (
+    <MemoizedStatusItem
+      title='运行时间'
+      value={
+        <div className='flex items-center gap-2'>
+          <Counter
+            className='flex items-center gap-0'
+            value={Math.floor(uptime)}
+            fontSize={(() => {
+              const size = getWindowSizeCategory()
+              switch (size) {
+                case 'sm':
+                  return 18
+                case 'md':
+                  return 20
+                case 'lg':
+                  return 24
+                default:
+                  return 24
+              }
+            })()}
+            places={generatePlaces(Math.floor(uptime))}
+          />
+          <span>秒</span>
+        </div>
+      }
+    />
+  )
+}
+
 function UpdateButtons ({ handleCloseModal }: { handleCloseModal: () => void }) {
   const [running, setRunning] = useState(false)
   const dialog = useDialog()
@@ -207,7 +243,6 @@ function Status () {
   const [hasCheckedNpm, setHasCheckedNpm] = useState(false)
   const [isLoadingRelease, setIsLoadingRelease] = useState(false)
 
-  // 获取运行状态
   const { data, error } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'), {
     pollingInterval: 1000,
   })
@@ -239,10 +274,9 @@ function Status () {
     }
   }, [data, hasCheckedNpm])
 
-  // 获取 release.json
   const { data: releaseData, error: releaseError, run: fetchRelease } = useRequest(
     async () => {
-      setIsLoadingRelease(true) // 开始加载时设置为 true
+      setIsLoadingRelease(true)
       try {
         const url = proxyFn('https://raw.githubusercontent.com/karinjs/repo-status/refs/heads/main/data/releases.json')
         console.log('fetchRelease', url)
@@ -257,6 +291,74 @@ function Status () {
 
   const updateLogs = releaseData ? extractUpdateLogs(releaseData, data?.version!) : []
 
+  const stableCards = useMemo(() => {
+    if (!data) return <></>
+
+    return (
+      <>
+        <MemoizedStatusItem title='名称' value={data.name} />
+        <MemoizedStatusItem title='PID' value={data.pid} />
+        <MemoizedStatusItem title='PM2 ID' value={data.pm2_id} />
+        <MemoizedStatusItem title='插件数量' value={localPluginsList.data?.length || '--'} />
+        <MemoizedStatusItem title='BOT数量' value={botList.data?.length} />
+        <MemoizedStatusItem
+          title='版本'
+          value={
+            <div className='flex items-center gap-2'>
+              <span>{data.version}</span>
+              {updateTip && (
+                <Tooltip
+                  delay={0}
+                  closeDelay={0}
+                  placement='bottom-start'
+                  content={
+                    <div className='px-1 py-2'>
+                      新版本
+                      <span className='text-green-400 font-bold'>{npmLatest}</span>
+                      可用，点击查看更新日志
+                    </div>
+                  }
+                >
+                  <LuInfo
+                    className='text-danger animate-pulse cursor-help'
+                    onClick={handleTooltipClick}
+                  />
+                </Tooltip>
+              )}
+            </div>
+          }
+        />
+        <MemoizedStatusItem title='运行环境' value={data.karin_runtime} />
+      </>
+    )
+  }, [
+    data,
+    localPluginsList.data?.length,
+    botList.data?.length,
+    updateTip,
+    npmLatest,
+    handleTooltipClick
+  ])
+
+  const middleVersions = useMemo(() => {
+    const versions: GithubRelease[] = []
+    if (updateLogs && data) {
+      for (let i = 0; i < updateLogs.length; i++) {
+        const versionInfo = updateLogs[i]
+        if (compareVersion(versionInfo.tag_name, data.version) > 0) {
+          versions.push(versionInfo)
+        } else {
+          break
+        }
+      }
+    }
+    return versions
+  }, [updateLogs, data])
+
+  const handleCloseModal = useCallback(() => {
+    setIsChangelogOpen(false)
+  }, [])
+
   if (error || !data) {
     return (
       <div className='flex flex-col justify-center items-center gap-2'>
@@ -268,84 +370,11 @@ function Status () {
     )
   }
 
-  const middleVersions: GithubRelease[] = []
-  if (updateLogs) {
-    for (let i = 0; i < updateLogs.length; i++) {
-      const versionInfo = updateLogs[i]
-      if (compareVersion(versionInfo.tag_name, data.version) > 0) {
-        middleVersions.push(versionInfo)
-      } else {
-        break
-      }
-    }
-  }
-
-  // 将关闭方法传递给 UpdateButtons
-  const handleCloseModal = () => {
-    setIsChangelogOpen(false)
-  }
-
   return (
     <div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-2 md:gap-x-6 md:gap-y-4 lg:gap-x-8 lg:gap-y-6'>
-      <StatusItem title='名称' value={data.name} />
-      <StatusItem title='PID' value={data.pid} />
-      <StatusItem title='PM2 ID' value={data.pm2_id} />
-      <StatusItem
-        title='运行时间'
-        value={
-          <div className='flex items-center gap-2'>
-            <Counter
-              className='flex items-center gap-0'
-              value={Math.floor(data.uptime)}
-              fontSize={(() => {
-                const size = getWindowSizeCategory()
-                switch (size) {
-                  case 'sm':
-                    return 18
-                  case 'md':
-                    return 20
-                  case 'lg':
-                    return 24
-                  default:
-                    return 24
-                }
-              })()}
-              places={generatePlaces(Math.floor(data.uptime))}
-            />
-            <span>秒</span>
-          </div>
-        }
-      />
-      <StatusItem title='插件数量' value={localPluginsList.data?.length || '--'} />
-      <StatusItem title='BOT数量' value={botList.data?.length} />
-      <StatusItem
-        title='版本'
-        value={
-          <div className='flex items-center gap-2'>
-            <span>{data.version}</span>
-            {updateTip && (
-              <Tooltip
-                delay={0}
-                closeDelay={0}
-                placement='bottom-start'
-                content={
-                  <div className='px-1 py-2'>
-                    新版本
-                    <span className='text-green-400 font-bold'>{npmLatest}</span>
-                    可用，点击查看更新日志
-                  </div>
-                }
-              >
-                <LuInfo
-                  className='text-danger animate-pulse cursor-help'
-                  onClick={handleTooltipClick}
-                />
-              </Tooltip>
-            )}
-          </div>
-        }
-      />
-      <StatusItem title='运行环境' value={data.karin_runtime} />
+      {stableCards}
+
+      <UptimeStatusItem uptime={data.uptime} />
 
       <Modal
         isOpen={isChangelogOpen}
@@ -428,6 +457,7 @@ function Status () {
     </div>
   )
 }
+
 function SystemStatusCard () {
   const [systemStatus, setSystemStatus] = useState<SystemStatus>()
   const getStatus = useCallback(() => {
@@ -555,11 +585,7 @@ export default function IndexPage () {
           <Status />
         </CardBody>
       </Card>
-      <Card shadow='sm'>
-        <CardBody>
-          <NetworkMonitorCard />
-        </CardBody>
-      </Card>
+      <NetworkMonitorCard />
       <Card shadow='sm'>
         <CardBody>
           <SystemStatusCard />
@@ -570,21 +596,112 @@ export default function IndexPage () {
 }
 
 function NetworkMonitorCard () {
+  const [showNetworkMonitor, setShowNetworkMonitor] = useState(false)
+  const [enablePolling, setEnablePolling] = useState(true)
+  const [showChart, setShowChart] = useState(true)
+
   const { data } = useRequest(() => request.serverGet<NetworkStatus>('/api/v1/status/network'), {
     pollingInterval: 2000,
+    ready: showNetworkMonitor && enablePolling,
   })
-  if (!data) {
-    <div className='flex flex-col justify-center items-center gap-2'>
-      <div className='text-danger text-4xl'>
-        <VscBracketError />
-      </div>
-      <div>请求错误</div>
-    </div>
+
+  if (!data && showNetworkMonitor) {
+    return (
+      <Card shadow='sm'>
+        <CardHeader className='flex justify-between items-center'>
+          <div className='flex items-center gap-2'>
+            <LuNetwork className='text-xl text-primary' />
+            <span className='text-lg font-semibold'>网络监控</span>
+          </div>
+          <Button
+            color='primary'
+            variant='flat'
+            size='sm'
+            onPress={() => setShowNetworkMonitor(!showNetworkMonitor)}
+          >
+            {showNetworkMonitor ? '关闭监控' : '开启监控'}
+          </Button>
+        </CardHeader>
+        <CardBody>
+          <div className='flex flex-col justify-center items-center gap-2'>
+            <div className='text-danger text-4xl'>
+              <VscBracketError />
+            </div>
+            <div>请求错误</div>
+          </div>
+        </CardBody>
+      </Card>
+    )
   }
+
   return (
-    <NetworkMonitor
-      title='网络监控'
-      networkData={data!}
-    />
+    <Card shadow='sm'>
+      <CardHeader className='flex justify-between items-center'>
+        <div className='flex items-center gap-2'>
+          <LuNetwork className='text-xl text-primary' />
+          <span className='text-lg font-semibold'>网络监控</span>
+        </div>
+
+        <div className='flex items-center gap-3'>
+          {showNetworkMonitor && (
+            <>
+              <div className='flex items-center gap-2'>
+                <span className='text-sm text-default-500'>实时更新</span>
+                <Switch
+                  isSelected={enablePolling}
+                  onChange={(e) => setEnablePolling(e.target.checked)}
+                  size='sm'
+                  color='primary'
+                />
+              </div>
+
+              <div className='flex items-center gap-2'>
+                <span className='text-sm text-default-500'>显示图表</span>
+                <Switch
+                  isSelected={showChart}
+                  onChange={(e) => setShowChart(e.target.checked)}
+                  size='sm'
+                  color='primary'
+                />
+              </div>
+
+              <Chip
+                color={enablePolling ? 'success' : 'default'}
+                variant='flat'
+                size='sm'
+              >
+                {enablePolling ? '实时模式' : '静态模式'}
+              </Chip>
+            </>
+          )}
+
+          <Button
+            color='primary'
+            variant='flat'
+            size='sm'
+            onPress={() => setShowNetworkMonitor(!showNetworkMonitor)}
+          >
+            {showNetworkMonitor ? '关闭监控' : '开启监控'}
+          </Button>
+        </div>
+      </CardHeader>
+      <CardBody>
+        {showNetworkMonitor
+          ? (
+            <NetworkMonitor
+              networkData={data || { upload: 0, download: 0, totalSent: 0, totalReceived: 0 }}
+              enablePolling={enablePolling}
+              onPollingChange={setEnablePolling}
+              showChart={showChart}
+              onShowChartChange={setShowChart}
+            />
+          )
+          : (
+            <div className='flex flex-col items-center justify-center p-6'>
+              <div className='text-default-400'>网络监控已关闭</div>
+            </div>
+          )}
+      </CardBody>
+    </Card>
   )
 }
