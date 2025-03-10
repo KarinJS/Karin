@@ -4,11 +4,9 @@ import type React from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import * as echarts from 'echarts'
 import { useTheme } from '@/hooks/use-theme'
-import { Card, CardBody, CardHeader } from '@heroui/card'
+import { Card, CardBody } from '@heroui/card'
 import { ArrowDownCircle, ArrowUpCircle, Download, Upload } from 'lucide-react'
 import type { NetworkStatus } from '@/types/server'
-import { Switch } from '@heroui/switch'
-import { Chip } from '@heroui/chip'
 
 // 限制最大数据点数量
 const MAX_DATA_POINTS = 100
@@ -24,9 +22,7 @@ interface NetworkMonitorProps {
 const NetworkMonitor: React.FC<NetworkMonitorProps> = ({
   networkData: propNetworkData,
   enablePolling,
-  onPollingChange,
   showChart,
-  onShowChartChange
 }) => {
   const chartRef = useRef<HTMLDivElement>(null)
   const chartInstance = useRef<echarts.ECharts | null>(null)
@@ -330,38 +326,37 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({
     const [valueText, unitText] = formattedText.split(' ')
 
     return (
-      <Card className='transition-all duration-150 ease-in-out hover:bg-default-100 dark:hover:bg-default-100 hover:translate-y-[-4px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-default-200 dark:border-default-100 cursor-pointer'>
-        <CardHeader className='px-2.5 py-1.5 md:px-2.5 md:py-2 lg:px-4 lg:py-3 flex-col items-start'>
-          <div className='flex items-center gap-2'>
-            {icon && <div className='w-4 h-4 lg:w-5 lg:h-5 text-primary'>{icon}</div>}
-            <p className='text-sm text-primary select-none'>{title}</p>
+      <div className='p-2 md:p-3 lg:p-4 rounded-lg bg-default-50 shadow-md hover:shadow-lg transition-all duration-300'>
+        <div className='text-xs md:text-base lg:text-xl font-normal text-default-500 mb-2'>{title}</div>
+        <div className='flex items-center justify-between'>
+          <div>
+            <span className='text-sm md:text-base lg:text-2xl font-medium text-default-800'>{valueText}</span>
+            <span className='text-xs md:text-base lg:text-xl font-light text-default-400 ml-2'>{unitText}</span>
           </div>
-          <div className='mt-1 md:mt-2 lg:mt-3 text-lg md:text-xl lg:text-2xl text-default-800 font-mono font-bold'>
-            <span>{valueText}</span>
-            <span className='text-base ml-1'>{unitText}</span>
-          </div>
-        </CardHeader>
-      </Card>
+          {icon}
+        </div>
+      </div>
     )
   }
 
   return (
-    <div className='w-full'>
-      <div className='grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 md:gap-x-6 md:gap-y-4 lg:gap-x-8 lg:gap-y-6'>
-        {renderNetworkCard('当前上传', currentUpload, formatSpeed, <ArrowUpCircle />)}
-        {renderNetworkCard('当前下载', currentDownload, formatSpeed, <ArrowDownCircle />)}
-        {renderNetworkCard('总发送', totalSent, formatDataSize, <Upload />)}
-        {renderNetworkCard('总接收', totalReceived, formatDataSize, <Download />)}
-      </div>
-
-      {showChart && (
-        <div
-          ref={chartRef}
-          className='rounded-xl border border-default-200/30 bg-default-50 p-3 w-full overflow-hidden mt-4'
-          style={{ height: '300px' }}
-        />
-      )}
-    </div>
+    <Card className='w-full bg-gradient-to-br from-background/40 to-background/10 backdrop-blur-lg border-1 border-default-200/50 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden'>
+      <CardBody>
+        <div className='grid grid-cols-2 md:grid-cols-4 gap-3'>
+          {renderNetworkCard('当前上传', currentUpload, formatSpeed, <ArrowUpCircle className='h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-green-500' />)}
+          {renderNetworkCard('当前下载', currentDownload, formatSpeed, <ArrowDownCircle className='h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-blue-500' />)}
+          {renderNetworkCard('总接收', totalSent, formatDataSize, <Download className='h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-amber-500' />)}
+          {renderNetworkCard('总发送', totalReceived, formatDataSize, <Upload className='h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-purple-500' />)}
+        </div>
+        {showChart && (
+          <div
+            ref={chartRef}
+            className='mt-4 rounded-xl border border-default-200/30 bg-gradient-to-br from-background/60 to-background/30 backdrop-blur-sm p-4 w-full max-w-full overflow-hidden'
+            style={{ height: '350px' }}
+          />
+        )}
+      </CardBody>
+    </Card>
   )
 }
 

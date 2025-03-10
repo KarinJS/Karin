@@ -26,7 +26,8 @@ import {
   Bot,
   Terminal,
   GitBranch,
-  LucideIcon
+  LucideIcon,
+  TriangleAlert
 } from 'lucide-react'
 import { LuInfo, LuNetwork } from 'react-icons/lu'
 import axios from 'axios'
@@ -608,7 +609,7 @@ function NetworkMonitorCard () {
   if (!data && showNetworkMonitor) {
     return (
       <Card shadow='sm'>
-        <CardHeader className='flex justify-between items-center'>
+        <CardHeader className='p-5 flex justify-between items-center'>
           <div className='flex items-center gap-2'>
             <LuNetwork className='text-xl text-primary' />
             <span className='text-lg font-semibold'>网络监控</span>
@@ -623,11 +624,8 @@ function NetworkMonitorCard () {
           </Button>
         </CardHeader>
         <CardBody>
-          <div className='flex flex-col justify-center items-center gap-2'>
-            <div className='text-danger text-4xl'>
-              <VscBracketError />
-            </div>
-            <div>请求错误</div>
+          <div className='flex flex-col items-center justify-center p-6 gap-2'>
+            <Spinner label='等待请求中' color='warning' />
           </div>
         </CardBody>
       </Card>
@@ -636,17 +634,26 @@ function NetworkMonitorCard () {
 
   return (
     <Card shadow='sm'>
-      <CardHeader className='flex justify-between items-center'>
+      <CardHeader className='p-5 flex justify-between items-center'>
         <div className='flex items-center gap-2'>
           <LuNetwork className='text-xl text-primary' />
           <span className='text-lg font-semibold'>网络监控</span>
         </div>
-
-        <div className='flex items-center gap-3'>
+        <Button
+          color='primary'
+          variant='flat'
+          size='sm'
+          onPress={() => setShowNetworkMonitor(!showNetworkMonitor)}
+        >
+          {showNetworkMonitor ? '关闭监控' : '开启监控'}
+        </Button>
+      </CardHeader>
+      <CardBody className='flex gap-4'>
+        <div className='px-5 flex items-center gap-3'>
           {showNetworkMonitor && (
-            <>
+            <div className='grid grid-cols-2 gap-4'>
               <div className='flex items-center gap-2'>
-                <span className='text-sm text-default-500'>实时更新</span>
+                <span className='text-base text-default-500'>实时更新</span>
                 <Switch
                   isSelected={enablePolling}
                   onChange={(e) => setEnablePolling(e.target.checked)}
@@ -656,40 +663,21 @@ function NetworkMonitorCard () {
               </div>
 
               <div className='flex items-center gap-2'>
-                <span className='text-sm text-default-500'>显示图表</span>
+                <span className='text-base text-default-500'>显示图表</span>
                 <Switch
                   isSelected={showChart}
-                  onChange={(e) => setShowChart(e.target.checked)}
+                  onChange={(e) => { setShowChart(e.target.checked) }}
                   size='sm'
                   color='primary'
                 />
               </div>
-
-              <Chip
-                color={enablePolling ? 'success' : 'default'}
-                variant='flat'
-                size='sm'
-              >
-                {enablePolling ? '实时模式' : '静态模式'}
-              </Chip>
-            </>
+            </div>
           )}
-
-          <Button
-            color='primary'
-            variant='flat'
-            size='sm'
-            onPress={() => setShowNetworkMonitor(!showNetworkMonitor)}
-          >
-            {showNetworkMonitor ? '关闭监控' : '开启监控'}
-          </Button>
         </div>
-      </CardHeader>
-      <CardBody>
         {showNetworkMonitor
           ? (
             <NetworkMonitor
-              networkData={data || { upload: 0, download: 0, totalSent: 0, totalReceived: 0 }}
+              networkData={data || { upload: 0, download: 0, totalSent: 0, totalReceived: 0, timestamp: Date.now() }}
               enablePolling={enablePolling}
               onPollingChange={setEnablePolling}
               showChart={showChart}
@@ -697,7 +685,8 @@ function NetworkMonitorCard () {
             />
           )
           : (
-            <div className='flex flex-col items-center justify-center p-6'>
+            <div className='flex flex-col items-center justify-center p-6 gap-2'>
+              <TriangleAlert className='text-warning-400' />
               <div className='text-default-400'>网络监控已关闭</div>
             </div>
           )}
