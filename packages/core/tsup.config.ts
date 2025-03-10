@@ -8,6 +8,9 @@ fs.rmSync('dist/index.js', { force: true })
 fs.rmSync('dist/index.d.ts', { force: true })
 
 const pkg = JSON.parse(fs.readFileSync(new URL('package.json', import.meta.url), 'utf-8'))
+const noExternal = ['jsonwebtoken', 'systeminformation', 'commander']
+const external = Object.keys(pkg.dependencies).filter(dep => !noExternal.includes(dep))
+
 /**
  * @description `tsup` configuration options
  */
@@ -31,9 +34,10 @@ export const options: Options = {
     }
   }, // 是否生成 .d.ts 文件
   outDir: 'dist', // 输出目录
-  treeshake: false, // 树摇优化
+  treeshake: true, // 树摇优化
   minify: false, // 压缩代码
-  external: Object.keys(pkg.dependencies),
+  external,
+  noExternal,
   ignoreWatch: ['src/modules'],
   shims: true,
 }
