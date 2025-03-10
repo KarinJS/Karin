@@ -7,11 +7,11 @@ import type { KarinStatus, NetworkStatus, SystemStatus } from '@/types/server'
 import { Button } from '@heroui/button'
 import { RiRestartLine, RiShutDownLine } from 'react-icons/ri'
 import { Tooltip } from '@heroui/tooltip'
-import React, { useState, useCallback, useEffect, useMemo } from 'react'
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import toast from 'react-hot-toast'
 import useDialog from '@/hooks/use-dialog'
 import { VscBracketError } from 'react-icons/vsc'
-import { getSystemStatus } from '@/lib/status'
+import { getNetworkStatus, getSystemStatus } from '@/lib/status'
 import SystemStatusDisplay from '@/components/system_display_card'
 import Counter from '@/components/counter.tsx'
 import RotatingText from '@/components/RotatingText'
@@ -596,41 +596,86 @@ export default function IndexPage () {
   )
 }
 
+// TODO 停止切不断开~?
 function NetworkMonitorCard () {
   const [showNetworkMonitor, setShowNetworkMonitor] = useState(false)
   const [enablePolling, setEnablePolling] = useState(true)
   const [showChart, setShowChart] = useState(true)
 
-  const { data } = useRequest(() => request.serverGet<NetworkStatus>('/api/v1/status/network'), {
-    pollingInterval: 2000,
-    ready: showNetworkMonitor && enablePolling,
-  })
+  // 使用ref存储网络数据历史，这样不会因为重新渲染而丢失
+  const [networkStatus, setNetworkStatus] = useState<NetworkStatus>()
+  const networkHistoryRef = useRef<NetworkStatus[]>([])
+  const eventSourceRef = useRef<EventSource | null>(null)
 
-  if (!data && showNetworkMonitor) {
-    return (
-      <Card shadow='sm'>
-        <CardHeader className='p-5 flex justify-between items-center'>
-          <div className='flex items-center gap-2'>
-            <LuNetwork className='text-xl text-primary' />
-            <span className='text-lg font-semibold'>网络监控</span>
-          </div>
-          <Button
-            color='primary'
-            variant='flat'
-            size='sm'
-            onPress={() => setShowNetworkMonitor(!showNetworkMonitor)}
-          >
-            {showNetworkMonitor ? '关闭监控' : '开启监控'}
-          </Button>
-        </CardHeader>
-        <CardBody>
-          <div className='flex flex-col items-center justify-center p-6 gap-2'>
-            <Spinner label='等待请求中' color='warning' />
-          </div>
-        </CardBody>
-      </Card>
-    )
-  }
+  // 处理接收到的网络数据
+  const handleNetworkData = useCallback((data: NetworkStatus) => {
+    // 只有当显示监控时才处理数据
+    if (!showNetworkMonitor) return
+
+    // 更新当前状态
+    setNetworkStatus(data)
+
+    // 将数据添加到历史记录中
+    // 限制历史记录长度，防止内存占用过大（例如保留最近100条记录）
+    networkHistoryRef.current.push(data)
+    if (networkHistoryRef.current.length > 100) {
+      networkHistoryRef.current.shift()
+    }
+  }, [showNetworkMonitor])
+
+  // 获取网络状态的函数 - 只在组件挂载时调用一次
+  const getStatus = useCallback(() => {
+    // 如果已经有连接，不要重复创建
+    if (eventSourceRef.current) {
+      return eventSourceRef.current
+    }
+
+    try {
+      const event = getNetworkStatus(handleNetworkData)
+      eventSourceRef.current = event
+      return event
+    } catch (error) {
+      toast.error('获取网络数据失败')
+    }
+    return null
+  }, [handleNetworkData])
+
+  // 只在组件挂载和卸载时处理连接
+  useEffect(() => {
+    // 组件挂载时创建连接
+    const eventSource = getStatus()
+
+    // 组件卸载时关闭连接
+    return () => {
+      if (eventSource) {
+        eventSource.close()
+      }
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close()
+        eventSourceRef.current = null
+      }
+    }
+  }, [getStatus])
+
+  // 当启用/禁用轮询或显示/隐藏监控时，暂停或恢复数据更新
+  useEffect(() => {
+    if (eventSourceRef.current) {
+      if (!enablePolling || !showNetworkMonitor) {
+        // 如果禁用轮询或关闭监控，暂停事件源（通过移除事件监听器）
+        eventSourceRef.current.onmessage = null
+      } else {
+        // 如果启用轮询且开启监控，恢复事件源
+        eventSourceRef.current.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data)
+            handleNetworkData(data)
+          } catch (error) {
+            console.error('解析网络数据失败', error)
+          }
+        }
+      }
+    }
+  }, [enablePolling, handleNetworkData, showNetworkMonitor])
 
   return (
     <Card shadow='sm'>
@@ -677,7 +722,8 @@ function NetworkMonitorCard () {
         {showNetworkMonitor
           ? (
             <NetworkMonitor
-              networkData={data || { upload: 0, download: 0, totalSent: 0, totalReceived: 0, timestamp: Date.now() }}
+              networkData={networkStatus!}
+              networkHistory={networkHistoryRef.current}
               enablePolling={enablePolling}
               onPollingChange={setEnablePolling}
               showChart={showChart}

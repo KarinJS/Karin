@@ -13,6 +13,7 @@ const MAX_DATA_POINTS = 100
 
 interface NetworkMonitorProps {
   networkData: NetworkStatus
+  networkHistory: NetworkStatus[]
   enablePolling: boolean
   onPollingChange: (value: boolean) => void
   showChart: boolean
@@ -21,6 +22,7 @@ interface NetworkMonitorProps {
 
 const NetworkMonitor: React.FC<NetworkMonitorProps> = ({
   networkData: propNetworkData,
+  networkHistory,
   enablePolling,
   showChart,
 }) => {
@@ -32,6 +34,26 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({
   const [currentDownload, setCurrentDownload] = useState<number>(0)
   const [totalSent, setTotalSent] = useState<number>(0)
   const [totalReceived, setTotalReceived] = useState<number>(0)
+  const isInitializedRef = useRef(false)
+
+  // 初始化历史数据
+  useEffect(() => {
+    // 只在组件首次挂载时初始化历史数据
+    if (!isInitializedRef.current && networkHistory && networkHistory.length > 0) {
+      setNetworkData(networkHistory.slice(-MAX_DATA_POINTS))
+
+      // 设置当前值为最新的历史数据
+      const latestData = networkHistory[networkHistory.length - 1]
+      if (latestData) {
+        setCurrentUpload(latestData.upload)
+        setCurrentDownload(latestData.download)
+        setTotalSent(latestData.totalSent)
+        setTotalReceived(latestData.totalReceived)
+      }
+
+      isInitializedRef.current = true
+    }
+  }, [networkHistory])
 
   // 格式化网络速度
   const formatSpeed = (speed: number): string => {
@@ -83,10 +105,14 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({
         setTotalSent(totalSent)
         setTotalReceived(totalReceived)
 
-        // 添加数据点
-        const timestamp = Date.now()
+        // 添加数据点，使用实际的时间戳
+        const timestamp = propNetworkData.timestamp || now
 
         setNetworkData((prev) => {
+          // 检查是否已经存在相同时间戳的数据点，避免重复
+          const exists = prev.some(item => item.timestamp === timestamp)
+          if (exists) return prev
+
           // 限制数据点数量，保留最新的 MAX_DATA_POINTS 个
           const newData = [
             ...prev,
@@ -105,7 +131,7 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({
     } catch (error) {
       console.error('处理网络数据失败:', error)
     }
-  }, [propNetworkData, enablePolling]) // 添加 enablePolling 作为依赖
+  }, [propNetworkData, enablePolling])
 
   useEffect(() => {
     if (chartRef.current && showChart) {
@@ -155,8 +181,8 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({
     const dataZoomEnd = (currentOption?.dataZoom as any)?.[0]?.end
     const legendSelected = (currentOption?.legend as any)?.[0]?.selected || {}
 
-    // 用于显示的数据
-    const displayData = networkData.slice(-20)
+    // 用于显示的数据 - 增加显示的数据点数量以保持连续性
+    const displayData = networkData.slice(-30)
 
     // 确定Y轴的单位
     const maxValue = Math.max(...displayData.map((item) => Math.max(item.upload, item.download)))
