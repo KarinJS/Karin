@@ -139,14 +139,22 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
       // 只取最新的20个数据点用于主图表显示
       const displayData = networkData.length > 20 ? networkData.slice(networkData.length - 20) : networkData
 
+      // 确定Y轴的单位
+      const maxValue = Math.max(...displayData.map((item) => Math.max(item.upload, item.download)))
+
+      let yAxisUnit = 'B/s'
+      let yAxisDivisor = 1
+
+      if (maxValue >= 1024 * 1024) {
+        yAxisUnit = 'MB/s'
+        yAxisDivisor = 1024 * 1024
+      } else if (maxValue >= 1024) {
+        yAxisUnit = 'KB/s'
+        yAxisDivisor = 1024
+      }
+
       const option: echarts.EChartsOption = {
         darkMode: theme === 'dark',
-        title: {
-          text: title,
-          textStyle: {
-            color: theme === 'dark' ? '#fff' : '#333',
-          },
-        },
         tooltip: {
           trigger: 'axis',
           formatter: (params: any) => {
@@ -183,10 +191,10 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
           top: '2%',
         },
         grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '18%', // 增加底部空间以容纳数据缩放控件
-          top: '15%',
+          left: '4%',
+          right: '5%',
+          bottom: '18%',
+          top: '18%',    // 从15%增加到18%，为标题和单位提供更多空间
           containLabel: true,
         },
         xAxis: {
@@ -195,9 +203,10 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
           data: displayData.map((item) => formatTime(item.timestamp)),
           axisLabel: {
             show: true,
-            interval: Math.max(1, Math.floor(displayData.length / 2)), // 动态调整显示间隔
+            interval: 4,
             color: theme === 'dark' ? '#ddd' : '#333',
             fontSize: 11,
+            margin: 24,     // 刻度标签距离x轴的距离
           },
           axisLine: {
             lineStyle: {
@@ -207,10 +216,21 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
         },
         yAxis: {
           type: 'value',
+          name: yAxisUnit,
+          nameLocation: 'end',
+          nameGap: 22,      // 从15增加到22，增加单位与轴的距离
+          nameTextStyle: {
+            color: theme === 'dark' ? '#ddd' : '#333',
+            fontSize: 12,
+            padding: [0, 0, 8, 0],  // 底部padding从5增加到8
+          },
           axisLabel: {
-            formatter: (value: number) => formatSpeed(value),
+            formatter: (value: number) => {
+              return (value / yAxisDivisor).toFixed(1)
+            },
             color: theme === 'dark' ? '#ddd' : '#333',
             fontSize: 11,
+            margin: 14,     // 从10增加到14，增加标签与轴的距离
           },
           splitLine: {
             lineStyle: {
@@ -218,6 +238,7 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
               type: 'dashed',
             },
           },
+          minInterval: maxValue / 5, // Ensures at least 5 intervals on the y-axis
         },
         // 添加数据缩放组件，始终启用
         dataZoom: [
@@ -318,10 +339,13 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
         ],
       }
 
-      // 使用 setOption 的第二个参数，设置为 false 以避免完全覆盖之前的配置
-      chartInstance.current.setOption(option, false)
+      // 使用 setOption 的第二个参数，设置为 true 以完全覆盖之前的配置
+      chartInstance.current.setOption(option, true)
+
+      // 强制重新渲染图表以应用新主题
+      chartInstance.current.resize()
     }
-  }, [networkData, theme, title])
+  }, [networkData, theme])
 
   return (
     <Card className='w-full shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden'>
@@ -334,38 +358,42 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
         </div>
       </CardHeader>
       <CardBody>
-        <div className='grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-3 mb-6'>
-          <div className='flex flex-col items-center justify-center p-4 bg-primary/5 rounded-lg shadow-sm border border-primary/10 transition-all duration-300 hover:shadow hover:bg-primary/10'>
-            <div className='text-sm font-medium text-primary mb-2'>当前上传</div>
+        <div className='grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-2 mb-4'>
+          <div className='flex flex-col items-center justify-center p-2 bg-primary/5 rounded-lg shadow-sm border border-primary/10 transition-all duration-300 hover:shadow hover:bg-primary/10'>
+            <div className='text-xs font-medium text-primary mb-1'>当前上传</div>
             <Chip
               variant='bordered'
+              size='sm'
               className='bg-green-100 text-green-800 dark:bg-green-900/60 dark:text-green-200 border-green-300 dark:border-green-700 font-medium'
             >
               {formatSpeed(currentUpload)}
             </Chip>
           </div>
-          <div className='flex flex-col items-center justify-center p-4 bg-primary/5 rounded-lg shadow-sm border border-primary/10 transition-all duration-300 hover:shadow hover:bg-primary/10'>
-            <div className='text-sm font-medium text-primary mb-2'>当前下载</div>
+          <div className='flex flex-col items-center justify-center p-2 bg-primary/5 rounded-lg shadow-sm border border-primary/10 transition-all duration-300 hover:shadow hover:bg-primary/10'>
+            <div className='text-xs font-medium text-primary mb-1'>当前下载</div>
             <Chip
               variant='bordered'
+              size='sm'
               className='bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200 border-blue-300 dark:border-blue-700 font-medium'
             >
               {formatSpeed(currentDownload)}
             </Chip>
           </div>
-          <div className='flex flex-col items-center justify-center p-4 bg-primary/5 rounded-lg shadow-sm border border-primary/10 transition-all duration-300 hover:shadow hover:bg-primary/10'>
-            <div className='text-sm font-medium text-primary mb-2'>总上传</div>
+          <div className='flex flex-col items-center justify-center p-2 bg-primary/5 rounded-lg shadow-sm border border-primary/10 transition-all duration-300 hover:shadow hover:bg-primary/10'>
+            <div className='text-xs font-medium text-primary mb-1'>总上传</div>
             <Chip
               variant='bordered'
+              size='sm'
               className='bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200 border-amber-300 dark:border-amber-700 font-medium'
             >
               {formatDataSize(totalSent)}
             </Chip>
           </div>
-          <div className='flex flex-col items-center justify-center p-4 bg-primary/5 rounded-lg shadow-sm border border-primary/10 transition-all duration-300 hover:shadow hover:bg-primary/10'>
-            <div className='text-sm font-medium text-primary mb-2'>总下载</div>
+          <div className='flex flex-col items-center justify-center p-2 bg-primary/5 rounded-lg shadow-sm border border-primary/10 transition-all duration-300 hover:shadow hover:bg-primary/10'>
+            <div className='text-xs font-medium text-primary mb-1'>总下载</div>
             <Chip
               variant='bordered'
+              size='sm'
               className='bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-200 border-purple-300 dark:border-purple-700 font-medium'
             >
               {formatDataSize(totalReceived)}
@@ -375,7 +403,7 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
         <div
           ref={chartRef}
           className='rounded-lg border border-primary/10 p-2 w-full max-w-full overflow-hidden'
-          style={{ height: '300px' }}
+          style={{ height: '350px' }}
         />
       </CardBody>
     </Card>
