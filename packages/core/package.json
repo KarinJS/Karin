@@ -145,11 +145,6 @@
       "types": "./dist/module/chokidar.d.ts",
       "require": "./dist/module/chokidar.cjs"
     },
-    "./commander": {
-      "import": "./dist/module/commander.js",
-      "types": "./dist/module/commander.d.ts",
-      "require": "./dist/module/commander.cjs"
-    },
     "./dotenv": {
       "import": "./dist/module/dotenv.js",
       "types": "./dist/module/dotenv.d.ts",

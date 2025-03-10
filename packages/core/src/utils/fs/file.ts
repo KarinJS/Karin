@@ -15,8 +15,8 @@ export const sep = path.sep === '/' ? /^file:\/\// : /^file:[/]{2,3}/
 
 /**
  * 下载保存文件
- * @param  fileUrl 下载地址
- * @param  savePath 保存路径
+ * @param fileUrl 下载地址
+ * @param savePath 保存路径
  * @param param axios参数
  */
 export const downFile = async (fileUrl: string, savePath: string, param: AxiosRequestConfig = {}) => {
