@@ -1,4 +1,5 @@
 import { router } from '../router'
+import { createSuccessResponse } from '../../utils/response'
 import * as si from 'systeminformation'
 
 import type { RequestHandler } from 'express'
@@ -79,52 +80,26 @@ async function calculateNetworkSpeed () {
     upload: Math.round(upload),
     download: Math.round(download),
     totalSent: totalStats.totalSent,
-    totalReceived: totalStats.totalReceived,
-    timestamp: now
+    totalReceived: totalStats.totalReceived
   }
 }
 
 /**
- * 网络状态 SSE 路由 - 使用 Server-Sent Events
+ * 获取网络状态路由
  */
-const networkStatusSSERouter: RequestHandler = async (_req, res) => {
+const networkStatusRouter: RequestHandler = async (_req, res) => {
   try {
-    // 设置 SSE 相关的响应头
-    res.setHeader('Content-Type', 'text/event-stream')
-    res.setHeader('Cache-Control', 'no-cache')
-    res.setHeader('Connection', 'keep-alive')
-    res.flushHeaders() // 立即发送响应头
-
-    // 发送初始数据
-    const initialData = await calculateNetworkSpeed()
-    res.write(`data: ${JSON.stringify(initialData)}\n\n`)
-
-    // 设置定时器，每2秒发送一次数据
-    const intervalId = setInterval(async () => {
-      try {
-        const networkSpeed = await calculateNetworkSpeed()
-        res.write(`data: ${JSON.stringify(networkSpeed)}\n\n`)
-      } catch (error) {
-        logger.error('SSE 发送网络状态失败:', error)
-        res.write(`data: ${JSON.stringify({
-          upload: 0,
-          download: 0,
-          totalSent: totalStats.totalSent,
-          totalReceived: totalStats.totalReceived,
-          timestamp: Date.now(),
-          error: true
-        })}\n\n`)
-      }
-    }, 2000)
-
-    // 当客户端断开连接时清除定时器
-    res.on('close', () => {
-      clearInterval(intervalId)
-    })
+    const networkSpeed = await calculateNetworkSpeed()
+    createSuccessResponse(res, networkSpeed)
   } catch (error) {
-    logger.error('初始化网络状态 SSE 失败:', error)
-    res.status(500).end()
+    logger.error('获取网络状态失败:', error)
+    createSuccessResponse(res, {
+      upload: 0,
+      download: 0,
+      totalSent: totalStats.totalSent,
+      totalReceived: totalStats.totalReceived
+    })
   }
 }
 
-router.get('/status/network', networkStatusSSERouter)
+router.get('/status/network', networkStatusRouter)
