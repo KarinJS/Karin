@@ -94,7 +94,6 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
   }, [propNetworkData]) // 添加 propNetworkData 作为依赖
 
   useEffect(() => {
-    // 初始化图表
     if (chartRef.current) {
       // 添加移动设备适配选项
       const initOptions: echarts.EChartsInitOpts = {
@@ -103,6 +102,12 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
         devicePixelRatio: window.devicePixelRatio,
       }
       chartInstance.current = echarts.init(chartRef.current, null, initOptions)
+
+      // 添加图例切换事件监听
+      chartInstance.current.on('legendselectchanged', function (params) {
+        // 这里不需要做任何事情，只需确保事件被正确处理
+        console.log('Legend select changed:', params)
+      })
 
       // 设置响应式
       const observer = new ResizeObserver(() => {
@@ -125,13 +130,15 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
     }
   }, [propNetworkData, fetchNetworkData])
 
-  // 更新图表数据
   useEffect(() => {
     if (chartInstance.current) {
-      // 保存当前的缩放状态
+      // 保存当前的缩放状态和图例选中状态
       const currentOption = chartInstance.current.getOption()
       const dataZoomStart = (currentOption?.dataZoom as any)?.[0]?.start
       const dataZoomEnd = (currentOption?.dataZoom as any)?.[0]?.end
+
+      // 保存图例选中状态
+      const legendSelected = (currentOption?.legend as any)?.[0]?.selected || {}
 
       // 所有数据用于时间选择器
       const allData = networkData
@@ -162,13 +169,24 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
             // 使用 displayData 而不是 filteredData
             const data = displayData[index]
             const time = formatTime(data.timestamp)
-            const upload = params[0].value
-            const download = params[1].value
+
+            // 修复：确保参数存在再访问其值
+            let uploadText = ''
+            let downloadText = ''
+
+            params.forEach((param: any) => {
+              if (param.seriesName === '上传') {
+                uploadText = `<div>上传: ${formatSpeed(param.value)}</div>`
+              } else if (param.seriesName === '下载') {
+                downloadText = `<div>下载: ${formatSpeed(param.value)}</div>`
+              }
+            })
+
             return `
               <div>
                 <div>时间: ${time}</div>
-                <div>上传: ${formatSpeed(upload)}</div>
-                <div>下载: ${formatSpeed(download)}</div>
+                ${uploadText}
+                ${downloadText}
               </div>
             `
           },
@@ -189,6 +207,8 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
           itemGap: 20,
           right: '5%',
           top: '2%',
+          // 恢复图例选中状态
+          selected: legendSelected,
         },
         grid: {
           left: '4%',
@@ -240,7 +260,7 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
           },
           minInterval: maxValue / 5, // Ensures at least 5 intervals on the y-axis
         },
-        // 添加数据缩放组件，始终启用
+        // 修改数据缩放组件配置
         dataZoom: [
           {
             type: 'slider',
@@ -269,15 +289,23 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
             xAxisIndex: [0],
             start: dataZoomStart !== undefined ? dataZoomStart : 0,
             end: dataZoomEnd !== undefined ? dataZoomEnd : 100,
+            // 禁用主图表区域的滚轮缩放
+            zoomOnMouseWheel: false,
+            moveOnMouseWheel: false,
+            // 禁用主图表区域的鼠标拖拽缩放
+            zoomLock: true,
+            // 可以保留鼠标平移功能
+            preventDefaultMouseMove: false,
           },
         ],
         series: [
           {
             name: '上传',
             type: 'line',
-            stack: '总量',
-            smooth: 0.5, // 增加平滑度，取值范围0-1
-            smoothMonotone: 'x', // 保持x方向的单调性
+            // 移除 stack 属性，避免堆叠导致的问题
+            // stack: '总量',
+            smooth: 0.5,
+            smoothMonotone: 'x',
             areaStyle: {
               opacity: 0.3,
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -307,9 +335,10 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
           {
             name: '下载',
             type: 'line',
-            stack: '总量',
-            smooth: 0.5, // 增加平滑度，取值范围0-1
-            smoothMonotone: 'x', // 保持x方向的单调性
+            // 移除 stack 属性，避免堆叠导致的问题
+            // stack: '总量',
+            smooth: 0.5,
+            smoothMonotone: 'x',
             areaStyle: {
               opacity: 0.3,
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -339,8 +368,8 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
         ],
       }
 
-      // 使用 setOption 的第二个参数，设置为 true 以完全覆盖之前的配置
-      chartInstance.current.setOption(option, true)
+      // 使用 notMerge: false 来合并配置而不是完全替换
+      chartInstance.current.setOption(option, { notMerge: false })
 
       // 强制重新渲染图表以应用新主题
       chartInstance.current.resize()
