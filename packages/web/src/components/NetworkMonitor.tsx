@@ -495,8 +495,8 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({ title = '网络监控',
         <div className='grid grid-cols-2 md:grid-cols-4 gap-3 mb-4'>
           {renderNetworkCard('当前上传', currentUpload, formatSpeed, <ArrowUpCircle className='h-4 w-4 lg:h-6 lg:w-6 text-green-500' />)}
           {renderNetworkCard('当前下载', currentDownload, formatSpeed, <ArrowDownCircle className='h-4 w-4 lg:h-6 lg:w-6 text-blue-500' />)}
-          {renderNetworkCard('总接收', totalSent, formatDataSize, <Upload className='h-4 w-4 lg:h-6 lg:w-6 text-amber-500' />)}
-          {renderNetworkCard('总发送', totalReceived, formatDataSize, <Download className='h-4 w-4 lg:h-6 lg:w-6 text-purple-500' />)}
+          {renderNetworkCard('总接收', totalSent, formatDataSize, <Download className='h-4 w-4 lg:h-6 lg:w-6 text-amber-500' />)}
+          {renderNetworkCard('总发送', totalReceived, formatDataSize, <Upload className='h-4 w-4 lg:h-6 lg:w-6 text-purple-500' />)}
         </div>
         <div
           ref={chartRef}
