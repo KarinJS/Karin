@@ -57,6 +57,10 @@ export default defineConfig({
         target: 'ws://localhost:7777',
         ws: true,
       },
+      '/terminal/create': {
+        target: 'ws://localhost:7777',
+        ws: true,
+      },
     },
   },
 })

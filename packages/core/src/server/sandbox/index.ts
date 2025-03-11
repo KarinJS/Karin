@@ -1,4 +1,3 @@
-import { router } from '@/server/router/router'
 import { listeners } from '@/core/internal'
 import { registerBot, unregisterBot } from '@/service/bot'
 import { AdapterSandbox } from '@/adapter/sandbox/adapter'
@@ -539,25 +538,25 @@ const main = () => {
   })
 }
 
-main()
-router.post('/sandbox/self', getSelfInfoRouter)
-router.post('/sandbox/msg/recall', recallMessageRouter)
-router.post('/sandbox/webhook', webhookRouter)
-router.post('/sandbox/self/update', updateBotInfoRouter)
-router.post('/sandbox/msg/list', getMsgListRouter)
-router.post('/sandbox/url', getSandboxUrlRouter)
+// main()
+// router.post('/sandbox/self', getSelfInfoRouter)
+// router.post('/sandbox/msg/recall', recallMessageRouter)
+// router.post('/sandbox/webhook', webhookRouter)
+// router.post('/sandbox/self/update', updateBotInfoRouter)
+// router.post('/sandbox/msg/list', getMsgListRouter)
+// router.post('/sandbox/url', getSandboxUrlRouter)
 
-router.post('/sandbox/friend/create', createFriendRouter)
-router.post('/sandbox/friend/list', getFriendListRouter)
-router.post('/sandbox/friend/delete', deleteFriendRouter)
-router.post('/sandbox/friend/update', updateFriendRouter)
+// router.post('/sandbox/friend/create', createFriendRouter)
+// router.post('/sandbox/friend/list', getFriendListRouter)
+// router.post('/sandbox/friend/delete', deleteFriendRouter)
+// router.post('/sandbox/friend/update', updateFriendRouter)
 
-router.post('/sandbox/group/create', createGroupRouter)
-router.post('/sandbox/group/list', getGroupListRouter)
-router.post('/sandbox/group/delete', deleteGroupRouter)
-router.post('/sandbox/group/update', updateGroupRouter)
+// router.post('/sandbox/group/create', createGroupRouter)
+// router.post('/sandbox/group/list', getGroupListRouter)
+// router.post('/sandbox/group/delete', deleteGroupRouter)
+// router.post('/sandbox/group/update', updateGroupRouter)
 
-router.post('/sandbox/group/member/list', getGroupMemberListRouter)
-router.post('/sandbox/group/member/create', createGroupMemberRouter)
-router.post('/sandbox/group/member/delete', deleteGroupMemberRouter)
-router.post('/sandbox/group/member/update', updateGroupMemberRouter)
+// router.post('/sandbox/group/member/list', getGroupMemberListRouter)
+// router.post('/sandbox/group/member/create', createGroupMemberRouter)
+// router.post('/sandbox/group/member/delete', deleteGroupMemberRouter)
+// router.post('/sandbox/group/member/update', updateGroupMemberRouter)

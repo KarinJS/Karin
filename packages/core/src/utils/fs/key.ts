@@ -14,6 +14,8 @@ export const WS_CONNECTION_ONEBOT = 'ws:connection:onebot'
 export const WS_CONNECTION_PUPPETEER = 'ws:connection:puppeteer'
 /** 传递sandbox ws连接 */
 export const WS_CONNECTION_SANDBOX = 'ws:connection:sandbox'
+/** 传递虚拟终端 ws连接 */
+export const WS_CONNECTION_TERMINAL = 'ws:connection:terminal'
 
 /** 传递ws关闭 */
 export const WS_CLOSE = 'ws:close'

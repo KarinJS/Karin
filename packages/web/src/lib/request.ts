@@ -1,7 +1,15 @@
 import axios from 'axios'
-import key from '@/consts/key.ts'
 import { toast } from 'react-hot-toast'
 import { EventSourcePolyfill } from 'event-source-polyfill'
+import {
+  clearAccessToken,
+  clearRefreshToken,
+  clearUserId,
+  getAccessToken,
+  getRefreshToken,
+  getUserId,
+  setAccessToken
+} from './token'
 
 import type { ServerResponse } from '@/types/server'
 import type { EventSourcePolyfillInit } from 'event-source-polyfill'
@@ -26,8 +34,8 @@ const cacheToken: {
  */
 const refreshAccessToken = async () => {
   try {
-    const accessToken = localStorage.getItem(key.accessToken)
-    const refreshToken = localStorage.getItem(key.refreshToken)
+    const accessToken = getAccessToken()
+    const refreshToken = getRefreshToken()
     if (!accessToken || !refreshToken) return false
     /** 刷新访问令牌 */
     const data = await axios.post(
@@ -37,7 +45,7 @@ const refreshAccessToken = async () => {
     )
 
     if (data.status === 200) {
-      localStorage.setItem(key.accessToken, data.data.accessToken)
+      setAccessToken(data.data.accessToken)
       return true
     }
 
@@ -57,7 +65,7 @@ const redirectToLogin = (message: string) => {
   if (isRedirecting) return
   isRedirecting = true
 
-  const token = localStorage.getItem(key.accessToken)
+  const token = getAccessToken()
   clearLocalAuthData()
   if (window.location.pathname === '/web/login') {
     token && toast.error('登录会话过期，请重新登录', { duration: 2000 })
@@ -81,9 +89,9 @@ const redirectToLogin = (message: string) => {
 const clearLocalAuthData = () => {
   cacheToken.token = null
   cacheToken.userId = null
-  localStorage.removeItem(key.userId)
-  localStorage.removeItem(key.refreshToken)
-  localStorage.removeItem(key.accessToken)
+  clearAccessToken()
+  clearRefreshToken()
+  clearUserId()
 }
 
 /** 处理认证相关错误 */
@@ -120,8 +128,8 @@ export const getToken = () => {
     return cacheToken
   }
 
-  const token = localStorage.getItem(key.accessToken)
-  const userId = localStorage.getItem(key.userId)
+  const token = getAccessToken()
+  const userId = getUserId()
 
   cacheToken.token = token
   cacheToken.userId = userId

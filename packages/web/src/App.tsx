@@ -21,6 +21,7 @@ const GroupChatTest = lazy(() => import('@/pages/dashboard/sandbox/group'))
 const PluginConfigPage = lazy(() => import('@/pages/dashboard/plugins/config'))
 const NotFoundPage = lazy(() => import('@/pages/404'))
 const LogPage = lazy(() => import('@/pages/dashboard/log'))
+const TerminalPage = lazy(() => import('@/pages/dashboard/terminal'))
 
 // Main App
 function App () {
@@ -43,6 +44,7 @@ function App () {
           path='/'
         >
           <Route element={<IndexPage />} path='' />
+          <Route element={<TerminalPage />} path='/terminal' />
           <Route element={<ConfigPage />} path='/config/*'>
             <Route element={<Navigate to='/config/system' />} path='' />
             <Route element={<ConfigPage />} path=':tab' />

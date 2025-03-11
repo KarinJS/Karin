@@ -39,7 +39,7 @@ const MenuItem: React.FC<MenuItemProps> = props => {
         }
       }}
     >
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">{icon}</div>
+      <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'>{icon}</div>
       <div
         className={clsx(
           'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-blue-500 transition-opacity',
@@ -56,18 +56,18 @@ const SideBar = () => {
   const { ws } = sandbox
   const { botInfo } = ws
   return (
-    <div className="select-none flex flex-col items-stretch px-2 flex-1">
-      <div className="aspect-square rounded-full my-4">
-        <Image src={botInfo.avatar} className="w-full h-full rounded-full" alt="avatar" />
+    <div className='select-none flex flex-col items-stretch px-2 flex-1'>
+      <div className='aspect-square rounded-full my-4'>
+        <Image src={botInfo.avatar} className='w-full h-full rounded-full' alt='avatar' />
       </div>
-      <div className="flex flex-1 flex-col items-stretch gap-2 pb-3">
+      <div className='flex flex-1 flex-col items-stretch gap-2 pb-3'>
         <MenuItem
           icon={<TbMessageCircle />}
           activeIcon={<TbMessageCircleFilled />}
-          href="/sandbox/chat"
+          href='/sandbox/chat'
         />
-        <MenuItem icon={<TbUser />} activeIcon={<TbUserFilled />} href="/sandbox/contact" />
-        <div className="mt-auto"></div>
+        <MenuItem icon={<TbUser />} activeIcon={<TbUserFilled />} href='/sandbox/contact' />
+        <div className='mt-auto' />
       </div>
     </div>
   )

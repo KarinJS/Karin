@@ -43,6 +43,8 @@ export const statusRouter: RequestHandler = (_req, res) => {
     karin_dev: isDev(),
     karin_lang: process.env.RUNTIME === 'tsx' ? 'ts' : 'js',
     karin_runtime: process.env.RUNTIME,
+    platform: process.platform,
+    arch: process.arch,
   }
 
   createSuccessResponse(res, data, '成功')

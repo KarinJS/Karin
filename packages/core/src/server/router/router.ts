@@ -68,3 +68,17 @@ export const GET_TASK_LIST_ROUTER = '/plugin/task/list'
 export const UPDATE_TASK_STATUS_ROUTER = '/plugin/task/status'
 /** 获取本地插件列表 */
 export const GET_LOCAL_PLUGIN_LIST_ROUTER = '/plugin/local'
+/** 创建终端 */
+export const CREATE_TERMINAL_ROUTER = '/terminal/create'
+/** 获取终端列表 */
+export const GET_TERMINAL_LIST_ROUTER = '/terminal/list'
+/** 关闭终端 */
+export const CLOSE_TERMINAL_ROUTER = '/terminal/close'
+/** 检查是否安装了指定的npm包 */
+export const CHECK_PLUGIN_ROUTER = '/system/check/plugin'
+/** 安装webui插件 */
+export const INSTALL_WEBUI_PLUGIN_ROUTER = '/plugin/webui/install'
+/** 获取webui插件列表 */
+export const GET_WEBUI_PLUGIN_LIST_ROUTER = '/plugin/webui/list'
+/** 卸载webui插件 */
+export const UNINSTALL_WEBUI_PLUGIN_ROUTER = '/plugin/webui/uninstall'

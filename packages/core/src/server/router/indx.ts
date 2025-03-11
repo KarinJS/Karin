@@ -33,7 +33,14 @@ import {
   GET_TASK_STATUS_ROUTER,
   GET_TASK_LIST_ROUTER,
   UPDATE_TASK_STATUS_ROUTER,
-  GET_LOCAL_PLUGIN_LIST_ROUTER
+  GET_LOCAL_PLUGIN_LIST_ROUTER,
+  CREATE_TERMINAL_ROUTER,
+  GET_TERMINAL_LIST_ROUTER,
+  CLOSE_TERMINAL_ROUTER,
+  CHECK_PLUGIN_ROUTER,
+  INSTALL_WEBUI_PLUGIN_ROUTER,
+  GET_WEBUI_PLUGIN_LIST_ROUTER,
+  UNINSTALL_WEBUI_PLUGIN_ROUTER,
 } from './router'
 import { logMiddleware } from '../log'
 import { authMiddleware } from '../auth/middleware'
@@ -78,6 +85,13 @@ import {
   pluginUninstall,
   pluginUpdateTaskStatus
 } from '../plugins/install'
+import {
+  createTerminalHandler,
+  getTerminalListHandler,
+  closeTerminalHandler
+} from '../pty'
+import { checkPlugin } from '../system/check'
+import { getWebuiPluginList, installWebui, uninstallWebui } from '../plugins/webui'
 
 /**
  * karin内部路由
@@ -131,6 +145,8 @@ router.get(PING_ROUTER, pingRouter)
 router.get(SYSTEM_STATUS_KARIN_ROUTER, statusRouter)
 /** 系统状态 */
 router.get(SYSTEM_STATUS_ROUTER, systemStatusRealTimeHandler)
+/** 检查是否安装了指定的npm包 */
+router.post(CHECK_PLUGIN_ROUTER, checkPlugin)
 
 /** 获取在线插件列表 */
 router.post(GET_ONLINE_PLUGIN_LIST_ROUTER, getOnlinePluginList)
@@ -164,3 +180,17 @@ router.post(GET_TASK_LIST_ROUTER, pluginGetTaskList)
 router.post(UPDATE_TASK_STATUS_ROUTER, pluginUpdateTaskStatus)
 /** 获取本地插件列表 */
 router.post(GET_LOCAL_PLUGIN_LIST_ROUTER, pluginGetLocalList)
+
+/** 创建终端 */
+router.post(CREATE_TERMINAL_ROUTER, createTerminalHandler)
+/** 获取终端列表 */
+router.get(GET_TERMINAL_LIST_ROUTER, getTerminalListHandler)
+/** 关闭终端 */
+router.post(CLOSE_TERMINAL_ROUTER, closeTerminalHandler)
+
+/** 获取webui插件列表 */
+router.get(GET_WEBUI_PLUGIN_LIST_ROUTER, getWebuiPluginList)
+/** 安装webui插件 */
+router.post(INSTALL_WEBUI_PLUGIN_ROUTER, installWebui)
+/** 卸载webui插件 */
+router.post(UNINSTALL_WEBUI_PLUGIN_ROUTER, uninstallWebui)

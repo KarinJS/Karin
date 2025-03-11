@@ -8,7 +8,8 @@ import {
   WS_CONNECTION,
   WS_CONNECTION_ONEBOT,
   WS_CONNECTION_PUPPETEER,
-  WS_CONNECTION_SANDBOX
+  WS_CONNECTION_SANDBOX,
+  WS_CONNECTION_TERMINAL
 } from '@/utils/fs/key'
 import type { IncomingMessage } from 'node:http'
 
@@ -88,6 +89,11 @@ wss.on('connection', (socket, request) => {
       listeners.emit(WS_CLOSE_PUPPETEER, socket, request, code, reason)
     })
 
+    return
+  }
+
+  if (request.url?.startsWith('/terminal/create')) {
+    emitEvent(WS_CONNECTION_TERMINAL, socket, request)
     return
   }
 

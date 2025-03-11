@@ -88,5 +88,24 @@ export const auth = {
     const token = req?.headers?.authorization?.replace('Bearer ', '')
     const userId = req?.headers?.['x-user-id'] as string
     return verifyToken(token, userId, res)
+  },
+
+  /**
+   * 虚拟终端鉴权
+   * @param token 令牌
+   * @param userId 用户id
+   * @returns 是否验证成功
+   */
+  terminalAuth: (token: string, userId: string) => {
+    if (!token || !userId) {
+      return false
+    }
+
+    const verifyStatus = verifyJwt(token, userId)
+    if (verifyStatus.status === HTTPStatusCode.OK) {
+      return true
+    }
+
+    return false
   }
 }

@@ -1,3 +1,4 @@
+import { URL } from 'node:url'
 import { EventEmitter } from 'node:events'
 import { listeners } from '../internal'
 import { WS_CONNECTION } from '@/utils/fs/key'
@@ -237,6 +238,8 @@ const events = () => {
     call: () => void
   ) => {
     other.emit(WS_CONNECTION, socket, request, call)
+    const url = new URL(request.url || '', 'ws://localhost')
+    other.emit(`${WS_CONNECTION}:${url.pathname}`, socket, request, call)
   })
 
   /** 文件发送变动 */
