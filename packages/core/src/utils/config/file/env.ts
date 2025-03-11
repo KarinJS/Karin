@@ -8,7 +8,7 @@ import { FILE_CHANGE } from '@/utils/fs'
 import { listeners } from '@/core/internal/listeners'
 import type { Env } from '@/types/config/env'
 import { disconnectAll } from '@/adapter/onebot/connect'
-import { updateJwt } from '@/server/utils/jwt'
+import { updateJwt } from '@/server/auth/jwt'
 
 /**
  * 自定义解析器

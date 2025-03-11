@@ -248,7 +248,7 @@ function Status () {
     pollingInterval: 1000,
   })
   const localPluginsList = useRequest(() => request.serverPost<LocalApiResponse[], {}>('/api/v1/plugin/local'))
-  const botList = useRequest(() => request.serverGet<Array<AdapterType>>('/api/v1/utils/get/bots'), {
+  const botList = useRequest(() => request.serverGet<Array<AdapterType>>('/api/v1/system/get/bots'), {
     pollingInterval: 5000,
   })
 
@@ -604,7 +604,7 @@ function NetworkMonitorCard () {
 
   // 初始检查接口是否可用
   const { data: initialData, error: initialError } = useRequest(
-    () => request.serverGet<NetworkStatus>('/api/v1/status/network'),
+    () => request.serverGet<NetworkStatus>('/api/v1/system/get/network'),
     {
       onSuccess: () => {
         setInitialCheckDone(true)
@@ -619,7 +619,7 @@ function NetworkMonitorCard () {
 
   // 实际数据请求
   const { data } = useRequest(
-    () => request.serverGet<NetworkStatus>('/api/v1/status/network'),
+    () => request.serverGet<NetworkStatus>('/api/v1/system/get/network'),
     {
       pollingInterval: 2000,
       ready: showNetworkMonitor && enablePolling && initialCheckDone && !initialError,
