@@ -597,14 +597,58 @@ export default function IndexPage () {
 }
 
 function NetworkMonitorCard () {
-  const [showNetworkMonitor, setShowNetworkMonitor] = useState(false)
+  const [showNetworkMonitor, setShowNetworkMonitor] = useState(true)
   const [enablePolling, setEnablePolling] = useState(true)
   const [showChart, setShowChart] = useState(true)
+  const [initialCheckDone, setInitialCheckDone] = useState(false)
 
-  const { data } = useRequest(() => request.serverGet<NetworkStatus>('/api/v1/status/network'), {
-    pollingInterval: 2000,
-    ready: showNetworkMonitor && enablePolling,
-  })
+  // 初始检查接口是否可用
+  const { data: initialData, error: initialError } = useRequest(
+    () => request.serverGet<NetworkStatus>('/api/v1/status/network'),
+    {
+      onSuccess: () => {
+        setInitialCheckDone(true)
+      },
+      onError: () => {
+        setInitialCheckDone(true)
+      },
+      manual: false,
+      pollingInterval: 0,
+    }
+  )
+
+  // 实际数据请求
+  const { data } = useRequest(
+    () => request.serverGet<NetworkStatus>('/api/v1/status/network'),
+    {
+      pollingInterval: 2000,
+      ready: showNetworkMonitor && enablePolling && initialCheckDone && !initialError,
+    }
+  )
+
+  // 如果初始检查出错，不渲染整个组件
+  if (initialError) {
+    return null
+  }
+
+  // 等待初始检查完成
+  if (!initialCheckDone) {
+    return (
+      <Card shadow='sm'>
+        <CardHeader className='p-5 flex justify-between items-center'>
+          <div className='flex items-center gap-2'>
+            <LuNetwork className='text-xl text-primary' />
+            <span className='text-lg font-semibold'>网络监控</span>
+          </div>
+        </CardHeader>
+        <CardBody>
+          <div className='flex flex-col items-center justify-center p-6 gap-2'>
+            <Spinner label='检查网络监控可用性...' color='warning' />
+          </div>
+        </CardBody>
+      </Card>
+    )
+  }
 
   if (!data && showNetworkMonitor) {
     return (
@@ -677,7 +721,7 @@ function NetworkMonitorCard () {
         {showNetworkMonitor
           ? (
             <NetworkMonitor
-              networkData={data || { upload: 0, download: 0, totalSent: 0, totalReceived: 0, timestamp: Date.now() }}
+              networkData={data || initialData || { upload: 0, download: 0, totalSent: 0, totalReceived: 0, timestamp: Date.now() }}
               enablePolling={enablePolling}
               onPollingChange={setEnablePolling}
               showChart={showChart}
