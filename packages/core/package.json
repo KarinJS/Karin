@@ -102,7 +102,7 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
-  "time": "2025-03-05",
+  "time": "2025-03-12",
   "exports": {
     ".": {
       "import": "./src/index.ts",
