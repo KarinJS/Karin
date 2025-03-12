@@ -138,19 +138,51 @@ const XTerm = forwardRef<XTermRef, XTermProps>((props, ref) => {
     ref,
     () => ({
       write: (...args) => {
-        return terminalRef.current?.write(...args)
+        const result = terminalRef.current?.write(...args)
+        // 确保光标位置正确，通过检查输入是否包含换行符
+        if (typeof args[0] === 'string' && args[0].includes('\n') && terminalRef.current) {
+          // 对于多行输入，确保光标移动到内容的最后位置
+          const lines = args[0].split('\n')
+          if (lines.length > 1) {
+            // 发送一个空字符并立即删除，触发终端重新计算光标位置
+            terminalRef.current.write(' \b')
+          }
+        }
+        return result
       },
       writeAsync: async (data) => {
         return new Promise((resolve) => {
-          terminalRef.current?.write(data, resolve)
+          terminalRef.current?.write(data, () => {
+            // 处理多行内容的光标问题
+            if (typeof data === 'string' && data.includes('\n') && terminalRef.current) {
+              // 发送一个空字符并立即删除，触发终端重新计算光标位置
+              terminalRef.current.write(' \b', resolve)
+            } else {
+              resolve()
+            }
+          })
         })
       },
       writeln: (...args) => {
-        return terminalRef.current?.writeln(...args)
+        const result = terminalRef.current?.writeln(...args)
+        // writeln本身会添加换行符，所以也需要处理光标位置
+        if (terminalRef.current) {
+          // 发送一个空字符并立即删除，触发终端重新计算光标位置
+          terminalRef.current.write(' \b')
+        }
+        return result
       },
       writelnAsync: async (data) => {
         return new Promise((resolve) => {
-          terminalRef.current?.writeln(data, resolve)
+          terminalRef.current?.writeln(data, () => {
+            // 处理光标位置
+            if (terminalRef.current) {
+              // 发送一个空字符并立即删除，触发终端重新计算光标位置
+              terminalRef.current.write(' \b', resolve)
+            } else {
+              resolve()
+            }
+          })
         })
       },
       clear: () => {
