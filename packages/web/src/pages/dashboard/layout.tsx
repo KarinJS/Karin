@@ -123,7 +123,7 @@ export default function DashboardLayout () {
             'z-40 w-full bg-opacity-50 backdrop-blur-md',
             'border-b border-divider shadow-sm flex items-center justify-between',
             'px-4 py-2',
-            !isConfigPage && 'sticky top-0'
+            isConfigPage ? 'lg:sticky lg:top-0' : 'lg:sticky lg:top-0'
           )}
           initial={{ y: -50 }}
           animate={{ y: 0 }}
