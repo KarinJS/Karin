@@ -1,9 +1,14 @@
-import { MdSpaceDashboard, MdExtension, MdStore, MdOutlineArticle } from 'react-icons/md'
-import { RiSettings2Fill } from 'react-icons/ri'
-// import { FiCodesandbox } from 'react-icons/fi'
-import { BsInfoCircleFill } from 'react-icons/bs'
-
 import { request } from '@/lib/request'
+import { RiSettings2Fill } from 'react-icons/ri'
+import { BsInfoCircleFill } from 'react-icons/bs'
+import {
+  MdSpaceDashboard,
+  MdExtension,
+  MdStore,
+  MdOutlineArticle, // 系统日志
+  MdOutlineTerminal, // 仿真终端
+  MdOutlineWebhook // webui插件管理
+} from 'react-icons/md'
 
 import type { LocalApiResponse } from 'node-karin'
 
@@ -58,21 +63,31 @@ export const defaultSiteConfig: SiteConfigType = {
       href: '/config',
     },
     {
-      Icon: MdStore,
-      label: '插件市场',
-      href: '/plugins/list',
-    },
-    {
       Icon: MdExtension,
       label: '插件配置',
       href: '/plugins',
       children: [],
+    },
+    {
+      Icon: MdStore,
+      label: '插件市场',
+      href: '/plugins/list',
     },
     // {
     //   Icon: FiCodesandbox,
     //   label: '沙箱调试',
     //   href: '/sandbox',
     // },
+    {
+      Icon: MdOutlineWebhook,
+      label: 'WebUI插件',
+      href: '/plugins/webui',
+    },
+    {
+      Icon: MdOutlineTerminal,
+      label: '仿真终端',
+      href: '/terminal',
+    },
     {
       Icon: MdOutlineArticle,
       label: '系统日志',

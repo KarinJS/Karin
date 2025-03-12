@@ -115,7 +115,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'MiSans', 'Arial', 'Helvetica', 'Verdana', 'Trebuchet MS', 'Geneva', 'Lucida Sans Unicode', 'Tahoma', sans-serif;
+    font-family: 'HarmonyOS_Sans_SC', 'Arial', 'Helvetica', 'Verdana', 'Trebuchet MS', 'Geneva', 'Lucida Sans Unicode', 'Tahoma', sans-serif !important;
   }
   $clip-path-circle: circle(0 at 0 100%);
   $clip-path-circle-active: circle(141.4% at 0 100%);

@@ -16,7 +16,7 @@ const env = () => {
     },
   ]
 
-  const file = `${process.cwd()}/.env`
+  const file = `${process.cwd()}/${process.env.EBV_FILE!}`
   const content = fs.readFileSync(file, 'utf-8')
 
   list.forEach(v => {

@@ -8,7 +8,7 @@ import { FILE_CHANGE } from '@/utils/fs'
 import { listeners } from '@/core/internal/listeners'
 import type { Env } from '@/types/config/env'
 import { disconnectAll } from '@/adapter/onebot/connect'
-import { updateJwt } from '@/server/utils/jwt'
+import { updateJwt } from '@/server/auth/jwt'
 
 /**
  * 自定义解析器
@@ -79,7 +79,7 @@ const parser = (content: string) => {
  * @description 初始化.env文件
  */
 const initEnv = () => {
-  const name = '.env'
+  const name = process.env.EBV_FILE!
   const file = `${process.cwd()}/${name}`
   getEnv()
 
@@ -158,7 +158,7 @@ export const authKey = () => {
  */
 export const setEnv = (data: Record<string, any>): boolean => {
   try {
-    const targetPath = path.join(process.cwd(), '.env')
+    const targetPath = path.join(process.cwd(), process.env.EBV_FILE!)
 
     const envConfig = getEnv(targetPath)
 
@@ -187,7 +187,7 @@ export const setEnv = (data: Record<string, any>): boolean => {
  * @public 公开Api
  * @description 获取.env文件内容
  */
-export const getEnv = (filePath: string = path.join(process.cwd(), '.env')): Record<string, {
+export const getEnv = (filePath: string = path.join(process.cwd(), process.env.EBV_FILE!)): Record<string, {
   /** 值 */
   value: string
   /** 注释 */
@@ -202,7 +202,7 @@ export const getEnv = (filePath: string = path.join(process.cwd(), '.env')): Rec
  * @description 获取.env文件内容
  */
 export const env = (): Env => {
-  const data = getEnv(path.join(process.cwd(), '.env'))
+  const data = getEnv(path.join(process.cwd(), process.env.EBV_FILE!))
   const env = {} as Record<string, string>
 
   Object.entries(data).forEach(([key, value]) => {
@@ -223,7 +223,7 @@ export const writeEnv = (
   cwd?: string,
   isCover: boolean = false
 ) => {
-  if (!cwd) cwd = path.join(process.cwd(), '.env')
+  if (!cwd) cwd = path.join(process.cwd(), process.env.EBV_FILE!)
   const env = getEnv(cwd)
   const result = { ...env }
   if (!Array.isArray(data)) data = [data]

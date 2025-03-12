@@ -38,7 +38,7 @@ const request = async (
         `path: ${path}\n` +
         `body: ${JSON.stringify(result.data)}\n`
       )
-      return { code: result.status, success: true }
+      return { code: result.status, success: true, data: result.data }
     }
 
     if (result.status === 401) {
@@ -82,7 +82,17 @@ export const checkProcess = async (port: number) => {
     return
   }
 
-  /** 2. 发送关闭后台进程 */
+  /** 2. 获取后台运行的pid */
+  const pid = await request(host, '/status/karin', 'get', 300)
+  console.log('pid:', pid)
+  if (pid && pid.success) {
+    if (pid.data?.data?.pid === process.pid) {
+      logger.debug(logger.green(tips('后台进程pid与当前进程pid一致 跳过检查')))
+      return
+    }
+  }
+
+  /** 3. 发送关闭后台进程 */
   logger.error(logger.yellow(tips('检测到后台进程 正在关闭...')))
   const exit = await request(host, '/exit', 'post', 500)
   if (!exit || !exit.success) {
@@ -90,7 +100,7 @@ export const checkProcess = async (port: number) => {
     process.exit(1)
   }
 
-  /** 3. 等待后台进程关闭 */
+  /** 4. 等待后台进程关闭 */
   for (let i = 0; i < 100; i++) {
     const ping = await request(host, '/ping', 'get', 300)
     if (ping && ping.success) {
@@ -102,7 +112,7 @@ export const checkProcess = async (port: number) => {
     return
   }
 
-  /** 4. 后台进程关闭失败 */
+  /** 5. 后台进程关闭失败 */
   logger.error(logger.red(tips(`后台进程关闭失败，请检查是否有进程正在占用端口 ${port} `)))
   process.exit(1)
 }

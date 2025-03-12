@@ -252,7 +252,7 @@ export default function TestPage () {
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-2'>
           <Cpu size={24} className='text-primary-500' />
-          <h2 className='text-xl font-semibold'>系统配置</h2>
+          <h2 className='text-xl font-semibold text-gray-800'>系统配置</h2>
         </div>
         <ActionButtons showText={false} />
       </div>
@@ -380,12 +380,12 @@ export default function TestPage () {
   return (
     <div className='p-4 space-y-4'>
       {/* 头部卡片 */}
-      <Card className='p-6'>
+      <Card className='p-6 sticky top-0 z-10'>
         <div className='flex flex-col gap-2'>
           {/* PC端标题 - 仅在PC端显示 */}
           <div className='hidden md:flex items-center gap-2'>
             <Cpu size={24} className='text-primary-500' />
-            <h2 className='text-xl font-semibold'>系统配置</h2>
+            <h2 className='text-xl font-semibold text-gray-800'>系统配置</h2>
           </div>
 
           <MobileLayout />

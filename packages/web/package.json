@@ -10,8 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@heroui/accordion": "^2.2.8",
+    "@heroui/alert": "^2.2.16",
+    "@heroui/autocomplete": "^2.3.17",
     "@heroui/avatar": "^2.2.7",
+    "@heroui/badge": "^2.2.10",
     "@heroui/button": "2.2.9",
     "@heroui/card": "^2.2.9",
     "@heroui/checkbox": "^2.3.9",
@@ -48,6 +54,10 @@
     "@react-types/shared": "3.27.0",
     "@reduxjs/toolkit": "^2.5.0",
     "@tailwindcss/typography": "^0.5.16",
+    "@xterm/addon-canvas": "^0.7.0",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/addon-web-links": "^0.11.0",
+    "@xterm/xterm": "^5.5.0",
     "ahooks": "^3.8.4",
     "axios": "1.8.2",
     "class-variance-authority": "^0.7.1",
@@ -82,9 +92,6 @@
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.173.0",
-    "xterm": "^5.3.0",
-    "xterm-addon-fit": "^0.8.0",
-    "xterm-addon-web-links": "^0.9.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {

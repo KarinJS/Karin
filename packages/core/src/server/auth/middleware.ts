@@ -1,6 +1,7 @@
-import { auth } from '@/server/auth'
+import { auth } from '@/server/common/common'
 import { createMethodNotAllowedResponse } from '@/server/utils/response'
-import type { Request, Response, NextFunction } from 'express'
+
+import type { RequestHandler } from 'express'
 
 /**
  * 鉴权中间件
@@ -8,16 +9,7 @@ import type { Request, Response, NextFunction } from 'express'
  * @param res 响应
  * @param next 下一个中间件
  */
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  logger.trace(
-    '[express] 收到请求: \n' +
-    `method: ${req.method}\n` +
-    `ip: ${req.ip}\n` +
-    `path: ${req.path}\n` +
-    `headers: ${JSON.stringify(req.headers)}\n` +
-    `body: ${JSON.stringify(req.body)}\n`
-  )
-
+export const authMiddleware: RequestHandler = async (req, res, next) => {
   /** 白名单 */
   if (
     req.path === '/ping' ||

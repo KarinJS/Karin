@@ -1,10 +1,11 @@
+import path from 'node:path'
 import '@/service/debug'
 import dotenv from 'dotenv'
 import root from '@/root'
 import { createInnerLogger } from '@/utils/logger'
 import { initConfig } from '@/utils/config/init'
 import { initProcess } from './service/process'
-import { initExpress } from './server/app'
+import { initExpress } from './server/app/app'
 import { initPlugin } from './plugin'
 import { printStartLog } from './service/start'
 import { Client, createLevelDB, createRedis } from '@/core/db'
@@ -28,6 +29,8 @@ export { getPlugins } from '@/plugin/list'
 export { Plugin } from '@/plugin/class'
 export { karin as default } from '@/core/karin'
 export type * from '@/types'
+
+if (!process.env.EBV_FILE) process.env.EBV_FILE = '.env'
 
 /**
  * @public
@@ -57,7 +60,7 @@ export const start = async () => {
    * - 加载环境变量到process.env
    * - 默认从.env文件加载
    */
-  dotenv.config()
+  dotenv.config({ path: `${path.resolve(process.cwd(), process.env.EBV_FILE!)}` })
 
   /**
    * 2. 初始化日志模块

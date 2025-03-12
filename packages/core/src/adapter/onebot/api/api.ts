@@ -1,4 +1,4 @@
-import { app } from '@/server/app'
+import { app } from '@/server/app/app'
 import { createHmac } from 'node:crypto'
 import express, { Router } from 'express'
 import { listeners } from '@/core/internal'

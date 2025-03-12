@@ -1,6 +1,6 @@
-import key from '@/consts/key'
 import { SystemStatus } from '@/types/server'
 import { eventSourcePolyfill } from './request'
+import { getAccessToken, getUserId } from './token'
 
 /**
  * 获取系统状态
@@ -8,8 +8,8 @@ import { eventSourcePolyfill } from './request'
  * @description 获取系统状态
  */
 export function getSystemStatus (writer: (data: SystemStatus) => void) {
-  const token = localStorage.getItem(key.accessToken)
-  const userId = localStorage.getItem(key.userId)
+  const token = getAccessToken()
+  const userId = getUserId()
   if (!token || !userId) {
     throw new Error('未登录')
   }

@@ -1,8 +1,8 @@
-import key from '@/consts/key'
+import { getAccessToken } from '@/lib/token'
 import { Navigate, useLocation } from 'react-router-dom'
 
 export default function RequireAuth ({ children }: { children: React.ReactNode }) {
-  const token = localStorage.getItem(key.accessToken)
+  const token = getAccessToken()
   const location = useLocation()
 
   if (!token) {
