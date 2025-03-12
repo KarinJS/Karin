@@ -27,6 +27,7 @@ import {
   GET_WEBUI_PLUGIN_VERSIONS_ROUTER,
   UPDATE_WEBUI_PLUGIN_VERSION_ROUTER
 } from '@/lib/router'
+import { Chip } from '@heroui/chip'
 
 interface PluginInfo {
   name: string
@@ -264,10 +265,10 @@ export default function WebUIPluginPage () {
               {filteredPlugins.map((plugin) => (
                 <Card
                   key={plugin.name}
-                  className='border border-gray-200 hover:shadow-md transition-shadow'
+                  className='border border-default-200 hover:shadow-md transition-shadow'
                   shadow='sm'
                 >
-                  <CardHeader className='flex gap-3 items-center border-b border-gray-200 px-5 py-4'>
+                  <CardHeader className='flex gap-3 items-center border-b border-default-200 px-5 py-4'>
                     <div className='p-2 rounded-full bg-gradient-to-br from-primary-50 to-primary-100 flex-shrink-0'>
                       {getPluginIcon(plugin.name)}
                     </div>
@@ -277,24 +278,19 @@ export default function WebUIPluginPage () {
                     </div>
                     <div className='flex items-center gap-1 flex-shrink-0'>
                       {plugin.installed && plugin.version && (
-                        <span className='text-xs px-2 py-1 rounded bg-blue-100 text-blue-700 mr-1 whitespace-nowrap'>v{plugin.version}</span>
+                        <Chip color='primary' variant='flat'>v{plugin.version}</Chip>
                       )}
-                      <span className={`text-xs px-2 py-1 rounded flex items-center gap-1 whitespace-nowrap ${plugin.installed
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-700'}`}
-                      >
-                        {plugin.installed
-                          ? <><IoCheckmarkCircle /> 已安装</>
-                          : <>未安装</>}
-                      </span>
+                      {plugin.installed
+                        ? <Chip color='success' variant='flat' startContent={<IoCheckmarkCircle size={18} />}>已安装</Chip>
+                        : <Chip color='default' variant='flat'>未安装</Chip>}
                     </div>
                   </CardHeader>
 
                   <CardBody className='px-5 py-4'>
-                    <p className='text-sm text-gray-700'>{plugin.description || '暂无描述信息'}</p>
+                    <p className='text-sm text-default-800'>{plugin.description || '暂无描述信息'}</p>
                   </CardBody>
 
-                  <CardFooter className='border-t border-gray-200 px-5 py-4 flex gap-2'>
+                  <CardFooter className='border-t border-default-200 px-5 py-4 flex gap-2'>
                     {plugin.installed
                       ? (
                         <>
@@ -361,15 +357,15 @@ export default function WebUIPluginPage () {
                 ? (
                   <div className='space-y-4'>
                     {/* 当前版本信息 */}
-                    <div className='bg-gray-50 px-4 py-3 rounded-lg border border-gray-200'>
+                    <div className='bg-default-50 px-4 py-3 rounded-lg border border-default-200'>
                       <div className='grid grid-cols-2 gap-2'>
                         <div>
-                          <p className='text-xs text-gray-500'>插件名称</p>
+                          <p className='text-xs text-default-800'>插件名称</p>
                           <p className='text-sm'>{selectedPlugin}</p>
                         </div>
                         {versionInfo.currentVersion && (
                           <div>
-                            <p className='text-xs text-gray-500'>当前版本</p>
+                            <p className='text-xs text-default-800'>当前版本</p>
                             <p className='text-sm'>{versionInfo.currentVersion}</p>
                           </div>
                         )}
@@ -377,14 +373,14 @@ export default function WebUIPluginPage () {
                     </div>
 
                     {/* 缓存提示信息 */}
-                    <div className='mb-3 text-xs text-gray-500 flex items-center gap-1 bg-gray-50 p-2 rounded-lg border border-gray-200'>
+                    <div className='mb-3 text-xs text-default-500 flex items-center gap-1 bg-default-50 p-2 rounded-lg border border-default-100'>
                       <IoInformationCircle className='text-blue-500 flex-shrink-0' />
                       <span>版本信息有2分钟缓存，初次获取可能需要较长时间</span>
                     </div>
 
                     {/* 选择版本区域 */}
                     <div>
-                      <p className='text-sm mb-2 flex items-center gap-1 text-gray-700'>
+                      <p className='text-sm mb-2 flex items-center gap-1 text-default-700'>
                         <IoArrowUp className='text-sm text-blue-500' />
                         选择要更新的版本
                       </p>
