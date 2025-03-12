@@ -1,3 +1,4 @@
+/* eslint-disable @stylistic/indent */
 import { title } from '@/components/primitives.ts'
 import { Card, CardBody, CardHeader } from '@heroui/card'
 import { useRequest } from 'ahooks'
@@ -726,14 +727,12 @@ function NetworkMonitorCard () {
               onPollingChange={setEnablePolling}
               showChart={showChart}
               onShowChartChange={setShowChart}
-            />
-          )
+            />)
           : (
             <div className='flex flex-col items-center justify-center p-6 gap-2'>
               <TriangleAlert className='text-warning-400' />
               <div className='text-default-400'>网络监控已关闭</div>
-            </div>
-          )}
+            </div>)}
       </CardBody>
     </Card>
   )

@@ -340,23 +340,21 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({
   }
 
   return (
-    <Card className='w-full bg-gradient-to-br from-background/40 to-background/10 backdrop-blur-lg border-1 border-default-200/50 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden'>
-      <CardBody>
-        <div className='grid grid-cols-2 md:grid-cols-4 gap-3'>
-          {renderNetworkCard('当前上传', currentUpload, formatSpeed, <ArrowUpCircle className='h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-green-500' />)}
-          {renderNetworkCard('当前下载', currentDownload, formatSpeed, <ArrowDownCircle className='h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-blue-500' />)}
-          {renderNetworkCard('总接收', totalSent, formatDataSize, <Download className='h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-amber-500' />)}
-          {renderNetworkCard('总发送', totalReceived, formatDataSize, <Upload className='h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-purple-500' />)}
-        </div>
-        {showChart && (
-          <div
-            ref={chartRef}
-            className='mt-4 rounded-xl border border-default-200/30 bg-gradient-to-br from-background/60 to-background/30 backdrop-blur-sm p-4 w-full max-w-full overflow-hidden'
-            style={{ height: '350px' }}
-          />
-        )}
-      </CardBody>
-    </Card>
+    <>
+      <div className='grid grid-cols-2 md:grid-cols-4 gap-3'>
+        {renderNetworkCard('当前上传', currentUpload, formatSpeed, <ArrowUpCircle className='h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-green-500' />)}
+        {renderNetworkCard('当前下载', currentDownload, formatSpeed, <ArrowDownCircle className='h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-blue-500' />)}
+        {renderNetworkCard('总接收', totalSent, formatDataSize, <Download className='h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-amber-500' />)}
+        {renderNetworkCard('总发送', totalReceived, formatDataSize, <Upload className='h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-purple-500' />)}
+      </div>
+      {showChart && (
+        <div
+          ref={chartRef}
+          className='mt-4 rounded-xl border border-default-200/30 bg-gradient-to-br from-background/60 to-background/30 backdrop-blur-sm p-4 w-full max-w-full overflow-hidden'
+          style={{ height: '350px' }}
+        />
+      )}
+    </>
   )
 }
 
