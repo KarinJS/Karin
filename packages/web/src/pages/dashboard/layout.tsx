@@ -1,6 +1,6 @@
 import Sidebar from '@/components/sidebar.tsx'
 import { Outlet, useLocation } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import clsx from 'clsx'
 import { IoMenu } from 'react-icons/io5'
@@ -25,6 +25,11 @@ export default function DashboardLayout () {
   const title = getPageTitle(location.pathname)
 
   const [currentMainPath, setCurrentMainPath] = useState(getMainPath(location.pathname))
+
+  // 检查当前是否为配置页面
+  const isConfigPage = useMemo(() => {
+    return location.pathname.startsWith('/config')
+  }, [location.pathname])
 
   // const [touchStartY, setTouchStartY] = useState(0)
   // const [touchStartTime, setTouchStartTime] = useState(0)
@@ -112,13 +117,13 @@ export default function DashboardLayout () {
           duration: 0.3
         }}
       >
-
         {/* 顶部导航栏 */}
         <motion.div
           className={clsx(
-            'sticky top-0 z-40 w-full bg-opacity-50 backdrop-blur-md',
+            'z-40 w-full bg-opacity-50 backdrop-blur-md',
             'border-b border-divider shadow-sm flex items-center justify-between',
-            'px-4 py-2'
+            'px-4 py-2',
+            !isConfigPage && 'sticky top-0'
           )}
           initial={{ y: -50 }}
           animate={{ y: 0 }}
@@ -142,15 +147,16 @@ export default function DashboardLayout () {
                   {title}
                 </motion.h1>
               </div>
-
             </motion.button>
-
           </div>
         </motion.div>
 
-        {/* 内容区域动画 */}
+        {/* 内容区域动画 - 根据是否显示导航栏调整类名 */}
         <motion.div
-          className='container mx-auto px-3 py-4 flex-1'
+          className={clsx(
+            'container mx-auto px-3 flex-1',
+            isConfigPage ? 'py-0' : 'py-4'  // 配置页面去除顶部内边距
+          )}
           key={currentMainPath} // 动态 key，只在主路径变化时触发动画
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}

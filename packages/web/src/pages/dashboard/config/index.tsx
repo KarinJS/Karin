@@ -172,7 +172,8 @@ export default function TestPage () {
     <Dropdown>
       <DropdownTrigger>
         <Button
-          variant='bordered'
+          variant='ghost'
+          color='primary'
           size='sm'
           startContent={<Settings2 size={18} />}
           className={!showText ? 'min-w-0 p-2' : ''}
@@ -248,11 +249,11 @@ export default function TestPage () {
    * @returns 移动端布局
    */
   const MobileLayout = () => (
-    <div className='md:hidden flex flex-col gap-4'>
+    <div className='md:hidden flex flex-col gap-4 backdrop:blur-2xl'>
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-2'>
           <Cpu size={24} className='text-primary-500' />
-          <h2 className='text-xl font-semibold text-gray-800'>系统配置</h2>
+          <h2 className='text-sm lg:text-xl font-semibold text-primary-500'>系统配置</h2>
         </div>
         <ActionButtons showText={false} />
       </div>
@@ -378,14 +379,14 @@ export default function TestPage () {
   }
 
   return (
-    <div className='p-4 space-y-4'>
+    <div className='space-y-4'>
       {/* 头部卡片 */}
-      <Card className='p-6 sticky top-0 z-10'>
+      <Card className='p-4 lg:p-6 sticky top-0 z-10 bg-opacity-50 backdrop-blur-md shadow-xl'>
         <div className='flex flex-col gap-2'>
           {/* PC端标题 - 仅在PC端显示 */}
           <div className='hidden md:flex items-center gap-2'>
             <Cpu size={24} className='text-primary-500' />
-            <h2 className='text-xl font-semibold text-gray-800'>系统配置</h2>
+            <h2 className='text-xl font-semibold text-primary-500'>系统配置</h2>
           </div>
 
           <MobileLayout />
