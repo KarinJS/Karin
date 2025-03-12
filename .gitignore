@@ -19,7 +19,7 @@ logs/
 /temp/
 
 # 配置
-plugins/
+packages/core/plugins
 /data/
 /config/
 /resources
