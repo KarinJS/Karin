@@ -60,7 +60,7 @@ export const Tab = forwardRef<HTMLDivElement, TabProps>(
         aria-selected={isSelected === true}
         onClick={handleClick}
         className={clsx(
-          'px-3 py-1 flex items-center gap-1 text-sm font-medium transition-all rounded-t-md',
+          'px-3 py-1 flex items-center gap-1 text-sm font-medium rounded-t-md',
           isSelected
             ? 'border-b-2 border-primary text-primary bg-primary/5'
             : 'border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800',
