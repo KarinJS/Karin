@@ -49,14 +49,14 @@ export default defineConfig({
         target: 'http://localhost:7777',
         changeOrigin: true,
       },
-      '/sandbox/data': {
-        target: 'http://localhost:7777',
-        changeOrigin: true,
-      },
-      '/sandbox': {
-        target: 'ws://localhost:7777',
-        ws: true,
-      },
+      // '/sandbox/data': {
+      //   target: 'http://localhost:7777',
+      //   changeOrigin: true,
+      // },
+      // '/sandbox': {
+      //   target: 'ws://localhost:7777',
+      //   ws: true,
+      // },
       '/terminal/create': {
         target: 'ws://localhost:7777',
         ws: true,
