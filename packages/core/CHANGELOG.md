@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.7.2](https://github.com/KarinJS/Karin/compare/core-v1.7.1...core-v1.7.2) (2025-03-12)
+
+
+### 🐛 Bug Fixes
+
+* 细节优化 ([a2dcdb0](https://github.com/KarinJS/Karin/commit/a2dcdb0eaaed203c77ab8c0f553e7db84000a6e4))
+
 ## [1.7.1](https://github.com/KarinJS/Karin/compare/core-v1.7.0...core-v1.7.1) (2025-03-12)
 
 
