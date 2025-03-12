@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/KarinJS/Karin/compare/web-v1.5.0...web-v1.6.0) (2025-03-12)
+
+
+### ✨ Features
+
+* 仿真终端 网络监控 感谢都行师傅~ ([#304](https://github.com/KarinJS/Karin/issues/304)) ([4d16851](https://github.com/KarinJS/Karin/commit/4d16851ec3c66be423ac6a485036a742f69e5ef6))
+
 ## [1.5.0](https://github.com/KarinJS/Karin/compare/web-v1.4.8...web-v1.5.0) (2025-03-09)
 
 
