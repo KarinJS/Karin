@@ -1,6 +1,6 @@
 import Sidebar from '@/components/sidebar.tsx'
 import { Outlet, useLocation } from 'react-router-dom'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import clsx from 'clsx'
 import { IoMenu } from 'react-icons/io5'
