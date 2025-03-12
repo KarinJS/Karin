@@ -405,7 +405,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                   >
                     <div
                       className={clsx(
-                        'mb-2 block text-default-600 hover:text-primary rounded-xl hover:bg-default-100/50 transition-all cursor-default md:cursor-pointer group',
+                        'mb-2 my-1 mx-1 block text-default-600 hover:text-primary rounded-xl hover:bg-default-100/50 transition-all cursor-default md:cursor-pointer group',
                         {
                           '!text-primary bg-primary/5 font-medium ring-1 ring-primary/10':
                             location.pathname === item.href ||
