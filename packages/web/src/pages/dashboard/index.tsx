@@ -598,7 +598,7 @@ export default function IndexPage () {
 }
 
 function NetworkMonitorCard () {
-  const [showNetworkMonitor, setShowNetworkMonitor] = useState(true)
+  const [showNetworkMonitor, setShowNetworkMonitor] = useState(false)
   const [enablePolling, setEnablePolling] = useState(true)
   const [showChart, setShowChart] = useState(true)
   const [initialCheckDone, setInitialCheckDone] = useState(false)
