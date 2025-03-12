@@ -16,12 +16,12 @@ const ShowStructedMessage = ({ messages }: ShowStructedMessageProps) => {
       classNames={{
         copyButton: 'self-start sticky top-0 right-0',
       }}
-      className="bg-content1 h-96 overflow-y-scroll items-start"
+      className='bg-content1 h-96 overflow-y-scroll items-start'
     >
       {JSON.stringify(messages, null, 2)
         .split('\n')
         .map((line, i) => (
-          <span key={i} className="whitespace-pre-wrap break-all">
+          <span key={i} className='whitespace-pre-wrap break-all'>
             {line}
           </span>
         ))}
