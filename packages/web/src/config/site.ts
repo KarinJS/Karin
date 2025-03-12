@@ -6,7 +6,8 @@ import {
   MdExtension,
   MdStore,
   MdOutlineArticle, // 系统日志
-  MdOutlineTerminal // 仿真终端
+  MdOutlineTerminal, // 仿真终端
+  MdOutlineWebhook // webui插件管理
 } from 'react-icons/md'
 
 import type { LocalApiResponse } from 'node-karin'
@@ -77,6 +78,11 @@ export const defaultSiteConfig: SiteConfigType = {
     //   label: '沙箱调试',
     //   href: '/sandbox',
     // },
+    {
+      Icon: MdOutlineWebhook,
+      label: 'WebUI插件',
+      href: '/plugins/webui',
+    },
     {
       Icon: MdOutlineTerminal,
       label: '仿真终端',

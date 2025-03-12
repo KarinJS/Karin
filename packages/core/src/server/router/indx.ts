@@ -41,6 +41,8 @@ import {
   INSTALL_WEBUI_PLUGIN_ROUTER,
   GET_WEBUI_PLUGIN_LIST_ROUTER,
   UNINSTALL_WEBUI_PLUGIN_ROUTER,
+  GET_WEBUI_PLUGIN_VERSIONS_ROUTER,
+  UPDATE_WEBUI_PLUGIN_VERSION_ROUTER,
 } from './router'
 import { logMiddleware } from '../log'
 import { authMiddleware } from '../auth/middleware'
@@ -91,7 +93,7 @@ import {
   closeTerminalHandler
 } from '../pty'
 import { checkPlugin } from '../system/check'
-import { getWebuiPluginList, installWebui, uninstallWebui } from '../plugins/webui'
+import { getWebuiPluginList, installWebui, uninstallWebui, getWebuiPluginVersions, updateWebuiPluginVersion } from '../plugins/webui'
 
 /**
  * karin内部路由
@@ -194,3 +196,8 @@ router.get(GET_WEBUI_PLUGIN_LIST_ROUTER, getWebuiPluginList)
 router.post(INSTALL_WEBUI_PLUGIN_ROUTER, installWebui)
 /** 卸载webui插件 */
 router.post(UNINSTALL_WEBUI_PLUGIN_ROUTER, uninstallWebui)
+
+/** 获取webui插件版本 */
+router.post(GET_WEBUI_PLUGIN_VERSIONS_ROUTER, getWebuiPluginVersions)
+/** 更新webui插件到指定版本 */
+router.post(UPDATE_WEBUI_PLUGIN_VERSION_ROUTER, updateWebuiPluginVersion)

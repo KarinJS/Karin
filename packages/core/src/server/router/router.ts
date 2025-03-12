@@ -82,3 +82,7 @@ export const INSTALL_WEBUI_PLUGIN_ROUTER = '/plugin/webui/install'
 export const GET_WEBUI_PLUGIN_LIST_ROUTER = '/plugin/webui/list'
 /** 卸载webui插件 */
 export const UNINSTALL_WEBUI_PLUGIN_ROUTER = '/plugin/webui/uninstall'
+/** 获取WebUI插件版本 */
+export const GET_WEBUI_PLUGIN_VERSIONS_ROUTER = '/plugin/webui/versions'
+/** 更新WebUI插件到指定版本 */
+export const UPDATE_WEBUI_PLUGIN_VERSION_ROUTER = '/plugin/webui/update-version'

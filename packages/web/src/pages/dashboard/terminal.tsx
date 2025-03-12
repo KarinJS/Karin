@@ -23,6 +23,7 @@ import terminalManager from '@/controllers/terminal_manager'
 import { SortableTab } from '@/components/tabs/sortable_tab.tsx'
 import { TerminalInstance } from '@/components/terminal/terminal-instance'
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/modal'
+import { useNavigate } from 'react-router-dom'
 
 import type { CreatePty } from 'node-karin'
 
@@ -32,6 +33,7 @@ interface TerminalTab {
 }
 
 export default function TerminalPage () {
+  const navigate = useNavigate()
   /** 后端是否安装了虚拟终端插件 */
   const [isPtyInstalled, setIsPtyInstalled] = useState(false)
   /** 是否正在检查插件 */
@@ -242,7 +244,9 @@ export default function TerminalPage () {
         <div className='text-gray-500'>需要安装 @karinjs/node-pty 插件</div>
         <Button
           color='primary'
-          onPress={() => window.location.href = '/plugin/webui'}
+          onPress={() => {
+            navigate('/plugins/webui')
+          }}
         >
           前往插件页面安装
         </Button>
