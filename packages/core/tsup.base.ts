@@ -4,7 +4,7 @@ import type { Options } from 'tsup'
 
 const pkg = JSON.parse(fs.readFileSync(new URL('package.json', import.meta.url), 'utf-8'))
 
-const noExternal = ['commander']
+const noExternal = []
 const external = Object.keys(pkg.dependencies).filter(dep => !noExternal.includes(dep))
 
 /**
