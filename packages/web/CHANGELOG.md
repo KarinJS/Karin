@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.1](https://github.com/KarinJS/Karin/compare/web-v1.7.0...web-v1.7.1) (2025-03-12)
+
+
+### 🐛 Bug Fixes
+
+* build error ([1ec764e](https://github.com/KarinJS/Karin/commit/1ec764e37c05abec994f4c4a8bd60c38bbb65a01))
+
+
+### 💄 Styles
+
+* 配置页面导航栏样式优化 ([4c8621a](https://github.com/KarinJS/Karin/commit/4c8621a1b5bf2d8ba982052fe43914fc690b2a39))
+
 ## [1.7.0](https://github.com/KarinJS/Karin/compare/web-v1.6.0...web-v1.7.0) (2025-03-12)
 
 
