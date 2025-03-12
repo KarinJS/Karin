@@ -26,11 +26,6 @@ export default function DashboardLayout () {
 
   const [currentMainPath, setCurrentMainPath] = useState(getMainPath(location.pathname))
 
-  // 检查当前是否为配置页面
-  const isConfigPage = useMemo(() => {
-    return location.pathname.startsWith('/config')
-  }, [location.pathname])
-
   // const [touchStartY, setTouchStartY] = useState(0)
   // const [touchStartTime, setTouchStartTime] = useState(0)
 
@@ -117,47 +112,45 @@ export default function DashboardLayout () {
           duration: 0.3
         }}
       >
-        {/* 顶部导航栏 - 在配置页面不显示 */}
-        {!isConfigPage && (
-          <motion.div
-            className={clsx(
-              'sticky top-0 z-40 w-full bg-opacity-50 backdrop-blur-md',
-              'border-b border-divider shadow-sm flex items-center justify-between',
-              'px-4 py-2'
-            )}
-            initial={{ y: -50 }}
-            animate={{ y: 0 }}
-            transition={{
-              type: 'tween',
-              ease: [0.00, 0.00, 0.00, 1.00],
-              duration: 0.3
-            }}
-          >
-            <div className='flex items-center gap-3'>
-              <motion.button
-                onClick={() => setIsOpen(!isOpen)}
-                className={clsx('p-2 rounded-lg text-xs')}
-              >
-                <div className='flex items-center gap-4'>
-                  {isOpen
-                    ? <RiMenuUnfold2Line className='w-5 h-5' />
-                    : <IoMenu className='w-5 h-5' />}
-                  {/* 标题 */}
-                  <motion.h1 className='text-lg'>
-                    {title}
-                  </motion.h1>
-                </div>
-              </motion.button>
-            </div>
-          </motion.div>
-        )}
 
-        {/* 内容区域动画 - 根据是否显示导航栏调整类名 */}
+        {/* 顶部导航栏 */}
         <motion.div
           className={clsx(
-            'container mx-auto px-3 flex-1',
-            isConfigPage ? 'py-0' : 'py-4'  // 配置页面去除顶部内边距
+            'sticky top-0 z-40 w-full bg-opacity-50 backdrop-blur-md',
+            'border-b border-divider shadow-sm flex items-center justify-between',
+            'px-4 py-2'
           )}
+          initial={{ y: -50 }}
+          animate={{ y: 0 }}
+          transition={{
+            type: 'tween',
+            ease: [0.00, 0.00, 0.00, 1.00],
+            duration: 0.3
+          }}
+        >
+          <div className='flex items-center gap-3'>
+            <motion.button
+              onClick={() => setIsOpen(!isOpen)}
+              className={clsx('p-2 rounded-lg text-xs')}
+            >
+              <div className='flex items-center gap-4'>
+                {isOpen
+                  ? <RiMenuUnfold2Line className='w-5 h-5' />
+                  : <IoMenu className='w-5 h-5' />}
+                {/* 标题 */}
+                <motion.h1 className='text-lg'>
+                  {title}
+                </motion.h1>
+              </div>
+
+            </motion.button>
+
+          </div>
+        </motion.div>
+
+        {/* 内容区域动画 */}
+        <motion.div
+          className='container mx-auto px-3 py-4 flex-1'
           key={currentMainPath} // 动态 key，只在主路径变化时触发动画
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
