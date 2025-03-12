@@ -41,7 +41,6 @@ export class HttpAdapterOneBot11 extends AdapterOneBot {
   }
 
   async onEvent (event: OB11AllEvent) {
-    console.log('1')
     const str = JSON.stringify(event)
     this.eventHandlers(event, str)
   }

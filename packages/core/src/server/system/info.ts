@@ -96,7 +96,7 @@ export const systemStatusRealTimeHandler: RequestHandler = async (req, res) => {
     try {
       res.write(`data: ${JSON.stringify(status)}\n\n`)
     } catch (e) {
-      console.error(`An error occurred when writing sendStatus data to client: ${e}`)
+      logger.error(`An error occurred when writing sendStatus data to client: ${e}`)
     }
   }
   statusListener.on('statusUpdate', sendStatus)

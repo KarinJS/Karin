@@ -99,7 +99,6 @@ export const initialize = async () => {
           }
           // 处理 resize 消息
           if (result.type === 'resize') {
-            console.log('resize', result.cols, result.rows)
             instance.pty.resize(result.cols, result.rows)
           }
         }
