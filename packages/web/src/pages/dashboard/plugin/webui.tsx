@@ -11,7 +11,6 @@ import { Select, SelectItem } from '@heroui/select'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
 import { Alert } from '@heroui/alert'
 import { Tabs, Tab } from '@heroui/tabs'
-import { Badge } from '@heroui/badge'
 import {
   IoRefresh,
   IoSearch,
@@ -59,6 +58,7 @@ export default function WebUIPluginPage () {
   const [searchQuery, setSearchQuery] = useState('')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [activeTab, setActiveTab] = useState<string>('all')
+  const dialog = useDialog()
 
   // 版本相关状态
   const [versionModalOpen, setVersionModalOpen] = useState(false)
@@ -243,137 +243,60 @@ export default function WebUIPluginPage () {
   }
 
   /** 渲染网格视图的插件卡片 */
-  const renderGridCard = (plugin: PluginInfo) => {
-    const dialog = useDialog()
-
-    return (
-      <Card
-        key={plugin.name}
-        className='border border-default-200 hover:shadow-md transition-all h-full'
-        shadow='sm'
-      >
-        <CardHeader className='flex gap-3 items-center border-b border-default-200 px-4 py-3'>
-          <div className='p-2 rounded-full bg-gradient-to-br from-primary-50 to-primary-100 flex-shrink-0'>
-            {getPluginIcon(plugin.name)}
-          </div>
-          <div className='flex-grow min-w-0'>
-            <Tooltip content={plugin.name}>
-              <h3 className='text-lg font-medium truncate'>{formatPluginName(plugin.name)}</h3>
-            </Tooltip>
-            <div className='text-xs text-gray-500 mt-0.5 truncate'>{plugin.name}</div>
-          </div>
-          <div className='flex items-center gap-1 flex-shrink-0'>
-            {plugin.installed && plugin.version && (
-              <Chip color='primary' variant='flat' className='mr-1'>v{plugin.version}</Chip>
-            )}
-            {plugin.installed
-              ? <Chip color='success' variant='flat' startContent={<IoCheckmarkCircle size={14} />}>已安装</Chip>
-              : <Chip color='default' variant='flat'>未安装</Chip>}
-          </div>
-        </CardHeader>
-
-        <CardBody className='px-4 py-3 flex-grow'>
-          <p className='text-sm text-default-700 line-clamp-3'>{plugin.description || '暂无描述信息'}</p>
-        </CardBody>
-
-        <CardFooter className='border-t border-default-200 px-4 py-3 flex gap-2'>
-          {plugin.installed
-            ? (
-              <>
-                <Button
-                  color='danger'
-                  variant='flat'
-                  // onPress={() => uninstallPlugin(plugin.name)}
-                  onPress={async () => {
-                    dialog.confirm({
-                      title: `卸载 ${plugin.name}`,
-                      content: '确认卸载吗',
-                      onConfirm: async () => {
-                        try {
-                          uninstallPlugin(plugin.name)
-                        } catch (e) {
-                          toast.error('卸载失败')
-                        }
-                      },
-                    })
-                  }}
-                  isLoading={uninstallingPlugin === plugin.name}
-                  isDisabled={!!installingPlugin || !!uninstallingPlugin || !!updatingPlugin}
-                  className='flex-1'
-                  startContent={<IoTrash size={16} />}
-                  size='sm'
-                >
-                  {uninstallingPlugin === plugin.name ? '卸载中' : '卸载'}
-                </Button>
-                <Button
-                  color='primary'
-                  variant='flat'
-                  onPress={() => fetchPluginVersions(plugin.name)}
-                  isLoading={loadingVersions && selectedPlugin === plugin.name}
-                  isDisabled={!!installingPlugin || !!uninstallingPlugin || !!updatingPlugin}
-                  startContent={<IoArrowUp size={16} />}
-                  size='sm'
-                >
-                  版本
-                </Button>
-              </>
-            )
-            : (
-              <Button
-                color='primary'
-                onPress={() => installPlugin(plugin.name)}
-                isLoading={installingPlugin === plugin.name}
-                isDisabled={!!installingPlugin || !!uninstallingPlugin || !!updatingPlugin}
-                className='w-full'
-                startContent={<IoCloudDownload size={16} />}
-                size='sm'
-              >
-                {installingPlugin === plugin.name ? '安装中' : '安装'}
-              </Button>
-            )}
-        </CardFooter>
-      </Card>
-    )
-  }
-
-  /** 渲染列表视图的插件项 */
-  const renderListItem = (plugin: PluginInfo) => (
+  const renderGridCard = (plugin: PluginInfo) => (
     <Card
       key={plugin.name}
-      className='border border-default-200 hover:shadow-sm transition-all mb-3'
-      shadow='none'
+      className='border border-default-200 hover:shadow-md transition-all h-full'
+      shadow='sm'
     >
-      <div className='flex flex-col sm:flex-row items-start sm:items-center p-3 gap-3'>
-        <div className='flex items-center gap-3 flex-grow min-w-0'>
-          <div className='p-2 rounded-full bg-gradient-to-br from-primary-50 to-primary-100 flex-shrink-0'>
-            {getPluginIcon(plugin.name)}
-          </div>
-          <div className='flex-grow min-w-0'>
-            <Tooltip content={plugin.name}>
-              <h3 className='text-base font-medium'>{formatPluginName(plugin.name)}</h3>
-            </Tooltip>
-            {plugin.installed && plugin.version && (
-              <Badge color='primary' variant='flat' size='sm'>v{plugin.version}</Badge>
-            )}
-            {plugin.installed
-              ? <Badge color='success' variant='flat' size='sm' className='flex items-center gap-1'><IoCheckmarkCircle size={12} />已安装</Badge>
-              : <Badge color='default' variant='flat' size='sm'>未安装</Badge>}
-          </div>
-          <div className='text-xs text-gray-500 mt-0.5 truncate'>{plugin.name}</div>
-          <p className='text-sm text-default-700 mt-1 line-clamp-2'>{plugin.description || '暂无描述信息'}</p>
+      <CardHeader className='flex gap-3 items-center border-b border-default-200 px-4 py-3'>
+        <div className='p-2 rounded-full bg-gradient-to-br from-primary-50 to-primary-100 flex-shrink-0'>
+          {getPluginIcon(plugin.name)}
         </div>
-      </div>
+        <div className='flex-grow min-w-0'>
+          <Tooltip content={plugin.name}>
+            <h3 className='text-lg font-medium truncate'>{formatPluginName(plugin.name)}</h3>
+          </Tooltip>
+          <div className='text-xs text-gray-500 mt-0.5 truncate'>{plugin.name}</div>
+        </div>
+        <div className='flex items-center gap-1 flex-shrink-0'>
+          {plugin.installed && plugin.version && (
+            <Chip color='primary' variant='flat' className='mr-1'>v{plugin.version}</Chip>
+          )}
+          {plugin.installed
+            ? <Chip color='success' variant='flat' startContent={<IoCheckmarkCircle size={14} />}>已安装</Chip>
+            : <Chip color='default' variant='flat'>未安装</Chip>}
+        </div>
+      </CardHeader>
 
-      <div className='flex gap-2 w-full sm:w-auto mt-2 sm:mt-0'>
+      <CardBody className='px-4 py-3 flex-grow'>
+        <p className='text-sm text-default-700 line-clamp-3'>{plugin.description || '暂无描述信息'}</p>
+      </CardBody>
+
+      <CardFooter className='border-t border-default-200 px-4 py-3 flex gap-2'>
         {plugin.installed
           ? (
             <>
               <Button
                 color='danger'
                 variant='flat'
-                onPress={() => uninstallPlugin(plugin.name)}
+                // onPress={() => uninstallPlugin(plugin.name)}
+                onPress={async () => {
+                  dialog.confirm({
+                    title: `卸载 ${plugin.name}`,
+                    content: '确认卸载吗',
+                    onConfirm: async () => {
+                      try {
+                        uninstallPlugin(plugin.name)
+                      } catch (e) {
+                        toast.error('卸载失败')
+                      }
+                    },
+                  })
+                }}
                 isLoading={uninstallingPlugin === plugin.name}
                 isDisabled={!!installingPlugin || !!uninstallingPlugin || !!updatingPlugin}
+                className='flex-1'
                 startContent={<IoTrash size={16} />}
                 size='sm'
               >
@@ -398,12 +321,94 @@ export default function WebUIPluginPage () {
               onPress={() => installPlugin(plugin.name)}
               isLoading={installingPlugin === plugin.name}
               isDisabled={!!installingPlugin || !!uninstallingPlugin || !!updatingPlugin}
+              className='w-full'
               startContent={<IoCloudDownload size={16} />}
               size='sm'
             >
               {installingPlugin === plugin.name ? '安装中' : '安装'}
             </Button>
           )}
+      </CardFooter>
+    </Card>
+  )
+
+  /** 渲染列表视图的插件项 */
+  const renderListItem = (plugin: PluginInfo) => (
+    <Card
+      key={plugin.name}
+      className='border border-default-200 hover:shadow-sm transition-all mb-3'
+      shadow='none'
+    >
+      {/* 调整内容区域的布局和间距 */}
+      <div className='flex flex-col sm:flex-row items-start sm:items-center p-4 gap-4'>
+        <div className='flex items-start gap-4 flex-grow min-w-0'>
+          {/* 图标部分保持不变 */}
+          <div className='p-2 rounded-full bg-gradient-to-br from-primary-50 to-primary-100 flex-shrink-0'>
+            {getPluginIcon(plugin.name)}
+          </div>
+
+          {/* 调整信息布局 */}
+          <div className='flex flex-col flex-grow min-w-0 gap-1'>
+            <div className='flex flex-wrap items-center gap-2'>
+              <Tooltip content={plugin.name}>
+                <h3 className='text-base font-medium'>{formatPluginName(plugin.name)}</h3>
+              </Tooltip>
+              <div className='flex items-center gap-2 flex-wrap'>
+                {plugin.installed && plugin.version && (
+                  <Chip color='primary' variant='flat' size='sm'>v{plugin.version}</Chip>
+                )}
+                {plugin.installed
+                  ? <Chip color='success' variant='flat' size='sm' startContent={<IoCheckmarkCircle size={12} />}>已安装</Chip>
+                  : <Chip color='default' variant='flat' size='sm'>未安装</Chip>}
+              </div>
+            </div>
+            <div className='text-xs text-gray-500'>{plugin.name}</div>
+            <p className='text-sm text-default-700 line-clamp-2 mt-1'>{plugin.description || '暂无描述信息'}</p>
+          </div>
+        </div>
+
+        {/* 按钮组靠右对齐 */}
+        <div className='flex gap-2 sm:flex-shrink-0 w-full sm:w-auto justify-end'>
+          {plugin.installed
+            ? (
+              <>
+                <Button
+                  color='danger'
+                  variant='flat'
+                  onPress={() => uninstallPlugin(plugin.name)}
+                  isLoading={uninstallingPlugin === plugin.name}
+                  isDisabled={!!installingPlugin || !!uninstallingPlugin || !!updatingPlugin}
+                  startContent={<IoTrash size={16} />}
+                  size='sm'
+                >
+                  {uninstallingPlugin === plugin.name ? '卸载中' : '卸载'}
+                </Button>
+                <Button
+                  color='primary'
+                  variant='flat'
+                  onPress={() => fetchPluginVersions(plugin.name)}
+                  isLoading={loadingVersions && selectedPlugin === plugin.name}
+                  isDisabled={!!installingPlugin || !!uninstallingPlugin || !!updatingPlugin}
+                  startContent={<IoArrowUp size={16} />}
+                  size='sm'
+                >
+                  版本
+                </Button>
+              </>
+            )
+            : (
+              <Button
+                color='primary'
+                onPress={() => installPlugin(plugin.name)}
+                isLoading={installingPlugin === plugin.name}
+                isDisabled={!!installingPlugin || !!uninstallingPlugin || !!updatingPlugin}
+                startContent={<IoCloudDownload size={16} />}
+                size='sm'
+              >
+                {installingPlugin === plugin.name ? '安装中' : '安装'}
+              </Button>
+            )}
+        </div>
       </div>
     </Card>
   )
@@ -431,24 +436,22 @@ export default function WebUIPluginPage () {
           />
           <div className='flex gap-2'>
             <Button
-              isIconOnly
+              size='sm'
               color='primary'
               variant='flat'
               onPress={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-              size='sm'
-              aria-label='切换视图模式'
+              startContent={viewMode === 'grid' ? <IoList /> : <IoGrid />}
             >
-              {viewMode === 'grid' ? <IoList /> : <IoGrid />}
+              切换视图
             </Button>
             <Button
-              isIconOnly
+              size='sm'
               color='primary'
               onPress={fetchPluginList}
               isDisabled={loading}
-              size='sm'
-              aria-label='刷新列表'
+              startContent={<IoRefresh className={loading ? 'animate-spin' : ''} />}
             >
-              <IoRefresh className={loading ? 'animate-spin' : ''} />
+              刷新列表
             </Button>
           </div>
         </div>
