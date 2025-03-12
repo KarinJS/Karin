@@ -117,7 +117,7 @@ export const initExpress = async (
   await import('./ws')
 
   app.use('/api/v1', router)
-  app.use('/', rootRouter)
+  app.get('/', rootRouter)
   web(dir)
   listen(port, host)
 }
