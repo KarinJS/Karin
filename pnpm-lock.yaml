@@ -50,9 +50,6 @@ importers:
       '@karinjs/node-pty':
         specifier: ^1.0.4
         version: 1.0.4
-      '@karinjs/plugin-webui-network-monitor':
-        specifier: ^1.0.3
-        version: 1.0.3
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.21
@@ -120,6 +117,9 @@ importers:
       '@types/jsonwebtoken':
         specifier: ^9.0.9
         version: 9.0.9
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
 
   packages/create-karin:
     dependencies:
@@ -1785,9 +1785,6 @@ packages:
     resolution: {integrity: sha512-w9j1wL2OAyan4rAoUvYESfFL19kDLCNUixtka/9yYFrINJQeOqOMtKRfQlKySN1TEz1KV7XSbnZ4q9uL3nhxYA==}
     engines: {node: '>=16'}
     hasBin: true
-
-  '@karinjs/plugin-webui-network-monitor@1.0.3':
-    resolution: {integrity: sha512-FloMaA3/41ZWOy0oVReH2tvS3FUABgzj2+EZ/6f7FkyC1aK4sQYsEDRuB2ru8RC7uycRxU2E0Tufj3jtnU5AGA==}
 
   '@monaco-editor/loader@1.5.0':
     resolution: {integrity: sha512-hKoGSM+7aAc7eRTRjpqAZucPmoNOC4UUbknb/VNoTkEIkCPhqV8LfbsgM1webRM7S/z21eHEx9Fkwx8Z/C/+Xw==}
@@ -3511,6 +3508,11 @@ packages:
   cron-parser@4.9.0:
     resolution: {integrity: sha512-p0SaNjrHOnQeR8/VnfGbmg9te2kfyYSQ7Sc/j/6DtPL3JQvKxmjO9TSjNFpujqV3vEYYBvNNvXSxzyksBWAx1Q==}
     engines: {node: '>=12.0.0'}
+
+  cross-env@7.0.3:
+    resolution: {integrity: sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==}
+    engines: {node: '>=10.14', npm: '>=6', yarn: '>=1'}
+    hasBin: true
 
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
@@ -5569,12 +5571,6 @@ packages:
   synckit@0.9.2:
     resolution: {integrity: sha512-vrozgXDQwYO72vHjUb/HnFbQx1exDjoKzqx23aXEg2a9VIg2TSFZ8FmeZpTjUCFMYw7mpX4BE2SFu8wI7asYsw==}
     engines: {node: ^14.18.0 || >=16.0.0}
-
-  systeminformation@5.25.11:
-    resolution: {integrity: sha512-jI01fn/t47rrLTQB0FTlMCC+5dYx8o0RRF+R4BPiUNsvg5OdY0s9DKMFmJGrx5SwMZQ4cag0Gl6v8oycso9b/g==}
-    engines: {node: '>=8.0.0'}
-    os: [darwin, linux, win32, freebsd, openbsd, netbsd, sunos, android]
-    hasBin: true
 
   tailwind-merge@2.5.4:
     resolution: {integrity: sha512-0q8cfZHMu9nuYP/b5Shb7Y7Sh1B7Nnl5GqNr1U+n2p6+mybvRtayrQ+0042Z5byvTA8ihjlP8Odo8/VnHbZu4Q==}
@@ -7855,10 +7851,6 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.0
 
   '@karinjs/node-pty@1.0.4': {}
-
-  '@karinjs/plugin-webui-network-monitor@1.0.3':
-    dependencies:
-      systeminformation: 5.25.11
 
   '@monaco-editor/loader@1.5.0':
     dependencies:
@@ -10147,6 +10139,10 @@ snapshots:
   cron-parser@4.9.0:
     dependencies:
       luxon: 3.5.0
+
+  cross-env@7.0.3:
+    dependencies:
+      cross-spawn: 7.0.6
 
   cross-spawn@7.0.6:
     dependencies:
@@ -12700,8 +12696,6 @@ snapshots:
     dependencies:
       '@pkgr/core': 0.1.1
       tslib: 2.8.1
-
-  systeminformation@5.25.11: {}
 
   tailwind-merge@2.5.4: {}
 

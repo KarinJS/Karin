@@ -4,7 +4,6 @@ import type React from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import * as echarts from 'echarts'
 import { useTheme } from '@/hooks/use-theme'
-import { Card, CardBody } from '@heroui/card'
 import { ArrowDownCircle, ArrowUpCircle, Download, Upload } from 'lucide-react'
 import type { NetworkStatus } from '@/types/server'
 

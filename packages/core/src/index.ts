@@ -1,3 +1,4 @@
+import path from 'node:path'
 import '@/service/debug'
 import dotenv from 'dotenv'
 import root from '@/root'
@@ -29,6 +30,8 @@ export { Plugin } from '@/plugin/class'
 export { karin as default } from '@/core/karin'
 export type * from '@/types'
 
+if (!process.env.EBV_FILE) process.env.EBV_FILE = '.env'
+
 /**
  * @public
  * @description 日志管理器
@@ -57,7 +60,7 @@ export const start = async () => {
    * - 加载环境变量到process.env
    * - 默认从.env文件加载
    */
-  dotenv.config()
+  dotenv.config({ path: `${path.resolve(process.cwd(), process.env.EBV_FILE!)}` })
 
   /**
    * 2. 初始化日志模块

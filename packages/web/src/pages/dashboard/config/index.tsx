@@ -252,7 +252,7 @@ export default function TestPage () {
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-2'>
           <Cpu size={24} className='text-primary-500' />
-          <h2 className='text-xl font-semibold'>系统配置</h2>
+          <h2 className='text-xl font-semibold text-gray-800'>系统配置</h2>
         </div>
         <ActionButtons showText={false} />
       </div>
@@ -385,7 +385,7 @@ export default function TestPage () {
           {/* PC端标题 - 仅在PC端显示 */}
           <div className='hidden md:flex items-center gap-2'>
             <Cpu size={24} className='text-primary-500' />
-            <h2 className='text-xl font-semibold'>系统配置</h2>
+            <h2 className='text-xl font-semibold text-gray-800'>系统配置</h2>
           </div>
 
           <MobileLayout />
