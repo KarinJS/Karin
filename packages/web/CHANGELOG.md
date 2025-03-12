@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.7.0](https://github.com/KarinJS/Karin/compare/web-v1.6.0...web-v1.7.0) (2025-03-12)
+
+
+### ✨ Features
+
+* 统一版本 ([6049c93](https://github.com/KarinJS/Karin/commit/6049c93dc096c061d3e3cf0fb9777c759697bff7))
+
+
+### 💄 Styles
+
+* 优化系统配置页面样式 ([c9dc9f7](https://github.com/KarinJS/Karin/commit/c9dc9f72894052e74319de20f80cce830030b111))
+* 样式优化 ([#306](https://github.com/KarinJS/Karin/issues/306)) ([3ac7f71](https://github.com/KarinJS/Karin/commit/3ac7f717bf65637b141ae53444631b2116c68f76))
+
 ## [1.6.0](https://github.com/KarinJS/Karin/compare/web-v1.5.0...web-v1.6.0) (2025-03-12)
 
 

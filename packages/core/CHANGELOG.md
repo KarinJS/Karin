@@ -1,5 +1,62 @@
 # 更新日志
 
+## [1.7.0](https://github.com/KarinJS/Karin/compare/core-v1.6.0...core-v1.7.0) (2025-03-12)
+
+
+### ✨ Features
+
+* jwt ([#284](https://github.com/KarinJS/Karin/issues/284)) ([9f4c2d8](https://github.com/KarinJS/Karin/commit/9f4c2d831fb57f1d4b2ac2417cec366753f419ab))
+* 仿真终端 网络监控 感谢都行师傅~ ([#304](https://github.com/KarinJS/Karin/issues/304)) ([4d16851](https://github.com/KarinJS/Karin/commit/4d16851ec3c66be423ac6a485036a742f69e5ef6))
+* 新增主页更新提示、快速更新本体入口、首次加载页面动画 ([#301](https://github.com/KarinJS/Karin/issues/301)) ([3f7efc5](https://github.com/KarinJS/Karin/commit/3f7efc52fdcf2f9b5708800e57c88b6658034817))
+
+
+### 🐛 Bug Fixes
+
+* fix [#287](https://github.com/KarinJS/Karin/issues/287) 提供兼容性 ([1ac554f](https://github.com/KarinJS/Karin/commit/1ac554fcb7b60aacb31fcfc4c5107fd84c1c9ae3))
+* hmr ([c09f423](https://github.com/KarinJS/Karin/commit/c09f4231d53d26ac1e3643ba18dd7dab10d032cc))
+* pub error ([0bfc6dc](https://github.com/KarinJS/Karin/commit/0bfc6dcb4603f4002b1b90400a6e8fd2e68f34ba))
+* 修复在组织下的npm包名称在web下跳转错误的问题 ([4c64c8c](https://github.com/KarinJS/Karin/commit/4c64c8c82a3776e19448dea1973080844b5f2dba))
+* 修复插件页面跳转 修复web在夜间模式下某些样式问题 ([aa8734e](https://github.com/KarinJS/Karin/commit/aa8734e74d064a86b88256c53768dfaae9bdf70a))
+* 发版 ([ee46097](https://github.com/KarinJS/Karin/commit/ee4609716831ae7eac3f89ee222958903e8302c1))
+* 启动时依赖缺失不打印依赖的问题 ([5d1d98a](https://github.com/KarinJS/Karin/commit/5d1d98a584e03fcf66652d15dbe532e88429dea7))
+* 实时日志 ([d3512b2](https://github.com/KarinJS/Karin/commit/d3512b20ea08e348390f7fbfde0046e133595a14))
+* 登录api增加阈值 fix [#288](https://github.com/KarinJS/Karin/issues/288) ([116ed45](https://github.com/KarinJS/Karin/commit/116ed45b0cf9c6e4980d6810c8b4569edee1a0a2))
+* 路由注册错误 ([594a453](https://github.com/KarinJS/Karin/commit/594a453e3ab41504cdc5735ca08546b2ea683099))
+
+
+### 💄 Styles
+
+* tabs ([9369507](https://github.com/KarinJS/Karin/commit/9369507dc16a561fa69eafd95af07c62bfc6dce9))
+* 优化前端样式 ([#283](https://github.com/KarinJS/Karin/issues/283)) ([0c4745d](https://github.com/KarinJS/Karin/commit/0c4745d299d49f3a93f6d5dba8f55b5a3bc71f33))
+
+
+### 🎫 Chores
+
+* **main:** release 1.4.6 ([#296](https://github.com/KarinJS/Karin/issues/296)) ([79d9233](https://github.com/KarinJS/Karin/commit/79d92338a5af5c323094a20eac768e9edd276ccd))
+* **main:** release 1.6.0 ([#305](https://github.com/KarinJS/Karin/issues/305)) ([f682392](https://github.com/KarinJS/Karin/commit/f6823927681d14325c9dfeeab2c977d364dab182))
+* **main:** release core 1.4.5 ([#295](https://github.com/KarinJS/Karin/issues/295)) ([08b1a1b](https://github.com/KarinJS/Karin/commit/08b1a1b060a629834ab7b97f23e406e2794b2f97))
+* release 1.4.2 ([#290](https://github.com/KarinJS/Karin/issues/290)) ([f702235](https://github.com/KarinJS/Karin/commit/f70223501dbea5cc0609514bf2958c61d117e562))
+* release main ([#282](https://github.com/KarinJS/Karin/issues/282)) ([b88b7ce](https://github.com/KarinJS/Karin/commit/b88b7ceb234c1e23a4defe8fc931160bc2b04df0))
+* release main ([#285](https://github.com/KarinJS/Karin/issues/285)) ([4632b85](https://github.com/KarinJS/Karin/commit/4632b85fe94993e5c68d12427bdf3b88fff14055))
+* release main ([#286](https://github.com/KarinJS/Karin/issues/286)) ([66ff138](https://github.com/KarinJS/Karin/commit/66ff138f74dc54cc1f18c8d9679ae026c541a58f))
+* release main ([#291](https://github.com/KarinJS/Karin/issues/291)) ([dacf483](https://github.com/KarinJS/Karin/commit/dacf48327411667dddb18f11c0450233512f136d))
+* release main ([#298](https://github.com/KarinJS/Karin/issues/298)) ([69008cd](https://github.com/KarinJS/Karin/commit/69008cd7832d758d0fcb8a68e4b3f384303da762))
+* release main 1.4.4 ([#293](https://github.com/KarinJS/Karin/issues/293)) ([0fc3d8f](https://github.com/KarinJS/Karin/commit/0fc3d8f2f38112f1c2bc2ed1d722c581837637e1))
+* release main 1.4.8 ([#299](https://github.com/KarinJS/Karin/issues/299)) ([cda5a1a](https://github.com/KarinJS/Karin/commit/cda5a1af8565f677bf7923fe371731f4e55de413))
+* release main 1.5.0 ([#300](https://github.com/KarinJS/Karin/issues/300)) ([2d97516](https://github.com/KarinJS/Karin/commit/2d97516866376365c47d69d106e45dee88ffc819))
+
+
+### ♻️ Code Refactoring
+
+* 重构框架配置页面 ([#292](https://github.com/KarinJS/Karin/issues/292)) ([e718144](https://github.com/KarinJS/Karin/commit/e7181441b2b4c86b1f557a8e17c735e2396817f8))
+
+
+### 📦️ Build System
+
+* 1.6.0 ([f318e05](https://github.com/KarinJS/Karin/commit/f318e05020e0c5a8ddb8a214c02ae7e6af0c499d))
+* **deps:** bump axios from 1.7.9 to 1.8.2 ([#303](https://github.com/KarinJS/Karin/issues/303)) ([04d337b](https://github.com/KarinJS/Karin/commit/04d337be3981722807395d1e9e1e1c632c2175b4))
+* **deps:** bump axios from 1.7.9 to 1.8.2 in /packages/core ([#302](https://github.com/KarinJS/Karin/issues/302)) ([c2e3379](https://github.com/KarinJS/Karin/commit/c2e3379670a56c2bd1abd88fbe6315766a479348))
+
 ## [1.6.0](https://github.com/KarinJS/Karin/compare/core-v1.5.0...core-v1.6.0) (2025-03-12)
 
 
