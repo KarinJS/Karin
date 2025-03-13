@@ -381,7 +381,7 @@ export default function TestPage () {
   return (
     <div className='space-y-4'>
       {/* 头部卡片 */}
-      <Card className='p-4 lg:p-6 sticky top-0 lg:top-[53px] z-10 bg-opacity-50 backdrop-blur-md shadow-xl'>
+      <Card className='p-4 lg:p-6 sticky top-0 md:top-[53px] lg:top-[53px] z-10 bg-opacity-50 backdrop-blur-md shadow-xl'>
         <div className='flex flex-col gap-2'>
           {/* PC端标题 - 仅在PC端显示 */}
           <div className='hidden md:flex items-center gap-2'>

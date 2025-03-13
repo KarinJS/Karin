@@ -21,6 +21,7 @@ export default function DashboardLayout () {
   // const [touchStartX, setTouchStartX] = useState(0)
   const [isOpen, setIsOpen] = useState(false)
   const isNotSmallScreen = useMediaQuery({ minWidth: 768 })
+  const isMediumOrLargeScreen = useMediaQuery({ minWidth: 640 })
   const location = useLocation()
   const title = getPageTitle(location.pathname)
 
@@ -120,10 +121,10 @@ export default function DashboardLayout () {
         {/* 顶部导航栏 */}
         <motion.div
           className={clsx(
+            isConfigPage && !isMediumOrLargeScreen ? 'static' : 'sticky top-0',
             'z-40 w-full bg-opacity-50 backdrop-blur-md',
             'border-b border-divider shadow-sm flex items-center justify-between',
-            'px-4 py-2',
-            isConfigPage ? 'lg:sticky lg:top-0' : 'lg:sticky lg:top-0'
+            'px-4 py-2'
           )}
           initial={{ y: -50 }}
           animate={{ y: 0 }}
@@ -154,8 +155,7 @@ export default function DashboardLayout () {
         {/* 内容区域动画 - 根据是否显示导航栏调整类名 */}
         <motion.div
           className={clsx(
-            'container mx-auto px-3 flex-1',
-            isConfigPage ? 'py-0' : 'py-4'  // 配置页面去除顶部内边距
+            'container mx-auto px-3 flex-1 py-4',
           )}
           key={currentMainPath} // 动态 key，只在主路径变化时触发动画
           initial={{ opacity: 0, scale: 0.9 }}
