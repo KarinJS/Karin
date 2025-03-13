@@ -32,12 +32,10 @@ export const tempPath = Object.freeze(path.join(basePath, 'temp'))
 export const resourcePath = Object.freeze(path.join(basePath, 'resource'))
 /** db根目录 `@karinjs/data/db` */
 export const dbPath = Object.freeze(path.join(dataPath, 'db'))
-/** level目录 `@karinjs/data/db/level` */
-export const levelPath = Object.freeze(path.join(dbPath, 'level'))
-/** 伪redis save-level目录 `@karinjs/data/db/redis-level` */
-export const redisLevelPath = Object.freeze(path.join(dbPath, 'redis-level'))
-/** 沙盒level目录 `@karinjs/data/sandbox/level` */
-export const sandboxLevelPath = Object.freeze(path.join(dbPath, 'sandbox'))
+/** 伪redis sqlite3目录 `@karinjs/data/db/redis-sqlite3` */
+export const redisSqlite3Path = Object.freeze(path.join(dbPath, 'redis-sqlite3'))
+/** kv数据库目录 `@karinjs/data/db/kv` */
+export const kvPath = Object.freeze(path.join(dbPath, 'kv'))
 /** logs目录 `@karinjs/logs` */
 export const logsPath = Object.freeze(path.join(basePath, 'logs'))
 /** html目录 `@karinjs/temp/html` */
@@ -65,9 +63,6 @@ export default {
   tempPath,
   resourcePath,
   dbPath,
-  levelPath,
-  redisLevelPath,
-  sandboxLevelPath,
   logsPath,
   htmlPath,
   pm2Path,

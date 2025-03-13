@@ -8,6 +8,7 @@ import lodash from 'lodash'
  * @returns 包含差异的对象
  *          - removed: 在旧数组中存在但在新数组中不存在的对象集合
  *          - added: 在新数组中存在但在旧数组中不存在的对象集合
+ *          - common: 在两个数组中都存在的对象集合
  * @example
  * const diff = diffArray(
  *   [{ self_id: 123, token: '123' }, { self_id: 222, token: '123' }],
@@ -15,21 +16,44 @@ import lodash from 'lodash'
  * )
  * // 结果: {
  * //   removed: [{ self_id: 222, token: '123' }],
- * //   added: [{ self_id: 333, token: '123' }]
+ * //   added: [{ self_id: 333, token: '123' }],
+ * //   common: [{ self_id: 123, token: '123' }]
  * // }
  */
 export const diffArray = <T extends Record<string, any>, K extends Record<string, any>> (
   old: T[],
   data: K[]
 ) => {
-  // 使用 lodash 的 differenceWith 方法找出差异
   const removed = lodash.differenceWith(old, data, lodash.isEqual)
   const added = lodash.differenceWith(data, old, lodash.isEqual)
+  const common = lodash.intersectionWith(old, data, lodash.isEqual)
 
-  return {
-    removed,
-    added
-  }
+  return { removed, added, common }
+}
+
+/**
+ * 比较两个单维数组，找出它们之间的差异
+ * @description 返回在旧数组中被移除的元素和在新数组中新增的元素
+ * @param old 旧数组 - 作为比较基准的原始数组
+ * @param data 新数组 - 需要与基准数组进行比较的目标数组
+ * @returns 包含差异的对象
+ *          - removed: 在旧数组中存在但在新数组中不存在的元素集合
+ *          - added: 在新数组中存在但在旧数组中不存在的元素集合
+ *          - common: 在两个数组中都存在的元素集合
+ * @example
+ * const result = diffSimpleArray([1, 2, 3], [2, 3, 4])
+ * // 结果: {
+ * //   removed: [1],
+ * //   added: [4],
+ * //   common: [2, 3]
+ * // }
+ */
+export const diffSimpleArray = <T> (old: T[], data: T[]) => {
+  const removed = lodash.difference(old, data)
+  const added = lodash.difference(data, old)
+  const common = lodash.intersection(old, data)
+
+  return { removed, added, common }
 }
 
 /**
@@ -68,7 +92,7 @@ export const random = (min: number, max: number): number => {
 export const formatNumber = (num: number, digits: number = 0): string => {
   return num.toLocaleString('en-US', {
     minimumFractionDigits: digits,
-    maximumFractionDigits: digits
+    maximumFractionDigits: digits,
   })
 }
 

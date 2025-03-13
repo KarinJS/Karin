@@ -21,9 +21,10 @@ export const restart = async (
     time: Date.now(),
   }
 
+  const { createDB } = await import('@/core/db/kv')
   const key = `karin:restart:${selfId}`
-  const { level } = await import('@/index')
-  await level.set(key, options)
+  const db = await createDB()
+  await db.set(key, options)
 
   if (isFront && process.send) {
     process.send('restart')

@@ -8,9 +8,11 @@ import { initProcess } from './service/process'
 import { initExpress } from './server/app/app'
 import { initPlugin } from './plugin'
 import { printStartLog } from './service/start'
-import { Client, createLevelDB, createRedis } from '@/core/db'
+import { createDB, createRedis } from '@/core/db'
 import { initRender } from '@/adapter/render'
 import { initOneBot } from '@/adapter/onebot'
+import type { Client } from '@/core/db/redis/redis'
+
 export * from '@/service/debug'
 
 export * from '@/root'
@@ -28,6 +30,7 @@ export { AdapterBase } from '@/adapter/base/index'
 export { getPlugins } from '@/plugin/list'
 export { Plugin } from '@/plugin/class'
 export { karin as default } from '@/core/karin'
+export { db } from '@/core/db/kv'
 export type * from '@/types'
 
 if (!process.env.EBV_FILE) process.env.EBV_FILE = '.env'
@@ -43,12 +46,6 @@ export let logger: ReturnType<typeof createInnerLogger>
  * @description Redis数据库
  */
 export let redis: Client
-
-/**
- * @public
- * @description LevelDB数据库
- */
-export let level: ReturnType<typeof createLevelDB>
 
 /**
  * @public
@@ -103,13 +100,8 @@ export const start = async () => {
    */
   await initExpress(root, Number(process.env.HTTP_PORT), process.env.HTTP_HOST)
 
-  /**
-   * 7. 初始化数据库
-   * - 初始化LevelDB数据库
-   * - 初始化Redis数据库
-   */
-  level = createLevelDB()
   redis = await createRedis()
+  await createDB()
 
   /**
    * 8. 初始化插件

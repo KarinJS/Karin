@@ -2,11 +2,13 @@ import neostandard from 'neostandard'
 
 /** 尾随逗号 */
 const commaDangle = val => {
-  if (typeof val?.rules?.['@stylistic/comma-dangle']?.[1] === 'object') {
-    val.rules['@stylistic/comma-dangle'][0] = 'off'
-    Object.keys(val?.rules?.['@stylistic/comma-dangle']?.[1]).forEach(key => {
-      val.rules['@stylistic/comma-dangle'][1][key] = 'always-multiline'
+  if (val?.rules?.['@stylistic/comma-dangle']?.[0] === 'warn') {
+    const rule = val?.rules?.['@stylistic/comma-dangle']?.[1]
+    Object.keys(rule).forEach(key => {
+      rule[key] = 'always-multiline'
     })
+    val.rules['@stylistic/comma-dangle'][1] = rule
+    console.log(val.rules['@stylistic/comma-dangle'])
   }
 
   return val

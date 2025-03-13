@@ -186,9 +186,10 @@ export const registerBot = (type: AdapterCommunication, bot: AdapterBase) => {
   }
 
   setTimeout(async () => {
-    const { level } = await import('@/index')
+    const { createDB } = await import('@/core/db/kv')
+    const db = await createDB()
     const key = `karin:restart:${bot.selfId}`
-    const options = await level.has(key)
+    const options = await db.get<{ selfId: string, contact: Contact, messageId: string, time: number }>(key)
     if (!options) return
 
     try {
@@ -206,7 +207,7 @@ export const registerBot = (type: AdapterCommunication, bot: AdapterBase) => {
       ]
       await sendMsg(selfId, contact, element)
     } finally {
-      await level.del(key)
+      await db.del(key)
     }
   }, 10)
 

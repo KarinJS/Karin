@@ -1,9 +1,12 @@
-import os from 'os'
-import { RedisClient } from '@/core/db/redis/mock'
-import { createClient, RedisClientType, RedisClientOptions } from 'redis'
+import os from 'node:os'
+import path from 'node:path'
 import { isWin } from '@/env'
-import { exec } from '@/utils/system/exec'
 import { redis } from '@/utils/config'
+import { redisSqlite3Path } from '@/root'
+import { exec } from '@/utils/system/exec'
+import { RedisClient } from '@/core/db/redis/mock'
+import { SQLiteWrapper } from '@/core/db/redis/mock/sqlite'
+import { createClient, RedisClientType, RedisClientOptions } from 'redis'
 
 /** Redis 客户端类型 */
 export type Client = RedisClientType & { id: 'redis' | 'mock' }
@@ -95,7 +98,8 @@ const isArm64 = async (): Promise<string> => {
  * @returns Redis 客户端
  */
 const mock = async (): Promise<Client> => {
-  const redis = await new RedisClient().init()
+  const sqlite = await new SQLiteWrapper(path.join(redisSqlite3Path, 'redis.db')).init()
+  const redis = await new RedisClient(sqlite).init()
   Object.defineProperty(redis, 'id', { value: 'mock' })
-  return redis as any
+  return redis as unknown as Client
 }

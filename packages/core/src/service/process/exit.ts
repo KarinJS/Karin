@@ -13,8 +13,8 @@ export const processExit = async (code: unknown) => {
     if (exitStatus) return
     exitStatus = true
 
-    const { redis, level } = await import('@/index')
-    await Promise.allSettled([redis.save(), level.close()])
+    const { redis } = await import('@/index')
+    await redis.save()
 
     logger.mark(tips(`运行结束 运行时间：${uptime()} 退出码：${code ?? '未知'}`))
 
