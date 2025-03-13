@@ -1,6 +1,6 @@
 {
   "name": "node-karin",
-  "version": "1.7.0",
+  "version": "1.7.2",
   "description": "Lightweight, efficient, concise, and stable robot framework.",
   "keywords": [
     "node",
@@ -88,7 +88,6 @@
     "yaml": "2.7.0"
   },
   "devDependencies": {
-    "@karinjs/node-pty": "^1.0.4",
     "@types/jsonwebtoken": "^9.0.9",
     "cross-env": "^7.0.3"
   },
@@ -102,7 +101,7 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
-  "time": "2025-03-12",
+  "time": "2025-03-12T19:55:45.123Z",
   "exports": {
     ".": {
       "import": "./src/index.ts",
