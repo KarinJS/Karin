@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.7.3](https://github.com/KarinJS/Karin/compare/core-v1.7.2...core-v1.7.3) (2025-03-14)
+
+
+### ♻️ Code Refactoring
+
+* 去除level 使用sqlite3代替 ([d4d950f](https://github.com/KarinJS/Karin/commit/d4d950f923bd7357c90a39e474418157baa7a22e))
+
 ## [1.7.2](https://github.com/KarinJS/Karin/compare/core-v1.7.1...core-v1.7.2) (2025-03-12)
 
 
