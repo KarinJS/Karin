@@ -8,7 +8,6 @@ const commaDangle = val => {
       rule[key] = 'always-multiline'
     })
     val.rules['@stylistic/comma-dangle'][1] = rule
-    console.log(val.rules['@stylistic/comma-dangle'])
   }
 
   return val
