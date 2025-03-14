@@ -155,11 +155,6 @@
       "types": "./dist/module/express.d.ts",
       "require": "./dist/module/express.cjs"
     },
-    "./level": {
-      "import": "./dist/module/level.js",
-      "types": "./dist/module/level.d.ts",
-      "require": "./dist/module/level.cjs"
-    },
     "./lodash": {
       "import": "./dist/module/lodash.js",
       "types": "./dist/module/lodash.d.ts",
@@ -189,6 +184,11 @@
       "import": "./dist/module/redis.js",
       "types": "./dist/module/redis.d.ts",
       "require": "./dist/module/redis.cjs"
+    },
+    "./sqlite3": {
+      "import": "./dist/module/sqlite3.js",
+      "types": "./dist/module/sqlite3.d.ts",
+      "require": "./dist/module/sqlite3.cjs"
     },
     "./ws": {
       "import": "./dist/module/ws.js",
