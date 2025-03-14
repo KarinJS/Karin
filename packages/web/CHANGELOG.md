@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.3](https://github.com/KarinJS/Karin/compare/web-v1.7.2...web-v1.7.3) (2025-03-14)
+
+
+### 🐛 Bug Fixes
+
+* 只有小屏幕和处于配置页面下才不置顶根导航栏 ([2a584b2](https://github.com/KarinJS/Karin/commit/2a584b28c198fdf6b4e62656f848358309acf058))
+
 ## [1.7.2](https://github.com/KarinJS/Karin/compare/web-v1.7.1...web-v1.7.2) (2025-03-12)
 
 
