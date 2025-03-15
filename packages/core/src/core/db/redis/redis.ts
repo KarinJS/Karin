@@ -54,26 +54,30 @@ const start = async () => {
  * @returns Redis 客户端
  */
 export const createRedis = async (): Promise<Client> => {
-  const options = redis()
-  let client = await create(options)
-  if (client) {
-    logger.info(`[redis] ${logger.green('Redis 连接成功')}`)
-    return client as Client
+  try {
+    const options = redis()
+    let client = await create(options)
+    if (client) {
+      logger.info(`[redis] ${logger.green('Redis 连接成功')}`)
+      return client as Client
+    }
+
+    /** 第一次启动失败 */
+    const result = await start()
+    if (result) {
+      logger.debug(logger.green('[redis] 主动拉起 Redis 成功'))
+      client = await create(options)
+    } else {
+      logger.debug(logger.red('[redis] 主动拉起 Redis 失败'))
+    }
+    if (client) return client as Client
+    throw new Error('Redis 启动失败')
+  } catch (error) {
+    logger.debug(`[redis] ${logger.red('Redis 连接失败')}`)
+    logger.debug(error)
+    logger.debug(logger.yellow('[redis] 将降级为 redis-mock 实现'))
+    return mock()
   }
-
-  /** 第一次启动失败 */
-  const result = await start()
-  if (result) {
-    logger.debug(logger.green('[redis] 主动拉起 Redis 成功'))
-    client = await create(options)
-  } else {
-    logger.debug(logger.red('[redis] 主动拉起 Redis 失败'))
-  }
-
-  if (client) return client as Client
-
-  logger.debug(logger.yellow('[redis] 将降级为 redis-mock 实现'))
-  return mock()
 }
 
 /**
