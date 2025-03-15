@@ -1,5 +1,17 @@
 # 更新日志
 
+## [1.7.4](https://github.com/KarinJS/Karin/compare/core-v1.7.3...core-v1.7.4) (2025-03-15)
+
+
+### 🐛 Bug Fixes
+
+* close [#313](https://github.com/KarinJS/Karin/issues/313) ([665ee4f](https://github.com/KarinJS/Karin/commit/665ee4f4771310f658532e05099cbb1bfd0a97bd))
+
+
+### 📦️ Build System
+
+* fix error ([a29345e](https://github.com/KarinJS/Karin/commit/a29345e91a858b1446b93d23753c1049608541fe))
+
 ## [1.7.3](https://github.com/KarinJS/Karin/compare/core-v1.7.2...core-v1.7.3) (2025-03-14)
 
 
