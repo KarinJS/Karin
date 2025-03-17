@@ -537,7 +537,14 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                 wrapper: '!text-primary',
               }}
             >
-              切换主题
+              {/* 根据当前主题显示对应的提示文本 */}
+              {({ theme }) => (
+                <>
+                  {theme === 'light' && '浅色模式'}
+                  {theme === 'dark' && '深色模式'}
+                  {theme === 'system' && '系统默认'}
+                </>
+              )}
             </ThemeSwitch>
             <Button
               startContent={<LuLogIn className='w-5 h-5' />}

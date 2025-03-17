@@ -1,22 +1,22 @@
-import { useState, useEffect, ReactNode } from 'react'
+import React, { useState, useEffect, ReactNode } from 'react'
 import { SwitchProps } from '@heroui/switch'
 import clsx from 'clsx'
 
 import { useTheme } from '@/hooks/use-theme'
-import { SunFilledIcon, MoonFilledIcon } from '@/components/icons'
+import { Moon, Sun, Laptop } from 'lucide-react'
 import { Button } from '@heroui/button'
 
-import type { FC } from 'react'
+type Theme = 'system' | 'light' | 'dark'
 
 export interface ThemeSwitchProps {
   className?: string
   classNames?: SwitchProps['classNames']
-  children?: ReactNode
+  children?: ReactNode | ((props: { theme: Theme; isDark: boolean }) => ReactNode)
 }
 
-export const ThemeSwitch: FC<ThemeSwitchProps> = ({ classNames, children }) => {
+export const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ classNames, children }) => {
   const [isMounted, setIsMounted] = useState(false)
-  const { theme, toggleTheme } = useTheme()
+  const { theme, toggleTheme, isDark } = useTheme()
 
   useEffect(() => {
     setIsMounted(true)
@@ -45,9 +45,11 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({ classNames, children }) => {
           classNames?.wrapper,
         )}
       >
-        {theme === 'light' ? <MoonFilledIcon size={22} /> : <SunFilledIcon size={22} />}
+        {theme === 'light' && <Sun size={22} />}
+        {theme === 'dark' && <Moon size={22} />}
+        {theme === 'system' && <Laptop size={22} />}
       </div>
-      {children}
+      {typeof children === 'function' ? children({ theme: theme as Theme, isDark }) : children}
     </Button>
   )
 }
