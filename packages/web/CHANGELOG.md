@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.4](https://github.com/KarinJS/Karin/compare/web-v1.7.3...web-v1.7.4) (2025-03-17)
+
+
+### 💄 Styles
+
+* 默认使用系统主题 ([a23723c](https://github.com/KarinJS/Karin/commit/a23723cc3b58a578c7bbb808a50232bb8d536dc5))
+
 ## [1.7.3](https://github.com/KarinJS/Karin/compare/web-v1.7.2...web-v1.7.3) (2025-03-14)
 
 
