@@ -95,6 +95,7 @@ export const initExpress = async (
         res.set({
           'Content-Encoding': 'br',
           'Content-Type': getMimeType(req.path),
+          'Cache-Control': 'public, max-age=604800',
         })
         req.url = `${req.url}.br`
         return express.static(webDir)(req, res, next)
@@ -103,6 +104,7 @@ export const initExpress = async (
         res.set({
           'Content-Encoding': 'identity',
           'Content-Type': getMimeType(req.path),
+          'Cache-Control': 'public, max-age=604800',
         })
         const readStream = fs.createReadStream(brPath)
         const decompressStream = createBrotliDecompress()
