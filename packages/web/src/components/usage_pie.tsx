@@ -14,7 +14,7 @@ const defaultOption: echarts.EChartsOption = {
     trigger: 'item',
     formatter: '<center>{b}<br/><b>{d}%</b></center>',
     borderRadius: 10,
-    extraCssText: 'backdrop-filter: blur(10px);'
+    extraCssText: 'backdrop-filter: blur(10px);',
   },
   series: [
     {
@@ -26,33 +26,33 @@ const defaultOption: echarts.EChartsOption = {
         show: true,
         position: 'center',
         formatter: '系统占用',
-        fontSize: 14
+        fontSize: 14,
       },
       itemStyle: {
         borderWidth: 1,
-        borderRadius: 10
+        borderRadius: 10,
       },
       labelLine: {
-        show: false
+        show: false,
       },
       data: [
         {
           value: 100,
-          name: '系统总量'
-        }
-      ]
-    }
-  ]
+          name: '系统总量',
+        },
+      ],
+    },
+  ],
 }
 
 const UsagePie: React.FC<UsagePieProps> = ({
-                                             systemUsage,
-                                             processUsage,
-                                             title
-                                           }) => {
+  systemUsage,
+  processUsage,
+  title,
+}) => {
   const chartRef = useRef<HTMLDivElement>(null)
   const chartInstance = useRef<echarts.ECharts | null>(null)
-  const { theme } = useTheme()
+  const { theme, isDark } = useTheme()
 
   useEffect(() => {
     if (chartRef.current) {
@@ -76,41 +76,44 @@ const UsagePie: React.FC<UsagePieProps> = ({
         series: [
           {
             label: {
-              formatter: title
-            }
-          }
-        ]
+              formatter: title,
+            },
+          },
+        ],
       })
     }
   }, [title])
 
   useEffect(() => {
+    console.log(isDark)
     if (chartInstance.current) {
+      const currentIsDark = isDark
+
       chartInstance.current.setOption({
-        darkMode: theme === 'dark',
+        darkMode: currentIsDark,
         tooltip: {
           backgroundColor:
-            theme === 'dark'
+            currentIsDark
               ? 'rgba(0, 0, 0, 0.8)'
               : 'rgba(255, 255, 255, 0.8)',
           textStyle: {
-            color: theme === 'dark' ? '#fff' : '#333'
-          }
+            color: currentIsDark ? '#fff' : '#333',
+          },
         },
         color:
-          theme === 'dark'
+          currentIsDark
             ? ['#3f42f0', '#64c5ef', '#516ee2']
             : ['#3f42f0', '#7d93ea', '#07bdff'],
         series: [
           {
             itemStyle: {
-              borderColor: theme === 'dark' ? '#333' : '#a7adf0'
-            }
-          }
-        ]
+              borderColor: currentIsDark ? '#333' : '#a7adf0',
+            },
+          },
+        ],
       })
     }
-  }, [theme])
+  }, [theme, isDark])
 
   useEffect(() => {
     if (chartInstance.current) {
@@ -120,24 +123,24 @@ const UsagePie: React.FC<UsagePieProps> = ({
             data: [
               {
                 value: processUsage,
-                name: 'QQ占用'
+                name: 'QQ占用',
               },
               {
                 value: systemUsage - processUsage,
-                name: '其他进程占用'
+                name: '其他进程占用',
               },
               {
                 value: 100 - systemUsage,
-                name: '剩余系统总量'
-              }
-            ]
-          }
-        ]
+                name: '剩余系统总量',
+              },
+            ],
+          },
+        ],
       })
     }
   }, [systemUsage, processUsage])
 
-  return <div ref={chartRef} className="w-36 h-36 flex-shrink-0" />
+  return <div ref={chartRef} className='w-36 h-36 flex-shrink-0' />
 }
 
 export default UsagePie
