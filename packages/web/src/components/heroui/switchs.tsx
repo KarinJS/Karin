@@ -24,12 +24,13 @@ export const createSwitch = (
   } = props
 
   return (
-    <div className={className || 'inline-block p-1'}>
+    <div className={className || 'inline-flex p-1 flex-row-reverse items-center'}>
       <HeroSwitch
         key={key}
         {...options}
         className={cn(
-          'inline-flex flex-row-reverse items-center',
+          'flex flex-row-reverse items-start',
+          'justify-between',
           'cursor-pointer rounded-lg border',
           'border-default-200',
           `data-[selected=true]:border-${options.color || 'primary'}`,
@@ -46,7 +47,7 @@ export const createSwitch = (
             <p className='font-medium text-base mb-2'>{props.label}</p>
           )}
           {props.description && (
-            <p className='text-xs text-gray-500'>{props.description}</p>
+            <p className='text-xs text-gray-500 mr-2'>{props.description}</p>
           )}
         </div>
       </HeroSwitch>

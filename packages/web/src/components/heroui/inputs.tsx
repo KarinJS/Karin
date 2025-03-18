@@ -18,7 +18,7 @@ import type { FormControl, FormRegister } from '../config/plugin/render'
 const generateDivClassName = (props: InputProps): string => {
   if (props.className && typeof props.className === 'string') return props.className
   if (props.width || props.height) return `w-${props.width || 200}px h-${props.height || 40}px`
-  return 'inline-flex p-2'
+  return 'w-full p-2'
 }
 
 /**
@@ -39,7 +39,7 @@ export const createInput = (
       <HeroInput
         {...options}
         {...register(`${key}.value`)}
-        className={componentClassName || 'w-[300px]'}
+        className={componentClassName || 'w-full max-w-[300px]'}
         validate={(value) => {
           if (!value) {
             if (options.isRequired) {
