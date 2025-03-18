@@ -238,18 +238,56 @@ const AboutUs = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
               >
+                <p>
+                  <span className='text-default-400 text-xl md:text-2xl lg:text-3xl font-normal'>Karin</span>{' '}
+                  <span className='text-4xl md:text-5xl lg:text-6xl text-default-800 font-bold'>是什么？</span>
+                </p>
                 <div className='inline-flex items-center px-3 py-1 rounded-full bg-primary-100/50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-sm font-medium mb-4'>
                   <Sparkles className='h-4 w-4 mr-2' />
-                  开源 NodeJS 机器人框架
+                  开源聊天平台机器人框架
                 </div>
-                <h1 className='text-5xl md:text-6xl font-bold tracking-tight'>
-                  <span className='bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-500'>
-                    Karin
-                  </span>
-                </h1>
-                <h2 className='text-3xl md:text-4xl font-bold tracking-tight'>轻量、高效、简洁</h2>
+                <div className='space-y-4 text-gray-600 dark:text-gray-400'>
+                  <div className='items-center'>
+                    Karin 是一个始于 2023 年的开源聊天机器人框架，由一群热爱即时通讯技术的开发者发起。该框架基于
+                    <span className='inline-flex items-center px-2.5 py-0.5 mx-1.5 rounded-full text-xs font-medium bg-green-50 text-green-700 dark:bg-green-900/50 dark:text-green-300 align-middle translate-y-[-1px]'>
+                      Node.js
+                    </span>
+                    开发，使用
+                    <span className='inline-flex items-center px-2.5 py-0.5 mx-1.5 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300 align-middle translate-y-[-1px]'>
+                      TypeScript
+                    </span> +
+                    <span className='inline-flex items-center px-2.5 py-0.5 mx-1.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 align-middle translate-y-[-1px]'>
+                      React
+                    </span>
+                    构建，旨在简化各大聊天平台机器人的开发流程。
+                  </div>
+                  <p>
+                    通过提供统一的 API 接口和丰富的插件生态，我们希望让开发者能够轻松接入 QQ 等多种聊天平台，快速构建功能丰富的聊天机器人，为社区、群组和个人用户提供智能化的服务体验。
+                  </p>
+                  <div className='items-center'>
+                    Karin 的一大亮点是自带前端相关页面，插件开发者可以更加得心应手地进行开发。技术栈方面，前端采用
+                    <span className='inline-flex items-center px-2.5 py-0.5 mx-1.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 align-middle translate-y-[-1px]'>
+                      Vite
+                    </span> +
+                    <span className='inline-flex items-center px-2.5 py-0.5 mx-1.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 align-middle translate-y-[-1px]'>
+                      React
+                    </span> +
+                    <span className='inline-flex items-center px-2.5 py-0.5 mx-1.5 rounded-full text-xs font-medium bg-cyan-50 text-cyan-700 dark:bg-cyan-900/50 dark:text-cyan-300 align-middle translate-y-[-1px]'>
+                      TailwindCSS
+                    </span>
+                    构建，后端使用
+                    <span className='inline-flex items-center px-2.5 py-0.5 mx-1.5 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300 align-middle translate-y-[-1px]'>
+                      TypeScript
+                    </span>
+                    开发并且完全兼容
+                    <span className='inline-flex items-center px-2.5 py-0.5 mx-1.5 rounded-full text-xs font-medium bg-pink-50 text-pink-700 dark:bg-pink-900/50 dark:text-pink-300 align-middle translate-y-[-1px]'>
+                      Bun
+                    </span>
+                    运行时，为开发者提供了现代、高效的开发体验。
+                  </div>
+                </div>
                 <p className='text-xl text-gray-600 dark:text-gray-300'>
-                  让机器人开发变得
+                  让插件开发变得
                   <span className='relative inline-block'>
                     <span className='relative z-10'>简单有趣</span>
                     <span className='absolute bottom-1 left-0 w-full h-3 bg-primary-200 dark:bg-primary-800/30 -z-0 rounded-sm' />
@@ -305,7 +343,7 @@ const AboutUs = () => {
                           <span className='font-bold text-primary-500'>Karin</span>
                         </h3>
                         <p className='text-sm text-gray-600 dark:text-gray-400'>
-                          {hasRepoData ? repoStats.description : '开源 NodeJS 机器人框架，让机器人开发变得简单有趣'}
+                          {hasRepoData ? repoStats.description : '开源 NodeJS 机器人框架，让插件开发变得简单有趣'}
                         </p>
                       </div>
                     </div>
@@ -542,8 +580,8 @@ const AboutUs = () => {
                     </div>
 
                     <div className='mt-4 flex flex-wrap gap-2'>
-                      <span className='inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'>
-                        NodeJS
+                      <span className='inline-flex items-center px-2 py-0.5 mx-1 rounded-full text-xs font-medium bg-green-50 text-green-700 dark:bg-green-900/50 dark:text-green-300'>
+                        Node.js
                       </span>
                       <span className='inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300'>
                         TypeScript
@@ -551,7 +589,7 @@ const AboutUs = () => {
                       <span className='inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300'>
                         React
                       </span>
-                      <span className='inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 dark:bg-green-900/50 dark:text-green-300'>
+                      <span className='inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'>
                         {hasRepoData ? repoStats.license : 'MIT'}
                       </span>
                     </div>
@@ -729,33 +767,7 @@ const AboutUs = () => {
       <section className='py-16'>
         <div className='container mx-auto px-4'>
           <div className='max-w-7xl mx-auto'>
-            <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 items-center'>
-              <motion.div
-                className='space-y-6'
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-                viewport={{ once: true }}
-              >
-                <div className='inline-flex items-center px-3 py-1 rounded-full bg-primary-100/50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-sm font-medium mb-4'>
-                  <Heart className='h-4 w-4 mr-2' />
-                  我们的故事
-                </div>
-                <h2 className='text-3xl md:text-4xl font-bold'>关于 Karin</h2>
-                <div className='space-y-4 text-gray-600 dark:text-gray-400'>
-                  <p>
-                    Karin 机器人框架是一个始于 2023 年的开源项目，由一群热爱机器人技术的开发者发起。该框架基于 Node.js
-                    开发，使用 TypeScript + React 构建，旨在降低机器人开发的门槛。
-                  </p>
-                  <p>
-                    通过提供一套完整的工具链和丰富的文档，我们希望让更多人能够参与到机器人技术的创新中来，无论是教育、研究还是商业应用场景下，都能借助这个框架轻松开展机器人相关的开发工作。
-                  </p>
-                  <p>
-                    我们坚信，开源协作是推动技术进步的最佳方式，也是让机器人技术得以广泛普及的关键因素，而我们的机器人框架正是开源精神的具体实践。
-                  </p>
-                </div>
-              </motion.div>
-
+            <div className='items-center'>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                 <motion.div
                   className='bg-white dark:bg-black p-6 rounded-xl shadow-sm hover:shadow-lg border border-default-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500'
@@ -823,7 +835,7 @@ const AboutUs = () => {
                 viewport={{ once: true }}
               >
                 <div className='text-3xl font-bold text-primary-600 dark:text-primary-500'>Karin</div>
-                <p className='text-gray-600 dark:text-gray-400 mt-2'>让机器人开发变得简单有趣</p>
+                <p className='text-gray-600 dark:text-gray-400 mt-2'>让插件开发变得简单有趣</p>
               </motion.div>
 
               <motion.div
