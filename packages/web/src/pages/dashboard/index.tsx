@@ -28,7 +28,7 @@ import {
   Terminal,
   GitBranch,
   LucideIcon,
-  TriangleAlert
+  TriangleAlert,
 } from 'lucide-react'
 import { LuInfo, LuNetwork } from 'react-icons/lu'
 import axios from 'axios'
@@ -86,7 +86,7 @@ function OnlineStatus () {
     {
       pollingInterval: 1000,
       // ready: location.pathname === '/dashboard',
-    },
+    }
   )
   const { data } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'))
   const msg = []
@@ -339,7 +339,7 @@ function Status () {
     botList.data?.length,
     updateTip,
     npmLatest,
-    handleTooltipClick
+    handleTooltipClick,
   ])
 
   const middleVersions = useMemo(() => {
@@ -723,10 +723,7 @@ function NetworkMonitorCard () {
           ? (
             <NetworkMonitor
               networkData={data || initialData || { upload: 0, download: 0, totalSent: 0, totalReceived: 0, timestamp: Date.now() }}
-              enablePolling={enablePolling}
-              onPollingChange={setEnablePolling}
               showChart={showChart}
-              onShowChartChange={setShowChart}
             />)
           : (
             <div className='flex flex-col items-center justify-center p-6 gap-2'>

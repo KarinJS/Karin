@@ -12,7 +12,6 @@ import {
   Users,
   Sparkles,
   Zap,
-  Heart,
   Target,
   Code2,
   Puzzle,
