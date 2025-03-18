@@ -126,6 +126,34 @@ const AboutUs = () => {
     threshold: 0.1,
   })
 
+  const [buttonSize, setButtonSize] = useState<'sm' | 'md' | 'lg'>('sm')
+  const [iconSize, setIconSize] = useState<number>(4)
+  const [textSize, setTextSize] = useState<string>('text-sm')
+
+  // 修改监听屏幕尺寸变化的函数
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setButtonSize('sm')
+        setIconSize(4)
+        setTextSize('text-xs')
+      } else {
+        setButtonSize('lg')
+        setIconSize(5)
+        setTextSize('text-sm')
+      }
+    }
+
+    // 初始化
+    handleResize()
+    // 添加监听
+    window.addEventListener('resize', handleResize)
+    // 清理
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
   useEffect(() => {
     const fetchRepoStats = async () => {
       try {
@@ -247,7 +275,7 @@ const AboutUs = () => {
                 </div>
                 <div className='space-y-4 text-gray-600 dark:text-gray-400'>
                   <div className='items-center'>
-                    Karin 是一个始于 2023 年的开源聊天机器人框架，由一群热爱即时通讯技术的开发者发起。该框架基于
+                    Karin 是一个始于 2023 年的开源聊天平台机器人框架，由一群热爱即时通讯技术的开发者发起。该框架基于
                     <span className='inline-flex items-center px-2.5 py-0.5 mx-1.5 rounded-full text-xs font-medium bg-green-50 text-green-700 dark:bg-green-900/50 dark:text-green-300 align-middle translate-y-[-1px]'>
                       Node.js
                     </span>
@@ -299,24 +327,24 @@ const AboutUs = () => {
                     href='https://github.com/KarinJS/Karin'
                     target='_blank'
                     rel='noopener noreferrer'
-                    size='lg'
+                    size={buttonSize}
                     variant='shadow'
                     radius='full'
-                    className='group bg-white dark:bg-black border border-default-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500 transition-colors'
+                    className={`group bg-white dark:bg-black border border-default-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500 transition-colors ${textSize}`}
                   >
-                    <Github className='h-5 w-5 mr-2 group-hover:rotate-12 transition-transform' />
+                    <Github className={`h-${iconSize} w-${iconSize} mr-2 group-hover:rotate-12 transition-transform`} />
                     GitHub
                   </Button>
                   <Button
                     as='a'
                     href='https://docs.karin.fun'
                     color='primary'
-                    size='lg'
+                    size={buttonSize}
                     variant='shadow'
                     radius='full'
-                    className='group'
+                    className={`group ${textSize}`}
                   >
-                    <Code className='h-5 w-5 mr-2 group-hover:rotate-12 transition-transform' />
+                    <Code className={`h-${iconSize} w-${iconSize} mr-2 group-hover:rotate-12 transition-transform`} />
                     文档
                   </Button>
                 </div>
