@@ -24,13 +24,12 @@ export const createSwitch = (
   } = props
 
   return (
-    <div className={className || 'inline-flex p-1 flex-row-reverse items-center'}>
+    <div className={className || 'inline-flex p-1 flex-row-reverse'}>
       <HeroSwitch
         key={key}
         {...options}
         className={cn(
-          'flex flex-row-reverse items-start',
-          'justify-between',
+          'flex flex-row-reverse items-center',
           'cursor-pointer rounded-lg border',
           'border-default-200',
           `data-[selected=true]:border-${options.color || 'primary'}`,
