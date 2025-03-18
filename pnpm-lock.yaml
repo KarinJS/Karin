@@ -114,6 +114,9 @@ importers:
         specifier: 2.7.0
         version: 2.7.0
     devDependencies:
+      '@karinjs/plugin-webui-network-monitor':
+        specifier: ^1.0.3
+        version: 1.0.3
       '@types/jsonwebtoken':
         specifier: ^9.0.9
         version: 9.0.9
@@ -1788,6 +1791,9 @@ packages:
     resolution: {integrity: sha512-w9j1wL2OAyan4rAoUvYESfFL19kDLCNUixtka/9yYFrINJQeOqOMtKRfQlKySN1TEz1KV7XSbnZ4q9uL3nhxYA==}
     engines: {node: '>=16'}
     hasBin: true
+
+  '@karinjs/plugin-webui-network-monitor@1.0.3':
+    resolution: {integrity: sha512-FloMaA3/41ZWOy0oVReH2tvS3FUABgzj2+EZ/6f7FkyC1aK4sQYsEDRuB2ru8RC7uycRxU2E0Tufj3jtnU5AGA==}
 
   '@mapbox/node-pre-gyp@1.0.11':
     resolution: {integrity: sha512-Yhlar6v9WQgUp/He7BdgzOz8lqMQ8sU+jkCq7Wx8Myc5YFJLbEe7lgui/V7G1qB1DJykHSGwreceSaD60Y0PUQ==}
@@ -5815,6 +5821,12 @@ packages:
     resolution: {integrity: sha512-vrozgXDQwYO72vHjUb/HnFbQx1exDjoKzqx23aXEg2a9VIg2TSFZ8FmeZpTjUCFMYw7mpX4BE2SFu8wI7asYsw==}
     engines: {node: ^14.18.0 || >=16.0.0}
 
+  systeminformation@5.25.11:
+    resolution: {integrity: sha512-jI01fn/t47rrLTQB0FTlMCC+5dYx8o0RRF+R4BPiUNsvg5OdY0s9DKMFmJGrx5SwMZQ4cag0Gl6v8oycso9b/g==}
+    engines: {node: '>=8.0.0'}
+    os: [darwin, linux, win32, freebsd, openbsd, netbsd, sunos, android]
+    hasBin: true
+
   tailwind-merge@2.5.4:
     resolution: {integrity: sha512-0q8cfZHMu9nuYP/b5Shb7Y7Sh1B7Nnl5GqNr1U+n2p6+mybvRtayrQ+0042Z5byvTA8ihjlP8Odo8/VnHbZu4Q==}
 
@@ -8122,6 +8134,10 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.0
 
   '@karinjs/node-pty@1.0.4': {}
+
+  '@karinjs/plugin-webui-network-monitor@1.0.3':
+    dependencies:
+      systeminformation: 5.25.11
 
   '@mapbox/node-pre-gyp@1.0.11(encoding@0.1.13)':
     dependencies:
@@ -13313,6 +13329,8 @@ snapshots:
     dependencies:
       '@pkgr/core': 0.1.1
       tslib: 2.8.1
+
+  systeminformation@5.25.11: {}
 
   tailwind-merge@2.5.4: {}
 

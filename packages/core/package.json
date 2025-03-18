@@ -88,6 +88,7 @@
     "yaml": "2.7.0"
   },
   "devDependencies": {
+    "@karinjs/plugin-webui-network-monitor": "^1.0.3",
     "@types/jsonwebtoken": "^9.0.9",
     "cross-env": "^7.0.3"
   },
