@@ -1,42 +1,79 @@
----
 name: 提交Bug / Submit Bug
-about: 向我们报告一个Bug以帮助我们改进
-title: 'Bug: '
-labels: bug
----
+description: 向我们报告一个Bug以帮助我们改进
+title: "Bug: "
+labels: ["bug"]
+body:
 
-警告: 在进一步操作之前，请检查下列选项。如果您忽视此模板或者没有提供关键信息，您的 Issue 将直接被关闭
+- type: markdown
+  attributes:
+  value: |
+  **警告**: 在进一步操作之前，请检查下列选项。如果您忽视此模板或者没有提供关键信息，您的 Issue 将直接被关闭
 
-- 确保您使用的是最新版本的`Karin`
-- 确保您的问题尚未在 Issues 列表中提出.
-- 确保您的问题不是由于您的代码错误导致的.
+      - 确保您使用的是最新版本的`Karin`
+      - 确保您的问题尚未在 Issues 列表中提出
+      - 确保您的问题不是由于您的代码错误导致的
 
-## 描述问题
+- type: textarea
+  id: bug-description
+  attributes:
+  label: 描述问题
+  description: 简要描述遇到的问题。
+  validations:
+  required: true
 
-简要描述遇到的问题。
+- type: textarea
+  id: reproduction-steps
+  attributes:
+  label: 复现步骤
+  description: 详细描述如何复现该问题
+  value: | 1. 第一步 2. 第二步 3. ...
+  validations:
+  required: true
 
-## 复现步骤
+- type: textarea
+  id: expected-behavior
+  attributes:
+  label: 预期行为
+  description: 预期应该发生什么？
+  validations:
+  required: true
 
-详细描述如何复现该问题：
+- type: textarea
+  id: actual-behavior
+  attributes:
+  label: 实际行为
+  description: 实际发生了什么？
+  validations:
+  required: true
 
-1. 第一步
-2. 第二步
-3. ...
+- type: input
+  id: os
+  attributes:
+  label: 操作系统
+  placeholder: 例如：Windows 11, macOS 12.0, Ubuntu 20.04
+  validations:
+  required: true
 
-## 预期行为
+- type: input
+  id: node-version
+  attributes:
+  label: Node.js 版本
+  placeholder: 例如：16.13.0
+  validations:
+  required: true
 
-预期应该发生什么？
+- type: input
+  id: project-version
+  attributes:
+  label: 项目版本
+  placeholder: 例如：1.0.0
+  validations:
+  required: true
 
-## 实际行为
-
-实际发生了什么？
-
-## 环境信息
-
-- 操作系统：
-- Node.js 版本：
-- 项目版本：
-
-## 附加信息
-
-任何额外的上下文或截图。
+- type: textarea
+  id: additional-info
+  attributes:
+  label: 附加信息
+  description: 任何额外的上下文或截图。
+  validations:
+  required: false

@@ -12,7 +12,7 @@ jobs:
       - name: analysis
         uses: actions-cool/issues-similarity-analysis@v1
         with:
-          filter-threshold: 0.5
+          filter-threshold: 0.7
           comment-title: '### 似乎有相似的问题'
           comment-body: '${index}. ${similarity} #${number}'
           show-footer: false
