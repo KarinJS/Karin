@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.7.5](https://github.com/KarinJS/Karin/compare/web-v1.7.4...web-v1.7.5) (2025-03-18)
+
+
+### 🐛 Bug Fixes
+
+* 修改关于页面描述 ([bf42a29](https://github.com/KarinJS/Karin/commit/bf42a2907118a472891b276284cfb56097e7b7e8))
+* 哎呀 ([d77e5f8](https://github.com/KarinJS/Karin/commit/d77e5f85f0b56157e895d7945f9bd38662c6d8fa))
+
+
+### 💄 Styles
+
+* 开关样式、输入框样式 ([050358a](https://github.com/KarinJS/Karin/commit/050358a55e2d6fb38fb5229e2578cbf0d241547d))
+* 系统默认主题适配 ([6ccdfb2](https://github.com/KarinJS/Karin/commit/6ccdfb2ac08456f60add3d0051e2fbcebd9df34b))
+
 ## [1.7.4](https://github.com/KarinJS/Karin/compare/web-v1.7.3...web-v1.7.4) (2025-03-17)
 
 
