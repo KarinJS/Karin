@@ -723,7 +723,10 @@ function NetworkMonitorCard () {
           ? (
             <NetworkMonitor
               networkData={data || initialData || { upload: 0, download: 0, totalSent: 0, totalReceived: 0, timestamp: Date.now() }}
+              enablePolling={enablePolling}
+              onPollingChange={setEnablePolling}
               showChart={showChart}
+              onShowChartChange={setShowChart}
             />)
           : (
             <div className='flex flex-col items-center justify-center p-6 gap-2'>
