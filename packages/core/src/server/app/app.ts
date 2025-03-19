@@ -33,7 +33,7 @@ const listen = (port: number, host: string) => {
   })
 
   listeners.once('online', () => {
-    logger.info(`[server] webui 已启动 访问地址: ${logger.green(`http://127.0.0.1:${port}/web`)}`)
+    logger.info(`[server] webui 已启动 访问地址: ${logger.green(`http://127.0.0.1:${port}/web/login?token=${process.env.HTTP_AUTH_KEY}`)}`)
     logger.info(`[server] http鉴权token: ${logger.green(process.env.HTTP_AUTH_KEY)}`)
     logger.info(`[server] ws鉴权token: ${logger.green(process.env.WS_SERVER_AUTH_KEY)}`)
     logger.info(`[server] OneBot11: ${logger.green(`ws://127.0.0.1:${port}`)}`)
@@ -81,7 +81,7 @@ const web = (dir: typeof root) => {
 export const initExpress = async (
   dir: typeof root,
   port: number,
-  host: string,
+  host: string
 ) => {
   const webDir = path.join(dir.karinDir, 'dist/web')
   app.use('/web', (req, res, next) => {
