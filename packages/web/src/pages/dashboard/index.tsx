@@ -241,6 +241,7 @@ function Status () {
   const [isChangelogOpen, setIsChangelogOpen] = useState(false)
   const [updateTip, setUpdateTip] = useState(false)
   const [proxyFn, setProxyFn] = useState(() => (url: string) => url)
+  const [proxyFnInitialized, setProxyFnInitialized] = useState(false)
   const [npmLatest, setNpmLatest] = useState(false)
   const [hasCheckedNpm, setHasCheckedNpm] = useState(false)
   const [isLoadingRelease, setIsLoadingRelease] = useState(false)
@@ -254,7 +255,13 @@ function Status () {
   })
 
   const handleTooltipClick = () => {
-    testGithub().then(fn => setProxyFn(fn))
+    // 只在第一次点击时初始化 proxyFn
+    if (!proxyFnInitialized) {
+      testGithub().then(fn => {
+        setProxyFn(fn)
+        setProxyFnInitialized(true)
+      })
+    }
     fetchRelease()
     setIsChangelogOpen(true)
   }
