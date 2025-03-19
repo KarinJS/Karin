@@ -288,7 +288,6 @@ function Status () {
       setIsLoadingRelease(true)
       try {
         const url = proxyFn('https://raw.githubusercontent.com/karinjs/repo-status/refs/heads/main/data/releases.json')
-        console.log('fetchRelease', url)
         const response = await axios.get<GithubRelease[]>(url)
         return response.data
       } catch (error) {
@@ -412,7 +411,7 @@ function Status () {
               {isLoadingRelease
                 ? (
                   <div className='flex justify-center items-center h-60'>
-                    <Spinner size='lg' color='primary' label='处理中' />
+                    <Spinner size='lg' color='primary' label='处理中...' />
                   </div>
                 )
                 : (

@@ -85,7 +85,6 @@ const UsagePie: React.FC<UsagePieProps> = ({
   }, [title])
 
   useEffect(() => {
-    console.log(isDark)
     if (chartInstance.current) {
       const currentIsDark = isDark
 
