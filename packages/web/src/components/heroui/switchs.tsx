@@ -35,7 +35,7 @@ export const createSwitch = (
           `data-[selected=true]:border-${options.color || 'primary'}`,
           'p-4',
           'hover:bg-default-100',
-          'w-[320px]',
+          'w-full max-w-[320px]',
           className
         )}
         defaultSelected={defaultSelected ?? false}
