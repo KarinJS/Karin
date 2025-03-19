@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.7.6](https://github.com/KarinJS/Karin/compare/web-v1.7.5...web-v1.7.6) (2025-03-19)
+
+
+### 🐛 Bug Fixes
+
+* **dashboard:** 仅在第一次点击时初始化 proxyFn ([df6064e](https://github.com/KarinJS/Karin/commit/df6064ee037f08c8d7c085dbbc900fd652ec5f85))
+* **dashboard:** 代理函数初始化及fetchRelease调用问题 ([c02cdf0](https://github.com/KarinJS/Karin/commit/c02cdf0d8746b07c2aad320facf400f36a88b35c))
+* **dashboard:** 改进更新日志错误处理及显示 ([ed9d432](https://github.com/KarinJS/Karin/commit/ed9d432564cf5b9d996a0d7691b6274eae0c00c9))
+* **login:** 自动登录 ([6911cd8](https://github.com/KarinJS/Karin/commit/6911cd84ad56ef11c2e69695e8ef090617a57a1f))
+* network monitor card ([6021476](https://github.com/KarinJS/Karin/commit/602147692e8a67a8cde34b8b9a35e785d39829f2))
+* 修复向后端请求两次插件列表 ([452f8da](https://github.com/KarinJS/Karin/commit/452f8da0c2e688fdcb05cb478c6e1fac021a83ed))
+
+
+### 💄 Styles
+
+* **switchs:** 将宽度样式调整为全宽并限制最大宽度 ([49f066f](https://github.com/KarinJS/Karin/commit/49f066f1c1db818b28f460a9fd0217a4e0ce8206))
+
 ## [1.7.5](https://github.com/KarinJS/Karin/compare/web-v1.7.4...web-v1.7.5) (2025-03-18)
 
 
