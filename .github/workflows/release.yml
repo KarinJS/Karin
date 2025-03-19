@@ -75,6 +75,5 @@ jobs:
         with:
           workflow: sync.yml
           repo: KarinJS/repo-status
-          inputs: '{ "message": "Sync", "something": false }'
           # Required when using the `repo` option. Either a PAT or a token generated from the GitHub app or CLI
           token: ${{ secrets.RELEASE }}
