@@ -258,11 +258,23 @@ function Status () {
     // 只在第一次点击时初始化 proxyFn
     if (!proxyFnInitialized) {
       testGithub().then(fn => {
-        setProxyFn(fn)
+        if (typeof fn === 'function') {
+          setProxyFn(fn)
+        } else {
+          // 如果不是函数，保持默认的 url => url 函数
+          console.warn('testGithub 返回的不是函数，使用默认代理函数')
+        }
         setProxyFnInitialized(true)
       })
+        .catch(err => {
+          console.error('初始化代理函数失败:', err)
+          setProxyFnInitialized(true) // 即使失败也标记为已初始化
+        })
     }
-    fetchRelease()
+    // 延迟执行 fetchRelease，确保 proxyFn 已经设置好
+    setTimeout(() => {
+      fetchRelease()
+    }, 100)
     setIsChangelogOpen(true)
   }
 
@@ -287,7 +299,8 @@ function Status () {
     async () => {
       setIsLoadingRelease(true)
       try {
-        const url = proxyFn('https://raw.githubusercontent.com/karinjs/repo-status/refs/heads/main/data/releases.json')
+        const proxyFunction = typeof proxyFn === 'function' ? proxyFn : (url: string) => url
+        const url = proxyFunction('https://raw.githubusercontent.com/karinjs/repo-status/refs/heads/main/data/releases.json')
         const response = await axios.get<GithubRelease[]>(url)
         return response.data
       } catch (error) {
