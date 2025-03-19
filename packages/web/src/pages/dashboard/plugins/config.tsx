@@ -1,5 +1,5 @@
 import { request } from '@/lib/request'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { DashboardPage } from '@/components/config/plugin/plugins'
 import { Spinner } from '@heroui/spinner'
@@ -25,23 +25,27 @@ export default function PluginConfigPage () {
     info: {
       id: '',
       name: '',
-    }
+    },
   })
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
+  const requestSentRef = useRef(false)
 
-  const fetchConfig = async () => {
+  const fetchConfig = useCallback(async () => {
     if (!name || !type) return
+    // 如果已经发送过请求，则不再重复发送
+    if (requestSentRef.current) return
 
     try {
       setLoading(true)
       setError(null)
+      requestSentRef.current = true // 标记请求已发送
       const result = await request.serverPost<GetConfigResponse, GetConfigRequest>(
         '/api/v1/plugin/config/get',
         {
           name,
-          type
+          type,
         }
       )
       setConfig(result)
@@ -51,12 +55,17 @@ export default function PluginConfigPage () {
     } finally {
       setLoading(false)
     }
-  }
+  }, [name, type])
 
   useEffect(() => {
     if (!name || !type) return
     fetchConfig()
-  }, [name, type])
+
+    // 组件卸载时重置标记，以便在组件重新挂载时可以再次发送请求
+    return () => {
+      requestSentRef.current = false
+    }
+  }, [name, type, fetchConfig])
 
   if (!name || !type) {
     return (
