@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.7.6](https://github.com/KarinJS/Karin/compare/core-v1.7.5...core-v1.7.6) (2025-03-19)
+
+
+### 🐛 Bug Fixes
+
+* **login:** 自动登录 ([6911cd8](https://github.com/KarinJS/Karin/commit/6911cd84ad56ef11c2e69695e8ef090617a57a1f))
+
 ## [1.7.5](https://github.com/KarinJS/Karin/compare/core-v1.7.4...core-v1.7.5) (2025-03-18)
 
 
