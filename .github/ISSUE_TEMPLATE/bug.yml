@@ -60,7 +60,7 @@ body:
     id: node-version
     attributes:
       label: Node.js 版本
-      placeholder: 例如：16.13.0
+      placeholder: 例如：22.14.0
     validations:
       required: true
 
