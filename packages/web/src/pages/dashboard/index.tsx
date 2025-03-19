@@ -291,11 +291,14 @@ function Status () {
         console.log('fetchRelease', url)
         const response = await axios.get<GithubRelease[]>(url)
         return response.data
+      } catch (error) {
+        console.error('获取更新日志失败:', error)
+        throw error
       } finally {
         setIsLoadingRelease(false)
       }
     },
-    { manual: true, onError: () => console.log('版本检测失败') }
+    { manual: true, onError: (error) => console.error('版本检测失败', error) }
   )
 
   const updateLogs = releaseData ? extractUpdateLogs(releaseData, data?.version!) : []
@@ -451,7 +454,31 @@ function Status () {
                       </div>
                     ))}
                     {releaseError && (
-                      <div className='text-danger'>无法加载更新日志</div>
+                      <div className='flex flex-col gap-2 p-4 bg-danger-50 rounded-lg border border-danger-200'>
+                        <div className='text-danger font-medium flex items-center gap-2'>
+                          <TriangleAlert className='w-5 h-5' />
+                          更新日志请求失败...
+                        </div>
+                        <div className='text-default-600 text-sm'>
+                          <div className='mb-2'>
+                            错误详情: {
+                              axios.isAxiosError(releaseError)
+                                ? `${releaseError.message} (状态码: ${releaseError.response?.status || '未知'})`
+                                : releaseError.message || '未知错误'
+                            }
+                          </div>
+                          您可以直接前往
+                          <a
+                            href='https://github.com/KarinJS/Karin/releases'
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='text-primary underline ml-1'
+                          >
+                            GitHub Releases
+                          </a>
+                          页面查看最新更新内容。
+                        </div>
+                      </div>
                     )}
                   </>
                 )}
