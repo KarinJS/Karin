@@ -282,7 +282,7 @@ const AboutUs = () => {
                     开发，使用
                     <span className='inline-flex items-center px-2.5 py-0.5 mx-1.5 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300 align-middle translate-y-[-1px]'>
                       TypeScript
-                    </span> +
+                    </span>+
                     <span className='inline-flex items-center px-2.5 py-0.5 mx-1.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 align-middle translate-y-[-1px]'>
                       React
                     </span>
@@ -295,10 +295,10 @@ const AboutUs = () => {
                     Karin 的一大亮点是自带前端相关页面，插件开发者可以更加得心应手地进行开发。技术栈方面，前端采用
                     <span className='inline-flex items-center px-2.5 py-0.5 mx-1.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 align-middle translate-y-[-1px]'>
                       Vite
-                    </span> +
+                    </span>+
                     <span className='inline-flex items-center px-2.5 py-0.5 mx-1.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 align-middle translate-y-[-1px]'>
                       React
-                    </span> +
+                    </span>+
                     <span className='inline-flex items-center px-2.5 py-0.5 mx-1.5 rounded-full text-xs font-medium bg-cyan-50 text-cyan-700 dark:bg-cyan-900/50 dark:text-cyan-300 align-middle translate-y-[-1px]'>
                       TailwindCSS
                     </span>
