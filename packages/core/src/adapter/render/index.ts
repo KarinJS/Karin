@@ -1,7 +1,7 @@
-export type * from './admin/types'
-
 import { createHttpRenderClient } from './connect/http'
 import { createWebSocketRenderClient } from './connect/client'
+
+export type * from './admin/types'
 
 /**
  * @internal

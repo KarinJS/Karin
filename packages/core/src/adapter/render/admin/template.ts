@@ -36,7 +36,6 @@ export const renderTpl = (options: Omit<Options, 'name'> & { name?: string }) =>
     fs.writeFileSync(outputPath, renderData)
 
     delete options.data
-    delete options.name
     options.file = `file://${outputPath}`
 
     return options
@@ -47,7 +46,6 @@ export const renderTpl = (options: Omit<Options, 'name'> & { name?: string }) =>
   }
 
   delete options.data
-  delete options.name
   return options
 }
 
