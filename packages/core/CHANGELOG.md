@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.7.7](https://github.com/KarinJS/Karin/compare/core-v1.7.6...core-v1.7.7) (2025-03-20)
+
+
+### 🐛 Bug Fixes
+
+* export renderTpl ([73b8d58](https://github.com/KarinJS/Karin/commit/73b8d58bc356a1a178b590202afd859028300f16))
+
 ## [1.7.6](https://github.com/KarinJS/Karin/compare/core-v1.7.5...core-v1.7.6) (2025-03-19)
 
 
