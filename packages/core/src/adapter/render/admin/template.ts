@@ -20,6 +20,10 @@ export const renderTpl = (options: Omit<Options, 'name'> & { name?: string }) =>
     throw TypeError('模板文件路径必须为字符串')
   }
 
+  if (!options.name) {
+    options.name = path.basename(options.file) || 'render'
+  }
+
   /** 渲染模板数据 */
   if (options.data) {
     /** 他喵的 不会真的有笨比传个http吧... */

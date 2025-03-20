@@ -329,7 +329,10 @@ const filterPkg = async (list: string[]) => {
   ]
 
   const pkg = await requireFile('./package.json', { force: true })
-  const dependencies = Object.keys(pkg.dependencies || {}).filter((name) => !exclude.includes(name) && !name.startsWith('@types'))
+  const dependencies = [
+    ...Object.keys(pkg.dependencies || {}),
+    ...Object.keys(pkg.devDependencies || {}),
+  ].filter((name) => !exclude.includes(name) && !name.startsWith('@types'))
 
   await Promise.all(dependencies.map(async (name) => {
     const isPlugin = await isNpmPlugin(name)
