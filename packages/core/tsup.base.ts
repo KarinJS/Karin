@@ -1,11 +1,9 @@
 import fs from 'node:fs'
 import { URL } from 'node:url'
+import { builtinModules } from 'node:module'
 import type { Options } from 'tsup'
 
 const pkg = JSON.parse(fs.readFileSync(new URL('package.json', import.meta.url), 'utf-8'))
-
-const noExternal = []
-const external = Object.keys(pkg.dependencies).filter(dep => !noExternal.includes(dep))
 
 /**
  * @description `tsup` configuration options
@@ -26,14 +24,17 @@ export const options: Options = {
       stripInternal: false, // 是否删除内部注释
       skipLibCheck: true, // 是否跳过库检查
       preserveSymlinks: false, // 是否保留符号链接
-      types: ['@types/node']
-    }
+      types: ['@types/node'],
+    },
   }, // 是否生成 .d.ts 文件
   outDir: 'dist', // 输出目录
   treeshake: true, // 树摇优化
   minify: false, // 压缩代码
   ignoreWatch: ['src/modules'],
   shims: false,
-  noExternal,
-  external,
+  external: [
+    ...builtinModules,
+    ...builtinModules.map((node) => `node:${node}`),
+    ...Object.keys(pkg.dependencies),
+  ],
 }

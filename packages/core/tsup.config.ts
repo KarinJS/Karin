@@ -9,4 +9,9 @@ fs.rmSync('dist/index.d.ts', { force: true })
 export default defineConfig({
   ...options,
   entry: ['src/index.ts', 'src/root.ts'], // 入口文件
+  external: [
+    ...(options.external || []),
+    '@karinjs/node-pty',
+    '@karinjs/plugin-webui-network-monitor',
+  ],
 })

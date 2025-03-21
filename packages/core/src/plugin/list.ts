@@ -326,6 +326,7 @@ const filterPkg = async (list: string[]) => {
     'redis',
     'ws',
     'yaml',
+    'sqlite3',
   ]
 
   const pkg = await requireFile('./package.json', { force: true })
