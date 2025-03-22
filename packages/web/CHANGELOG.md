@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.7](https://github.com/KarinJS/Karin/compare/web-v1.7.6...web-v1.7.7) (2025-03-22)
+
+
+### 🐛 Bug Fixes
+
+* **网络监控:** 优化网络监控组件的轮询和图表管理 ([73369c7](https://github.com/KarinJS/Karin/commit/73369c791c5c4b7a59e5c31ff6ec464523d490ac))
+
 ## [1.7.6](https://github.com/KarinJS/Karin/compare/web-v1.7.5...web-v1.7.6) (2025-03-19)
 
 
