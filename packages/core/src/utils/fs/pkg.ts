@@ -4,7 +4,7 @@ import { cache } from '@/plugin/cache'
 import { createRequire } from 'module'
 import { requireFileSync } from './require'
 import type { PkgData } from '@/types'
-export { PkgEnv, PkgData } from '@/types'
+export type { PkgEnv, PkgData } from '@/types'
 
 /**
  * 输入包名 返回包根目录的绝对路径 仅简单查找

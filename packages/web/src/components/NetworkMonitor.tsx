@@ -1,7 +1,6 @@
 'use client'
 
-import type React from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import * as echarts from 'echarts'
 import { useTheme } from '@/hooks/use-theme'
 import { ArrowDownCircle, ArrowUpCircle, Download, Upload } from 'lucide-react'
@@ -104,46 +103,67 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({
     } catch (error) {
       console.error('处理网络数据失败:', error)
     }
-  }, [propNetworkData, enablePolling]) // 添加 enablePolling 作为依赖
+  }, [propNetworkData, enablePolling])
 
+  // 清理图表实例的函数
+  const disposeChart = useCallback(() => {
+    if (chartInstance.current) {
+      chartInstance.current.dispose()
+      chartInstance.current = null
+    }
+  }, [])
+
+  // 初始化和清理图表
   useEffect(() => {
+    let observer: ResizeObserver | null = null
+
     if (chartRef.current && showChart) {
+      // 确保先清理之前的实例
+      disposeChart()
+
       // 移除不必要的配置，优化性能
       const initOptions: echarts.EChartsInitOpts = {
         renderer: 'canvas',
-        // 减少不必要的脏矩形检测，优化性能
         useDirtyRect: false,
         devicePixelRatio: window.devicePixelRatio,
       }
       chartInstance.current = echarts.init(chartRef.current, null, initOptions)
 
       // 设置响应式
-      const observer = new ResizeObserver(() => {
+      observer = new ResizeObserver(() => {
         chartInstance.current?.resize()
       })
       observer.observe(chartRef.current)
+    } else if (!showChart) {
+      // 如果图表不显示，则清理图表实例
+      disposeChart()
+    }
 
-      // 清理函数
-      return () => {
-        chartInstance.current?.dispose()
+    // 清理函数
+    return () => {
+      if (observer) {
         observer.disconnect()
       }
+      disposeChart()
     }
+  }, [showChart, disposeChart])
 
-    // 如果图表不显示，则清理图表实例
-    if (!showChart && chartInstance.current) {
-      chartInstance.current.dispose()
-      chartInstance.current = null
-    }
-  }, [showChart])
-
-  // 添加这个 useEffect 来监听 propNetworkData 变化并调用 fetchNetworkData
+  // 监听 propNetworkData 变化并调用 fetchNetworkData
   useEffect(() => {
-    if (propNetworkData) {
+    if (propNetworkData && enablePolling) {
       fetchNetworkData()
     }
-  }, [propNetworkData, fetchNetworkData])
+  }, [propNetworkData, fetchNetworkData, enablePolling])
 
+  // 组件卸载时清理数据
+  useEffect(() => {
+    return () => {
+      // 清空数据以防内存泄漏
+      setNetworkData([])
+    }
+  }, [])
+
+  // 更新图表
   useEffect(() => {
     // 如果不显示图表或没有图表实例，则不更新
     if (!showChart || !chartInstance.current || networkData.length === 0) return
@@ -154,7 +174,7 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({
     const dataZoomEnd = (currentOption?.dataZoom as any)?.[0]?.end
     const legendSelected = (currentOption?.legend as any)?.[0]?.selected || {}
 
-    // 用于显示的数据
+    // 用于显示的数据 - 限制为最新的20个点，减少内存使用
     const displayData = networkData.slice(-20)
 
     // 确定Y轴的单位
@@ -311,7 +331,9 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({
     }
 
     // 使用节流更新图表，减少渲染频率
-    chartInstance.current.setOption(option, { notMerge: false })
+    if (chartInstance.current) {
+      chartInstance.current.setOption(option, { notMerge: false })
+    }
   }, [networkData, theme, showChart])
 
   /** 渲染网络状态卡片 */
@@ -357,4 +379,4 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({
   )
 }
 
-export default NetworkMonitor
+export default React.memo(NetworkMonitor)

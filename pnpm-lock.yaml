@@ -47,9 +47,6 @@ importers:
 
   packages/core:
     dependencies:
-      '@karinjs/node-pty':
-        specifier: ^1.0.4
-        version: 1.0.4
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.21
@@ -114,6 +111,9 @@ importers:
         specifier: 2.7.0
         version: 2.7.0
     devDependencies:
+      '@karinjs/node-pty':
+        specifier: ^1.0.4
+        version: 1.0.4
       '@karinjs/plugin-webui-network-monitor':
         specifier: ^1.0.3
         version: 1.0.3

@@ -8,7 +8,7 @@ import type { KarinStatus, NetworkStatus, SystemStatus } from '@/types/server'
 import { Button } from '@heroui/button'
 import { RiRestartLine, RiShutDownLine } from 'react-icons/ri'
 import { Tooltip } from '@heroui/tooltip'
-import React, { useState, useCallback, useEffect, useMemo } from 'react'
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import toast from 'react-hot-toast'
 import useDialog from '@/hooks/use-dialog'
 import { VscBracketError } from 'react-icons/vsc'
@@ -648,6 +648,7 @@ function NetworkMonitorCard () {
   const [enablePolling, setEnablePolling] = useState(true)
   const [showChart, setShowChart] = useState(true)
   const [initialCheckDone, setInitialCheckDone] = useState(false)
+  const pollingIntervalRef = useRef<number | null>(null)
 
   // 初始检查接口是否可用
   const { data: initialData, error: initialError } = useRequest(
@@ -664,14 +665,41 @@ function NetworkMonitorCard () {
     }
   )
 
-  // 实际数据请求
-  const { data } = useRequest(
+  // 实际数据请求 - 使用 manual 模式，手动控制轮询
+  const { data, run: fetchNetworkData } = useRequest(
     () => request.serverGet<NetworkStatus>('/api/v1/system/get/network'),
     {
-      pollingInterval: 2000,
-      ready: showNetworkMonitor && enablePolling && initialCheckDone && !initialError,
+      manual: true,
     }
   )
+
+  // 手动控制轮询，避免 ahooks 内部轮询可能导致的内存泄漏
+  useEffect(() => {
+    // 清理之前的轮询
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current)
+      pollingIntervalRef.current = null
+    }
+
+    // 如果满足条件，开始新的轮询
+    if (showNetworkMonitor && enablePolling && initialCheckDone && !initialError) {
+      // 立即执行一次
+      fetchNetworkData()
+
+      // 设置轮询
+      pollingIntervalRef.current = window.setInterval(() => {
+        fetchNetworkData()
+      }, 2000)
+    }
+
+    // 组件卸载时清理轮询
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current)
+        pollingIntervalRef.current = null
+      }
+    }
+  }, [showNetworkMonitor, enablePolling, initialCheckDone, initialError, fetchNetworkData])
 
   // 如果初始检查出错，不渲染整个组件
   if (initialError) {
