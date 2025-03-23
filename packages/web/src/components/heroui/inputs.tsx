@@ -39,7 +39,7 @@ export const createInput = (
       <HeroInput
         {...options}
         {...register(`${key}.value`)}
-        className={componentClassName || 'w-full max-w-[300px]'}
+        className={componentClassName || 'w-[300px]'}
         validate={(value) => {
           if (!value) {
             if (options.isRequired) {
