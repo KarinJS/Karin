@@ -1,5 +1,24 @@
 # 更新日志
 
+## [1.7.8](https://github.com/KarinJS/Karin/compare/core-v1.7.7...core-v1.7.8) (2025-03-23)
+
+
+### 🐛 Bug Fixes
+
+* fix [#316](https://github.com/KarinJS/Karin/issues/316) ([4c2340b](https://github.com/KarinJS/Karin/commit/4c2340bbd47c193182e2b1761e1840e39c7b3e70))
+* fix [#322](https://github.com/KarinJS/Karin/issues/322) ([4214772](https://github.com/KarinJS/Karin/commit/421477269702d06d67d915000186efc5177f9f69))
+* **网络监控:** 优化网络监控组件的轮询和图表管理 ([73369c7](https://github.com/KarinJS/Karin/commit/73369c791c5c4b7a59e5c31ff6ec464523d490ac))
+
+
+### 💄 Styles
+
+* 优化部分样式 ([5eaaeed](https://github.com/KarinJS/Karin/commit/5eaaeed6722efdd9e282e9ab43b5f59c5975ab3f))
+
+
+### 🎡 Continuous Integration
+
+* 锁定版本 ([db44a80](https://github.com/KarinJS/Karin/commit/db44a80e4ebb4a63fb47c7c58113fbebff0aa07f))
+
 ## [1.7.7](https://github.com/KarinJS/Karin/compare/core-v1.7.6...core-v1.7.7) (2025-03-20)
 
 
