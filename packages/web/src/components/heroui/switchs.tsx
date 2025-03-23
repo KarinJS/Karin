@@ -24,32 +24,38 @@ export const createSwitch = (
   } = props
 
   return (
-    <div className={className || 'inline-flex p-1 flex-row-reverse'}>
-      <HeroSwitch
-        key={key}
-        {...options}
-        className={cn(
-          'flex flex-row-reverse items-center',
-          'cursor-pointer rounded-lg border',
-          'border-default-200',
-          `data-[selected=true]:border-${options.color || 'primary'}`,
-          'p-4',
-          'hover:bg-default-100',
-          'w-full max-w-[320px]',
-          className
-        )}
-        defaultSelected={defaultSelected ?? false}
-        {...register(`${key}.value`)}
-      >
-        <div className='flex-shrink'>
+    <div className={className || 'inline-flex p-1'}>
+      <div className='w-[320px] h-[100px] relative border border-default-200 rounded-lg hover:bg-default-100 p-0'>
+        {/* 标题和描述区域 */}
+        <div className='w-full p-4 pr-16'>
           {props.label && (
-            <p className='font-medium text-base mb-2'>{props.label}</p>
+            <p className='text-base mb-2'>{props.label}</p>
           )}
           {props.description && (
-            <p className='text-xs text-gray-500 mr-2'>{props.description}</p>
+            <p
+              className='text-xs text-gray-500 truncate w-full'
+              title={props.description}
+            >
+              {props.description}
+            </p>
           )}
         </div>
-      </HeroSwitch>
+
+        {/* 开关控件位于右侧中间 */}
+        <div className='absolute right-4 top-1/2 -translate-y-1/2'>
+          <HeroSwitch
+            key={key}
+            {...options}
+            className={cn(
+              'cursor-pointer',
+              `data-[selected=true]:border-${options.color || 'primary'}`,
+              componentClassName
+            )}
+            defaultSelected={defaultSelected ?? false}
+            {...register(`${key}.value`)}
+          />
+        </div>
+      </div>
     </div>
   )
 }

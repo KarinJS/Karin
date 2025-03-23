@@ -59,7 +59,7 @@ const initLogger = (options: LoggerOptions = {}) => {
     config.categories.default.appenders.unshift('fragments')
     config.appenders.fragments = {
       type: 'file',
-      filename: 'logs/app.log',
+      filename: '@karinjs/logs/app.log',
       pattern: 'MM-dd.log',
       keepFileExt: true,
       alwaysIncludePattern: true,
@@ -125,7 +125,7 @@ const addColor = (Logger: log4js.Logger, color?: string) => {
  */
 const createLogger = (dir: string, options: LoggerOptions = {}) => {
   if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true, })
+    fs.mkdirSync(dir, { recursive: true })
   }
 
   initLogger(options)
@@ -147,6 +147,6 @@ export const createInnerLogger = (dir: string) => {
       daysToKeep: Number(process.env.LOG_DAYS_TO_KEEP) || 30,
       maxLogSize: Number(process.env.LOG_MAX_LOG_SIZE) || 0,
       logColor: process.env.LOG_FNC_COLOR || '#E1D919',
-    }
+    },
   })
 }
