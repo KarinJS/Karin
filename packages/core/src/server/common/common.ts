@@ -4,13 +4,13 @@ import {
   createAccessTokenExpiredResponse,
   createServerErrorResponse,
   createUnauthorizedResponse,
-  HTTPStatusCode
+  HTTPStatusCode,
 } from '../utils/response'
 import type { Request, Response } from 'express'
 
 enum AuthErrorType {
   MissingToken = '鉴权失败: 缺少authorization',
-  MissingUserId = '鉴权失败: 缺少x-user-id'
+  MissingUserId = '鉴权失败: 缺少x-user-id',
 }
 
 /**
@@ -107,5 +107,5 @@ export const auth = {
     }
 
     return false
-  }
+  },
 }

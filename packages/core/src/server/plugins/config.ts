@@ -183,7 +183,7 @@ export const pluginGetConfig: RequestHandler = async (req, res) => {
 
   const data: GetConfigResponse = {
     options: list as GetConfigResponse['options'],
-    info: config.info
+    info: config.info,
   }
 
   createSuccessResponse(res, data)

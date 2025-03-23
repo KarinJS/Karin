@@ -103,7 +103,7 @@ export const installPuppeteer = async (name: string, isNpmMirror: boolean) => {
   fs.writeFileSync(path.join(puppeteerDir, 'config.json'), JSON.stringify(puppeteerConfig, null, 2))
 
   console.log('📦 正在安装puppeteer...')
-  const cmd = `pnpm init && pnpm install @karinjs/puppeteer${getSuffix(isNpmMirror)} && npx init`
+  const cmd = `pnpm init && pnpm install @karinjs/puppeteer@1.6.1${getSuffix(isNpmMirror)} && npx init`
   execSync(cmd, {
     cwd: puppeteerDir,
     stdio: 'inherit',
@@ -164,7 +164,7 @@ export const production = async (name: string, puppeteer: boolean) => {
         '--------------------------------',
         '  如需使用Puppeteer，请执行以下命令：',
         green(`  cd ${name}-puppeteer && pnpm app`),
-        '--------------------------------',
+        '--------------------------------'
       )
     }
 
