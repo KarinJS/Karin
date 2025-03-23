@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5](https://github.com/KarinJS/Karin/compare/create-karin-v1.0.4...create-karin-v1.0.5) (2025-03-23)
+
+
+### 🎡 Continuous Integration
+
+* 锁定版本 ([db44a80](https://github.com/KarinJS/Karin/commit/db44a80e4ebb4a63fb47c7c58113fbebff0aa07f))
+
 ## [1.0.4](https://github.com/KarinJS/Karin/compare/create-karin-v1.0.3...create-karin-v1.0.4) (2025-02-11)
 
 
