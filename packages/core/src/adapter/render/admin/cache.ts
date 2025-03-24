@@ -1,7 +1,10 @@
-import type { Options, RenderResult } from './types'
+import type { Options, RenderResult, Options2, RenderResult2 } from './types'
 
 /** 渲染函数类型 */
-export type Render = <T extends Options>(options: T) => Promise<RenderResult<T>>
+export interface Render {
+  <T extends Options> (options: T): Promise<RenderResult<T>>
+  <T extends Options2> (options: T): Promise<RenderResult2<T>>
+}
 
 let index = 0
 const cache: {

@@ -1,5 +1,4 @@
 import { WebSocketRender } from './ws'
-import { render } from '@/utils/config/file/render'
 import { listeners } from '@/core/internal'
 import { WS_CONNECTION_PUPPETEER } from '@/utils/fs/key'
 import type { WebSocket } from 'ws'
@@ -18,13 +17,6 @@ export class WebSocketServerRenderer extends WebSocketRender {
   }
 
   connection () {
-    const cfg = render()
-    if (!cfg.ws_server.enable) {
-      logger.warn('[WebSocket] 反向ws未启用')
-      this.socket.close()
-      return false
-    }
-
     const url = `ws://${this.request.headers.host}${this.request.url}`
 
     if (process.env.WS_SERVER_AUTH_KEY) {

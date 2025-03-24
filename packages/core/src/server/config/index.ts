@@ -8,7 +8,7 @@ import {
   adapter,
   groups,
   privates,
-  render,
+  getRenderCfg,
   pm2,
   redis,
   getEnv,
@@ -47,7 +47,7 @@ export const getConfig: RequestHandler = async (req, res) => {
   }
 
   if (type === 'render') {
-    const cfg = render()
+    const cfg = getRenderCfg()
     return createSuccessResponse(res, cfg)
   }
 

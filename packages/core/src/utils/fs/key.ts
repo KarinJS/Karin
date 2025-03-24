@@ -25,3 +25,6 @@ export const WS_CLOSE_ONEBOT = 'ws:close:onebot'
 export const WS_CLOSE_PUPPETEER = 'ws:close:puppeteer'
 /** 传递sandbox ws关闭 */
 export const WS_CLOSE_SANDBOX = 'ws:close:sandbox'
+
+/** 传递2.0 puppeteer ws连接 */
+export const WS_CONNECTION_PUPPETEER_2 = 'ws:connection:puppeteer-2'

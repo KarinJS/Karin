@@ -50,7 +50,14 @@ const initRender = (dir: string) => {
 /**
  * @public 公开Api
  * @description 获取渲染配置
+ * @deprecated 请使用 `getRenderCfg` 代替
  */
 export const render = () => cache
+
+/**
+ * @public 公开Api
+ * @description 获取渲染配置
+ */
+export const getRenderCfg = () => cache
 
 export default initRender

@@ -1,6 +1,7 @@
 import { server } from './app'
 import { WebSocketServer, type WebSocket } from 'ws'
 import { listeners } from '@/core/internal'
+import { getRenderCfg } from '@/utils/config'
 import {
   WS_CLOSE,
   WS_CLOSE_ONEBOT,
@@ -8,8 +9,9 @@ import {
   WS_CONNECTION,
   WS_CONNECTION_ONEBOT,
   WS_CONNECTION_PUPPETEER,
+  WS_CONNECTION_PUPPETEER_2,
   WS_CONNECTION_SANDBOX,
-  WS_CONNECTION_TERMINAL
+  WS_CONNECTION_TERMINAL,
 } from '@/utils/fs/key'
 import type { IncomingMessage } from 'node:http'
 
@@ -25,7 +27,7 @@ export const wss: WebSocketServer = new WebSocketServer({ server })
 export const emitEvent = (
   key: string,
   socket: WebSocket,
-  request: IncomingMessage,
+  request: IncomingMessage
 ) => {
   /** 是否关闭 */
   let isClose = true
@@ -83,7 +85,22 @@ wss.on('connection', (socket, request) => {
   }
 
   if (request.url === '/puppeteer') {
-    emitEvent(WS_CONNECTION_PUPPETEER, socket, request)
+    const cfg = getRenderCfg()
+    if (!cfg.ws_server.enable) {
+      logger.warn('[WebSocket] puppeteerServer 未启用')
+      socket.close()
+      return
+    }
+
+    /**
+     * 2.0 puppeteer
+     * 客户端名称: @karinjs/puppeteer-server
+     */
+    if (request.headers['x-client-name'] === '@karinjs/puppeteer-server') {
+      emitEvent(WS_CONNECTION_PUPPETEER_2, socket, request)
+    } else {
+      emitEvent(WS_CONNECTION_PUPPETEER, socket, request)
+    }
 
     socket.once('close', (code, reason) => {
       listeners.emit(WS_CLOSE_PUPPETEER, socket, request, code, reason)

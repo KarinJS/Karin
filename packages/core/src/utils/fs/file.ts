@@ -199,3 +199,125 @@ export const copyConfig = async (
     return false
   }
 }
+
+/**
+ * 递归获取目录下的所有文件
+ * @param dir 目录路径
+ * @param options 选项
+ * @returns 符合条件的文件路径列表（包括相对路径）
+ * @example
+ * ```ts
+ * getAllFilesSync('dir')
+ * getAllFilesSync('dir', { suffixs: ['yaml', '.json'] })
+ * getAllFilesSync('dir', { exclude: ['.yaml', 'json'] })
+ * ```
+ */
+export const getAllFilesSync = (dir: string, options: {
+  /** 仅获取指定后缀的文件 与 exclude 互斥 */
+  suffixs?: string[]
+  /** 排除指定后缀的文件 与 suffixs 互斥 */
+  exclude?: string[]
+} = {}) => {
+  const { suffixs = [], exclude = [] } = options
+  const result: string[] = []
+
+  const readDirRecursive = (currentDir: string, prefix = '') => {
+    const files = fs.readdirSync(currentDir, { withFileTypes: true })
+
+    for (const file of files) {
+      const relativePath = path.join(prefix, file.name)
+      const fullPath = path.join(currentDir, file.name)
+
+      if (file.isDirectory()) {
+        readDirRecursive(fullPath, relativePath)
+      } else if (file.isFile()) {
+        const suffix = path.extname(file.name)
+
+        // 处理文件后缀筛选逻辑
+        if (suffixs.length > 0) {
+          // 统一后缀格式为 .suffix
+          const normalizedSuffixs = suffixs.map(s => s.startsWith('.') ? s : `.${s}`)
+          if (normalizedSuffixs.includes(suffix)) {
+            result.push(relativePath)
+          }
+        } else if (exclude.length > 0) {
+          // 统一后缀格式为 .suffix
+          const normalizedExclude = exclude.map(s => s.startsWith('.') ? s : `.${s}`)
+          if (!normalizedExclude.includes(suffix)) {
+            result.push(relativePath)
+          }
+        } else {
+          result.push(relativePath)
+        }
+      }
+    }
+  }
+
+  if (!fs.existsSync(dir)) {
+    throw new Error(`路径不存在: ${dir}`)
+  }
+
+  readDirRecursive(dir)
+  return result
+}
+
+/**
+ * 递归获取目录下的所有文件（异步版本）
+ * @param dir 目录路径
+ * @param options 选项
+ * @returns 符合条件的文件路径列表（包括相对路径）
+ * @example
+ * ```ts
+ * await getFilesRecursive('dir')
+ * await getFilesRecursive('dir', { suffixs: ['yaml', '.json'] })
+ * await getFilesRecursive('dir', { exclude: ['.yaml', 'json'] })
+ * ```
+ */
+export const getAllFiles = async (dir: string, options: {
+  /** 仅获取指定后缀的文件 与 exclude 互斥 */
+  suffixs?: string[]
+  /** 排除指定后缀的文件 与 suffixs 互斥 */
+  exclude?: string[]
+} = {}) => {
+  const { suffixs = [], exclude = [] } = options
+  const result: string[] = []
+
+  const readDirRecursive = async (currentDir: string, prefix = '') => {
+    const files = await fs.promises.readdir(currentDir, { withFileTypes: true })
+
+    await Promise.all(files.map(async file => {
+      const relativePath = path.join(prefix, file.name)
+      const fullPath = path.join(currentDir, file.name)
+
+      if (file.isDirectory()) {
+        await readDirRecursive(fullPath, relativePath)
+      } else if (file.isFile()) {
+        const suffix = path.extname(file.name)
+
+        // 处理文件后缀筛选逻辑
+        if (suffixs.length > 0) {
+          // 统一后缀格式为 .suffix
+          const normalizedSuffixs = suffixs.map(s => s.startsWith('.') ? s : `.${s}`)
+          if (normalizedSuffixs.includes(suffix)) {
+            result.push(relativePath)
+          }
+        } else if (exclude.length > 0) {
+          // 统一后缀格式为 .suffix
+          const normalizedExclude = exclude.map(s => s.startsWith('.') ? s : `.${s}`)
+          if (!normalizedExclude.includes(suffix)) {
+            result.push(relativePath)
+          }
+        } else {
+          result.push(relativePath)
+        }
+      }
+    }))
+  }
+
+  if (!fs.existsSync(dir)) {
+    throw new Error(`路径不存在: ${dir}`)
+  }
+
+  await readDirRecursive(dir)
+  return result
+}

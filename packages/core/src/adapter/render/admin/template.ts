@@ -1,21 +1,18 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import chokidar from 'chokidar'
 import template from 'art-template'
-import { Options } from './types'
+import schedule from 'node-schedule'
 import { htmlPath } from '@/root'
-import { existToMkdirSync } from '@/utils/fs/fsSync'
-
-/** 模板缓存 */
-const cache = new Map<string, string>()
-/** 监听器缓存 */
-const watcherCache = new Map<string, chokidar.FSWatcher>()
+import { mkdirSync } from '@/utils/fs/fsSync'
+import { getAllFiles } from '@/utils/fs/file'
+import type { Options, Options2 } from './types'
 
 /**
  * @description 处理模板
  * @param options 截图参数
+ * @deprecated 请使用`renderTemplate`
  */
-export const renderTpl = (options: Omit<Options, 'name'> & { name?: string }) => {
+export const renderTpl = (options: Options) => {
   if (typeof options.file !== 'string') {
     throw TypeError('模板文件路径必须为字符串')
   }
@@ -32,7 +29,7 @@ export const renderTpl = (options: Omit<Options, 'name'> & { name?: string }) =>
     }
 
     const file = path.resolve(options.file)
-    const tplData = getCacheData(file)
+    const tplData = fs.readFileSync(file, 'utf-8')
     const renderData = template.render(tplData, options.data)
 
     /** 保存文件的绝对路径 */
@@ -54,18 +51,50 @@ export const renderTpl = (options: Omit<Options, 'name'> & { name?: string }) =>
 }
 
 /**
- * @description 获取模板数据
- * @param file 模板文件路径
+ * @description 处理模板
+ * @param options 截图参数
  */
-const getCacheData = (file: string) => {
-  const CachingData = cache.get(file)
-  if (CachingData) {
-    return CachingData
+export const renderTemplate = <R extends Options2> (options: Options2): R => {
+  if (typeof options.file !== 'string') {
+    throw TypeError('模板文件路径必须为字符串')
   }
 
-  const tplData = fs.readFileSync(file, 'utf-8')
-  watch(file, tplData)
-  return tplData
+  if ('name' in options) {
+    options.file_name = options.name as string
+    delete options.name
+  }
+
+  if (!options.file_name) {
+    options.file_name = path.basename(options.file) || 'render'
+  }
+
+  /** 渲染模板数据 */
+  if (options.data) {
+    /** 他喵的 不会真的有笨比传个http吧... */
+    if (options.file.startsWith('http')) {
+      throw TypeError('他喵的 不会真的有笨比传个http来当做模板吧...')
+    }
+
+    const file = path.resolve(options.file)
+    const tplData = fs.readFileSync(file, 'utf-8')
+    const renderData = template.render(tplData, options.data)
+
+    /** 保存文件的绝对路径 */
+    const outputPath = getOutputPath(options.file, renderData, options.file_name)
+    fs.writeFileSync(outputPath, renderData)
+
+    delete options.data
+    options.file = `file://${outputPath}`
+
+    return options as R
+  }
+
+  if (!options.file.startsWith('http') && !options.file.startsWith('file')) {
+    options.file = `file://${path.resolve(options.file)}`
+  }
+
+  delete options.data
+  return options as R
 }
 
 /**
@@ -81,34 +110,62 @@ const getOutputPath = (file: string, data: string, name?: string) => {
   const basename = path.basename(file, extname)
   /** 保存文件的目录 */
   const fileDir = path.join(htmlPath, name || 'render')
-  /** 保存文件的绝对路径 */
-  const filePath = path.join(fileDir, `${basename}-${Date.now()}${extname}`)
+  mkdirSync(fileDir)
 
-  existToMkdirSync(fileDir)
+  /** 内容哈希 */
+  const contentHash = require('crypto')
+    .createHash('md5')
+    .update(data)
+    .digest('hex')
+    .substring(0, 8)
+  const filePath = path.join(fileDir, `${basename}-${contentHash}${extname}`)
+
+  /** 如果文件已存在 则更新文件的修改时间 */
+  if (fs.existsSync(filePath)) {
+    const now = new Date()
+    try {
+      fs.utimesSync(filePath, now, now)
+    } catch (err) {
+      logger.error(`[文件更新] 更新文件时出错: ${filePath}, ${err}`)
+    }
+    return filePath
+  }
+
   fs.writeFileSync(filePath, data)
   return filePath
 }
 
 /**
- * @description 监听模板文件
- * @param file 模板文件路径
- * @param data 模板数据
+ * 清理过期文件
+ * 删除修改时间超过10分钟的HTML文件
  */
-const watch = async (file: string, data: string) => {
-  cache.set(file, data)
-  if (watcherCache.has(file)) return
+const cleanExpiredFiles = async () => {
+  let count = 0
+  const now = Date.now()
+  const files = await getAllFiles(htmlPath, { suffixs: ['.html'] })
+  const EXPIRE_TIME = 10 * 60 * 1000
 
-  const watcher = chokidar.watch(file)
-  watcherCache.set(file, watcher)
-  watcher.on('change', () => {
-    cache.set(file, fs.readFileSync(file, 'utf-8'))
-    logger.info(`[文件变动] html模板发送变动: ${file}`)
-  })
-  watcher.on('unlink', () => {
-    cache.delete(file)
-    watcher.close()
-    watcherCache.delete(file)
-    watcher.removeAllListeners()
-    logger.info(`[文件删除] html模板被删除: ${file}`)
-  })
+  for (const file of files) {
+    try {
+      const stats = await fs.promises.stat(file)
+      const lastModified = stats.mtimeMs
+
+      // 如果文件最后修改时间超过10分钟，则删除
+      if (now - lastModified > EXPIRE_TIME) {
+        await fs.promises.unlink(file)
+        count++
+      }
+    } catch (err) {
+      logger.error(`[文件清理] 处理文件时出错: ${file}, ${err}`)
+    }
+  }
+
+  logger.mark(`[文件清理] 清理HTML完成: ${count}/${files.length}`)
+}
+
+/**
+ * 定时清理过期的html文件
+ */
+export const startCleanExpiredFiles = () => {
+  schedule.scheduleJob(process.env.CLEAN_HTML_CRON || '*/10 * * * *', cleanExpiredFiles)
 }

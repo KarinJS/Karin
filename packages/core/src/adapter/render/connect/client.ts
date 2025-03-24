@@ -1,7 +1,7 @@
 import WebSocket from 'ws'
 import crypto from 'node:crypto'
 import { WebSocketRender } from './ws'
-import { render } from '@/utils/config/file/render'
+import { getRenderCfg } from '@/utils/config/file/render'
 
 /**
  * @description WebSocket客户端渲染器
@@ -77,7 +77,7 @@ export class WebSocketClientRenderer extends WebSocketRender {
  * @description 创建puppeteer WebSocket客户端
  */
 export const createWebSocketRenderClient = () => {
-  const cfg = render()
+  const cfg = getRenderCfg()
   if (!cfg.ws_client || !Array.isArray(cfg.ws_client) || cfg.ws_client.length === 0) {
     logger.trace('[render][WebSocket] 未配置任何正向WebSocket 已跳过创建')
     return

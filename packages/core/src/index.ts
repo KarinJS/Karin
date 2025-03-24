@@ -115,6 +115,18 @@ export const start = async () => {
   await import('@/adapter')
   await initOneBot()
   await initRender()
+
+  /**
+   * 10. 清理HTML缓存
+   */
+  const { startCleanExpiredFiles } = await import('@/adapter/render/admin/template')
+  startCleanExpiredFiles()
+
+  /**
+   * 11. 初始化WebSocket服务
+   */
+  const { initWebSocketPuppeteerServer } = await import('@/adapter/puppeteer/server')
+  initWebSocketPuppeteerServer()
 }
 
 start()

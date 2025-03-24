@@ -1,13 +1,13 @@
 import axios, { AxiosError } from 'axios'
 import crypto from 'node:crypto'
 import { registerRender, unregisterRender } from '../admin/cache'
-import { render } from '@/utils/config/file/render'
+import { getRenderCfg } from '@/utils/config/file/render'
 
 /**
  * @description 创建http渲染器
  */
 export const createHttpRenderClient = () => {
-  const cfg = render()
+  const cfg = getRenderCfg()
   if (!cfg.http_server || !Array.isArray(cfg.http_server) || cfg.http_server.length === 0) {
     logger.trace('[render][http] 未配置任何正向HTTP 已跳过创建')
     return

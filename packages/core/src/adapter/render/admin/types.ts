@@ -215,12 +215,47 @@ export interface screenshot extends ScreenshotOptions {
 /** 截图参数 */
 export interface Options extends screenshot {
   /** 保存文件目录 推荐使用插件名称 */
-  name: string
+  name?: string
   /** 传递给 art-template 的参数 */
   data?: Record<string, any>
 }
 
 /** 单页或多页截图返回 */
 export type RenderResult<T extends screenshot> = T['multiPage'] extends true | number
+  ? string[]
+  : string
+
+/**
+ * 2.0截图参数
+ */
+export interface Options2 extends screenshot {
+  /**
+   * 截图类型
+   * @default 'png'
+   */
+  type?: 'png' | 'jpeg' | 'webp'
+  /** http地址、本地文件路径、html字符串 */
+  file: string
+  /**
+   * file类型
+   * @default 'auto'
+   * @description 如果传递的是URL、HTML绝对路径则无需传递此项
+   * - auto: 自动识别、支持URL、HTML绝对路径
+   * - htmlString: 传递HTML字符串
+   * - vue3: 传递Vue3组件路径
+   * - vueString: 传递Vue3组件字符串
+   * - react: 传递React组件路径 `(暂未支持)`
+   */
+  file_type?: 'auto' | 'htmlString' | 'vue3' | 'vueString' | 'react'
+  /** 文件名 推荐在传递字符串时使用 */
+  file_name?: string
+  /** 重试次数 */
+  retry?: number
+  /** 渲染参数 */
+  data?: Record<string, any>
+}
+
+/** 2.0截图返回 */
+export type RenderResult2<T extends Options2> = T['multiPage'] extends true | number
   ? string[]
   : string
