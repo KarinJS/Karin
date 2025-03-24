@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.8](https://github.com/KarinJS/Karin/compare/web-v1.7.7...web-v1.7.8) (2025-03-24)
+
+
+### 💄 Styles
+
+* `accordion-pro`组件下`input`组件溢出屏幕 ([b75c845](https://github.com/KarinJS/Karin/commit/b75c84573acbbc29660bad55f7c026b58b55c25a))
+* fix [#321](https://github.com/KarinJS/Karin/issues/321) 修正移动端在`添加新卡片`后呼出键盘 ([e647c0e](https://github.com/KarinJS/Karin/commit/e647c0ee6cf43f808a856848200238e02baf6c0c))
+
 ## [1.7.7](https://github.com/KarinJS/Karin/compare/web-v1.7.6...web-v1.7.7) (2025-03-23)
 
 
