@@ -13,6 +13,7 @@ export const networkStatusRouter: RequestHandler = async (_req, res) => {
     const data: NetworkStatus = await calculateNetworkSpeed()
     createSuccessResponse(res, data)
   } catch (error) {
+    logger.debug(error)
     createServerErrorResponse(res, '@karinjs/plugin-webui-network-monitor 插件未安装！')
   }
 }

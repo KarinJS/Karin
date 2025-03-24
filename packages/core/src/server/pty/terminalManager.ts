@@ -38,7 +38,7 @@ export const isPtyInstalled = async (): Promise<boolean> => {
 export const initialize = async () => {
   const installed = await isPtyInstalled()
   if (!installed) {
-    logger.warn('[terminal] PTY 模块未安装，终端功能不可用')
+    logger.debug('[terminal] PTY 模块未安装，终端功能不可用')
     return
   }
 
@@ -135,7 +135,7 @@ export const createTerminal = async (
   name: string = 'xterm-256color',
   shell: TerminalShell,
   cols: number = 80,
-  rows: number = 30,
+  rows: number = 30
 ) => {
   if (!pty) {
     throw new Error('终端管理器未初始化或插件未安装')
