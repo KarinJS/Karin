@@ -209,10 +209,10 @@ const getGitInfo = async (
     }
   }
 
-  if (isTsx() && pkg.karin['ts-apps']) {
-    pushApps(pkg.karin['ts-apps'])
-  } else if (pkg.karin.apps) {
-    pushApps(pkg.karin.apps)
+  if (isTsx()) {
+    pkg.karin['ts-apps'] && pushApps(pkg.karin['ts-apps'])
+  } else {
+    pkg.karin.apps && pushApps(pkg.karin.apps)
   }
 
   await Promise.allSettled(files.map(async app => {
