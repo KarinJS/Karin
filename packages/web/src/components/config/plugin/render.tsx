@@ -258,7 +258,7 @@ export const createAccordionPro = (
     remove: (index: number) => void,
     data: AccordionProProps['data'],
     template: AccordionProProps['children'],
-    createPrefixedRegister: (index: number) => FormRegister,
+    createPrefixedRegister: (index: number) => FormRegister
   ) => {
     const {
       key: ___,
@@ -287,8 +287,22 @@ export const createAccordionPro = (
               role='button'
               tabIndex={0}
               onClick={(e) => {
+                e.preventDefault()
                 e.stopPropagation()
                 remove(index)
+              }}
+              onTouchStart={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+              }}
+              onTouchEnd={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                remove(index)
+              }}
+              onMouseDown={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
               }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {

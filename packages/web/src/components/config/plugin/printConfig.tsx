@@ -26,7 +26,7 @@ interface ConfigDetailModalProps {
 export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
   showJsonModal,
   setShowJsonModal,
-  handleFormResult
+  handleFormResult,
 }) => {
   const handleCopyConfig = () => {
     const config = JSON.stringify(print, null, 2)
@@ -73,7 +73,7 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
         classNames={{
           base: 'bg-white dark:bg-gray-900',
           header: 'border-b border-gray-100 dark:border-gray-800',
-          footer: 'border-t border-gray-100 dark:border-gray-800'
+          footer: 'border-t border-gray-100 dark:border-gray-800',
         }}
       >
         <ModalContent>

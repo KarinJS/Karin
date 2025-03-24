@@ -34,12 +34,37 @@ export const createInput = (
   const { componentType: _, className, componentClassName, key, ...options } = props
   const validator = props.rules ? createValidator(props.rules) : undefined
 
+  // 使用useEffect确保输入框不会自动获取焦点
+  const [inputRef, setInputRef] = useState<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    if (inputRef) {
+      // 确保输入框失去焦点
+      inputRef.blur()
+
+      // 在移动设备上，临时设置readOnly以防止键盘弹出
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+      if (isMobile) {
+        inputRef.setAttribute('readonly', 'readonly')
+        // 短暂延迟后移除readonly属性，但保持失焦状态
+        setTimeout(() => {
+          inputRef.removeAttribute('readonly')
+          inputRef.blur()
+        }, 100)
+      }
+    }
+  }, [inputRef])
+
   return (
     <div className={generateDivClassName(props)} key={`div-${key}`}>
       <HeroInput
         {...options}
         {...register(`${key}.value`)}
         className={componentClassName || 'w-full max-w-[300px]'}
+        autoFocus={false}
+        ref={(el) => {
+          el && setInputRef(el)
+        }}
         validate={(value) => {
           if (!value) {
             if (options.isRequired) {
