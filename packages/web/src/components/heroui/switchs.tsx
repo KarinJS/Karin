@@ -47,7 +47,7 @@ export const createSwitch = (
         {/* 标题和描述区域 */}
         <div className='w-full h-full flex flex-col justify-center p-3 sm:p-4 pr-14 sm:pr-16'>
           {props.label && (
-            <p className='mb-1 text-gray-600 text-sm sm:text-base'>{props.label}</p>
+            <p className='mb-1 text-default-600 text-sm sm:text-base'>{props.label}</p>
           )}
           {props.description && (
             <div
@@ -56,7 +56,7 @@ export const createSwitch = (
             >
               <p
                 className={cn(
-                  'text-xs text-gray-500 w-full cursor-pointer',
+                  'text-xs text-default-500 w-full cursor-pointer',
                   isDescriptionExpanded ? '' : 'truncate',
                   'transition-all duration-200 ease-in-out'
                 )}
