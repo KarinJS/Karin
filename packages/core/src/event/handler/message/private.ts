@@ -6,7 +6,8 @@ import { context as CTX } from '../other/context'
 import { config as cfg, getFriendCfg } from '@/utils/config'
 import { Permission } from '../other/permission'
 import { hooksMessageEmit } from '@/hooks/messaeg'
-import { hooksEmptyMessageEmit } from '@/hooks/emptyMessage'
+import { eventCallEmit } from '@/hooks/eventCall'
+import { emptyEmit } from '@/hooks/empty'
 import {
   log,
   initAlias,
@@ -158,7 +159,7 @@ const privateDeal = async (
   log(ctx.userId, `未找到匹配到相应插件: ${ctx.messageId}`)
 
   /** 触发未找到匹配插件消息钩子 */
-  hooksEmptyMessageEmit.emptyMessage(ctx)
+  emptyEmit.message(ctx)
 }
 
 /**
@@ -184,8 +185,16 @@ const privateCmd = async (
 
   /** 计算插件处理时间 */
   const start = Date.now()
-  // filter.addEventCount(plugin, ctx.event)
-  // TODO: 未实现中间件
+  if (ctx.isFriend) {
+    const result = await eventCallEmit.friend(ctx, plugin)
+    if (!result) return false
+  } else if (ctx.isDirect) {
+    const result = await eventCallEmit.direct(ctx, plugin)
+    if (!result) return false
+  }
+
+  const hookResult = await eventCallEmit.message(ctx, plugin)
+  if (!hookResult) return false
 
   try {
     if (!Permission.private(ctx, plugin)) return false

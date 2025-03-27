@@ -5,7 +5,8 @@ import { context as CTX } from '../other/context'
 import { listeners } from '@/core/internal'
 import { Permission } from '../other/permission'
 import { hooksMessageEmit } from '@/hooks/messaeg'
-import { hooksEmptyMessageEmit } from '@/hooks/emptyMessage'
+import { emptyEmit } from '@/hooks/empty'
+import { eventCallEmit } from '@/hooks/eventCall'
 import { config as cfg, getGroupCfg, getGuildCfg } from '@/utils/config'
 import {
   initAlias,
@@ -219,7 +220,7 @@ const groupsDeal = async (
   log(ctx.userId, `未找到匹配到相应插件: ${ctx.messageId}`)
 
   /** 触发未找到匹配插件消息钩子 */
-  hooksEmptyMessageEmit.emptyMessage(ctx)
+  emptyEmit.message(ctx)
 }
 
 /**
@@ -247,7 +248,19 @@ const groupsCmd = async (
 
   /** 计算插件处理时间 */
   const start = Date.now()
-  // filter.addEventCount(plugin, ctx.event)
+  if (ctx.isGroup) {
+    const result = await eventCallEmit.group(ctx, plugin)
+    if (!result) return false
+  } else if (ctx.isGuild) {
+    const result = await eventCallEmit.guild(ctx, plugin)
+    if (!result) return false
+  } else if (ctx.isGroupTemp) {
+    const result = await eventCallEmit.groupTemp(ctx, plugin)
+    if (!result) return false
+  }
+
+  const hookResult = await eventCallEmit.message(ctx, plugin)
+  if (!hookResult) return false
 
   try {
     if (!Permission.groups(ctx, plugin)) return false

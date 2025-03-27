@@ -144,7 +144,6 @@ const cleanExpiredFiles = async () => {
   let count = 0
   const now = Date.now()
   const files = await getAllFiles(htmlPath, { suffixs: ['.html'], returnType: 'abs' })
-  console.log('files:', files)
   if (files.length === 0) return
   const EXPIRE_TIME = 10 * 60 * 1000
 

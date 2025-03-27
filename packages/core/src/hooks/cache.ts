@@ -24,5 +24,19 @@ export const cache: HookCache = {
     message: [],
     forward: [],
   },
-  emptyMessage: []
+  empty: {
+    message: [],
+    notice: [],
+    request: [],
+  },
+  eventCall: {
+    message: [],
+    group: [],
+    guild: [],
+    groupTemp: [],
+    friend: [],
+    direct: [],
+    notice: [],
+    request: [],
+  },
 }

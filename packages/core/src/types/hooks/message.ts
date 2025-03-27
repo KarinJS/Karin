@@ -3,10 +3,11 @@ import type {
   GroupMessage,
   GuildMessage,
   DirectMessage,
-  GroupTempMessage
+  GroupTempMessage,
 } from '@/event'
-import type { Message } from '@/types/event/event'
 import type { Contact } from '@/types/event'
+import type { cache as pluginCache } from '@/plugin/cache'
+import type { Message, Notice, Request } from '@/types/event/event'
 import type { Elements, ForwardOptions, NodeElement } from '@/types/segment'
 
 export type UnionMessage = Message | FriendMessage | GroupMessage | GuildMessage | DirectMessage | GroupTempMessage
@@ -31,6 +32,24 @@ export interface MessageHookItem<T extends UnionMessage> {
   priority: number
   /** 钩子回调函数 */
   callback: HookCallback<T>
+}
+
+/**
+ * 事件调用插件钩子回调函数
+ * @param event 事件
+ * @param plugin 插件对象
+ * @param next 继续执行下一个钩子的函数
+ */
+export type EventCallCallback<T, P> = (event: T, plugin: P, next: HookNext) => void | Promise<void>
+
+/** 事件调用插件钩子项 */
+export interface EventCallHookItem<T, P> {
+  /** 钩子ID */
+  id: number
+  /** 钩子优先级 */
+  priority: number
+  /** 钩子回调函数 */
+  callback: EventCallCallback<T, P>
 }
 
 /**
@@ -99,6 +118,45 @@ export interface HookCache {
     /** 转发消息 */
     forward: SendMsgHookItem<ForwardMessageCallback>[]
   },
-  /** 未找到匹配插件消息钩子 */
-  emptyMessage: MessageHookItem<Message>[]
+  /** 未找到匹配插件钩子 */
+  empty: {
+    /** 消息 */
+    message: MessageHookItem<Message>[]
+    /** 通知 */
+    notice: GeneralHookItem<Notice>[]
+    /** 请求 */
+    request: GeneralHookItem<Request>[]
+  },
+  /** 事件调用插件钩子 */
+  eventCall: {
+    /** 通用消息事件 */
+    message: EventCallHookItem<Message, typeof pluginCache.command[number]>[]
+    /** 群聊事件 */
+    group: EventCallHookItem<GroupMessage, typeof pluginCache.command[number]>[]
+    /** 频道事件 */
+    guild: EventCallHookItem<GuildMessage, typeof pluginCache.command[number]>[]
+    /** 群临时事件 */
+    groupTemp: EventCallHookItem<GroupTempMessage, typeof pluginCache.command[number]>[]
+    /** 好友事件 */
+    friend: EventCallHookItem<FriendMessage, typeof pluginCache.command[number]>[]
+    /** 私聊事件 */
+    direct: EventCallHookItem<DirectMessage, typeof pluginCache.command[number]>[]
+    /** 通知事件 */
+    notice: EventCallHookItem<Notice, typeof pluginCache.accept[number]>[]
+    /** 请求事件 */
+    request: EventCallHookItem<Request, typeof pluginCache.accept[number]>[]
+  }
+}
+
+/** 通用事件钩子回调函数 */
+export type GeneralHookCallback<T> = (event: T, next: HookNext) => void | Promise<void>
+
+/** 通用事件钩子项 */
+export interface GeneralHookItem<T> {
+  /** 钩子ID */
+  id: number
+  /** 钩子优先级 */
+  priority: number
+  /** 钩子回调函数 */
+  callback: GeneralHookCallback<T>
 }

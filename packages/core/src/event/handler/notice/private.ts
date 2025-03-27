@@ -29,7 +29,6 @@ export const friendNoticeHandler = async (
 
   const cd = noticeRequestCD(ctx, friend, ctx.userId)
   const filter = privateFilterEvent(ctx, config, friend, cd)
-  // TODO: 中间件实现
 
   if (filter) deal(ctx, friend)
 }

@@ -1,5 +1,7 @@
 import { cache } from '@/plugin/cache'
 import { listeners } from '@/core/internal'
+import { eventCallEmit } from '@/hooks/eventCall'
+import { emptyEmit } from '@/hooks/empty'
 import { getFriendCfg, getGroupCfg } from '@/utils/config'
 
 import {
@@ -134,14 +136,27 @@ export const deal = async (
       continue
     }
 
+    if (ctx.event === 'notice') {
+      const result = await eventCallEmit.notice(ctx, plugin)
+      if (!result) return
+    } else {
+      const result = await eventCallEmit.request(ctx, plugin)
+      if (!result) return
+    }
+
     const result = await fnc(ctx, plugin, config)
     if (!result) return
   }
 
   /** 未找到匹配插件 */
   log(ctx.userId, `未找到匹配到相应插件: ${ctx.eventId}`)
-  // TODO: 中间件实现
-  // MiddlewareHandler(cache.middleware.notFoundMsg, ctx)
+
+  /** 触发未找到匹配插件钩子 */
+  if (ctx.event === 'notice') {
+    emptyEmit.notice(ctx)
+  } else {
+    emptyEmit.request(ctx)
+  }
 }
 
 const fnc = async (
