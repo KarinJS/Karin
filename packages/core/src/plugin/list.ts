@@ -12,6 +12,8 @@ import { requireFile, requireFileSync } from '@/utils/fs/require'
 import type { PkgData, PkgEnv } from '@/utils/fs/pkg'
 import type { GetPluginType, PkgInfo, GetPluginReturn } from '@/types/plugin'
 
+let isInit = true
+
 /**
  * 缓存
  */
@@ -87,6 +89,7 @@ export const getPlugins = async<T extends boolean = false> (
   const info = await getPluginsInfo(list, isForce, isFirst)
   cache.info[type] = info
   setTimeout(() => delete cache?.info?.[type], 60 * 1000)
+  if (isInit) isInit = false
   return info as GetPluginReturn<T>
 }
 
@@ -304,7 +307,7 @@ const filterGit = async (files: fs.Dirent[], list: string[]) => {
     const pkg = await requireFile<PkgData>(path.join(dir, v.name, 'package.json'))
     if (pkg?.karin?.engines?.karin && !satisfies(pkg.karin.engines.karin, process.env.KARIN_VERSION)) {
       const msg = `[getPlugins][git] ${v.name} 要求 node-karin 版本为 ${pkg.karin.engines.karin}，当前不符合要求，跳过加载插件`
-      setTimeout(() => logger.error(msg), 1000)
+      isInit && setTimeout(() => logger.error(msg), 1000)
       return
     }
 
@@ -352,7 +355,7 @@ const filterPkg = async (list: string[]) => {
     /** 检查是否符合版本 */
     if (pkg.karin?.engines?.karin) {
       if (!satisfies(pkg.karin.engines.karin, process.env.KARIN_VERSION)) {
-        logger.error(`[getPlugins][npm] ${name} 要求 node-karin 版本为 ${pkg.karin.engines.karin}，当前不符合要求，跳过加载插件`)
+        isInit && logger.error(`[getPlugins][npm] ${name} 要求 node-karin 版本为 ${pkg.karin.engines.karin}，当前不符合要求，跳过加载插件`)
         return
       }
 
