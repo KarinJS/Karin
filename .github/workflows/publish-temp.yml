@@ -1,0 +1,251 @@
+name: publish-temp
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, reopened, synchronize]
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  publish-temp:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 获取完整历史记录，用于生成版本号
+
+      - name: 安装node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21
+          registry-url: "https://registry.npmjs.org"
+
+      - name: 安装pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9.7.1
+
+      - name: 获取当前提交哈希
+        run: |
+          COMMIT_HASH=$(git rev-parse HEAD)
+          SHORT_COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+          echo "SHORT_COMMIT_HASH=$SHORT_COMMIT_HASH" >> $GITHUB_ENV
+          echo "REPO_URL=https://github.com/${{ github.repository }}/tree/$COMMIT_HASH" >> $GITHUB_ENV
+
+      - name: 安装依赖
+        run: pnpm install
+
+      - name: 修改版本号
+        run: |
+          # 获取当前日期作为版本号的一部分
+          DATE=$(date +'%Y%m%d')
+          
+          # 从package.json获取当前版本号
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          
+          # 生成新的版本号：主版本号.次版本号.日期-短哈希
+          BASE_VERSION=$(echo $CURRENT_VERSION | sed -E 's/([0-9]+\.[0-9]+)\.[0-9]+.*/\1/')
+          NEW_VERSION="${BASE_VERSION}.${DATE}-${SHORT_COMMIT_HASH}"
+          
+          # 更新package.json中的版本号
+          npm version $NEW_VERSION --no-git-tag-version
+          
+          echo "PKG_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: 编译
+        run: pnpm build:all
+        id: build
+        continue-on-error: true
+
+      - name: 检查构建结果
+        if: steps.build.outcome != 'success'
+        run: |
+          echo "❌ 构建失败！" >> $GITHUB_STEP_SUMMARY
+          echo "提交哈希: ${{ env.SHORT_COMMIT_HASH }}" >> $GITHUB_STEP_SUMMARY
+          exit 1
+
+      - name: 发布临时NPM包
+        id: publish_pkg
+        run: |
+          # 将标准输出和标准错误都重定向到文件
+          pnpm dlx pkg-pr-new publish --json output.json --comment=update --compact --packageManager=pnpm > pkg-output.txt 2>&1
+          
+          # 显示输出内容以便在日志中查看
+          echo "命令输出内容："
+          cat pkg-output.txt
+          
+          # 提取安装URL并转换为pnpm格式
+          INSTALL_URL=$(grep -E "npm i https://pkg.pr.new" pkg-output.txt | sed 's/.*npm i //' || echo "")
+          
+          if [ ! -z "$INSTALL_URL" ]; then
+            # 获取仓库名和短哈希
+            REPO_NAME=$(basename ${{ github.repository }})
+            # 生成简化的安装URL
+            SIMPLIFIED_URL="https://pkg.pr.new/${REPO_NAME}@${SHORT_COMMIT_HASH}"
+            PNPM_INSTALL_CMD="pnpm add ${SIMPLIFIED_URL} -w"
+          else
+            PNPM_INSTALL_CMD="未找到安装命令"
+          fi
+          
+          echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
+          echo "install_url=$SIMPLIFIED_URL" >> $GITHUB_OUTPUT
+          
+          # 在工作流摘要中添加信息
+          echo "## Published Packages :package:" >> $GITHUB_STEP_SUMMARY
+          echo "version: \`${{ env.PKG_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "commit: [\`${{ env.SHORT_COMMIT_HASH }}\`](${{ env.REPO_URL }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "use pnpm:" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "$PNPM_INSTALL_CMD" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # 添加完整输出到摘要，方便查看
+          echo "## Complete output" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat pkg-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Post or update comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const output = JSON.parse(fs.readFileSync('output.json', 'utf8'));
+            
+            // 获取提交哈希
+            let sha;
+            try {
+              sha = context.payload.pull_request.head.sha;
+            } catch (error) {
+              console.log('无法获取提交哈希，使用环境变量中的值');
+            }
+            
+            // 如果无法从上下文获取SHA，则使用环境变量中的值
+            const shortSha = sha ? sha.substring(0, 7) : '${{ env.SHORT_COMMIT_HASH }}';
+            const commitUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            
+            // 获取安装URL
+            let installUrl = '';
+            for (const pkg of output.packages) {
+              installUrl = pkg.url;
+              break; // 只取第一个包的URL
+            }
+            
+            // 简化安装URL格式为 包名@短哈希
+            const repoName = context.repo.repo; // 获取仓库名
+            const simplifiedUrl = `https://pkg.pr.new/${repoName}@${shortSha}`;
+            
+            // 获取Stackblitz链接
+            let stackblitzUrl = '';
+            for (const template of output.templates) {
+              stackblitzUrl = template.url;
+              break; // 只取第一个模板的URL
+            }
+            
+            // 获取当前中国标准时间
+            const now = new Date();
+            // 转换为北京时间 (UTC+8)
+            now.setHours(now.getHours() + 8);
+            const cstTime = now.toISOString().replace('T', ' ').substring(0, 19);
+            
+            // 构建与摘要类似的评论内容
+            const body = `## Published Packages :package:
+            
+            version: \`${{ env.PKG_VERSION }}\`
+            commit: [\`${shortSha}\`](${commitUrl})
+            
+            ${stackblitzUrl ? `[Open in Stackblitz](${stackblitzUrl})` : ''}
+            
+            use pnpm:
+            \`\`\`
+            pnpm add ${simplifiedUrl} -w
+            \`\`\`
+            
+            pack time: <code>${cstTime} (CST)</code>`;
+            
+            const botCommentIdentifier = '## Published Packages';
+            
+            // 查找机器人评论的函数
+            async function findBotComments(issueNumber) {
+              if (!issueNumber) return [];
+              const comments = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+              });
+              return comments.data.filter((comment) =>
+                comment.body.includes(botCommentIdentifier)
+              );
+            }
+            
+            // 创建或更新评论
+            async function createOrUpdateComment(issueNumber) {
+              if (!issueNumber) {
+                console.log('No issue number provided. Cannot post or update comment.');
+                return;
+              }
+              
+              // 获取所有机器人评论
+              const botComments = await findBotComments(issueNumber);
+              
+              // 创建新评论
+              const newComment = await github.rest.issues.createComment({
+                issue_number: issueNumber,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body,
+              });
+              console.log(`创建了新评论 ID: ${newComment.data.id}`);
+              
+              // 如果评论数超过3条，删除最旧的评论
+              if (botComments.length >= 3) {
+                // 按创建时间排序，旧的在前
+                const commentsToDelete = botComments
+                  .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+                  .slice(0, botComments.length - 2); // 删除最旧的，保留2条旧评论+1条新评论=3条
+                
+                for (const comment of commentsToDelete) {
+                  await github.rest.issues.deleteComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    comment_id: comment.id
+                  });
+                  console.log(`删除了旧评论 ID: ${comment.id}`);
+                }
+              }
+            }
+            
+            // 记录发布信息到控制台
+            async function logPublishInfo() {
+              console.log('\n' + '='.repeat(50));
+              console.log('Publish Information');
+              console.log('='.repeat(50));
+              console.log(`\nInstall URL: ${installUrl}`);
+              console.log(`\nCommit URL: ${commitUrl}`);
+              console.log('\n' + '='.repeat(50));
+            }
+            
+            // 只处理PR情况
+            if (context.issue.number) {
+              await createOrUpdateComment(context.issue.number);
+            } else {
+              console.log('No issue number found. Cannot post comment.');
+              await logPublishInfo();
+            }
+
+      - name: 上传NPM包信息
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-package-info
+          path: |
+            pkg-output.txt
+            output.json
