@@ -3,7 +3,7 @@ import path from 'node:path'
 import lodash from 'lodash'
 import { isTsx } from '@/env'
 import { createAddEnv } from './env'
-import { range } from '@/utils/system'
+import { satisfies } from '@/utils/system'
 import { pluginDir as dir } from '@/root'
 import { filesByExt } from '@/utils/fs/path'
 import { writeEnv } from '@/utils/config/file/env'
@@ -303,7 +303,7 @@ const filterGit = async (files: fs.Dirent[], list: string[]) => {
     // TODO: 其实正常来说这里是需要判断一下karin字段的 不过为了兼容性先不判断了...
     const pkg = await requireFile<PkgData>(path.join(dir, v.name, 'package.json'))
     if (pkg?.karin?.engines?.karin) {
-      if (!range(pkg.karin.engines.karin, process.env.KARIN_VERSION)) {
+      if (!satisfies(pkg.karin.engines.karin, process.env.KARIN_VERSION)) {
         logger.error(`[getPlugins][git] ${v.name} 要求 node-karin 版本为 ${pkg.karin.engines.karin}，当前不符合要求，跳过加载插件`)
         return
       }
@@ -352,7 +352,7 @@ const filterPkg = async (list: string[]) => {
     if (!pkg.karin) return
     /** 检查是否符合版本 */
     if (pkg.karin?.engines?.karin) {
-      if (!range(pkg.karin.engines.karin, process.env.KARIN_VERSION)) {
+      if (!satisfies(pkg.karin.engines.karin, process.env.KARIN_VERSION)) {
         logger.error(`[getPlugins][npm] ${name} 要求 node-karin 版本为 ${pkg.karin.engines.karin}，当前不符合要求，跳过加载插件`)
         return
       }

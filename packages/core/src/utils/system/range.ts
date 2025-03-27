@@ -293,7 +293,7 @@ const satisfiesCondition = (version: string, condition: string): boolean => {
  * console.log(range('1.x.0', '1.2.1')) // false
  * ```
  */
-export const range = (range: string, version: string): boolean => {
+export const satisfies = (range: string, version: string): boolean => {
   /** 处理复合条件（用空格分隔的多个条件） */
   const conditions = range.split(' ')
 
