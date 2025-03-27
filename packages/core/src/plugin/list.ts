@@ -302,11 +302,10 @@ const filterGit = async (files: fs.Dirent[], list: string[]) => {
 
     // TODO: 其实正常来说这里是需要判断一下karin字段的 不过为了兼容性先不判断了...
     const pkg = await requireFile<PkgData>(path.join(dir, v.name, 'package.json'))
-    if (pkg?.karin?.engines?.karin) {
-      if (!satisfies(pkg.karin.engines.karin, process.env.KARIN_VERSION)) {
-        logger.error(`[getPlugins][git] ${v.name} 要求 node-karin 版本为 ${pkg.karin.engines.karin}，当前不符合要求，跳过加载插件`)
-        return
-      }
+    if (pkg?.karin?.engines?.karin && !satisfies(pkg.karin.engines.karin, process.env.KARIN_VERSION)) {
+      const msg = `[getPlugins][git] ${v.name} 要求 node-karin 版本为 ${pkg.karin.engines.karin}，当前不符合要求，跳过加载插件`
+      setTimeout(() => logger.error(msg), 1000)
+      return
     }
 
     list.push(`git:${v.name}`)
