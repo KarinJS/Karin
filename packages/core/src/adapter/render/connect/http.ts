@@ -1,7 +1,8 @@
-import axios, { AxiosError } from 'axios'
 import crypto from 'node:crypto'
+import axios, { AxiosError } from 'axios'
 import { registerRender, unregisterRender } from '../admin/cache'
 import { getRenderCfg } from '@/utils/config/file/render'
+import type { Render } from '../admin/cache'
 
 /**
  * @description 创建http渲染器
@@ -41,7 +42,7 @@ export const createHttpRenderClient = () => {
       return
     }
 
-    const index = registerRender('puppeteer', async (options) => {
+    const index = registerRender('puppeteer', async (options: Render) => {
       try {
         const result = await axios.post(`${url}/puppeteer`, options, { headers })
         if (result.status !== 200) {

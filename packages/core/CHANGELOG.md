@@ -1,5 +1,30 @@
 # 更新日志
 
+## [1.7.11](https://github.com/KarinJS/Karin/compare/core-v1.7.10...core-v1.7.11) (2025-03-27)
+
+
+### 🐛 Bug Fixes
+
+* close [#341](https://github.com/KarinJS/Karin/issues/341) ([6c738ab](https://github.com/KarinJS/Karin/commit/6c738ab5d01487db9dfefed6ec97bdfdde1ba84d))
+
+
+### 📦️ Build System
+
+* type error ([761f659](https://github.com/KarinJS/Karin/commit/761f659205d8524293661cd87f8f7bbbe1783e46))
+
+## [1.7.10](https://github.com/KarinJS/Karin/compare/core-v1.7.9...core-v1.7.10) (2025-03-26)
+
+
+### 🐛 Bug Fixes
+
+* sqlite3 锁定5.1.6 ([5c8589e](https://github.com/KarinJS/Karin/commit/5c8589e3825ac58c13734d11707e9009eaea0190))
+* 清理日志有点多 ([5d9895a](https://github.com/KarinJS/Karin/commit/5d9895a3d9dd23895a3519aaaad0666c0af48022))
+
+
+### ✅ Tests
+
+* 初步适配`puppeteer-server` ([264eb11](https://github.com/KarinJS/Karin/commit/264eb11f7a928eaebb363a8526342b2588a2525d))
+
 ## [1.7.9](https://github.com/KarinJS/Karin/compare/core-v1.7.8...core-v1.7.9) (2025-03-24)
 
 

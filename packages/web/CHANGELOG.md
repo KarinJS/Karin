@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.7.10](https://github.com/KarinJS/Karin/compare/web-v1.7.9...web-v1.7.10) (2025-03-27)
+
+
+### 🐛 Bug Fixes
+
+* close [#341](https://github.com/KarinJS/Karin/issues/341) ([6c738ab](https://github.com/KarinJS/Karin/commit/6c738ab5d01487db9dfefed6ec97bdfdde1ba84d))
+
+## [1.7.9](https://github.com/KarinJS/Karin/compare/web-v1.7.8...web-v1.7.9) (2025-03-26)
+
+
+### 💄 Styles
+
+* 开关深色模式样式 ([809dc08](https://github.com/KarinJS/Karin/commit/809dc0899f52d99342cdeebba6d8dfc5d10eacba))
+
 ## [1.7.8](https://github.com/KarinJS/Karin/compare/web-v1.7.7...web-v1.7.8) (2025-03-24)
 
 

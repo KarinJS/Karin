@@ -40,7 +40,7 @@ export const groupHandler = async (ctx: GroupMessage) => {
   initRole(ctx, config)
   initAlias(ctx, group.alias)
   initEmit(ctx)
-  initPrint(ctx, 'group', '群消息', isPrint ? 'info' : 'debug')
+  initPrint(ctx, isPrint ? 'info' : 'debug')
 
   /** 消息钩子 */
   const hook = await hooksMessageEmit.group(ctx)
@@ -91,7 +91,7 @@ export const groupTempHandler = async (ctx: GroupTempMessage) => {
   initRole(ctx, config)
   initAlias(ctx, group.alias)
   initEmit(ctx)
-  initPrint(ctx, 'groupTemp', '群临时消息')
+  initPrint(ctx)
 
   /** 消息钩子 */
   const hook = await hooksMessageEmit.groupTemp(ctx)
@@ -136,7 +136,7 @@ export const guildHandler = async (ctx: GuildMessage) => {
   initRole(ctx, config)
   initAlias(ctx, group.alias)
   initEmit(ctx)
-  initPrint(ctx, 'guild', '频道消息')
+  initPrint(ctx)
 
   const context = CTX(ctx)
   if (context) return ctx
@@ -170,14 +170,30 @@ export const guildHandler = async (ctx: GuildMessage) => {
  * @param prefix 日志前缀
  * @param level 日志等级
  */
-const initPrint = (
-  ctx: Message,
-  type: string,
-  prefix: string,
-  level: 'info' | 'debug' = 'info'
-) => {
-  ctx.logText = `[${type}:${ctx.userId}(${ctx.sender.nick || ''})]`
-  logger.bot(level, ctx.selfId, `${prefix}: [${ctx.userId}(${ctx.sender.nick || ''})] ${ctx.rawMessage}`)
+const initPrint = (ctx: Message, level: 'info' | 'debug' = 'info') => {
+  let idPath: string
+  let msgType: string
+
+  if (ctx.isFriend) {
+    msgType = '好友消息'
+    idPath = ctx.userId
+  } else if (ctx.isGroup) {
+    msgType = '群消息'
+    idPath = `${ctx.groupId}-${ctx.userId}`
+  } else if (ctx.isGuild) {
+    msgType = '频道消息'
+    idPath = `${ctx.guildId}-${ctx.channelId}-${ctx.userId}`
+  } else if (ctx.isGroupTemp) {
+    msgType = '群临时消息'
+    idPath = `${ctx.groupId}-${ctx.userId}`
+  } else {
+    msgType = '私信消息'
+    idPath = ctx.userId
+  }
+
+  const nick = ctx.sender.nick || ''
+  ctx.logText = `[${ctx.contact.scene}:${idPath}(${nick})]`
+  logger.bot(level, ctx.selfId, `${msgType}: [${idPath}(${nick})] ${ctx.rawMessage}`)
 }
 
 /**
