@@ -171,17 +171,27 @@ export const guildHandler = async (ctx: GuildMessage) => {
  * @param level 日志等级
  */
 const initPrint = (ctx: Message, level: 'info' | 'debug' = 'info') => {
-  const sceneMap = {
-    friend: ['好友消息', `${ctx.userId}`],
-    group: ['群消息', `${ctx.groupId}-${ctx.userId}`],
-    guild: ['频道消息', `${ctx.guildId}-${ctx.channelId}-${ctx.userId}`],
-    direct: ['私聊消息', `${ctx.userId}`],
-    groupTemp: ['群临时消息', `${ctx.groupId}-${ctx.userId}`],
+  let idPath: string
+  let msgType: string
+
+  if (ctx.isFriend) {
+    msgType = '好友消息'
+    idPath = ctx.userId
+  } else if (ctx.isGroup) {
+    msgType = '群消息'
+    idPath = `${ctx.groupId}-${ctx.userId}`
+  } else if (ctx.isGuild) {
+    msgType = '频道消息'
+    idPath = `${ctx.guildId}-${ctx.channelId}-${ctx.userId}`
+  } else if (ctx.isGroupTemp) {
+    msgType = '群临时消息'
+    idPath = `${ctx.groupId}-${ctx.userId}`
+  } else {
+    msgType = '私信消息'
+    idPath = ctx.userId
   }
 
-  const [msgType, idPath] = sceneMap[ctx.contact.scene]
   const nick = ctx.sender.nick || ''
-
   ctx.logText = `[${ctx.contact.scene}:${idPath}(${nick})]`
   logger.bot(level, ctx.selfId, `${msgType}: [${idPath}(${nick})] ${ctx.rawMessage}`)
 }
