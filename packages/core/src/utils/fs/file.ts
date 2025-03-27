@@ -204,12 +204,13 @@ export const copyConfig = async (
  * 递归获取目录下的所有文件
  * @param dir 目录路径
  * @param options 选项
- * @returns 符合条件的文件路径列表（包括相对路径）
+ * @returns 符合条件的文件路径列表
  * @example
  * ```ts
  * getAllFilesSync('dir')
  * getAllFilesSync('dir', { suffixs: ['yaml', '.json'] })
  * getAllFilesSync('dir', { exclude: ['.yaml', 'json'] })
+ * getAllFilesSync('dir', { returnType: 'abs' })
  * ```
  */
 export const getAllFilesSync = (dir: string, options: {
@@ -217,8 +218,10 @@ export const getAllFilesSync = (dir: string, options: {
   suffixs?: string[]
   /** 排除指定后缀的文件 与 suffixs 互斥 */
   exclude?: string[]
+  /** 返回类型 'rel':相对路径 'abs':绝对路径 */
+  returnType?: 'rel' | 'abs'
 } = {}) => {
-  const { suffixs = [], exclude = [] } = options
+  const { suffixs = [], exclude = [], returnType = 'rel' } = options
   const result: string[] = []
 
   const readDirRecursive = (currentDir: string, prefix = '') => {
@@ -238,16 +241,16 @@ export const getAllFilesSync = (dir: string, options: {
           // 统一后缀格式为 .suffix
           const normalizedSuffixs = suffixs.map(s => s.startsWith('.') ? s : `.${s}`)
           if (normalizedSuffixs.includes(suffix)) {
-            result.push(relativePath)
+            result.push(returnType === 'abs' ? fullPath : relativePath)
           }
         } else if (exclude.length > 0) {
           // 统一后缀格式为 .suffix
           const normalizedExclude = exclude.map(s => s.startsWith('.') ? s : `.${s}`)
           if (!normalizedExclude.includes(suffix)) {
-            result.push(relativePath)
+            result.push(returnType === 'abs' ? fullPath : relativePath)
           }
         } else {
-          result.push(relativePath)
+          result.push(returnType === 'abs' ? fullPath : relativePath)
         }
       }
     }
@@ -265,12 +268,13 @@ export const getAllFilesSync = (dir: string, options: {
  * 递归获取目录下的所有文件（异步版本）
  * @param dir 目录路径
  * @param options 选项
- * @returns 符合条件的文件路径列表（包括相对路径）
+ * @returns 符合条件的文件路径列表
  * @example
  * ```ts
  * await getFilesRecursive('dir')
  * await getFilesRecursive('dir', { suffixs: ['yaml', '.json'] })
  * await getFilesRecursive('dir', { exclude: ['.yaml', 'json'] })
+ * await getFilesRecursive('dir', { returnType: 'abs' })
  * ```
  */
 export const getAllFiles = async (dir: string, options: {
@@ -278,8 +282,10 @@ export const getAllFiles = async (dir: string, options: {
   suffixs?: string[]
   /** 排除指定后缀的文件 与 suffixs 互斥 */
   exclude?: string[]
+  /** 返回类型 'rel':相对路径 'abs':绝对路径 默认相对路径 */
+  returnType?: 'rel' | 'abs'
 } = {}) => {
-  const { suffixs = [], exclude = [] } = options
+  const { suffixs = [], exclude = [], returnType = 'rel' } = options
   const result: string[] = []
 
   const readDirRecursive = async (currentDir: string, prefix = '') => {
@@ -299,16 +305,16 @@ export const getAllFiles = async (dir: string, options: {
           // 统一后缀格式为 .suffix
           const normalizedSuffixs = suffixs.map(s => s.startsWith('.') ? s : `.${s}`)
           if (normalizedSuffixs.includes(suffix)) {
-            result.push(relativePath)
+            result.push(returnType === 'abs' ? fullPath : relativePath)
           }
         } else if (exclude.length > 0) {
           // 统一后缀格式为 .suffix
           const normalizedExclude = exclude.map(s => s.startsWith('.') ? s : `.${s}`)
           if (!normalizedExclude.includes(suffix)) {
-            result.push(relativePath)
+            result.push(returnType === 'abs' ? fullPath : relativePath)
           }
         } else {
-          result.push(relativePath)
+          result.push(returnType === 'abs' ? fullPath : relativePath)
         }
       }
     }))

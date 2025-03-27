@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import crypto from 'node:crypto'
 import template from 'art-template'
 import schedule from 'node-schedule'
 import { htmlPath } from '@/root'
@@ -113,7 +114,7 @@ const getOutputPath = (file: string, data: string, name?: string) => {
   mkdirSync(fileDir)
 
   /** 内容哈希 */
-  const contentHash = require('crypto')
+  const contentHash = crypto
     .createHash('md5')
     .update(data)
     .digest('hex')
@@ -142,7 +143,8 @@ const getOutputPath = (file: string, data: string, name?: string) => {
 const cleanExpiredFiles = async () => {
   let count = 0
   const now = Date.now()
-  const files = await getAllFiles(htmlPath, { suffixs: ['.html'] })
+  const files = await getAllFiles(htmlPath, { suffixs: ['.html'], returnType: 'abs' })
+  console.log('files:', files)
   if (files.length === 0) return
   const EXPIRE_TIME = 10 * 60 * 1000
 

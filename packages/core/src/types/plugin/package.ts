@@ -33,6 +33,17 @@ export interface PkgData {
     files?: string[]
     /** 环境变量配置 */
     env?: PkgEnv[]
+    /** 引擎兼容性 官方的翻译。。。奇奇怪怪的 */
+    engines?: {
+      /**
+       * @description karin版本
+       * @example ^0.0.1
+       * @example >=0.0.1
+       * @example 0.0.1
+       * @example 0.0.x
+       */
+      karin?: string
+    }
   }
   [key: string]: any
 }
