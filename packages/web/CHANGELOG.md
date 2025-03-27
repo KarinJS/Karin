@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.10](https://github.com/KarinJS/Karin/compare/web-v1.7.9...web-v1.7.10) (2025-03-27)
+
+
+### 🐛 Bug Fixes
+
+* close [#341](https://github.com/KarinJS/Karin/issues/341) ([6c738ab](https://github.com/KarinJS/Karin/commit/6c738ab5d01487db9dfefed6ec97bdfdde1ba84d))
+
 ## [1.7.9](https://github.com/KarinJS/Karin/compare/web-v1.7.8...web-v1.7.9) (2025-03-26)
 
 
