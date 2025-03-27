@@ -40,7 +40,7 @@ export const groupHandler = async (ctx: GroupMessage) => {
   initRole(ctx, config)
   initAlias(ctx, group.alias)
   initEmit(ctx)
-  initPrint(ctx, 'group', '群消息', isPrint ? 'info' : 'debug')
+  initPrint(ctx, isPrint ? 'info' : 'debug')
 
   /** 消息钩子 */
   const hook = await hooksMessageEmit.group(ctx)
@@ -91,7 +91,7 @@ export const groupTempHandler = async (ctx: GroupTempMessage) => {
   initRole(ctx, config)
   initAlias(ctx, group.alias)
   initEmit(ctx)
-  initPrint(ctx, 'groupTemp', '群临时消息')
+  initPrint(ctx)
 
   /** 消息钩子 */
   const hook = await hooksMessageEmit.groupTemp(ctx)
@@ -136,7 +136,7 @@ export const guildHandler = async (ctx: GuildMessage) => {
   initRole(ctx, config)
   initAlias(ctx, group.alias)
   initEmit(ctx)
-  initPrint(ctx, 'guild', '频道消息')
+  initPrint(ctx)
 
   const context = CTX(ctx)
   if (context) return ctx
@@ -170,14 +170,20 @@ export const guildHandler = async (ctx: GuildMessage) => {
  * @param prefix 日志前缀
  * @param level 日志等级
  */
-const initPrint = (
-  ctx: Message,
-  type: string,
-  prefix: string,
-  level: 'info' | 'debug' = 'info'
-) => {
-  ctx.logText = `[${type}:${ctx.userId}(${ctx.sender.nick || ''})]`
-  logger.bot(level, ctx.selfId, `${prefix}: [${ctx.userId}(${ctx.sender.nick || ''})] ${ctx.rawMessage}`)
+const initPrint = (ctx: Message, level: 'info' | 'debug' = 'info') => {
+  const sceneMap = {
+    friend: ['好友消息', `${ctx.userId}`],
+    group: ['群消息', `${ctx.groupId}-${ctx.userId}`],
+    guild: ['频道消息', `${ctx.guildId}-${ctx.channelId}-${ctx.userId}`],
+    direct: ['私聊消息', `${ctx.userId}`],
+    groupTemp: ['群临时消息', `${ctx.groupId}-${ctx.userId}`],
+  }
+
+  const [msgType, idPath] = sceneMap[ctx.contact.scene]
+  const nick = ctx.sender.nick || ''
+
+  ctx.logText = `[${ctx.contact.scene}:${idPath}(${nick})]`
+  logger.bot(level, ctx.selfId, `${msgType}: [${idPath}(${nick})] ${ctx.rawMessage}`)
 }
 
 /**

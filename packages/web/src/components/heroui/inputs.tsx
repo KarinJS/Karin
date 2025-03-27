@@ -55,15 +55,18 @@ export const createInput = (
     }
   }, [inputRef])
 
+  const registerOptions = register(`${key}.value`)
+
   return (
     <div className={generateDivClassName(props)} key={`div-${key}`}>
       <HeroInput
         {...options}
-        {...register(`${key}.value`)}
+        {...registerOptions}
         className={componentClassName || 'w-full max-w-[300px]'}
         autoFocus={false}
         ref={(el) => {
-          el && setInputRef(el)
+          el && setInputRef(el) // 防止键盘弹出
+          registerOptions.ref?.(el) // 怪怪的...
         }}
         validate={(value) => {
           if (!value) {
