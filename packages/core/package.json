@@ -54,7 +54,7 @@
     "build:module": "tsup --tsconfig tsconfig.module.json --config tsup.modules.ts && node cli/module.js",
     "build:prod": "pnpm build:module && pnpm build:cli && pnpm build && node cli/build.js",
     "bun:app": "bun dist/index.js",
-    "bun:dev": "cross-env EBV_FILE=\"development.env\" bun --import tsx src/index.ts",
+    "bun:dev": "cross-env EBV_FILE=\"development.env\" bun src/index.ts",
     "cli": "node dist/cli/index.cjs",
     "debug": "node dist/index.js --debug",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/index.ts",
