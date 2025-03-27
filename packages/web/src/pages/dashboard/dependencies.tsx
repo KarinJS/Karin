@@ -15,6 +15,9 @@ import {
 } from 'react-icons/io5'
 import { LuSettings, LuPackage, LuDownload } from 'react-icons/lu'
 
+// 定义过滤模式类型
+type FilterMode = 'all' | 'plugins' | 'updatable'
+
 // 定义依赖项类型
 interface Dependency {
   name: string
@@ -85,7 +88,8 @@ export default function DependenciesPage () {
   const [filteredDependencies, setFilteredDependencies] = useState<Dependency[]>(mockDependencies)
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
-  const [showOnlyPlugins, setShowOnlyPlugins] = useState<boolean>(false)
+  // 用过滤模式替换showOnlyPlugins
+  const [filterMode, setFilterMode] = useState<FilterMode>('all')
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false)
   const [selectedDependency, setSelectedDependency] = useState<Dependency | null>(null)
   const [selectedVersion, setSelectedVersion] = useState<string>('')
@@ -101,12 +105,22 @@ export default function DependenciesPage () {
       )
     }
 
-    if (showOnlyPlugins) {
-      filtered = filtered.filter(dep => dep.isKarinPlugin)
+    // 根据过滤模式进行筛选
+    switch (filterMode) {
+      case 'plugins':
+        filtered = filtered.filter(dep => dep.isKarinPlugin)
+        break
+      case 'updatable':
+        filtered = filtered.filter(dep => hasUpdate(dep))
+        break
+      case 'all':
+      default:
+        // 显示全部依赖，不进行过滤
+        break
     }
 
     setFilteredDependencies(filtered)
-  }, [dependencies, searchTerm, showOnlyPlugins])
+  }, [dependencies, searchTerm, filterMode])
 
   // 模拟刷新依赖
   const refreshDependencies = () => {
@@ -192,7 +206,6 @@ export default function DependenciesPage () {
               isLoading={loading}
               onPress={refreshDependencies}
               size='sm'
-              md='md'
               radius='full'
               variant='light'
               className='font-normal'
@@ -206,7 +219,6 @@ export default function DependenciesPage () {
                 startContent={<IoSave size={14} />}
                 onPress={saveChanges}
                 size='sm'
-                md='md'
                 radius='full'
                 className='font-normal bg-gradient-to-r from-blue-400 to-blue-500 shadow-sm'
               >
@@ -218,7 +230,16 @@ export default function DependenciesPage () {
 
         {/* 信息统计卡片 */}
         <div className='grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-4 mt-4 md:mt-6'>
-          <div className='bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl md:rounded-2xl p-3 md:p-5 shadow-sm border border-blue-200/50 dark:border-blue-800/30'>
+          {/* 总依赖数卡片 */}
+          <div
+            onClick={() => setFilterMode('all')}
+            className={`
+              bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 
+              rounded-xl md:rounded-2xl p-3 md:p-5 shadow-sm border border-blue-200/50 dark:border-blue-800/30
+              transition-all duration-300 cursor-pointer hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
+              ${filterMode === 'all' ? 'ring-2 ring-blue-400 dark:ring-blue-500' : ''}
+            `}
+          >
             <div className='flex items-center gap-2 md:gap-3'>
               <div className='w-8 h-8 md:w-10 md:h-10 rounded-full bg-blue-100 dark:bg-blue-700/30 flex items-center justify-center text-blue-600 dark:text-blue-400'>
                 <LuPackage size={16} className='md:hidden' />
@@ -231,7 +252,16 @@ export default function DependenciesPage () {
             </div>
           </div>
 
-          <div className='bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl md:rounded-2xl p-3 md:p-5 shadow-sm border border-green-200/50 dark:border-green-800/30'>
+          {/* Karin插件卡片 */}
+          <div
+            onClick={() => setFilterMode('plugins')}
+            className={`
+              bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 
+              rounded-xl md:rounded-2xl p-3 md:p-5 shadow-sm border border-green-200/50 dark:border-green-800/30
+              transition-all duration-300 cursor-pointer hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
+              ${filterMode === 'plugins' ? 'ring-2 ring-green-400 dark:ring-green-500' : ''}
+            `}
+          >
             <div className='flex items-center gap-2 md:gap-3'>
               <div className='w-8 h-8 md:w-10 md:h-10 rounded-full bg-green-100 dark:bg-green-700/30 flex items-center justify-center text-green-600 dark:text-green-400'>
                 <div className='relative'>
@@ -247,7 +277,16 @@ export default function DependenciesPage () {
             </div>
           </div>
 
-          <div className='bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 rounded-xl md:rounded-2xl p-3 md:p-5 shadow-sm border border-amber-200/50 dark:border-amber-800/30'>
+          {/* 可更新卡片 */}
+          <div
+            onClick={() => setFilterMode('updatable')}
+            className={`
+              bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 
+              rounded-xl md:rounded-2xl p-3 md:p-5 shadow-sm border border-amber-200/50 dark:border-amber-800/30
+              transition-all duration-300 cursor-pointer hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
+              ${filterMode === 'updatable' ? 'ring-2 ring-amber-400 dark:ring-amber-500' : ''}
+            `}
+          >
             <div className='flex items-center gap-2 md:gap-3'>
               <div className='w-8 h-8 md:w-10 md:h-10 rounded-full bg-amber-100 dark:bg-amber-700/30 flex items-center justify-center text-amber-600 dark:text-amber-400'>
                 <LuDownload size={16} className='md:hidden' />
@@ -279,6 +318,7 @@ export default function DependenciesPage () {
             <div>
               <div className='font-medium mb-1'>依赖管理使用指南</div>
               <ul className='list-disc pl-3 md:pl-5 space-y-0.5 md:space-y-1'>
+                <li>点击顶部卡片可快速筛选不同类型的依赖</li>
                 <li>使用选择器可直接更改依赖版本</li>
                 <li>绿色圆点表示 Karin 插件，灰色圆点表示普通 npm 包</li>
                 <li>点击设置图标可查看更多版本选项和详细信息</li>
@@ -307,17 +347,12 @@ export default function DependenciesPage () {
         />
 
         <div className='flex items-center gap-2 text-default-600 ml-0 sm:ml-1'>
-          <Button
-            size='sm'
-            variant={showOnlyPlugins ? 'solid' : 'bordered'}
-            color={showOnlyPlugins ? 'success' : 'default'}
-            radius='full'
-            onPress={() => setShowOnlyPlugins(!showOnlyPlugins)}
-            startContent={<LuPackage size={14} />}
-            className='font-normal text-xs'
-          >
-            仅显示插件
-          </Button>
+          {/* 使用过滤器状态显示当前激活的过滤状态 */}
+          <div className='px-2 py-1 text-xs rounded-full bg-default-100 dark:bg-default-200/10'>
+            {filterMode === 'all' && '全部依赖'}
+            {filterMode === 'plugins' && 'Karin 插件'}
+            {filterMode === 'updatable' && '可更新依赖'}
+          </div>
 
           <div className='text-xs md:text-sm text-default-400 ml-1 md:ml-2'>
             共 {filteredDependencies.length} 个依赖
