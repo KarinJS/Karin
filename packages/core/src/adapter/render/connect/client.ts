@@ -84,8 +84,8 @@ export const createWebSocketRenderClient = () => {
   }
 
   return Promise.allSettled(cfg.ws_client.map(async (item) => {
-    const { url, token, enable } = item
-    if (!enable) return
+    const { url, token, enable, isSnapka } = item
+    if (!enable || isSnapka) return
 
     const headers = { Authorization: crypto.createHash('md5').update(`Bearer ${token}`).digest('hex') }
     const socket = new WebSocket(url, { headers })

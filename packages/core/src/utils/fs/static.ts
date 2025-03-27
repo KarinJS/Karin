@@ -1,13 +1,12 @@
-import { cache } from '@/plugin/cache'
 import { isSubPath } from './path'
+import { cache } from '@/plugin/cache'
 
 /**
  * @description 传入一个文件路径，检查是否是静态资源中的文件
  * @param filePath 文件路径
  * @returns 是否是静态资源中的文件
  */
-export const isStatic = (filePath: string) => {
-  // TODO: 待完善
+export const isPublic = (filePath: string) => {
   try {
     for (const item of cache.static) {
       if (isSubPath(item, filePath)) {
@@ -16,7 +15,7 @@ export const isStatic = (filePath: string) => {
     }
     return false
   } catch (error) {
-    logger.error('isStatic', error)
+    logger.error(error)
     return false
   }
 }

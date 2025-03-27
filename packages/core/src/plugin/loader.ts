@@ -108,6 +108,9 @@ export class LoaderPlugin {
           ? pkg.pkgData.karin.static
           : [pkg.pkgData.karin.static]
         cache.static.push(...list.map(file => path.resolve(pkg.dir, file)))
+      } else {
+        /** 如果没有配置 默认使用 resource 目录 */
+        cache.static.push(path.resolve(pkg.dir, 'resource'))
       }
     }))
 

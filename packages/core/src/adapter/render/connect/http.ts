@@ -15,8 +15,8 @@ export const createHttpRenderClient = () => {
   }
 
   return Promise.allSettled(cfg.http_server.map(async (item) => {
-    let { url, token, enable } = item
-    if (!enable) return
+    let { url, token, enable, isSnapka } = item
+    if (!enable || isSnapka) return
     url = url.replace('/puppeteer', '')
     /** 初次鉴权 */
     const headers = { authorization: crypto.createHash('md5').update(`Bearer ${token}`).digest('hex') }

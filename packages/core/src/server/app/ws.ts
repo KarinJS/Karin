@@ -9,7 +9,7 @@ import {
   WS_CONNECTION,
   WS_CONNECTION_ONEBOT,
   WS_CONNECTION_PUPPETEER,
-  WS_CONNECTION_PUPPETEER_2,
+  WS_SNAPKA,
   WS_CONNECTION_SANDBOX,
   WS_CONNECTION_TERMINAL,
 } from '@/utils/fs/key'
@@ -84,20 +84,21 @@ wss.on('connection', (socket, request) => {
     return
   }
 
-  if (request.url === '/puppeteer') {
+  // 兼容1.0的puppeteer
+  if (request.url === '/puppeteer' || request.url === '/snapka') {
     const cfg = getRenderCfg()
     if (!cfg.ws_server.enable) {
-      logger.warn('[WebSocket] puppeteerServer 未启用')
+      logger.warn('[WebSocket] snapkaServer 未启用')
       socket.close()
       return
     }
 
     /**
-     * 2.0 puppeteer
-     * 客户端名称: @karinjs/puppeteer-server
+     * Snapka
+     * x-client-id: snapka 作为识别
      */
-    if (request.headers['x-client-name'] === '@karinjs/puppeteer-server') {
-      emitEvent(WS_CONNECTION_PUPPETEER_2, socket, request)
+    if (request.headers['x-client-id'] === 'snapka') {
+      emitEvent(WS_SNAPKA, socket, request)
     } else {
       emitEvent(WS_CONNECTION_PUPPETEER, socket, request)
     }

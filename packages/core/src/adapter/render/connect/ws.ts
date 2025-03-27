@@ -4,7 +4,7 @@ import { renderTpl } from '../admin/template'
 import { registerRender, unregisterRender } from '../admin/cache'
 import type { WebSocket } from 'ws'
 import type { Options, RenderResult } from '../admin/types'
-import { isStatic } from '@/utils/fs/static'
+import { isPublic } from '@/utils/fs/static'
 
 export abstract class WebSocketRender {
   /** websocket实例 */
@@ -78,7 +78,7 @@ export abstract class WebSocketRender {
    * @param data 数据
    */
   async static (echo: string, data: { file: string, type: string, url: string }) {
-    const result = isStatic(data.file)
+    const result = isPublic(data.file)
     if (!result) {
       logger.warn(`[WebSocket] 访问的路径非法: echo: ${echo} data: ${JSON.stringify(data)}`)
       return this.socket.send(JSON.stringify({ echo, status: 'error', data: '非法的访问路径' }))

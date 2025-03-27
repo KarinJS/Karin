@@ -1,7 +1,7 @@
 import { listeners } from '@/core/internal'
 import { createWsResponseKey } from './key'
 
-import type { Options2 } from '@/adapter/render/admin/types'
+import type { Snapka } from '@/adapter/render/admin/types'
 import type { WebSocket } from 'ws'
 
 /** 索引 */
@@ -127,7 +127,7 @@ export const sendWsRequest = <T, R = void> (
  */
 export const sendWsScreenshotRequest = <R> (
   socket: WebSocket,
-  params: Options2,
+  params: Snapka,
   timeout: number = 60 * 1000
 ): Promise<R> => {
   return sendWsRequest(

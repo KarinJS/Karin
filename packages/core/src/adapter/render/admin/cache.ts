@@ -1,9 +1,9 @@
-import type { Options, RenderResult, Options2, RenderResult2 } from './types'
+import type { Options, RenderResult, Snapka, SnapkaResult } from './types'
 
 /** 渲染函数类型 */
 export interface Render {
   <T extends Options> (options: T): Promise<RenderResult<T>>
-  <T extends Options2> (options: T): Promise<RenderResult2<T>>
+  <T extends Snapka> (options: T): Promise<SnapkaResult<T>>
 }
 
 let index = 0

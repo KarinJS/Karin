@@ -201,6 +201,9 @@ export const defaultConfig: {
         enable: false,
         url: 'ws://127.0.0.1:7005',
         token: '123456',
+        isSnapka: false,
+        reconnectTime: 5000,
+        heartbeatTime: 30000,
       },
     ],
     http_server: [
@@ -208,6 +211,7 @@ export const defaultConfig: {
         enable: false,
         url: 'http://127.0.0.1:7005',
         token: '123456',
+        isSnapka: false,
       },
     ],
   },

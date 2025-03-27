@@ -5,7 +5,7 @@ import schedule from 'node-schedule'
 import { htmlPath } from '@/root'
 import { mkdirSync } from '@/utils/fs/fsSync'
 import { getAllFiles } from '@/utils/fs/file'
-import type { Options, Options2 } from './types'
+import type { Options, Snapka } from './types'
 
 /**
  * @description 处理模板
@@ -54,7 +54,7 @@ export const renderTpl = (options: Options) => {
  * @description 处理模板
  * @param options 截图参数
  */
-export const renderTemplate = <R extends Options2> (options: Options2): R => {
+export const renderTemplate = <R extends Snapka> (options: Snapka): R => {
   if (typeof options.file !== 'string') {
     throw TypeError('模板文件路径必须为字符串')
   }
@@ -143,6 +143,7 @@ const cleanExpiredFiles = async () => {
   let count = 0
   const now = Date.now()
   const files = await getAllFiles(htmlPath, { suffixs: ['.html'] })
+  if (files.length === 0) return
   const EXPIRE_TIME = 10 * 60 * 1000
 
   for (const file of files) {

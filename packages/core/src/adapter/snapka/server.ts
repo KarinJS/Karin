@@ -2,13 +2,13 @@ import { auth } from './auth'
 import { listeners } from '@/core/internal'
 import { createWsResponseKey } from './key'
 import { sendWsScreenshotRequest } from './request'
-import { WS_CONNECTION_PUPPETEER_2 } from '@/utils/fs/key'
+import { WS_SNAPKA } from '@/utils/fs/key'
 import { renderTemplate } from '../render/admin/template'
 import { registerRender, unregisterRender } from '../render/admin/cache'
 
 import type { WebSocket } from 'ws'
 import type { IncomingMessage } from 'node:http'
-import type { Options2, RenderResult2 } from '../render/admin/types'
+import type { Snapka, SnapkaResult } from '../render/admin/types'
 
 /**
  * @description 2.0 puppeteer WebSocket服务端
@@ -32,11 +32,9 @@ const WebSocketPuppeteerServer = async (
   /**
    * 截图函数
    */
-  const render = <T extends Options2> (options: T) => {
-    if (options.data) {
-      options = renderTemplate(options)
-    }
-    return sendWsScreenshotRequest<RenderResult2<T>>(socket, options)
+  const render = <T extends Snapka> (options: T) => {
+    options = renderTemplate(options)
+    return sendWsScreenshotRequest<SnapkaResult<T>>(socket, options)
   }
 
   socket.on('close', () => {
@@ -60,14 +58,15 @@ const WebSocketPuppeteerServer = async (
     listeners.emit(key, { status, data })
   })
 
-  index = registerRender('@karinjs/puppeteer-server', render)
+  const name = request.headers['x-client-name'] as string || 'snapka'
+  index = registerRender(name, render)
 }
 
 /**
  * @description 初始化WebSocketPuppeteerServer
  */
 export const initWebSocketPuppeteerServer = () => {
-  listeners.on(WS_CONNECTION_PUPPETEER_2, (
+  listeners.on(WS_SNAPKA, (
     socket: WebSocket,
     request: IncomingMessage,
     call: () => void

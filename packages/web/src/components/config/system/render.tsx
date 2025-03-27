@@ -24,19 +24,24 @@ const getRenderComponent = (
       ws_server: {
         enable: data.ws_server.enable ?? false,
       },
-      ws_client: data.ws_client || [],
-      http_server: data.http_server || []
-    }
+      ws_client: (data.ws_client || []).map((item) => ({
+        ...item,
+        isSnapka: item.isSnapka ?? false,
+        reconnectTime: item.reconnectTime ?? 5000,
+        heartbeatTime: item.heartbeatTime ?? 30000,
+      })),
+      http_server: data.http_server || [],
+    },
   })
 
   const wsClientFields = useFieldArray({
     control: methods.control,
-    name: 'ws_client'
+    name: 'ws_client',
   })
 
   const httpServerFields = useFieldArray({
     control: methods.control,
-    name: 'http_server'
+    name: 'http_server',
   })
 
   const onSubmit = (formData: Renders) => {
@@ -46,16 +51,20 @@ const getRenderComponent = (
   const addWsClient = () => {
     wsClientFields.append({
       enable: false,
-      url: 'ws://127.0.0.1:7005/ws',
-      token: '123456'
+      url: 'ws://127.0.0.1:7775/ws',
+      token: '123456',
+      isSnapka: false,
+      reconnectTime: 5000,
+      heartbeatTime: 30000,
     })
   }
 
   const addHttpServer = () => {
     httpServerFields.append({
       enable: false,
-      url: 'http://127.0.0.1:7005',
-      token: '123456'
+      url: 'http://127.0.0.1:7775',
+      token: '123456',
+      isSnapka: false,
     })
   }
 
@@ -108,6 +117,16 @@ const getRenderComponent = (
                 >
                   <span className='text-xs'>启用</span>
                 </Switch>
+                <Switch
+                  className='p-2 rounded-lg mb-3'
+                  {...methods.register(`ws_client.${index}.isSnapka`)}
+                  color='success'
+                >
+                  <div className='flex flex-col'>
+                    <span className='text-xs'>Snapka模式</span>
+                    <span className='text-xs text-gray-500'>是否使用snapka模式</span>
+                  </div>
+                </Switch>
                 <Input
                   label='WebSocketServer 地址'
                   description='WebSocket的地址 也就是puppeteer的WebSocket服务端api地址 例如: ws://127.0.0.1:6099'
@@ -123,6 +142,24 @@ const getRenderComponent = (
                   placeholder='请输入 Token'
                   className='p-2 rounded-lg w-full'
                   color='primary'
+                />
+                <Input
+                  label='重连时间'
+                  description='连接断开后重新连接的时间间隔(毫秒)'
+                  {...methods.register(`ws_client.${index}.reconnectTime`)}
+                  placeholder='请输入重连时间'
+                  className='p-2 rounded-lg w-full'
+                  color='primary'
+                  type='number'
+                />
+                <Input
+                  label='心跳时间'
+                  description='发送心跳包的时间间隔(毫秒)'
+                  {...methods.register(`ws_client.${index}.heartbeatTime`)}
+                  placeholder='请输入心跳时间'
+                  className='p-2 rounded-lg w-full'
+                  color='primary'
+                  type='number'
                 />
               </div>
             )}
@@ -149,6 +186,13 @@ const getRenderComponent = (
                 >
                   <span className='text-xs'>启用</span>
                 </Switch>
+                <Switch
+                  className='p-2 rounded-lg mb-3'
+                  {...methods.register(`http_server.${index}.isSnapka`)}
+                  color='success'
+                >
+                  <span className='text-xs'>Snapka模式</span>
+                </Switch>
                 <Input
                   label='发送Api请求的URL地址'
                   {...methods.register(`http_server.${index}.url`)}
@@ -165,6 +209,7 @@ const getRenderComponent = (
                   className='p-2 rounded-lg w-full'
                   color='primary'
                 />
+
               </div>
             )}
           />

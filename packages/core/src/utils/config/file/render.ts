@@ -1,6 +1,7 @@
 import { watch } from '../../fs/watch'
-import { requireFileSync } from '../../fs/require'
 import { FILE_CHANGE } from '@/utils/fs'
+import { diffArray } from '@/utils/common/number'
+import { requireFileSync } from '../../fs/require'
 import { listeners } from '@/core/internal/listeners'
 
 import type { Renders } from '@/types/config'
@@ -23,6 +24,7 @@ const format = (data: Renders) => {
     http_server: data.http_server.map(v => ({
       ...v,
       token: String(v.token),
+      isSnapka: v.isSnapka ?? false,
     })),
   }
 }
@@ -38,8 +40,31 @@ const initRender = (dir: string) => {
   const data = requireFileSync<Renders>(file, { type: 'json' })
   cache = format(data)
 
-  watch<Renders>(file, (old, data) => {
+  watch<Renders>(file, async (old, data) => {
     cache = format(data)
+
+    const wsClient = diffArray(
+      Array.isArray(old?.ws_client) ? old?.ws_client : [],
+      Array.isArray(data?.ws_client) ? data?.ws_client : []
+    )
+
+    const {
+      disconnectSnapkaClient,
+      createSnapkaClient,
+      disconnectSnapkaHttp,
+      createSnapkaHttp,
+    } = await import('@/adapter/snapka')
+
+    wsClient.removed.forEach(v => disconnectSnapkaClient(v.url))
+    wsClient.added.forEach(v => createSnapkaClient(v))
+
+    const httpServer = diffArray(
+      Array.isArray(old?.http_server) ? old?.http_server : [],
+      Array.isArray(data?.http_server) ? data?.http_server : []
+    )
+
+    httpServer.removed.forEach(v => disconnectSnapkaHttp(v.url))
+    httpServer.added.forEach(v => createSnapkaHttp(v))
 
     const options = { file: name, old, data: cache }
     listeners.emit(FILE_CHANGE, options)

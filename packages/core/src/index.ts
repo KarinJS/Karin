@@ -123,10 +123,16 @@ export const start = async () => {
   startCleanExpiredFiles()
 
   /**
-   * 11. 初始化WebSocket服务
+   * 11. 初始化snapka服务
    */
-  const { initWebSocketPuppeteerServer } = await import('@/adapter/puppeteer/server')
+  const {
+    initWebSocketPuppeteerServer,
+    initSnapkaClient,
+    initSnapkaHttp,
+  } = await import('@/adapter/snapka/index')
   initWebSocketPuppeteerServer()
+  initSnapkaClient()
+  initSnapkaHttp()
 }
 
 start()

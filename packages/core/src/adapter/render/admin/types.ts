@@ -226,9 +226,9 @@ export type RenderResult<T extends screenshot> = T['multiPage'] extends true | n
   : string
 
 /**
- * 2.0截图参数
+ * snapka截图参数
  */
-export interface Options2 extends screenshot {
+export interface Snapka extends screenshot {
   /**
    * 截图类型
    * @default 'png'
@@ -255,7 +255,7 @@ export interface Options2 extends screenshot {
   data?: Record<string, any>
 }
 
-/** 2.0截图返回 */
-export type RenderResult2<T extends Options2> = T['multiPage'] extends true | number
+/** snapka截图返回 */
+export type SnapkaResult<T extends Snapka> = T['multiPage'] extends true | number
   ? string[]
   : string

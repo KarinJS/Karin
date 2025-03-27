@@ -15,6 +15,12 @@ export interface Renders {
     url: string
     /** 令牌 */
     token: string
+    /** 是否为snapka */
+    isSnapka: boolean
+    /** 重连时间 单位毫秒 默认5000 */
+    reconnectTime?: number
+    /** 心跳时间 单位毫秒 默认30000 */
+    heartbeatTime?: number
   }[],
   /** http服务器配置`反向http` */
   http_server: {
@@ -24,5 +30,7 @@ export interface Renders {
     url: string
     /** 令牌 */
     token: string
+    /** 是否为snapka */
+    isSnapka: boolean
   }[]
 }
