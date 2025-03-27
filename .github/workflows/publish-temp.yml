@@ -73,7 +73,7 @@ jobs:
         id: publish_pkg
         run: |
           # 将标准输出和标准错误都重定向到文件
-          pnpm dlx pkg-pr-new publish --json output.json --comment=update --compact --packageManager=pnpm --filter=./packages/core > pkg-output.txt 2>&1
+          pnpm dlx pkg-pr-new publish --json output.json --comment=update --compact --packageManager=pnpm './packages/core' > pkg-output.txt 2>&1
           
           # 显示输出内容以便在日志中查看
           echo "命令输出内容："
