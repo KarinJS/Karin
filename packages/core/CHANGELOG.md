@@ -1,5 +1,28 @@
 # 更新日志
 
+## [1.7.12](https://github.com/KarinJS/Karin/compare/core-v1.7.11...core-v1.7.12) (2025-03-27)
+
+
+### 🐛 Bug Fixes
+
+* close [#327](https://github.com/KarinJS/Karin/issues/327) close  [#319](https://github.com/KarinJS/Karin/issues/319) ([3d5816d](https://github.com/KarinJS/Karin/commit/3d5816d52550d72e8a261a137fc6042d7d27895b))
+* close [#329](https://github.com/KarinJS/Karin/issues/329)  添加插件版本兼容性检查，更新文件获取函数以支持绝对路径返回 ([0e29b3a](https://github.com/KarinJS/Karin/commit/0e29b3a31c834262d56ddd25d06eed3b2ad8c928))
+* 优化插件版本兼容性检查，延迟日志输出以提高用户体验 ([cdbfcba](https://github.com/KarinJS/Karin/commit/cdbfcba05d4d043150092358711a1b8386d6ba06))
+* 优化插件版本兼容性检查，延迟日志输出以提高用户体验 ([aa8a07b](https://github.com/KarinJS/Karin/commit/aa8a07b93b25ce41c8053398c201851205ba155e))
+* 更新插件版本兼容性检查，使用 satisfies 替代 range 函数名称 解决导出冲突 ([d526b4f](https://github.com/KarinJS/Karin/commit/d526b4f456d9257c3fdd6f698a5735c7b4706d18))
+
+
+### ♻️ Code Refactoring
+
+* close [#325](https://github.com/KarinJS/Karin/issues/325) 重构消息钩子系统，移除旧的空消息钩子，新增事件调用钩子支持 ([b54d294](https://github.com/KarinJS/Karin/commit/b54d294cff3972bd7730fe287e4ccdf8c633eb22))
+* 移除 range.ts 中的示例使用代码，简化文件结构 ([c413fa3](https://github.com/KarinJS/Karin/commit/c413fa39cd9d978af01dc473515c3bb9d4d5eb73))
+* 重构路径常量，新增以 karinPath 开头的新常量，保留旧常量以保持兼容性 ([a80a3db](https://github.com/KarinJS/Karin/commit/a80a3db1d76bca825ba023c7d8bfa42e4773c321))
+
+
+### 📦️ Build System
+
+* fix build type ([b7b4f50](https://github.com/KarinJS/Karin/commit/b7b4f50657c07369538ef6a3d07a80c27dcbb582))
+
 ## [1.7.11](https://github.com/KarinJS/Karin/compare/core-v1.7.10...core-v1.7.11) (2025-03-27)
 
 
