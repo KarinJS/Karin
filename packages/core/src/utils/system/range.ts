@@ -300,29 +300,3 @@ export const range = (range: string, version: string): boolean => {
   /** 所有条件都必须满足 */
   return conditions.every(condition => satisfiesCondition(version, condition))
 }
-
-// 示例使用：
-console.log(range('1.0.0', '1.0.1')) // false
-console.log(range('^1.0.0', '1.0.0')) // true
-console.log(range('^1.0.0', '2.0.0')) // false
-console.log(range('^1.0.0', '0.0.1')) // false
-console.log(range('>=1.0.0', '1.0.0')) // true
-console.log(range('>=1.0.0', '0.0.1')) // false
-console.log(range('<=1.0.0', '1.0.0')) // true
-console.log(range('<=1.0.0', '2.0.0')) // false
-console.log(range('>=1.0.0 <2.0.0', '1.0.0')) // true
-console.log(range('1.0.0-alpha', '1.0.0-beta')) // false
-console.log(range('1.0.0-beta', '1.0.0-alpha')) // false
-console.log(range('^1.0.0-beta', '1.0.0-alpha')) // false
-console.log(range('>=1.0.0-beta', '1.0.0-alpha')) // false
-console.log(range('^1.0.0-alpha', '1.0.0-beta')) // true
-console.log(range('^1.0.0-beta', '1.0.0-beta')) // true
-console.log(range('^1.0.0-alpha', '1.0.0-alpha')) // true
-
-console.log('--------------------------------------')
-// 通配符示例
-console.log(range('1.0.x', '1.0.1')) // true
-console.log(range('1.0.x', '1.1.0')) // false
-console.log(range('1.x.x', '1.2.3')) // true
-console.log(range('1.x.0', '1.2.0')) // true
-console.log(range('1.x.0', '1.2.1')) // false
