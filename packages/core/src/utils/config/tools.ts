@@ -85,6 +85,10 @@ export const getCacheCfg = <T> (
 ) => {
   /** 优先走缓存 */
   if (cache[keys[0]]) {
+    if (!count[keys[0]]) {
+      count[keys[0]] = { start: 0, count: 0 }
+    }
+
     count[keys[0]].count++
     return cache[keys[0]]
   }
