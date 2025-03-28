@@ -355,8 +355,8 @@ const filterPkg = async (list: string[]) => {
         logger.error(`[getPlugins][npm] ${name} 要求 node-karin 版本为 ${pkg.karin.engines.karin}，当前不符合要求，跳过加载插件`)
         return
       }
-
-      list.push(`npm:${name}`)
     }
+
+    list.push(`npm:${name}`)
   }))
 }
