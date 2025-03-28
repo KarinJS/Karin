@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.7.13](https://github.com/KarinJS/Karin/compare/core-v1.7.12...core-v1.7.13) (2025-03-28)
+
+
+### 🐛 Bug Fixes
+
+* 修正npm plugin不加载的问题 ([4811aef](https://github.com/KarinJS/Karin/commit/4811aef5fb39e56584b95e68df7bae65d6e0cba2))
+
 ## [1.7.12](https://github.com/KarinJS/Karin/compare/core-v1.7.11...core-v1.7.12) (2025-03-27)
 
 
