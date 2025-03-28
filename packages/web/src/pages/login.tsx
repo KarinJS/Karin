@@ -110,6 +110,12 @@ export default function LoginPage () {
   useEffect(() => {
     if (tokenFromUrl && !autoLoginAttempted) {
       setAutoLoginAttempted(true)
+
+      // 清除已存储的登录信息，防止之前的登录状态影响
+      localStorage.removeItem(key.userId)
+      localStorage.removeItem(key.accessToken)
+      localStorage.removeItem(key.refreshToken)
+
       form.setValue('token', tokenFromUrl)
       setTimeout(() => {
         form.handleSubmit(onSubmit)()
