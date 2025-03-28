@@ -1,5 +1,17 @@
 # 更新日志
 
+## [1.7.14](https://github.com/KarinJS/Karin/compare/core-v1.7.13...core-v1.7.14) (2025-03-28)
+
+
+### 🐛 Bug Fixes
+
+* 初始化计数器以确保缓存统计正确 ([bec90c1](https://github.com/KarinJS/Karin/commit/bec90c1cfa90a545fe41b838ecab8a74fa0725fd))
+
+
+### 💄 Styles
+
+* 增加更新依赖和插件的功能，优化输出结果格式 ([9fc2375](https://github.com/KarinJS/Karin/commit/9fc23758aeec43a1e365083a379631565bc1696a))
+
 ## [1.7.13](https://github.com/KarinJS/Karin/compare/core-v1.7.12...core-v1.7.13) (2025-03-28)
 
 
