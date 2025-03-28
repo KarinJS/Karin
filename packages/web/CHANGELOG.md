@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.12](https://github.com/KarinJS/Karin/compare/web-v1.7.11...web-v1.7.12) (2025-03-28)
+
+
+### 🐛 Bug Fixes
+
+* 清除已存储的登录信息以防止影响自动登录状态 ([d1a0740](https://github.com/KarinJS/Karin/commit/d1a07403118fc080031b54a702bbec1a84e259d6))
+
 ## [1.7.11](https://github.com/KarinJS/Karin/compare/web-v1.7.10...web-v1.7.11) (2025-03-27)
 
 
