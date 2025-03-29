@@ -61,12 +61,12 @@ import { exitRouter, restartRouter } from '../system/manage'
 import {
   infoRouter,
   statusRouter,
-  systemStatusRealTimeHandler
+  systemStatusRealTimeHandler,
 } from '../system/info'
 import {
   getLogFileListRouter,
   getLogFileRouter,
-  getLogRouter, logLevelRouter
+  getLogRouter, logLevelRouter,
 } from '../log/getLog'
 import {
   getOnlinePluginList,
@@ -78,19 +78,19 @@ import {
 import {
   pluginGetConfig,
   pluginIsConfigExist,
-  pluginSaveConfig
+  pluginSaveConfig,
 } from '../plugins/config'
 import {
   pluginGetTaskList,
   pluginGetTaskStatus,
   pluginInstall,
   pluginUninstall,
-  pluginUpdateTaskStatus
+  pluginUpdateTaskStatus,
 } from '../plugins/install'
 import {
   createTerminalHandler,
   getTerminalListHandler,
-  closeTerminalHandler
+  closeTerminalHandler,
 } from '../pty'
 import { checkPlugin } from '../system/check'
 import { getWebuiPluginList, installWebui, uninstallWebui, getWebuiPluginVersions, updateWebuiPluginVersion } from '../plugins/webui'

@@ -7,8 +7,9 @@ import {
   MdStore,
   MdOutlineArticle, // 系统日志
   MdOutlineTerminal, // 仿真终端
-  MdOutlineWebhook // webui插件管理
+  MdOutlineWebhook, // webui插件管理
 } from 'react-icons/md'
+import { TbPackages } from 'react-icons/tb' // 依赖管理图标
 
 import type { LocalApiResponse } from 'node-karin'
 
@@ -44,7 +45,7 @@ const getInstalledPlugins = async () => {
     label: item.name,
     href: `/plugins/${item.id}`,
     icon: item.icon,
-    type: item.type
+    type: item.type,
   }))
 }
 
@@ -82,6 +83,11 @@ export const defaultSiteConfig: SiteConfigType = {
       Icon: MdOutlineWebhook,
       label: 'WebUI插件',
       href: '/plugins/webui',
+    },
+    {
+      Icon: TbPackages,
+      label: '依赖管理',
+      href: '/dependencies',
     },
     {
       Icon: MdOutlineTerminal,
