@@ -41,9 +41,5 @@
   "include": [
     "./src/**/*",
     "./src/global.d.ts"
-  ],
-  "tsc-alias": {
-    "resolveFullExtension": ".js",
-    "resolveFullPaths": true
-  }
+  ]
 }
