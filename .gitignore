@@ -2,7 +2,6 @@
 .npmrc
 yarn.lock
 package-lock.json
-pnpm-lock.yaml
 
 # 包管理器日志
 npm-debug.log*
