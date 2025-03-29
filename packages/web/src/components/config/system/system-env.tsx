@@ -1,9 +1,9 @@
 import { Input } from '@heroui/input'
 import { Switch } from '@heroui/switch'
+import { Controller } from 'react-hook-form'
 import { RadioGroup, Radio } from '@heroui/radio'
 import { NumberInput } from '@heroui/number-input'
 import ColorPicker from '@/components/common/ColorPicker'
-import { Controller } from 'react-hook-form'
 
 import type { EnvFormData } from './env'
 import type { UseFormReturn } from 'react-hook-form'
@@ -14,7 +14,7 @@ import type { UseFormReturn } from 'react-hook-form'
  * @returns 系统环境变量组件
  */
 export const getSystemEnvComponent = (
-  methods: UseFormReturn<EnvFormData, any, undefined>
+  methods: UseFormReturn<EnvFormData, any, EnvFormData>
 ) => {
   return (
     <div className='w-full max-w-full px-4 py-2 space-y-4'>
