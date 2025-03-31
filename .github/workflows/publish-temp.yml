@@ -124,7 +124,7 @@ jobs:
             
             // 简化安装URL格式为 包名@短哈希
             const repoName = context.repo.repo; // 获取仓库名
-            const simplifiedUrl = `https://pkg.pr.new/${repoName}@${shortSha}`;
+            const simplifiedUrl = `https://pkg.pr.new/node-karin@${shortSha}`;
             
             // 获取Stackblitz链接
             let stackblitzUrl = '';
