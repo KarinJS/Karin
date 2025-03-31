@@ -14,7 +14,7 @@ import type { UseFormReturn } from 'react-hook-form'
  * @returns 系统环境变量组件
  */
 export const getSystemEnvComponent = (
-  methods: UseFormReturn<EnvFormData, any, undefined>
+  methods: UseFormReturn<EnvFormData, any, EnvFormData>
 ) => {
   return (
     <div className='w-full max-w-full px-4 py-2 space-y-4'>
