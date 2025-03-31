@@ -107,7 +107,7 @@ export const SYSTEM_ENV_KEYS = [
   'FFPROBE_PATH',
   'FFPLAY_PATH',
   'RUNTIME',
-  'NODE_ENV'
+  'NODE_ENV',
 ]
 
 /**
@@ -124,72 +124,72 @@ const getEnvComponent = (
   const systemEnvs: SystemEnvsField = {
     HTTP_PORT: {
       value: Number(data.HTTP_PORT?.value) || 7777,
-      comment: data.HTTP_PORT?.comment || ''
+      comment: data.HTTP_PORT?.comment || '',
     },
     HTTP_HOST: {
       value: data.HTTP_HOST?.value || '0.0.0.0',
-      comment: data.HTTP_HOST?.comment || ''
+      comment: data.HTTP_HOST?.comment || '',
     },
     HTTP_AUTH_KEY: {
       value: data.HTTP_AUTH_KEY?.value || '',
-      comment: data.HTTP_AUTH_KEY?.comment || ''
+      comment: data.HTTP_AUTH_KEY?.comment || '',
     },
     WS_SERVER_AUTH_KEY: {
       value: data.WS_SERVER_AUTH_KEY?.value || '',
-      comment: data.WS_SERVER_AUTH_KEY?.comment || ''
+      comment: data.WS_SERVER_AUTH_KEY?.comment || '',
     },
     REDIS_ENABLE: {
       value: data.REDIS_ENABLE?.value === 'true',
-      comment: data.REDIS_ENABLE?.comment || ''
+      comment: data.REDIS_ENABLE?.comment || '',
     },
     PM2_RESTART: {
       value: data.PM2_RESTART?.value === 'true',
-      comment: data.PM2_RESTART?.comment || ''
+      comment: data.PM2_RESTART?.comment || '',
     },
     TSX_WATCH: {
       value: data.TSX_WATCH?.value === 'true',
-      comment: data.TSX_WATCH?.comment || ''
+      comment: data.TSX_WATCH?.comment || '',
     },
     LOG_LEVEL: {
       value: data.LOG_LEVEL?.value as SystemEnvsField['LOG_LEVEL']['value'] || 'info',
-      comment: data.LOG_LEVEL?.comment || ''
+      comment: data.LOG_LEVEL?.comment || '',
     },
     LOG_DAYS_TO_KEEP: {
       value: Number(data.LOG_DAYS_TO_KEEP?.value) || 7,
-      comment: data.LOG_DAYS_TO_KEEP?.comment || ''
+      comment: data.LOG_DAYS_TO_KEEP?.comment || '',
     },
     LOG_MAX_LOG_SIZE: {
       value: Number(data.LOG_MAX_LOG_SIZE?.value) || 0,
-      comment: data.LOG_MAX_LOG_SIZE?.comment || ''
+      comment: data.LOG_MAX_LOG_SIZE?.comment || '',
     },
     LOG_FNC_COLOR: {
       value: data.LOG_FNC_COLOR?.value || '#E1D919',
-      comment: data.LOG_FNC_COLOR?.comment || ''
+      comment: data.LOG_FNC_COLOR?.comment || '',
     },
     LOG_MAX_CONNECTIONS: {
       value: Number(data.LOG_MAX_CONNECTIONS?.value) || 5,
-      comment: data.LOG_MAX_CONNECTIONS?.comment || ''
+      comment: data.LOG_MAX_CONNECTIONS?.comment || '',
     },
     FFMPEG_PATH: {
       value: data.FFMPEG_PATH?.value || '',
-      comment: data.FFMPEG_PATH?.comment || ''
+      comment: data.FFMPEG_PATH?.comment || '',
     },
     FFPROBE_PATH: {
       value: data.FFPROBE_PATH?.value || '',
-      comment: data.FFPROBE_PATH?.comment || ''
+      comment: data.FFPROBE_PATH?.comment || '',
     },
     FFPLAY_PATH: {
       value: data.FFPLAY_PATH?.value || '',
-      comment: data.FFPLAY_PATH?.comment || ''
+      comment: data.FFPLAY_PATH?.comment || '',
     },
     RUNTIME: {
       value: data.RUNTIME?.value as SystemEnvsField['RUNTIME']['value'] || 'tsx',
-      comment: data.RUNTIME?.comment || ''
+      comment: data.RUNTIME?.comment || '',
     },
     NODE_ENV: {
       value: data.NODE_ENV?.value as SystemEnvsField['NODE_ENV']['value'] || 'development',
-      comment: data.NODE_ENV?.comment || ''
-    }
+      comment: data.NODE_ENV?.comment || '',
+    },
   }
 
   /** 排除掉系统预设的环境变量 */
@@ -198,17 +198,17 @@ const getEnvComponent = (
     customEnvs.push({
       key,
       value: value.value,
-      comment: value.comment
+      comment: value.comment,
     })
   })
 
-  const methods = useForm<EnvFormData>({
-    defaultValues: { systemEnvs, customEnvs }
+  const methods = useForm<EnvFormData, any, EnvFormData>({
+    defaultValues: { systemEnvs, customEnvs },
   })
 
   const { fields, append, remove } = useFieldArray({
     control: methods.control,
-    name: 'customEnvs'  // 只对自定义环境变量使用 fieldArray
+    name: 'customEnvs',  // 只对自定义环境变量使用 fieldArray
   })
 
   // 获取系统环境变量组件
