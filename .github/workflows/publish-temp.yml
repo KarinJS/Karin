@@ -21,13 +21,13 @@ jobs:
       - name: 安装node
         uses: actions/setup-node@v4
         with:
-          node-version: 21
+          node-version: 20
           registry-url: "https://registry.npmjs.org"
 
       - name: 安装pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 9.7.1
+          version: 9
 
       - name: 获取当前提交哈希
         run: |
@@ -39,23 +39,6 @@ jobs:
 
       - name: 安装依赖
         run: pnpm install
-
-      - name: 修改版本号
-        run: |
-          # 获取当前日期作为版本号的一部分
-          DATE=$(date +'%Y%m%d')
-          
-          # 从package.json获取当前版本号
-          CURRENT_VERSION=$(node -p "require('./packages/core/package.json').version")
-          
-          # 生成新的版本号：主版本号.次版本号.日期+短哈希
-          BASE_VERSION=$(echo $CURRENT_VERSION | sed -E 's/([0-9]+\.[0-9]+)\.[0-9]+.*/\1/')
-          NEW_VERSION="${BASE_VERSION}.${DATE}+${SHORT_COMMIT_HASH}"
-          
-          # 更新package.json中的版本号
-          npm version $NEW_VERSION --no-git-tag-version
-          
-          echo "PKG_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: 编译
         run: pnpm build:all
@@ -73,7 +56,7 @@ jobs:
         id: publish_pkg
         run: |
           # 将标准输出和标准错误都重定向到文件
-          pnpm dlx pkg-pr-new publish --json output.json --comment=update --compact --packageManager=pnpm './packages/core' > pkg-output.txt 2>&1
+          pnpm dlx pkg-pr-new publish --json output.json --comment=update --compact --packageManager=pnpm './packages/*' > pkg-output.txt 2>&1
           
           # 显示输出内容以便在日志中查看
           echo "命令输出内容："
@@ -97,7 +80,6 @@ jobs:
           
           # 在工作流摘要中添加信息
           echo "## Published Packages :package:" >> $GITHUB_STEP_SUMMARY
-          echo "version: \`${{ env.PKG_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
           echo "commit: [\`${{ env.SHORT_COMMIT_HASH }}\`](${{ env.REPO_URL }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "use pnpm:" >> $GITHUB_STEP_SUMMARY
@@ -160,7 +142,6 @@ jobs:
             // 构建与摘要类似的评论内容
             const body = `## Published Packages :package:
             
-            version: \`${{ env.PKG_VERSION }}\`
             commit: [\`${shortSha}\`](${commitUrl})
             
             ${stackblitzUrl ? `[Open in Stackblitz](${stackblitzUrl})` : ''}
