@@ -1,4 +1,4 @@
-name: publish-temp
+name: publish-minimal-repro
 
 on:
   push:
