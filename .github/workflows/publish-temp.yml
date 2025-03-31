@@ -77,14 +77,16 @@ jobs:
           
           echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
           echo "install_url=$SIMPLIFIED_URL" >> $GITHUB_OUTPUT
-          
+
+      - name: 生成发布摘要
+        run: |
           # 在工作流摘要中添加信息
           echo "## Published Packages :package:" >> $GITHUB_STEP_SUMMARY
           echo "commit: [\`${{ env.SHORT_COMMIT_HASH }}\`](${{ env.REPO_URL }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "use pnpm:" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "$PNPM_INSTALL_CMD" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.publish_pkg.outputs.pnpm_install_cmd }}" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
@@ -94,7 +96,7 @@ jobs:
           cat pkg-output.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
-      - name: Post or update comment
+      - name: 发布PR评论
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
         with:
