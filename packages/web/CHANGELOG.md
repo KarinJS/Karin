@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.13](https://github.com/KarinJS/Karin/compare/web-v1.7.12...web-v1.7.13) (2025-04-05)
+
+
+### 🐛 Bug Fixes
+
+* 最小复现包ci ([#354](https://github.com/KarinJS/Karin/issues/354)) ([426fd47](https://github.com/KarinJS/Karin/commit/426fd47c0b33ee77cc73fac9879fda3467e5af01))
+
 ## [1.7.12](https://github.com/KarinJS/Karin/compare/web-v1.7.11...web-v1.7.12) (2025-03-28)
 
 
