@@ -1,5 +1,13 @@
 # 更新日志
 
+## [1.7.15](https://github.com/KarinJS/Karin/compare/core-v1.7.14...core-v1.7.15) (2025-04-05)
+
+
+### 🐛 Bug Fixes
+
+* **core:** 补全hooks API注释 ([1080fe6](https://github.com/KarinJS/Karin/commit/1080fe6dbdc18565aab9e4ea04448a42ee9bdfb4))
+* 在加载插件时，添加对非开发环境下不加载main ([0753973](https://github.com/KarinJS/Karin/commit/0753973a8853ef477fe187e5b67809cd7f13482e))
+
 ## [1.7.14](https://github.com/KarinJS/Karin/compare/core-v1.7.13...core-v1.7.14) (2025-03-28)
 
 
