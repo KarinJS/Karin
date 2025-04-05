@@ -24,7 +24,7 @@
   "license": "MIT",
   "author": "shijin",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./src/index.ts",
   "types": "./dist/index.d.ts",
   "bin": {
     "k": "./dist/cli/index.cjs",
@@ -92,6 +92,9 @@
     "@types/jsonwebtoken": "^9.0.9",
     "cross-env": "^7.0.3"
   },
+  "peerDependencies": {
+    "node-karin": "workspace:*"
+  },
   "engines": {
     "node": ">=18"
   },
@@ -102,7 +105,7 @@
   "time": "2025-03-12T19:55:45.123Z",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
+      "import": "./src/index.ts",
       "types": "./dist/index.d.ts"
     },
     "./dir": {
