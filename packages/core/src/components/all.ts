@@ -24,6 +24,7 @@ export type Components = {
   checkbox: typeof checkbox
 }
 
+/** 前端配置组件 */
 export const components: Components = {
   /** 分隔线 */
   divider,
