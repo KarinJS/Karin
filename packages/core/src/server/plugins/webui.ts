@@ -32,13 +32,13 @@ const plugins: PluginInfo[] = [
   {
     name: '@karinjs/node-pty',
     installed: false, // 会在运行时检测并更新
-    description: '提供终端功能支持，允许您在WebUI中使用命令行终端。安装此插件后可使用终端功能。'
+    description: '提供终端功能支持，允许您在WebUI中使用命令行终端。安装此插件后可使用终端功能。',
   },
   {
     name: '@karinjs/plugin-webui-network-monitor',
     installed: false, // 会在运行时检测并更新
-    description: '网络监控插件，提供网络流量、连接等监控功能，可视化展示系统网络状态。'
-  }
+    description: '网络监控插件，提供网络流量、连接等监控功能，可视化展示系统网络状态。',
+  },
 ]
 
 /**
@@ -61,7 +61,7 @@ export const installWebui: RequestHandler = async (req, res) => {
     const result = await exec(`pnpm install ${name}${isWorkspace ? ' -w' : ''}`)
     return createSuccessResponse(res, {
       status: result.status,
-      data: result.status ? '安装成功' : result.error?.message || '安装失败'
+      data: result.status ? '安装成功' : result.error?.message || '安装失败',
     })
   } catch (error) {
     logger.error(`[webui] 安装webui插件失败: ${req.body.name}`)
@@ -87,7 +87,7 @@ export const uninstallWebui: RequestHandler = async (req, res) => {
     const result = await exec(`pnpm uninstall ${name}`)
     return createSuccessResponse(res, {
       status: result.status,
-      data: result.status ? '卸载成功' : result.error?.message || '卸载失败'
+      data: result.status ? '卸载成功' : result.error?.message || '卸载失败',
     })
   } catch (error) {
     logger.error(`[webui] 卸载webui插件失败: ${req.body.name}`)
@@ -125,7 +125,7 @@ export const getWebuiPluginList: RequestHandler = async (req, res) => {
       return {
         ...plugin,
         installed: isInstalled,
-        version
+        version,
       }
     }))
 
@@ -196,13 +196,13 @@ export const getWebuiPluginVersions: RequestHandler = async (req, res) => {
       const responseData = {
         currentVersion,
         availableVersions: limitedVersions,
-        hasMoreVersions: versions.length > 20
+        hasMoreVersions: versions.length > 20,
       }
 
       // 更新缓存
       versionCache[name] = {
         data: responseData,
-        timestamp: now
+        timestamp: now,
       }
 
       return createSuccessResponse(res, responseData)
@@ -236,7 +236,7 @@ export const updateWebuiPluginVersion: RequestHandler = async (req, res) => {
     const result = await exec(`pnpm install ${name}@${version}${isWorkspace ? ' -w' : ''}`)
     return createSuccessResponse(res, {
       status: result.status,
-      data: result.status ? '更新成功' : result.error?.message || '更新失败'
+      data: result.status ? '更新成功' : result.error?.message || '更新失败',
     })
   } catch (error) {
     logger.error(`[webui] 更新插件版本失败: ${req.body.name}@${req.body.version}`)

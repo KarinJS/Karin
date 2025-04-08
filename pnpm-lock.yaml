@@ -69,8 +69,8 @@ importers:
         specifier: 5.4.1
         version: 5.4.1
       chokidar:
-        specifier: 3.6.0
-        version: 3.6.0
+        specifier: 4.0.3
+        version: 4.0.3
       commander:
         specifier: ^13.0.0
         version: 13.1.0
@@ -117,6 +117,9 @@ importers:
       '@karinjs/plugin-webui-network-monitor':
         specifier: ^1.0.3
         version: 1.0.3
+      '@karinjs/plugins-list':
+        specifier: ^1.5.0
+        version: 1.5.0
       '@types/jsonwebtoken':
         specifier: ^9.0.9
         version: 9.0.9
@@ -1666,6 +1669,9 @@ packages:
 
   '@karinjs/plugin-webui-network-monitor@1.0.3':
     resolution: {integrity: sha512-FloMaA3/41ZWOy0oVReH2tvS3FUABgzj2+EZ/6f7FkyC1aK4sQYsEDRuB2ru8RC7uycRxU2E0Tufj3jtnU5AGA==}
+
+  '@karinjs/plugins-list@1.5.0':
+    resolution: {integrity: sha512-lbxoLAp757yGparirfcDGpvLLmA91Pq+xc+IrIW2kcRMglTr+wTkrr6PQ9OtYO7HhTuqpYefIoxwuL7dVEeoWA==}
 
   '@mapbox/node-pre-gyp@1.0.11':
     resolution: {integrity: sha512-Yhlar6v9WQgUp/He7BdgzOz8lqMQ8sU+jkCq7Wx8Myc5YFJLbEe7lgui/V7G1qB1DJykHSGwreceSaD60Y0PUQ==}
@@ -7785,6 +7791,8 @@ snapshots:
   '@karinjs/plugin-webui-network-monitor@1.0.3':
     dependencies:
       systeminformation: 5.25.11
+
+  '@karinjs/plugins-list@1.5.0': {}
 
   '@mapbox/node-pre-gyp@1.0.11(encoding@0.1.13)':
     dependencies:

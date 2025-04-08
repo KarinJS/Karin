@@ -87,14 +87,17 @@ export class LoaderPlugin {
 
       /** 收集入口文件加载的Promise */
       if (pkg.type !== 'app') {
-        if (isTsx() && pkg?.pkgData?.karin?.main) {
-          const file = path.join(pkg.dir, pkg.pkgData.karin.main)
-          if (fs.existsSync(file)) {
-            entryPromises.push(this.loaderMain(pkg.name, file))
+        if (isTsx()) {
+          if (pkg?.pkgData?.karin?.main) {
+            const file = path.join(pkg.dir, pkg.pkgData.karin.main)
+            if (fs.existsSync(file)) {
+              entryPromises.push(this.loaderMain(pkg.name, file))
+            }
+            return
           }
         }
 
-        if (!isTsx() && pkg?.pkgData?.main) {
+        if (pkg?.pkgData?.main) {
           const file = path.join(pkg.dir, pkg.pkgData.main)
           if (fs.existsSync(file)) {
             entryPromises.push(this.loaderMain(pkg.name, file))
@@ -163,16 +166,24 @@ export class LoaderPlugin {
     name: string
   ): PluginFile<T> {
     return {
-      absPath: app,
+      get absPath () {
+        return app
+      },
       get dirname () {
         return path.dirname(this.absPath)
       },
       get basename () {
         return path.basename(this.absPath)
       },
-      type,
-      method,
-      name: name || type,
+      get type () {
+        return type
+      },
+      get method () {
+        return method
+      },
+      get name () {
+        return name || this.method
+      },
     }
   }
 

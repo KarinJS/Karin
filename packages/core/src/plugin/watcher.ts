@@ -4,6 +4,8 @@ import { isTsx } from '@/env'
 import { cache } from './cache'
 import { LoaderPlugin } from './loader'
 import { listeners } from '@/core/internal'
+
+import type { FSWatcher } from 'chokidar'
 import type { PkgInfo } from '@/types/plugin'
 
 interface WatchDirEvent {
@@ -14,7 +16,7 @@ interface WatchDirEvent {
  * 热更新监听器
  */
 export class WatcherPlugin {
-  private watcher: chokidar.FSWatcher | null = null
+  private watcher: FSWatcher | null = null
   private watchDirs = new Set<string>()
   private loader: LoaderPlugin
 

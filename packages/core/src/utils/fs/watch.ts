@@ -32,7 +32,7 @@ export const watch = <T> (
   cache.set(file, watcher)
   /** 监听文件变动 */
   watcher.on('change', async () => {
-    logger.info(`[配置文件变动] ${path.relative(process.cwd(), file).replace(/\\/g, '/')}`)
+    logger.info(`[watch][change] ${path.relative(process.cwd(), file).replace(/\\/g, '/')}`)
     const oldData = requireFileSync<T>(file, { ...options, readCache: true })
     clearRequireFile(file)
     const newData = requireFileSync<T>(file, { ...options, force: true })
@@ -41,13 +41,12 @@ export const watch = <T> (
 
   /** 监听删除 */
   watcher.on('unlink', () => {
-    logger.info(`[配置文件删除] ${path.relative(process.cwd(), file).replace(/\\/g, '/')}`)
+    logger.info(`[watch][unlink] ${path.relative(process.cwd(), file).replace(/\\/g, '/')}`)
     clearRequireFile(file)
   })
 
-  /** 如果watcher被关闭 则当前实例移除全部监听器并清理watcherMap中的缓存 */
+  // @ts-ignore TODO: 严格意义来说可能不需要这个...
   watcher.once('close', () => {
-    watcher.removeAllListeners()
     cache.delete(file)
     clearRequireFile(file)
   })

@@ -72,7 +72,7 @@
     "art-template": "npm:@karinjs/art-template@1.0.0",
     "axios": "1.8.2",
     "chalk": "5.4.1",
-    "chokidar": "3.6.0",
+    "chokidar": "4.0.3",
     "commander": "^13.0.0",
     "dotenv": "^16.4.7",
     "express": "4.21.2",
@@ -87,6 +87,7 @@
     "yaml": "2.7.0"
   },
   "devDependencies": {
+    "@karinjs/plugins-list": "^1.5.0",
     "@karinjs/node-pty": "^1.0.4",
     "@karinjs/plugin-webui-network-monitor": "^1.0.3",
     "@types/jsonwebtoken": "^9.0.9",

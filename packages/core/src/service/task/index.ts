@@ -6,7 +6,7 @@ export * from './queue'
 /**
  * 任务系统对象
  */
-export let taskSystem: Awaited<ReturnType<typeof createTaskDatabase>> | null = null
+export let taskSystem: Awaited<ReturnType<typeof createTaskDatabase>>
 
 /**
  * 初始化任务系统

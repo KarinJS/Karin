@@ -1,9 +1,19 @@
-import sqlite3, { type Database } from 'sqlite3'
 import { randomUUID } from 'node:crypto'
-import type { TaskEntity, TaskStatus, TaskType, TaskFilter, CreateTaskParams, CommandConfig } from '../../types/task'
+import sqlite3, { type Database } from 'sqlite3'
+import type { TaskEntity, TaskStatus, TaskType, TaskFilter, CreateTaskParams } from '../../types/task/task'
 
 type TaskDB = {
   db: Database
+}
+
+/**
+ * 解析返回值
+ */
+const parseRow = (row: any): TaskEntity => {
+  return {
+    ...row,
+    command: JSON.parse(row.command),
+  }
 }
 
 /**
@@ -125,16 +135,18 @@ export const taskAdd = async (taskDB: TaskDB, taskParams: CreateTaskParams): Pro
   const taskId = randomUUID()
   const now = Date.now()
 
-  // 预定义所有可能的字段，确保只有这些字段可以被插入
+  /** 所有可能的字段 */
   const allPossibleFields = [
     'id', 'type', 'name', 'target', 'status', 'logs', 'operatorIp',
     'createTime', 'updateTime', 'command',
   ]
 
-  // 构建插入字段和参数
+  /** 插入字段 */
   const fields: string[] = [
-    'id', 'type', 'name', 'target', 'status', 'logs', 'operatorIp', 'createTime', 'updateTime',
+    'id', 'type', 'name', 'target', 'status', 'logs', 'operatorIp', 'createTime', 'updateTime', 'command',
   ]
+
+  /** 插入值 */
   const values = [
     taskId,
     taskParams.type,
@@ -145,37 +157,15 @@ export const taskAdd = async (taskDB: TaskDB, taskParams: CreateTaskParams): Pro
     taskParams.operatorIp,
     taskParams.createTime || now,
     now,
+    JSON.stringify(taskParams.spawn),
   ]
 
-  // 处理命令配置
-  const commandConfig: Partial<CommandConfig> = {}
-
-  // 使用spawn配置
-  if (taskParams.spawn) {
-    commandConfig.command = taskParams.spawn.cmd
-    commandConfig.args = taskParams.spawn.args
-    if (taskParams.spawn.cwd) {
-      commandConfig.cwd = taskParams.spawn.cwd
-    }
-  }
-
-  // 如果有全局工作目录，并且spawn中没有指定，则使用全局工作目录
-  if (taskParams.cwd && !commandConfig.cwd) {
-    commandConfig.cwd = taskParams.cwd
-  }
-
-  // 只有在有命令配置时才添加字段
-  if (commandConfig.command) {
-    fields.push('command')
-    values.push(JSON.stringify(commandConfig))
-  }
-
-  // 验证所有字段都在预定义的安全字段列表中
+  /** 检查所有字段是否都在预定义的安全字段列表中 */
   if (!fields.every(field => allPossibleFields.includes(field))) {
     return Promise.reject(new Error('包含无效的数据库字段'))
   }
 
-  // 生成占位符
+  /** 生成占位符 */
   const placeholders = values.map(() => '?').join(', ')
 
   return new Promise((resolve, reject) => {
@@ -275,7 +265,7 @@ export const taskGet = async (
           return
         }
 
-        resolve(row as TaskEntity)
+        resolve(parseRow(row))
       }
     )
   })
@@ -350,7 +340,7 @@ export const taskList = async (
         return
       }
 
-      resolve(rows as TaskEntity[])
+      resolve(rows.map(parseRow))
     })
   })
 }

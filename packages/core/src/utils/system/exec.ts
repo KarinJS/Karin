@@ -52,11 +52,19 @@ export const exec = <T extends boolean = false> (
         return resolve((!error) as ExecReturn<T>)
       }
 
+      stdout = stdout.toString()
+      stderr = stderr.toString()
+
+      if (options?.trim) {
+        stdout = stdout.trim()
+        stderr = stderr.trim()
+      }
+
       const value = {
         status: !error,
         error,
-        stdout: stdout.toString().trim(),
-        stderr: stderr.toString().trim(),
+        stdout,
+        stderr,
       } as ExecReturn<T>
       resolve(value)
     })

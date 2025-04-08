@@ -4,7 +4,7 @@ export * from '@/utils/fs/index'
 export * from '@/utils/logger/logger'
 export * from '@/utils/system/index'
 export * from '@/utils/message/index'
-
+export * from '@/utils/request/index'
 export * as fs from '@/utils/fs/index'
 export * as system from '@/utils/system/index'
 export * as common from '@/utils/common'

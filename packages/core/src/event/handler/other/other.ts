@@ -168,7 +168,7 @@ const fnc = async (
   if (!disableViaPluginWhitelist(plugin, config)) return true
   if (!disableViaPluginBlacklist(plugin, config)) return true
 
-  ctx.logFnc = `[${plugin.pkg.name}][${plugin.file.method}]`
+  ctx.logFnc = `[${plugin.pkg.name}][${plugin.file.name}]`
   const logFnc = logger.fnc(ctx.logFnc)
   plugin.log(ctx.selfId, `${logFnc}${ctx.logText}`)
 

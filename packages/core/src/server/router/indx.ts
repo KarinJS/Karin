@@ -93,7 +93,13 @@ import {
   closeTerminalHandler,
 } from '../pty'
 import { checkPlugin } from '../system/check'
-import { getWebuiPluginList, installWebui, uninstallWebui, getWebuiPluginVersions, updateWebuiPluginVersion } from '../plugins/webui'
+import {
+  getWebuiPluginList,
+  installWebui,
+  uninstallWebui,
+  getWebuiPluginVersions,
+  updateWebuiPluginVersion,
+} from '../plugins/webui'
 
 /**
  * karin内部路由

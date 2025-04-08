@@ -1,7 +1,7 @@
-import { sep } from './file'
 import fs from 'node:fs'
 import lodash from 'lodash'
 import path from 'node:path'
+import { sep } from './file'
 import { fileURLToPath } from 'node:url'
 
 /**
@@ -39,7 +39,7 @@ export const filesByExt = (
         const file = path.resolve(filePath, v.name)
         list.push(path.relative(process.cwd(), file))
       } else if (returnType === 'abs') {
-        list.push(path.resolve(filePath, v.name))
+        list.push(formatPath(path.resolve(filePath, v.name)))
       }
     }
   })
@@ -110,4 +110,45 @@ export const isSubPath = (root: string, target: string, isAbs = true) => {
   const relative = path.relative(root, target)
   /** 检查是否以 `..` 开头或是否为空路径 如果是则代表目标路径不处于根路径下 */
   return relative && !relative.startsWith('..') && !path.isAbsolute(relative)
+}
+
+/**
+ * @description 将路径统一格式
+ * - 绝对路径
+ * - 统一分隔符`/`
+ * @param filePath - 路径
+ * @returns 统一格式后的路径
+ */
+export const formatPath = (filePath: string) => {
+  return path.resolve(filePath).replace(/\\/g, '/')
+}
+
+/**
+ * @description 比较两个路径是否相同
+ * @param path1 - 第一个路径
+ * @param path2 - 第二个路径
+ * @returns 是否相同
+ * @example
+ * ```ts
+ * isPathEqual('C:\\Users\\admin', 'C:/Users/admin')
+ * // -> true
+ * isPathEqual('./folder', 'folder')
+ * // -> true
+ * ```
+ */
+export const isPathEqual = (path1: string, path2: string) => {
+  /** 先直接判断 */
+  if (path1 === path2) return true
+
+  /** 格式化后第二次比较 */
+  path1 = formatPath(path1)
+  path2 = formatPath(path2)
+  if (path1 === path2) return true
+
+  /** 判断是否为windows */
+  if (process.platform === 'win32') {
+    return path1.toLowerCase() === path2.toLowerCase()
+  }
+
+  return false
 }

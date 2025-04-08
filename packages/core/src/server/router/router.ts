@@ -86,3 +86,12 @@ export const UNINSTALL_WEBUI_PLUGIN_ROUTER = '/plugin/webui/uninstall'
 export const GET_WEBUI_PLUGIN_VERSIONS_ROUTER = '/plugin/webui/versions'
 /** 更新WebUI插件到指定版本 */
 export const UPDATE_WEBUI_PLUGIN_VERSION_ROUTER = '/plugin/webui/update-version'
+
+/** 获取任务列表 */
+export const TASK_LIST_ROUTER = '/task/list'
+/** 新增任务 */
+export const TASK_ADD_ROUTER = '/task/add'
+/** 删除任务 */
+export const TASK_DELETE_ROUTER = '/task/delete'
+/** 获取任务日志 */
+export const TASK_LOGS_ROUTER = '/task/logs'

@@ -5,7 +5,7 @@ import { isTsx } from '@/env'
 import { createAddEnv } from './env'
 import { satisfies } from '@/utils/system'
 import { pluginDir as dir } from '@/root'
-import { filesByExt } from '@/utils/fs/path'
+import { filesByExt, formatPath } from '@/utils/fs/path'
 import { writeEnv } from '@/utils/config/file/env'
 import { requireFile, requireFileSync } from '@/utils/fs/require'
 
@@ -84,8 +84,11 @@ export const getPlugins = async<T extends boolean = false> (
 
   cache.list[type] = list
   setTimeout(() => delete cache?.list?.[type], 60 * 1000)
-  if (!isInfo) return list as GetPluginReturn<T>
+  if (!isInfo) {
+    return list as GetPluginReturn<T>
+  }
 
+  /** 获取插件包的详细信息并返回 */
   const info = await getPluginsInfo(list, isForce, isFirst)
   cache.info[type] = info
   setTimeout(() => delete cache?.info?.[type], 60 * 1000)
@@ -243,8 +246,8 @@ const getNpmInfo = async (
   env: PkgEnv[] | null
 ) => {
   const ext = '.js'
-  const apps: string[] = []
-  const allApps: string[] = []
+  let apps: string[] = []
+  let allApps: string[] = []
   const pkg = await requireFile(path.join(dir, 'package.json'))
 
   if (!pkg.karin?.apps?.length) {
@@ -268,6 +271,9 @@ const getNpmInfo = async (
     apps.push(...filesByExt(appPath, ext, 'abs'))
     allApps.push(appPath)
   }))
+
+  apps = apps.map(formatPath)
+  allApps = allApps.map(formatPath)
 
   info.push(createPkg('npm', name, dir, apps, allApps, isForce))
 }

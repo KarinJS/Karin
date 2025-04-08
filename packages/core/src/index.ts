@@ -11,6 +11,7 @@ import { printStartLog } from './service/start'
 import { createDB, createRedis } from '@/core/db'
 import { initRender } from '@/adapter/render'
 import { initOneBot } from '@/adapter/onebot'
+import { initTaskSystem } from '@/service/task'
 import type { Client } from '@/core/db/redis/redis'
 
 export * from '@/service/debug'
@@ -90,7 +91,7 @@ export const start = async () => {
    * - 检查是否存在后台进程
    * - 关闭后台进程
    */
-  await initProcess(Number(process.env.HTTP_PORT))
+  await initProcess(+process.env.HTTP_PORT)
 
   /**
    * 6. 初始化express
@@ -99,8 +100,8 @@ export const start = async () => {
    * - 设置静态文件目录
    * - 设置根路径请求
    */
-  await initExpress(root, Number(process.env.HTTP_PORT), process.env.HTTP_HOST)
-
+  await initExpress(root, +process.env.HTTP_PORT, process.env.HTTP_HOST)
+  await initTaskSystem(root.karinPathTaskDb)
   redis = await createRedis()
   await createDB()
 
@@ -133,6 +134,8 @@ export const start = async () => {
   initWebSocketPuppeteerServer()
   initSnapkaClient()
   initSnapkaHttp()
+
+  logger.mark(`karin 启动完成: 耗时 ${logger.green(process.uptime().toFixed(2))} 秒...`)
 }
 
 start()

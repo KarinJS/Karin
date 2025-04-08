@@ -100,7 +100,7 @@ export interface PluginFile<T extends PluginFncTypes> {
    * import karin from 'node-karin'
    *
    * export const fnc = karin.command('你好', 'hello', { name: 'demo插件' })
-   * // 此时`name`为`demo插件` 如果没有，则是`this.type`
+   * // 此时`name`为`demo插件` 如果没有，则是`this.method`
    * ```
    */
   name: string

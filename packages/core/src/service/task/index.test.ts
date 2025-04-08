@@ -1,5 +1,5 @@
 import { initTaskSystem } from '.'
-import { TaskStatus } from '../../types/task'
+import { TaskStatus } from '../../types/task/task'
 
 /**
  * 任务系统基础测试
@@ -16,8 +16,8 @@ async function basicTest () {
     target: 'ls',
     spawn: {
       cmd: 'dir',
-      args: []
-    }
+      args: [],
+    },
   })
 
   console.log(`创建任务成功: ${id1}`)
@@ -32,11 +32,11 @@ async function basicTest () {
         process.stdout.write(log.toString())
       },
       (status: TaskStatus) => {
-        console.log(`任务状态: ${status.toString()}`)
-        if (status === 'success' || status === 'failed' ||
-          status === 'canceled' || status === 'timeout') {
-          resolve()
+        if (status === 'pending' || status === 'running') {
+          console.log(`任务状态: ${status.toString()}`)
         }
+
+        resolve()
       }
     )
   })
