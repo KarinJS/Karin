@@ -16,7 +16,7 @@ interface DependencyCardProps {
 }
 
 const DependencyCard = ({
-  title, count, description, icon, iconDot, gradient, border, iconBg, textColor, ringColor, isActive, onClick,
+  count, description, icon, iconDot, gradient, border, iconBg, textColor, ringColor, isActive, onClick,
 }: DependencyCardProps) => {
   return (
     <div
