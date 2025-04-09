@@ -2,8 +2,7 @@ import { taskSystem as taskDB } from '@/service/task'
 import { createServerErrorResponse, createSuccessResponse } from '../utils/response'
 
 import type { RequestHandler } from 'express'
-import type { CreateTask, CreateTaskParams, TaskStatus } from '@/types/task/task'
-import { taskPluginInstallSpawn } from './plugin'
+import type { TaskStatus } from '@/types/task/task'
 
 const taskStatusMap = {
   pending: '待执行(pending)',
@@ -22,7 +21,7 @@ export const taskListRouter: RequestHandler = async (_req, res) => {
   createSuccessResponse(res, list)
 }
 
-// TODO: 这个api暂时开放给前端使用
+// TODO: 这个api暂时不开放给前端使用
 // /**
 //  * 新增任务
 //  */

@@ -43,6 +43,7 @@ import {
   UNINSTALL_WEBUI_PLUGIN_ROUTER,
   GET_WEBUI_PLUGIN_VERSIONS_ROUTER,
   UPDATE_WEBUI_PLUGIN_VERSION_ROUTER,
+  GET_DEPENDENCIES_LIST_ROUTER,
 } from './router'
 import { logMiddleware } from '../log'
 import { authMiddleware } from '../auth/middleware'
@@ -101,6 +102,7 @@ import {
   updateWebuiPluginVersion,
 } from '../plugins/webui'
 import { pluginAdminRouter } from '../plugins/admin/router'
+import { getDependenciesListRouter } from '../dependencies/list'
 
 /**
  * karin内部路由
@@ -208,3 +210,6 @@ router.post(UNINSTALL_WEBUI_PLUGIN_ROUTER, uninstallWebui)
 router.post(GET_WEBUI_PLUGIN_VERSIONS_ROUTER, getWebuiPluginVersions)
 /** 更新webui插件到指定版本 */
 router.post(UPDATE_WEBUI_PLUGIN_VERSION_ROUTER, updateWebuiPluginVersion)
+
+/** 获取依赖列表 */
+router.get(GET_DEPENDENCIES_LIST_ROUTER, getDependenciesListRouter)
