@@ -125,7 +125,7 @@ const getRegistry = async () => {
  * @param res - 响应
  */
 const getCache = async (req: Request, res: Response) => {
-  if (req.query?.force || req.body?.force) {
+  if (req.body?.force) {
     return null
   }
 

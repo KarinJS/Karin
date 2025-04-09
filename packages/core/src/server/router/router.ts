@@ -100,3 +100,5 @@ export const PLUGIN_ADMIN_ROUTER = '/plugin/admin'
 
 /** 获取依赖列表 */
 export const GET_DEPENDENCIES_LIST_ROUTER = '/dependencies/list'
+/** 依赖管理路由 */
+export const MANAGE_DEPENDENCIES_ROUTER = '/dependencies/manage'
