@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { existsSync } from 'node:fs'
-import { cache } from '@/plugin/cache'
+import { cache } from '@/plugin/system/cache'
 import { createRequire } from 'module'
 import { requireFileSync } from './require'
 import type { PkgData } from '@/types'

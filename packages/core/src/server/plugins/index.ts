@@ -1,5 +1,5 @@
 import './config'
-import './admin'
+import './admin/router'
 import './install'
 import './local'
 import path from 'node:path'
@@ -29,7 +29,7 @@ export const getFullPluginList = async () => {
   const [list, createUrl, localPlugins] = await Promise.all([
     fetchPluginList(),
     testGithub(),
-    getPlugins('all', true, true)
+    getPlugins('all', true, true),
   ])
 
   const pluginMap = new Map<string, PluginLists>()
@@ -53,7 +53,7 @@ export const getFullPluginList = async () => {
         {
           name: str(author),
           home: '',
-          avatar: ''
+          avatar: '',
         },
       ],
       repo: [],
@@ -129,7 +129,7 @@ export const getFullPluginList = async () => {
               plugin.updated = info.updated
             }
           }
-        })()
+        })(),
       ])
     })
   )
@@ -173,7 +173,7 @@ export const getOnlinePluginList: RequestHandler = async (req, res) => {
       list: paginatedPlugins,
       total: plugins.length,
       page,
-      pageSize
+      pageSize,
     })
   } catch (error) {
     createServerErrorResponse(res, (error as Error).message)
@@ -243,7 +243,7 @@ const checkNodeKarinUpdate = async (): Promise<PluginUpdateInfo | null> => {
       repo: [],
       downloads: 0,
       size: 0,
-      updated: ''
+      updated: '',
     }
   } catch (error) {
     logger.error('检查 node-karin 更新失败:', error)
@@ -259,7 +259,7 @@ export const getUpdatablePlugins: RequestHandler = async (_req, res) => {
     // 并发获取 node-karin 和其他插件信息
     const [nodeKarinInfo, plugins] = await Promise.all([
       checkNodeKarinUpdate(),
-      getPlugins('all', true, true)
+      getPlugins('all', true, true),
     ])
 
     const pluginInfos: PluginUpdateInfo[] = nodeKarinInfo ? [nodeKarinInfo] : []
@@ -271,7 +271,7 @@ export const getUpdatablePlugins: RequestHandler = async (_req, res) => {
 
         let pluginInfo: Partial<PluginUpdateInfo> = {
           ...plugin,
-          hasUpdate: false
+          hasUpdate: false,
         }
 
         if (plugin.type === 'npm') {
@@ -281,13 +281,13 @@ export const getUpdatablePlugins: RequestHandler = async (_req, res) => {
               ...pluginInfo,
               currentVersion: result.local,
               hasUpdate: true,
-              latestVersion: result.remote
+              latestVersion: result.remote,
             }
           } else if (result.status === 'no') {
             pluginInfo = {
               ...pluginInfo,
               currentVersion: result.local,
-              hasUpdate: false
+              hasUpdate: false,
             }
           } else {
             logger.error(`检查 ${plugin.name} 更新失败: ${result.error.message}`)
@@ -295,7 +295,7 @@ export const getUpdatablePlugins: RequestHandler = async (_req, res) => {
         } else if (plugin.type === 'git') {
           const [hash, updateResult] = await Promise.all([
             getHash(`./plugins/${plugin.name}`),
-            checkGitPluginUpdate(`./plugins/${plugin.name}`)
+            checkGitPluginUpdate(`./plugins/${plugin.name}`),
           ])
 
           pluginInfo = {
@@ -304,7 +304,7 @@ export const getUpdatablePlugins: RequestHandler = async (_req, res) => {
             hasUpdate: updateResult.status === 'yes',
             ...(updateResult.status === 'yes'
               ? { updateLog: updateResult.data, updateCount: updateResult.count }
-              : {})
+              : {}),
           }
         }
 
@@ -344,7 +344,7 @@ export const batchUpdatePlugins: RequestHandler = async (req, res) => {
             message: result.data,
             ...(result.status === 'ok'
               ? { currentVersion: result.local, latestVersion: result.remote }
-              : {})
+              : {}),
           }
         } else if (plugin.type === 'git') {
           const result = await updateGitPlugin(`./plugins/${name}`)
@@ -354,7 +354,7 @@ export const batchUpdatePlugins: RequestHandler = async (req, res) => {
             message: result.data,
             ...(result.status === 'ok'
               ? { commit: result.commit }
-              : {})
+              : {}),
           }
         }
 

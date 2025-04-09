@@ -33,11 +33,14 @@ const getWebConfigPathFromPkg = (pkg: PkgData, baseDir: string): string | null =
     return null
   }
 
-  if (isTsx() && pkg.karin['ts-web']) {
-    return path.join(baseDir, pkg.karin['ts-web'])
+  if (isTsx()) {
+    if (pkg.karin['ts-web']) {
+      return path.join(baseDir, pkg.karin['ts-web'])
+    }
+  } else {
+    if (pkg.karin.web) return path.join(baseDir, pkg.karin.web)
   }
 
-  if (pkg.karin.web) return path.join(baseDir, pkg.karin.web)
   return null
 }
 

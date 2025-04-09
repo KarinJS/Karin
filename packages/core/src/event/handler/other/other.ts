@@ -1,4 +1,4 @@
-import { cache } from '@/plugin/cache'
+import { cache } from '@/plugin/system/cache'
 import { listeners } from '@/core/internal'
 import { eventCallEmit } from '@/hooks/eventCall'
 import { emptyEmit } from '@/hooks/empty'

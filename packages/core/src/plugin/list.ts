@@ -30,12 +30,13 @@ const cache: {
  * @param type 获取插件的方式
  * @param isInfo 是否获取插件详细信息 否则返回插件名称列表
  * @param isForce 是否强制更新缓存
+ * @param _isFirst 是否第一次获取
  */
 export const getPlugins = async<T extends boolean = false> (
   type: GetPluginType,
   isInfo?: T,
   isForce: boolean = false,
-  isFirst: boolean = false
+  _isFirst: boolean = false
 ): Promise<GetPluginReturn<T>> => {
   if (isForce) {
     delete cache.list
@@ -89,7 +90,7 @@ export const getPlugins = async<T extends boolean = false> (
   }
 
   /** 获取插件包的详细信息并返回 */
-  const info = await getPluginsInfo(list, isForce, isFirst)
+  const info = await getPluginsInfo(list, isForce, _isFirst)
   cache.info[type] = info
   setTimeout(() => delete cache?.info?.[type], 60 * 1000)
   if (isInit) isInit = false
@@ -99,6 +100,8 @@ export const getPlugins = async<T extends boolean = false> (
 /**
  * 获取插件详细信息
  * @param list 插件名称列表
+ * @param isForce 是否强制更新缓存
+ * @param isFirst 是否第一次获取
  */
 const getPluginsInfo = async (list: string[], isForce: boolean, isFirst: boolean): Promise<PkgInfo[]> => {
   const info: PkgInfo[] = []

@@ -1,7 +1,7 @@
 import chokidar from 'chokidar'
 import path from 'node:path'
 import { isTsx } from '@/env'
-import { cache } from './cache'
+import { cache } from './system/cache'
 import { LoaderPlugin } from './loader'
 import { listeners } from '@/core/internal'
 

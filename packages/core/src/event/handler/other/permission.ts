@@ -1,5 +1,5 @@
 import type { Message } from '@/types/event'
-import type { cache } from '@/plugin/cache'
+import type { cache } from '@/plugin/system/cache'
 import type {
   DirectMessage,
   FriendMessage,

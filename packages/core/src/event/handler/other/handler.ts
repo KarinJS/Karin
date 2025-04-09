@@ -1,4 +1,4 @@
-import { cache } from '@/plugin/cache'
+import { cache } from '@/plugin/system/cache'
 import { RECV_MSG } from '@/utils/fs/key'
 import { lock } from '@/utils/system/lock'
 import { listeners } from '@/core/internal'

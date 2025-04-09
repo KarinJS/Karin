@@ -5,7 +5,7 @@ import util from 'node:util'
 import schedule from 'node-schedule'
 
 import { isTsx } from '@/env'
-import { cache } from '../cache'
+import { cache } from '../system/cache'
 import { formatPath } from '@/utils'
 import { createLogger } from '../tools'
 import { isClass } from '@/utils/system/class'

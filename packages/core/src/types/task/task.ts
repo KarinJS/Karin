@@ -20,28 +20,12 @@ export type TaskType = 'install' | 'uninstall' | 'update' | 'disable' | 'enable'
 export type TaskStatus = 'pending' | 'running' | 'success' | 'failed' | 'canceled' | 'timeout'
 
 /**
- * Spawn命令配置接口
+ * 任务执行器类型
+ * @param task - 任务实体
+ * @param log - 日志记录函数
+ * @returns Promise<boolean> - 执行成功返回true，失败返回false
  */
-export interface SpawnConfig {
-  /** spawn命令 */
-  cmd: string
-  /** spawn参数数组 */
-  args: string[]
-  /** 工作目录 */
-  cwd?: string
-}
-
-/**
- * 命令配置接口(内部使用)
- */
-export interface CommandConfig {
-  /** spawn命令 */
-  command: string
-  /** spawn参数 */
-  args: string[]
-  /** 工作目录 */
-  cwd?: string
-}
+export type TaskExecutor = (task: TaskEntity, log: (message: string) => void) => Promise<boolean>
 
 /**
  * 任务实体接口
@@ -75,8 +59,6 @@ export interface TaskEntity {
   updateTime: number
   /** 结束时间戳(可选) */
   endTime?: number
-  /** 命令配置(JSON) */
-  command: CommandConfig
 }
 
 /**
@@ -93,8 +75,6 @@ export interface CreateTaskParams {
   operatorIp: string
   /** 创建时间戳 无需指定，自动获取 */
   createTime?: number
-  /** spawn命令配置 */
-  spawn: SpawnConfig
 }
 
 /**
@@ -103,8 +83,6 @@ export interface CreateTaskParams {
 export interface TaskCallbacks {
   /** 状态变更回调 */
   onStatusChange?: (status: TaskStatus) => void
-  /** 日志更新回调 */
-  onLogUpdate?: (log: string) => void
 }
 
 /**
@@ -140,4 +118,4 @@ export interface TaskFilter {
 /**
  * 前端请求插件安装参数接口
  */
-export type CreateTask = Omit<CreateTaskParams, 'spawn' | 'createTime' | 'operatorIp'>
+export type CreateTask = Omit<CreateTaskParams, 'createTime' | 'operatorIp'>

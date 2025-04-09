@@ -1,4 +1,4 @@
-import { cache } from '../cache'
+import { cache } from '../system/cache'
 import { isPathEqual } from '@/utils/fs/path'
 
 /**

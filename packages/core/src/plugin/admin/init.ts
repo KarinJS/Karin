@@ -1,5 +1,5 @@
 import { ONLINE } from '@/env'
-import { cache } from '../cache'
+import { cache } from '../system/cache'
 import { getPlugins } from '../list'
 import { initPluginHmr } from './hmr'
 import { pkgLoads, pkgSort } from './load'

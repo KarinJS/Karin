@@ -1,5 +1,5 @@
 import util from 'node:util'
-import { cache } from '@/plugin/cache'
+import { cache } from '@/plugin/system/cache'
 
 import type { Event } from '@/types/event'
 

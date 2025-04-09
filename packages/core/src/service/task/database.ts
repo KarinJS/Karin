@@ -1,6 +1,8 @@
+import path from 'node:path'
+import { mkdirSync } from 'node:fs'
 import { randomUUID } from 'node:crypto'
 import sqlite3, { type Database } from 'sqlite3'
-import type { TaskEntity, TaskStatus, TaskType, TaskFilter, CreateTaskParams } from '../../types/task/task'
+import type { TaskEntity, TaskStatus, TaskType, TaskFilter, CreateTaskParams, TaskExecutor } from '../../types/task/task'
 
 type TaskDB = {
   db: Database
@@ -12,7 +14,6 @@ type TaskDB = {
 const parseRow = (row: any): TaskEntity => {
   return {
     ...row,
-    command: JSON.parse(row.command),
   }
 }
 
@@ -81,6 +82,8 @@ const handleUnfinishedTasks = async (db: Database): Promise<void> => {
  * @returns - 数据库连接对象
  */
 const initDatabase = async (dbPath: string): Promise<TaskDB> => {
+  mkdirSync(path.dirname(dbPath), { recursive: true })
+
   return new Promise((resolve, reject) => {
     const db = new sqlite3.Database(dbPath, async (err) => {
       if (err) {
@@ -102,8 +105,7 @@ const initDatabase = async (dbPath: string): Promise<TaskDB> => {
               operatorIp TEXT NOT NULL,
               createTime INTEGER NOT NULL,
               updateTime INTEGER NOT NULL,
-              endTime INTEGER,
-              command TEXT
+              endTime INTEGER
             )
           `, (err) => {
             if (err) {
@@ -138,12 +140,12 @@ export const taskAdd = async (taskDB: TaskDB, taskParams: CreateTaskParams): Pro
   /** 所有可能的字段 */
   const allPossibleFields = [
     'id', 'type', 'name', 'target', 'status', 'logs', 'operatorIp',
-    'createTime', 'updateTime', 'command',
+    'createTime', 'updateTime',
   ]
 
   /** 插入字段 */
   const fields: string[] = [
-    'id', 'type', 'name', 'target', 'status', 'logs', 'operatorIp', 'createTime', 'updateTime', 'command',
+    'id', 'type', 'name', 'target', 'status', 'logs', 'operatorIp', 'createTime', 'updateTime',
   ]
 
   /** 插入值 */
@@ -157,7 +159,6 @@ export const taskAdd = async (taskDB: TaskDB, taskParams: CreateTaskParams): Pro
     taskParams.operatorIp,
     taskParams.createTime || now,
     now,
-    JSON.stringify(taskParams.spawn),
   ]
 
   /** 检查所有字段是否都在预定义的安全字段列表中 */
@@ -436,9 +437,20 @@ export const createTaskDatabase = async (dbPath: string) => {
     /**
      * 添加任务
      * @param params - 任务参数
+     * @param executor - 任务执行回调函数
      * @returns 任务ID
      */
-    add: (params: CreateTaskParams) => taskAdd(taskDB, params),
+    add: async (params: CreateTaskParams, executor?: TaskExecutor): Promise<string> => {
+      const taskId = await taskAdd(taskDB, params)
+
+      // 如果提供了执行器，则存储它
+      if (executor) {
+        const { setTaskCallback } = await import('./queue')
+        setTaskCallback(taskId, executor)
+      }
+
+      return taskId
+    },
     /**
      * 获取任务详情
      * @param taskId - 任务ID
@@ -481,6 +493,12 @@ export const createTaskDatabase = async (dbPath: string) => {
               reject(err)
               return
             }
+
+            // 移除任务回调
+            import('./queue').then(({ removeTaskCallback }) => {
+              removeTaskCallback(taskId)
+            })
+
             resolve(this.changes > 0)
           }
         )
@@ -501,6 +519,12 @@ export const createTaskDatabase = async (dbPath: string) => {
               reject(err)
               return
             }
+
+            // 移除任务回调
+            import('./queue').then(({ removeTaskCallback }) => {
+              removeTaskCallback(taskId)
+            })
+
             resolve(this.changes > 0)
           }
         )
@@ -545,39 +569,45 @@ export const createTaskDatabase = async (dbPath: string) => {
      */
     run: async (
       taskId: string,
-      onLog?: (log: string) => void,
-      onStatusChange?: (status: TaskStatus) => void
+      onLog: (log: string) => void = () => { },
+      onStatusChange: (status: TaskStatus) => void = () => { }
     ): Promise<boolean> => {
       const task = await taskGet(taskDB, taskId)
       if (!task) {
-        if (onStatusChange) onStatusChange('failed')
+        onLog(`任务 ${taskId} 不存在`)
+        onStatusChange('failed')
         return false
       }
 
-      /** 执行任务 */
-      const { executeTask } = await import('./queue')
+      /** 获取任务执行器 */
+      const { executeTask, getTaskCallback } = await import('./queue')
+
+      /** 检查是否存在回调函数 */
+      if (!getTaskCallback(taskId)) {
+        onLog(`任务 ${taskId} 没有关联的执行回调函数`)
+        onStatusChange('failed')
+        return false
+      }
 
       /** 先将任务状态更新为running */
       await taskUpdateStatus(taskDB, taskId, 'running')
 
-      /** 存储完整日志 */
-      let fullLogs = task.logs || ''
-
       /** 创建日志收集器 */
-      const logCollector = (log: string) => {
-        fullLogs += log
-        /** 转发日志到外部回调 */
-        if (onLog) onLog(log)
-      }
+      const logCollector = (log: string) => onLog(log)
 
       /** 创建状态监听器 */
       const statusListener = async (status: TaskStatus) => {
-        /** 更新数据库中的状态和日志 */
-        await taskUpdateLogs(taskDB, taskId, fullLogs)
+        /** 更新数据库中的状态 */
         await taskUpdateStatus(taskDB, taskId, status)
 
         /** 转发状态到外部回调 */
-        if (onStatusChange) onStatusChange(status)
+        onStatusChange(status)
+
+        /** 移除回调 清理缓存 */
+        if (status !== 'pending' && status !== 'running') {
+          const { removeTaskCallback } = await import('./queue')
+          removeTaskCallback(taskId)
+        }
       }
 
       /** 执行任务 */

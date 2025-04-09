@@ -95,3 +95,5 @@ export const TASK_ADD_ROUTER = '/task/add'
 export const TASK_DELETE_ROUTER = '/task/delete'
 /** 获取任务日志 */
 export const TASK_LOGS_ROUTER = '/task/logs'
+/** 插件管理 */
+export const PLUGIN_ADMIN_ROUTER = '/plugin/admin'

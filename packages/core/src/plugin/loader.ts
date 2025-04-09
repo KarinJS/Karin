@@ -6,7 +6,7 @@ import schedule from 'node-schedule'
 import { errorHandler } from '@/core/internal/error'
 
 import { getPlugins } from './list'
-import { cache } from './cache'
+import { cache } from './system/cache'
 import { isClass } from '@/utils/system/class'
 import { createLogger } from './tools'
 import { isTsx } from '@/env'

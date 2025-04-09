@@ -27,7 +27,7 @@ import {
   GET_PLUGIN_CONFIG_ROUTER,
   SAVE_PLUGIN_CONFIG_ROUTER,
   IS_PLUGIN_CONFIG_EXIST_ROUTER,
-  UPDATE_PLUGIN_ROUTER,
+  PLUGIN_ADMIN_ROUTER,
   INSTALL_PLUGIN_ROUTER,
   UNINSTALL_PLUGIN_ROUTER,
   GET_TASK_STATUS_ROUTER,
@@ -50,7 +50,7 @@ import { loginRouter } from '../auth/login'
 import { refreshRouter } from '../auth/refresh'
 import { getConfig, saveConfig } from '../config'
 import { pingRouter } from '../system/ping'
-import { pluginUpdate } from '../plugins/admin'
+// import { pluginUpdateRouter } from '../plugins/admin'
 import { handlePluginFile } from '../plugins/file'
 import { pluginGetLocalList } from '../plugins/local'
 import { consoleRouter } from '../console'
@@ -100,6 +100,7 @@ import {
   getWebuiPluginVersions,
   updateWebuiPluginVersion,
 } from '../plugins/webui'
+import { pluginAdminRouter } from '../plugins/admin/router'
 
 /**
  * karin内部路由
@@ -174,8 +175,8 @@ router.post(GET_PLUGIN_CONFIG_ROUTER, pluginGetConfig)
 router.post(SAVE_PLUGIN_CONFIG_ROUTER, pluginSaveConfig)
 /** 判断插件配置是否存在 */
 router.post(IS_PLUGIN_CONFIG_EXIST_ROUTER, pluginIsConfigExist)
-/** 更新插件 */
-router.post(UPDATE_PLUGIN_ROUTER, pluginUpdate)
+/** 插件管理 */
+router.post(PLUGIN_ADMIN_ROUTER, pluginAdminRouter)
 /** 安装插件 */
 router.post(INSTALL_PLUGIN_ROUTER, pluginInstall)
 /** 卸载插件 */

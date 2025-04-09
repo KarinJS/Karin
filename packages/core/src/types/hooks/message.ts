@@ -6,7 +6,7 @@ import type {
   GroupTempMessage,
 } from '@/event'
 import type { Contact } from '@/types/event'
-import type { cache as pluginCache } from '@/plugin/cache'
+import type { cache as pluginCache } from '@/plugin/system/cache'
 import type { Message, Notice, Request } from '@/types/event/event'
 import type { Elements, ForwardOptions, NodeElement } from '@/types/segment'
 

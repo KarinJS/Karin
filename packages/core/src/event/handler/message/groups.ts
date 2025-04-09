@@ -1,6 +1,6 @@
 import lodash from 'lodash'
 import { groupsCD } from '../other/cd'
-import { cache } from '@/plugin/cache'
+import { cache } from '@/plugin/system/cache'
 import { context as CTX } from '../other/context'
 import { listeners } from '@/core/internal'
 import { Permission } from '../other/permission'

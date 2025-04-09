@@ -1,4 +1,5 @@
 import { createTaskDatabase } from './database'
+import { setTaskCallback, getTaskCallback, removeTaskCallback } from './queue'
 
 export * from './database'
 export * from './queue'
@@ -17,3 +18,8 @@ export const initTaskSystem = async (dbPath: string) => {
   taskSystem = await createTaskDatabase(dbPath)
   return taskSystem
 }
+
+/**
+ * 导出任务回调函数管理方法
+ */
+export { setTaskCallback, getTaskCallback, removeTaskCallback }

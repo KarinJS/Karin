@@ -1,80 +1,81 @@
-import { TaskStatus, TaskEntity } from '../../types/task/task'
-import { spawn } from 'child_process'
+import { TaskEntity, TaskStatus, TaskExecutor } from '../../types/task/task'
+
+/**
+ * 任务回调函数存储
+ */
+const taskCallbacks = new Map<string, TaskExecutor>()
+
+/**
+ * 设置任务回调函数
+ * @param taskId - 任务ID
+ * @param executor - 任务执行函数
+ */
+export const setTaskCallback = (taskId: string, executor: TaskExecutor): void => {
+  taskCallbacks.set(taskId, executor)
+}
+
+/**
+ * 获取任务回调函数
+ * @param taskId - 任务ID
+ * @returns 对应任务的执行函数，如果未找到返回undefined
+ */
+export const getTaskCallback = (taskId: string): TaskExecutor | undefined => {
+  return taskCallbacks.get(taskId)
+}
+
+/**
+ * 删除任务回调函数
+ * @param taskId - 任务ID
+ * @returns 是否成功删除
+ */
+export const removeTaskCallback = (taskId: string): boolean => {
+  return taskCallbacks.delete(taskId)
+}
 
 /**
  * 执行任务
  * @param task - 任务实体
- * @param onLog - 日志回调
- * @param onStatus - 状态回调
+ * @param emitLog - 日志回调
+ * @param emitStatus - 状态回调
  * @returns 执行是否成功的Promise
  */
 export const executeTask = async (
   task: TaskEntity,
-  onLog: (log: string) => void,
-  onStatus: (status: TaskStatus) => void
+  emitLog: (log: string) => void,
+  emitStatus: (status: TaskStatus) => void
 ): Promise<boolean> => {
-  if (!task.command || !task.command.command || !Array.isArray(task.command.args)) {
-    onLog('任务缺少有效的命令配置')
-    onStatus('failed')
-    return false
-  }
-
   /** 通知状态为运行中 */
-  onStatus('running')
+  emitStatus('running')
 
   try {
-    /** 构建命令描述 */
-    const cmdDesc = `${task.command.command} ${task.command.args.join(' ')}`
+    const callback = taskCallbacks.get(task.id)
 
-    /** 添加工作目录信息 */
-    const cwdInfo = `(工作目录: ${task.command.cwd || '当前目录'})`
+    if (!callback) {
+      emitLog(`未找到任务 ${task.id} 的回调函数`)
+      emitStatus('failed')
+      return false
+    }
 
     /** 记录开始信息 */
-    const startMessage = `开始执行命令: ${cmdDesc} ${cwdInfo}\n`
-    onLog(startMessage)
+    const startMessage = `开始执行任务: ${task.name} (目标: ${task.target})\n`
+    emitLog(startMessage)
 
-    /** 启动子进程 */
-    const proc = spawn(
-      task.command.command,
-      task.command.args,
-      {
-        shell: true,
-        windowsHide: true,
-        cwd: task.command.cwd || process.cwd(),
-        env: {
-          ...process.env,
-          LANG: 'zh_CN.UTF-8',
-        },
-      }
-    )
+    /** 执行任务回调 */
+    const result = await callback(task, emitLog)
 
-    return new Promise<boolean>((resolve) => {
-      /** 处理标准输出 */
-      proc.stdout.on('data', (data) => {
-        onLog(typeof data === 'string' ? data : data.toString())
-      })
+    /** 根据结果设置状态 */
+    emitStatus(result ? 'success' : 'failed')
 
-      /** 处理标准错误 */
-      proc.stderr.on('data', (data) => {
-        onLog(typeof data === 'string' ? data : data.toString())
-      })
+    if (typeof result === 'boolean') {
+      return result
+    }
 
-      /** 处理完成事件 */
-      proc.on('close', (code: number | null) => {
-        const status: TaskStatus = code === 0 ? 'success' : 'failed'
-        const resultMessage = `\n命令执行${status === 'success' ? '成功' : '失败'}，退出码: ${code}\n`
-
-        onLog(resultMessage)
-        onStatus(status)
-
-        resolve(status === 'success')
-      })
-    })
+    throw new Error('任务执行器返回值类型错误')
   } catch (error) {
     /** 处理错误 */
     const errorMessage = `执行任务出错: ${error instanceof Error ? error.message : String(error)}\n`
-    onLog(errorMessage)
-    onStatus('failed')
+    emitLog(errorMessage)
+    emitStatus('failed')
     return false
   }
 }

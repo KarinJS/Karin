@@ -2,7 +2,7 @@ import lodash from 'lodash'
 import { isPromise } from 'util/types'
 import { cache, createHookId } from './cache'
 
-import type { cache as pluginCache } from '@/plugin/cache'
+import type { cache as pluginCache } from '@/plugin/system/cache'
 import type { Message, Notice, Request } from '@/types/event/event'
 import type {
   FriendMessage,

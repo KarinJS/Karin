@@ -1,8 +1,8 @@
 import { isWorkspace } from '@/env'
-import { raceRequest } from '@/utils'
-import { getPluginMarket } from '@/plugin/market'
+import { raceRequest } from '@/utils/request/race'
+import { getPluginMarket } from '@/plugin/system/market'
 import type {
-  PluginAdminCustomInstallParams,
+  PluginAdminCustomInstall,
   PluginAdminInstall,
   PluginAdminMarketInstall,
 } from '@/types/task'
@@ -72,7 +72,7 @@ const handlePluginMarketInstall = async (params: PluginAdminMarketInstall) => {
 /**
  * 处理自定义安装参数插件
  */
-const handlePluginCustomInstall = async (params: PluginAdminCustomInstallParams) => {
+const handlePluginCustomInstall = async (params: PluginAdminCustomInstall) => {
   if (params.pluginType === 'npm') {
     const args = [
       'install',

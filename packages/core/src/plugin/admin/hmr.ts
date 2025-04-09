@@ -1,6 +1,6 @@
 import path from 'node:path'
 import chokidar from 'chokidar'
-import { cache } from '../cache'
+import { cache } from '../system/cache'
 import { pkgRemoveModule } from './uninstall'
 import { getModuleType, isDev } from '@/env'
 import { formatPath } from '@/utils/fs/path'
