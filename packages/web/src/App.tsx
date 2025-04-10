@@ -23,7 +23,7 @@ const NotFoundPage = lazy(() => import('@/pages/404'))
 const LogPage = lazy(() => import('@/pages/dashboard/log'))
 const TerminalPage = lazy(() => import('@/pages/dashboard/terminal'))
 const WebUIPluginPage = lazy(() => import('@/pages/dashboard/plugin/webui'))
-const DependenciesPage = lazy(() => import('@/pages/dashboard/dependencies'))
+const DependenciesPage = lazy(() => import('@/pages/dashboard/dependencies/dependencies'))
 
 // Main App
 function App () {

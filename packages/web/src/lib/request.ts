@@ -8,7 +8,7 @@ import {
   getAccessToken,
   getRefreshToken,
   getUserId,
-  setAccessToken
+  setAccessToken,
 } from './token'
 
 import type { ServerResponse } from '@/types/server'
@@ -26,7 +26,7 @@ const cacheToken: {
   userId: string | null
 } = {
   token: null,
-  userId: null
+  userId: null,
 }
 
 /**

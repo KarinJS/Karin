@@ -1,6 +1,8 @@
 import { Input } from '@heroui/input'
+import { Chip } from '@heroui/chip'
 import { IoSearch } from 'react-icons/io5'
-import { FilterMode } from '../../pages/dashboard/dependencies.utils'
+import { LuPackage, LuDownload } from 'react-icons/lu'
+import { FilterMode } from '../../pages/dashboard/dependencies/dependencies.utils'
 
 interface DependencyFilterProps {
   searchTerm: string
@@ -10,6 +12,40 @@ interface DependencyFilterProps {
 }
 
 const DependencyFilter = ({ searchTerm, setSearchTerm, filterMode, count }: DependencyFilterProps) => {
+  /**
+   * 获取过滤标签的颜色和图标
+   */
+  const getFilterConfig = (mode: FilterMode) => {
+    switch (mode) {
+      case 'all':
+        return {
+          color: 'primary' as const,
+          icon: <LuPackage size={14} />,
+          text: '全部依赖',
+        }
+      case 'plugins':
+        return {
+          color: 'success' as const,
+          icon: <LuPackage size={14} />,
+          text: 'Karin 插件',
+        }
+      case 'updatable':
+        return {
+          color: 'warning' as const,
+          icon: <LuDownload size={14} />,
+          text: '可更新依赖',
+        }
+      default:
+        return {
+          color: 'default' as const,
+          icon: <LuPackage size={14} />,
+          text: '未知类型',
+        }
+    }
+  }
+
+  const filterConfig = getFilterConfig(filterMode)
+
   return (
     <div className='flex flex-col sm:flex-row sm:items-center gap-2 md:gap-4 mb-4 md:mb-6 pb-4 md:pb-6 border-b border-default-100'>
       <Input
@@ -27,12 +63,16 @@ const DependencyFilter = ({ searchTerm, setSearchTerm, filterMode, count }: Depe
         className='max-w-md'
       />
 
-      <div className='flex items-center gap-2 text-default-600 ml-0 sm:ml-1'>
-        <div className='px-2 py-1 text-xs rounded-full bg-default-100 dark:bg-default-200/10'>
-          {filterMode === 'all' && '全部依赖'}
-          {filterMode === 'plugins' && 'Karin 插件'}
-          {filterMode === 'updatable' && '可更新依赖'}
-        </div>
+      <div className='flex items-center gap-2 ml-0 sm:ml-1'>
+        <Chip
+          color={filterConfig.color}
+          variant='flat'
+          startContent={filterConfig.icon}
+          className='font-normal text-xs px-2 h-6'
+          radius='full'
+        >
+          {filterConfig.text}
+        </Chip>
 
         <div className='text-xs md:text-sm text-default-400 ml-1 md:ml-2'>
           共 {count} 个依赖

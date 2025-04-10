@@ -2,7 +2,8 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@herou
 import { Button } from '@heroui/button'
 import { Link } from '@heroui/link'
 import { Divider } from '@heroui/divider'
-import { Dependency, getNpmLink } from '../../pages/dashboard/dependencies.utils'
+import { getNpmLink } from '../../pages/dashboard/dependencies/dependencies.utils'
+import type { Dependency } from 'node-karin'
 
 interface DependencySettingsProps {
   isOpen: boolean
@@ -11,12 +12,34 @@ interface DependencySettingsProps {
   selectedVersion: string
   setSelectedVersion: (version: string) => void
   onSave: () => void
+  onSelectDependency?: (name: string, isSelected: boolean) => void
+}
+
+/**
+ * 阻止事件冒泡
+ * @param e 事件对象
+ */
+const stopPropagation = (e: React.MouseEvent | React.TouchEvent) => {
+  e.stopPropagation()
 }
 
 const DependencySettings = ({
-  isOpen, onClose, dependency, selectedVersion, setSelectedVersion, onSave,
+  isOpen, onClose, dependency, selectedVersion, setSelectedVersion, onSave, onSelectDependency,
 }: DependencySettingsProps) => {
   if (!dependency) return null
+
+  /**
+   * 处理版本选择
+   * @param version 选择的版本
+   */
+  const handleVersionSelect = (version: string) => {
+    setSelectedVersion(version)
+
+    // 如果提供了选择依赖的函数，且选择的版本不是当前版本，则自动选中该依赖
+    if (onSelectDependency && version !== dependency.current) {
+      onSelectDependency(dependency.name, true)
+    }
+  }
 
   return (
     <Modal
@@ -45,14 +68,16 @@ const DependencySettings = ({
             />
             <div className='text-lg md:text-xl font-light tracking-tight'>{dependency.name}</div>
           </div>
-          <Link
-            href={getNpmLink(dependency.name)}
-            isExternal
-            showAnchorIcon
-            className='text-xs md:text-sm text-default-500 ml-4 md:ml-5 pl-0.5'
-          >
-            在 npmjs.com 上查看
-          </Link>
+          <div onClick={stopPropagation} className='inline-block ml-4 md:ml-5 pl-0.5'>
+            <Link
+              href={getNpmLink(dependency.name)}
+              isExternal
+              showAnchorIcon={false}
+              className='text-xs md:text-sm text-default-500'
+            >
+              在 npmjs.com 上查看
+            </Link>
+          </div>
         </ModalHeader>
 
         <Divider className='opacity-50' />
@@ -64,11 +89,13 @@ const DependencySettings = ({
               <div className='space-y-2 md:space-y-3'>
                 <div>
                   <div className='text-xs text-default-400'>当前版本</div>
-                  <div className='font-mono text-xs md:text-sm'>{dependency.currentVersion}</div>
+                  <div className='font-mono text-xs md:text-sm'>{dependency.current}</div>
                 </div>
                 <div>
                   <div className='text-xs text-default-400'>package.json 中的值</div>
-                  <div className='font-mono text-xs md:text-sm'>{dependency.packageJsonVersion}</div>
+                  <div className={`font-mono text-xs md:text-sm ${dependency.packageValue ? '' : 'text-default-400 italic'}`}>
+                    {dependency.packageValue || '未定义'}
+                  </div>
                 </div>
                 <div>
                   <div className='text-xs text-default-400'>类型</div>
@@ -80,7 +107,7 @@ const DependencySettings = ({
             <div>
               <div className='text-xs md:text-sm text-default-500 mb-2 md:mb-3'>选择要安装的版本</div>
               <div className='grid grid-cols-2 gap-1.5 md:gap-2 max-h-32 md:max-h-40 overflow-y-auto pr-1 md:pr-2'>
-                {dependency.availableVersions.map(version => (
+                {dependency.latest.map((version) => (
                   <Button
                     key={version}
                     variant={selectedVersion === version ? 'solid' : 'flat'}
@@ -88,7 +115,7 @@ const DependencySettings = ({
                     className='font-mono text-xs md:text-sm justify-start px-2 md:px-3 h-7 md:h-8 min-h-0'
                     size='sm'
                     radius='lg'
-                    onPress={() => setSelectedVersion(version)}
+                    onPress={() => handleVersionSelect(version)}
                   >
                     {version}
                   </Button>
@@ -97,11 +124,11 @@ const DependencySettings = ({
             </div>
           </div>
 
-          {selectedVersion !== dependency.currentVersion && (
+          {selectedVersion !== dependency.current && (
             <div className='mt-4 md:mt-6 p-2 md:p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg text-xs md:text-sm'>
               <div className='font-medium'>即将更新版本</div>
               <div className='text-default-600 mt-1 flex items-center gap-2'>
-                <code className='font-mono text-xs'>{dependency.currentVersion}</code>
+                <code className='font-mono text-xs'>{dependency.current}</code>
                 <span>→</span>
                 <code className='font-mono text-xs text-primary'>{selectedVersion}</code>
               </div>
@@ -125,7 +152,7 @@ const DependencySettings = ({
           <Button
             color='primary'
             onPress={onSave}
-            isDisabled={selectedVersion === dependency.currentVersion}
+            isDisabled={selectedVersion === dependency.current}
             radius='full'
             className='font-normal text-xs md:text-sm'
             size='sm'
