@@ -197,14 +197,31 @@ export default function DependenciesPage () {
         const newDependencies = [...dependencies]
         const updatedPackages: string[] = []
 
-        // 更新所有可更新的依赖到最新版本
+        // 准备所有依赖的最新版本数据
+        const allDepsData = newDependencies.map(dep => {
+          // 使用"latest"标签而不是具体版本号
+          const latestVersion = dep.from && dep.name !== dep.from
+            ? `npm:${dep.from}@latest` // 别名依赖
+            : 'latest'                  // 普通依赖
+
+          // 只有当当前版本不是"latest"时才标记为已更新
+          // 这里简化处理，将所有依赖视为需要更新
+          updatedPackages.push(dep.name)
+
+          return {
+            name: dep.name,
+            version: latestVersion,
+          }
+        })
+
+        console.log('更新全部依赖到最新版本', allDepsData)
+
+        // 在实际场景中，API会根据返回的版本更新依赖
+        // 这里我们模拟更新，使用latest最新版作为当前版本
         newDependencies.forEach(dep => {
-          if (hasUpdate(dep)) {
-            const latestVersion = dep.latest[dep.latest.length - 1]
-            // 处理别名依赖的版本格式
-            const formattedVersion = formatVersionForAlias(dep, latestVersion)
-            dep.current = formattedVersion
-            updatedPackages.push(dep.name)
+          if (dep.latest.length > 0) {
+            const actualLatestVersion = dep.latest[dep.latest.length - 1]
+            dep.current = formatVersionForAlias(dep, actualLatestVersion)
           }
         })
 
@@ -216,10 +233,22 @@ export default function DependenciesPage () {
       } else if (params.type === 'selected' && params.data) {
         const newDependencies = [...dependencies]
 
+        // 在实际场景中，API会根据返回的版本更新依赖
+        // 这里我们模拟更新，将包含"latest"的版本解析为最新版本
         params.data.forEach(item => {
           const index = newDependencies.findIndex(d => d.name === item.name)
           if (index !== -1) {
-            newDependencies[index].current = item.version
+            const dep = newDependencies[index]
+            // 如果版本是"latest"或者包含"@latest"，则使用最新实际版本号
+            if (item.version === 'latest' || item.version.includes('@latest')) {
+              if (dep.latest.length > 0) {
+                const actualLatestVersion = dep.latest[dep.latest.length - 1]
+                dep.current = formatVersionForAlias(dep, actualLatestVersion)
+              }
+            } else {
+              // 使用指定的版本
+              dep.current = item.version
+            }
           }
         })
 
@@ -238,19 +267,32 @@ export default function DependenciesPage () {
   const handleUpdateClick = () => {
     // 如果有选中的依赖
     if (selectedDependencies.length > 0) {
-      // 准备更新数据
+      // 只处理选中的依赖
       const updateData = selectedDependencies.map(name => {
         // 查找依赖对象
         const dep = dependencies.find(d => d.name === name)
 
         if (!dep) return { name, version: '' }
 
-        // 如果有待更改版本，使用待更改版本，否则使用最新版本
-        const version = pendingChanges[name] ||
-          (dep ? formatVersionForAlias(dep, dep.latest[dep.latest.length - 1]) : '')
+        // 优先使用用户明确选择的版本
+        const pendingVersion = pendingChanges[name]
 
-        return { name, version }
+        // 如果用户未明确选择版本，或选择的版本与当前版本相同，则使用"latest"
+        if (!pendingVersion || pendingVersion === dep.current) {
+          // 使用"latest"标签而不是具体版本号
+          return {
+            name,
+            version: dep.from && dep.name !== dep.from
+              ? `npm:${dep.from}@latest` // 别名依赖
+              : 'latest',                  // 普通依赖
+          }
+        } else {
+          // 使用用户选择的版本
+          return { name, version: pendingVersion }
+        }
       })
+
+      console.log('更新选中的依赖', updateData, '选中的依赖数量', selectedDependencies.length)
 
       // 调用更新函数
       updateDependencies({
@@ -295,12 +337,6 @@ export default function DependenciesPage () {
     }
   }
 
-  // 检查是否所有依赖都被选中
-  const isAllSelected = useMemo(
-    () => filteredDependencies.length > 0 && filteredDependencies.every(d => selectedDependencies.includes(d.name)),
-    [filteredDependencies, selectedDependencies]
-  )
-
   return (
     <div className='w-full p-4 sm:p-6 md:p-8 bg-background'>
       {/* 页面标题和信息卡片 */}
@@ -337,7 +373,7 @@ export default function DependenciesPage () {
               isLoading={loading}
               isDisabled={filterMode !== 'all' && selectedDependencies.length === 0}
             >
-              {selectedDependencies.length > 0 && !isAllSelected ? '更新选中' : '更新全部'}
+              {filterMode !== 'all' || selectedDependencies.length > 0 ? '更新选中' : '更新全部'}
             </Button>
 
             {/* 卸载按钮，只在有选中依赖时可用 */}

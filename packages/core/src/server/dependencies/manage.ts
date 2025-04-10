@@ -5,12 +5,15 @@ import { handleReturn, spawnProcess } from '../plugins/admin/tool'
 import type { RequestHandler, Response } from 'express'
 import type { TaskEntity, TaskType } from '@/types/task'
 
-/**
- * 依赖管理请求参数接口
- */
-interface DependenciesManageParams {
+/** 依赖管理基类 */
+interface DependenciesManageBase {
   /** 操作类型：安装或删除 */
   type: 'install' | 'remove'
+}
+
+/** 安装依赖请求参数 */
+interface InstallDependenciesParams extends DependenciesManageBase {
+  type: 'install'
   /** 依赖列表 */
   dependencies: Array<{
     /** 依赖名称 */
@@ -19,6 +22,17 @@ interface DependenciesManageParams {
     version?: string
   }>
 }
+
+/** 删除依赖请求参数 */
+interface RemoveDependenciesParams extends DependenciesManageBase {
+  type: 'remove'
+  /** 依赖列表 */
+  dependencies: string[]
+}
+/**
+ * 依赖管理请求参数接口
+ */
+export type DependenciesManage = InstallDependenciesParams | RemoveDependenciesParams
 
 /**
  * 依赖管理路由
@@ -31,7 +45,7 @@ interface DependenciesManageParams {
  * @param res - 响应对象，用于返回操作结果
  * @returns 响应结果
  */
-export const manageDependenciesRouter: RequestHandler<null, null, DependenciesManageParams> = async (req, res) => {
+export const manageDependenciesRouter: RequestHandler<null, null, DependenciesManage> = async (req, res) => {
   const { type, dependencies } = req.body
 
   if (!type || !Array.isArray(dependencies) || dependencies.length === 0) {
@@ -91,13 +105,11 @@ export const manageDependenciesRouter: RequestHandler<null, null, DependenciesMa
  */
 const installDependencies = async (
   res: Response,
-  dependencies: DependenciesManageParams['dependencies'],
+  dependencies: InstallDependenciesParams['dependencies'],
   ip: string
 ) => {
   try {
-    const packagesToInstall = dependencies.map(dep =>
-      dep.version ? `${dep.name}@${dep.version}` : dep.name
-    ).join(' ')
+    const packagesToInstall = dependencies.map(dep => `${dep.name}@${dep.version || 'latest'}`).join(' ')
 
     const id = await task.add(
       {
@@ -132,11 +144,11 @@ const installDependencies = async (
  */
 const removeDependencies = async (
   res: Response,
-  dependencies: DependenciesManageParams['dependencies'],
+  dependencies: RemoveDependenciesParams['dependencies'],
   ip: string
 ) => {
   try {
-    const packagesToRemove = dependencies.map(dep => dep.name).join(' ')
+    const packagesToRemove = dependencies.join(' ')
 
     const id = await task.add(
       {
