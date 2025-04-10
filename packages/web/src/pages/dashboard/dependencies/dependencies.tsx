@@ -269,6 +269,20 @@ export default function DependenciesPage () {
     // 获取选中的依赖
     const selectedDeps = dependenciesData.filter(dep => dep.isSelected)
 
+    // 检查是否处于总依赖模式且选中了所有依赖且没有指定自定义版本
+    const isAllMode = filterMode === 'all'
+    const isAllSelected = selectedDeps.length === dependenciesData.length
+    const hasNoCustomVersions = selectedDeps.every(dep => dep.targetVersion === null)
+
+    // 如果满足全部条件，走更新全部路径
+    if (isAllMode && isAllSelected && hasNoCustomVersions) {
+      updateDependencies({
+        type: 'all',
+        data: null,
+      })
+      return
+    }
+
     // 如果有选中的依赖
     if (selectedDeps.length > 0) {
       // 准备更新数据
