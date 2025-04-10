@@ -19,25 +19,39 @@ import { Progress } from '@heroui/progress'
 
 import type { Dependency } from 'node-karin'
 
-// 更新类型定义
+/**
+ * 增强依赖项接口，包含UI状态
+ */
+interface EnhancedDependency extends Dependency {
+  /** 是否被选中 */
+  isSelected: boolean
+  /** 用户选择的目标版本（如果有） */
+  targetVersion: string | null
+}
+
+/**
+ * 更新类型定义
+ */
 type UpdateType = 'all' | 'selected'
 
-// 更新依赖参数接口
+/**
+ * 更新依赖参数接口
+ */
 interface UpdateParams {
+  /** 更新类型 */
   type: UpdateType
+  /** 需要更新的依赖数据 */
   data: Array<{ name: string, version: string }> | null
 }
 
 export default function DependenciesPage () {
-  const [dependencies, setDependencies] = useState<Dependency[]>([])
+  const [dependenciesData, setDependenciesData] = useState<EnhancedDependency[]>([])
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(true)
   const [filterMode, setFilterMode] = useState<FilterMode>('all')
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false)
-  const [selectedDependency, setSelectedDependency] = useState<Dependency | null>(null)
+  const [selectedDependency, setSelectedDependency] = useState<EnhancedDependency | null>(null)
   const [selectedVersion, setSelectedVersion] = useState<string>('')
-  const [pendingChanges, setPendingChanges] = useState<Record<string, string>>({})
-  const [selectedDependencies, setSelectedDependencies] = useState<string[]>([])
 
   /**
    * 获取依赖列表
@@ -48,7 +62,13 @@ export default function DependenciesPage () {
     try {
       const res = await getDependencies(isForceRefresh)
       if (res.success) {
-        setDependencies(res.data || [])
+        // 转换为增强依赖对象
+        const enhancedDeps = (res.data || []).map(dep => ({
+          ...dep,
+          isSelected: false,
+          targetVersion: null,
+        }))
+        setDependenciesData(enhancedDeps)
       } else {
         toast.error(res.message || '获取依赖列表失败')
       }
@@ -65,9 +85,9 @@ export default function DependenciesPage () {
     fetchDependencies(false)
   }, [fetchDependencies])
 
-  // 使用useMemo优化依赖筛选，避免不必要的重新计算
+  // 过滤后的依赖列表
   const filteredDependencies = useMemo(() => {
-    let filtered = dependencies
+    let filtered = dependenciesData
 
     if (searchTerm) {
       filtered = filtered.filter(dep =>
@@ -90,22 +110,31 @@ export default function DependenciesPage () {
     }
 
     return filtered
-  }, [dependencies, searchTerm, filterMode])
+  }, [dependenciesData, searchTerm, filterMode])
 
-  // 统计信息使用useMemo缓存计算结果
+  // 统计信息
   const stats = useMemo(() => {
-    const total = dependencies.length
-    const plugins = dependencies.filter(d => d.isKarinPlugin).length
-    const updatable = dependencies.filter(d => hasUpdate(d)).length
+    const total = dependenciesData.length
+    const plugins = dependenciesData.filter(d => d.isKarinPlugin).length
+    const updatable = dependenciesData.filter(d => hasUpdate(d)).length
     return { total, plugins, updatable }
-  }, [dependencies])
+  }, [dependenciesData])
+
+  // 选中的依赖列表
+  const selectedDependencies = useMemo(() => {
+    return filteredDependencies.filter(dep => dep.isSelected)
+  }, [filteredDependencies])
 
   // 打开设置模态框
   const openSettings = useCallback((dependency: Dependency) => {
-    setSelectedDependency(dependency)
-    setSelectedVersion(dependency.current)
-    setIsSettingsOpen(true)
-  }, [])
+    // 找到并使用增强版本的依赖对象
+    const enhancedDep = dependenciesData.find(dep => dep.name === dependency.name)
+    if (enhancedDep) {
+      setSelectedDependency(enhancedDep)
+      setSelectedVersion(enhancedDep.current)
+      setIsSettingsOpen(true)
+    }
+  }, [dependenciesData])
 
   /**
    * 格式化别名依赖的版本号
@@ -113,7 +142,7 @@ export default function DependenciesPage () {
    * @param version 版本号
    * @returns 格式化后的版本号
    */
-  const formatVersionForAlias = useCallback((dependency: Dependency, version: string): string => {
+  const formatVersionForAlias = useCallback((dependency: EnhancedDependency, version: string): string => {
     // 如果name和from不一样，表示是别名依赖
     if (dependency.from && dependency.name !== dependency.from) {
       return `npm:${dependency.from}@${version}`
@@ -133,17 +162,12 @@ export default function DependenciesPage () {
       // 处理别名依赖的版本格式
       const formattedVersion = formatVersionForAlias(selectedDependency, selectedVersion)
 
-      // 准备更新数据
-      const updateData = [{
-        name: selectedDependency.name,
-        version: formattedVersion,
-      }]
-
-      // 调用更新函数
-      updateDependencies({
-        type: 'selected',
-        data: updateData,
-      })
+      // 更新依赖数据
+      setDependenciesData(prev => prev.map(dep =>
+        dep.name === selectedDependency.name
+          ? { ...dep, targetVersion: formattedVersion, isSelected: true }
+          : dep
+      ))
 
       setIsSettingsOpen(false)
     }
@@ -151,35 +175,28 @@ export default function DependenciesPage () {
 
   // 更新依赖版本
   const updateDependencyVersion = useCallback((dependencyName: string, version: string) => {
-    // 查找依赖对象
-    const dependency = dependencies.find(d => d.name === dependencyName)
-    if (!dependency) return
-
-    // 处理别名依赖的版本格式
-    const formattedVersion = formatVersionForAlias(dependency, version)
-
-    setPendingChanges(prev => ({
-      ...prev,
-      [dependencyName]: formattedVersion,
-    }))
-  }, [dependencies, formatVersionForAlias])
+    // 更新依赖数据中的目标版本
+    setDependenciesData(prev => prev.map(dep =>
+      dep.name === dependencyName
+        ? { ...dep, targetVersion: formatVersionForAlias(dep, version) }
+        : dep
+    ))
+  }, [formatVersionForAlias])
 
   // 选择单个依赖
   const handleSelectDependency = useCallback((name: string, isSelected: boolean) => {
-    setSelectedDependencies(prev =>
-      isSelected
-        ? [...prev, name]
-        : prev.filter(dep => dep !== name)
-    )
+    setDependenciesData(prev => prev.map(dep =>
+      dep.name === name ? { ...dep, isSelected } : dep
+    ))
   }, [])
 
   // 全选/取消全选
   const handleSelectAll = useCallback((isSelected: boolean) => {
-    setSelectedDependencies(
-      isSelected
-        ? filteredDependencies.map(dep => dep.name)
-        : []
-    )
+    setDependenciesData(prev => prev.map(dep => {
+      // 只更新当前过滤视图中的依赖
+      const isInFilteredView = filteredDependencies.some(fd => fd.name === dep.name)
+      return isInFilteredView ? { ...dep, isSelected } : dep
+    }))
   }, [filteredDependencies])
 
   /**
@@ -194,51 +211,34 @@ export default function DependenciesPage () {
     setTimeout(() => {
       // 处理全部更新
       if (params.type === 'all') {
-        const newDependencies = [...dependencies]
+        const newDependencies = [...dependenciesData]
         const updatedPackages: string[] = []
 
         // 准备所有依赖的最新版本数据
-        const allDepsData = newDependencies.map(dep => {
-          // 使用"latest"标签而不是具体版本号
-          const latestVersion = dep.from && dep.name !== dep.from
-            ? `npm:${dep.from}@latest` // 别名依赖
-            : 'latest'                  // 普通依赖
-
-          // 只有当当前版本不是"latest"时才标记为已更新
-          // 这里简化处理，将所有依赖视为需要更新
-          updatedPackages.push(dep.name)
-
-          return {
-            name: dep.name,
-            version: latestVersion,
-          }
-        })
-
-        console.log('更新全部依赖到最新版本', allDepsData)
-
-        // 在实际场景中，API会根据返回的版本更新依赖
-        // 这里我们模拟更新，使用latest最新版作为当前版本
         newDependencies.forEach(dep => {
+          // 只有当有最新版本时才更新
           if (dep.latest.length > 0) {
+            updatedPackages.push(dep.name)
             const actualLatestVersion = dep.latest[dep.latest.length - 1]
             dep.current = formatVersionForAlias(dep, actualLatestVersion)
+            dep.targetVersion = null // 重置目标版本
+            dep.isSelected = false   // 重置选中状态
           }
         })
 
-        setDependencies(newDependencies)
-        setSelectedDependencies([])
-        setPendingChanges({})
-
+        setDependenciesData(newDependencies)
         alert(`已更新 ${updatedPackages.length} 个依赖到最新版本`)
       } else if (params.type === 'selected' && params.data) {
-        const newDependencies = [...dependencies]
+        const newDependencies = [...dependenciesData]
+        let updatedCount = 0
 
-        // 在实际场景中，API会根据返回的版本更新依赖
-        // 这里我们模拟更新，将包含"latest"的版本解析为最新版本
+        // 更新指定依赖的版本
         params.data.forEach(item => {
-          const index = newDependencies.findIndex(d => d.name === item.name)
-          if (index !== -1) {
-            const dep = newDependencies[index]
+          const depIndex = newDependencies.findIndex(d => d.name === item.name)
+          if (depIndex !== -1) {
+            updatedCount++
+            const dep = newDependencies[depIndex]
+
             // 如果版本是"latest"或者包含"@latest"，则使用最新实际版本号
             if (item.version === 'latest' || item.version.includes('@latest')) {
               if (dep.latest.length > 0) {
@@ -249,14 +249,15 @@ export default function DependenciesPage () {
               // 使用指定的版本
               dep.current = item.version
             }
+
+            // 重置状态
+            dep.targetVersion = null
+            dep.isSelected = false
           }
         })
 
-        setDependencies(newDependencies)
-        setSelectedDependencies([])
-        setPendingChanges({})
-
-        alert(`已更新 ${params.data.length} 个依赖`)
+        setDependenciesData(newDependencies)
+        alert(`已更新 ${updatedCount} 个依赖`)
       }
 
       setLoading(false)
@@ -265,34 +266,31 @@ export default function DependenciesPage () {
 
   // 处理更新按钮点击
   const handleUpdateClick = () => {
+    // 获取选中的依赖
+    const selectedDeps = dependenciesData.filter(dep => dep.isSelected)
+
     // 如果有选中的依赖
-    if (selectedDependencies.length > 0) {
-      // 只处理选中的依赖
-      const updateData = selectedDependencies.map(name => {
-        // 查找依赖对象
-        const dep = dependencies.find(d => d.name === name)
-
-        if (!dep) return { name, version: '' }
-
-        // 优先使用用户明确选择的版本
-        const pendingVersion = pendingChanges[name]
-
-        // 如果用户未明确选择版本，或选择的版本与当前版本相同，则使用"latest"
-        if (!pendingVersion || pendingVersion === dep.current) {
-          // 使用"latest"标签而不是具体版本号
+    if (selectedDeps.length > 0) {
+      // 准备更新数据
+      const updateData = selectedDeps.map(dep => {
+        // 优先使用用户明确选择的目标版本
+        if (dep.targetVersion) {
           return {
-            name,
-            version: dep.from && dep.name !== dep.from
-              ? `npm:${dep.from}@latest` // 别名依赖
-              : 'latest',                  // 普通依赖
+            name: dep.name,
+            version: dep.targetVersion,
           }
-        } else {
-          // 使用用户选择的版本
-          return { name, version: pendingVersion }
+        }
+
+        // 否则使用latest
+        return {
+          name: dep.name,
+          version: dep.from && dep.name !== dep.from
+            ? `npm:${dep.from}@latest` // 别名依赖
+            : 'latest',                  // 普通依赖
         }
       })
 
-      console.log('更新选中的依赖', updateData, '选中的依赖数量', selectedDependencies.length)
+      console.log('更新选中的依赖', updateData, '选中的依赖数量', selectedDeps.length)
 
       // 调用更新函数
       updateDependencies({
@@ -320,11 +318,8 @@ export default function DependenciesPage () {
     // 模拟API调用延迟
     setTimeout(() => {
       // 移除指定的依赖
-      const newDependencies = dependencies.filter(dep => !packageNames.includes(dep.name))
-      setDependencies(newDependencies)
-      setSelectedDependencies([])
-      setPendingChanges({})
-
+      const newDependencies = dependenciesData.filter(dep => !packageNames.includes(dep.name))
+      setDependenciesData(newDependencies)
       alert(`已卸载 ${packageNames.length} 个依赖`)
       setLoading(false)
     }, 1000)
@@ -332,8 +327,12 @@ export default function DependenciesPage () {
 
   // 处理卸载按钮点击
   const handleUninstallClick = () => {
-    if (selectedDependencies.length > 0) {
-      uninstallDependencies(selectedDependencies)
+    const selectedNames = dependenciesData
+      .filter(dep => dep.isSelected)
+      .map(dep => dep.name)
+
+    if (selectedNames.length > 0) {
+      uninstallDependencies(selectedNames)
     }
   }
 
@@ -373,7 +372,7 @@ export default function DependenciesPage () {
               isLoading={loading}
               isDisabled={filterMode !== 'all' && selectedDependencies.length === 0}
             >
-              {filterMode !== 'all' || selectedDependencies.length > 0 ? '更新选中' : '更新全部'}
+              {selectedDependencies.length > 0 ? '更新选中' : '更新全部'}
             </Button>
 
             {/* 卸载按钮，只在有选中依赖时可用 */}
@@ -498,8 +497,14 @@ export default function DependenciesPage () {
             {/* 依赖表格 */}
             <DependencyTable
               dependencies={processedDependencies}
-              pendingChanges={pendingChanges}
-              selectedDependencies={selectedDependencies}
+              pendingChanges={Object.fromEntries(
+                dependenciesData
+                  .filter(dep => dep.targetVersion !== null)
+                  .map(dep => [dep.name, dep.targetVersion || ''])
+              )}
+              selectedDependencies={dependenciesData
+                .filter(dep => dep.isSelected)
+                .map(dep => dep.name)}
               updateDependencyVersion={updateDependencyVersion}
               openSettings={openSettings}
               onSelectDependency={handleSelectDependency}
