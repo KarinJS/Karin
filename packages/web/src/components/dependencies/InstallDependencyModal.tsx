@@ -225,8 +225,10 @@ const InstallDependencyModal = ({
       onClose={onClose}
       backdrop='blur'
       radius='lg'
+      placement='center'
       classNames={{
-        base: 'border border-default-100 mx-2',
+        base: 'border border-default-100 max-w-full mx-auto my-0',
+        wrapper: 'items-center justify-center',
         header: 'border-b border-default-100 p-4',
         body: 'p-4',
         footer: 'border-t border-default-100 p-4',
