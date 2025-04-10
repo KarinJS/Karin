@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Button } from '@heroui/button'
 import { IoRefresh } from 'react-icons/io5'
 import { LuPackage, LuDownload, LuTrash2 } from 'react-icons/lu'
@@ -6,6 +6,7 @@ import {
   DependencyTable,
   DependencySettings,
   DependencyFilter,
+  LazyDependencyLoader,
 } from '../../../components/dependencies'
 import { StatCard } from '../../../components/card'
 import {
@@ -14,6 +15,7 @@ import {
 } from './dependencies.utils'
 import { getDependencies } from '@/request/dependencies'
 import { toast } from 'react-hot-toast'
+import { Progress } from '@heroui/progress'
 
 import type { Dependency } from 'node-karin'
 
@@ -28,7 +30,6 @@ interface UpdateParams {
 
 export default function DependenciesPage () {
   const [dependencies, setDependencies] = useState<Dependency[]>([])
-  const [filteredDependencies, setFilteredDependencies] = useState<Dependency[]>([])
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(true)
   const [filterMode, setFilterMode] = useState<FilterMode>('all')
@@ -42,25 +43,30 @@ export default function DependenciesPage () {
    * 获取依赖列表
    * @param isForceRefresh - 是否强制刷新
    */
-  const fetchDependencies = async (isForceRefresh: boolean) => {
+  const fetchDependencies = useCallback(async (isForceRefresh: boolean) => {
     setLoading(true)
-    const res = await getDependencies(isForceRefresh)
-    if (res.success) {
+    try {
+      const res = await getDependencies(isForceRefresh)
+      if (res.success) {
+        setDependencies(res.data || [])
+      } else {
+        toast.error(res.message || '获取依赖列表失败')
+      }
+    } catch (error) {
+      toast.error('获取依赖列表时发生错误')
+      console.error(error)
+    } finally {
       setLoading(false)
-      return setDependencies(res.data || [])
     }
-
-    toast.error(res.message || '获取依赖列表失败')
-    setLoading(false)
-  }
+  }, [])
 
   // 初始加载依赖列表
   useEffect(() => {
     fetchDependencies(false)
-  }, [])
+  }, [fetchDependencies])
 
-  // 筛选依赖
-  useEffect(() => {
+  // 使用useMemo优化依赖筛选，避免不必要的重新计算
+  const filteredDependencies = useMemo(() => {
     let filtered = dependencies
 
     if (searchTerm) {
@@ -83,15 +89,23 @@ export default function DependenciesPage () {
         break
     }
 
-    setFilteredDependencies(filtered)
+    return filtered
   }, [dependencies, searchTerm, filterMode])
 
+  // 统计信息使用useMemo缓存计算结果
+  const stats = useMemo(() => {
+    const total = dependencies.length
+    const plugins = dependencies.filter(d => d.isKarinPlugin).length
+    const updatable = dependencies.filter(d => hasUpdate(d)).length
+    return { total, plugins, updatable }
+  }, [dependencies])
+
   // 打开设置模态框
-  const openSettings = (dependency: Dependency) => {
+  const openSettings = useCallback((dependency: Dependency) => {
     setSelectedDependency(dependency)
     setSelectedVersion(dependency.current)
     setIsSettingsOpen(true)
-  }
+  }, [])
 
   /**
    * 格式化别名依赖的版本号
@@ -99,16 +113,16 @@ export default function DependenciesPage () {
    * @param version 版本号
    * @returns 格式化后的版本号
    */
-  const formatVersionForAlias = (dependency: Dependency, version: string): string => {
+  const formatVersionForAlias = useCallback((dependency: Dependency, version: string): string => {
     // 如果name和from不一样，表示是别名依赖
     if (dependency.from && dependency.name !== dependency.from) {
       return `npm:${dependency.from}@${version}`
     }
     return version
-  }
+  }, [])
 
   // 保存依赖版本变更
-  const saveDependencyVersion = () => {
+  const saveDependencyVersion = useCallback(() => {
     if (selectedDependency) {
       // 如果版本没有变化，直接关闭模态框
       if (selectedVersion === selectedDependency.current) {
@@ -133,10 +147,10 @@ export default function DependenciesPage () {
 
       setIsSettingsOpen(false)
     }
-  }
+  }, [selectedDependency, selectedVersion, formatVersionForAlias])
 
   // 更新依赖版本
-  const updateDependencyVersion = (dependencyName: string, version: string) => {
+  const updateDependencyVersion = useCallback((dependencyName: string, version: string) => {
     // 查找依赖对象
     const dependency = dependencies.find(d => d.name === dependencyName)
     if (!dependency) return
@@ -144,34 +158,36 @@ export default function DependenciesPage () {
     // 处理别名依赖的版本格式
     const formattedVersion = formatVersionForAlias(dependency, version)
 
-    const newPendingChanges = { ...pendingChanges }
-    newPendingChanges[dependencyName] = formattedVersion
-    setPendingChanges(newPendingChanges)
-  }
+    setPendingChanges(prev => ({
+      ...prev,
+      [dependencyName]: formattedVersion,
+    }))
+  }, [dependencies, formatVersionForAlias])
 
   // 选择单个依赖
-  const handleSelectDependency = (name: string, isSelected: boolean) => {
-    if (isSelected) {
-      setSelectedDependencies(prev => [...prev, name])
-    } else {
-      setSelectedDependencies(prev => prev.filter(dep => dep !== name))
-    }
-  }
+  const handleSelectDependency = useCallback((name: string, isSelected: boolean) => {
+    setSelectedDependencies(prev =>
+      isSelected
+        ? [...prev, name]
+        : prev.filter(dep => dep !== name)
+    )
+  }, [])
 
   // 全选/取消全选
-  const handleSelectAll = (isSelected: boolean) => {
-    if (isSelected) {
-      setSelectedDependencies(filteredDependencies.map(dep => dep.name))
-    } else {
-      setSelectedDependencies([])
-    }
-  }
+  const handleSelectAll = useCallback((isSelected: boolean) => {
+    setSelectedDependencies(
+      isSelected
+        ? filteredDependencies.map(dep => dep.name)
+        : []
+    )
+  }, [filteredDependencies])
 
   /**
    * 模拟更新依赖
    * @param params 更新参数
    */
   const updateDependencies = (params: UpdateParams) => {
+    console.log('updateDependencies', params)
     setLoading(true)
 
     // 模拟API调用延迟
@@ -279,17 +295,11 @@ export default function DependenciesPage () {
     }
   }
 
-  // 获取统计信息
-  const getStats = () => {
-    const total = dependencies.length
-    const plugins = dependencies.filter(d => d.isKarinPlugin).length
-    const updatable = dependencies.filter(d => hasUpdate(d)).length
-    return { total, plugins, updatable }
-  }
-
-  const stats = getStats()
-  const isAllSelected = filteredDependencies.length > 0 &&
-    filteredDependencies.every(d => selectedDependencies.includes(d.name))
+  // 检查是否所有依赖都被选中
+  const isAllSelected = useMemo(
+    () => filteredDependencies.length > 0 && filteredDependencies.every(d => selectedDependencies.includes(d.name)),
+    [filteredDependencies, selectedDependencies]
+  )
 
   return (
     <div className='w-full p-4 sm:p-6 md:p-8 bg-background'>
@@ -419,16 +429,48 @@ export default function DependenciesPage () {
         count={filteredDependencies.length}
       />
 
-      {/* 依赖表格 */}
-      <DependencyTable
+      {/* 使用延迟加载组件优化依赖渲染 */}
+      <LazyDependencyLoader
         dependencies={filteredDependencies}
-        pendingChanges={pendingChanges}
-        selectedDependencies={selectedDependencies}
-        updateDependencyVersion={updateDependencyVersion}
-        openSettings={openSettings}
-        onSelectDependency={handleSelectDependency}
-        onSelectAll={handleSelectAll}
-      />
+        initialBatchSize={30}
+        batchSize={20}
+      >
+        {({ processedDependencies, isLoading, progress }) => (
+          <>
+            {/* 显示加载进度 */}
+            {progress < 100 && (
+              <div className='mb-4'>
+                <Progress
+                  value={progress}
+                  color='primary'
+                  size='sm'
+                  radius='sm'
+                  classNames={{
+                    base: 'max-w-md',
+                    track: 'drop-shadow-sm border border-default-100/50',
+                    indicator: 'bg-gradient-to-r from-primary-500 to-primary-400',
+                  }}
+                  aria-label='加载依赖进度'
+                />
+                <div className='text-xs text-default-500 mt-1'>
+                  正在加载依赖 ({progress}%)...
+                </div>
+              </div>
+            )}
+
+            {/* 依赖表格 */}
+            <DependencyTable
+              dependencies={processedDependencies}
+              pendingChanges={pendingChanges}
+              selectedDependencies={selectedDependencies}
+              updateDependencyVersion={updateDependencyVersion}
+              openSettings={openSettings}
+              onSelectDependency={handleSelectDependency}
+              onSelectAll={handleSelectAll}
+            />
+          </>
+        )}
+      </LazyDependencyLoader>
 
       {/* 设置模态框 */}
       <DependencySettings

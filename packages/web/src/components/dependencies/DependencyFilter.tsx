@@ -2,6 +2,7 @@ import { Input } from '@heroui/input'
 import { Chip } from '@heroui/chip'
 import { IoSearch } from 'react-icons/io5'
 import { LuPackage, LuDownload } from 'react-icons/lu'
+import { memo, useMemo } from 'react'
 import { FilterMode } from '../../pages/dashboard/dependencies/dependencies.utils'
 
 interface DependencyFilterProps {
@@ -11,12 +12,15 @@ interface DependencyFilterProps {
   count: number
 }
 
-const DependencyFilter = ({ searchTerm, setSearchTerm, filterMode, count }: DependencyFilterProps) => {
+/**
+ * 依赖过滤组件
+ */
+const DependencyFilter = memo(({ searchTerm, setSearchTerm, filterMode, count }: DependencyFilterProps) => {
   /**
    * 获取过滤标签的颜色和图标
    */
-  const getFilterConfig = (mode: FilterMode) => {
-    switch (mode) {
+  const filterConfig = useMemo(() => {
+    switch (filterMode) {
       case 'all':
         return {
           color: 'primary' as const,
@@ -42,9 +46,7 @@ const DependencyFilter = ({ searchTerm, setSearchTerm, filterMode, count }: Depe
           text: '未知类型',
         }
     }
-  }
-
-  const filterConfig = getFilterConfig(filterMode)
+  }, [filterMode])
 
   return (
     <div className='flex flex-col sm:flex-row sm:items-center gap-2 md:gap-4 mb-4 md:mb-6 pb-4 md:pb-6 border-b border-default-100'>
@@ -80,6 +82,8 @@ const DependencyFilter = ({ searchTerm, setSearchTerm, filterMode, count }: Depe
       </div>
     </div>
   )
-}
+})
+
+DependencyFilter.displayName = 'DependencyFilter'
 
 export default DependencyFilter

@@ -3,6 +3,7 @@ import { Button } from '@heroui/button'
 import { Link } from '@heroui/link'
 import { Divider } from '@heroui/divider'
 import { getNpmLink } from '../../pages/dashboard/dependencies/dependencies.utils'
+import { memo } from 'react'
 import type { Dependency } from 'node-karin'
 
 interface DependencySettingsProps {
@@ -23,7 +24,10 @@ const stopPropagation = (e: React.MouseEvent | React.TouchEvent) => {
   e.stopPropagation()
 }
 
-const DependencySettings = ({
+/**
+ * 依赖设置模态框组件
+ */
+const DependencySettings = memo(({
   isOpen, onClose, dependency, selectedVersion, setSelectedVersion, onSave, onSelectDependency,
 }: DependencySettingsProps) => {
   if (!dependency) return null
@@ -163,6 +167,8 @@ const DependencySettings = ({
       </ModalContent>
     </Modal>
   )
-}
+})
+
+DependencySettings.displayName = 'DependencySettings'
 
 export default DependencySettings
