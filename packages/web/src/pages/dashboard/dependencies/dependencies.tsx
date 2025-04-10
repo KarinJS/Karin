@@ -356,8 +356,13 @@ export default function DependenciesPage () {
       <div className='mb-6 md:mb-10'>
         <div className='flex flex-wrap items-start justify-between gap-3 md:gap-6'>
           <div className='flex flex-col'>
-            <h1 className='text-2xl md:text-3xl font-light text-foreground/90 tracking-tight'>依赖管理</h1>
-            <p className='text-sm md:text-base text-default-500 mt-0.5 md:mt-1'>管理项目依赖包和Karin插件</p>
+            <h1 className='text-2xl md:text-3xl font-light text-foreground/90 tracking-tight flex items-center gap-2'>
+              <LuPackage size={24} className='text-primary-500' />
+              依赖管理
+            </h1>
+            <p className='text-sm md:text-base text-default-500 mt-0.5 md:mt-1'>
+              (∩^o^)⊃━☆ 小包包们的幸福家园～让我们一起管理包包和Karin插件吧！(●'◡'●)
+            </p>
           </div>
 
           <div className='flex flex-wrap items-center gap-2 md:gap-3'>
