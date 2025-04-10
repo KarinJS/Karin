@@ -549,8 +549,8 @@ export default function DependenciesPage () {
       {/* 使用延迟加载组件优化依赖渲染 */}
       <MemoizedLazyDependencyLoader
         dependencies={filteredDependencies}
-        initialBatchSize={30}
-        batchSize={20}
+        initialBatchSize={2}
+        batchSize={2}
       >
         {({ processedDependencies, progress }) => (
           <>

@@ -338,8 +338,8 @@ const DependencyTable = memo(({
     // 根据内容量和可用屏幕空间调整高度
     const availableHeight = window.innerHeight * 0.6 // 屏幕高度的60%
     const contentHeight = dependencies.length * rowHeight
-    // 设置最小和最大高度限制
-    return Math.min(Math.max(contentHeight, 300), availableHeight)
+    // 设置最小和最大高度限制，确保即使没有数据也至少有一定高度
+    return Math.min(Math.max(contentHeight || 300, 300), availableHeight)
   }, [dependencies.length, rowHeight])
 
   // 渲染表格
@@ -404,51 +404,53 @@ const DependencyTable = memo(({
           className='overflow-auto'
           style={{ height: `${containerHeight}px` }}
         >
-          {/* 创建一个容器，其高度等于所有行的总高度 */}
-          <div
-            style={{
-              height: `${rowVirtualizer.getTotalSize()}px`,
-              width: '100%',
-              position: 'relative',
-            }}
-          >
-            {/* 当没有数据时显示空状态 */}
-            {dependencies.length === 0 && (
+          {dependencies.length === 0
+            ? (
               <div className='flex items-center justify-center h-32'>
                 <p className='text-default-500'>没有找到依赖包</p>
               </div>
+            )
+            : (
+              <div
+                style={{
+                  height: `${rowVirtualizer.getTotalSize()}px`,
+                  width: '100%',
+                  position: 'relative',
+                }}
+              >
+                {/* 根据虚拟化列表渲染可见行 */}
+                {virtualItems.map((virtualItem) => {
+                  const dependency = dependencies[virtualItem.index]
+                  if (!dependency) return null
+
+                  const isSelected = selectedMap.has(dependency.name)
+
+                  return (
+                    <div
+                      key={virtualItem.key}
+                      data-index={virtualItem.index}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: `${rowHeight}px`,
+                        transform: `translateY(${virtualItem.start}px)`,
+                      }}
+                    >
+                      <DependencyRow
+                        dependency={dependency}
+                        pendingChanges={pendingChanges}
+                        isSelected={isSelected}
+                        updateDependencyVersion={updateDependencyVersion}
+                        openSettings={openSettings}
+                        onSelectDependency={onSelectDependency}
+                      />
+                    </div>
+                  )
+                })}
+              </div>
             )}
-
-            {/* 根据虚拟化列表渲染可见行 */}
-            {virtualItems.map((virtualItem) => {
-              const dependency = dependencies[virtualItem.index]
-              const isSelected = selectedMap.has(dependency.name)
-
-              return (
-                <div
-                  key={virtualItem.key}
-                  data-index={virtualItem.index}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: `${rowHeight}px`,
-                    transform: `translateY(${virtualItem.start}px)`,
-                  }}
-                >
-                  <DependencyRow
-                    dependency={dependency}
-                    pendingChanges={pendingChanges}
-                    isSelected={isSelected}
-                    updateDependencyVersion={updateDependencyVersion}
-                    openSettings={openSettings}
-                    onSelectDependency={onSelectDependency}
-                  />
-                </div>
-              )
-            })}
-          </div>
         </div>
       </div>
     </div>
