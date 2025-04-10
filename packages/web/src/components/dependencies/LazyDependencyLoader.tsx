@@ -95,8 +95,25 @@ export const LazyDependencyLoader = ({
   useEffect(() => {
     setProcessedCount(0)
     setProcessedDependencies([])
-    loadNextBatch()
-  }, [dependencies]) // 当依赖列表变化时重新开始
+
+    // 如果依赖列表很小（小于initialBatchSize），直接加载所有数据
+    if (dependencies.length <= initialBatchSize) {
+      setProcessedDependencies([...dependencies])
+      setProcessedCount(dependencies.length)
+    } else {
+      loadNextBatch()
+    }
+  }, [dependencies, initialBatchSize, loadNextBatch]) // 当依赖列表变化时重新开始
+
+  // 当第一批加载完成后，检查是否需要继续加载更多数据
+  useEffect(() => {
+    // 如果已加载的依赖数量小于总数且不是正在加载中，继续加载
+    if (processedCount > 0 && processedCount < dependencies.length && !isLoading) {
+      // 使用短延迟，确保UI有时间更新
+      const timer = setTimeout(loadNextBatch, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [processedCount, dependencies.length, isLoading, loadNextBatch])
 
   // 添加滚动监听
   useEffect(() => {
