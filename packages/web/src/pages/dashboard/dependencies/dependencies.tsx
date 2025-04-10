@@ -335,6 +335,7 @@ export default function DependenciesPage () {
               variant='flat'
               className='font-normal'
               isLoading={loading}
+              isDisabled={filterMode !== 'all' && selectedDependencies.length === 0}
             >
               {selectedDependencies.length > 0 && !isAllSelected ? '更新选中' : '更新全部'}
             </Button>
