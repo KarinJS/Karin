@@ -435,7 +435,7 @@ export default function DependenciesPage () {
         initialBatchSize={30}
         batchSize={20}
       >
-        {({ processedDependencies, isLoading, progress }) => (
+        {({ processedDependencies, progress }) => (
           <>
             {/* 显示加载进度 */}
             {progress < 100 && (
