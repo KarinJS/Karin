@@ -1,12 +1,13 @@
 import { useState, useEffect, useMemo, useCallback, memo } from 'react'
 import { Button } from '@heroui/button'
 import { IoRefresh } from 'react-icons/io5'
-import { LuPackage, LuDownload, LuTrash2 } from 'react-icons/lu'
+import { LuPackage, LuDownload, LuTrash2, LuPlus } from 'react-icons/lu'
 import {
   DependencyTable,
   DependencySettings,
   DependencyFilter,
   LazyDependencyLoader,
+  InstallDependencyModal,
 } from '../../../components/dependencies'
 import { StatCard } from '../../../components/card'
 import {
@@ -32,7 +33,7 @@ interface EnhancedDependency extends Dependency {
 /**
  * 更新类型定义
  */
-type UpdateType = 'all' | 'selected'
+type UpdateType = 'all' | 'selected' | 'add'
 
 /**
  * 更新依赖参数接口
@@ -67,6 +68,7 @@ export default function DependenciesPage () {
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false)
   const [selectedDependency, setSelectedDependency] = useState<EnhancedDependency | null>(null)
   const [selectedVersion, setSelectedVersion] = useState<string>('')
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState<boolean>(false)
 
   /**
    * 获取依赖列表
@@ -320,6 +322,46 @@ export default function DependenciesPage () {
 
         setDependenciesData(newDependencies)
         alert(`已更新 ${updatedCount} 个依赖`)
+      } else if (params.type === 'add' && params.data) {
+        // 处理安装新依赖
+        const newPackages = params.data
+
+        // 模拟添加新依赖
+        const newDependencies = [...dependenciesData]
+        let installedCount = 0
+
+        newPackages.forEach(pkg => {
+          // 检查是否已存在同名依赖
+          const existingIndex = newDependencies.findIndex(d => d.name === pkg.name)
+
+          if (existingIndex !== -1) {
+            // 如果已存在，则更新版本
+            newDependencies[existingIndex].current = pkg.version
+            installedCount++
+          } else {
+            // 否则添加新依赖
+            // 创建一个模拟的依赖对象
+            const version = pkg.version === 'latest' ? '1.0.0' : pkg.version
+            const newDep: EnhancedDependency = {
+              name: pkg.name,
+              current: version,
+              packageValue: version,
+              from: pkg.name, // 使用包名作为from值
+              type: 'dependencies',
+              latest: [version], // 使用当前版本作为最新版本
+              isKarinPlugin: pkg.name.startsWith('@karinjs/') || pkg.name.includes('karin'),
+              isSelected: false,
+              targetVersion: null,
+            }
+
+            // 添加到依赖列表
+            newDependencies.push(newDep)
+            installedCount++
+          }
+        })
+
+        setDependenciesData(newDependencies)
+        toast.success(`已安装 ${installedCount} 个依赖`)
       }
 
       setLoading(false)
@@ -439,6 +481,19 @@ export default function DependenciesPage () {
               className='font-normal'
             >
               刷新
+            </Button>
+
+            {/* 安装依赖按钮 */}
+            <Button
+              color='primary'
+              startContent={<LuPlus size={14} />}
+              onPress={() => setIsInstallModalOpen(true)}
+              size='sm'
+              radius='full'
+              variant='flat'
+              className='font-normal'
+            >
+              新增依赖
             </Button>
 
             {/* 显示"更新选中"或"更新全部"按钮 */}
@@ -570,7 +625,7 @@ export default function DependenciesPage () {
                   aria-label='加载依赖进度'
                 />
                 <div className='text-xs text-default-500 mt-1'>
-                  正在加载依赖 ({progress}%)...
+                  正在加载依赖 ({progress}%)... 总计:{filteredDependencies.length}个依赖
                 </div>
               </div>
             )}
@@ -598,6 +653,13 @@ export default function DependenciesPage () {
         setSelectedVersion={setSelectedVersion}
         onSave={saveDependencyVersion}
         onSelectDependency={handleSelectDependency}
+      />
+
+      {/* 安装依赖模态框 */}
+      <InstallDependencyModal
+        isOpen={isInstallModalOpen}
+        onClose={() => setIsInstallModalOpen(false)}
+        onInstall={(params) => updateDependencies(params as UpdateParams)}
       />
     </div>
   )
