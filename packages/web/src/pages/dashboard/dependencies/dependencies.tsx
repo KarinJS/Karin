@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, memo } from 'react'
 import { Button } from '@heroui/button'
 import { IoRefresh } from 'react-icons/io5'
 import { LuPackage, LuDownload, LuTrash2 } from 'react-icons/lu'
@@ -43,6 +43,21 @@ interface UpdateParams {
   /** 需要更新的依赖数据 */
   data: Array<{ name: string, version: string }> | null
 }
+
+/**
+ * 使用memo优化DependencyFilter组件
+ */
+const MemoizedDependencyFilter = memo(DependencyFilter)
+
+/**
+ * 使用memo优化DependencyTable组件
+ */
+const MemoizedDependencyTable = memo(DependencyTable)
+
+/**
+ * 使用memo优化LazyDependencyLoader组件
+ */
+const MemoizedLazyDependencyLoader = memo(LazyDependencyLoader)
 
 export default function DependenciesPage () {
   const [dependenciesData, setDependenciesData] = useState<EnhancedDependency[]>([])
@@ -122,8 +137,17 @@ export default function DependenciesPage () {
 
   // 选中的依赖列表
   const selectedDependencies = useMemo(() => {
-    return filteredDependencies.filter(dep => dep.isSelected)
-  }, [filteredDependencies])
+    return dependenciesData.filter(dep => dep.isSelected).map(dep => dep.name)
+  }, [dependenciesData])
+
+  // 版本变更映射 - 从依赖数据中提取
+  const pendingVersionChanges = useMemo(() => {
+    return Object.fromEntries(
+      dependenciesData
+        .filter(dep => dep.targetVersion !== null)
+        .map(dep => [dep.name, dep.targetVersion || ''])
+    )
+  }, [dependenciesData])
 
   // 打开设置模态框
   const openSettings = useCallback((dependency: Dependency) => {
@@ -162,12 +186,19 @@ export default function DependenciesPage () {
       // 处理别名依赖的版本格式
       const formattedVersion = formatVersionForAlias(selectedDependency, selectedVersion)
 
-      // 更新依赖数据
-      setDependenciesData(prev => prev.map(dep =>
-        dep.name === selectedDependency.name
-          ? { ...dep, targetVersion: formattedVersion, isSelected: true }
-          : dep
-      ))
+      // 更新依赖数据 - 使用函数式更新来确保状态更新准确
+      setDependenciesData(prev => {
+        const index = prev.findIndex(dep => dep.name === selectedDependency.name)
+        if (index === -1) return prev
+
+        const newArray = [...prev]
+        newArray[index] = {
+          ...newArray[index],
+          targetVersion: formattedVersion,
+          isSelected: true, // 自动选中该依赖
+        }
+        return newArray
+      })
 
       setIsSettingsOpen(false)
     }
@@ -175,28 +206,59 @@ export default function DependenciesPage () {
 
   // 更新依赖版本
   const updateDependencyVersion = useCallback((dependencyName: string, version: string) => {
-    // 更新依赖数据中的目标版本
-    setDependenciesData(prev => prev.map(dep =>
-      dep.name === dependencyName
-        ? { ...dep, targetVersion: formatVersionForAlias(dep, version) }
-        : dep
-    ))
+    // 更新依赖数据中的目标版本 - 使用函数式更新并只修改必要的部分
+    setDependenciesData(prev => {
+      const index = prev.findIndex(dep => dep.name === dependencyName)
+      if (index === -1) return prev
+
+      const newArray = [...prev]
+      newArray[index] = {
+        ...newArray[index],
+        targetVersion: formatVersionForAlias(newArray[index], version),
+      }
+      return newArray
+    })
   }, [formatVersionForAlias])
 
   // 选择单个依赖
   const handleSelectDependency = useCallback((name: string, isSelected: boolean) => {
-    setDependenciesData(prev => prev.map(dep =>
-      dep.name === name ? { ...dep, isSelected } : dep
-    ))
+    setDependenciesData(prev => {
+      const index = prev.findIndex(dep => dep.name === name)
+      if (index === -1) return prev
+
+      // 如果状态没有变化，直接返回原数组避免不必要的渲染
+      if (prev[index].isSelected === isSelected) return prev
+
+      const newArray = [...prev]
+      newArray[index] = { ...newArray[index], isSelected }
+      return newArray
+    })
   }, [])
 
   // 全选/取消全选
   const handleSelectAll = useCallback((isSelected: boolean) => {
-    setDependenciesData(prev => prev.map(dep => {
-      // 只更新当前过滤视图中的依赖
-      const isInFilteredView = filteredDependencies.some(fd => fd.name === dep.name)
-      return isInFilteredView ? { ...dep, isSelected } : dep
-    }))
+    setDependenciesData(prev => {
+      // 创建一个Set来加速查找
+      const filteredSet = new Set(filteredDependencies.map(dep => dep.name))
+
+      // 检查是否有需要变更的项
+      let hasChanges = false
+      for (const dep of prev) {
+        if (filteredSet.has(dep.name) && dep.isSelected !== isSelected) {
+          hasChanges = true
+          break
+        }
+      }
+
+      // 如果没有变化，直接返回原数据避免不必要的渲染
+      if (!hasChanges) return prev
+
+      // 只更新过滤视图中的依赖
+      return prev.map(dep => {
+        if (!filteredSet.has(dep.name)) return dep
+        return { ...dep, isSelected }
+      })
+    })
   }, [filteredDependencies])
 
   /**
@@ -477,7 +539,7 @@ export default function DependenciesPage () {
       </div>
 
       {/* 搜索和过滤 */}
-      <DependencyFilter
+      <MemoizedDependencyFilter
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         filterMode={filterMode}
@@ -485,7 +547,7 @@ export default function DependenciesPage () {
       />
 
       {/* 使用延迟加载组件优化依赖渲染 */}
-      <LazyDependencyLoader
+      <MemoizedLazyDependencyLoader
         dependencies={filteredDependencies}
         initialBatchSize={30}
         batchSize={20}
@@ -514,16 +576,10 @@ export default function DependenciesPage () {
             )}
 
             {/* 依赖表格 */}
-            <DependencyTable
+            <MemoizedDependencyTable
               dependencies={processedDependencies}
-              pendingChanges={Object.fromEntries(
-                dependenciesData
-                  .filter(dep => dep.targetVersion !== null)
-                  .map(dep => [dep.name, dep.targetVersion || ''])
-              )}
-              selectedDependencies={dependenciesData
-                .filter(dep => dep.isSelected)
-                .map(dep => dep.name)}
+              pendingChanges={pendingVersionChanges}
+              selectedDependencies={selectedDependencies}
               updateDependencyVersion={updateDependencyVersion}
               openSettings={openSettings}
               onSelectDependency={handleSelectDependency}
@@ -531,7 +587,7 @@ export default function DependenciesPage () {
             />
           </>
         )}
-      </LazyDependencyLoader>
+      </MemoizedLazyDependencyLoader>
 
       {/* 设置模态框 */}
       <DependencySettings

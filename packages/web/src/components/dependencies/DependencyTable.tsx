@@ -95,13 +95,35 @@ const DependencyRow = memo(({
     ? `package.json 中的值: ${dependency.packageValue}`
     : '未在 package.json 中定义'
 
+  // 处理选择状态变更，但不传递事件对象
+  const handleSelectionChange = useCallback(() => {
+    onSelectDependency(dependency.name, !isSelected)
+  }, [dependency.name, isSelected, onSelectDependency])
+
+  // 处理设置按钮点击，但不传递事件对象
+  const handleOpenSettings = useCallback(() => {
+    openSettings(dependency)
+  }, [dependency, openSettings])
+
+  // 处理版本选择变更
+  const handleVersionChange = useCallback((keys: any) => {
+    const selectedKey = Array.from(keys as Set<string>)[0] as string
+    if (selectedKey) {
+      updateDependencyVersion(dependency.name, selectedKey)
+      // 当切换版本时自动选中
+      if (!isSelected) {
+        onSelectDependency(dependency.name, true)
+      }
+    }
+  }, [dependency.name, isSelected, onSelectDependency, updateDependencyVersion])
+
   return (
     <div className='grid grid-cols-12 w-full border-b border-default-100/40 hover:bg-default-50/70 transition-colors'>
       {/* 选择框 */}
       <div className='py-3 md:py-4 px-2 md:px-4 text-sm text-center col-span-1' onClick={stopPropagation}>
         <Checkbox
           isSelected={isSelected}
-          onValueChange={(checked) => onSelectDependency(dependency.name, checked)}
+          onValueChange={handleSelectionChange}
           size='sm'
           aria-label={`选择 ${dependency.name}`}
           classNames={{
@@ -193,16 +215,7 @@ const DependencyRow = memo(({
       <div className='hidden md:block py-3 md:py-4 px-2 md:px-4 text-sm col-span-2' onClick={stopPropagation}>
         <Select
           selectedKeys={[displayedVersion]}
-          onSelectionChange={(keys) => {
-            const selectedKey = Array.from(keys)[0] as string
-            if (selectedKey) {
-              updateDependencyVersion(dependency.name, selectedKey)
-              // 当切换版本时自动选中
-              if (!isSelected) {
-                onSelectDependency(dependency.name, true)
-              }
-            }
-          }}
+          onSelectionChange={handleVersionChange}
           size='sm'
           radius='full'
           classNames={{
@@ -228,7 +241,7 @@ const DependencyRow = memo(({
           size='sm'
           variant='light'
           color='default'
-          onPress={() => openSettings(dependency)}
+          onPress={handleOpenSettings}
           className='opacity-70 hover:opacity-100 transition-opacity w-8 h-8 min-w-0 p-0'
         >
           <LuSettings size={14} className='md:hidden' />
@@ -237,6 +250,22 @@ const DependencyRow = memo(({
       </div>
     </div>
   )
+}, (prevProps, nextProps) => {
+  // 深度比较props，仅在以下情况重新渲染：
+  // 1. 选中状态改变
+  // 2. 待处理的版本变更影响当前依赖
+  // 3. 依赖对象本身变化（比较name和current属性足够）
+  const isSelectedChanged = prevProps.isSelected !== nextProps.isSelected
+
+  const prevPending = prevProps.pendingChanges[prevProps.dependency.name]
+  const nextPending = nextProps.pendingChanges[nextProps.dependency.name]
+  const isPendingChanged = prevPending !== nextPending
+
+  const isDependencyChanged =
+    prevProps.dependency.name !== nextProps.dependency.name ||
+    prevProps.dependency.current !== nextProps.dependency.current
+
+  return !(isSelectedChanged || isPendingChanged || isDependencyChanged)
 })
 
 DependencyRow.displayName = 'DependencyRow'
@@ -279,6 +308,13 @@ const DependencyTable = memo(({
     return window.innerWidth < 768 ? 3 : 5
   }, [])
 
+  // 为选中状态创建映射表以加速查找
+  const selectedMap = useMemo(() => {
+    const map = new Map<string, boolean>()
+    selectedDependencies.forEach(name => map.set(name, true))
+    return map
+  }, [selectedDependencies])
+
   // 优化版本的虚拟滚动配置
   const rowVirtualizer = useVirtualizer({
     count: dependencies.length,
@@ -291,6 +327,11 @@ const DependencyTable = memo(({
 
   // 获取虚拟化列表项 - 使用useMemo避免不必要的列表重建
   const virtualItems = rowVirtualizer.getVirtualItems()
+
+  // 处理全选变更
+  const handleSelectAll = useCallback((isSelected: boolean) => {
+    onSelectAll(isSelected)
+  }, [onSelectAll])
 
   // 计算容器高度 - 动态适应内容和可用空间
   const containerHeight = useMemo(() => {
@@ -314,7 +355,7 @@ const DependencyTable = memo(({
               <Checkbox
                 isSelected={allSelected}
                 isIndeterminate={someSelected}
-                onValueChange={onSelectAll}
+                onValueChange={handleSelectAll}
                 size='sm'
                 aria-label='全选'
                 classNames={{
@@ -381,6 +422,8 @@ const DependencyTable = memo(({
             {/* 根据虚拟化列表渲染可见行 */}
             {virtualItems.map((virtualItem) => {
               const dependency = dependencies[virtualItem.index]
+              const isSelected = selectedMap.has(dependency.name)
+
               return (
                 <div
                   key={virtualItem.key}
@@ -397,7 +440,7 @@ const DependencyTable = memo(({
                   <DependencyRow
                     dependency={dependency}
                     pendingChanges={pendingChanges}
-                    isSelected={selectedDependencies.includes(dependency.name)}
+                    isSelected={isSelected}
                     updateDependencyVersion={updateDependencyVersion}
                     openSettings={openSettings}
                     onSelectDependency={onSelectDependency}
