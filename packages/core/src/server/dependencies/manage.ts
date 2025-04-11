@@ -7,8 +7,8 @@ import type { TaskEntity, TaskType } from '@/types/task'
 
 /** 依赖管理基类 */
 interface DependenciesManageBase {
-  /** 操作类型：安装或删除 */
-  type: 'install' | 'remove'
+  /** 操作类型：安装、删除、添加 */
+  type: 'install' | 'remove' | 'add'
 }
 
 /** 安装依赖请求参数 */

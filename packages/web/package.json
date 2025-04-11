@@ -107,7 +107,7 @@
     "@types/three": "^0.173.0",
     "@vitejs/plugin-react-swc": "^3.8.1",
     "autoprefixer": "10.4.20",
-    "react-scan": "^0.1.4",
+    "react-scan": "^0.3.3",
     "sass": "^1.86.0",
     "typescript": "5.7.3",
     "vite": "^6.2.3",

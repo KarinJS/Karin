@@ -1,7 +1,6 @@
 import { defineConfig, normalizePath } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import tsconfigPaths from 'vite-tsconfig-paths'
-import reactScan from '@react-scan/vite-plugin-react-scan'
 import viteCompression from 'vite-plugin-compression'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import path from 'node:path'
@@ -16,7 +15,6 @@ export default defineConfig({
   plugins: [
     react(),
     tsconfigPaths(),
-    reactScan(),
     viteCompression({
       deleteOriginFile: true,
       verbose: false,
@@ -24,18 +22,18 @@ export default defineConfig({
       ext: '.br',
       compressionOptions: {
         params: {
-          [zlib.constants.BROTLI_PARAM_QUALITY]: 11
-        }
-      }
+          [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
+        },
+      },
     }),
     viteStaticCopy({
       targets: [
         {
           src: monacoEditorPath,
           dest: 'monaco-editor/min',
-        }
-      ]
-    })
+        },
+      ],
+    }),
   ],
   base: '/web/',
   build: {

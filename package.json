@@ -20,7 +20,6 @@
     "web": "pnpm --filter karin-webui run dev"
   },
   "devDependencies": {
-    "@react-scan/vite-plugin-react-scan": "^0.1.8",
     "@types/node": "^18.19.84",
     "eslint-plugin-prettier": "^5.2.5",
     "neostandard": "^0.12.1",
