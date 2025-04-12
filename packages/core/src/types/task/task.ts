@@ -119,3 +119,20 @@ export interface TaskFilter {
  * 前端请求插件安装参数接口
  */
 export type CreateTask = Omit<CreateTaskParams, 'createTime' | 'operatorIp'>
+
+/**
+ * 创建任务成功 返回任务ID
+ */
+export type CreateTaskResult = {
+  /** 操作成功 */
+  success: true
+  /** 任务ID */
+  taskId: string
+  /** 提示信息 */
+  message: string
+} | {
+  /** 操作失败 */
+  success: false
+  /** 错误信息 */
+  message: string
+}

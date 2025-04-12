@@ -84,14 +84,14 @@ export const update = async (
    */
   if (data.pluginType === 'npm') {
     return createUpdateTask(async (options, emitLog) => {
-      spawnProcess('pnpm', ['update', data.target, '@latest', '--save'], {}, emitLog)
+      await spawnProcess('pnpm', ['update', data.target, '@latest', '--save'], {}, emitLog)
       return true
     })
   }
 
   if (data.pluginType === 'git') {
     return createUpdateTask(async (options, emitLog) => {
-      spawnProcess('git', ['pull'], { cwd: path.join(karinPathPlugins, data.target) }, emitLog)
+      await spawnProcess('git', ['pull'], { cwd: path.join(karinPathPlugins, data.target) }, emitLog)
       return true
     })
   }
@@ -137,14 +137,14 @@ const updateAll = async (options: TaskEntity, log: (message: string) => void) =>
    * 更新所有NPM插件
    * @param npmPlugins - NPM插件列表
    */
-  const updateNpmPlugins = (npmPlugins: string[]) => {
+  const updateNpmPlugins = async (npmPlugins: string[]) => {
     if (npmPlugins.length === 0) return
 
     log(`* 开始更新NPM插件，共${npmPlugins.length}个`)
     const args = ['update', npmPlugins.join('@latest '), '--save']
     if (isWorkspace()) args.unshift('-w')
 
-    spawnProcess('pnpm', args, {}, (msg) => {
+    await spawnProcess('pnpm', args, {}, (msg) => {
       log(msg)
     })
   }

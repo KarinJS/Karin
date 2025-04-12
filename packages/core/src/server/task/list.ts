@@ -66,7 +66,7 @@ export const taskListRouter: RequestHandler = async (_req, res) => {
  * 返回SSE长连接，实时推送任务执行日志和状态
  */
 export const taskRunRouter: RequestHandler<null, null, { id: string }> = async (req, res) => {
-  const { id } = req.body
+  const { id } = req.query
   if (typeof id !== 'string' || id.length === 0) {
     return createServerErrorResponse(res, 'id 为空')
   }
@@ -77,7 +77,7 @@ export const taskRunRouter: RequestHandler<null, null, { id: string }> = async (
   }
 
   /** 检查任务是否存在 */
-  if (await taskDB.exists(task.type, task.target, ['running', 'pending'])) {
+  if (await taskDB.exists(task.type, task.target, ['running'])) {
     return createServerErrorResponse(res, '已有相同任务正在执行，请勿重复创建任务...')
   }
 

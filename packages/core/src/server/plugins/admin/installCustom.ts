@@ -67,7 +67,7 @@ const installNpm = async (
       if (isWorkspace()) args.unshift('-w')
       if (data.registry) args.push(`--registry=${data.registry}`)
 
-      spawnProcess('pnpm', args, {}, emitLog)
+      await spawnProcess('pnpm', args, {}, emitLog)
       return true
     }
   )
@@ -111,7 +111,7 @@ const installGit = async (
         data.repo,
         `./plugins/${pkgName}`,
       ]
-      spawnProcess('git', args, {}, emitLog)
+      await spawnProcess('git', args, {}, emitLog)
       return true
     }
   )

@@ -659,7 +659,10 @@ export default function DependenciesPage () {
       <InstallDependencyModal
         isOpen={isInstallModalOpen}
         onClose={() => setIsInstallModalOpen(false)}
-        onInstall={(params) => updateDependencies(params as UpdateParams)}
+        onSuccess={() => {
+          // 模拟安装成功后刷新依赖列表
+          fetchDependencies(true)
+        }}
       />
     </div>
   )

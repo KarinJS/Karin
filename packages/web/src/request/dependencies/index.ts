@@ -1,7 +1,7 @@
 import { api, request, getErrorMessage } from '@/request/base'
 
-import type { Dependency } from 'node-karin'
 import type { BaseResponse } from '@/request/base'
+import type { DependenciesManage, Dependency, CreateTaskResult } from 'node-karin'
 
 /**
  * 获取依赖列表
@@ -19,6 +19,23 @@ export const getDependencies = async (
     )
 
     return { success: true, data: result }
+  } catch (error) {
+    return { success: false, data: error, message: getErrorMessage(error) }
+  }
+}
+
+/**
+ * 依赖管理
+ */
+export const manageDependencies = async (params: DependenciesManage): Promise<BaseResponse<CreateTaskResult>> => {
+  try {
+    const result = await request.serverPost<CreateTaskResult, DependenciesManage>(api.manageDependencies, params)
+
+    if (result.success) {
+      return { success: true, data: result }
+    }
+
+    throw new Error(result.message)
   } catch (error) {
     return { success: false, data: error, message: getErrorMessage(error) }
   }

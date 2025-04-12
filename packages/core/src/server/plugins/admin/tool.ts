@@ -54,34 +54,41 @@ export const spawnProcess = (
   options: Parameters<typeof spawn>[2] = {},
   emitLog: (message: string) => void
 ) => {
-  const proc = spawn(command, args, {
-    shell: true,
-    cwd: options.cwd || process.cwd(),
-    env: {
-      ...process.env,
-      ...options.env,
-    },
-  })
+  return new Promise((resolve, reject) => {
+    const proc = spawn(command, args, {
+      shell: true,
+      cwd: options.cwd || process.cwd(),
+      env: {
+        ...process.env,
+        ...options.env,
+      },
+    })
 
-  proc.stdout.on('data', (data) => {
-    emitLog(data.toString())
-  })
+    proc.stdout.on('data', (data) => {
+      logger.debug(data.toString())
+      emitLog(data.toString())
+    })
 
-  proc.stderr.on('data', (data) => {
-    emitLog(data.toString())
-  })
+    proc.stderr.on('data', (data) => {
+      logger.debug(data.toString())
+      emitLog(data.toString())
+    })
 
-  proc.on('close', (code) => {
-    proc.kill()
-    emitLog(`执行完成，退出码: ${code}`)
-  })
+    proc.on('close', (code) => {
+      proc.kill()
+      emitLog(`执行完成，退出码: ${code}`)
+      resolve(true)
+    })
 
-  proc.on('error', (error) => {
-    emitLog(`执行失败: ${error.message}`)
-    logger.error(error)
-  })
+    proc.on('error', (error) => {
+      logger.debug(error)
+      emitLog(`执行失败: ${error.message}`)
+      logger.error(error)
+      resolve(error)
+    })
 
-  return proc
+    return proc
+  })
 }
 
 /**

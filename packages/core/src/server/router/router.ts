@@ -89,12 +89,14 @@ export const UPDATE_WEBUI_PLUGIN_VERSION_ROUTER = '/plugin/webui/update-version'
 
 /** 获取任务列表 */
 export const TASK_LIST_ROUTER = '/task/list'
-/** 新增任务 */
-export const TASK_ADD_ROUTER = '/task/add'
-/** 删除任务 */
-export const TASK_DELETE_ROUTER = '/task/delete'
+// /** 新增任务 */
+// export const TASK_ADD_ROUTER = '/task/add'
+/** 执行任务 */
+export const TASK_RUN_ROUTER = '/task/run'
 /** 获取任务日志 */
 export const TASK_LOGS_ROUTER = '/task/logs'
+/** 删除任务记录 */
+export const TASK_DELETE_ROUTER = '/task/delete_record'
 /** 插件管理 */
 export const PLUGIN_ADMIN_ROUTER = '/plugin/admin'
 

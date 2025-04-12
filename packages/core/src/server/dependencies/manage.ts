@@ -3,7 +3,7 @@ import { taskSystem as task } from '@/service/task'
 import { handleReturn, spawnProcess } from '../plugins/admin/tool'
 
 import type { RequestHandler, Response } from 'express'
-import type { TaskEntity, TaskType, DependenciesManage, UpgradeDependenciesParams, RemoveDependenciesParams } from '@/types'
+import type { TaskEntity, TaskType, DependenciesManage, UpgradeDependenciesParams, RemoveDependenciesParams, AddDependenciesParams } from '@/types'
 /**
  * 依赖管理路由
  *
@@ -18,8 +18,24 @@ import type { TaskEntity, TaskType, DependenciesManage, UpgradeDependenciesParam
 export const manageDependenciesRouter: RequestHandler<null, null, DependenciesManage> = async (req, res) => {
   const { type, data } = req.body
 
-  if (!type || !Array.isArray(data) || data.length === 0) {
-    return handleReturn(res, false, '无效请求：缺少必要参数')
+  if (type === 'add') {
+    /**
+     * @description 此处的响应格式符合以下格式
+     * @example
+     * ```json
+     * {
+     *   "success": true,
+     *   "message": "添加任务已创建",
+     *   "taskId": "1234567890"
+     * }
+     *
+     * {
+     *   "success": false,
+     *   "message": "添加失败"
+     * }
+     * ```
+     */
+    return await addDependencies(res, data, req.ip!)
   }
 
   if (type === 'upgrade') {
@@ -92,7 +108,7 @@ const installDependencies = async (
         const args = ['install', ...packagesToInstall.split(' ')]
         if (isWorkspace()) args.unshift('-w')
 
-        spawnProcess('pnpm', args, {}, emitLog)
+        await spawnProcess('pnpm', args, {}, emitLog)
         return true
       }
     )
@@ -131,7 +147,7 @@ const removeDependencies = async (
         const args = ['remove', ...packagesToRemove.split(' ')]
         if (isWorkspace()) args.unshift('-w')
 
-        spawnProcess('pnpm', args, {}, emitLog)
+        await spawnProcess('pnpm', args, {}, emitLog)
         return true
       }
     )
@@ -140,5 +156,51 @@ const removeDependencies = async (
   } catch (error) {
     logger.error('[removeDependencies]', error)
     return handleReturn(res, false, `删除失败: ${error instanceof Error ? error.message : String(error)}`)
+  }
+}
+
+/**
+ * 添加依赖
+ *
+ * @param res - 响应对象
+ * @param dependencies - 依赖列表
+ * @param ip - 操作者IP地址
+ */
+const addDependencies = async (
+  res: Response,
+  dependencies: AddDependenciesParams['data'],
+  ip: string
+) => {
+  try {
+    if (!dependencies.name || !dependencies.location) {
+      return handleReturn(res, false, '无效请求：缺少必要参数')
+    }
+
+    const id = await task.add(
+      {
+        type: 'add-dependencies' as TaskType,
+        name: '依赖新增',
+        target: dependencies.name,
+        operatorIp: ip,
+      },
+      async (_: TaskEntity, emitLog: (message: string) => void) => {
+        const args = ['add', dependencies.name]
+        if (dependencies.location === 'devDependencies') {
+          args.push('-D')
+        } else if (dependencies.location === 'optionalDependencies') {
+          args.push('-O')
+        }
+
+        if (isWorkspace()) args.unshift('-w')
+
+        await spawnProcess('pnpm', args, {}, emitLog)
+        return true
+      }
+    )
+
+    return handleReturn(res, true, '添加任务已创建', id)
+  } catch (error) {
+    logger.error('[addDependencies]', error)
+    return handleReturn(res, false, `添加失败: ${error instanceof Error ? error.message : String(error)}`)
   }
 }

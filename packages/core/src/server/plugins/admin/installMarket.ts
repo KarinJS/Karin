@@ -73,7 +73,7 @@ const installNpm = async (
       const args = ['add', data.target, '--save']
       if (isWorkspace()) args.unshift('-w')
 
-      spawnProcess('pnpm', args, {}, emitLog)
+      await spawnProcess('pnpm', args, {}, emitLog)
       return true
     }
   )
@@ -123,7 +123,7 @@ const installGit = async (
     },
     async (options: TaskEntity, emitLog: (message: string) => void) => {
       const args = ['clone', '--depth=1', repo.config.url!, `./plugins/${plugin.name}`]
-      spawnProcess('git', args, {}, emitLog)
+      await spawnProcess('git', args, {}, emitLog)
       return true
     }
   )

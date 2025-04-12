@@ -45,6 +45,10 @@ import {
   UPDATE_WEBUI_PLUGIN_VERSION_ROUTER,
   GET_DEPENDENCIES_LIST_ROUTER,
   MANAGE_DEPENDENCIES_ROUTER,
+  TASK_LIST_ROUTER,
+  TASK_RUN_ROUTER,
+  TASK_LOGS_ROUTER,
+  TASK_DELETE_ROUTER,
 } from './router'
 import { logMiddleware } from '../log'
 import { authMiddleware } from '../auth/middleware'
@@ -105,6 +109,7 @@ import {
 import { pluginAdminRouter } from '../plugins/admin/router'
 import { getDependenciesListRouter } from '../dependencies/list'
 import { manageDependenciesRouter } from '../dependencies/manage'
+import { taskListRouter, taskRunRouter, taskLogsRouter, taskDeleteRouter } from '../task/list'
 
 /**
  * karin内部路由
@@ -217,3 +222,12 @@ router.post(UPDATE_WEBUI_PLUGIN_VERSION_ROUTER, updateWebuiPluginVersion)
 router.post(GET_DEPENDENCIES_LIST_ROUTER, getDependenciesListRouter)
 /** 依赖管理（安装/删除） */
 router.post(MANAGE_DEPENDENCIES_ROUTER, manageDependenciesRouter)
+
+/** 获取任务列表 */
+router.post(TASK_LIST_ROUTER, taskListRouter)
+/** 执行任务 */
+router.get(TASK_RUN_ROUTER, taskRunRouter)
+/** 获取任务日志 */
+router.post(TASK_LOGS_ROUTER, taskLogsRouter)
+/** 删除任务记录 */
+router.post(TASK_DELETE_ROUTER, taskDeleteRouter)
