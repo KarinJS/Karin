@@ -3,37 +3,7 @@ import { taskSystem as task } from '@/service/task'
 import { handleReturn, spawnProcess } from '../plugins/admin/tool'
 
 import type { RequestHandler, Response } from 'express'
-import type { TaskEntity, TaskType } from '@/types/task'
-
-/** 依赖管理基类 */
-interface DependenciesManageBase {
-  /** 操作类型：安装、删除、添加 */
-  type: 'install' | 'remove' | 'add'
-}
-
-/** 安装依赖请求参数 */
-interface InstallDependenciesParams extends DependenciesManageBase {
-  type: 'install'
-  /** 依赖列表 */
-  dependencies: Array<{
-    /** 依赖名称 */
-    name: string
-    /** 依赖版本 */
-    version?: string
-  }>
-}
-
-/** 删除依赖请求参数 */
-interface RemoveDependenciesParams extends DependenciesManageBase {
-  type: 'remove'
-  /** 依赖列表 */
-  dependencies: string[]
-}
-/**
- * 依赖管理请求参数接口
- */
-export type DependenciesManage = InstallDependenciesParams | RemoveDependenciesParams
-
+import type { TaskEntity, TaskType, DependenciesManage, UpgradeDependenciesParams, RemoveDependenciesParams } from '@/types'
 /**
  * 依赖管理路由
  *
@@ -46,13 +16,13 @@ export type DependenciesManage = InstallDependenciesParams | RemoveDependenciesP
  * @returns 响应结果
  */
 export const manageDependenciesRouter: RequestHandler<null, null, DependenciesManage> = async (req, res) => {
-  const { type, dependencies } = req.body
+  const { type, data } = req.body
 
-  if (!type || !Array.isArray(dependencies) || dependencies.length === 0) {
+  if (!type || !Array.isArray(data) || data.length === 0) {
     return handleReturn(res, false, '无效请求：缺少必要参数')
   }
 
-  if (type === 'install') {
+  if (type === 'upgrade') {
     /**
      * @description 此处的响应格式符合以下格式
      * @example
@@ -69,7 +39,7 @@ export const manageDependenciesRouter: RequestHandler<null, null, DependenciesMa
      * }
      * ```
      */
-    return await installDependencies(res, dependencies, req.ip!)
+    return await installDependencies(res, data, req.ip!)
   }
 
   if (type === 'remove') {
@@ -89,7 +59,7 @@ export const manageDependenciesRouter: RequestHandler<null, null, DependenciesMa
      * }
      * ```
      */
-    return await removeDependencies(res, dependencies, req.ip!)
+    return await removeDependencies(res, data, req.ip!)
   }
 
   return handleReturn(res, false, '无效请求：不支持的操作类型')
@@ -105,7 +75,7 @@ export const manageDependenciesRouter: RequestHandler<null, null, DependenciesMa
  */
 const installDependencies = async (
   res: Response,
-  dependencies: InstallDependenciesParams['dependencies'],
+  dependencies: UpgradeDependenciesParams['data'],
   ip: string
 ) => {
   try {
@@ -144,7 +114,7 @@ const installDependencies = async (
  */
 const removeDependencies = async (
   res: Response,
-  dependencies: RemoveDependenciesParams['dependencies'],
+  dependencies: RemoveDependenciesParams['data'],
   ip: string
 ) => {
   try {

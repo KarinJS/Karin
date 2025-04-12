@@ -8,6 +8,8 @@ import { Card, CardBody } from '@heroui/card'
 import { useState, useCallback, useEffect } from 'react'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
 import { LuSearch, LuPackage, LuPlus, LuChevronLeft, LuChevronRight, LuX } from 'react-icons/lu'
+import { Radio, RadioGroup } from '@heroui/radio'
+import { AddDependenciesParams } from 'node-karin'
 
 /**
  * NPM版本查询响应接口
@@ -23,23 +25,13 @@ interface NpmVersionResponse {
   current: string
 }
 
-/**
- * 安装依赖接口
- */
-interface InstallParams {
-  /** 操作类型 */
-  type: 'add'
-  /** 需要安装的依赖数据 */
-  data: Array<{ name: string, version: string }>
-}
-
 interface InstallDependencyModalProps {
   /** 模态框是否打开 */
   isOpen: boolean
   /** 关闭模态框的回调 */
   onClose: () => void
   /** 安装依赖的回调 */
-  onInstall: (params: InstallParams) => void
+  onInstall: (params: AddDependenciesParams) => void
 }
 
 /**
@@ -66,6 +58,8 @@ const InstallDependencyModal = ({
   const [isLoading, setIsLoading] = useState(false)
   /** 是否已查询过 */
   const [hasSearched, setHasSearched] = useState(false)
+  /** 依赖安装位置 */
+  const [location, setLocation] = useState<'dependencies' | 'devDependencies' | 'optionalDependencies'>('dependencies')
 
   /** 每页显示版本数量 */
   const versionsPerPage = 25
@@ -80,6 +74,7 @@ const InstallDependencyModal = ({
     setCurrentPage(1)
     setIsLoading(false)
     setHasSearched(false)
+    setLocation('dependencies')
   }, [])
 
   /** 模态框关闭时重置状态 */
@@ -167,16 +162,15 @@ const InstallDependencyModal = ({
     /** 调用安装函数 */
     onInstall({
       type: 'add',
-      data: [
-        {
-          name: packageName.trim(),
-          version,
-        },
-      ],
+      data: {
+        name: packageName.trim(),
+        version,
+        location,
+      },
     })
 
     onClose()
-  }, [packageName, customVersion, selectedVersion, onInstall, onClose])
+  }, [packageName, customVersion, selectedVersion, location, onInstall, onClose])
 
   /**
    * 处理版本选择
@@ -227,14 +221,14 @@ const InstallDependencyModal = ({
       radius='lg'
       placement='center'
       classNames={{
-        base: 'border border-default-100 max-w-full mx-auto my-0',
+        base: 'border border-default-100 max-w-md mx-auto my-0',
         wrapper: 'items-center justify-center',
         header: 'border-b border-default-100 p-4',
         body: 'p-4',
         footer: 'border-t border-default-100 p-4',
         closeButton: 'hover:bg-default-100',
       }}
-      size='sm'
+      size='md'
     >
       <ModalContent>
         <ModalHeader className='flex flex-col gap-1 pb-3'>
@@ -285,6 +279,22 @@ const InstallDependencyModal = ({
                 color='primary'
                 className='font-light'
               />
+            </div>
+
+            {/* 依赖安装位置 */}
+            <div>
+              <label className='block text-sm text-default-700 mb-1'>安装位置</label>
+              <RadioGroup
+                value={location}
+                onValueChange={(value) => setLocation(value as 'dependencies' | 'devDependencies' | 'optionalDependencies')}
+                orientation='vertical'
+                size='sm'
+                className='space-y-2'
+              >
+                <Radio value='dependencies'>dependencies</Radio>
+                <Radio value='devDependencies'>devDependencies</Radio>
+                <Radio value='optionalDependencies'>optionalDependencies</Radio>
+              </RadioGroup>
             </div>
 
             {/* 版本列表卡片 */}
