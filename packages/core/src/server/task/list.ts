@@ -13,6 +13,12 @@ const taskStatusMap = {
   timeout: '超时(timeout)',
 }
 
+/** 活跃的SSE连接计数 */
+const activeConnections = new Map<string, { count: number, logs: string[], status: TaskStatus }>()
+
+/** 最大允许的同时连接数 */
+const MAX_CONNECTIONS = 3
+
 /**
  * 获取任务列表
  */
@@ -65,8 +71,10 @@ export const taskListRouter: RequestHandler = async (_req, res) => {
  * 执行任务
  * 返回SSE长连接，实时推送任务执行日志和状态
  */
-export const taskRunRouter: RequestHandler<null, null, { id: string }> = async (req, res) => {
-  const { id } = req.query
+export const taskRunRouter: RequestHandler<null, null, null, { id: string, lastIndex?: string }> = async (req, res) => {
+  const id = req.query.id
+  const lastIndex = req.query.lastIndex
+
   if (typeof id !== 'string' || id.length === 0) {
     return createServerErrorResponse(res, 'id 为空')
   }
@@ -76,18 +84,18 @@ export const taskRunRouter: RequestHandler<null, null, { id: string }> = async (
     return createServerErrorResponse(res, '任务不存在')
   }
 
+  /** 获取当前活跃连接总数 */
+  const totalConnections = [...activeConnections.values()].reduce((sum, connection) => sum + connection.count, 0)
+
+  /** 如果不是断线重连并且超过最大连接数，则拒绝新连接 */
+  if (!lastIndex && totalConnections >= MAX_CONNECTIONS) {
+    return createServerErrorResponse(res, `服务器负载过高，当前连接数已达上限(${MAX_CONNECTIONS})，请稍后重试`)
+  }
+
   /** 检查任务是否存在 */
   if (await taskDB.exists(task.type, task.target, ['running'])) {
     return createServerErrorResponse(res, '已有相同任务正在执行，请勿重复创建任务...')
   }
-
-  /** sse是否处于运行状态 */
-  let sseOpen = true
-
-  req.on('close', () => {
-    sseOpen = false
-    logger.debug(`[task][${id}] 客户端断开连接，任务继续在后台执行`)
-  })
 
   try {
     /** 设置SSE响应头 */
@@ -99,13 +107,69 @@ export const taskRunRouter: RequestHandler<null, null, { id: string }> = async (
     /** 立即发送响应头 */
     res.flushHeaders()
 
-    res.write('data: 任务创建成功: 开始执行...\n\n')
+    /** 获取或初始化任务连接信息 */
+    if (!activeConnections.has(id)) {
+      activeConnections.set(id, {
+        count: 0,
+        logs: [],
+        status: task.status,
+      })
+    }
+
+    /** 更新连接计数 */
+    const connectionInfo = activeConnections.get(id)!
+    connectionInfo.count++
+
+    /** 如果是重连请求，先发送之前缓存的日志 */
+    if (lastIndex && connectionInfo.logs.length > 0) {
+      const lastPos = parseInt(lastIndex, 10) || 0
+      if (lastPos < connectionInfo.logs.length) {
+        const missedLogs = connectionInfo.logs.slice(lastPos)
+        missedLogs.forEach(log => res.write(`data: ${log}\n\n`))
+      }
+    } else {
+      res.write('data: 任务创建成功: 开始执行...\n\n')
+    }
+
+    /** sse是否处于运行状态 */
+    let sseOpen = true
+
+    req.on('close', () => {
+      sseOpen = false
+      /** 更新连接计数 */
+      if (activeConnections.has(id)) {
+        const info = activeConnections.get(id)!
+        info.count = Math.max(0, info.count - 1)
+
+        /** 如果没有活跃连接且任务已完成，清理缓存 */
+        if (info.count === 0 &&
+          info.status !== 'running' &&
+          info.status !== 'pending') {
+          activeConnections.delete(id)
+        }
+      }
+      logger.debug(`[task][${id}] 客户端断开连接，当前连接数: ${activeConnections.get(id)?.count || 0}`)
+    })
+
     taskDB.run(
       id,
-      (log: string) => sseOpen && res.write(`data: ${log}\n\n`),
+      (log: string) => {
+        /** 缓存日志 */
+        if (activeConnections.has(id)) {
+          activeConnections.get(id)!.logs.push(log)
+        }
+        /** 发送日志到客户端 */
+        sseOpen && res.write(`data: ${log}\n\n`)
+      },
       (status: TaskStatus) => {
         const tips = taskStatusMap[status]
         logger.debug(`[task][${id}] 状态变更: ${tips}`)
+
+        /** 更新任务状态 */
+        if (activeConnections.has(id)) {
+          activeConnections.get(id)!.status = status
+        }
+
         if (!sseOpen) {
           logger.debug(`[task][${id}] sse已关闭 停止发送日志`)
           return
@@ -114,14 +178,24 @@ export const taskRunRouter: RequestHandler<null, null, { id: string }> = async (
         res.write(`data: 任务状态变更: ${tips}\n\n`)
         if (status !== 'running' && status !== 'pending') {
           res.write('data: 任务执行完成，结束连接\n\n')
-          res.end()
+          res.end('data: end\n\n')
+
+          /** 如果没有活跃连接，清理缓存 */
+          if (activeConnections.has(id) && activeConnections.get(id)!.count <= 1) {
+            activeConnections.delete(id)
+          }
         }
       }
     )
   } catch (error) {
+    /** 更新连接计数 */
+    if (activeConnections.has(id)) {
+      activeConnections.get(id)!.count = Math.max(0, activeConnections.get(id)!.count - 1)
+    }
+
     if (res.headersSent) {
       res.write(`data: ${error instanceof Error ? error.message : String(error)} \n\n`)
-      return res.end()
+      return res.end('data: end\n\n')
     }
 
     createServerErrorResponse(res, error instanceof Error ? error.message : String(error))
@@ -186,7 +260,7 @@ export const taskLogsRouter: RequestHandler<{ id: string }> = async (req, res) =
         if (!info) {
           timer && clearInterval(timer)
           sseOpen && res.write('data: 任务不存在，无法获取任务详情 \n\n')
-          return res.end()
+          return res.end('data: end\n\n')
         }
 
         /** 如果状态发生变化 则说明任务已结束 */
@@ -194,7 +268,7 @@ export const taskLogsRouter: RequestHandler<{ id: string }> = async (req, res) =
           const logs = info.logs.split('\n')
           logs.forEach(log => res.write(`data: ${log} \n\n`))
           timer && clearInterval(timer)
-          return res.end()
+          return res.end('data: end\n\n')
         }
 
         sseOpen && res.write('data: 任务执行中，请耐心等待... \n\n')
@@ -202,7 +276,7 @@ export const taskLogsRouter: RequestHandler<{ id: string }> = async (req, res) =
         logger.error(new Error('sse获取日志失败', { cause: error }))
         timer && clearInterval(timer)
         sseOpen && res.write('data: 获取日志失败 \n\n')
-        return res.end()
+        return res.end('data: end\n\n')
       }
     }, 1000)
   } catch (error) {

@@ -9,8 +9,9 @@ import { useState, useCallback, useEffect } from 'react'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
 import { LuSearch, LuPackage, LuPlus, LuChevronLeft, LuChevronRight, LuX } from 'react-icons/lu'
 import { Radio, RadioGroup } from '@heroui/radio'
-import { manageDependencies } from '@/request/dependencies'
 import TaskLogModal from './TaskLogModal'
+import { manageDependencies } from '@/request/dependencies'
+import { getErrorMessage } from '@/request/base'
 import type { AddDependenciesParams } from 'node-karin'
 
 /**
@@ -66,8 +67,6 @@ const InstallDependencyModal = ({
   const [isLogModalOpen, setIsLogModalOpen] = useState(false)
   /** 任务ID */
   const [taskId, setTaskId] = useState<string>('')
-  /** 任务名称 */
-  const [taskName, setTaskName] = useState<string>('')
   /** 初始日志 */
   const [initialLogs, setInitialLogs] = useState<string[]>([])
   /** 安装中 */
@@ -171,59 +170,58 @@ const InstallDependencyModal = ({
     /** 如果没有选择版本也没有输入自定义版本，则使用 latest */
     const version = customVersion.trim() || selectedVersion || 'latest'
 
-    /** 安装参数 */
-    const params: AddDependenciesParams = {
-      type: 'add',
-      data: {
-        name: packageName.trim(),
-        version,
-        location,
-      },
-    }
-
     try {
       setIsInstalling(true)
+      setTaskId('')
+      setInitialLogs([])
+
+      /** 构建安装参数 */
+      const params: AddDependenciesParams = {
+        type: 'add',
+        data: {
+          name: packageName.trim(),
+          location,
+          version,
+        },
+      }
 
       /** 初始日志 */
-      setInitialLogs([
-        `开始安装依赖: ${packageName}@${version}`,
+      const logs = [
+        `开始安装依赖: ${packageName.trim()}@${version}`,
         `安装位置: ${location}`,
         '正在创建任务...',
-      ])
+      ]
 
-      /** 创建任务 */
+      /** 发起请求 */
       const response = await manageDependencies(params)
 
-      if (response.success && response.data && response.data.success) {
-        const { taskId } = response.data
+      if (!response.success || !response.data || !response.data.success) {
+        toast.error('安装依赖失败')
+        return
+      }
 
-        /** 设置任务信息 */
-        setTaskId(taskId)
-        setTaskName(`安装依赖: ${packageName}`)
+      /** 设置任务信息 */
+      setTaskId(response.data.taskId)
+      setInitialLogs([
+        ...logs,
+        '任务创建成功!',
+        `任务ID: ${response.data.taskId}`,
+        '正在连接任务执行日志...',
+      ])
 
-        /** 添加初始日志 */
-        setInitialLogs(prev => [
-          ...prev,
-          '任务创建成功!',
-          `任务ID: ${taskId}`,
-          `任务名称: ${packageName}`,
-          '正在连接任务执行日志...',
-        ])
+      /** 打开日志模态框 */
+      setIsLogModalOpen(true)
 
-        /** 打开日志模态框 */
-        setIsLogModalOpen(true)
+      /** 关闭安装模态框 */
+      onClose()
 
-        /** 关闭安装模态框 */
-        onClose()
-
-        /** 调用成功回调 */
-        onSuccess?.()
-      } else {
-        toast.error(`创建任务失败: ${response.data || '未知错误'}`)
+      /** 安装成功后刷新依赖列表 */
+      if (onSuccess) {
+        setTimeout(onSuccess, 500)
       }
     } catch (error) {
       console.error('安装依赖失败:', error)
-      toast.error(`安装依赖失败: ${error instanceof Error ? error.message : '未知错误'}`)
+      toast.error(`安装依赖失败: ${getErrorMessage(error)}`)
     } finally {
       setIsInstalling(false)
     }
@@ -273,7 +271,12 @@ const InstallDependencyModal = ({
   /** 处理日志模态框关闭 */
   const handleLogModalClose = useCallback(() => {
     setIsLogModalOpen(false)
-  }, [])
+    setTaskId('')
+    setInitialLogs([])
+    if (onSuccess) {
+      onSuccess()
+    }
+  }, [onSuccess])
 
   return (
     <>
@@ -516,7 +519,7 @@ const InstallDependencyModal = ({
         isOpen={isLogModalOpen}
         onClose={handleLogModalClose}
         taskId={taskId}
-        taskName={taskName}
+        taskName={`安装依赖: ${packageName}`}
         initialLogs={initialLogs}
       />
     </>

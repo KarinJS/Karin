@@ -4,7 +4,7 @@ import {
   WS_CLOSE_ONEBOT,
   WS_CLOSE_PUPPETEER,
   WS_CONNECTION_ONEBOT,
-  WS_CONNECTION_PUPPETEER
+  WS_CONNECTION_PUPPETEER,
 } from '@/utils/fs/key'
 
 import type { SystemStatus } from '@/types/system/status'
@@ -102,6 +102,6 @@ export const systemStatusRealTimeHandler: RequestHandler = async (req, res) => {
   statusListener.on('statusUpdate', sendStatus)
   req.on('close', () => {
     statusListener.off('statusUpdate', sendStatus)
-    res.end()
+    res.end('data: end\n\n')
   })
 }

@@ -9,6 +9,9 @@ import { eventSourcePolyfill } from '@/lib/request'
 import { toast } from 'react-hot-toast'
 import { api } from '@/request/base'
 
+/** 前端日志前缀 */
+const CLIENT_LOG_PREFIX = '[webui] '
+
 /**
  * 任务日志模态框属性
  */
@@ -43,10 +46,132 @@ const TaskLogModal = ({
   const [isConnecting, setIsConnecting] = useState(false)
   /** 是否已完成 */
   const [, setIsCompleted] = useState(false)
+  /** 已接收的日志索引 */
+  const [logIndex, setLogIndex] = useState(0)
+  /** 是否尝试重连 */
+  const [isReconnecting, setIsReconnecting] = useState(false)
+  /** 是否需要重连 */
+  const [needReconnect, setNeedReconnect] = useState(false)
   /** 事件源引用 */
   const eventSourceRef = useRef<EventSource | null>(null)
   /** 日志容器引用 */
   const logContainerRef = useRef<HTMLDivElement>(null)
+  /** 保存上一次的任务ID */
+  const prevTaskIdRef = useRef<string>('')
+
+  /**
+   * 重置所有状态
+   */
+  const resetState = () => {
+    setLogs([])
+    setLogIndex(0)
+    setIsConnecting(false)
+    setIsCompleted(false)
+    setIsReconnecting(false)
+    setNeedReconnect(false)
+
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close()
+      eventSourceRef.current = null
+    }
+  }
+
+  /**
+   * 当任务ID变化时，重置状态并设置初始日志
+   */
+  useEffect(() => {
+    if (taskId && taskId !== prevTaskIdRef.current) {
+      resetState()
+      setLogs(initialLogs || [])
+      prevTaskIdRef.current = taskId
+    }
+  }, [taskId, initialLogs])
+
+  /**
+   * 当模态框打开时，重置状态并设置初始日志
+   */
+  useEffect(() => {
+    if (isOpen) {
+      // 设置初始日志，但不重置连接状态
+      setLogs(initialLogs || [])
+    } else {
+      // 模态框关闭时完全重置状态
+      resetState()
+      prevTaskIdRef.current = ''
+    }
+  }, [isOpen, initialLogs])
+
+  /**
+   * 连接任务日志
+   */
+  const connectTaskLogs = () => {
+    if (!taskId) return null
+
+    setIsConnecting(true)
+    setIsCompleted(false)
+
+    /** 构建连接URL，断线重连时附加上次接收的日志索引 */
+    const url = needReconnect
+      ? `${api.runTask}?id=${taskId}&lastIndex=${logIndex}`
+      : `${api.runTask}?id=${taskId}`
+
+    /** 连接任务执行端点 */
+    const eventSource = eventSourcePolyfill(url)
+
+    /** 连接成功 */
+    eventSource.onopen = () => {
+      setIsConnecting(false)
+      setIsReconnecting(false)
+      setNeedReconnect(false)
+      if (!needReconnect) {
+        setLogs(prevLogs => [...prevLogs, `${CLIENT_LOG_PREFIX}连接已建立，正在接收任务日志...`])
+      } else {
+        setLogs(prevLogs => [...prevLogs, `${CLIENT_LOG_PREFIX}已重新连接，继续接收任务日志...`])
+      }
+    }
+
+    /** 接收消息 */
+    eventSource.onmessage = (event) => {
+      const data = event.data
+      setLogIndex(prevIndex => prevIndex + 1)
+      setLogs(prevLogs => [...prevLogs, data])
+
+      /** 滚动到底部 */
+      if (logContainerRef.current) {
+        setTimeout(() => {
+          if (logContainerRef.current) {
+            logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight
+          }
+        }, 0)
+      }
+
+      /** 判断任务是否完成 */
+      if (data === 'end') {
+        setIsCompleted(true)
+      }
+    }
+
+    /** 发生错误或连接断开 */
+    eventSource.onerror = (error) => {
+      /** 检查连接状态 */
+      if (eventSource.readyState === EventSource.CLOSED) {
+        setLogs(prevLogs => [...prevLogs, `${CLIENT_LOG_PREFIX}连接已关闭`])
+        setNeedReconnect(true)
+      } else {
+        setLogs(prevLogs => [...prevLogs, `${CLIENT_LOG_PREFIX}连接发生错误`])
+        setNeedReconnect(true)
+        console.error('EventSource 错误:', error)
+      }
+
+      setIsCompleted(true)
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close()
+        eventSourceRef.current = null
+      }
+    }
+
+    return eventSource
+  }
 
   /** 连接任务日志 */
   useEffect(() => {
@@ -60,54 +185,26 @@ const TaskLogModal = ({
       }
     }
 
-    setIsConnecting(true)
-    setIsCompleted(false)
-
-    /** 连接任务执行端点 */
-    const eventSource = eventSourcePolyfill(`${api.runTask}?id=${taskId}`)
-
-    eventSourceRef.current = eventSource
-
-    /** 连接成功 */
-    eventSource.onopen = () => {
-      setIsConnecting(false)
-      setLogs(prevLogs => [...prevLogs, '连接已建立，正在接收任务日志...'])
-    }
-
-    /** 接收消息 */
-    eventSource.onmessage = (event) => {
-      const data = event.data
-      setLogs(prevLogs => [...prevLogs, data])
-
-      /** 滚动到底部 */
-      if (logContainerRef.current) {
-        setTimeout(() => {
-          if (logContainerRef.current) {
-            logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight
-          }
-        }, 0)
-      }
-
-      /** 判断任务是否完成 */
-      if (
-        data.includes('任务执行完成') ||
-        (data.includes('任务状态变更') &&
-          (data.includes('成功') || data.includes('失败') || data.includes('已取消') || data.includes('超时')))
-      ) {
-        setIsCompleted(true)
-      }
-    }
-
-    /** 发生错误 */
-    eventSource.onerror = (error) => {
-      setLogs(prevLogs => [...prevLogs, '连接出错或已关闭'])
-      setIsCompleted(true)
-      console.error('EventSource 错误:', error)
-      cleanup()
+    // 避免重复连接同一个任务
+    if (!eventSourceRef.current) {
+      eventSourceRef.current = connectTaskLogs()
     }
 
     return cleanup
   }, [isOpen, taskId])
+
+  /** 处理断线重连 */
+  useEffect(() => {
+    if (needReconnect && !isReconnecting && isOpen && taskId) {
+      setIsReconnecting(true)
+      const reconnectTimer = setTimeout(() => {
+        setLogs(prevLogs => [...prevLogs, `${CLIENT_LOG_PREFIX}尝试重新连接...`])
+        eventSourceRef.current = connectTaskLogs()
+      }, 3000)
+
+      return () => clearTimeout(reconnectTimer)
+    }
+  }, [needReconnect, isReconnecting, isOpen, taskId])
 
   /** 复制日志到剪贴板 */
   const handleCopyLogs = () => {
@@ -144,7 +241,7 @@ const TaskLogModal = ({
             <div className='flex items-center gap-2'>
               <LuActivity size={20} className='text-primary-500' />
               <div className='text-lg font-light tracking-tight'>{taskName}</div>
-              {isConnecting && <Spinner size='sm' color='primary' />}
+              {(isConnecting || isReconnecting) && <Spinner size='sm' color='primary' />}
             </div>
             <div className='text-xs text-default-500'>
               {taskId && <span>任务ID: {taskId}</span>}
