@@ -296,21 +296,33 @@ export const PluginManagePage = (): ReactElement => {
                     </div>
                   </TableCell>
                   <TableCell className='hidden sm:table-cell text-center'>
-                    <Chip size='sm' variant='flat' color='primary' className='bg-primary-100/50'>
-                      {plugin.version}
-                    </Chip>
-                  </TableCell>
-                  <TableCell className='hidden sm:table-cell text-center'>
-                    {plugin.availableVersion
+                    {plugin.type === 'app'
                       ? (
-                        <Chip size='sm' variant='flat' color='warning' className='bg-warning-100/50'>
-                          {plugin.availableVersion}
-                        </Chip>
+                        <span className='text-xs text-default-500'>-</span>
                       )
                       : (
-                        <Chip size='sm' variant='flat' color='success' className='bg-success-100/50'>
+                        <Chip size='sm' variant='flat' color='primary' className='bg-primary-100/50'>
                           {plugin.version}
                         </Chip>
+                      )}
+                  </TableCell>
+                  <TableCell className='hidden sm:table-cell text-center'>
+                    {plugin.type === 'app'
+                      ? (
+                        <span className='text-xs text-default-500'>-</span>
+                      )
+                      : (
+                        plugin.availableVersion
+                          ? (
+                            <Chip size='sm' variant='flat' color='warning' className='bg-warning-100/50'>
+                              {plugin.availableVersion}
+                            </Chip>
+                          )
+                          : (
+                            <Chip size='sm' variant='flat' color='success' className='bg-success-100/50'>
+                              {plugin.version}
+                            </Chip>
+                          )
                       )}
                   </TableCell>
                   <TableCell className='hidden sm:table-cell text-center'>
@@ -345,28 +357,45 @@ export const PluginManagePage = (): ReactElement => {
                   </TableCell>
                   <TableCell className='text-center'>
                     <div className='flex justify-center items-center'>
-                      <div
-                        className='inline-flex items-center justify-center w-20 h-6 text-xs rounded-md border' style={{
-                          backgroundColor: statusConfig.color === 'success'
-                            ? 'rgba(34, 197, 94, 0.08)'
-                            : statusConfig.color === 'warning'
-                              ? 'rgba(234, 179, 8, 0.08)'
-                              : 'rgba(161, 161, 170, 0.08)',
-                          color: statusConfig.color === 'success'
-                            ? 'rgb(22, 163, 74)'
-                            : statusConfig.color === 'warning'
-                              ? 'rgb(202, 138, 4)'
-                              : 'rgb(113, 113, 122)',
-                          borderColor: statusConfig.color === 'success'
-                            ? 'rgba(34, 197, 94, 0.2)'
-                            : statusConfig.color === 'warning'
-                              ? 'rgba(234, 179, 8, 0.2)'
-                              : 'rgba(161, 161, 170, 0.2)',
-                        }}
-                      >
-                        {statusConfig.icon}
-                        <span className='font-normal'>{statusConfig.text}</span>
-                      </div>
+                      {plugin.type === 'app'
+                        ? (
+                          <div
+                            className='inline-flex items-center justify-center w-20 h-6 text-xs rounded-md border'
+                            style={{
+                              backgroundColor: 'rgba(34, 197, 94, 0.08)',
+                              color: 'rgb(22, 163, 74)',
+                              borderColor: 'rgba(34, 197, 94, 0.2)',
+                            }}
+                          >
+                            <TbCircleCheck className='text-xs mr-1' />
+                            <span className='font-normal'>最新</span>
+                          </div>
+                        )
+                        : (
+                          <div
+                            className='inline-flex items-center justify-center w-20 h-6 text-xs rounded-md border'
+                            style={{
+                              backgroundColor: statusConfig.color === 'success'
+                                ? 'rgba(34, 197, 94, 0.08)'
+                                : statusConfig.color === 'warning'
+                                  ? 'rgba(234, 179, 8, 0.08)'
+                                  : 'rgba(161, 161, 170, 0.08)',
+                              color: statusConfig.color === 'success'
+                                ? 'rgb(22, 163, 74)'
+                                : statusConfig.color === 'warning'
+                                  ? 'rgb(202, 138, 4)'
+                                  : 'rgb(113, 113, 122)',
+                              borderColor: statusConfig.color === 'success'
+                                ? 'rgba(34, 197, 94, 0.2)'
+                                : statusConfig.color === 'warning'
+                                  ? 'rgba(234, 179, 8, 0.2)'
+                                  : 'rgba(161, 161, 170, 0.2)',
+                            }}
+                          >
+                            {statusConfig.icon}
+                            <span className='font-normal'>{statusConfig.text}</span>
+                          </div>
+                        )}
                     </div>
                   </TableCell>
                   <TableCell className='text-center'>
