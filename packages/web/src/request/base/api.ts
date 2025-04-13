@@ -9,6 +9,14 @@ export const api = {
   getDependencies: `${BASE_ROUTER}/dependencies/list`,
   /** 依赖管理 POST */
   manageDependencies: `${BASE_ROUTER}/dependencies/manage`,
+  /** 获取.npmrc文件列表 POST */
+  getNpmrcList: `${BASE_ROUTER}/dependencies/npmrc/list`,
+  /** 获取.npmrc文件内容 POST */
+  getNpmrcContent: `${BASE_ROUTER}/dependencies/npmrc/get`,
+  /** 获取npm registry、proxy、https-proxy配置 POST */
+  getNpmBaseConfig: `${BASE_ROUTER}/dependencies/npm/base`,
+  /** 保存npmrc文件 POST */
+  saveNpmrc: `${BASE_ROUTER}/dependencies/npmrc/save`,
   /** 执行任务 GET */
   runTask: `${BASE_ROUTER}/task/run`,
   /** 获取任务列表 POST */

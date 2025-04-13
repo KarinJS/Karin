@@ -59,9 +59,9 @@ export const getDependenciesListRouter: RequestHandler = async (req, res) => {
     })
 
     /**
-   * 依赖类型权重映射
-   * 权重越小优先级越高
-   */
+     * 依赖类型权重映射
+     * 权重越小优先级越高
+     */
     const typeWeightMap: Record<Dependency['type'], number> = {
       dependencies: 1, // 生产依赖
       devDependencies: 2, // 开发依赖

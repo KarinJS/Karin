@@ -104,3 +104,11 @@ export const PLUGIN_ADMIN_ROUTER = '/plugin/admin'
 export const GET_DEPENDENCIES_LIST_ROUTER = '/dependencies/list'
 /** 依赖管理路由 */
 export const MANAGE_DEPENDENCIES_ROUTER = '/dependencies/manage'
+/** 获取.npmrc文件列表 */
+export const GET_NPMRC_LIST_ROUTER = '/dependencies/npmrc/list'
+/** 获取npm config文件内容 */
+export const GET_NPM_CONFIG_ROUTER = '/dependencies/npmrc/get'
+/** 获取npm registry、proxy、https-proxy配置 */
+export const GET_NPM_BASE_CONFIG_ROUTER = '/dependencies/npm/base'
+/** 保存npmrc文件 */
+export const SAVE_NPMRC_ROUTER = '/dependencies/npmrc/save'

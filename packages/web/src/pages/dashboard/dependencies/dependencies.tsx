@@ -8,6 +8,7 @@ import {
   DependencyFilter,
   LazyDependencyLoader,
   InstallDependencyModal,
+  NpmConfigModal,
 } from '../../../components/dependencies'
 import { StatCard } from '../../../components/card'
 import TaskLogModal from '../../../components/dependencies/TaskLogModal'
@@ -48,6 +49,8 @@ export default function DependenciesPage () {
   const [selectedVersion, setSelectedVersion] = useState<string>('')
   /** 安装模态框状态 */
   const [isInstallModalOpen, setIsInstallModalOpen] = useState<boolean>(false)
+  /** npm配置模态框状态 */
+  const [isNpmConfigModalOpen, setIsNpmConfigModalOpen] = useState<boolean>(false)
 
   // 使用依赖管理Hook
   const {
@@ -261,6 +264,20 @@ export default function DependenciesPage () {
     </>
   ), [stats, filterMode, setFilterMode, renderIcon])
 
+  /**
+   * 打开npm配置模态框
+   */
+  const openNpmConfigModal = useCallback(() => {
+    setIsNpmConfigModalOpen(true)
+  }, [])
+
+  /**
+   * 关闭npm配置模态框
+   */
+  const closeNpmConfigModal = useCallback(() => {
+    setIsNpmConfigModalOpen(false)
+  }, [])
+
   return (
     <div className='w-full p-4 sm:p-6 md:p-8 bg-background'>
       {/* 页面标题和信息卡片 */}
@@ -286,6 +303,7 @@ export default function DependenciesPage () {
             onOpenInstallModal={() => setIsInstallModalOpen(true)}
             onUpdate={handleUpdateClick}
             onUninstall={handleUninstallClick}
+            onOpenNpmConfigModal={openNpmConfigModal}
           />
         </div>
 
@@ -375,6 +393,12 @@ export default function DependenciesPage () {
         taskId={taskId}
         taskName={taskName}
         initialLogs={initialLogs}
+      />
+
+      {/* npm配置模态框 */}
+      <NpmConfigModal
+        isOpen={isNpmConfigModalOpen}
+        onClose={closeNpmConfigModal}
       />
     </div>
   )

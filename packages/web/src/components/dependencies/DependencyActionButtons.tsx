@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { Button } from '@heroui/button'
-import { IoRefresh } from 'react-icons/io5'
-import { LuDownload, LuTrash2, LuPlus } from 'react-icons/lu'
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/dropdown'
+import { LuDownload, LuTrash2, LuSettings, LuRefreshCw, LuPackagePlus, LuGlobe, LuSettings2 } from 'react-icons/lu'
 import type { FilterMode } from '@/pages/dashboard/dependencies/dependencies.utils'
 
 interface DependencyActionButtonsProps {
@@ -21,6 +21,8 @@ interface DependencyActionButtonsProps {
   onUpdate: () => void
   /** 卸载依赖回调 */
   onUninstall: () => void
+  /** 打开npm配置模态框回调 */
+  onOpenNpmConfigModal: () => void
 }
 
 /**
@@ -35,34 +37,10 @@ const DependencyActionButtons = ({
   onOpenInstallModal,
   onUpdate,
   onUninstall,
+  onOpenNpmConfigModal,
 }: DependencyActionButtonsProps) => {
   return (
     <div className='flex flex-wrap items-center gap-2 md:gap-3'>
-      <Button
-        color='default'
-        startContent={<IoRefresh size={14} className='text-default-500' />}
-        isLoading={isLoading}
-        onPress={onRefresh}
-        size='sm'
-        radius='full'
-        variant='light'
-        className='font-normal'
-      >
-        刷新
-      </Button>
-
-      <Button
-        color='primary'
-        startContent={<LuPlus size={14} />}
-        onPress={onOpenInstallModal}
-        size='sm'
-        radius='full'
-        variant='flat'
-        className='font-normal'
-      >
-        新增依赖
-      </Button>
-
       <Button
         color='success'
         startContent={<LuDownload size={14} />}
@@ -90,6 +68,53 @@ const DependencyActionButtons = ({
       >
         卸载依赖
       </Button>
+
+      <Dropdown>
+        <DropdownTrigger>
+          <Button
+            color='secondary'
+            startContent={<LuSettings size={14} className='text-secondary-500' />}
+            size='sm'
+            radius='full'
+            variant='flat'
+            className='font-normal'
+          >
+            选项
+          </Button>
+        </DropdownTrigger>
+        <DropdownMenu aria-label='依赖管理选项' variant='flat'>
+          <DropdownItem
+            key='refresh'
+            startContent={<LuRefreshCw size={14} className='text-blue-500' />}
+            onPress={onRefresh}
+            isDisabled={isLoading || isOperating}
+          >
+            刷新依赖
+          </DropdownItem>
+          <DropdownItem
+            key='install'
+            startContent={<LuPackagePlus size={14} className='text-primary-500' />}
+            onPress={onOpenInstallModal}
+          >
+            新增依赖
+          </DropdownItem>
+          <DropdownItem
+            key='config'
+            startContent={<LuSettings2 size={14} className='text-warning-500' />}
+            onPress={onOpenNpmConfigModal}
+          >
+            npm配置管理
+          </DropdownItem>
+          <DropdownItem
+            key='global'
+            startContent={<LuGlobe size={14} className='text-success-500' />}
+            isDisabled
+            description='即将到来...'
+          >
+            全局依赖管理
+          </DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
     </div>
   )
 }

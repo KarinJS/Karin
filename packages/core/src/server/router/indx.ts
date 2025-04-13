@@ -49,6 +49,10 @@ import {
   TASK_RUN_ROUTER,
   TASK_LOGS_ROUTER,
   TASK_DELETE_ROUTER,
+  GET_NPMRC_LIST_ROUTER,
+  GET_NPM_CONFIG_ROUTER,
+  GET_NPM_BASE_CONFIG_ROUTER,
+  SAVE_NPMRC_ROUTER,
 } from './router'
 import { logMiddleware } from '../log'
 import { authMiddleware } from '../auth/middleware'
@@ -110,6 +114,7 @@ import { pluginAdminRouter } from '../plugins/admin/router'
 import { getDependenciesListRouter } from '../dependencies/list'
 import { manageDependenciesRouter } from '../dependencies/manage'
 import { taskListRouter, taskRunRouter, taskLogsRouter, taskDeleteRouter } from '../task/list'
+import { getNpmBaseConfigRouter, getNpmrcContentRouter, getNpmrcListRouter, saveNpmrcRouter } from '../dependencies/config'
 
 /**
  * karin内部路由
@@ -222,6 +227,14 @@ router.post(UPDATE_WEBUI_PLUGIN_VERSION_ROUTER, updateWebuiPluginVersion)
 router.post(GET_DEPENDENCIES_LIST_ROUTER, getDependenciesListRouter)
 /** 依赖管理（安装/删除） */
 router.post(MANAGE_DEPENDENCIES_ROUTER, manageDependenciesRouter)
+/** 获取.npmrc文件列表 */
+router.post(GET_NPMRC_LIST_ROUTER, getNpmrcListRouter)
+/** 获取npm config文件内容 */
+router.post(GET_NPM_CONFIG_ROUTER, getNpmrcContentRouter)
+/** 获取npm registry、proxy、https-proxy配置 */
+router.post(GET_NPM_BASE_CONFIG_ROUTER, getNpmBaseConfigRouter)
+/** 保存npmrc文件 */
+router.post(SAVE_NPMRC_ROUTER, saveNpmrcRouter)
 
 /** 获取任务列表 */
 router.post(TASK_LIST_ROUTER, taskListRouter)
