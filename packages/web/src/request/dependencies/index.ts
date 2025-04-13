@@ -9,6 +9,9 @@ import type {
   NpmBaseConfigResponse,
 } from 'node-karin'
 
+/** 2分钟超时 */
+const TIMEOUT = 2 * 60 * 1000
+
 /**
  * 获取依赖列表
  * @param isForceRefresh - 是否强制刷新
@@ -21,7 +24,8 @@ export const getDependencies = async (
     const data = { force: isForceRefresh }
     const result = await request.serverPost<Dependency[], { force: boolean }>(
       api.getDependencies,
-      data
+      data,
+      { timeout: TIMEOUT }
     )
 
     return { success: true, data: result }
@@ -35,7 +39,11 @@ export const getDependencies = async (
  */
 export const manageDependencies = async (params: DependenciesManage): Promise<BaseResponse<CreateTaskResult>> => {
   try {
-    const result = await request.serverPost<CreateTaskResult, DependenciesManage>(api.manageDependencies, params)
+    const result = await request.serverPost<CreateTaskResult, DependenciesManage>(
+      api.manageDependencies,
+      params,
+      { timeout: TIMEOUT }
+    )
 
     if (result.success) {
       return { success: true, data: result }
