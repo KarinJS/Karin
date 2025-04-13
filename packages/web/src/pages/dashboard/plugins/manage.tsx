@@ -283,7 +283,7 @@ export const PluginManagePage = (): ReactElement => {
           </TableHeader>
           <TableBody>
             {plugins.map((plugin: PluginItem) => {
-              const statusConfig = getUpdateStatusConfig(plugin.updateStatus, plugin.type)
+              const statusConfig = getUpdateStatusConfig(plugin.updateStatus)
               const typeConfig = getTypeConfig(plugin.type)
 
               return (
@@ -436,12 +436,12 @@ export const PluginManagePage = (): ReactElement => {
 
   return (
     <div className='w-full p-5'>
-      <div className='flex justify-between items-center mb-8'>
-        <div className='flex items-center gap-2'>
+      <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8'>
+        <div className='flex items-center gap-2 mb-4 sm:mb-0'>
           <MdOutlineExtension className='text-2xl text-default-600' />
           <h1 className='text-2xl font-semibold text-default-700'>插件管理</h1>
         </div>
-        <div className='flex gap-3'>
+        <div className='flex gap-3 justify-center w-full sm:w-auto sm:self-auto'>
           <Button
             color='success'
             size='sm'
