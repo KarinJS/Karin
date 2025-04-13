@@ -171,6 +171,17 @@ export type PluginAdminParams =
   | PluginAdminUpdate
 
 /**
+ * 更新插件返回值
+ */
+export interface PluginAdminUpdateResult {
+  /** 是否更新成功 */
+  success: boolean
+  /** 操作日志 */
+  message: string
+  /** 任务ID */
+  taskId?: string
+}
+/**
  * 卸载插件返回值
  */
 export interface PluginAdminUninstallResult {

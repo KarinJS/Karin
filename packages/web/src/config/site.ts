@@ -8,6 +8,7 @@ import {
   MdOutlineArticle, // 系统日志
   MdOutlineTerminal, // 仿真终端
   MdOutlineWebhook, // webui插件管理
+  MdOutlineManageAccounts, // 插件管理
 } from 'react-icons/md'
 import { TbPackages } from 'react-icons/tb' // 依赖管理图标
 
@@ -60,7 +61,7 @@ export const defaultSiteConfig: SiteConfigType = {
     },
     {
       Icon: RiSettings2Fill,
-      label: '配置信息',
+      label: '系统配置',
       href: '/config',
     },
     {
@@ -73,6 +74,11 @@ export const defaultSiteConfig: SiteConfigType = {
       Icon: MdStore,
       label: '插件市场',
       href: '/plugins/list',
+    },
+    {
+      Icon: MdOutlineManageAccounts,
+      label: '插件管理',
+      href: '/plugins/manage',
     },
     // {
     //   Icon: FiCodesandbox,

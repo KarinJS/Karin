@@ -9,6 +9,8 @@ const DashboardLayout = lazy(() => import('@/pages/dashboard/layout'))
 const IndexPage = lazy(() => import('@/pages/dashboard'))
 const ConfigPage = lazy(() => import('@/pages/dashboard/config/index'))
 const PluginMarketPage = lazy(() => import('@/pages/dashboard/plugins'))
+const PluginConfigPage = lazy(() => import('@/pages/dashboard/plugins/config'))
+const PluginManagePage = lazy(() => import('@/pages/dashboard/plugins/manage'))
 const SandboxPage = lazy(() => import('@/pages/dashboard/sandbox'))
 const AboutPage = lazy(() => import('@/pages/dashboard/about'))
 const LoginPage = lazy(() => import('@/pages/login'))
@@ -18,7 +20,6 @@ const FriendRequest = lazy(() => import('@/pages/dashboard/sandbox/contact/frien
 const UserDetail = lazy(() => import('@/pages/dashboard/sandbox/contact/detail'))
 const GroupNotice = lazy(() => import('@/pages/dashboard/sandbox/contact/group_notice'))
 const GroupChatTest = lazy(() => import('@/pages/dashboard/sandbox/group'))
-const PluginConfigPage = lazy(() => import('@/pages/dashboard/plugins/config'))
 const NotFoundPage = lazy(() => import('@/pages/404'))
 const LogPage = lazy(() => import('@/pages/dashboard/log'))
 const TerminalPage = lazy(() => import('@/pages/dashboard/terminal'))
@@ -55,6 +56,7 @@ function App () {
           </Route>
           <Route element={<PluginMarketPage />} path='/plugins/list' />
           <Route element={<PluginConfigPage />} path='/plugins/config' />
+          <Route element={<PluginManagePage />} path='/plugins/manage' />
           <Route element={<SandboxPage />} path='/sandbox'>
             <Route element={<Navigate to='/sandbox/chat' />} path='' />
             <Route path='chat'>

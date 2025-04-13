@@ -25,4 +25,7 @@ export const api = {
   getTaskLogs: `${BASE_ROUTER}/task/logs`,
   /** 删除任务记录 POST */
   deleteTaskRecord: `${BASE_ROUTER}/task/delete_record`,
+
+  /** 插件管理 POST */
+  pluginAdmin: `${BASE_ROUTER}/plugin/admin`,
 }
