@@ -142,7 +142,7 @@ const updateAll = async (options: TaskEntity, log: (message: string) => void) =>
 
     log(`* 开始更新NPM插件，共${npmPlugins.length}个`)
     const args = ['update', npmPlugins.join('@latest '), '--save']
-    if (isWorkspace()) args.unshift('-w')
+    if (isWorkspace()) args.push('-w')
 
     await spawnProcess('pnpm', args, {}, (msg) => {
       log(msg)

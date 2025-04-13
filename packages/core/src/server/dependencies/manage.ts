@@ -106,7 +106,7 @@ const installDependencies = async (
       },
       async (_: TaskEntity, emitLog: (message: string) => void) => {
         const args = ['install', ...packagesToInstall.split(' ')]
-        if (isWorkspace()) args.unshift('-w')
+        if (isWorkspace()) args.push('-w')
 
         await spawnProcess('pnpm', args, {}, emitLog)
         return true
@@ -145,7 +145,7 @@ const removeDependencies = async (
       },
       async (_: TaskEntity, emitLog: (message: string) => void) => {
         const args = ['remove', ...packagesToRemove.split(' ')]
-        if (isWorkspace()) args.unshift('-w')
+        if (isWorkspace()) args.push('-w')
 
         await spawnProcess('pnpm', args, {}, emitLog)
         return true
@@ -193,7 +193,7 @@ const addDependencies = async (
           args.push('-O')
         }
 
-        if (isWorkspace()) args.unshift('-w')
+        if (isWorkspace()) args.push('-w')
 
         await spawnProcess('pnpm', args, {}, emitLog)
         return true

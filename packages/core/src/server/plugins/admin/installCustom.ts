@@ -64,7 +64,7 @@ const installNpm = async (
       if (data.version) pkg += `@${data.version}`
 
       const args = ['add', pkg, '--save']
-      if (isWorkspace()) args.unshift('-w')
+      if (isWorkspace()) args.push('-w')
       if (data.registry) args.push(`--registry=${data.registry}`)
 
       await spawnProcess('pnpm', args, {}, emitLog)

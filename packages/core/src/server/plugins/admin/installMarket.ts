@@ -71,7 +71,7 @@ const installNpm = async (
     },
     async (_: TaskEntity, emitLog: (message: string) => void) => {
       const args = ['add', data.target, '--save']
-      if (isWorkspace()) args.unshift('-w')
+      if (isWorkspace()) args.push('-w')
 
       await spawnProcess('pnpm', args, {}, emitLog)
       return true
