@@ -5,28 +5,14 @@ import { Input } from '@heroui/input'
 import { Divider } from '@heroui/divider'
 import { Spinner } from '@heroui/spinner'
 import { Card, CardBody } from '@heroui/card'
-import { useState, useCallback, useEffect } from 'react'
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
-import { LuSearch, LuPackage, LuPlus, LuChevronLeft, LuChevronRight, LuX } from 'react-icons/lu'
 import { Radio, RadioGroup } from '@heroui/radio'
+import { useState, useCallback, useEffect } from 'react'
 import TaskLogModal from './TaskLogModal'
 import { manageDependencies } from '@/request/dependencies'
-import { getErrorMessage } from '@/request/base'
+import { getErrorMessage, raceRequest } from '@/request/base'
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
+import { LuSearch, LuPackage, LuPlus, LuChevronLeft, LuChevronRight, LuX } from 'react-icons/lu'
 import type { AddDependenciesParams } from 'node-karin'
-
-/**
- * NPM版本查询响应接口
- */
-interface NpmVersionResponse {
-  /** 包名 */
-  name: string
-  /** 版本列表 */
-  versions: string[]
-  /** 最新版本 */
-  latest: string
-  /** 当前稳定版本 */
-  current: string
-}
 
 interface InstallDependencyModalProps {
   /** 模态框是否打开 */
@@ -35,6 +21,35 @@ interface InstallDependencyModalProps {
   onClose: () => void
   /** 安装依赖成功回调，用于刷新依赖列表 */
   onSuccess?: () => void
+}
+
+/**
+ * 传入一个npm包名，返回所有版本
+ * @param packageName 包名
+ * @returns 按发布时间排序的所有版本
+ */
+const getNpmVersions = async (packageName: string): Promise<string[]> => {
+  const response = await raceRequest<Record<string, any>>([
+    `https://registry.npmmirror.com/${packageName}`,
+    `https://registry.npmjs.com/${packageName}`,
+    `https://mirrors.cloud.tencent.com/npm/${packageName}`,
+  ], {
+    method: 'GET',
+    timeout: 5000,
+  })
+
+  if (response?.status !== 200) return []
+
+  /** Object.keys会乱序 */
+  if (response.data.time) {
+    return Object.keys(response.data.time)
+      .filter(key => key !== 'created' && key !== 'modified' && response.data.versions[key])
+      .sort((a, b) => {
+        return new Date(response.data.time[b]).getTime() - new Date(response.data.time[a]).getTime()
+      })
+  }
+
+  return Object.keys(response.data.versions)
 }
 
 /**
@@ -96,47 +111,6 @@ const InstallDependencyModal = ({
   }, [isOpen, resetState])
 
   /**
-   * 模拟从npm获取版本信息
-   * @param name 包名
-   */
-  const fetchNpmVersions = async (name: string): Promise<NpmVersionResponse> => {
-    return new Promise((resolve) => {
-      setIsLoading(true)
-      /** 模拟网络延迟 */
-      setTimeout(() => {
-        /** 生成随机版本号模拟数据 */
-        const generateVersions = () => {
-          const versions = []
-          /** 生成主要版本 */
-          for (let major = 4; major >= 1; major--) {
-            for (let minor = 9; minor >= 0; minor--) {
-              for (let patch = 9; patch >= 0; patch -= 3) {
-                versions.push(`${major}.${minor}.${patch}`)
-                if (versions.length >= 100) break
-              }
-              if (versions.length >= 100) break
-            }
-            if (versions.length >= 100) break
-          }
-          return versions
-        }
-
-        const versions = generateVersions()
-        const latest = versions[0]
-
-        resolve({
-          name,
-          versions,
-          latest,
-          current: latest,
-        })
-
-        setIsLoading(false)
-      }, 1000)
-    })
-  }
-
-  /**
    * 处理版本查询
    */
   const handleSearch = useCallback(async () => {
@@ -146,10 +120,10 @@ const InstallDependencyModal = ({
     }
 
     try {
-      const response = await fetchNpmVersions(packageName.trim())
-      setVersions(response.versions)
-      setSelectedVersion(response.latest)
-      setCustomVersion(response.latest)
+      const list = await getNpmVersions(packageName.trim())
+      setVersions(list)
+      setSelectedVersion(list[0])
+      setCustomVersion(list[0])
       setCurrentPage(1)
       setHasSearched(true)
     } catch (error) {
