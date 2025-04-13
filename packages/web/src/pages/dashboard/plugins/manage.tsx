@@ -20,7 +20,7 @@ import StatCard from '@/components/card/StatCard'
  * @param type - 插件类型
  * @returns 状态配置
  */
-const getUpdateStatusConfig = (status: string, type: PluginType) => {
+const getUpdateStatusConfig = (status: string) => {
   if (status === 'up-to-date') {
     return {
       text: '最新',
