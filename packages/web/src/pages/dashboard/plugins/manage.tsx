@@ -1,11 +1,12 @@
+/* eslint-disable @stylistic/indent */
 import { useState, useCallback, ReactElement } from 'react'
 import { useRequest } from 'ahooks'
 import { Card } from '@heroui/card'
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from '@heroui/table'
 import { Chip } from '@heroui/chip'
 import { Button } from '@heroui/button'
-import { Tooltip } from '@heroui/tooltip'
 import { Spinner } from '@heroui/spinner'
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/dropdown'
 import { FaNpm } from 'react-icons/fa6'
 import { TbApps, TbBrandGit, TbCircleCheck, TbCircleDashed, TbArrowUp, TbRefresh, TbTrash, TbArrowsUp } from 'react-icons/tb'
 import { IoSettingsOutline } from 'react-icons/io5'
@@ -273,12 +274,12 @@ export const PluginManagePage = (): ReactElement => {
           }}
         >
           <TableHeader>
-            <TableColumn>插件名称</TableColumn>
-            <TableColumn>当前版本</TableColumn>
-            <TableColumn>最新版本</TableColumn>
-            <TableColumn>类型</TableColumn>
-            <TableColumn>状态</TableColumn>
-            <TableColumn>操作</TableColumn>
+            <TableColumn className='w-[40%]'>插件名称</TableColumn>
+            <TableColumn className='hidden sm:table-cell w-[12%] text-center'>当前版本</TableColumn>
+            <TableColumn className='hidden sm:table-cell w-[12%] text-center'>最新版本</TableColumn>
+            <TableColumn className='hidden sm:table-cell w-[12%] text-center'>类型</TableColumn>
+            <TableColumn className='w-[12%] text-center'>状态</TableColumn>
+            <TableColumn className='w-[8%] text-center'>操作</TableColumn>
           </TableHeader>
           <TableBody>
             {plugins.map((plugin: PluginItem) => {
@@ -289,17 +290,17 @@ export const PluginManagePage = (): ReactElement => {
                 <TableRow key={plugin.id}>
                   <TableCell>
                     <div className='flex items-center pl-0'>
-                      <div className='font-medium text-default-700 dark:text-default-300 truncate max-w-[260px] ml-2'>
+                      <div className='font-medium text-default-700 dark:text-default-300 w-full break-words whitespace-normal pl-3 pr-2 sm:pl-4'>
                         {plugin.name}
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className='hidden sm:table-cell text-center'>
                     <Chip size='sm' variant='flat' color='primary' className='bg-primary-100/50'>
                       {plugin.version}
                     </Chip>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className='hidden sm:table-cell text-center'>
                     {plugin.availableVersion
                       ? (
                         <Chip size='sm' variant='flat' color='warning' className='bg-warning-100/50'>
@@ -312,9 +313,9 @@ export const PluginManagePage = (): ReactElement => {
                         </Chip>
                       )}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className='hidden sm:table-cell text-center'>
                     <div
-                      className='w-20 h-6 flex items-center justify-center rounded-full border text-xs'
+                      className='w-20 mx-auto h-6 flex items-center justify-center rounded-full border text-xs'
                       style={{
                         backgroundColor: typeConfig.color === 'primary'
                           ? 'rgba(59, 130, 246, 0.1)'
@@ -342,37 +343,86 @@ export const PluginManagePage = (): ReactElement => {
                       {typeConfig.text}
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div
-                      className='inline-flex items-center justify-center w-20 h-6 text-xs rounded-md border' style={{
-                        backgroundColor: statusConfig.color === 'success'
-                          ? 'rgba(34, 197, 94, 0.08)'
-                          : statusConfig.color === 'warning'
-                            ? 'rgba(234, 179, 8, 0.08)'
-                            : 'rgba(161, 161, 170, 0.08)',
-                        color: statusConfig.color === 'success'
-                          ? 'rgb(22, 163, 74)'
-                          : statusConfig.color === 'warning'
-                            ? 'rgb(202, 138, 4)'
-                            : 'rgb(113, 113, 122)',
-                        borderColor: statusConfig.color === 'success'
-                          ? 'rgba(34, 197, 94, 0.2)'
-                          : statusConfig.color === 'warning'
-                            ? 'rgba(234, 179, 8, 0.2)'
-                            : 'rgba(161, 161, 170, 0.2)',
-                      }}
-                    >
-                      {statusConfig.icon}
-                      <span className='font-normal'>{statusConfig.text}</span>
+                  <TableCell className='text-center'>
+                    <div className='flex justify-center items-center'>
+                      <div
+                        className='inline-flex items-center justify-center w-20 h-6 text-xs rounded-md border' style={{
+                          backgroundColor: statusConfig.color === 'success'
+                            ? 'rgba(34, 197, 94, 0.08)'
+                            : statusConfig.color === 'warning'
+                              ? 'rgba(234, 179, 8, 0.08)'
+                              : 'rgba(161, 161, 170, 0.08)',
+                          color: statusConfig.color === 'success'
+                            ? 'rgb(22, 163, 74)'
+                            : statusConfig.color === 'warning'
+                              ? 'rgb(202, 138, 4)'
+                              : 'rgb(113, 113, 122)',
+                          borderColor: statusConfig.color === 'success'
+                            ? 'rgba(34, 197, 94, 0.2)'
+                            : statusConfig.color === 'warning'
+                              ? 'rgba(234, 179, 8, 0.2)'
+                              : 'rgba(161, 161, 170, 0.2)',
+                        }}
+                      >
+                        {statusConfig.icon}
+                        <span className='font-normal'>{statusConfig.text}</span>
+                      </div>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div className='flex gap-2'>
-                      <Tooltip content='管理插件'>
-                        <Button size='sm' isIconOnly variant='light' color='primary'>
-                          <IoSettingsOutline className='text-xl' />
-                        </Button>
-                      </Tooltip>
+                  <TableCell className='text-center'>
+                    <div className='flex justify-center'>
+                      <Dropdown>
+                        <DropdownTrigger>
+                          <Button size='sm' isIconOnly variant='light' color='primary' onClick={(e) => e.stopPropagation()}>
+                            <IoSettingsOutline className='text-lg' />
+                          </Button>
+                        </DropdownTrigger>
+                        <DropdownMenu aria-label='插件操作' onAction={(key) => console.log(key)} onClick={(e) => e.stopPropagation()}>
+                          {/* 配置选项 - 只有git和npm类型才显示 */}
+                          {(plugin.type === 'git' || plugin.type === 'npm')
+                            ? (
+                              <DropdownItem key='settings' description='调整插件配置'>
+                                <div className='flex items-center gap-2'>
+                                  <IoSettingsOutline />
+                                  <span>插件配置</span>
+                                </div>
+                              </DropdownItem>
+                            )
+                            : null}
+
+                          {/* 更新按钮 - 对app类型不显示且必须是可更新状态 */}
+                          {plugin.type !== 'app' && plugin.updateStatus === 'outdated'
+                            ? (
+                              <DropdownItem key='update' description='更新到最新版本' className='text-success'>
+                                <div className='flex items-center gap-2'>
+                                  <TbArrowUp />
+                                  <span>更新插件</span>
+                                </div>
+                              </DropdownItem>
+                            )
+                            : null}
+
+                          {/* Git类型特有的强制更新按钮 */}
+                          {plugin.type === 'git'
+                            ? (
+                              <DropdownItem key='forceUpdate' description='强制拉取最新代码' className='text-warning'>
+                                <div className='flex items-center gap-2'>
+                                  <TbArrowsUp />
+                                  <span>强制更新</span>
+                                </div>
+                              </DropdownItem>
+                            )
+                            : null}
+
+                          {/* 卸载按钮 - 所有类型都显示 */}
+                          <DropdownItem key='uninstall' description='从系统移除此插件' className='text-danger'>
+                            <div className='flex items-center gap-2'>
+                              <TbTrash />
+                              <span>卸载插件</span>
+                            </div>
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
                     </div>
                   </TableCell>
                 </TableRow>
