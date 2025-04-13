@@ -162,7 +162,7 @@ export const PluginManagePage = (): ReactElement => {
         <StatCard
           title='全部'
           count={counts.all}
-          description='所有类型插件'
+          description='全部插件'
           icon={renderIcon(24, IoSettingsOutline)}
           gradient='bg-gradient-to-br from-indigo-400/10 to-indigo-500/20 dark:from-indigo-600/10 dark:to-indigo-700/20'
           border='border border-indigo-200/30 dark:border-indigo-800/20'
@@ -176,7 +176,7 @@ export const PluginManagePage = (): ReactElement => {
         <StatCard
           title='NPM插件'
           count={counts.npm}
-          description='Node包管理器插件'
+          description='Npm包插件'
           icon={renderIcon(24, FaNpm)}
           gradient='bg-gradient-to-br from-rose-400/10 to-rose-500/20 dark:from-rose-600/10 dark:to-rose-700/20'
           border='border border-rose-200/30 dark:border-rose-800/20'
@@ -190,7 +190,7 @@ export const PluginManagePage = (): ReactElement => {
         <StatCard
           title='Git插件'
           count={counts.git}
-          description='Git仓库插件'
+          description='Git  插件'
           icon={renderIcon(24, TbBrandGit)}
           gradient='bg-gradient-to-br from-amber-400/10 to-amber-500/20 dark:from-amber-600/10 dark:to-amber-700/20'
           border='border border-amber-200/30 dark:border-amber-800/20'
@@ -204,7 +204,7 @@ export const PluginManagePage = (): ReactElement => {
         <StatCard
           title='App插件'
           count={counts.app}
-          description='应用类型插件'
+          description='App插件'
           icon={renderIcon(24, TbApps)}
           gradient='bg-gradient-to-br from-teal-400/10 to-teal-500/20 dark:from-teal-600/10 dark:to-teal-700/20'
           border='border border-teal-200/30 dark:border-teal-800/20'
@@ -274,12 +274,12 @@ export const PluginManagePage = (): ReactElement => {
           }}
         >
           <TableHeader>
-            <TableColumn className='w-[40%]'>插件名称</TableColumn>
+            <TableColumn className='w-[60%] sm:w-[40%]'>插件名称</TableColumn>
             <TableColumn className='hidden sm:table-cell w-[12%] text-center'>当前版本</TableColumn>
             <TableColumn className='hidden sm:table-cell w-[12%] text-center'>最新版本</TableColumn>
             <TableColumn className='hidden sm:table-cell w-[12%] text-center'>类型</TableColumn>
-            <TableColumn className='w-[12%] text-center'>状态</TableColumn>
-            <TableColumn className='w-[8%] text-center'>操作</TableColumn>
+            <TableColumn className='w-[20%] sm:w-[12%] text-center'>状态</TableColumn>
+            <TableColumn className='w-[20%] sm:w-[8%] text-center'>操作</TableColumn>
           </TableHeader>
           <TableBody>
             {plugins.map((plugin: PluginItem) => {
@@ -290,7 +290,7 @@ export const PluginManagePage = (): ReactElement => {
                 <TableRow key={plugin.id}>
                   <TableCell>
                     <div className='flex items-center pl-0'>
-                      <div className='font-medium text-default-700 dark:text-default-300 w-full break-words whitespace-normal pl-3 pr-2 sm:pl-4'>
+                      <div className='font-medium text-default-700 dark:text-default-300 w-full break-words whitespace-normal pl-3 pr-1 sm:pr-2 sm:pl-4'>
                         {plugin.name}
                       </div>
                     </div>
