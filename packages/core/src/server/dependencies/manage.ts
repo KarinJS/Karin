@@ -176,15 +176,17 @@ const addDependencies = async (
       return handleReturn(res, false, '无效请求：缺少必要参数')
     }
 
+    const version = `${dependencies.name}@${dependencies.version || 'latest'}`
+
     const id = await task.add(
       {
         type: 'add-dependencies' as TaskType,
         name: '依赖新增',
-        target: dependencies.name,
+        target: version,
         operatorIp: ip,
       },
       async (_: TaskEntity, emitLog: (message: string) => void) => {
-        const args = ['add', dependencies.name]
+        const args = ['add', version]
         if (dependencies.location === 'devDependencies') {
           args.push('-D')
         } else if (dependencies.location === 'optionalDependencies') {
