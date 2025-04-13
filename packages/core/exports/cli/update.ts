@@ -205,7 +205,7 @@ const checkDependencies = async (packagePath: string, allItems: UpdateItem[], pa
  */
 const checkPlugins = async (pluginsPath: string, allItems: UpdateItem[]) => {
   /** 检查git是否安装 */
-  if (!await checkGitInstalled()) {
+  if (!(await checkGitInstalled())) {
     console.error('请先安装git')
     return
   }

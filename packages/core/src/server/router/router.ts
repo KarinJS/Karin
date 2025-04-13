@@ -25,7 +25,7 @@ export const UPDATE_CORE_ROUTER = '/system/update'
 /** 获取所有bot列表路由 */
 export const GET_BOTS_ROUTER = '/system/get/bots'
 /** console适配器路由 */
-export const CONSOLE_ROUTER = '/console/*'
+export const CONSOLE_ROUTER = '/console/{*path}'
 /** ping路由 */
 export const PING_ROUTER = '/ping'
 /** 系统状态路由 */

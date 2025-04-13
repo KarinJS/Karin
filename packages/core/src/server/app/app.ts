@@ -54,7 +54,7 @@ const web = (dir: typeof root) => {
   app.use('/sandbox/file', express.static(dir.sandboxTempPath))
 
   /** 处理 /web 路径下的所有请求，确保 SPA 路由可以正常工作 */
-  app.get('/web/*', (req, res) => {
+  app.get('/web/{*splat}', (req, res) => {
     res.sendFile(path.join(webDir, 'index.html'))
   })
 

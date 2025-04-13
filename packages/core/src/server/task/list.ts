@@ -195,7 +195,8 @@ export const taskRunRouter: RequestHandler<null, null, null, { id: string, lastI
 
     if (res.headersSent) {
       res.write(`data: ${error instanceof Error ? error.message : String(error)} \n\n`)
-      return res.end('data: end\n\n')
+      res.end('data: end\n\n')
+      return
     }
 
     createServerErrorResponse(res, error instanceof Error ? error.message : String(error))

@@ -39,7 +39,7 @@ export interface SiteConfigType {
  * 获取已安装的插件列表
  */
 const getInstalledPlugins = async () => {
-  const list = await request.serverPost<LocalApiResponse[], null>('/api/v1/plugin/local') || []
+  const list = (await request.serverPost<LocalApiResponse[], null>('/api/v1/plugin/local')) || []
   return list.map((item) => ({
     id: item.id,
     label: item.name,
