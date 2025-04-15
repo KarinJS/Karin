@@ -96,8 +96,8 @@ importers:
         specifier: workspace:*
         version: 'link:'
       node-schedule:
-        specifier: 2.1.1
-        version: 2.1.1
+        specifier: npm:@karinjs/node-schedule@1.0.0
+        version: '@karinjs/node-schedule@1.0.0'
       redis:
         specifier: 4.7.0
         version: 4.7.0
@@ -1666,6 +1666,9 @@ packages:
     resolution: {integrity: sha512-w9j1wL2OAyan4rAoUvYESfFL19kDLCNUixtka/9yYFrINJQeOqOMtKRfQlKySN1TEz1KV7XSbnZ4q9uL3nhxYA==}
     engines: {node: '>=16'}
     hasBin: true
+
+  '@karinjs/node-schedule@1.0.0':
+    resolution: {integrity: sha512-dHhYKcprM/5DQhVX/CFZGsJcNhbfUuE14zFuNunvzU5WdX+mqnpPpOAOaHdKMOLJunaq6zMdBHDYNw/NgEBQyg==}
 
   '@karinjs/plugin-webui-network-monitor@1.0.3':
     resolution: {integrity: sha512-FloMaA3/41ZWOy0oVReH2tvS3FUABgzj2+EZ/6f7FkyC1aK4sQYsEDRuB2ru8RC7uycRxU2E0Tufj3jtnU5AGA==}
@@ -3395,10 +3398,6 @@ packages:
     resolution: {integrity: sha512-9Kr/j4O16ISv8zBBhJoi4bXOYNTkFLOqSL3UDB0njXxCXNezjeyVrJyGOWtgfs/q2km1gwBcfH8q1yEGoMYunA==}
     engines: {node: '>=18'}
 
-  cron-parser@4.9.0:
-    resolution: {integrity: sha512-p0SaNjrHOnQeR8/VnfGbmg9te2kfyYSQ7Sc/j/6DtPL3JQvKxmjO9TSjNFpujqV3vEYYBvNNvXSxzyksBWAx1Q==}
-    engines: {node: '>=12.0.0'}
-
   cross-env@7.0.3:
     resolution: {integrity: sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==}
     engines: {node: '>=10.14', npm: '>=6', yarn: '>=1'}
@@ -4387,9 +4386,6 @@ packages:
     resolution: {integrity: sha512-1somDdy9sChrr9/f4UlzhdaGfDR2c/SaD2a4T7qEkG4jTS57/B3qmnjLYePwQ8cqWnUHZI0iAKxMBpCZICiZ2g==}
     engines: {node: '>=8.0'}
 
-  long-timeout@0.1.1:
-    resolution: {integrity: sha512-BFRuQUqc7x2NWxfJBCyUrN8iYUYznzL9JROmRz1gZ6KlOIgmoD+njPVbb+VNn2nGMKggMsK79iUNErillsrx7w==}
-
   longest-streak@3.1.0:
     resolution: {integrity: sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==}
 
@@ -4410,10 +4406,6 @@ packages:
     resolution: {integrity: sha512-KW6u5AKeIjkvrxXZ6WuCu9zHE/gEYSXCay+Gre2ZoInD0Je/e3RBtP4OHpJVJ40nDklSvjVKjgH7VU8/e2dzRw==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
-  luxon@3.5.0:
-    resolution: {integrity: sha512-rh+Zjr6DNfUYR3bPwJEnuwDdqMbxZW7LOQfUN4B54+Cl+0o5zaU9RJ6bcidfDtC1cWCZXQ+nvX8bf6bAji37QQ==}
-    engines: {node: '>=12'}
 
   markdown-table@3.0.4:
     resolution: {integrity: sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==}
@@ -4656,10 +4648,6 @@ packages:
 
   node-releases@2.0.19:
     resolution: {integrity: sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw==}
-
-  node-schedule@2.1.1:
-    resolution: {integrity: sha512-OXdegQq03OmXEjt2hZP33W2YPs/E5BcFQks46+G2gAxs4gHOIVD1u7EqlYLYSKsaIpyKCK9Gbk0ta1/gjRSMRQ==}
-    engines: {node: '>=6'}
 
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
@@ -5272,9 +5260,6 @@ packages:
   sort-package-json@3.0.0:
     resolution: {integrity: sha512-vfZWx4DnFNB8R9Vg4Dnx21s20auNzWH15ZaCBfADAiyrCwemRmhWstTgvLjMek1DW3+MHcNaqkp86giCF24rMA==}
     hasBin: true
-
-  sorted-array-functions@1.3.0:
-    resolution: {integrity: sha512-2sqgzeFlid6N4Z2fUQ1cvFmTOLRi/sEDzSQ0OKYchqgoPmQBVyM3959qYx3fpS6Esef80KjmpgPeEr028dP3OA==}
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -7475,6 +7460,8 @@ snapshots:
 
   '@karinjs/node-pty@1.0.4': {}
 
+  '@karinjs/node-schedule@1.0.0': {}
+
   '@karinjs/plugin-webui-network-monitor@1.0.3':
     dependencies:
       systeminformation: 5.25.11
@@ -9596,10 +9583,6 @@ snapshots:
 
   cookie@1.0.2: {}
 
-  cron-parser@4.9.0:
-    dependencies:
-      luxon: 3.5.0
-
   cross-env@7.0.3:
     dependencies:
       cross-spawn: 7.0.6
@@ -10761,8 +10744,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  long-timeout@0.1.1: {}
-
   longest-streak@3.1.0: {}
 
   loose-envify@1.4.0:
@@ -10784,8 +10765,6 @@ snapshots:
   lucide-react@0.473.0(react@19.1.0):
     dependencies:
       react: 19.1.0
-
-  luxon@3.5.0: {}
 
   markdown-table@3.0.4: {}
 
@@ -11229,12 +11208,6 @@ snapshots:
     optional: true
 
   node-releases@2.0.19: {}
-
-  node-schedule@2.1.1:
-    dependencies:
-      cron-parser: 4.9.0
-      long-timeout: 0.1.1
-      sorted-array-functions: 1.3.0
 
   normalize-path@3.0.0: {}
 
@@ -11964,8 +11937,6 @@ snapshots:
       semver: 7.7.1
       sort-object-keys: 1.1.3
       tinyglobby: 0.2.12
-
-  sorted-array-functions@1.3.0: {}
 
   source-map-js@1.2.1: {}
 

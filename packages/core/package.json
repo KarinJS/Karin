@@ -80,7 +80,7 @@
     "lodash": "4.17.21",
     "log4js": "6.9.1",
     "moment": "npm:@karinjs/moment@1.1.4",
-    "node-schedule": "2.1.1",
+    "node-schedule": "npm:@karinjs/node-schedule@1.0.0",
     "redis": "4.7.0",
     "sqlite3": "npm:@karinjs/sqlite3@1.0.1",
     "ws": "8.18.0",
