@@ -202,7 +202,7 @@ const getEnvComponent = (
     })
   })
 
-  const methods = useForm<EnvFormData>({
+  const methods = useForm<EnvFormData, any, EnvFormData>({
     defaultValues: { systemEnvs, customEnvs },
   })
 

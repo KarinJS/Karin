@@ -94,7 +94,7 @@ export class LoaderPlugin {
           }
         }
 
-        if (pkg?.pkgData?.main) {
+        if (!isTsx() && pkg?.pkgData?.main) {
           const file = path.join(pkg.dir, pkg.pkgData.main)
           if (fs.existsSync(file)) {
             entryPromises.push(this.loaderMain(pkg.name, file))

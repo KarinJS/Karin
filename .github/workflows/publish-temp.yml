@@ -1,4 +1,4 @@
-name: publish-temp
+name: publish-minimal-repro
 
 on:
   push:
@@ -21,13 +21,13 @@ jobs:
       - name: 安装node
         uses: actions/setup-node@v4
         with:
-          node-version: 21
+          node-version: 20
           registry-url: "https://registry.npmjs.org"
 
       - name: 安装pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 9.7.1
+          version: 9
 
       - name: 获取当前提交哈希
         run: |
@@ -39,23 +39,6 @@ jobs:
 
       - name: 安装依赖
         run: pnpm install
-
-      - name: 修改版本号
-        run: |
-          # 获取当前日期作为版本号的一部分
-          DATE=$(date +'%Y%m%d')
-          
-          # 从package.json获取当前版本号
-          CURRENT_VERSION=$(node -p "require('./packages/core/package.json').version")
-          
-          # 生成新的版本号：主版本号.次版本号.日期+短哈希
-          BASE_VERSION=$(echo $CURRENT_VERSION | sed -E 's/([0-9]+\.[0-9]+)\.[0-9]+.*/\1/')
-          NEW_VERSION="${BASE_VERSION}.${DATE}+${SHORT_COMMIT_HASH}"
-          
-          # 更新package.json中的版本号
-          npm version $NEW_VERSION --no-git-tag-version
-          
-          echo "PKG_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: 编译
         run: pnpm build:all
@@ -94,15 +77,16 @@ jobs:
           
           echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
           echo "install_url=$SIMPLIFIED_URL" >> $GITHUB_OUTPUT
-          
+
+      - name: 生成发布摘要
+        run: |
           # 在工作流摘要中添加信息
           echo "## Published Packages :package:" >> $GITHUB_STEP_SUMMARY
-          echo "version: \`${{ env.PKG_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
           echo "commit: [\`${{ env.SHORT_COMMIT_HASH }}\`](${{ env.REPO_URL }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "use pnpm:" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "$PNPM_INSTALL_CMD" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.publish_pkg.outputs.pnpm_install_cmd }}" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
@@ -112,7 +96,7 @@ jobs:
           cat pkg-output.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
-      - name: Post or update comment
+      - name: 发布PR评论
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
         with:
@@ -142,7 +126,7 @@ jobs:
             
             // 简化安装URL格式为 包名@短哈希
             const repoName = context.repo.repo; // 获取仓库名
-            const simplifiedUrl = `https://pkg.pr.new/${repoName}@${shortSha}`;
+            const simplifiedUrl = `https://pkg.pr.new/node-karin@${shortSha}`;
             
             // 获取Stackblitz链接
             let stackblitzUrl = '';
@@ -160,7 +144,6 @@ jobs:
             // 构建与摘要类似的评论内容
             const body = `## Published Packages :package:
             
-            version: \`${{ env.PKG_VERSION }}\`
             commit: [\`${shortSha}\`](${commitUrl})
             
             ${stackblitzUrl ? `[Open in Stackblitz](${stackblitzUrl})` : ''}
