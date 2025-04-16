@@ -41,7 +41,7 @@ jobs:
       
       # 更新版本号
       - name: 更新版本号
-        run: cd packages/core && npm pkg set version=${{ inputs.version }}
+        run: cd packages/core && npm pkg set version=${{ inputs.version }} && npm pkg delete peerDependencies
       
       # 发布到npm
       - name: 发布到NPM
