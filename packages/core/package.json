@@ -32,14 +32,10 @@
     "kr": "./dist/cli/index.js"
   },
   "files": [
-    "/dist/**/*.js",
-    "/dist/**/*.d.ts",
+    "dist",
     "/default/**",
-    "/dist/web/**",
     "CHANGELOG.md",
-    "LICENSE",
-    "package.json",
-    "README.md"
+    "LICENSE"
   ],
   "workspaces": [
     "plugins/**"
