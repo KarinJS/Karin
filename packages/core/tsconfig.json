@@ -12,12 +12,10 @@
     "noImplicitAny": true,
     "outDir": "./lib",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@fs": [
-        "./src/utils/fs/main"
-      ]
+      "@/*": ["./src/*"],
+      "@fs": ["./src/utils/fs/main"],
+      "node:events": ["node_modules/@types/node/events.d.ts"],
+      "events": ["node_modules/@types/node/events.d.ts"]
     },
     "resolveJsonModule": true,
     "rootDir": "./src",
@@ -25,21 +23,8 @@
     "sourceMap": true,
     "strict": true,
     "target": "ES2022",
-    "types": [
-      "@types/node",
-      "@types/express"
-    ]
+    "types": ["@types/node"]
   },
-  "exclude": [
-    "@karinjs",
-    "default",
-    "lib",
-    "plugins",
-    "node_modules",
-    "logs"
-  ],
-  "include": [
-    "./src/**/*",
-    "./src/global.d.ts"
-  ]
+  "exclude": ["@karinjs", "default", "lib", "plugins", "node_modules", "logs"],
+  "include": ["./src/**/*", "./src/global.d.ts"]
 }

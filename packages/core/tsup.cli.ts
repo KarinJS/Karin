@@ -4,8 +4,9 @@ import { options } from './tsup.base'
 export default defineConfig({
   ...options,
   entry: ['exports/cli/index.ts'],
-  format: ['cjs', 'esm'],
+  format: ['esm'],
   clean: true,
   outDir: 'dist/cli',
   treeshake: true,
+  minify: 'terser',
 })

@@ -1,10 +1,7 @@
+// @ts-ignore 不需要管类型 已经是esm包了
+export * from 'express'
 export { default } from 'express'
 export {
-  query,
-  json,
-  raw,
-  text,
-  Router,
   type Express,
   type RouterOptions,
   type Application,

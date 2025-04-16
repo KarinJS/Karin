@@ -1,3 +1,2 @@
-import { WebSocket, WebSocketServer, createWebSocketStream } from 'ws'
-export { WebSocket, WebSocketServer, createWebSocketStream }
+export * from 'ws'
 export { default } from 'ws'

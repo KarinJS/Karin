@@ -1,5 +1,5 @@
 import os from 'node:os'
-import EventEmitter from 'node:events'
+import { EventEmitter } from 'node:events'
 import type { SystemStatus } from '@/types/system/status'
 
 export class StatusHelper {
@@ -31,7 +31,7 @@ export class StatusHelper {
           total: acc.total + cur.total,
           active: acc.active + cur.active,
         }),
-        { total: 0, active: 0 },
+        { total: 0, active: 0 }
       )
     this.cpuTimes = currentTimes
     return {

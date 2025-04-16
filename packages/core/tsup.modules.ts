@@ -4,7 +4,7 @@ import { options } from './tsup.base'
 export default defineConfig({
   ...options,
   entry: ['exports/module/*.ts'],
-  format: ['cjs', 'esm'],
+  format: ['esm'],
   clean: true,
   outDir: 'dist/module',
 })

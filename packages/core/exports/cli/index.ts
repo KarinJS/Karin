@@ -44,10 +44,10 @@ program.command('up').description('更新插件').action(updateAll)
 program.command('init').description('初始化项目').action(init)
 
 addEnvOption(program.command('.').description('前台启动')).action(
-  (options: { env: string | undefined }) => start(options.env),
+  (options: { env: string | undefined }) => start(options.env)
 )
 addEnvOption(program.command('app').description('前台启动')).action(
-  (options: { env: string | undefined }) => start(options.env),
+  (options: { env: string | undefined }) => start(options.env)
 )
 addEnvOption(program.command('start').description('前台启动'))
 
