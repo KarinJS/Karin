@@ -1,1 +1,3 @@
-export { default } from 'lodash'
+import * as lodash from 'lodash'
+
+export default lodash

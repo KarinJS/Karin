@@ -1,6 +1,5 @@
 export { default } from 'express'
 export {
-  query,
   json,
   raw,
   text,

@@ -1,1 +1,3 @@
-export { default } from 'moment'
+import moment from 'moment'
+
+export default moment
