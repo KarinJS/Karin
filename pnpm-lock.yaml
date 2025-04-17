@@ -60,11 +60,11 @@ importers:
         specifier: 4.0.3
         version: 4.0.3
       express:
-        specifier: npm:@karinjs/express@1.0.2
-        version: '@karinjs/express@1.0.2'
+        specifier: npm:@karinjs/express@1.0.3
+        version: '@karinjs/express@1.0.3'
       lodash:
-        specifier: npm:@karinjs/lodash@1.0.2
-        version: '@karinjs/lodash@1.0.2'
+        specifier: npm:@karinjs/lodash@1.1.1
+        version: '@karinjs/lodash@1.1.1'
       moment:
         specifier: npm:@karinjs/moment@1.1.5
         version: '@karinjs/moment@1.1.5'
@@ -75,11 +75,11 @@ importers:
         specifier: npm:@karinjs/node-schedule@1.0.0
         version: '@karinjs/node-schedule@1.0.0'
       redis:
-        specifier: npm:@karinjs/redis@1.1.0
-        version: '@karinjs/redis@1.1.0'
+        specifier: npm:@karinjs/redis@1.1.3
+        version: '@karinjs/redis@1.1.3'
       sqlite3:
-        specifier: npm:@karinjs/sqlite3@0.1.0
-        version: '@karinjs/sqlite3@0.1.0'
+        specifier: npm:@karinjs/sqlite3@0.1.3
+        version: '@karinjs/sqlite3@0.1.3'
       ws:
         specifier: npm:@karinjs/ws@1.0.4
         version: '@karinjs/ws@1.0.4'
@@ -109,14 +109,14 @@ importers:
         specifier: ^7.0.3
         version: 7.0.3
       dotenv:
-        specifier: npm:@karinjs/dotenv@^1.1.1
-        version: '@karinjs/dotenv@1.1.1'
+        specifier: npm:@karinjs/dotenv@^1.1.2
+        version: '@karinjs/dotenv@1.1.2'
       jsonwebtoken:
-        specifier: npm:@karinjs/jsonwebtoken@^1.1.0
-        version: '@karinjs/jsonwebtoken@1.1.0'
+        specifier: npm:@karinjs/jsonwebtoken@^1.1.1
+        version: '@karinjs/jsonwebtoken@1.1.1'
       log4js:
-        specifier: npm:@karinjs/log4js@1.1.3
-        version: '@karinjs/log4js@1.1.3'
+        specifier: npm:@karinjs/log4js@1.1.4
+        version: '@karinjs/log4js@1.1.4'
 
   packages/create-karin:
     dependencies:
@@ -1588,24 +1588,24 @@ packages:
   '@karinjs/axios@1.0.1':
     resolution: {integrity: sha512-brYm4KN/KH9geXPTEHWawyi1Y0Z79WB9rp5MG3EblS0SMYa1ta22Mqx6wKRCUiCpRn7cxvmyYG1+O8YdAD2k9g==}
 
-  '@karinjs/dotenv@1.1.1':
-    resolution: {integrity: sha512-ecgKcoidX3QlGJvkIl1IYS8pPWqXtUhofP4/LH8WTdgRMjcoTErUdascEdGsrrfhgf1Yxt8Kj4Jq30BJpGF+wA==}
+  '@karinjs/dotenv@1.1.2':
+    resolution: {integrity: sha512-F1YCmSWxh3hvunVkxKco+4dsEL/DHqwuWVesB4M0fDh/sa/jhhQ6YrD3V03j0oTH9+jtszehTFEetcvjr8IH1g==}
     engines: {node: '>=18'}
 
-  '@karinjs/express@1.0.2':
-    resolution: {integrity: sha512-KP7ZHjchhogykYNEqc6gl6gq2DOT32BV1HB1MdDnFnOzedzFof9C9Z3yPDh2pHPukLqzl64sF2NNFAErj8rkdw==}
+  '@karinjs/express@1.0.3':
+    resolution: {integrity: sha512-xHsKbxh7SJLCosg/iXYtaH1WHSMKe+FkLIlvj8/nJui3MhgQsso7OkHZHOoooAJkZ3U+41DkbPV2nVav3AYFWQ==}
     engines: {node: '>=18'}
 
-  '@karinjs/jsonwebtoken@1.1.0':
-    resolution: {integrity: sha512-CG8q4Sg7hCQLB3FWP4xfzk4DhK2X78tDh6la/NQk4Xlh1L+Sakoul53zGvEU7bcam/zUfj1MLSqKKE/EWawZYg==}
+  '@karinjs/jsonwebtoken@1.1.1':
+    resolution: {integrity: sha512-c4GTcubcRuQt8niZ186PVImi/k+pmt3VsTD2z2KhtP06AVvpm088lIT11Vc4B8LQGNpYSNNWNKw6921WzIxELA==}
     engines: {node: '>=18'}
 
-  '@karinjs/lodash@1.0.2':
-    resolution: {integrity: sha512-lrjyQAcAoHBlqMfTT3wsKOvUzvxayMuykC95WFSv/xpDg4U6nj4u3ncYd6QUb125Rh1hG9rx2Ngzn4SUUUX1cQ==}
+  '@karinjs/lodash@1.1.1':
+    resolution: {integrity: sha512-suq7TVHaaTrkD74WhEpzsm1SqZfiSf0yiWPEzoZhNbB1Kfwo/ys9yOwptZqTKXZyTghSrF+dfILvh2E32wBofw==}
     engines: {node: '>=18'}
 
-  '@karinjs/log4js@1.1.3':
-    resolution: {integrity: sha512-YCplgtr5l/4RkTLBpAJVeVdx868Qj3Yw+rRGPKn+mfmZGaOxOqT6GcnKOgXaZ5pfOESUQlxKipH+INlZgdO0Tg==}
+  '@karinjs/log4js@1.1.4':
+    resolution: {integrity: sha512-/35rg9EV6vIhVwG3GmQl5Bmm8/l2hooAWbizsaPawj2aBu+koioz8/Ser6wEPUkr8mEwPBMJ/R7ax94tiU5LOg==}
     engines: {node: '>=18'}
 
   '@karinjs/moment@1.1.5':
@@ -1625,12 +1625,12 @@ packages:
   '@karinjs/plugins-list@1.5.0':
     resolution: {integrity: sha512-lbxoLAp757yGparirfcDGpvLLmA91Pq+xc+IrIW2kcRMglTr+wTkrr6PQ9OtYO7HhTuqpYefIoxwuL7dVEeoWA==}
 
-  '@karinjs/redis@1.1.0':
-    resolution: {integrity: sha512-EIqH6ww5DoB0zZJa9vAoZDjdD4bRSvVKKQjBIA9huNzZiy78oBPwxHjlcNoC9GiJQmgWvx2CrylnP25pT2staA==}
+  '@karinjs/redis@1.1.3':
+    resolution: {integrity: sha512-Keo+1pJxvddTqBF4BE7AnZqvbBRXZ4QaZa8uJCKngmQ303TV3M0x0gHuKBfDNXQAkiHylw09a3YAzj68sh/Dhw==}
     engines: {node: '>=18'}
 
-  '@karinjs/sqlite3@0.1.0':
-    resolution: {integrity: sha512-1LcIFSY2Ws5abtxs0Tgeq+uDEo0ioKa4R2AeXkdE5o1hC7mFyWLFlLrYazsXF6XB/ttDrwc8qEUGLVN3EfUjzg==}
+  '@karinjs/sqlite3@0.1.3':
+    resolution: {integrity: sha512-xFe+2EsbQ9OSZ5HkkZg66iQxPKZks1uE8UazpeQLbkrkdC1k8UGEjT65FMlUgHzcAdbuyex+UElchX7mH8K6xQ==}
     engines: {node: '>=18'}
 
   '@karinjs/ws@1.0.4':
@@ -7041,15 +7041,15 @@ snapshots:
 
   '@karinjs/axios@1.0.1': {}
 
-  '@karinjs/dotenv@1.1.1': {}
+  '@karinjs/dotenv@1.1.2': {}
 
-  '@karinjs/express@1.0.2': {}
+  '@karinjs/express@1.0.3': {}
 
-  '@karinjs/jsonwebtoken@1.1.0': {}
+  '@karinjs/jsonwebtoken@1.1.1': {}
 
-  '@karinjs/lodash@1.0.2': {}
+  '@karinjs/lodash@1.1.1': {}
 
-  '@karinjs/log4js@1.1.3': {}
+  '@karinjs/log4js@1.1.4': {}
 
   '@karinjs/moment@1.1.5': {}
 
@@ -7063,9 +7063,9 @@ snapshots:
 
   '@karinjs/plugins-list@1.5.0': {}
 
-  '@karinjs/redis@1.1.0': {}
+  '@karinjs/redis@1.1.3': {}
 
-  '@karinjs/sqlite3@0.1.0': {}
+  '@karinjs/sqlite3@0.1.3': {}
 
   '@karinjs/ws@1.0.4': {}
 
