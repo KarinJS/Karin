@@ -93,7 +93,10 @@ const restart = () => {
     process.exit(1)
   }
 
-  execSync(`pm2 restart ${pm2Dir}`, { cwd: process.cwd() })
+  const data = JSON.parse(fs.readFileSync(pm2Dir, 'utf-8'))
+  /** 直接使用重启命令存在问题 不过后续应该用不到这里了... */
+  execSync(`pm2 delete ${data.apps[0].name}`, { cwd: process.cwd() })
+  execSync(`pm2 start ${pm2Dir}`, { cwd: process.cwd() })
   console.log('[pm2] 重启成功')
   process.exit(0)
 }

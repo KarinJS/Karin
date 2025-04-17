@@ -1,98 +1,78 @@
+/**
+ * 初始化项目说明
+ * 1. @karinjs 目录
+ * 2. 创建.npmrc
+ * 3. 创建.pnpmfile.cjs
+ * 4. 创建pnpm-workspace.yaml
+ * 5. 标准化package.json
+ * 6. 非开发环境创建plugins/karin-plugin-example
+ * 7. 创建基本配置文件
+ */
+
 import fs from 'node:fs'
 import path from 'node:path'
-import { execSync } from './exec.js'
 import { URL, fileURLToPath } from 'node:url'
-
-let isDev = false
-const dir = process.env.INIT_CWD || process.cwd()
-const pkgDir = fileURLToPath(new URL('../..', import.meta.url))
 
 /**
  * 判断是否处于插件开发环境
+ * @param dir 目标目录
  */
-const isPluginDev = () => {
-  /**
-   * 规则如下
-   * 1. 根目录的package.json中karin字段存在
-   * 2. 存在src目录
-   * 3. 存在tsconfig.json文件
-   * 4. 存在.prettierrc文件
-   * 5. 存在eslint.config.mjs文件
-   */
-  const pkg = fs.readFileSync(path.join(dir, 'package.json'), 'utf-8')
-  const data = JSON.parse(pkg)
-  if (data?.karin) return true
-  if (fs.existsSync(path.join(dir, 'src'))) return true
-  if (fs.existsSync(path.join(dir, 'tsconfig.json'))) return true
-  if (fs.existsSync(path.join(dir, '.prettierrc'))) return true
-  if (fs.existsSync(path.join(dir, 'eslint.config.mjs'))) return true
-  return false
+const getIsDev = (dir: string) => {
+  if (process.env.NODE_ENV === 'development') {
+    return true
+  }
+
+  const list = [
+    path.join(dir, 'src'),
+    path.join(dir, 'tsconfig.json'),
+    path.join(dir, 'eslint.config.mjs'),
+    path.join(dir, 'eslint.config.js'),
+    path.join(dir, '.prettierrc'),
+    path.join(dir, 'vite.config.ts'),
+    path.join(dir, 'tsup.config.ts'),
+  ]
+
+  return list.some(item => fs.existsSync(item))
 }
 
 /**
  * 创建基本目录
- */
-export const createDir = () => {
-  const list = [
-    path.join(dir, '@karinjs', 'logs'),
-    path.join(dir, '@karinjs', 'config'),
-    path.join(dir, '@karinjs', 'data'),
-    path.join(dir, '@karinjs', 'resource'),
-    path.join(dir, '@karinjs', 'temp', 'console'),
-    path.join(dir, '@karinjs', 'temp', 'html'),
-  ]
-
-  !isDev && list.push(path.join(dir, 'plugins', 'karin-plugin-example'))
-  list.forEach(item => {
-    if (!fs.existsSync(item)) fs.mkdirSync(item, { recursive: true })
-  })
-}
-
-/**
- * 创建 .pnpmfile.cjs 文件
+ * @param isDev - 是否处于开发环境
  * @param dir - 目标目录
  */
-const createPnpmFile = (dir: string) => {
-  const pnpmfile = path.join(dir, '.pnpmfile.cjs')
-  if (fs.existsSync(pnpmfile)) return
+const createDir = (isDev: boolean, dir: string) => {
+  const list = [
+    'logs',
+    'config',
+    'data',
+    'resource',
+    'temp/console',
+    'temp/html',
+  ]
 
-  const content = [
-    '// 清空对等依赖中的node-karin',
-    'function readPackage (pkg, context) {',
-    "  if (pkg?.['peerDependencies']?.['node-karin'] && pkg['peerDependencies']['node-karin'] !== 'file:./lib') {",
-    "    delete pkg['peerDependencies']['node-karin']",
-    '  }',
-    '  return pkg',
-    '}',
-    'module.exports = {',
-    '  hooks: {',
-    '    readPackage',
-    '  },',
-    '}',
-  ].join('\n')
+  list.forEach(item => {
+    const dirPath = path.join(dir, '@karinjs', item)
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true })
+    }
+  })
 
-  fs.writeFileSync(pnpmfile, content)
-}
+  if (isDev) return
 
-/**
- * 检查是否需要创建 .npmrc
- * @returns 如果不需要创建返回 true
- */
-const shouldSkipNpmrc = () => {
-  const { stdout } = execSync('npm config get registry')
-  if (stdout.includes('registry.npmjs.org')) return true
-
-  const { stdout: proxy } = execSync('npm config get proxy')
-  return !!proxy
+  const example = path.join(dir, 'plugins', 'karin-plugin-example')
+  if (!fs.existsSync(example)) {
+    fs.mkdirSync(example, { recursive: true })
+  }
 }
 
 /**
  * 创建或更新 .npmrc 文件
  * @param dir - 目标目录
  */
-const createOrUpdateNpmrc = (dir: string) => {
+const npmrc = (dir: string) => {
   // TODO: 后续改为远程api拉取 动态更新
   const list = [
+    'sqlite3_binary_host_mirror=https://registry.npmmirror.com/-/binary/sqlite3',
     'node_sqlite3_binary_host_mirror=https://registry.npmmirror.com/-/binary/sqlite3',
     'better_sqlite3_binary_host_mirror=https://registry.npmmirror.com/-/binary/better-sqlite3',
     'sass_binary_site=https://registry.npmmirror.com/-/binary/node-sass',
@@ -123,16 +103,52 @@ const createOrUpdateNpmrc = (dir: string) => {
 }
 
 /**
+ * 创建 .pnpmfile.cjs 文件
+ * @param isDev - 是否处于开发环境
+ * @param dir - 目标目录
+ */
+const pnpmfile = (isDev: boolean, dir: string) => {
+  if (isDev) return
+
+  const pnpmfile = path.join(dir, '.pnpmfile.cjs')
+  if (fs.existsSync(pnpmfile)) return
+
+  const content = [
+    '// 清空对等依赖中的node-karin',
+    'function readPackage (pkg, context) {',
+    "  if (pkg?.['peerDependencies']?.['node-karin'] && pkg['peerDependencies']['node-karin'] !== 'file:./lib') {",
+    "    delete pkg['peerDependencies']['node-karin']",
+    '  }',
+    '  return pkg',
+    '}',
+    'module.exports = {',
+    '  hooks: {',
+    '    readPackage',
+    '  },',
+    '}',
+  ].join('\n')
+
+  fs.writeFileSync(pnpmfile, content)
+}
+
+/**
  * 创建或更新 .env 文件
  * @param dir - 目标目录
  */
 const createOrUpdateEnv = (dir: string) => {
   /** 生成随机6位字母key */
-  const generateRandomKey = () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
-    return Array.from({ length: 6 }, () =>
-      chars.charAt(Math.floor(Math.random() * chars.length))
-    ).join('')
+  const generateRandomKey = (type: 'http' | 'ws') => {
+    if (type === 'http' && process.env.HTTP_AUTH_KEY) {
+      return process.env.HTTP_AUTH_KEY
+    }
+    if (type === 'ws' && process.env.WS_SERVER_AUTH_KEY) {
+      return process.env.WS_SERVER_AUTH_KEY
+    }
+
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+    return Array.from({ length: 6 }, () => {
+      return chars.charAt(Math.floor(Math.random() * chars.length))
+    }).join('')
   }
 
   const envData = [
@@ -143,9 +159,9 @@ const createOrUpdateEnv = (dir: string) => {
     '# HTTP监听地址',
     'HTTP_HOST=0.0.0.0',
     '# HTTP鉴权秘钥 仅用于karin自身Api',
-    `HTTP_AUTH_KEY=${generateRandomKey()}`,
+    `HTTP_AUTH_KEY=${generateRandomKey('http')}`,
     '# ws_server鉴权秘钥',
-    `WS_SERVER_AUTH_KEY=${generateRandomKey()}`,
+    `WS_SERVER_AUTH_KEY=${generateRandomKey('ws')}`,
     '\n',
     '# 是否启用Redis 关闭后将使用内部虚拟Redis',
     'REDIS_ENABLE=true',
@@ -169,9 +185,9 @@ const createOrUpdateEnv = (dir: string) => {
     'FFPROBE_PATH=',
     '# ffplay',
     'FFPLAY_PATH=',
-    '\n',
-    '# 这里请勿修改',
     'RUNTIME=node',
+    'NODE_ENV=production',
+    'TSX_WATCH=false',
   ]
 
   const env = path.join(dir, '.env')
@@ -194,34 +210,25 @@ const createOrUpdateEnv = (dir: string) => {
 
 /**
  * 创建 pnpm-workspace.yaml 文件
+ * @param isDev - 是否处于开发环境
  * @param dir - 目标目录
  */
-const createWorkspace = (dir: string) => {
+const createWorkspace = (isDev: boolean, dir: string) => {
+  if (isDev) return
+
   const workspace = path.join(dir, 'pnpm-workspace.yaml')
   if (fs.existsSync(workspace)) return
 
-  const content = "packages:\n  - 'plugins/**'\n"
+  const content = "packages:\n  - 'plugins/*'\n"
   fs.writeFileSync(workspace, content)
 }
 
 /**
- * 生成一些其他文件
- */
-export const createOtherFile = async () => {
-  !isDev && createPnpmFile(dir)
-  !isDev && createWorkspace(dir)
-
-  if (!shouldSkipNpmrc()) {
-    createOrUpdateNpmrc(dir)
-  }
-
-  createOrUpdateEnv(dir)
-}
-
-/**
  * 生成配置文件
+ * @param dir - 目标目录
  */
-export const createConfig = () => {
+const createConfigFile = (dir: string) => {
+  const pkgDir = fileURLToPath(new URL('../..', import.meta.url))
   const defCfg = path.join(pkgDir, 'default', 'config')
   /** 读取默认目录下的所有json文件 遍历复制到目标目录 */
   const files = fs.readdirSync(defCfg)
@@ -244,55 +251,85 @@ export const createConfig = () => {
     const defData = fs.readFileSync(filePath, 'utf-8')
     const targetData = fs.readFileSync(targetFile, 'utf-8')
     const mergedData = { ...JSON.parse(defData), ...JSON.parse(targetData) }
+    if (file.includes('pm2.json')) {
+      mergedData.apps[0].script = 'index.mjs'
+    }
+
     fs.writeFileSync(targetFile, JSON.stringify(mergedData, null, 2))
   })
 }
 
 /**
  * 修改package.json
+ * @param isDev - 是否处于开发环境
+ * @param dir - 目标目录
  */
-export const modifyPackageJson = async () => {
-  /** 将type设置为module */
-  const pkg = fs.readFileSync(path.join(dir, 'package.json'), 'utf-8')
-  const data = JSON.parse(pkg)
-  data.type = 'module'
+const modifyPackageJson = (isDev: boolean, dir: string) => {
+  const pkgDir = path.join(dir, 'package.json')
+  const pkg = (() => {
+    try {
+      return JSON.parse(fs.readFileSync(pkgDir, 'utf-8'))
+    } catch {
+      return {
+        dependencies: {
+          'node-karin': 'latest',
+        },
+      }
+    }
+  })()
+
   // 永恒是猪 scripts都为空
-  if (!data.scripts) data.scripts = {}
-  data.scripts.karin = 'karin'
+  if (!pkg.scripts) pkg.scripts = {}
+  if (!pkg.name) pkg.name = 'karin-project'
+  if (!pkg.version) pkg.version = '1.0.0'
 
-  // 检查pnpm版本
-  const { stdout: pnpmVersion } = execSync('pnpm -v')
-  const majorVersion = parseInt(pnpmVersion.split('.')[0])
-
-  if (majorVersion < 10 && data.pnpm) {
-    delete data.pnpm
-  } else if (majorVersion >= 10) {
-    if (typeof data.pnpm !== 'object') data.pnpm = {}
-    data.pnpm.onlyBuiltDependenciesFile = [
-      'sqlite3',
-      'classic-level',
-    ]
-  }
-
-  const list = ['app', 'start', 'pm2', 'stop', 'rs', 'log']
   if (!isDev) {
-    list.forEach(v => {
-      data.scripts[v] = `karin ${v}`
-    })
+    pkg.type = 'module'
+    if (!pkg.scripts.ki) pkg.scripts.ki = 'karin'
+    if (!pkg.scripts.karin) pkg.scripts.karin = 'karin'
+    if (!pkg.scripts.app) pkg.scripts.app = 'node index.mjs'
+    if (!pkg.scripts.start) pkg.scripts.start = 'node index.mjs'
+    if (!pkg.scripts.pm2) pkg.scripts.pm2 = 'pm2 start @karinjs/config/pm2.json'
+    if (!pkg.scripts.stop) pkg.scripts.stop = 'karin stop'
+    if (!pkg.scripts.rs) pkg.scripts.rs = 'karin rs'
+    if (!pkg.scripts.log) pkg.scripts.log = 'karin log'
+    if (!pkg.scripts.up) pkg.scripts.up = 'karin up'
   }
 
-  fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify(data, null, 2))
-  return data
+  /** pnpm10无力适配... */
+  if (pkg.pnpm) delete pkg.pnpm
+  fs.writeFileSync(pkgDir, JSON.stringify(pkg, null, 2))
+  return pkg
+}
+
+/**
+ * 生成入口文件
+ */
+const createEntryFile = (dir: string) => {
+  const entryFile = path.join(dir, 'index.mjs')
+  if (fs.existsSync(entryFile)) return
+  fs.writeFileSync(entryFile, `(() => {
+  import('node-karin/start')
+})()
+`)
 }
 
 /**
  * 入口函数
  */
 export const init = async () => {
-  isDev = isPluginDev()
-  createDir()
-  await createOtherFile()
-  createConfig()
-  await modifyPackageJson()
-  process.exit(0)
+  const dir = process.env.INIT_CWD || process.cwd()
+  const isDev = getIsDev(dir)
+  createDir(isDev, dir)
+  createWorkspace(isDev, dir)
+  createConfigFile(dir)
+  modifyPackageJson(isDev, dir)
+  npmrc(dir)
+  pnpmfile(isDev, dir)
+  createEntryFile(dir)
+  createOrUpdateEnv(dir)
+
+  if (process.env.KARIN_CLI) {
+    process.exit(0)
+  }
 }

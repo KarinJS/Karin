@@ -59,7 +59,7 @@ export const start = async (env?: string) => {
     }
   })
 
-  child.on('exit', code => process.exit(code))
+  child.on('exit', code => process.exit(code!))
 }
 
 /**
