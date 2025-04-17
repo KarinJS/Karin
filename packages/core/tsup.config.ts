@@ -5,11 +5,13 @@ import { options } from './tsup.config.base'
 /**
  * 删除dist目录下的出文件夹外的所有文件 不递归删除
  */
-fs.readdirSync('dist', { withFileTypes: true }).forEach((file) => {
-  if (file.isFile()) {
-    fs.unlinkSync(`dist/${file.name}`)
-  }
-})
+if (fs.existsSync('dist')) {
+  fs.readdirSync('dist', { withFileTypes: true }).forEach((file) => {
+    if (file.isFile()) {
+      fs.unlinkSync(`dist/${file.name}`)
+    }
+  })
+}
 
 const entry = [
   'src/index.ts',
