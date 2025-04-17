@@ -11,6 +11,7 @@ import type { Request, Response } from 'express'
 enum AuthErrorType {
   MissingToken = '鉴权失败: 缺少authorization',
   MissingUserId = '鉴权失败: 缺少x-user-id',
+  TokenError = '鉴权失败: token错误',
 }
 
 /**
@@ -33,7 +34,7 @@ const verifyToken = async (
   if (!userId) {
     /** 尝试明文密码验证 */
     if (authKey() === token) return true
-    createUnauthorizedResponse(res, AuthErrorType.MissingUserId)
+    createUnauthorizedResponse(res, AuthErrorType.TokenError)
     return false
   }
 

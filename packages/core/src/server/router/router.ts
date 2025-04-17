@@ -1,3 +1,5 @@
+/** 基本路由 */
+export const BASE_ROUTER = '/api/v1'
 /** 登录路由 */
 export const LOGIN_ROUTER = '/login'
 /** 刷新令牌路由 */

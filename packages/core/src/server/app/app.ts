@@ -7,6 +7,7 @@ import getMimeType from '../utils/getMimeType'
 import { rootRouter } from '../system/root'
 import { listeners } from '@/core/internal/listeners'
 import { router } from '../router/indx'
+import { BASE_ROUTER } from '../router/router'
 
 import type root from '@/root'
 import type { Express } from 'express'
@@ -118,7 +119,7 @@ export const initExpress = async (
 
   await import('./ws')
 
-  app.use('/api/v1', router)
+  app.use(BASE_ROUTER, router)
   app.get('/', rootRouter)
   web(dir)
   listen(port, host)
