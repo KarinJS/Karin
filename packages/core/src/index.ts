@@ -36,6 +36,7 @@ export { logger } from '@/utils/logger'
 
 export type * from '@/types'
 
+let isStart = false
 if (!process.env.EBV_FILE) process.env.EBV_FILE = '.env'
 
 /**
@@ -43,6 +44,13 @@ if (!process.env.EBV_FILE) process.env.EBV_FILE = '.env'
  * @description 启动框架
  */
 export const start = async () => {
+  if (isStart) {
+    console.error('karin 已经启动，请勿重复启动')
+    return
+  }
+
+  isStart = true
+
   /**
    * 1. 加载环境变量
    * - 加载环境变量到process.env
@@ -126,5 +134,3 @@ export const start = async () => {
 
   logger.mark(`karin 启动完成: 耗时 ${logger.green(process.uptime().toFixed(2))} 秒...`)
 }
-
-start()

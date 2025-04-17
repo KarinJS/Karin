@@ -2,23 +2,32 @@ import fs from 'node:fs'
 import { defineConfig } from 'tsup'
 import { options } from './tsup.config.base'
 
-/** 删掉index.js index.d.ts */
-fs.rmSync('dist/index.js', { force: true })
-fs.rmSync('dist/index.d.ts', { force: true })
+/**
+ * 删除dist目录下的出文件夹外的所有文件 不递归删除
+ */
+fs.readdirSync('dist', { withFileTypes: true }).forEach((file) => {
+  if (file.isFile()) {
+    fs.unlinkSync(`dist/${file.name}`)
+  }
+})
+
+const entry = [
+  'src/index.ts',
+  'src/root.ts',
+  'src/app.ts',
+]
 
 export default defineConfig({
   ...options,
-  clean: true,
-  entry: [
-    'src/index.ts',
-    'src/root.ts',
-  ], // 入口文件
-  external: [
-    ...(options.external || []),
-    '@karinjs/node-pty',
-    '@karinjs/plugin-webui-network-monitor',
-    'dotenv',
-    'jsonwebtoken',
-    'log4js',
-  ],
+  clean: false,
+  splitting: false,
+  format: ['esm'],
+  entry,
+  treeshake: 'recommended',
+  dts: {
+    entry: [
+      ...entry,
+      'src/global.d.ts',
+    ],
+  },
 })

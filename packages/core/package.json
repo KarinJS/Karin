@@ -28,100 +28,105 @@
     ".": {
       "types": "./dist/index.d.ts",
       "development": "./src/index.ts",
-      "default": "./dist/index.js"
+      "default": "./dist/index.mjs"
+    },
+    "./start": {
+      "types": "./dist/app.d.ts",
+      "development": "./src/app.ts",
+      "default": "./dist/app.mjs"
     },
     "./dir": {
       "types": "./dist/root.d.ts",
       "development": "./src/root.ts",
-      "default": "./dist/root.js"
+      "default": "./dist/root.mjs"
     },
     "./cli": {
       "types": "./dist/cli/index.d.ts",
       "development": "./src/exports/cli/index.ts",
-      "default": "./dist/cli/index.js"
+      "default": "./dist/cli/index.mjs"
     },
     "./root": {
       "types": "./dist/root.d.ts",
       "development": "./src/root.ts",
-      "default": "./dist/root.js"
+      "default": "./dist/root.mjs"
     },
     "./template": {
       "types": "./dist/module/art-template.d.ts",
       "development": "./exports/module/art-template.ts",
-      "default": "./dist/module/art-template.js"
+      "default": "./dist/module/art-template.mjs"
     },
     "./art-template": {
       "types": "./dist/module/art-template.d.ts",
       "development": "./exports/module/art-template.ts",
-      "default": "./dist/module/art-template.js"
+      "default": "./dist/module/art-template.mjs"
     },
     "./axios": {
       "types": "./dist/module/axios.d.ts",
       "development": "./exports/module/axios.ts",
-      "default": "./dist/module/axios.js"
+      "default": "./dist/module/axios.mjs"
     },
     "./chalk": {
       "types": "./dist/module/chalk.d.ts",
       "development": "./exports/module/chalk.ts",
-      "default": "./dist/module/chalk.js"
+      "default": "./dist/module/chalk.mjs"
     },
     "./chokidar": {
       "types": "./dist/module/chokidar.d.ts",
       "development": "./exports/module/chokidar.ts",
-      "default": "./dist/module/chokidar.js"
+      "default": "./dist/module/chokidar.mjs"
     },
     "./express": {
       "types": "./dist/module/express.d.ts",
       "development": "./exports/module/express.ts",
-      "default": "./dist/module/express.js"
+      "default": "./dist/module/express.mjs"
     },
     "./lodash": {
       "types": "./dist/module/lodash.d.ts",
       "development": "./exports/module/lodash.ts",
-      "default": "./dist/module/lodash.js"
+      "default": "./dist/module/lodash.mjs"
     },
     "./moment": {
       "types": "./dist/module/moment.d.ts",
       "development": "./exports/module/moment.ts",
-      "default": "./dist/module/moment.js"
+      "default": "./dist/module/moment.mjs"
     },
     "./schedule": {
       "types": "./dist/module/node-schedule.d.ts",
       "development": "./exports/module/node-schedule.ts",
-      "default": "./dist/module/node-schedule.js"
+      "default": "./dist/module/node-schedule.mjs"
     },
     "./node-schedule": {
       "types": "./dist/module/node-schedule.d.ts",
       "development": "./exports/module/node-schedule.ts",
-      "default": "./dist/module/node-schedule.js"
+      "default": "./dist/module/node-schedule.mjs"
     },
     "./redis": {
       "types": "./dist/module/redis.d.ts",
       "development": "./exports/module/redis.ts",
-      "default": "./dist/module/redis.js"
+      "default": "./dist/module/redis.mjs"
     },
     "./ws": {
       "types": "./dist/module/ws.d.ts",
       "development": "./exports/module/ws.ts",
-      "default": "./dist/module/ws.js"
+      "default": "./dist/module/ws.mjs"
     },
     "./yaml": {
       "types": "./dist/module/yaml.d.ts",
       "development": "./exports/module/yaml.ts",
-      "default": "./dist/module/yaml.js"
+      "default": "./dist/module/yaml.mjs"
     },
     "./sqlite3": {
       "types": "./dist/module/sqlite3.d.ts",
       "development": "./exports/module/sqlite3.ts",
-      "default": "./dist/module/sqlite3.js"
+      "default": "./dist/module/sqlite3.mjs"
     }
   },
   "main": "./src/index.ts",
   "types": "./dist/index.d.ts",
   "bin": {
-    "k": "./dist/cli/index.js",
-    "karin": "./dist/cli/index.js",
-    "ki": "./dist/cli/index.js"
+    "k": "./dist/cli/index.mjs",
+    "karin": "./dist/cli/index.mjs",
+    "ki": "./dist/cli/index.mjs"
   },
   "files": [
     "dist",
@@ -129,16 +134,16 @@
     "LICENSE"
   ],
   "scripts": {
-    ".": "node dist/index.js",
-    "app": "node dist/index.js",
+    ".": "pnpm app",
+    "app": "node dist/app.mjs",
     "build": "tsc && tsup --config tsup.config.ts",
     "build:cli": "tsc && tsup --config tsup.config.cli.ts",
-    "build:dev": "pnpm build:type",
+    "build:dev": "pnpm build:types",
     "build:module": "tsc && tsup --config tsup.config.module.ts",
     "build:types": "tsc && tsup --config tsup.config.types.ts",
     "build:prod": "pnpm build && pnpm build:cli && pnpm build:module",
-    "app:bun": "bun dist/index.js",
-    "cli": "node dist/cli/index.js",
+    "app:bun": "bun dist/app.mjs",
+    "cli": "node dist/cli/index.mjs",
     "cli:dev": "tsx exports/cli/index.ts",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/index.ts",
     "dev:bun": "cross-env EBV_FILE=\"development.env\" bun src/index.ts",
@@ -172,9 +177,6 @@
     "dotenv": "npm:@karinjs/dotenv@^1.1.2",
     "jsonwebtoken": "npm:@karinjs/jsonwebtoken@^1.1.1",
     "log4js": "npm:@karinjs/log4js@1.1.4"
-  },
-  "peerDependencies": {
-    "node-karin": "workspace:*"
   },
   "engines": {
     "node": ">=18"

@@ -28,4 +28,9 @@ export const options: Options = {
     '@karinjs/plugin-webui-network-monitor',
     '@karinjs/plugins-list',
   ],
+  outExtension () {
+    return {
+      js: '.mjs',
+    }
+  },
 }
