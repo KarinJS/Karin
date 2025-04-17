@@ -68,9 +68,6 @@ importers:
       moment:
         specifier: npm:@karinjs/moment@1.1.5
         version: '@karinjs/moment@1.1.5'
-      node-karin:
-        specifier: workspace:*
-        version: 'link:'
       node-schedule:
         specifier: npm:@karinjs/node-schedule@1.0.0
         version: '@karinjs/node-schedule@1.0.0'
