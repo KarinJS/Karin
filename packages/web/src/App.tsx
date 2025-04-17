@@ -11,15 +11,8 @@ const ConfigPage = lazy(() => import('@/pages/dashboard/config/index'))
 const PluginMarketPage = lazy(() => import('@/pages/dashboard/plugins'))
 const PluginConfigPage = lazy(() => import('@/pages/dashboard/plugins/config'))
 const PluginManagePage = lazy(() => import('@/pages/dashboard/plugins/manage'))
-const SandboxPage = lazy(() => import('@/pages/dashboard/sandbox'))
 const AboutPage = lazy(() => import('@/pages/dashboard/about'))
 const LoginPage = lazy(() => import('@/pages/login'))
-const ChatDetail = lazy(() => import('@/pages/dashboard/sandbox/chat/detail'))
-const DefaultPage = lazy(() => import('@/components/default_page'))
-const FriendRequest = lazy(() => import('@/pages/dashboard/sandbox/contact/friend_request'))
-const UserDetail = lazy(() => import('@/pages/dashboard/sandbox/contact/detail'))
-const GroupNotice = lazy(() => import('@/pages/dashboard/sandbox/contact/group_notice'))
-const GroupChatTest = lazy(() => import('@/pages/dashboard/sandbox/group'))
 const NotFoundPage = lazy(() => import('@/pages/404'))
 const LogPage = lazy(() => import('@/pages/dashboard/log'))
 const TerminalPage = lazy(() => import('@/pages/dashboard/terminal'))
@@ -57,20 +50,6 @@ function App () {
           <Route element={<PluginMarketPage />} path='/plugins/list' />
           <Route element={<PluginConfigPage />} path='/plugins/config' />
           <Route element={<PluginManagePage />} path='/plugins/manage' />
-          <Route element={<SandboxPage />} path='/sandbox'>
-            <Route element={<Navigate to='/sandbox/chat' />} path='' />
-            <Route path='chat'>
-              <Route element={<DefaultPage />} path='' />
-              <Route element={<ChatDetail />} path=':type/:id' />
-            </Route>
-            <Route path='contact/*'>
-              <Route element={<DefaultPage />} path='' />
-              <Route element={<FriendRequest />} path='friend_request' />
-              <Route element={<GroupNotice />} path='group_notice' />
-              <Route element={<UserDetail />} path=':id' />
-            </Route>
-            <Route element={<GroupChatTest />} path='group' />
-          </Route>
           <Route element={<LogPage />} path='/log' />
           <Route element={<AboutPage />} path='/about' />
           <Route path='*' element={<NotFoundPage />} />
