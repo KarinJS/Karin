@@ -78,8 +78,8 @@ importers:
         specifier: npm:@karinjs/redis@1.1.0
         version: '@karinjs/redis@1.1.0'
       sqlite3:
-        specifier: npm:@karinjs/sqlite3@1.0.1
-        version: '@karinjs/sqlite3@1.0.1'
+        specifier: npm:@karinjs/sqlite3@0.1.0
+        version: '@karinjs/sqlite3@0.1.0'
       ws:
         specifier: npm:@karinjs/ws@1.0.4
         version: '@karinjs/ws@1.0.4'
@@ -1629,8 +1629,9 @@ packages:
     resolution: {integrity: sha512-EIqH6ww5DoB0zZJa9vAoZDjdD4bRSvVKKQjBIA9huNzZiy78oBPwxHjlcNoC9GiJQmgWvx2CrylnP25pT2staA==}
     engines: {node: '>=18'}
 
-  '@karinjs/sqlite3@1.0.1':
-    resolution: {integrity: sha512-DJvH3+4J31N8TDujllUlg3JT0ontxRSog39MGfXsmgCUeRaonPTxsPHZc0Y1tn6Js1G72E4LP95mAmCrzMmDow==}
+  '@karinjs/sqlite3@0.1.0':
+    resolution: {integrity: sha512-1LcIFSY2Ws5abtxs0Tgeq+uDEo0ioKa4R2AeXkdE5o1hC7mFyWLFlLrYazsXF6XB/ttDrwc8qEUGLVN3EfUjzg==}
+    engines: {node: '>=18'}
 
   '@karinjs/ws@1.0.4':
     resolution: {integrity: sha512-RbaNNTd5wAH6sqwGaetoNyPVMydZu+9db4MxFxrKpzdRo3wMiR8eijdVo7S/jnWnoMHSZ5GJ5wTymrIsVCf9pw==}
@@ -7064,7 +7065,7 @@ snapshots:
 
   '@karinjs/redis@1.1.0': {}
 
-  '@karinjs/sqlite3@1.0.1': {}
+  '@karinjs/sqlite3@0.1.0': {}
 
   '@karinjs/ws@1.0.4': {}
 

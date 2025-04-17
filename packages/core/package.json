@@ -69,7 +69,7 @@
     "moment": "npm:@karinjs/moment@1.1.5",
     "node-schedule": "npm:@karinjs/node-schedule@1.0.0",
     "redis": "npm:@karinjs/redis@1.1.0",
-    "sqlite3": "npm:@karinjs/sqlite3@1.0.1",
+    "sqlite3": "npm:@karinjs/sqlite3@0.1.0",
     "ws": "npm:@karinjs/ws@1.0.4",
     "yaml": "2.7.0"
   },
@@ -181,6 +181,11 @@
       "types": "./dist/module/yaml.d.ts",
       "development": "./exports/module/yaml.ts",
       "default": "./dist/module/yaml.js"
+    },
+    "./sqlite3": {
+      "types": "./dist/module/sqlite3.d.ts",
+      "development": "./exports/module/sqlite3.ts",
+      "default": "./dist/module/sqlite3.js"
     }
   }
 }
