@@ -58,7 +58,7 @@ export const radio = {
       throw new Error('radio 必须是一个数组')
     }
 
-    return createRadioGroup(key, { radio: config.radio, })
+    return createRadioGroup(key, { radio: config.radio })
   },
 
   /**
@@ -67,7 +67,7 @@ export const radio = {
    * @param config 单选框配置
    */
   default: (key: string, config: Partial<Omit<Radio, 'key' | 'componentType' | 'className'>> = {}) => createRadio(key, {
-    ...config
+    ...config,
   }),
 
   /**
@@ -107,6 +107,6 @@ export const radio = {
    */
   invalid: (key: string, config: Partial<Omit<Radio, 'key' | 'componentType' | 'className'>> = {}) => createRadio(key, {
     isInvalid: true,
-    ...config
-  })
+    ...config,
+  }),
 }

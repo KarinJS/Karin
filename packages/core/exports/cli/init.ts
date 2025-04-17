@@ -131,7 +131,7 @@ const createOrUpdateEnv = (dir: string) => {
   const generateRandomKey = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
     return Array.from({ length: 6 }, () =>
-      chars.charAt(Math.floor(Math.random() * chars.length)),
+      chars.charAt(Math.floor(Math.random() * chars.length))
     ).join('')
   }
 

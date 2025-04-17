@@ -1,7 +1,7 @@
 import {
   createSuccessResponse,
   createBadRequestResponse,
-  createServerErrorResponse
+  createServerErrorResponse,
 } from '@/server/utils/response'
 import {
   config,
@@ -13,7 +13,7 @@ import {
   redis,
   getEnv,
   setConfig,
-  writeEnv
+  writeEnv,
 } from '@/utils/config'
 
 import type { RequestHandler } from 'express'
@@ -83,7 +83,7 @@ export const saveConfig: RequestHandler = async (req, res) => {
       const result = Object.entries(data).map(([key, value]) => ({
         key,
         value: value.value,
-        comment: value.comment
+        comment: value.comment,
       }))
       writeEnv(result, undefined, true)
       return true

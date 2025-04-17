@@ -41,13 +41,15 @@ const useSendMessage = () => {
       sender: {
         id: targetId,
         name: 'Bot',
-        role: 'member'
+        role: 'member',
       },
-      ...(type === 'group' ? {
-        groupId: targetId,
-        groupName: '群聊'
-      } : {}),
-      elements
+      ...(type === 'group'
+        ? {
+            groupId: targetId,
+            groupName: '群聊',
+          }
+        : {}),
+      elements,
     }
 
     // 3. 发送消息上报请求
@@ -58,4 +60,4 @@ const useSendMessage = () => {
   return { sendMessage }
 }
 
-export default useSendMessage 
+export default useSendMessage

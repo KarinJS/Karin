@@ -54,7 +54,7 @@ export const spawnProcess = (
   options: Parameters<typeof spawn>[2] = {},
   emitLog: (message: string) => void
 ) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const proc = spawn(command, args, {
       shell: true,
       cwd: options.cwd || process.cwd(),

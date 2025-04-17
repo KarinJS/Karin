@@ -34,7 +34,7 @@ export const divider = {
    */
   horizontal: (key: string, config: Partial<Omit<DividerProps, 'key' | 'componentType'>> = {}) => createDivider(key, {
     orientation: 'horizontal',
-    ...config
+    ...config,
   }),
 
   /**
@@ -44,6 +44,6 @@ export const divider = {
    */
   vertical: (key: string, config: Partial<Omit<DividerProps, 'key' | 'componentType'>> = {}) => createDivider(key, {
     orientation: 'vertical',
-    ...config
-  })
+    ...config,
+  }),
 }

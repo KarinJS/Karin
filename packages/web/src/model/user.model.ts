@@ -28,7 +28,7 @@ export class User {
 
   async refresh () {
     // 不需要重新获取，因为已经有了完整信息
-    return
+
   }
 
   setInfo (nickname: string, avatar: string, signature: string) {
@@ -47,7 +47,7 @@ export class User {
       nickname: this.nickname,
       avatar: this.avatar,
       signature: this.signature,
-      id: this.id
+      id: this.id,
     }
   }
 }

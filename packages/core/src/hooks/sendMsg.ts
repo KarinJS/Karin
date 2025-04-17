@@ -19,7 +19,7 @@ const addHook = <T extends NormalMessageCallback | ForwardMessageCallback> (
   list.push({
     id,
     priority: options.priority ?? 10000,
-    callback
+    callback,
   })
   return { id, list: lodash.orderBy(list, ['priority'], ['asc']) }
 }
@@ -58,7 +58,7 @@ export const sendMsg = {
     logger.mark(`[hooks] 移除发送消息钩子: ${id}`)
     cache.sendMsg.message = cache.sendMsg.message.filter(item => item.id !== id)
     cache.sendMsg.forward = cache.sendMsg.forward.filter(item => item.id !== id)
-  }
+  },
 }
 
 /**
@@ -117,5 +117,5 @@ export const hooksSendMsgEmit = {
       cache.sendMsg.forward,
       (hook, next) => hook.callback(contact, elements, options, next)
     )
-  }
+  },
 }

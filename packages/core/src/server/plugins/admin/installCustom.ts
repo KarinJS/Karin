@@ -103,7 +103,7 @@ const installGit = async (
       target: data.target,
       operatorIp: ip,
     },
-    async (options: TaskEntity, emitLog: (message: string) => void) => {
+    async (_: TaskEntity, emitLog: (message: string) => void) => {
       const args = [
         data.branch ? `-b ${data.branch}` : '',
         'clone',

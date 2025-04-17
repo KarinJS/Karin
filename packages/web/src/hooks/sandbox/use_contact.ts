@@ -21,7 +21,7 @@ interface Group {
 const defaultGroup = {
   id: 'groupSandbox',
   name: '测试群',
-  avatar: 'https://p.qlogo.cn/gh/967068507/967068507/0'
+  avatar: 'https://p.qlogo.cn/gh/967068507/967068507/0',
 } as const
 
 /** 获取好友列表 */
@@ -33,7 +33,7 @@ const getFriendList = async () => {
     return {
       user_id: friend.userId,
       nickname: friend.nick,
-      avatar: friend.avatar
+      avatar: friend.avatar,
     }
   })
 }
@@ -51,13 +51,13 @@ const getGroupList = async () => {
     const defaultGroupUser = User.fromGroup({
       groupId: defaultGroup.id,
       name: defaultGroup.name,
-      avatar: defaultGroup.avatar
+      avatar: defaultGroup.avatar,
     })
     updateUserCache(defaultGroupUser)
     return [{
       group_id: defaultGroup.id,
       name: defaultGroup.name,
-      avatar: defaultGroup.avatar
+      avatar: defaultGroup.avatar,
     }]
   }
   return groups.map(group => {
@@ -66,7 +66,7 @@ const getGroupList = async () => {
     return {
       group_id: group.groupId,
       name: group.name,
-      avatar: group.avatar
+      avatar: group.avatar,
     }
   })
 }
@@ -85,7 +85,7 @@ export const useFriendList = () => {
         User.fromFriend({
           userId: friend.user_id,
           nick: friend.nickname,
-          avatar: friend.avatar
+          avatar: friend.avatar,
         })
       )
       setData(list)
@@ -133,4 +133,4 @@ export const useGroupList = () => {
   }, [])
 
   return { data, loading, error, refresh: fetchGroupList }
-} 
+}

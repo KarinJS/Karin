@@ -42,7 +42,7 @@ const migrate = (
 
   /** 转换为新版本 */
   Object.entries(data).forEach(([key, value]) => {
-    list.push({ key, ...value, })
+    list.push({ key, ...value })
   })
 
   /** 写入新版本 */

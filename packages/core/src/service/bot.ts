@@ -145,7 +145,7 @@ export const unregisterBot: UnregisterBot = (type, idOrIndex, address?) => {
  * @param bot 适配器实例
  * @returns 适配器索引
  */
-export const registerBot = (type: AdapterCommunication, bot: AdapterBase) => {
+export const registerBot = (_: AdapterCommunication, bot: AdapterBase) => {
   const id = ++index
   list.push({ index: id, bot })
 

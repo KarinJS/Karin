@@ -47,7 +47,7 @@ export const copyTemplate = (name: string, type: 'ts' | 'js') => {
     env,
     envContent
       .replace('HTTP_AUTH_KEY=QtYTbI', `HTTP_AUTH_KEY=${token}`)
-      .replace('WS_SERVER_AUTH_KEY=QOnAho', `WS_SERVER_AUTH_KEY=${wsToken}`),
+      .replace('WS_SERVER_AUTH_KEY=QOnAho', `WS_SERVER_AUTH_KEY=${wsToken}`)
   )
 
   console.log(green('✨ 项目目录结构创建完成'))
@@ -86,7 +86,7 @@ export const createDev = async (name: string, type: 'ts' | 'js', puppeteer: bool
         '--------------------------------',
         '  如需使用Puppeteer，请执行以下命令：',
         green(`  cd ${name}-puppeteer && node .`),
-        '--------------------------------',
+        '--------------------------------'
       )
     }
 

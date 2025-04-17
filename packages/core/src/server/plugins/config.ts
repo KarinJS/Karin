@@ -128,7 +128,7 @@ const loadConfig = async (configPath: string) => {
  * @param fnc 配置文件不符合要求时回调
  * @returns web.config配置
  */
-export const getWebConfig = async (type: Apps, id: string, fnc?: () => void) => {
+export const getWebConfig = async (type: Apps, id: string, _?: () => void) => {
   /** 只支持git npm */
   if (!['git', 'npm'].includes(type)) {
     return null

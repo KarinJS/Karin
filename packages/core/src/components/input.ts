@@ -19,7 +19,7 @@ const createInput = (
     data.rules = config.rules.map((rule) => {
       return {
         ...rule,
-        regex: rule.regex instanceof RegExp ? rule.regex.source : rule.regex
+        regex: rule.regex instanceof RegExp ? rule.regex.source : rule.regex,
       }
     })
   }
@@ -80,7 +80,7 @@ export const input = {
     isRequired: true,
     isClearable: true,
     color: 'primary',
-    ...config
+    ...config,
   }),
 
   /**
@@ -99,10 +99,10 @@ export const input = {
       {
         min: 0,
         max: 100,
-        error: '数字应在0-100之间'
-      }
+        error: '数字应在0-100之间',
+      },
     ],
-    ...config
+    ...config,
   }),
 
   /**
@@ -120,10 +120,10 @@ export const input = {
     rules: [
       {
         regex: /^(true|false)$/,
-        error: '请输入有效的布尔值'
-      }
+        error: '请输入有效的布尔值',
+      },
     ],
-    ...config
+    ...config,
   }),
 
   /**
@@ -141,10 +141,10 @@ export const input = {
     rules: [
       {
         regex: /^\d{4}-\d{2}-\d{2}$/,
-        error: '请输入有效的日期格式'
-      }
+        error: '请输入有效的日期格式',
+      },
     ],
-    ...config
+    ...config,
   }),
 
   /**
@@ -162,10 +162,10 @@ export const input = {
     rules: [
       {
         regex: /^\d{2}:\d{2}:\d{2}$/,
-        error: '请输入有效的时间格式'
-      }
+        error: '请输入有效的时间格式',
+      },
     ],
-    ...config
+    ...config,
   }),
 
   /**
@@ -183,10 +183,10 @@ export const input = {
     rules: [
       {
         regex: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/,
-        error: '请输入有效的日期时间格式'
-      }
+        error: '请输入有效的日期时间格式',
+      },
     ],
-    ...config
+    ...config,
   }),
 
   /**
@@ -204,15 +204,15 @@ export const input = {
     rules: [
       {
         regex: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$',
-        error: '请输入有效的邮箱地址'
+        error: '请输入有效的邮箱地址',
       },
       {
         minLength: 5,
         maxLength: 50,
-        error: '邮箱长度应在5-50个字符之间'
-      }
+        error: '邮箱长度应在5-50个字符之间',
+      },
     ],
-    ...config
+    ...config,
   }),
 
   /**
@@ -230,10 +230,10 @@ export const input = {
     rules: [
       {
         regex: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
-        error: '请输入有效的URL地址'
-      }
+        error: '请输入有效的URL地址',
+      },
     ],
-    ...config
+    ...config,
   }),
 
   /**
@@ -251,10 +251,10 @@ export const input = {
     rules: [
       {
         regex: /^1[3-9]\d{9}$/,
-        error: '请输入有效的手机号码'
-      }
+        error: '请输入有效的手机号码',
+      },
     ],
-    ...config
+    ...config,
   }),
 
   /**
@@ -272,10 +272,10 @@ export const input = {
     rules: [
       {
         minLength: 1,
-        error: '密码长度不能小于1位'
-      }
+        error: '密码长度不能小于1位',
+      },
     ],
-    ...config
+    ...config,
   }),
 
   /**
@@ -293,10 +293,10 @@ export const input = {
     rules: [
       {
         regex: /^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/,
-        error: '请输入有效的颜色格式'
-      }
+        error: '请输入有效的颜色格式',
+      },
     ],
-    ...config
+    ...config,
   }),
 
   /**
@@ -314,9 +314,9 @@ export const input = {
     rules: [
       {
         regex: /^[^{}]*$/,
-        error: '请输入有效的JSON格式'
-      }
+        error: '请输入有效的JSON格式',
+      },
     ],
-    ...config
-  })
+    ...config,
+  }),
 }

@@ -14,7 +14,7 @@ import type { FileListMap, Groups, Privates } from '@/types/config'
 export const getYaml = <T extends keyof FileListMap> (
   name: T,
   type: 'user' | 'default',
-  isRefresh?: boolean,
+  isRefresh?: boolean
 ): FileListMap[T] => {
   const file = `${type === 'user' ? root.configPath : root.defaultConfigPath}/${name}.json`
   if (!fs.existsSync(file)) {

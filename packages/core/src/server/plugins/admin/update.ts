@@ -83,14 +83,14 @@ export const update = async (
    * 处理不同类型插件的更新
    */
   if (data.pluginType === 'npm') {
-    return createUpdateTask(async (options, emitLog) => {
+    return createUpdateTask(async (_, emitLog) => {
       await spawnProcess('pnpm', ['update', data.target, '@latest', '--save'], {}, emitLog)
       return true
     })
   }
 
   if (data.pluginType === 'git') {
-    return createUpdateTask(async (options, emitLog) => {
+    return createUpdateTask(async (_, emitLog) => {
       await spawnProcess('git', ['pull'], { cwd: path.join(karinPathPlugins, data.target) }, emitLog)
       return true
     })
@@ -108,11 +108,11 @@ export const update = async (
  * 3. 对git插件逐个执行更新
  * 4. 记录更新过程的日志
  *
- * @param options - 任务参数，包含任务ID和相关信息
+ * @param _options - 任务参数，包含任务ID和相关信息
  * @param log - 日志函数，用于记录更新进度和结果
  * @returns 操作是否成功
  */
-const updateAll = async (options: TaskEntity, log: (message: string) => void) => {
+const updateAll = async (_options: TaskEntity, log: (message: string) => void) => {
   /**
    * 将插件列表按类型分类
    * @returns 分类后的插件列表 {npm: string[], git: string[]}

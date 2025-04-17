@@ -49,7 +49,7 @@ const format = (data: Adapters) => {
  * @param listeners 事件监听器
  * @param dir 配置文件根目录
  */
-const initAdapter = (dir: string,) => {
+const initAdapter = (dir: string) => {
   const name = 'adapter.json'
 
   const file = `${dir}/${name}`

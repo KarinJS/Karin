@@ -2,7 +2,7 @@ import {
   createSuccessResponse,
   createBadRequestResponse,
   createServerErrorResponse,
-  createForbiddenResponse
+  createForbiddenResponse,
 } from '@/server/utils/response'
 import { createJwt, getSecretOrPrivateKey } from '@/server/auth/jwt'
 
@@ -15,7 +15,7 @@ const IP_LIMIT_CONFIG = {
   /** 时间窗口 */
   timeWindow: 5 * 60 * 1000,
   /** 封禁时长 */
-  blockDuration: 30 * 60 * 1000
+  blockDuration: 30 * 60 * 1000,
 }
 
 /** IP记录 */
@@ -78,7 +78,7 @@ const checkIPBlocked = (clientIP: string, res: Response) => {
     logger.warn(`${logger.red('login')}: ${clientIP} 继续尝试登录, 当前尝试次数:${ipRecord.attempts}, 封禁时间延长至${remainingTime}分钟`)
     return {
       isBlocked: true,
-      ipRecord
+      ipRecord,
     }
   }
 

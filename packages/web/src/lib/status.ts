@@ -17,7 +17,7 @@ export function getSystemStatus (writer: (data: SystemStatus) => void) {
   const eventSource = eventSourcePolyfill(
     '/api/v1/status/system',
     {
-      withCredentials: true
+      withCredentials: true,
     }
   )
 

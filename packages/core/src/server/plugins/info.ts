@@ -111,7 +111,7 @@ export const getPackageInfo = async (name: string) => {
 export const getNpmInfo = async (name: string) => {
   const [downloads, packageInfo] = await Promise.all([
     getPackageDownloads(name),
-    getPackageInfo(name)
+    getPackageInfo(name),
   ])
 
   return {
@@ -143,11 +143,11 @@ export const getGitHubInfo = async (repoUrl: string) => {
         pushed_at: pushedAt,
         stargazers_count: stargazersCount,
         forks_count: forksCount,
-        watchers_count: watchersCount
+        watchers_count: watchersCount,
       } = response.data
       return {
         updated: pushedAt, // ISO 8601 格式
-        downloads: stargazersCount + forksCount + watchersCount // 使用 star 数、fork 数和 watch 数之和作为受欢迎度指标
+        downloads: stargazersCount + forksCount + watchersCount, // 使用 star 数、fork 数和 watch 数之和作为受欢迎度指标
       }
     }
   } catch (error) {
@@ -179,11 +179,11 @@ export const getGiteeInfo = async (repoUrl: string) => {
       const {
         pushed_at: pushedAt,
         stargazers_count: stargazersCount,
-        forks_count: forksCount
+        forks_count: forksCount,
       } = response.data
       return {
         updated: pushedAt, // ISO 8601 格式
-        downloads: stargazersCount + forksCount // 使用 star 数和 fork 数之和作为下载量的替代指标
+        downloads: stargazersCount + forksCount, // 使用 star 数和 fork 数之和作为下载量的替代指标
       }
     }
   } catch (error) {

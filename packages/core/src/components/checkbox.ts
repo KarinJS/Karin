@@ -57,7 +57,7 @@ export const checkbox = {
       throw new Error('checkbox 必须是一个数组')
     }
 
-    return createCheckboxGroup(key, { checkbox: config.checkbox, })
+    return createCheckboxGroup(key, { checkbox: config.checkbox })
   },
 
   /**
@@ -66,7 +66,7 @@ export const checkbox = {
    * @param config 复选框配置
    */
   default: (key: string, config: Partial<Omit<CheckboxProps, 'key' | 'componentType' | 'className'>> = {}) => createCheckbox(key, {
-    ...config
+    ...config,
   }),
 
   /**
@@ -106,7 +106,7 @@ export const checkbox = {
    */
   indeterminate: (key: string, config: Partial<Omit<CheckboxProps, 'key' | 'componentType' | 'className'>> = {}) => createCheckbox(key, {
     isIndeterminate: true,
-    ...config
+    ...config,
   }),
 
   /**
@@ -116,6 +116,6 @@ export const checkbox = {
    */
   invalid: (key: string, config: Partial<Omit<CheckboxProps, 'key' | 'componentType' | 'className'>> = {}) => createCheckbox(key, {
     isInvalid: true,
-    ...config
-  })
+    ...config,
+  }),
 }

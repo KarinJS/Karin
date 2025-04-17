@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import { defineConfig } from 'tsup'
-import { options } from './tsup.base'
+import { options } from './tsup.config.base'
 
 /** 删掉index.js index.d.ts */
 fs.rmSync('dist/index.js', { force: true })

@@ -17,7 +17,8 @@
     "dev": "pnpm --filter node-karin run dev",
     "dev:cli": "pnpm --filter node-karin run dev:cli",
     "dev:web": "pnpm --filter karin-webui run dev",
-    "web": "pnpm --filter karin-webui run dev"
+    "web": "pnpm --filter karin-webui run dev",
+    "lint:fix": "eslint --fix \"packages/**/*.ts\""
   },
   "devDependencies": {
     "@types/node": "^18.19.84",
@@ -32,6 +33,6 @@
     "typescript": "^5.8.2"
   },
   "peerDependencies": {
-    "@karinjs/karin-types": "workspace:*"
+    "node-karin": "workspace:*"
   }
 }

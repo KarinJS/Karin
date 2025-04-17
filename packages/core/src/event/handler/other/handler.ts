@@ -85,7 +85,7 @@ export const initEmit = (ctx: Event) => {
  */
 export const disableViaAdapter = (
   plugin: (typeof cache.command)[number] | (typeof cache.accept)[number],
-  protocol: AdapterProtocol,
+  protocol: AdapterProtocol
 ): boolean => {
   /** 插件指定只允许特定适配器使用 */
   if (plugin.adapter.length && !plugin.adapter.includes(protocol)) {
@@ -108,7 +108,7 @@ export const disableViaAdapter = (
  */
 export const disableViaPluginWhitelist = (
   plugin: (typeof cache.command)[number] | (typeof cache.accept)[number],
-  config: ReturnType<typeof getFriendCfg> | ReturnType<typeof getGroupCfg>,
+  config: ReturnType<typeof getFriendCfg> | ReturnType<typeof getGroupCfg>
 ) => {
   /** 未设置白名单 */
   if (!config.enable.length) return true
@@ -142,7 +142,7 @@ export const disableViaPluginWhitelist = (
  */
 export const disableViaPluginBlacklist = (
   plugin: (typeof cache.command)[number] | (typeof cache.accept)[number],
-  config: ReturnType<typeof getFriendCfg> | ReturnType<typeof getGroupCfg>,
+  config: ReturnType<typeof getFriendCfg> | ReturnType<typeof getGroupCfg>
 ) => {
   /** 未设置黑名单 */
   if (!config.disable.length) return true
@@ -177,7 +177,7 @@ export const privateFilterEvent = (
   ctx: Event,
   config: ReturnType<typeof cfg>,
   friend: ReturnType<typeof getFriendCfg>,
-  cd: boolean,
+  cd: boolean
 ): boolean => {
   if (ctx.isFriend) {
     if (!config?.friend?.enable) {
@@ -261,7 +261,7 @@ export const groupFilterEvent = (
   ctx: Event,
   config: ReturnType<typeof cfg>,
   group: ReturnType<typeof getGroupCfg>,
-  cd: boolean,
+  cd: boolean
 ): boolean => {
   if (ctx.isGroup) {
     if (!config?.group?.enable) {
@@ -426,7 +426,7 @@ export const groupFilterEvent = (
  */
 export const groupPrint = (
   ctx: GroupMessage | GroupTempMessage,
-  config: ReturnType<typeof cfg>,
+  config: ReturnType<typeof cfg>
 ): boolean => {
   if (
     config?.group?.log_enable_list?.length &&

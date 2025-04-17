@@ -4,7 +4,7 @@ const key = {
   sideBarCollapsed: 'side-bar-collapsed',
   userId: 'userId',
   accessToken: 'accessToken',
-  refreshToken: 'refreshToken'
+  refreshToken: 'refreshToken',
 } as const
 
 export default key

@@ -54,7 +54,7 @@ const web = (dir: typeof root) => {
   app.use('/sandbox/file', express.static(dir.sandboxTempPath))
 
   /** 处理 /web 路径下的所有请求，确保 SPA 路由可以正常工作 */
-  app.get('/web/{*splat}', (req, res) => {
+  app.get('/web/{*splat}', (_, res) => {
     res.sendFile(path.join(webDir, 'index.html'))
   })
 
@@ -64,7 +64,7 @@ const web = (dir: typeof root) => {
        * 5秒后将所有根路径请求重定向到 /web
        * 等5秒是因为插件可能也使用了部分路由
        */
-      app.get('/', (req, res) => {
+      app.get('/', (_, res) => {
         res.redirect('/web')
       })
     }, 5000)

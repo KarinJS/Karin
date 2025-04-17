@@ -6,6 +6,6 @@ import type { RequestHandler } from 'express'
 /**
  * 获取所有bot列表
  */
-export const getBotsRouter: RequestHandler = async (req, res) => {
+export const getBotsRouter: RequestHandler = async (_, res) => {
   createSuccessResponse(res, getAllBotList())
 }

@@ -33,7 +33,7 @@ export class SQLiteWrapper {
       )
     })
 
-    await new Promise<void>((resolve, reject) => {
+    await new Promise<void>((resolve) => {
       this._db.exec(
         `
           PRAGMA foreign_keys = ON;

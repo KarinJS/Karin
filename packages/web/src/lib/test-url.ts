@@ -33,7 +33,7 @@ export const speedTest = async () => {
   const fallbackResult = {
     code: true,
     host: github,
-    time: Infinity
+    time: Infinity,
   }
 
   try {
@@ -44,7 +44,7 @@ export const speedTest = async () => {
           const url = host === github ? testUrl : `${host}/${testUrl}`
           await axios.get(url, {
             signal: controllers[index].signal,
-            timeout: 2 * 1000
+            timeout: 2 * 1000,
           })
 
           controllers.forEach((controller, i) => {
@@ -54,13 +54,13 @@ export const speedTest = async () => {
           return {
             code: true,
             host,
-            time: Date.now() - startTime
+            time: Date.now() - startTime,
           }
         } catch {
           return {
             code: false,
             host,
-            time: Infinity
+            time: Infinity,
           }
         }
       })

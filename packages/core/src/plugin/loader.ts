@@ -312,7 +312,7 @@ export class LoaderPlugin {
     Method: Function,
     pkg: PkgInfo,
     app: string,
-    key: string
+    _: string
   ) {
     const command = new (Method as new () => Plugin)()
     if (!command.name) {
@@ -325,7 +325,7 @@ export class LoaderPlugin {
       return
     }
 
-    command.rule.forEach((v, i) => {
+    command.rule.forEach((v) => {
       /** 没有对应方法跳过 */
       if (!(v.fnc in command)) return
       /** 没有正则跳过 */

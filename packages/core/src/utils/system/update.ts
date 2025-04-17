@@ -212,7 +212,7 @@ export const updateAllPkg = async (): Promise<string> => {
     })
 
     /** 排序 成功在上 */
-    result.sort((a, b) => a.includes('成功') ? -1 : 1)
+    result.sort((a) => a.includes('成功') ? -1 : 1)
     logger.info(result.join('\n'))
     return result.join('\n')
   } catch (error) {

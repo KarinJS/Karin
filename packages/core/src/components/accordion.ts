@@ -70,7 +70,7 @@ export const accordion = {
     selectionMode: 'single',
     selectionBehavior: 'toggle',
     showDivider: true,
-    fullWidth: true
+    fullWidth: true,
   }),
 
   /**
@@ -81,7 +81,7 @@ export const accordion = {
   createItem: (
     key: string,
     options?: Omit<AccordionItemProps, 'key' | 'componentType'>
-  ) => createAccordionItem(key, options)
+  ) => createAccordionItem(key, options),
 }
 
 /**
@@ -100,8 +100,8 @@ export const accordionPro = {
     options?: Omit<AccordionProProps, 'key' | 'componentType' | 'data'>
   ) => createAccordionPro(key, {
     ...options,
-    data
-  })
+    data,
+  }),
 }
 
 /**
@@ -130,6 +130,6 @@ export const accordionItem = {
     isCompact: false,
     hideIndicator: false,
     disableAnimation: false,
-    disableIndicatorAnimation: false
-  })
+    disableIndicatorAnimation: false,
+  }),
 }

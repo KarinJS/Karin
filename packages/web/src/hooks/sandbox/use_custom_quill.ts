@@ -11,7 +11,7 @@ interface UseCustomQuillProps {
 export const useCustomQuill = ({
   modules,
   formats,
-  placeholder
+  placeholder,
 }: UseCustomQuillProps) => {
   const quillRef = useRef<HTMLDivElement | null>(null)
   const [quill, setQuill] = useState<Quill | null>(null)
@@ -21,7 +21,7 @@ export const useCustomQuill = ({
       const quillInstance = new Quill(quillRef.current, {
         modules,
         formats,
-        placeholder
+        placeholder,
       })
       setQuill(quillInstance)
     }

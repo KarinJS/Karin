@@ -99,7 +99,7 @@ export const uninstallWebui: RequestHandler = async (req, res) => {
 /**
  * 获取webui插件列表
  */
-export const getWebuiPluginList: RequestHandler = async (req, res) => {
+export const getWebuiPluginList: RequestHandler = async (_, res) => {
   try {
     /**
      * 检查每个插件是否已安装，并获取版本号

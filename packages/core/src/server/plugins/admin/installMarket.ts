@@ -121,7 +121,7 @@ const installGit = async (
       target: data.target,
       operatorIp: ip,
     },
-    async (options: TaskEntity, emitLog: (message: string) => void) => {
+    async (_: TaskEntity, emitLog: (message: string) => void) => {
       const args = ['clone', '--depth=1', repo.config.url!, `./plugins/${plugin.name}`]
       await spawnProcess('git', args, {}, emitLog)
       return true

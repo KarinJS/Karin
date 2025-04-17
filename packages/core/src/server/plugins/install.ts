@@ -30,7 +30,7 @@ function spawnCommand (command: string, args: string[], task: InstallTask): Prom
     const child = spawn(command, args, {
       stdio: ['ignore', 'pipe', 'pipe'],
       shell: true,
-      cwd: process.cwd()
+      cwd: process.cwd(),
     })
 
     // 捕获标准输出
@@ -122,7 +122,7 @@ async function installAppPlugin (task: InstallTask, url?: string) {
       '-L',
       '-o',
       pluginDir,
-      url
+      url,
     ],
     task
   )
@@ -190,7 +190,7 @@ export const pluginInstall: RequestHandler = async (req, res) => {
       type,
       status: 'pending',
       logs: [],
-      minimized: false
+      minimized: false,
     }
     taskQueue.set(taskId, task)
 
@@ -292,7 +292,7 @@ export const pluginUninstall: RequestHandler = async (req, res) => {
       type,
       status: 'pending',
       logs: [],
-      minimized: false
+      minimized: false,
     }
     taskQueue.set(taskId, task)
 

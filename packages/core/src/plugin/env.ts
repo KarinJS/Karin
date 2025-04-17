@@ -31,7 +31,7 @@ export const createAddEnv = (
       list.push({
         key,
         value,
-        comment: typeof comment !== 'string' ? String(comment) : comment
+        comment: typeof comment !== 'string' ? String(comment) : comment,
       })
     })
   }

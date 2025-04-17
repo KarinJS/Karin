@@ -13,7 +13,7 @@ export const pluginGetLocalList: RequestHandler = async (req, res) => {
   const { isForce } = req.body
   const [npm, git] = await Promise.all([
     getPlugins('npm', true, isForce ?? false),
-    getPlugins('git', true, isForce ?? false)
+    getPlugins('git', true, isForce ?? false),
   ])
 
   const list = [...npm, ...git]
@@ -34,7 +34,7 @@ export const pluginGetLocalList: RequestHandler = async (req, res) => {
         version: config.info.version ?? pkg.version,
         description: config.info.description ?? pkg.description,
         hasConfig: true,
-        type: val.type
+        type: val.type,
       })
       return
     }
@@ -53,7 +53,7 @@ export const pluginGetLocalList: RequestHandler = async (req, res) => {
         version: config.info.version ?? pkg.version,
         description: config.info.description ?? pkg.description,
         hasConfig: true,
-        type: val.type
+        type: val.type,
       })
     }
   }))

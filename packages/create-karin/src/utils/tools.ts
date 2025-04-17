@@ -75,7 +75,7 @@ const pingWithTimeout = (url: string, timeout: number): Promise<TestResult> => {
   return Promise.race([
     ping(url),
     new Promise<TestResult>(resolve =>
-      setTimeout(() => resolve({ url, success: false, time: timeout }), timeout),
+      setTimeout(() => resolve({ url, success: false, time: timeout }), timeout)
     ),
   ])
 }
@@ -97,7 +97,7 @@ const formatResults = (results: TestResult[]) => {
  */
 export const testUrls = async (
   urls: string[] = DEFAULT_URLS,
-  options: TestOptions = {},
+  options: TestOptions = {}
 ): Promise<{ results: TestResult[]; succ: number; fail: number; count: number }> => {
   const { timeout = DEFAULT_TIMEOUT, silent = false } = options
 
@@ -124,7 +124,7 @@ export const testUrls = async (
  */
 export const exec = (
   command: string,
-  options: ExecOptions = {},
+  options: ExecOptions = {}
 ): Promise<{
   status: boolean
   error?: Error | null

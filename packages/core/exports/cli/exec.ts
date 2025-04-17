@@ -7,7 +7,7 @@ import { exec as execCmd, execSync as execSyncCmd } from 'node:child_process'
  */
 const execSync = (
   cmd: string,
-  options: import('node:child_process').ExecOptions = {},
+  options: import('node:child_process').ExecOptions = {}
 ): { status: boolean; error: Error | null; stdout: string; stderr: string } => {
   try {
     const result = execSyncCmd(cmd, options)
@@ -24,7 +24,7 @@ const execSync = (
  */
 const exec = (
   cmd: string,
-  options: import('node:child_process').ExecOptions = {},
+  options: import('node:child_process').ExecOptions = {}
 ): Promise<{ status: boolean; error: Error | null; stdout: string; stderr: string }> => {
   return new Promise(resolve => {
     execCmd(cmd, options, (error, stdout, stderr) => {

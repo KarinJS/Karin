@@ -89,13 +89,13 @@ const initValue = (
   defaultValues: DefaultValues,
   option: ComponentConfig,
   isAccordion: boolean = false,
-  data?: any,
+  data?: any
 ) => {
   if (option.componentType === 'divider') return
   if (option.componentType === 'input') {
     defaultValues[option.key] = {
       key: 'input',
-      value: data ?? option.value ?? option.defaultValue ?? ''
+      value: data ?? option.value ?? option.defaultValue ?? '',
     }
     return
   }
@@ -103,7 +103,7 @@ const initValue = (
   if (option.componentType === 'switch') {
     defaultValues[option.key] = {
       key: 'switch',
-      value: data ?? option.defaultSelected ?? false
+      value: data ?? option.defaultSelected ?? false,
     }
     return
   }
@@ -111,7 +111,7 @@ const initValue = (
   if (option.componentType === 'radio-group') {
     defaultValues[option.key] = {
       key: 'radio-group',
-      value: data ?? option.defaultValue ?? ''
+      value: data ?? option.defaultValue ?? '',
     }
     return
   }
@@ -121,7 +121,7 @@ const initValue = (
 
     defaultValues[option.key] = {
       key: 'checkbox-group',
-      value: data ?? selectedValues
+      value: data ?? selectedValues,
     }
     return
   }
@@ -129,7 +129,7 @@ const initValue = (
   if (option.componentType === 'input-group') {
     defaultValues[option.key] = {
       key: 'input-group',
-      value: data || option.data || []
+      value: data || option.data || [],
     }
     return
   }

@@ -11,7 +11,7 @@ const pkg = JSON.parse(fs.readFileSync(new URL('package.json', import.meta.url),
 export const options: Options = {
   entry: [], // 入口文件
   format: ['esm'], // 输出格式
-  target: 'node16', // 目标环境
+  target: 'node18', // 目标环境
   splitting: false, // 是否拆分文件
   sourcemap: false, // 是否生成 sourcemap
   clean: false, // 是否清理输出目录
@@ -19,11 +19,13 @@ export const options: Options = {
   outDir: 'dist', // 输出目录
   treeshake: true, // 树摇优化
   minify: false, // 压缩代码
-  ignoreWatch: ['src/modules'],
   shims: false,
   external: [
     ...builtinModules,
     ...builtinModules.map((node) => `node:${node}`),
     ...Object.keys(pkg.dependencies),
+    '@karinjs/node-pty',
+    '@karinjs/plugin-webui-network-monitor',
+    '@karinjs/plugins-list',
   ],
 }

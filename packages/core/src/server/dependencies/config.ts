@@ -7,7 +7,7 @@ import type { NpmBaseConfigResponse } from '@/types/utils/npm'
 /**
  * 获取.npmrc文件列表
  */
-export const getNpmrcListRouter: RequestHandler = async (req, res) => {
+export const getNpmrcListRouter: RequestHandler = async (_, res) => {
   try {
     const list = await getNpmConfigList()
     return createSuccessResponse(res, list)

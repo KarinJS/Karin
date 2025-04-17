@@ -138,7 +138,7 @@ export const getLogRouter: RequestHandler = async (req, res) => {
 /**
  * 获取日志文件列表
  */
-export const getLogFileListRouter: RequestHandler = async (req, res) => {
+export const getLogFileListRouter: RequestHandler = async (_, res) => {
   const files = fs.readdirSync(logsPath)
   const logFiles = files
     .filter(file => file.startsWith('logger.') && file.endsWith('.log'))
