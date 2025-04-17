@@ -172,7 +172,7 @@ const getCache = async (req: Request, _: Response) => {
     return null
   }
 
-  const { redis } = await import('@/index')
+  const { redis } = await import('@/core/db/redis/redis')
   const cache = await redis.get(REDIS_DEPENDENCIES_LIST_CACHE_KEY)
   if (cache) {
     const data = JSON.parse(cache)
@@ -192,7 +192,7 @@ const getCache = async (req: Request, _: Response) => {
  * @param data - 依赖列表
  */
 const setCache = async (data: Dependency[]) => {
-  const { redis } = await import('@/index')
+  const { redis } = await import('@/core/db/redis/redis')
   await redis.set(
     REDIS_DEPENDENCIES_LIST_CACHE_KEY,
     JSON.stringify(data),

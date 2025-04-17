@@ -12,10 +12,8 @@ import { createDB, createRedis } from '@/core/db'
 import { initRender } from '@/adapter/render'
 import { initOneBot } from '@/adapter/onebot'
 import { initTaskSystem } from '@/service/task'
-import type { Client } from '@/core/db/redis/redis'
 
 export * from '@/service/debug'
-
 export * from '@/root'
 export * from '@/service'
 export * from '@/core/karin'
@@ -33,21 +31,12 @@ export { getPlugins } from '@/plugin/list'
 export { Plugin } from '@/plugin/class'
 export { karin as default } from '@/core/karin'
 export { db } from '@/core/db/kv'
+export { redis } from '@/core/db/redis/redis'
+export { logger } from '@/utils/logger'
+
 export type * from '@/types'
 
 if (!process.env.EBV_FILE) process.env.EBV_FILE = '.env'
-
-/**
- * @public
- * @description 日志管理器
- */
-export let logger: ReturnType<typeof createInnerLogger>
-
-/**
- * @public
- * @description Redis数据库
- */
-export let redis: Client
 
 /**
  * @public
@@ -66,7 +55,7 @@ export const start = async () => {
    * - 创建日志目录
    * - 初始化日志模块
    */
-  logger = createInnerLogger(root.logsPath)
+  createInnerLogger(root.logsPath)
 
   /**
    * 3. 初始化配置文件
@@ -102,7 +91,7 @@ export const start = async () => {
    */
   await initExpress(root, +process.env.HTTP_PORT, process.env.HTTP_HOST)
   await initTaskSystem(root.karinPathTaskDb)
-  redis = await createRedis()
+  await createRedis()
   await createDB()
 
   /**

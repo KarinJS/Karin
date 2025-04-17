@@ -1,4 +1,3 @@
-import { redis } from '@/index'
 import { REDIS_PLUGIN_LIST_CACHE_KEY } from '@/env/key'
 import { raceRequest } from '@/utils/request'
 import type { MarketType } from '@karinjs/plugins-list'
@@ -19,6 +18,7 @@ const CACHE_TTL = process.env.PLUGIN_MARKET_CACHE_TTL ? Number(process.env.PLUGI
  * @returns 返回最先成功响应的插件列表
  */
 export const getPluginMarket = async (forceUpdate = false): Promise<MarketType[]> => {
+  const { redis } = await import('@/core/db/redis/redis')
   if (!forceUpdate) {
     const cachedData = await redis.get(REDIS_PLUGIN_LIST_CACHE_KEY)
     if (cachedData) return JSON.parse(cachedData)

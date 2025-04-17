@@ -1,4 +1,3 @@
-import { redis } from '@/index'
 import type { PluginLists } from '@/types/server/plugins'
 
 const CACHE_KEY = 'karin:web:plugin:list'
@@ -9,6 +8,7 @@ const CACHE_EXPIRE = 300 // 5分钟缓存
  */
 export const getPluginListCache = async (): Promise<PluginLists[] | null> => {
   try {
+    const { redis } = await import('@/core/db/redis/redis')
     const cached = await redis.get(CACHE_KEY)
     if (!cached) return null
     return JSON.parse(cached)
@@ -23,6 +23,7 @@ export const getPluginListCache = async (): Promise<PluginLists[] | null> => {
  */
 export const setPluginListCache = async (plugins: PluginLists[]): Promise<void> => {
   try {
+    const { redis } = await import('@/core/db/redis/redis')
     await redis.set(CACHE_KEY, JSON.stringify(plugins), { EX: CACHE_EXPIRE })
   } catch (error) {
     logger.error('设置插件列表缓存失败:', error)
@@ -34,6 +35,7 @@ export const setPluginListCache = async (plugins: PluginLists[]): Promise<void> 
  */
 export const deletePluginListCache = async (): Promise<void> => {
   try {
+    const { redis } = await import('@/core/db/redis/redis')
     await redis.del(CACHE_KEY)
   } catch (error) {
     logger.error('删除插件列表缓存失败:', error)
