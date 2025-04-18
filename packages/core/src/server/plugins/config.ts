@@ -9,7 +9,7 @@ import { createServerErrorResponse, createSuccessResponse } from '@/server/utils
 import type { Apps } from '@/types/plugin'
 import type { RequestHandler } from 'express'
 import type { PkgData } from '@/utils/fs/pkg'
-import type { GetConfigResponse, LocalApiResponse } from '@/types/server/local'
+import type { DefineConfig, GetConfigResponse } from '@/types/server/local'
 
 interface BaseConfig {
   /** 插件类型 */
@@ -110,13 +110,7 @@ const loadConfig = async (configPath: string) => {
   const result = await import(
     `${pathToFileURL(configPath).toString()}${isDev() ? '?t=' + Date.now() : ''}`
   ) as {
-    default: {
-      info: LocalApiResponse
-      components: () => any
-      save: (config: Record<string, any>) =>
-        { success: boolean, message: string } |
-        Promise<{ success: boolean, message: string }>
-    }
+    default: DefineConfig
   }
   return result.default
 }
@@ -146,7 +140,19 @@ export const getWebConfig = async (type: Apps, id: string, _?: () => void) => {
     return null
   }
 
-  return await loadConfig(webConfig)
+  const result = await loadConfig(webConfig)
+  /** 检查一下version description是否存在 不存在则从插件对应的package.json中获取 */
+  if (!result.info.version || !result.info.description) {
+    const dir = type === 'npm'
+      ? path.join(process.cwd(), 'node_modules', id)
+      : path.join(process.cwd(), 'plugins', id)
+
+    const pkg = requireFileSync<PkgData>(path.join(dir, 'package.json'))
+    if (!pkg.version) result.info.version = pkg.version
+    if (!pkg.description) result.info.description = pkg.description
+  }
+
+  return result
 }
 
 /**
@@ -184,9 +190,19 @@ export const pluginGetConfig: RequestHandler = async (req, res) => {
     }
   })
 
+  let author: GetConfigResponse['info']['author'] = []
+  if (Array.isArray(config.info.author)) {
+    author = config.info.author
+  } else if (config.info.author) {
+    author = [config.info.author]
+  }
+
   const data: GetConfigResponse = {
     options: list as GetConfigResponse['options'],
-    info: config.info,
+    info: {
+      ...config.info,
+      author,
+    },
   }
 
   createSuccessResponse(res, data)
