@@ -14,7 +14,7 @@
   "license": "MIT",
   "author": "shijin",
   "type": "module",
-  "main": "./src/index.ts",
+  "main": "./index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
@@ -23,9 +23,10 @@
   ],
   "scripts": {
     "app": "node dist/index.mjs",
+    "cp": "node index.mjs",
     "dev": "tsx src/index.ts",
-    "build": "tsc && vite build && tsup",
-    "build:dev": "tsc && vite build --mode development && tsup"
+    "build": "pnpm cp && tsc && vite build&& tsup ",
+    "build:dev": "pnpm cp && tsc && vite build --mode development && tsup "
   },
   "devDependencies": {
     "commander": "^13.1.0"

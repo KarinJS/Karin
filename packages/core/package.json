@@ -121,7 +121,7 @@
       "default": "./dist/module/sqlite3.mjs"
     }
   },
-  "main": "./src/index.ts",
+  "main": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "bin": {
     "k": "./dist/cli/index.mjs",

@@ -1,12 +1,5 @@
-import fs from 'node:fs'
 import { defineConfig } from 'vite'
 import { builtinModules } from 'node:module'
-
-const dir = 'src/git'
-if (!fs.existsSync(dir)) {
-  fs.mkdirSync(dir, { recursive: true })
-  fs.cpSync('../core/src/utils/git', dir, { recursive: true })
-}
 
 export default defineConfig({
   build: {
