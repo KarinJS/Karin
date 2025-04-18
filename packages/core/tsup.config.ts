@@ -16,7 +16,9 @@ if (fs.existsSync('dist')) {
 const entry = [
   'src/index.ts',
   'src/root.ts',
-  'src/app.ts',
+  'src/start/index.ts',
+  'src/start/app.ts',
+  'src/start/index.ts',
 ]
 
 export default defineConfig({

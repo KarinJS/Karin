@@ -26,7 +26,7 @@
     "cp": "node index.mjs",
     "dev": "tsx src/index.ts",
     "build": "pnpm cp && tsc && vite build&& tsup ",
-    "build:dev": "pnpm cp && tsc && vite build --mode development && tsup "
+    "build:dev": "pnpm cp && tsc && vite build --mode development && tsup --development"
   },
   "devDependencies": {
     "commander": "^13.1.0"

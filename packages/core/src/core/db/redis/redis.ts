@@ -65,7 +65,8 @@ export const createRedis = async (): Promise<Client> => {
     let client = await create(options)
     if (client) {
       logger.info(`[redis] ${logger.green('Redis 连接成功')}`)
-      return client as Client
+      redis = client as Client
+      return redis
     }
 
     /** 第一次启动失败 */
@@ -85,7 +86,8 @@ export const createRedis = async (): Promise<Client> => {
     logger.debug(`[redis] ${logger.red('Redis 连接失败')}`)
     logger.debug(error)
     logger.debug(logger.yellow('[redis] 将降级为 redis-mock 实现'))
-    return mock()
+    redis = await mock()
+    return redis
   }
 }
 

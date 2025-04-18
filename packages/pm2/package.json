@@ -15,6 +15,9 @@
     "log": "ki log",
     "up": "ki up"
   },
+  "dependencies": {
+    "node-karin": "workspace:*"
+  },
   "keywords": [],
   "author": "shijin",
   "license": "MIT",

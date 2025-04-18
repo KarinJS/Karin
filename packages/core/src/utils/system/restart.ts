@@ -50,8 +50,14 @@ export const restart = async (
  */
 export const restartDirect = async () => {
   logger.mark('收到重启请求，正在重启...')
+  if (process?.send) {
+    process.send('restart')
+    logger.mark('正在通知父进程重启...')
+    return
+  }
+
   if (process.env.RUNTIME === 'pm2') {
-    await exec(`pm2 restart ${process.env.pm_id}`)
+    await exec('npx karin rs')
     return
   }
 

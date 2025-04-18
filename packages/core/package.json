@@ -31,9 +31,9 @@
       "default": "./dist/index.mjs"
     },
     "./start": {
-      "types": "./dist/app.d.ts",
-      "development": "./src/app.ts",
-      "default": "./dist/app.mjs"
+      "types": "./dist/start/index.d.ts",
+      "development": "./src/start/index.ts",
+      "default": "./dist/start/index.mjs"
     },
     "./dir": {
       "types": "./dist/root.d.ts",
@@ -135,17 +135,17 @@
   ],
   "scripts": {
     ".": "pnpm app",
-    "app": "node dist/app.mjs",
+    "app": "node dist/start/index.mjs",
     "build": "pnpm build:main && pnpm build:module",
     "build:dev": "pnpm build:main",
     "build:main": "tsc && tsup --config tsup.config.ts",
     "build:module": "tsc && tsup --config tsup.config.module.ts",
     "build:types": "tsc && tsup --config tsup.config.types.ts",
-    "app:bun": "bun dist/app.mjs",
+    "app:bun": "bun dist/start/index.mjs",
     "cli": "node dist/cli/index.mjs",
     "cli:dev": "tsx exports/cli/index.ts",
-    "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/index.ts",
-    "dev:bun": "cross-env EBV_FILE=\"development.env\" bun src/index.ts",
+    "dev": "cross-env EBV_FILE=\"development.env\" node --conditions=development --import tsx src/start/index.ts",
+    "dev:bun": "cross-env EBV_FILE=\"development.env\" bun --conditions=development src/start/index.ts",
     "pr": "node cli/pr.js all",
     "pub": "npm publish --access public",
     "pub-beta": "npm publish --access public --tag beta",

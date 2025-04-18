@@ -1,3 +1,5 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import { defineConfig } from 'vite'
 import { builtinModules } from 'node:module'
 
@@ -5,8 +7,8 @@ export default defineConfig({
   build: {
     target: 'node18',
     lib: {
-      formats: ['es'],
-      fileName: 'index',
+      formats: ['es', 'cjs'],
+      fileName: (format) => `index.${format === 'es' ? 'mjs' : 'cjs'}`,
       entry: ['src/index.ts'],
     },
     emptyOutDir: true,
@@ -18,7 +20,6 @@ export default defineConfig({
       ],
       output: {
         inlineDynamicImports: true,
-        entryFileNames: '[name].mjs',
       },
       cache: false,
     },
@@ -29,4 +30,21 @@ export default defineConfig({
       ],
     },
   },
+  plugins: [
+    {
+      name: 'karin-cli-plugin',
+      closeBundle: () => {
+        if (process.argv[4] === 'development') {
+          return
+        }
+
+        const file = path.join(process.cwd(), '../core/dist/cli/pm2.js')
+        if (fs.existsSync(file)) {
+          fs.unlinkSync(file)
+        }
+        const content = 'import \'node-karin/start\''
+        fs.writeFileSync(file, content)
+      },
+    },
+  ],
 })
