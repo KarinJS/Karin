@@ -332,6 +332,9 @@ importers:
       monaco-editor:
         specifier: ^0.52.2
         version: 0.52.2
+      node-karin:
+        specifier: workspace:*
+        version: link:../core
       ogl:
         specifier: ^1.0.11
         version: 1.0.11
