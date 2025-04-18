@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import { join } from 'node:path'
 import { exec } from './exec'
+import { gitPull } from './git/index'
 
 /**
  * 检查系统是否安装了 Git
@@ -51,8 +52,10 @@ const sortUpdateItems = (items: UpdateItem[]): UpdateItem[] => {
 
 /**
  * 全部更新
+ * @param force - 是否强制更新git插件
+ * @param parallel - 是否并发执行更新检查，默认为true
  */
-export const updateAll = async () => {
+export const updateAll = async (force?: boolean, parallel: boolean = false) => {
   try {
     console.log('开始执行更新任务\n')
 
@@ -62,13 +65,8 @@ export const updateAll = async () => {
     // 收集需要更新的包
     const packagesToUpdate: string[] = []
 
-    // 并行执行依赖检查和插件检查
-    await Promise.all([
-      // 检查npm依赖
-      checkDependencies('./package.json', allItems, packagesToUpdate),
-      // 检查git插件
-      checkPlugins('./plugins', allItems),
-    ])
+    await checkDependencies('./package.json', allItems, packagesToUpdate)
+    await checkPlugins('./plugins', allItems, force, parallel)
 
     // 对结果进行排序
     const sortedItems = sortUpdateItems(allItems)
@@ -202,8 +200,15 @@ const checkDependencies = async (packagePath: string, allItems: UpdateItem[], pa
  * 检查 plugins 目录下所有符合条件的 Git 仓库
  * @param pluginsPath - plugins 目录的完整路径
  * @param allItems - 收集所有项目信息的数组
+ * @param force - 是否强制更新git插件
+ * @param parallel - 是否并发处理插件检查，默认为true
  */
-const checkPlugins = async (pluginsPath: string, allItems: UpdateItem[]) => {
+const checkPlugins = async (
+  pluginsPath: string,
+  allItems: UpdateItem[],
+  force?: boolean,
+  parallel: boolean = true
+) => {
   /** 检查git是否安装 */
   if (!(await checkGitInstalled())) {
     console.error('请先安装git')
@@ -225,30 +230,48 @@ const checkPlugins = async (pluginsPath: string, allItems: UpdateItem[]) => {
   /** 获取所有插件目录 */
   const dirs = await fs.promises.readdir(pluginsPath)
 
-  /** 并发更新所有插件 */
-  const updateTasks = dirs.map(async (dir) => {
-    const pluginPath = join(pluginsPath, dir)
-    const gitPath = join(pluginPath, '.git')
-    const packageJsonPath = join(pluginPath, 'package.json')
-
-    /** 检查是否是目录且以karin-plugin-开头 */
-    if (!dir.startsWith('karin-plugin-') || !(await fs.promises.stat(pluginPath)).isDirectory()) {
-      return
+  if (parallel) {
+    /** 并发处理所有插件 */
+    const tasks = dirs.map(async (dir) => {
+      await processPlugin(dir, pluginsPath, allItems, force)
+    })
+    await Promise.all(tasks)
+  } else {
+    /** 串行处理所有插件 */
+    for (const dir of dirs) {
+      await processPlugin(dir, pluginsPath, allItems, force)
     }
+  }
+}
 
-    /** 检查.git目录是否存在 */
-    if (!fs.existsSync(gitPath)) {
-      allItems.push({
-        name: dir,
-        type: 'git',
-        currentVersion: '-',
-        latestVersion: '-',
-        status: '不是git仓库，已跳过',
-        needUpdate: false,
-        isPlugin: false,
-      })
-      return
-    }
+/**
+ * 处理单个插件
+ * @param dir - 插件目录名
+ * @param pluginsPath - 插件根目录路径
+ * @param allItems - 收集所有项目信息的数组
+ * @param force - 是否强制更新git插件
+ */
+const processPlugin = async (dir: string, pluginsPath: string, allItems: UpdateItem[], force?: boolean) => {
+  const pluginPath = join(pluginsPath, dir)
+  const gitPath = join(pluginPath, '.git')
+  const packageJsonPath = join(pluginPath, 'package.json')
+
+  /** 检查是否是目录且以karin-plugin-开头 */
+  if (!dir.startsWith('karin-plugin-') || !(await fs.promises.stat(pluginPath)).isDirectory()) {
+    return
+  }
+
+  /** 检查.git目录是否存在 */
+  if (!fs.existsSync(gitPath)) {
+    allItems.push({
+      name: dir,
+      type: 'git',
+      currentVersion: '-',
+      latestVersion: '-',
+      status: '不是git仓库，已跳过',
+      needUpdate: false,
+      isPlugin: false,
+    })
 
     /** 检查package.json是否存在karin字段 */
     try {
@@ -266,62 +289,27 @@ const checkPlugins = async (pluginsPath: string, allItems: UpdateItem[]) => {
         return
       }
 
-      /** 执行git pull */
-      const { status, stdout, error } = await exec('git pull', { cwd: pluginPath })
-
-      // 从git输出判断是否已是最新
-      const isUpToDate = stdout.includes('Already up to date') || stdout.includes('已经是最新的')
-      const currentVersion = packageJson.version || '-'
-
+      const { status, hash, data } = await gitPull(pluginPath, { customCmd: 'git pull', force })
       if (!status) {
         allItems.push({
           name: dir,
           type: 'git',
-          currentVersion,
+          currentVersion: '-',
           latestVersion: '-',
-          status: `更新失败: ${error}`,
-          needUpdate: false,
-          isPlugin: true,
-        })
-      } else if (isUpToDate) {
-        allItems.push({
-          name: dir,
-          type: 'git',
-          currentVersion,
-          latestVersion: currentVersion,
-          status: '已是最新',
+          status: `更新失败: ${data}`,
           needUpdate: false,
           isPlugin: true,
         })
       } else {
-        // 尝试获取更新后的版本
-        try {
-          // 读取更新后的package.json
-          const updatedPackageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
-          const updatedVersion = updatedPackageJson.version || '已更新'
-
-          // 更新成功且有版本变化
-          allItems.push({
-            name: dir,
-            type: 'git',
-            currentVersion,
-            latestVersion: updatedVersion,
-            status: `${currentVersion} -> ${updatedVersion}`,
-            needUpdate: true,
-            isPlugin: true,
-          })
-        } catch {
-          // 如果无法读取更新后的版本，则使用一般状态
-          allItems.push({
-            name: dir,
-            type: 'git',
-            currentVersion,
-            latestVersion: '已更新',
-            status: '更新成功',
-            needUpdate: true,
-            isPlugin: true,
-          })
-        }
+        allItems.push({
+          name: dir,
+          type: 'git',
+          currentVersion: hash.before,
+          latestVersion: hash.after,
+          status: '更新成功',
+          needUpdate: true,
+          isPlugin: true,
+        })
       }
     } catch (error) {
       allItems.push({
@@ -334,10 +322,7 @@ const checkPlugins = async (pluginsPath: string, allItems: UpdateItem[]) => {
         isPlugin: false,
       })
     }
-  })
-
-  /** 等待所有更新任务完成 */
-  await Promise.all(updateTasks)
+  }
 }
 
 /**
@@ -401,11 +386,12 @@ export const updateDependencies = async (packagePath: string) => {
 /**
  * 更新 plugins 目录下所有符合条件的 Git 仓库
  * @param pluginsPath - plugins 目录的完整路径
+ * @param parallel - 是否并发处理插件检查，默认为true
  */
-export const updatePlugins = async (pluginsPath: string) => {
+export const updatePlugins = async (pluginsPath: string, parallel: boolean = true) => {
   const allItems: UpdateItem[] = []
 
-  await checkPlugins(pluginsPath, allItems)
+  await checkPlugins(pluginsPath, allItems, undefined, parallel)
 
   // 对结果进行排序
   const sortedItems = sortUpdateItems(allItems)

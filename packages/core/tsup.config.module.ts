@@ -4,7 +4,7 @@ import { options } from './tsup.config.base'
 export default defineConfig({
   ...options,
   tsconfig: 'tsconfig.node.json',
-  entry: ['exports/module/*.ts'],
+  entry: ['module/*.ts'],
   format: ['esm'],
   clean: true,
   outDir: 'dist/module',

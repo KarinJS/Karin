@@ -1,7 +1,7 @@
 /** 尽量全是实现为纯函数 */
 export * from '@/utils/button'
 export * from '@/utils/fs/index'
-export * from '@/utils/git/export'
+export * from '@/utils/git'
 export * from '@/utils/logger/logger'
 export * from '@/utils/system/index'
 export * from '@/utils/message/index'

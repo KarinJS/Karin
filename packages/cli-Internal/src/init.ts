@@ -23,16 +23,26 @@ const getIsDev = (dir: string) => {
   }
 
   const list = [
-    path.join(dir, 'src'),
-    path.join(dir, 'tsconfig.json'),
-    path.join(dir, 'eslint.config.mjs'),
-    path.join(dir, 'eslint.config.js'),
-    path.join(dir, '.prettierrc'),
-    path.join(dir, 'vite.config.ts'),
-    path.join(dir, 'tsup.config.ts'),
+    'src',
+    'tsconfig.json',
+    'eslint.config.mjs',
+    'eslint.config.js',
+    '.prettierrc',
+    'vite.config.ts',
+    'tsup.config.ts',
   ]
 
-  return list.some(item => fs.existsSync(item))
+  return list.some(item => fs.existsSync(path.join(dir, item)))
+}
+
+/**
+ * 递归删除目录
+ * @param dirPath - 要删除的目录路径
+ */
+const removeDirectory = (dirPath: string) => {
+  if (fs.existsSync(dirPath)) {
+    fs.rmSync(dirPath, { recursive: true, force: true })
+  }
 }
 
 /**
@@ -228,6 +238,7 @@ const createWorkspace = (isDev: boolean, dir: string) => {
  * @param dir - 目标目录
  */
 const createConfigFile = (dir: string) => {
+  /* @vite-ignore */
   const pkgDir = fileURLToPath(new URL('../..', import.meta.url))
   const defCfg = path.join(pkgDir, 'default', 'config')
   /** 读取默认目录下的所有json文件 遍历复制到目标目录 */
@@ -270,11 +281,7 @@ const modifyPackageJson = (isDev: boolean, dir: string) => {
     try {
       return JSON.parse(fs.readFileSync(pkgDir, 'utf-8'))
     } catch {
-      return {
-        dependencies: {
-          'node-karin': 'latest',
-        },
-      }
+      return {}
     }
   })()
 
@@ -282,18 +289,23 @@ const modifyPackageJson = (isDev: boolean, dir: string) => {
   if (!pkg.scripts) pkg.scripts = {}
   if (!pkg.name) pkg.name = 'karin-project'
   if (!pkg.version) pkg.version = '1.0.0'
+  pkg.type = 'module'
 
   if (!isDev) {
-    pkg.type = 'module'
-    if (!pkg.scripts.ki) pkg.scripts.ki = 'karin'
-    if (!pkg.scripts.karin) pkg.scripts.karin = 'karin'
+    if (!pkg.scripts.ki) pkg.scripts.ki = 'ki'
+    if (!pkg.scripts.karin) pkg.scripts.karin = 'ki'
     if (!pkg.scripts.app) pkg.scripts.app = 'node index.mjs'
     if (!pkg.scripts.start) pkg.scripts.start = 'node index.mjs'
     if (!pkg.scripts.pm2) pkg.scripts.pm2 = 'pm2 start @karinjs/config/pm2.json'
-    if (!pkg.scripts.stop) pkg.scripts.stop = 'karin stop'
-    if (!pkg.scripts.rs) pkg.scripts.rs = 'karin rs'
-    if (!pkg.scripts.log) pkg.scripts.log = 'karin log'
-    if (!pkg.scripts.up) pkg.scripts.up = 'karin up'
+    if (!pkg.scripts.stop) pkg.scripts.stop = 'ki stop'
+    if (!pkg.scripts.rs) pkg.scripts.rs = 'ki rs'
+    if (!pkg.scripts.log) pkg.scripts.log = 'ki log'
+    if (!pkg.scripts.up) pkg.scripts.up = 'ki up'
+  }
+
+  if (!isDev && !pkg?.dependencies?.['node-karin']) {
+    if (!pkg.dependencies) pkg.dependencies = {}
+    pkg.dependencies['node-karin'] = 'latest'
   }
 
   /** pnpm10无力适配... */
@@ -315,11 +327,46 @@ const createEntryFile = (dir: string) => {
 }
 
 /**
- * 入口函数
+ * 如果强制更新，删除指定的文件和目录
+ * @param dir - 目标目录
  */
-export const init = async () => {
+const removeFilesIfForced = (dir: string) => {
+  // 删除 @karinjs 目录
+  removeDirectory(path.join(dir, '@karinjs'))
+
+  // 删除 .pnpmfile.cjs 文件
+  const pnpmfilePath = path.join(dir, '.pnpmfile.cjs')
+  if (fs.existsSync(pnpmfilePath)) {
+    fs.unlinkSync(pnpmfilePath)
+  }
+
+  // 删除入口文件 index.mjs
+  const entryFilePath = path.join(dir, 'index.mjs')
+  if (fs.existsSync(entryFilePath)) {
+    fs.unlinkSync(entryFilePath)
+  }
+
+  // 删除 .env 文件
+  const envPath = path.join(dir, '.env')
+  if (fs.existsSync(envPath)) {
+    fs.unlinkSync(envPath)
+  }
+}
+
+/**
+ * 入口函数
+ * @param force - 是否强制初始化
+ * @param dev - 是否开发模式
+ */
+export const init = async (force?: boolean) => {
   const dir = process.env.INIT_CWD || process.cwd()
   const isDev = getIsDev(dir)
+
+  // 如果是强制更新，先删除指定的文件和目录
+  if (force) {
+    removeFilesIfForced(dir)
+  }
+
   createDir(isDev, dir)
   createWorkspace(isDev, dir)
   createConfigFile(dir)
@@ -330,6 +377,7 @@ export const init = async () => {
   createOrUpdateEnv(dir)
 
   if (process.env.KARIN_CLI) {
+    console.log('[cli] 初始化完成 请使用 pnpm app 启动项目')
     process.exit(0)
   }
 }

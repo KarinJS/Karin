@@ -20,6 +20,7 @@ const ignores = [
   'logs',
   'data',
   'lib',
+  '**/dist/**',
   'packages/module',
   'packages/core/dist',
   'packages/types/index.d.ts',

@@ -31,5 +31,6 @@ export default defineConfig({
       ...entry,
       'src/global.d.ts',
     ],
+    banner: 'import EventEmitter from \'events\';',
   },
 })

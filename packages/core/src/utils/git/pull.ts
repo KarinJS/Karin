@@ -61,7 +61,7 @@ const pullResult = (
  * @param options 选项
  * @returns 拉取结果
  */
-export const pull = async (
+export const gitPull = async (
   cwd: string = process.cwd(),
   options: GitPullOptions = {}
 ): Promise<GitPullResult> => {

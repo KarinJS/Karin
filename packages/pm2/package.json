@@ -1,0 +1,22 @@
+{
+  "name": "pm2",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "ki": "ki",
+    "karin": "ki",
+    "app": "node index.mjs",
+    "start": "node index.mjs",
+    "pm2": "pm2 start @karinjs/config/pm2.json",
+    "stop": "ki stop",
+    "rs": "ki rs",
+    "log": "ki log",
+    "up": "ki up"
+  },
+  "keywords": [],
+  "author": "shijin",
+  "license": "MIT",
+  "type": "module"
+}
