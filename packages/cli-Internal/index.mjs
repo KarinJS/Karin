@@ -8,5 +8,6 @@ const __dirname = path.dirname(__filename)
 const dir = path.join(__dirname, 'src/git')
 if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir, { recursive: true })
-  fs.cpSync(path.join(__dirname, '../core/src/utils/git'), dir, { recursive: true })
 }
+
+fs.cpSync(path.join(__dirname, '../core/src/utils/git'), dir, { recursive: true })
