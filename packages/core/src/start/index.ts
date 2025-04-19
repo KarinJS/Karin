@@ -105,6 +105,7 @@ export const stop = async (): Promise<boolean> => {
  * @returns 新的子进程实例
  */
 export const restart = async (): Promise<ChildProcess | null> => {
+  isClosing = true
   child.kill('SIGTERM')
   isStart = false
   child = start()
