@@ -82,6 +82,8 @@ const createDir = (isDev: boolean, dir: string) => {
 const npmrc = (dir: string) => {
   // TODO: 后续改为远程api拉取 动态更新
   const list = [
+    'public-hoist-pattern[]=*sqlite3*',
+    'public-hoist-pattern[]=*express*',
     'sqlite3_binary_host_mirror=https://registry.npmmirror.com/-/binary/sqlite3',
     'node_sqlite3_binary_host_mirror=https://registry.npmmirror.com/-/binary/sqlite3',
     'better_sqlite3_binary_host_mirror=https://registry.npmmirror.com/-/binary/better-sqlite3',
@@ -316,8 +318,18 @@ const modifyPackageJson = (isDev: boolean, dir: string) => {
 
 /**
  * 生成入口文件
+ * @param isDev - 是否处于开发环境
+ * @param dir - 目标目录
  */
-const createEntryFile = (dir: string) => {
+const createEntryFile = (isDev: boolean, dir: string) => {
+  /** 处于开发环境 */
+  if (isDev) {
+    if (fs.existsSync(`${dir}/src`)) {
+      fs.writeFileSync(path.join(dir, 'src', 'app.ts'), `import('node-karin/start')`)
+      return
+    }
+  }
+
   const entryFile = path.join(dir, 'index.mjs')
   if (fs.existsSync(entryFile)) return
   fs.writeFileSync(entryFile, `(() => {
@@ -373,7 +385,7 @@ export const init = async (force?: boolean) => {
   modifyPackageJson(isDev, dir)
   npmrc(dir)
   pnpmfile(isDev, dir)
-  createEntryFile(dir)
+  createEntryFile(isDev, dir)
   createOrUpdateEnv(dir)
 
   if (process.env.KARIN_CLI) {

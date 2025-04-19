@@ -13,17 +13,10 @@
         "src/*"
       ],
     },
-    "types": [
-      "@types/node"
-    ],
     "rootDir": "./src",
     "declaration": true,
     "noImplicitAny": true,
     "strict": true
-  },
-  "tsc-alias": {
-    "resolveFullPaths": true,
-    "resolveFullExtension": ".js"
   },
   "include": [
     "src/**/*",
