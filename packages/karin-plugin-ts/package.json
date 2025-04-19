@@ -13,17 +13,20 @@
     "url": "git+https://github.com/KarinJS/karin-plugin-template-ts.git"
   },
   "scripts": {
-    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
-    "pub": "npm publish --access public",
-    "dev": "tsx watch --include \"src/**/*.ts\" src/index.ts"
+    "app": "node lib/app.js",
+    "build": "tsup",
+    "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts",
+    "pub": "npm publish --access public"
   },
   "main": "lib/index.js",
   "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/lodash": "^4.17.16",
     "@types/node": "^20.17.8",
+    "cross-env": "^7.0.3",
     "eslint": "^9.7.0",
     "neostandard": "^0.11.9",
-    "node-karin": "latest",
-    "tsc-alias": "^1.8.10",
+    "node-karin": "workspace:*",
     "tsx": "^4.19.2",
     "typescript": "^5.5.3"
   },
@@ -49,9 +52,7 @@
     "/lib/**/*.d.ts",
     "/config/*.yaml",
     "resources",
-    "LICENSE",
-    "package.json",
-    "README.md"
+    "!lib/app.js"
   ],
   "publishConfig": {
     "access": "public",

@@ -1,0 +1,3 @@
+(() => {
+  import('node-karin/start')
+})()

@@ -11,8 +11,8 @@ lerna-debug.log*
 .pnpm-debug.log*
 
 # 编辑器配置
-.idea/
-.vscode/
+/.idea/
+/.vscode/
 
 # 临时文件
 logs/

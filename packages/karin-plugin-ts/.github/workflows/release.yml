@@ -26,7 +26,7 @@ jobs:
           # 设置 Node.js 版本
           node-version: 20
           # 设置 npm 注册表 URL
-          registry-url: "https://registry.npmjs.org"
+          registry-url: https://registry.npmjs.org
         if: ${{ steps.release.outputs.release_created }}
       # 编译
       - run: npm run build

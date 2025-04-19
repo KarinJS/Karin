@@ -1,5 +1,6 @@
-import { dirPath, config } from '@/utils'
-import { karin, render, common, segment, logger } from 'node-karin'
+import { dir } from '@/dir'
+import { config } from '@/utils'
+import { karin, render, segment, logger } from 'node-karin'
 
 /**
  * 渲染demo
@@ -7,9 +8,8 @@ import { karin, render, common, segment, logger } from 'node-karin'
  */
 export const image = karin.command(/^#?测试渲染$/, async (e) => {
   try {
-    const filePath = common.absPath(dirPath + '/resources')
-    const html = filePath + '/template/test.html'
-    const image = filePath + '/image/启程宣发.png'
+    const html = dir.defResourcesDir + '/template/test.html'
+    const image = dir.defResourcesDir + '/image/启程宣发.png'
 
     const img = await render.render({
       name: 'render',
@@ -93,7 +93,7 @@ export const renderUrl = karin.command(/^#?渲染/, async (e) => {
  * 网页截图
  */
 export const screenshot = karin.command('^#测试截图$', async (e) => {
-  const { screenshotUrl } = config.config()
+  const { screenshotUrl } = config()
   const img = await karin.render(screenshotUrl)
   await e.reply(segment.image(`base64://${img}`))
   return true

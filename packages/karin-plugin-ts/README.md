@@ -13,10 +13,10 @@ ts插件的开发较为繁琐，但请不要着急，容我娓娓道来~
 打开[模板仓库](https://github.com/KarinJS/karin-plugin-template-ts)
 
 点击`Use this template`或`使用此模板`按钮，创建自己的仓库。
-![202404121412587](https://cdn.jsdelivr.net/gh/Zyy955/imgs/img/202404121412587.png)
+![202404121412587](https://cdn.jsdelivr.net/gh/sj817/imgs/img/202404121412587.png)
 
 填写仓库名称，描述，选择是否公开。
-![202404121414580](https://cdn.jsdelivr.net/gh/Zyy955/imgs/img/202404121414580.png)
+![202404121414580](https://cdn.jsdelivr.net/gh/sj817/imgs/img/202404121414580.png)
 
 ```bash
 # 请改成你自己的仓库 注意！ 现在是克隆成单独的文件夹 而不是以前一样作为插件
