@@ -146,6 +146,33 @@ importers:
         specifier: ^5.3.3
         version: 5.7.3
 
+  packages/karin-plugin-js:
+    devDependencies:
+      '@types/express':
+        specifier: ^5.0.1
+        version: 5.0.1
+      '@types/lodash':
+        specifier: ^4.17.16
+        version: 4.17.16
+      '@types/node':
+        specifier: ^20.17.8
+        version: 20.17.28
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
+      eslint:
+        specifier: ^9.7.0
+        version: 9.21.0(jiti@1.21.7)
+      neostandard:
+        specifier: ^0.11.9
+        version: 0.11.9(eslint@9.21.0(jiti@1.21.7))(typescript@5.8.2)
+      node-karin:
+        specifier: workspace:*
+        version: link:../core
+      typescript:
+        specifier: ^5.5.3
+        version: 5.8.2
+
   packages/karin-plugin-ts:
     devDependencies:
       '@types/express':

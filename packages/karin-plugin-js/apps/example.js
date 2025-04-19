@@ -1,7 +1,7 @@
 import { karin, segment } from 'node-karin'
 
 export const hello = karin.command('^(#)?你好$', async (e) => {
-  await e.reply('你好啊！我是Karin，很高兴认识你~ (。・∀・)ノ', { at: false, recallMsg: 0, reply: true })
+  await e.reply('你好啊！我是Karin，很高兴见到你~ (。・∀・)ノ', { at: false, recallMsg: 0, reply: true })
   return true
 })
 

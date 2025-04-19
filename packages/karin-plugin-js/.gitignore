@@ -13,15 +13,16 @@ lerna-debug.log*
 
 # 编辑器配置
 .idea/
-.vscode/
 
 # 临时文件
 /logs/
 /temp/
 
+# 配置
+/lib
+
 # 依赖
 node_modules/
-config/config/pm2.yaml
-/@karinjs
-.pnpmfile.cjs
-index.js
+/index.js
+pnpm-workspace.yaml
+@karinjs/
