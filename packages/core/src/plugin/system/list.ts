@@ -15,34 +15,77 @@ import type { GetPluginType, PkgInfo, GetPluginReturn } from '@/types/plugin'
 let isInit = true
 
 /**
- * 缓存
+ * ===================================================================
+ * 缓存管理模块
+ * ===================================================================
  */
-const cache: {
+
+/**
+ * 插件信息缓存结构
+ */
+type PluginCache = {
+  /** 插件名称列表缓存 */
   list: Record<GetPluginType, string[]> | undefined
+  /** 插件详细信息缓存 */
   info: Record<GetPluginType, PkgInfo[]> | undefined
-} = {
+}
+
+/**
+ * 内存缓存对象
+ */
+const cache: PluginCache = {
   list: undefined,
   info: undefined,
 }
 
 /**
- * 获取插件
- * @param type 获取插件的方式
- * @param isInfo 是否获取插件详细信息 否则返回插件名称列表
- * @param isForce 是否强制更新缓存
- * @param _isFirst 是否第一次获取
+ * 重置缓存
  */
-export const getPlugins = async<T extends boolean = false> (
-  type: GetPluginType,
-  isInfo?: T,
-  isForce: boolean = false,
-  _isFirst: boolean = false
-): Promise<GetPluginReturn<T>> => {
-  if (isForce) {
-    delete cache.list
-    delete cache.info
+const resetCache = (): void => {
+  delete cache.list
+  delete cache.info
+}
+
+/**
+ * 初始化缓存容器
+ */
+const initCache = (): void => {
+  if (!cache.list) {
+    cache.list = {} as Record<GetPluginType, string[]>
   }
 
+  if (!cache.info) {
+    cache.info = {} as Record<GetPluginType, PkgInfo[]>
+  }
+}
+
+/**
+ * 设置插件列表到缓存并设置过期时间
+ * @param type 插件类型
+ * @param list 插件列表
+ */
+const setCachedList = (type: GetPluginType, list: string[]): void => {
+  cache.list![type] = list
+  setTimeout(() => delete cache?.list?.[type], 60 * 1000)
+}
+
+/**
+ * 设置插件信息到缓存并设置过期时间
+ * @param type 插件类型
+ * @param info 插件信息
+ */
+const setCachedInfo = (type: GetPluginType, info: PkgInfo[]): void => {
+  cache.info![type] = info
+  setTimeout(() => delete cache?.info?.[type], 60 * 1000)
+}
+
+/**
+ * 获取缓存的信息（若有效）
+ * @param type 插件类型
+ * @param isInfo 是否获取详细信息
+ * @returns 缓存的数据或undefined
+ */
+const getCachedData = <T extends boolean> (type: GetPluginType, isInfo?: T): GetPluginReturn<T> | undefined => {
   if (isInfo) {
     if (cache?.info?.[type] && !lodash.isEqual(cache.info[type], cache.info[type])) {
       return cache.info[type] as GetPluginReturn<T>
@@ -52,94 +95,25 @@ export const getPlugins = async<T extends boolean = false> (
       return cache.list[type] as GetPluginReturn<T>
     }
   }
-
-  if (!cache.list) {
-    cache.list = {} as Record<GetPluginType, string[]>
-  }
-
-  if (!cache.info) {
-    cache.info = {} as Record<GetPluginType, PkgInfo[]>
-  }
-
-  if (!['npm', 'all', 'git', 'app'].includes(type)) return []
-
-  const list: string[] = []
-  const files = type === 'npm'
-    ? []
-    : fs.existsSync(dir) ? await fs.promises.readdir(dir, { withFileTypes: true }) : []
-
-  const pluginHandlers: Record<GetPluginType, () => Promise<void>> = {
-    app: () => filterApp(files, list),
-    git: () => filterGit(files, list),
-    npm: () => filterPkg(list),
-    all: async () => {
-      await Promise.all([
-        filterApp(files, list),
-        filterGit(files, list),
-        filterPkg(list),
-      ])
-    },
-  }
-
-  await pluginHandlers[type]()
-
-  cache.list[type] = list
-  setTimeout(() => delete cache?.list?.[type], 60 * 1000)
-  if (!isInfo) {
-    return list as GetPluginReturn<T>
-  }
-
-  /** 获取插件包的详细信息并返回 */
-  const info = await getPluginsInfo(list, isForce, _isFirst)
-  cache.info[type] = info
-  setTimeout(() => delete cache?.info?.[type], 60 * 1000)
-  if (isInit) isInit = false
-  return info as GetPluginReturn<T>
+  return undefined
 }
 
 /**
- * 获取插件详细信息
- * @param list 插件名称列表
- * @param isForce 是否强制更新缓存
- * @param isFirst 是否第一次获取
+ * ===================================================================
+ * 插件信息构建模块
+ * ===================================================================
  */
-const getPluginsInfo = async (list: string[], isForce: boolean, isFirst: boolean): Promise<PkgInfo[]> => {
-  const info: PkgInfo[] = []
-  const ext = isTsx() ? ['.ts', '.js'] : ['.js']
 
-  const env: PkgEnv[] | null = isFirst ? [] : null
-
-  await Promise.allSettled(list.map(async (v) => {
-    const [type, name] = v.split(':')
-
-    if (type === 'app') {
-      const file = path.join(dir, name)
-      await getAppInfo(info, file, name, ext, isForce)
-      return
-    }
-
-    if (type === 'git' || type === 'root') {
-      const file = type === 'root' ? process.cwd() : path.join(dir, name)
-      await getGitInfo(info, file, name, ext, isForce, env)
-      return
-    }
-
-    if (type === 'npm') {
-      const file = path.join(process.cwd(), 'node_modules', name)
-      await getNpmInfo(info, file, name, isForce, env)
-    }
-  }))
-
-  /** 处理环境变量 同步写入 */
-  if (env && env.length) {
-    logger.debug('[getPluginsInfo] 处理环境变量 同步写入', JSON.stringify(env, null, 2))
-    writeEnv(env)
-  } else {
-    logger.debug('[getPluginsInfo] 处理环境变量 未收集到环境变量 跳过写入')
-  }
-  return info
-}
-
+/**
+ * 创建插件包信息对象
+ * @param type 插件类型
+ * @param name 插件名称
+ * @param dir 插件目录
+ * @param apps 应用路径列表
+ * @param allApps 所有应用目录列表
+ * @param isForce 是否强制更新
+ * @returns 插件信息对象
+ */
 const createPkg = (
   type: PkgInfo['type'],
   name: string,
@@ -147,45 +121,50 @@ const createPkg = (
   apps: string[],
   allApps: string[],
   isForce: boolean
-): PkgInfo => {
-  return {
-    type,
-    name,
-    apps,
-    allApps,
-    dir,
-    id: -1,
-    get pkgPath () {
-      const file = path.join(this.dir, 'package.json')
-      if (!fs.existsSync(file)) return ''
-      return file
-    },
-    get pkgData () {
-      if (!this.pkgPath) return {}
-      return requireFileSync(this.pkgPath, { force: isForce })
-    },
-  }
-}
+): PkgInfo => ({
+  type,
+  name,
+  apps,
+  allApps,
+  dir,
+  id: -1,
+  get pkgPath () {
+    const file = path.join(this.dir, 'package.json')
+    return fs.existsSync(file) ? file : ''
+  },
+  get pkgData () {
+    if (!this.pkgPath) return {}
+    return requireFileSync(this.pkgPath, { force: isForce })
+  },
+})
 
 /**
- * 获取app插件信息
+ * 获取app类型插件信息
+ * @param info 插件信息数组（会被修改）
  * @param dir 插件目录
  * @param name 插件名称
- * @param ext 文件后缀
- * @param isForce 是否强制更新缓存
+ * @param ext 文件扩展名
+ * @param isForce 是否强制更新
  */
-const getAppInfo = async (info: PkgInfo[], dir: string, name: string, ext: string[], isForce: boolean) => {
+const getAppInfo = async (
+  info: PkgInfo[],
+  dir: string,
+  name: string,
+  ext: string[],
+  isForce: boolean
+): Promise<void> => {
   const apps = filesByExt(dir, ext, 'abs')
   info.push(createPkg('app', name, dir, apps, [dir], isForce))
 }
 
 /**
- * 获取git插件信息
+ * 获取git类型插件信息
+ * @param info 插件信息数组（会被修改）
  * @param dir 插件目录
  * @param name 插件名称
- * @param ext 文件后缀
- * @param isForce 是否强制更新缓存
- * @param env 收集插件的环境变量配置
+ * @param ext 文件扩展名
+ * @param isForce 是否强制更新
+ * @param env 环境变量收集数组
  */
 const getGitInfo = async (
   info: PkgInfo[],
@@ -194,7 +173,7 @@ const getGitInfo = async (
   ext: string[],
   isForce: boolean,
   env: PkgEnv[] | null
-) => {
+): Promise<void> => {
   const pkg = await requireFile<PkgData>(path.join(dir, 'package.json'))
   if (!pkg || !pkg.karin) {
     info.push(createPkg('git', name, dir, [], [], isForce))
@@ -202,16 +181,17 @@ const getGitInfo = async (
   }
 
   /** 收集环境变量 */
-  Array.isArray(pkg.env) && createAddEnv(env)(pkg.name, pkg.env)
+  if (Array.isArray(pkg.env)) {
+    createAddEnv(env)(pkg.name, pkg.env)
+  }
 
-  /** app的绝对路径列表 */
+  /** 收集应用文件 */
   const apps: string[] = []
-  /** apps目录列表 */
   const files: string[] = []
-  /** 所有可能包含apps的目录 */
   const allApps: string[] = []
 
-  const pushApps = (app: string | string[]) => {
+  /** 添加应用路径的辅助函数 */
+  const pushApps = (app: string | string[]): void => {
     if (typeof app === 'string') {
       files.push(app)
     } else if (Array.isArray(app)) {
@@ -219,35 +199,41 @@ const getGitInfo = async (
     }
   }
 
+  /** 根据环境决定使用哪些应用路径 */
   if (isTsx()) {
     pkg.karin['ts-apps'] && pushApps(pkg.karin['ts-apps'])
   } else {
     pkg.karin.apps && pushApps(pkg.karin.apps)
   }
 
-  await Promise.allSettled(files.map(async app => {
-    const appPath = path.join(dir, app)
-    if (!fs.existsSync(appPath)) return
-    apps.push(...filesByExt(appPath, ext, 'abs'))
-    allApps.push(appPath)
-  }))
+  /** 处理所有应用路径 */
+  await Promise.allSettled(
+    files.map(async (app) => {
+      const appPath = path.join(dir, app)
+      if (!fs.existsSync(appPath)) return
+      apps.push(...filesByExt(appPath, ext, 'abs'))
+      allApps.push(appPath)
+    })
+  )
 
   info.push(createPkg('git', name, dir, apps, allApps, isForce))
 }
 
 /**
- * 获取npm插件信息
+ * 获取npm类型插件信息
+ * @param info 插件信息数组（会被修改）
  * @param dir 插件目录
  * @param name 插件名称
- * @param isForce 是否强制更新缓存
- * @param env 收集插件的环境变量配置
+ * @param isForce 是否强制更新
+ * @param env 环境变量收集数组
  */
 const getNpmInfo = async (
   info: PkgInfo[],
-  dir: string, name: string,
+  dir: string,
+  name: string,
   isForce: boolean,
   env: PkgEnv[] | null
-) => {
+): Promise<void> => {
   const ext = '.js'
   let apps: string[] = []
   let allApps: string[] = []
@@ -259,8 +245,11 @@ const getNpmInfo = async (
   }
 
   /** 收集环境变量 */
-  Array.isArray(pkg.env) && createAddEnv(env)(pkg.name, pkg.env)
+  if (Array.isArray(pkg.env)) {
+    createAddEnv(env)(pkg.name, pkg.env)
+  }
 
+  /** 收集应用文件 */
   const files: string[] = []
   if (typeof pkg.karin.apps === 'string') {
     files.push(pkg.karin.apps)
@@ -268,13 +257,17 @@ const getNpmInfo = async (
     files.push(...pkg.karin.apps)
   }
 
-  await Promise.allSettled(files.map(async app => {
-    const appPath = path.join(dir, app)
-    if (!fs.existsSync(appPath)) return
-    apps.push(...filesByExt(appPath, ext, 'abs'))
-    allApps.push(appPath)
-  }))
+  /** 处理所有应用路径 */
+  await Promise.allSettled(
+    files.map(async (app) => {
+      const appPath = path.join(dir, app)
+      if (!fs.existsSync(appPath)) return
+      apps.push(...filesByExt(appPath, ext, 'abs'))
+      allApps.push(appPath)
+    })
+  )
 
+  /** 格式化路径 */
   apps = apps.map(formatPath)
   allApps = allApps.map(formatPath)
 
@@ -282,11 +275,270 @@ const getNpmInfo = async (
 }
 
 /**
- * 判断是否为npm插件
- * @param name pkg名称
- * @returns 是否为pkg插件
+ * 获取插件详细信息
+ * @param list 插件名称列表
+ * @param isForce 是否强制更新缓存
+ * @param isFirst 是否第一次获取
+ * @returns 插件详细信息数组
  */
-export const isNpmPlugin = async (name: string) => {
+const getPluginsInfo = async (
+  list: string[],
+  isForce: boolean,
+  isFirst: boolean
+): Promise<PkgInfo[]> => {
+  const info: PkgInfo[] = []
+  const ext = isTsx() ? ['.ts', '.js'] : ['.js']
+  const env: PkgEnv[] | null = isFirst ? [] : null
+
+  /** 处理每个插件 */
+  await Promise.allSettled(
+    list.map(async (v) => {
+      const [type, name] = v.split(':')
+
+      if (type === 'app') {
+        const file = path.join(dir, name)
+        await getAppInfo(info, file, name, ext, isForce)
+        return
+      }
+
+      if (type === 'git' || type === 'root') {
+        const file = type === 'root' ? process.cwd() : path.join(dir, name)
+        await getGitInfo(info, file, name, ext, isForce, env)
+        return
+      }
+
+      if (type === 'npm') {
+        const file = path.join(process.cwd(), 'node_modules', name)
+        await getNpmInfo(info, file, name, isForce, env)
+      }
+    })
+  )
+
+  /** 处理环境变量 */
+  if (env && env.length) {
+    logger.debug('[getPluginsInfo] 处理环境变量 同步写入', JSON.stringify(env, null, 2))
+    writeEnv(env)
+  } else {
+    logger.debug('[getPluginsInfo] 处理环境变量 未收集到环境变量 跳过写入')
+  }
+
+  return info
+}
+
+/**
+ * ===================================================================
+ * 插件收集模块
+ * ===================================================================
+ */
+
+/**
+ * 收集App类型插件
+ * @param files 目录项列表
+ * @param list 结果列表（会被修改）
+ */
+const collectAppPlugins = async (files: fs.Dirent[], list: string[]): Promise<void> => {
+  await Promise.all(
+    files.map(async (v) => {
+      if (!v.isDirectory()) return
+      if (!v.name.startsWith('karin-plugin-')) return
+      if (fs.existsSync(`${dir}/${v.name}/package.json`)) return
+
+      list.push(`app:${v.name}`)
+    })
+  )
+}
+
+/**
+ * 收集Git类型插件
+ * @param files 目录项列表
+ * @param list 结果列表（会被修改）
+ */
+const collectGitPlugins = async (files: fs.Dirent[], list: string[]): Promise<void> => {
+  await Promise.all(
+    files.map(async (v) => {
+      if (!v.isDirectory()) return
+      if (!v.name.startsWith('karin-plugin-')) return
+      if (!fs.existsSync(path.join(dir, v.name, 'package.json'))) return
+
+      /** 验证版本兼容性 */
+      const pkg = await requireFile<PkgData>(path.join(dir, v.name, 'package.json'))
+      if (pkg?.karin?.engines?.karin && !satisfies(pkg.karin.engines.karin, process.env.KARIN_VERSION)) {
+        const msg = `[getPlugins][git] ${v.name} 要求 node-karin 版本为 ${pkg.karin.engines.karin}，当前不符合要求，跳过加载插件`
+        isInit && setTimeout(() => logger.error(msg), 1000)
+        return
+      }
+
+      list.push(`git:${v.name}`)
+    })
+  )
+
+  /** 检查根目录是否为插件 */
+  const root = await requireFile('./package.json')
+  if (root.name && root.karin) list.push(`root:${root.name}`)
+}
+
+/**
+ * 要排除的NPM包列表
+ */
+const NPM_EXCLUDE_LIST = [
+  '@karinjs/node-pty',
+  '@karinjs/plugin-webui-network-monitor',
+  '@karinjs/plugins-list',
+  '@types/express',
+  '@types/lodash',
+  '@types/node-schedule',
+  '@types/ws',
+  'art-template',
+  'axios',
+  'chalk',
+  'chokidar',
+  'commander',
+  'dotenv',
+  'express',
+  'level',
+  'lodash',
+  'log4js',
+  'moment',
+  'node-schedule',
+  'redis',
+  'ws',
+  'yaml',
+  'sqlite3',
+]
+
+/**
+ * 收集NPM类型插件
+ * @param list 结果列表（会被修改）
+ */
+const collectNpmPlugins = async (list: string[]): Promise<void> => {
+  const pkg = await requireFile('./package.json', { force: true })
+
+  /** 获取所有依赖并排除不需要的 */
+  const dependencies = [
+    ...Object.keys(pkg.dependencies || {}),
+    ...Object.keys(pkg.devDependencies || {}),
+  ].filter((name) => !NPM_EXCLUDE_LIST.includes(name) && !name.startsWith('@types'))
+
+  /** 检查每个依赖是否为karin插件 */
+  await Promise.allSettled(
+    dependencies.map(async (name) => {
+      const file = path.join(process.cwd(), 'node_modules', name, 'package.json')
+      const pkg = await requireFile<PkgData>(file)
+      if (!pkg.karin) return
+
+      /** 检查版本兼容性 */
+      if (pkg.karin?.engines?.karin) {
+        if (!satisfies(pkg.karin.engines.karin, process.env.KARIN_VERSION)) {
+          isInit && logger.error(
+            `[getPlugins][npm] ${name} 要求 node-karin 版本为 ${pkg.karin.engines.karin}，当前不符合要求，跳过加载插件`
+          )
+          return
+        }
+      }
+
+      list.push(`npm:${name}`)
+    })
+  )
+}
+
+/**
+ * 收集所有类型插件
+ * @param files 目录项列表
+ * @param list 结果列表（会被修改）
+ */
+const collectAllPlugins = async (files: fs.Dirent[], list: string[]): Promise<void> => {
+  await Promise.all([
+    collectAppPlugins(files, list),
+    collectGitPlugins(files, list),
+    collectNpmPlugins(list),
+  ])
+}
+
+/**
+ * ===================================================================
+ * 主函数模块
+ * ===================================================================
+ */
+
+/**
+ * 获取插件
+ * @param type 获取插件的方式
+ * @param isInfo 是否获取插件详细信息，否则返回插件名称列表
+ * @param isForce 是否强制更新缓存
+ * @param _isFirst 是否第一次获取
+ * @returns 插件列表或详细信息
+ */
+export const getPlugins = async <T extends boolean = false> (
+  type: GetPluginType,
+  isInfo?: T,
+  isForce: boolean = false,
+  _isFirst: boolean = false
+): Promise<GetPluginReturn<T>> => {
+  /** 强制更新时重置缓存 */
+  if (isForce) {
+    resetCache()
+  }
+
+  /** 尝试从缓存获取数据 */
+  const cachedData = getCachedData<T>(type, isInfo)
+  if (cachedData) {
+    return cachedData
+  }
+
+  /** 初始化缓存容器 */
+  initCache()
+
+  /** 验证插件类型 */
+  if (!['npm', 'all', 'git', 'app'].includes(type)) return [] as GetPluginReturn<T>
+
+  /** 获取目录文件列表（npm类型不需要读取目录） */
+  const list: string[] = []
+  const files = type === 'npm'
+    ? []
+    : fs.existsSync(dir) ? await fs.promises.readdir(dir, { withFileTypes: true }) : []
+
+  /** 根据类型收集插件 */
+  switch (type) {
+    case 'app':
+      await collectAppPlugins(files, list)
+      break
+    case 'git':
+      await collectGitPlugins(files, list)
+      break
+    case 'npm':
+      await collectNpmPlugins(list)
+      break
+    case 'all':
+      await collectAllPlugins(files, list)
+      break
+  }
+
+  /** 缓存插件列表 */
+  setCachedList(type, list)
+
+  /** 如果不需要详细信息，直接返回列表 */
+  if (!isInfo) {
+    return list as GetPluginReturn<T>
+  }
+
+  /** 获取插件详细信息 */
+  const info = await getPluginsInfo(list, isForce, _isFirst)
+
+  /** 缓存插件详细信息 */
+  setCachedInfo(type, info)
+
+  /** 更新初始化状态 */
+  if (isInit) isInit = false
+
+  return info as GetPluginReturn<T>
+}
+
+/**
+ * 判断是否为npm插件
+ * @param name 包名称
+ * @returns 是否为karin插件
+ */
+export const isNpmPlugin = async (name: string): Promise<boolean> => {
   try {
     const file = path.join(process.cwd(), 'node_modules', name, 'package.json')
     const pkg = await requireFile(file)
@@ -294,81 +546,4 @@ export const isNpmPlugin = async (name: string) => {
   } catch {
     return false
   }
-}
-
-const filterApp = async (files: fs.Dirent[], list: string[]) => {
-  await Promise.all(files.map(async v => {
-    if (!v.isDirectory()) return
-    if (!v.name.startsWith('karin-plugin-')) return
-    if (fs.existsSync(`${dir}/${v.name}/package.json`)) return
-
-    list.push(`app:${v.name}`)
-  }))
-}
-
-const filterGit = async (files: fs.Dirent[], list: string[]) => {
-  await Promise.all(files.map(async v => {
-    if (!v.isDirectory()) return
-    if (!v.name.startsWith('karin-plugin-')) return
-    if (!fs.existsSync(path.join(dir, v.name, 'package.json'))) return
-
-    // TODO: 其实正常来说这里是需要判断一下karin字段的 不过为了兼容性先不判断了...
-    const pkg = await requireFile<PkgData>(path.join(dir, v.name, 'package.json'))
-    if (pkg?.karin?.engines?.karin && !satisfies(pkg.karin.engines.karin, process.env.KARIN_VERSION)) {
-      const msg = `[getPlugins][git] ${v.name} 要求 node-karin 版本为 ${pkg.karin.engines.karin}，当前不符合要求，跳过加载插件`
-      isInit && setTimeout(() => logger.error(msg), 1000)
-      return
-    }
-
-    list.push(`git:${v.name}`)
-  }))
-
-  const root = await requireFile('./package.json')
-  if (root.name && root.karin) list.push(`root:${root.name}`)
-}
-
-const filterPkg = async (list: string[]) => {
-  const exclude = [
-    '@types/express',
-    '@types/lodash',
-    '@types/node-schedule',
-    '@types/ws',
-    'art-template',
-    'axios',
-    'chalk',
-    'chokidar',
-    'commander',
-    'dotenv',
-    'express',
-    'level',
-    'lodash',
-    'log4js',
-    'moment',
-    'node-schedule',
-    'redis',
-    'ws',
-    'yaml',
-    'sqlite3',
-  ]
-
-  const pkg = await requireFile('./package.json', { force: true })
-  const dependencies = [
-    ...Object.keys(pkg.dependencies || {}),
-    ...Object.keys(pkg.devDependencies || {}),
-  ].filter((name) => !exclude.includes(name) && !name.startsWith('@types'))
-
-  await Promise.allSettled(dependencies.map(async (name) => {
-    const file = path.join(process.cwd(), 'node_modules', name, 'package.json')
-    const pkg = await requireFile<PkgData>(file)
-    if (!pkg.karin) return
-    /** 检查是否符合版本 */
-    if (pkg.karin?.engines?.karin) {
-      if (!satisfies(pkg.karin.engines.karin, process.env.KARIN_VERSION)) {
-        isInit && logger.error(`[getPlugins][npm] ${name} 要求 node-karin 版本为 ${pkg.karin.engines.karin}，当前不符合要求，跳过加载插件`)
-        return
-      }
-    }
-
-    list.push(`npm:${name}`)
-  }))
 }
