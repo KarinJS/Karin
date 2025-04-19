@@ -173,6 +173,7 @@ export const pkgCache = (result: LoadPluginResult, pkg: PkgInfo, app: string) =>
       })
 
       cache.count.task++
+      cache.task.push(val)
     }
   }
 

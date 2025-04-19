@@ -1,5 +1,5 @@
 import fs from 'node:fs'
-import { URL } from 'node:url'
+import { URL, fileURLToPath } from 'node:url'
 import { setVersion, setRuntime } from '@/env'
 import { pkg } from '@/utils/config/pkg'
 import { defaultConfig } from './default'
@@ -22,7 +22,7 @@ const env = () => {
   if (!fs.existsSync(file)) {
     /** 这里只需要考虑生产环境即可 */
     logger.error(logger.yellow('检查到项目配置文件缺失，正在初始化...'))
-    const cwd = new URL('./cli/index.mjs', import.meta.url).toString()
+    const cwd = fileURLToPath(new URL('./cli/index.mjs', import.meta.url))
     execSync(`node ${cwd} init`, {
       cwd: process.cwd(),
       stdio: 'inherit',

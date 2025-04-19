@@ -30,6 +30,11 @@
       "development": "./src/index.ts",
       "default": "./dist/index.mjs"
     },
+    "./app": {
+      "types": "./dist/start/app.d.ts",
+      "development": "./src/start/app.ts",
+      "default": "./dist/start/app.mjs"
+    },
     "./start": {
       "types": "./dist/start/index.d.ts",
       "development": "./src/start/index.ts",
