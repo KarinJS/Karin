@@ -1,7 +1,2 @@
-import { LoaderPlugin } from './loader'
-
-/**
- * @internal
- * @description 初始化插件
- */
-export const initPlugin = () => new LoaderPlugin().init()
+export * from './admin'
+export { initPlugins as initPlugin } from './admin/init'

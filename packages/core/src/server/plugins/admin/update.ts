@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { isWorkspace } from '@/env'
 import { exec } from '@/utils/system/exec'
-import { getPlugins } from '@/plugin/list'
+import { getPlugins } from '@/plugin/system/list'
 import { karinPathPlugins } from '@/root'
 import { taskSystem as task } from '@/service/task'
 import { validatePluginRequest, spawnProcess, handleReturn } from './tool'

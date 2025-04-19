@@ -9,7 +9,7 @@ const PLUGIN_SOURCES = [
   'https://mirrors.cloud.tencent.com/npm/@karinjs/plugins-list/latest',
 ]
 
-/** 缓存有效期（秒） */
+/** 缓存有效期 默认12小时 */
 const CACHE_TTL = process.env.PLUGIN_MARKET_CACHE_TTL ? Number(process.env.PLUGIN_MARKET_CACHE_TTL) : 12 * 60 * 60
 
 /**

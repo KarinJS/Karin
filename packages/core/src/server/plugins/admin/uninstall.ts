@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { exec } from '@/utils/system/exec'
-import { getPlugins } from '@/plugin/list'
+import { getPlugins } from '@/plugin/system/list'
 import { karinPathPlugins } from '@/root'
 import { taskSystem as task } from '@/service/task'
 import { validatePluginRequest, createOperationResult, safelyExecuteFileOperation, handleReturn } from './tool'

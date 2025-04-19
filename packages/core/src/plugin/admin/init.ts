@@ -1,6 +1,6 @@
 import { ONLINE } from '@/env'
 import { cache } from '../system/cache'
-import { getPlugins } from '../list'
+import { getPlugins } from '../system/list'
 import { initPluginHmr } from './hmr'
 import { pkgLoads, pkgSort } from './load'
 import { errorHandler, listeners } from '@/core/internal'
@@ -45,7 +45,6 @@ export const initPlugins = async () => {
   logger.info(logger.green('-----------'))
   listeners.emit(ONLINE, {})
 
-  // TODO: 热更新
   setTimeout(() => {
     initPluginHmr()
   }, 3 * 1000)

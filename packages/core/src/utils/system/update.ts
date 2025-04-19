@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import { exec } from './exec'
 import { requireFile } from '../fs/require'
-import { getPlugins } from '@/plugin/list'
+import { getPlugins } from '@/plugin/system/list'
 
 import type { Package } from '@/types/config'
 import type { ExecException } from 'node:child_process'

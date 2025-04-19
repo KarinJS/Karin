@@ -1,7 +1,7 @@
 import axios from 'axios'
 import lodash from 'lodash'
 import { exec } from '@/utils/system/exec'
-import { getPlugins } from '@/plugin/list'
+import { getPlugins } from '@/plugin/system/list'
 import { requireFileSync } from '@/utils/fs/require'
 import { createBadRequestResponse, createServerErrorResponse, createSuccessResponse } from '../utils/response'
 import { REDIS_DEPENDENCIES_LIST_CACHE_KEY, REDIS_DEPENDENCIES_LIST_CACHE_EXPIRE } from '@/env/key/redis'

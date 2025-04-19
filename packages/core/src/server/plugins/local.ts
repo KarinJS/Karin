@@ -1,6 +1,6 @@
 import { isDev, isTs } from '@/env'
 import { getWebConfig, normalizeAuthor } from './config'
-import { getPlugins } from '@/plugin/list'
+import { getPlugins } from '@/plugin/system/list'
 import { createSuccessResponse } from '@/server/utils/response'
 
 import type { RequestHandler } from 'express'

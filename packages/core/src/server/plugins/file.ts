@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { getPlugins } from '@/plugin/list'
+import { getPlugins } from '@/plugin/system/list'
 import { raceRequest } from './source'
 import { pluginDir as getPluginsDir } from '@/root'
 import { createServerErrorResponse, createSuccessResponse } from '@/server/utils/response'
