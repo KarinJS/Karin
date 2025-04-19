@@ -1,20 +1,19 @@
 {
-  "name": "karin-plugin-template-ts",
+  "name": "karin-plugin-template-js",
   "version": "1.0.0",
   "author": "shijin",
   "type": "module",
   "description": "karin plugin template",
-  "homepage": "https://github.com/KarinJS/karin-plugin-template-ts",
+  "homepage": "https://github.com/KarinJS/karin",
   "bugs": {
-    "url": "https://github.com/KarinJS/karin-plugin-template-ts/issues"
+    "url": "https://github.com/KarinJS/karin/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/KarinJS/karin-plugin-template-ts.git"
+    "url": "git+https://github.com/KarinJS/karin.git"
   },
   "scripts": {
     "app": "node app.js",
-    "build": "tsup",
     "dev": "cross-env EBV_FILE=\"development.env\" node app.js",
     "pub": "npm publish --access public"
   },

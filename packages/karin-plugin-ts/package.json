@@ -4,13 +4,13 @@
   "author": "shijin",
   "type": "module",
   "description": "karin plugin template",
-  "homepage": "https://github.com/KarinJS/karin-plugin-template-ts",
+  "homepage": "https://github.com/KarinJS/karin",
   "bugs": {
-    "url": "https://github.com/KarinJS/karin-plugin-template-ts/issues"
+    "url": "https://github.com/KarinJS/karin/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/KarinJS/karin-plugin-template-ts.git"
+    "url": "git+https://github.com/KarinJS/karin.git"
   },
   "scripts": {
     "app": "node lib/app.js",

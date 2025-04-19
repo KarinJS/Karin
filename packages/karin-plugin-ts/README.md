@@ -1,93 +1,123 @@
-# karin的ts插件开发模板
+# Karin TypeScript 插件开发模板
+
+## 📖 目录
+
+- [前言](#前言)
+- [快速开始](#快速开始)
+- [详细开发流程](#详细开发流程)
+- [常见问题与建议](#常见问题与建议)
+- [贡献与反馈](#贡献与反馈)
+
+---
 
 ## 前言
 
-ts插件的开发较为繁琐，但请不要着急，容我娓娓道来~  
+TypeScript 插件开发流程现在更加简单，无需手动克隆模板仓库，只需一条命令即可快速开始！
 
-- `TypeScript` 开发编写 -> 编译为`js` -> 发布 `npm` 包 -> 用户安装
+> TypeScript 编写 → 编译为 JS → 发布 NPM 包 → 用户安装
 
-## 克隆模板仓库
+---
 
-> 需要注意 请先安装`karin`哦~
-
-打开[模板仓库](https://github.com/KarinJS/karin-plugin-template-ts)
-
-点击`Use this template`或`使用此模板`按钮，创建自己的仓库。
-![202404121412587](https://cdn.jsdelivr.net/gh/sj817/imgs/img/202404121412587.png)
-
-填写仓库名称，描述，选择是否公开。
-![202404121414580](https://cdn.jsdelivr.net/gh/sj817/imgs/img/202404121414580.png)
+## 🚀 快速开始
 
 ```bash
-# 请改成你自己的仓库 注意！ 现在是克隆成单独的文件夹 而不是以前一样作为插件
-git clone https://github.com/karinjs/karin-plugin-template-ts.git
+pnpm create karin
 ```
 
-## 安装开发依赖
+- 按提示选择“ts插件开发模板”即可自动初始化项目。
+- 进入新建的项目目录，继续开发。
 
-```bash
-pnpm install
-```
+---
 
-## 开始你的开发
+## 详细开发流程
 
-```bash
-npx karin ts
-```
+1. **一键创建项目**
 
-```bash
-# 编译
-npm run build
-# or
-pnpm build
-```
+   ```bash
+   pnpm create karin
+   ```
 
-## 配置基本秘钥
+   - 选择“ts插件开发模板”
+   - 填写你的插件名称（会自动作为 package.json 的 name）
+   - 其余信息按提示填写
 
-> 需要1个基本的`npm`秘钥
+2. **安装依赖**
 
-1. 前往[npmjs](https://www.npmjs.com/)注册账号
-2. 注册完成点击`右上角头像` -> `Access Tokens` -> `Granular Access Token` -> `Classic Token`
-3. 填写`token`的`name`，选择`Automation`，如下图
-  ![npm](./resources//image/npm.png)
-4. 随后点击`Generate Token`即可
-5. 打开[Github](https://github.com)，请自行登录账号。
-6. 打开你刚才`Fork`的仓库，点击`Settings(设置)` -> `Secrets and variables(机密和变量)` -> `actions(操作)`
-7. 选择`Repository secrets(仓库机密)`，点击`New repository secret(新建仓库机密)`
-8. `Name *(名称 *)` 输入 `NPM_TOKEN` ， `Secret *(机密 *)` 输入你刚才得到的`npm`秘钥，随后保存即可。
-9. 允许`github-actions`发起`pr`，打开仓库主页，点击`Settings(设置)` -> `Actions(操作)` -> 勾选`Allow GitHub Actions to create and approve pull requests(允许 GitHub Actions 创建和批准拉取请求)` -> `Save(保存)`
+   ```bash
+   pnpm install
+   ```
 
-这里的步骤很长，请仔细认真一步步来，`npm`的秘钥，获取一次之后，多个仓库都可以重复使用，建议`npm`账户打开`2FA`
+3. **开发与调试**
 
-## 设置npm包名称
+   - 启动开发命令：
+     ```bash
+     pnpm dev
+     ```
+   - 编写你的插件代码于 `src/` 目录。
+   - 编译输出：
+     ```bash
+     pnpm build
+     ```
+   - 调试编译之后的代码：
+     ```bash
+     pnpm app
+     ```
+   - 本地调试建议：
+     - 可用 `pnpm link --global` 进行全局软链测试。
+     - 或在 karin 根目录用 `pnpm add ../your-plugin-repo -w` 进行本地依赖测试。
 
-> [!IMPORTANT]
-> 对于包名，请自行查看`npm`上是否已经冲突，`npm`的包名必须是唯一的。
+4. **配置 NPM 秘钥**
 
-你需要更改以下这些选项:
+   > 用于自动化发布，建议开启 2FA。
 
-- `package.json`:
-  - `name`: 改成npm包名，请注意使用`全部小写`
-  - `author`: 改成你的名字，需要英文哦
-  - `description`: 改成插件描述
-  - `homepage`: `npm`显示的主页
-  - `bugs.url`: 反馈bug
-  - `repository`: 指定项目的代码存储库地址
-- `.github/workflows/release-please.yml`:
-  - 修改其中的`package-name`，注意，这里需要和上面`package.json`的一致。
+   1. 注册 [npmjs](https://www.npmjs.com/) 账号。
+   2. 进入 `Access Tokens`，新建 `Classic Token`，类型选 `Automation`。
+   3. 复制生成的 Token。
+   4. 打开你的 GitHub 仓库 → Settings → Secrets and variables → Actions。
+   5. 新建 `NPM_TOKEN`，粘贴 Token。
+   6. 允许 GitHub Actions 创建和批准 PR（Settings → Actions）。
 
-> 对于更多选项，请自行查看注释。
+5. **设置包信息**
 
-## 推送
+   > 包名必须唯一，建议先在 [npm](https://www.npmjs.com/) 搜索确认。
 
-> [!IMPORTANT]
-> 编写好代码之后，正常`git pull`，随后等待几秒钟，合并`pr`即可。
+   - 初始化时填写的插件名会自动作为 package.json 的 name，无需手动修改。
+   - 其他如 `author`、`description`、`homepage`、`bugs.url`、`repository` 可在 package.json 中补充完善。
+   - **CI 配置无需再手动修改 package-name，已自动同步。**
 
-利用`Gihub`提供的`actions`来编译，推送`npm`。
+6. **自动化发布**
 
-## 安装发布的包
+   > 推送代码后，GitHub Actions 会自动编译并发布到 npm。
 
-```bash
-# 在karin根目录执行
-pnpm add package.name -w
-```
+   - 常规开发流程：
+     1. `git add . && git commit -m "feat: ..." && git push`
+     2. 等待 CI 自动发布
+     3. 发布成功后可在 npm 页面看到新版本
+
+7. **安装与验证**
+
+   - 在 karin 根目录下安装你的插件：
+     ```bash
+     pnpm add your-package-name -w
+     ```
+   - 验证插件是否生效，可查看 karin 启动日志或相关功能。
+
+---
+
+## 💡 常见问题与建议
+
+- **Q: 发布失败怎么办？**
+  - 检查 NPM_TOKEN 是否配置正确，权限是否足够。
+  - 包名是否唯一，未被占用。
+  - Actions 日志可定位具体报错。
+- **Q: 如何本地调试插件？**
+  - 推荐用 `pnpm link` 或本地依赖安装。
+- **Q: 如何贡献代码？**
+  - 欢迎 PR，建议先提 issue 讨论。
+
+---
+
+## 贡献与反馈
+
+- 有任何建议或问题，欢迎在 [Issues](https://github.com/KarinJS/karin-plugin-template-ts/issues) 提出。
+- 也可加入官方交流群交流经验。
