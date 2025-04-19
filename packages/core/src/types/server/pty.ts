@@ -1,5 +1,4 @@
 import type { WebSocket } from 'ws'
-import type { spawn } from '@karinjs/node-pty'
 
 /** 终端类型 */
 export type TerminalShell = 'powershell.exe' | 'cmd.exe' | 'bash'
@@ -21,11 +20,11 @@ export interface CreatePty {
 /**
  * 终端实例
  */
-export interface TerminalInstance {
+export interface TerminalInstance<T = any> {
   /** 终端名称 */
   name: string
   /** 终端 */
-  pty: ReturnType<typeof spawn>
+  pty: T
   /** 最后访问时间 */
   lastAccess: number
   /** 连接的 websocket */

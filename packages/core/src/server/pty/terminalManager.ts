@@ -25,7 +25,9 @@ let pty: typeof PtyModule | null = null
  */
 export const isPtyInstalled = async (): Promise<boolean> => {
   try {
-    pty = await import('@karinjs/node-pty')
+    /** 不要直接import 不然打包之后会有类型问题 */
+    const name = '@karinjs/node-pty'
+    pty = await import(name)
     return true
   } catch (error) {
     return false
