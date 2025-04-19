@@ -34,11 +34,11 @@ build/
 modules.js
 modules.d.ts
 /index.js
-1.js
-packages/types/index.js
-packages/types/index.mjs
-packages/types/index.d.mts
-packages/types/index.d.ts
+/1.js
+/packages/types/index.js
+/packages/types/index.mjs
+/packages/types/index.d.mts
+/packages/types/index.d.ts
 /web
 
 #macos 文件

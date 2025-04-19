@@ -71,7 +71,7 @@ export interface SaveConfigResponse {
 }
 
 /** webui配置 */
-export interface DefineConfig {
+export interface DefineConfig<T = any> {
   /** 插件信息 */
   info: {
     /** 插件id */
@@ -92,7 +92,7 @@ export interface DefineConfig {
   /**
    * 保存配置
    * @param config 配置
-   * @param T 支持传递泛型~
+   * @returns 保存结果
    */
-  save: <T = Record<string, any>>(config: T) => SaveConfigResponse | Promise<SaveConfigResponse>
+  save: (config: T) => SaveConfigResponse | Promise<SaveConfigResponse>
 }

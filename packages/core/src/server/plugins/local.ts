@@ -1,5 +1,5 @@
 import { isDev, isTs } from '@/env'
-import { getWebConfig } from './config'
+import { getWebConfig, normalizeAuthor } from './config'
 import { getPlugins } from '@/plugin/list'
 import { createSuccessResponse } from '@/server/utils/response'
 
@@ -28,6 +28,7 @@ export const pluginGetLocalList: RequestHandler = async (req, res) => {
       }
 
       if (!config || !config.info) return
+
       result.push({
         ...config.info,
         id: val.name,
@@ -35,6 +36,7 @@ export const pluginGetLocalList: RequestHandler = async (req, res) => {
         description: config.info.description ?? pkg.description,
         hasConfig: true,
         type: val.type,
+        author: normalizeAuthor(config.info.author),
       })
       return
     }
@@ -47,6 +49,7 @@ export const pluginGetLocalList: RequestHandler = async (req, res) => {
       }
 
       if (!config || !config.info) return
+
       result.push({
         ...config.info,
         id: val.name,
@@ -54,6 +57,7 @@ export const pluginGetLocalList: RequestHandler = async (req, res) => {
         description: config.info.description ?? pkg.description,
         hasConfig: true,
         type: val.type,
+        author: normalizeAuthor(config.info.author),
       })
     }
   }))

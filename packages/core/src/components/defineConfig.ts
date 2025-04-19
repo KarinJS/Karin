@@ -5,8 +5,8 @@ import type { DefineConfig } from '@/types'
  * @param config 配置
  * @returns 配置
  */
-export const defineConfig = (
-  config: DefineConfig
-): DefineConfig => {
+export const defineConfig = <T> (
+  config: DefineConfig<T>
+): DefineConfig<T> => {
   return config
 }

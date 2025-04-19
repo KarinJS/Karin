@@ -156,6 +156,22 @@ export const getWebConfig = async (type: Apps, id: string, _?: () => void) => {
 }
 
 /**
+ * 标准化插件作者字段
+ * @param author 插件作者
+ * @returns 标准化后的作者
+ */
+export const normalizeAuthor = (author: DefineConfig['info']['author']) => {
+  const list: GetConfigResponse['info']['author'] = []
+  if (Array.isArray(author)) {
+    list.push(...author)
+  } else if (author) {
+    list.push(author)
+  }
+
+  return list
+}
+
+/**
  * 获取插件配置 不存在则返回null
  * @param req 请求
  * @param res 响应
@@ -190,18 +206,11 @@ export const pluginGetConfig: RequestHandler = async (req, res) => {
     }
   })
 
-  let author: GetConfigResponse['info']['author'] = []
-  if (Array.isArray(config.info.author)) {
-    author = config.info.author
-  } else if (config.info.author) {
-    author = [config.info.author]
-  }
-
   const data: GetConfigResponse = {
     options: list as GetConfigResponse['options'],
     info: {
       ...config.info,
-      author,
+      author: normalizeAuthor(config.info.author),
     },
   }
 
