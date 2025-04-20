@@ -31,6 +31,9 @@ export const exec = (
   return new Promise(resolve => {
     execCmd(cmd, { ...options, shell }, (error, stdout, stderr) => {
       const status = !error
+      if (typeof stdout !== 'string') {
+        stdout = String(stdout)
+      }
       resolve({ status, error, stdout, stderr })
     })
   })

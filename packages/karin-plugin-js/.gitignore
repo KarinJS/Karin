@@ -23,6 +23,5 @@ lerna-debug.log*
 
 # 依赖
 node_modules/
-/index.js
 pnpm-workspace.yaml
 @karinjs/

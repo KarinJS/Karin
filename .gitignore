@@ -45,3 +45,4 @@ modules.d.ts
 .DS_Store
 
 !packages/core/src/server/api/plugins
+.windsurfrules

@@ -13,8 +13,8 @@
     "url": "git+https://github.com/KarinJS/karin.git"
   },
   "scripts": {
-    "app": "node app.js",
-    "dev": "cross-env EBV_FILE=\"development.env\" node app.js",
+    "app": "node index.mjs",
+    "dev": "cross-env EBV_FILE=\"development.env\" node index.mjs",
     "pub": "npm publish --access public"
   },
   "main": "lib/index.js",
