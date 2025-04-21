@@ -46,3 +46,4 @@ modules.d.ts
 
 !packages/core/src/server/api/plugins
 .windsurfrules
+/packages/test

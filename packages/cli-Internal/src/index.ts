@@ -47,8 +47,11 @@ program.command('init')
   .option('-f, --force', '强制初始化')
   .option('-d, --dev', '开发模式')
   .action((options) => {
-    process.env.NODE_ENV = 'development'
     process.env.KARIN_CLI = 'true'
+    if (options.dev) {
+      process.env.NODE_ENV = 'development'
+    }
+
     init(options.force)
   })
 

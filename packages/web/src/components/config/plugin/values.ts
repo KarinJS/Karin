@@ -3,13 +3,14 @@ import type { ComponentConfig } from 'node-karin'
 interface BaseValue {
   /** 组件类型 */
   key:
-  'input' |
-  'input-group' |
-  'switch' |
-  'radio-group' |
-  'checkbox-group' |
-  'accordion' |
-  'accordion-pro'
+  | 'input'
+  | 'input-group'
+  | 'switch'
+  | 'radio-group'
+  | 'checkbox-group'
+  | 'accordion'
+  | 'accordion-pro'
+  | 'cron'
 }
 
 /**
@@ -71,7 +72,18 @@ export interface AccordionProValue extends BaseValue {
 /**
  * 联合初始值类型
  */
-export type Value = InputValue | InputGroupValue | SwitchValue | RadioGroupValue | CheckboxGroupValue | AccordionValue | AccordionProValue
+/**
+ * Cron表达式值类型
+ */
+export interface CronValue extends BaseValue {
+  key: 'cron'
+  value: string
+}
+
+/**
+ * 联合初始值类型
+ */
+export type Value = InputValue | InputGroupValue | SwitchValue | RadioGroupValue | CheckboxGroupValue | AccordionValue | AccordionProValue | CronValue
 
 /**
  * initDefaultValues函数返回值类型
@@ -92,6 +104,14 @@ const initValue = (
   data?: any
 ) => {
   if (option.componentType === 'divider') return
+  if ('componentType' in option && option.componentType === 'cron') {
+    defaultValues[option.key] = {
+      key: 'cron',
+      value: data ?? option.defaultValue ?? '* * * * * *',
+    }
+    return
+  }
+
   if (option.componentType === 'input') {
     defaultValues[option.key] = {
       key: 'input',
@@ -212,7 +232,8 @@ const resultValue = (
     option.key === 'switch' ||
     option.key === 'radio-group' ||
     option.key === 'checkbox-group' ||
-    option.key === 'input-group'
+    option.key === 'input-group' ||
+    option.key === 'cron'
   ) {
     result[key] = option.value
     return

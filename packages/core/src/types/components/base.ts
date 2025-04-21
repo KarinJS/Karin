@@ -23,6 +23,7 @@ export type ComponentType =
   | 'radio'
   | 'radio-group'
   | 'input-group'
+  | 'cron'
 
 /** 组件通用属性 */
 export interface ComponentProps {

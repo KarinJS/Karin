@@ -221,7 +221,14 @@ importers:
         specifier: workspace:*
         version: link:../core
 
-  packages/test: {}
+  packages/test:
+    dependencies:
+      '@karinjs/plugin-basic':
+        specifier: 1.0.8
+        version: 1.0.8
+      node-karin:
+        specifier: workspace:*
+        version: link:../core
 
   packages/types: {}
 
@@ -1714,6 +1721,9 @@ packages:
 
   '@karinjs/node-schedule@1.0.0':
     resolution: {integrity: sha512-dHhYKcprM/5DQhVX/CFZGsJcNhbfUuE14zFuNunvzU5WdX+mqnpPpOAOaHdKMOLJunaq6zMdBHDYNw/NgEBQyg==}
+
+  '@karinjs/plugin-basic@1.0.8':
+    resolution: {integrity: sha512-HfJKfS330dK9I4o8O2hxOLYwPVmnXIUkIjG0Noeravi4wfkIeFqEQuUVJ4Ba1n6VuJdTRxE7HZA3fGMKFRAPNw==}
 
   '@karinjs/plugin-webui-network-monitor@1.0.3':
     resolution: {integrity: sha512-FloMaA3/41ZWOy0oVReH2tvS3FUABgzj2+EZ/6f7FkyC1aK4sQYsEDRuB2ru8RC7uycRxU2E0Tufj3jtnU5AGA==}
@@ -7329,6 +7339,8 @@ snapshots:
   '@karinjs/node-pty@1.0.4': {}
 
   '@karinjs/node-schedule@1.0.0': {}
+
+  '@karinjs/plugin-basic@1.0.8': {}
 
   '@karinjs/plugin-webui-network-monitor@1.0.3':
     dependencies:

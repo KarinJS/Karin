@@ -4,6 +4,7 @@ import { divider } from './divider'
 import { checkbox } from './checkbox'
 import { switchComponent } from './switch'
 import { accordion, accordionPro, accordionItem } from './accordion'
+import { cron } from './cron'
 
 export type Components = {
   /** 分隔线 */
@@ -22,6 +23,8 @@ export type Components = {
   radio: typeof radio
   /** 多选框 */
   checkbox: typeof checkbox
+  /** cron */
+  cron: typeof cron
 }
 
 /** 前端配置组件 */
@@ -42,6 +45,8 @@ export const components: Components = {
   radio,
   /** 多选框 */
   checkbox,
+  /** cron */
+  cron,
 }
 
 export type ComponentsClass = typeof divider

@@ -4,9 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "ki": "ki",
+    "karin": "ki",
+    "app": "node index.mjs",
+    "start": "node index.mjs",
+    "pm2": "pm2 start @karinjs/config/pm2.json",
+    "stop": "ki stop",
+    "rs": "ki rs",
+    "log": "ki log",
+    "up": "ki up"
   },
   "keywords": [],
   "author": "shijin",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "node-karin": "workspace:*",
+    "@karinjs/plugin-basic": "1.0.8"
+  },
+  "type": "module"
 }

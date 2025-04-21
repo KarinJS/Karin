@@ -325,7 +325,7 @@ const createEntryFile = (isDev: boolean, dir: string) => {
   /** 处于开发环境 */
   if (isDev) {
     if (fs.existsSync(`${dir}/src`)) {
-      fs.writeFileSync(path.join(dir, 'src', 'app.ts'), `import('node-karin/start')`)
+      fs.writeFileSync(path.join(dir, 'src', 'app.ts'), 'import(\'node-karin/start\')')
       return
     }
   }
