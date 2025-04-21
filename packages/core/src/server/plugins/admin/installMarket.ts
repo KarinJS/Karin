@@ -27,7 +27,7 @@ export const installMarket = async (
 ) => {
   /** tips: 不可以走缓存获取列表哦 */
   const market = await getPluginMarket(true)
-  const plugin = market.find(item => item.name === data.target)
+  const plugin = market.plugins.find(item => item.name === data.target)
   if (!plugin) {
     return handleReturn(res, false, '插件包不存在')
   }
