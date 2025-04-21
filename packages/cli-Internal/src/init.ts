@@ -102,9 +102,15 @@ const npmrc = (dir: string) => {
     fs.writeFileSync(npmrc, list.join('\n'))
     return
   }
-
   const data = fs.readFileSync(npmrc, 'utf-8')
+  const dataLines = data.split('\n').map(line => line.trim())
+
   const newEntries = list.filter(item => {
+    // 对于 public-hoist-pattern[] 这样的数组配置项，需要检查整行
+    if (item.startsWith('public-hoist-pattern[]=')) {
+      return !dataLines.includes(item)
+    }
+    // 对于普通配置项，检查键名
     const key = item.split('=')[0]
     return !data.includes(key)
   })
