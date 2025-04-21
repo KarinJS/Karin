@@ -120,38 +120,42 @@ const DependencyRow = memo(({
   return (
     <div className='grid grid-cols-12 w-full border-b border-default-100/40 hover:bg-default-50/70 transition-colors'>
       {/* 选择框 */}
-      <div className='py-3 md:py-4 px-2 md:px-4 text-sm text-center col-span-1' onClick={stopPropagation}>
-        <Checkbox
-          isSelected={isSelected}
-          onValueChange={handleSelectionChange}
-          size='sm'
-          aria-label={`选择 ${dependency.name}`}
-          classNames={{
-            base: 'w-4 h-4',
-            wrapper: 'rounded-full w-4 h-4 border-1 border-default-300 data-[selected=true]:border-blue-500 data-[selected=true]:bg-blue-500 data-[hover=true]:border-blue-400 data-[hover=true]:bg-blue-400/20 transition-all',
-            icon: 'text-white text-[10px]',
-          }}
-        />
+      <div className='py-3 md:py-4 px-2 md:px-4 text-sm flex items-center justify-center col-span-1' onClick={stopPropagation}>
+        <div className="flex items-center justify-center w-full">
+          <Checkbox
+            isSelected={isSelected}
+            onValueChange={handleSelectionChange}
+            size='sm'
+            aria-label={`选择 ${dependency.name}`}
+            classNames={{
+              base: 'w-4 h-4',
+              wrapper: 'rounded-full w-4 h-4 border-1 border-default-300 data-[selected=true]:border-blue-500 data-[selected=true]:bg-blue-500 data-[hover=true]:border-blue-400 data-[hover=true]:bg-blue-400/20 transition-all',
+              icon: 'text-white text-[10px]',
+            }}
+          />
+        </div>
       </div>
 
       {/* 包名称 */}
-      <div className='py-3 md:py-4 px-2 md:px-4 text-sm col-span-4'>
-        <div className='flex items-center'>
-          <Tooltip content={dependency.name === 'node-karin' ? '当然是我啦 φ(>ω<*)' : (dependency.isKarinPlugin ? 'karin 插件' : 'npm 依赖')}>
-            <div
-              className='w-2 md:w-2.5 h-2 md:h-2.5 rounded-full mr-1.5 md:mr-2.5 flex-shrink-0'
-              style={{
-                backgroundColor: dependency.name === 'node-karin' ? '#8b5cf6' : (dependency.isKarinPlugin ? '#10b981' : '#9ca3af'),
-                boxShadow: dependency.name === 'node-karin' ? '0 0 6px rgba(139, 92, 246, 0.3)' : (dependency.isKarinPlugin ? '0 0 6px rgba(16, 185, 129, 0.3)' : 'none'),
-              }}
-            />
-          </Tooltip>
-          <div onClick={stopPropagation} className='inline-block'>
+      <div className='py-3 md:py-4 px-2 md:px-4 text-sm col-span-4 sm:col-span-4 flex items-center'>
+        <div className='flex items-center w-full'>
+          <div className='flex-shrink-0'>
+            <Tooltip content={dependency.name === 'node-karin' ? '当然是我啦 φ(>ω<*)' : (dependency.isKarinPlugin ? 'karin 插件' : 'npm 依赖')}>
+              <div
+                className='w-2 md:w-2.5 h-2 md:h-2.5 rounded-full mr-1.5 md:mr-2.5 flex-shrink-0 translate-y-[0.5px] sm:translate-y-0'
+                style={{
+                  backgroundColor: dependency.name === 'node-karin' ? '#8b5cf6' : (dependency.isKarinPlugin ? '#10b981' : '#9ca3af'),
+                  boxShadow: dependency.name === 'node-karin' ? '0 0 6px rgba(139, 92, 246, 0.3)' : (dependency.isKarinPlugin ? '0 0 6px rgba(16, 185, 129, 0.3)' : 'none'),
+                }}
+              />
+            </Tooltip>
+          </div>
+          <div onClick={stopPropagation} className='w-full'>
             <Link
               href={getNpmLink(dependency.name)}
               isExternal
               showAnchorIcon={false}
-              className='font-medium text-blue-500 hover:text-blue-600 transition-colors text-xs md:text-sm'
+              className='font-medium text-blue-500 hover:text-blue-600 transition-colors text-xs md:text-sm break-all sm:break-normal'
             >
               {dependency.name}
             </Link>
@@ -160,13 +164,13 @@ const DependencyRow = memo(({
       </div>
 
       {/* 当前版本 */}
-      <div className='py-3 md:py-4 px-2 md:px-4 text-sm col-span-2 text-center'>
+      <div className='py-3 md:py-4 px-1 sm:px-2 md:px-4 text-sm col-span-3 sm:col-span-2 text-center'>
         <Tooltip content={packageTooltip} delay={100} placement='top'>
           <Chip
             color={pendingChanges[dependency.name] ? 'warning' : 'primary'}
             variant='flat'
             size='sm'
-            className='font-mono bg-opacity-20 text-xs cursor-help'
+            className='font-mono bg-opacity-20 text-xs cursor-help whitespace-nowrap max-w-full'
             radius='sm'
           >
             {pendingChanges[dependency.name] || dependency.current}
@@ -235,7 +239,7 @@ const DependencyRow = memo(({
       </div>
 
       {/* 操作 */}
-      <div className='py-3 md:py-4 px-2 md:px-4 text-sm text-center col-span-1' onClick={stopPropagation}>
+      <div className='py-3 md:py-4 px-0 sm:px-2 md:px-4 text-sm text-center col-span-4 sm:col-span-1' onClick={stopPropagation}>
         <Button
           isIconOnly
           size='sm'
@@ -351,7 +355,7 @@ const DependencyTable = memo(({
         <div className='bg-default-50/50 sticky top-0 z-10 w-full'>
           <div className='grid grid-cols-12 w-full border-b border-default-100/70 -ml-[3px]'>
             {/* 选择框列 */}
-            <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 text-center col-span-1'>
+            <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 flex items-center justify-center col-span-1'>
               <Checkbox
                 isSelected={allSelected}
                 isIndeterminate={someSelected}
@@ -367,12 +371,12 @@ const DependencyTable = memo(({
             </div>
 
             {/* 包名称列 */}
-            <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 col-span-4'>
+            <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 col-span-4 sm:col-span-4'>
               包名称
             </div>
 
             {/* 当前版本列 */}
-            <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 text-center col-span-2'>
+            <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-1 sm:px-2 md:px-4 text-center col-span-3 sm:col-span-2'>
               当前版本
             </div>
 
@@ -382,18 +386,18 @@ const DependencyTable = memo(({
             </div>
 
             {/* 依赖类型列 */}
-            <div className='hidden md:block text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-0 md:px-2 border-b border-default-100/70 text-center col-span-1'>
-              <span className='ml-[-5px]'>依赖类型</span>
+            <div className='hidden sm:block text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 text-center col-span-1'>
+              依赖类型
             </div>
 
             {/* 可用版本列 */}
-            <div className='hidden md:block text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-0 md:px-2 border-b border-default-100/70 text-center col-span-2'>
-              <span className='ml-[-10px]'>可用版本</span>
+            <div className='hidden md:block text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 text-center col-span-2'>
+              可用版本
             </div>
 
             {/* 操作列 */}
-            <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-0 md:px-2 border-b border-default-100/70 text-center col-span-1'>
-              <span className='ml-[-5px]'>操作</span>
+            <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-0 sm:px-2 md:px-4 text-center col-span-4 sm:col-span-1'>
+              操作
             </div>
           </div>
         </div>
