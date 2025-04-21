@@ -17,14 +17,17 @@ const CACHE_TTL = process.env.PLUGIN_MARKET_CACHE_TTL ? Number(process.env.PLUGI
  * @param forceUpdate - 是否强制从远程获取，忽略缓存
  * @returns 返回最先成功响应的插件列表
  */
-export const getPluginMarket = async (forceUpdate = false): Promise<MarketType[]> => {
+export const getPluginMarket = async (forceUpdate = false): Promise<{ plugins: MarketType[] }> => {
   const { redis } = await import('@/core/db/redis/redis')
   if (!forceUpdate) {
     const cachedData = await redis.get(REDIS_PLUGIN_LIST_CACHE_KEY)
-    if (cachedData) return JSON.parse(cachedData)
+    if (cachedData) {
+      const data = JSON.parse(cachedData)
+      if (data) return data
+    }
   }
 
-  const results = await raceRequest<MarketType[]>(PLUGIN_SOURCES)
+  const results = await raceRequest<MarketType[]>(PLUGIN_SOURCES, { method: 'get' })
   if (!results) throw new Error('无法从任何源获取插件列表')
 
   await redis.set(REDIS_PLUGIN_LIST_CACHE_KEY, JSON.stringify(results.data), { EX: CACHE_TTL })

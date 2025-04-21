@@ -5,7 +5,6 @@ import './local'
 import path from 'node:path'
 import { testGithub } from './test-url'
 import { getPlugins } from '@/plugin/system/list'
-import { fetchPluginList } from './source'
 import { handleAppPlugin, handleGitPlugin, handleNpmPlugin } from './file'
 import { createServerErrorResponse, createSuccessResponse } from '@/server/utils/response'
 import {
@@ -20,6 +19,7 @@ import { getPluginListCache, setPluginListCache, paginatePlugins } from './cache
 import type { RequestHandler } from 'express'
 import type { GetPluginType } from '@/types/plugin'
 import type { PluginLists, PluginUpdateInfo } from '@/types/server/plugins'
+import { getPluginMarket } from '@/plugin/system'
 
 /**
  * 获取完整的插件列表
@@ -27,7 +27,7 @@ import type { PluginLists, PluginUpdateInfo } from '@/types/server/plugins'
 export const getFullPluginList = async () => {
   // 并发获取基础数据
   const [list, createUrl, localPlugins] = await Promise.all([
-    fetchPluginList(),
+    getPluginMarket(),
     testGithub(),
     getPlugins('all', true, true),
   ])
@@ -91,6 +91,10 @@ export const getFullPluginList = async () => {
         downloads: existingPlugin.downloads,
         size: existingPlugin.size,
         updated: existingPlugin.updated,
+        author: existingPlugin.author.map(author => ({
+          ...author,
+          avatar: author.avatar || '',
+        })),
       })
       return
     }
@@ -101,6 +105,10 @@ export const getFullPluginList = async () => {
       downloads: 0,
       size: 0,
       updated: '',
+      author: info.author.map(author => ({
+        ...author,
+        avatar: '',
+      })),
     })
   }))
 

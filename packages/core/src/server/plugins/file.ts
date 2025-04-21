@@ -7,7 +7,8 @@ import { createServerErrorResponse, createSuccessResponse } from '@/server/utils
 
 import type { RequestHandler } from 'express'
 import type { GetPluginType } from '@/types/plugin'
-import type { PluginLists, OnlinePluginInfo } from '@/types/server/plugins'
+import type { PluginLists } from '@/types/server/plugins'
+import type { MarketType } from '@karinjs/plugins-list'
 
 /**
  * 构建raw url
@@ -55,7 +56,7 @@ export const checkPluginInstalled = async (name: string, type: GetPluginType): P
  * @param plugin NPM插件信息
  * @returns 处理后的插件信息
  */
-export const handleNpmPlugin = async (plugin: OnlinePluginInfo['plugins'][number]) => {
+export const handleNpmPlugin = async (plugin: MarketType) => {
   const urls = [
     `https://registry.npmmirror.com/${plugin.name}/latest`,
     `https://registry.npmjs.com/${plugin.name}/latest`,
@@ -80,7 +81,7 @@ export const handleNpmPlugin = async (plugin: OnlinePluginInfo['plugins'][number
  * @returns 处理后的插件信息
  */
 export const handleGitPlugin = async (
-  plugin: OnlinePluginInfo['plugins'][number],
+  plugin: MarketType,
   createUrl: (url: string) => string
 ) => {
   const installed = await checkPluginInstalled(plugin.name, 'git')
@@ -105,7 +106,7 @@ export const handleGitPlugin = async (
  * @param plugin App插件信息
  * @returns 处理后的插件信息
  */
-export const handleAppPlugin = async (plugin: OnlinePluginInfo['plugins'][number]) => {
+export const handleAppPlugin = async (plugin: MarketType) => {
   return {
     ...plugin,
     version: '-',
