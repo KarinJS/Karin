@@ -239,7 +239,7 @@ const DependencyRow = memo(({
       </div>
 
       {/* 操作 */}
-      <div className='py-3 md:py-4 px-0 sm:px-2 md:px-4 text-sm text-center col-span-4 sm:col-span-1' onClick={stopPropagation}>
+      <div className='py-3 md:py-4 px-0 sm:px-2 md:px-4 text-sm text-center col-span-3 sm:col-span-1' onClick={stopPropagation}>
         <Button
           isIconOnly
           size='sm'
