@@ -220,7 +220,7 @@ export default function DependenciesPage () {
       <StatCard
         title='总依赖'
         count={stats.total}
-        description='总依赖数'
+        description='总依赖数 (当前页面的依赖均为缓存)'
         icon={renderIcon(16, 20, LuPackage)}
         gradient='bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20'
         border='border border-blue-200/50 dark:border-blue-800/30'

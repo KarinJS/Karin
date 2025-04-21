@@ -2,11 +2,15 @@ import { motion, useDragControls } from 'framer-motion'
 import { RocketIcon } from 'lucide-react'
 import { useEffect, useState, useRef } from 'react'
 
+/**
+ * 小火箭
+ */
 const ScrollToTop = () => {
   const [isVisible, setIsVisible] = useState(false)
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const [isAtEdge, setIsAtEdge] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false) // 跟踪模态框是否打开
   const dragControls = useDragControls()
   const lastAltPressTime = useRef<number | null>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -27,6 +31,26 @@ const ScrollToTop = () => {
 
       scrollContainer.addEventListener('scroll', handleScroll)
       return () => scrollContainer.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
+  // 监听自定义的模态框事件
+  useEffect(() => {
+    const handleModalOpen = () => {
+      setIsModalOpen(true)
+    }
+
+    const handleModalClose = () => {
+      setIsModalOpen(false)
+    }
+
+    // 监听我们在DependencySettings中添加的自定义事件
+    window.addEventListener('karin:modal-open', handleModalOpen)
+    window.addEventListener('karin:modal-close', handleModalClose)
+
+    return () => {
+      window.removeEventListener('karin:modal-open', handleModalOpen)
+      window.removeEventListener('karin:modal-close', handleModalClose)
     }
   }, [])
 
@@ -96,15 +120,19 @@ const ScrollToTop = () => {
     }, 100)
   }
 
+  // 如果模态框打开且在移动端，就隐藏小火箭按钮
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768
+  const shouldHideRocket = isModalOpen && isMobile
+
   return (
     <motion.button
       ref={buttonRef}
       initial={{ opacity: 0, scale: 0.5 }}
       animate={{
-        opacity: isVisible ? 1 : 0,
-        scale: isVisible ? 1 : 0.5,
-        // 设置右侧距离为0
-        display: isVisible ? 'flex' : 'none',
+        opacity: isVisible && !shouldHideRocket ? 1 : 0,
+        scale: isVisible && !shouldHideRocket ? 1 : 0.5,
+        // 控制显示与否
+        display: isVisible && !shouldHideRocket ? 'flex' : 'none',
       }}
       whileHover={{
         scale: 1.1,
