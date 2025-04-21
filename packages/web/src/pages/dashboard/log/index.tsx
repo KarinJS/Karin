@@ -50,12 +50,22 @@ const color = {
 const LOG_LEVELS = Object.keys(color) as LogLevel[]
 
 /**
+ * 最大日志行数
+ */
+const DEFAULT_MAX_LOG_LINES = 3000
+
+/**
+ * 批量处理大小
+ */
+const BATCH_SIZE = 50
+
+/**
  * 创建终端
  * @returns 终端实例
  */
-const createTerminal = () => {
+const createTerminal = (isMobile = false) => {
   const terminal = new Terminal({
-    fontSize: 14,
+    fontSize: isMobile ? 8 : 14,
     fontFamily: 'Consolas, "DejaVu Sans Mono", "Courier New", monospace',
     theme: {
       background: '#1a1a1a',
@@ -66,7 +76,9 @@ const createTerminal = () => {
     convertEol: true,
     cursorBlink: false,
     disableStdin: false,
-    scrollback: 5000
+    scrollback: 3000,
+    cols: 999, // 设置一个较大的列数，让终端充分利用可用宽度
+    letterSpacing: isMobile ? -1 : 0 // 移动端使用负字母间距
   })
 
   return terminal
@@ -85,7 +97,7 @@ const createEventSource = () => {
 
 export default function LogPage () {
   /** 日志行数限制 */
-  const [maxLogLines, setMaxLogLines] = useState(1000)
+  const [maxLogLines, setMaxLogLines] = useState(DEFAULT_MAX_LOG_LINES)
   /** 当前过滤等级 */
   const [selectedLevel, setSelectedLevel] = useState<FilterLevel>('all')
   /** 终端容器 */
@@ -104,6 +116,44 @@ export default function LogPage () {
   const [selectedTab, setSelectedTab] = useState('realtime')
   /** 历史日志内容 */
   const [historyLogs, setHistoryLogs] = useState<LogItem[]>([])
+  /** 日志缓冲区 */
+  const logBufferRef = useRef<LogItem[]>([])
+  /** 动画帧ID */
+  const animationFrameRef = useRef<number | null>(null)
+  /** 是否需要滚动到底部 */
+  const shouldScrollRef = useRef(true)
+
+  /**
+   * 滚动到底部
+   */
+  const scrollToBottom = () => {
+    if (terminalInstance.current && shouldScrollRef.current) {
+      terminalInstance.current.scrollToBottom()
+    }
+  }
+
+  /**
+   * 批量写入日志到终端
+   */
+  const flushLogBuffer = () => {
+    if (logBufferRef.current.length === 0 || !terminalInstance.current) return
+
+    const buffer = logBufferRef.current
+    logBufferRef.current = []
+
+    const filteredLogs = buffer.filter(
+      log => selectedLevel === 'all' || log.level === selectedLevel
+    )
+
+    if (filteredLogs.length === 0) return
+
+    // 使用writeSync批量写入，减少重绘
+    const content = filteredLogs.map(log => log.message).join('\r\n') + '\r\n'
+    terminalInstance.current.write(content)
+
+    // 滚动到底部
+    scrollToBottom()
+  }
 
   /**
    * 设置日志流
@@ -119,29 +169,41 @@ export default function LogPage () {
       const logItem = parseLogLine(event.data)
       if (!logItem) return
 
-      /** 限制日志行数 */
-      if (logsRef.current.length >= maxLogLines) {
-        logsRef.current = logsRef.current.slice(-maxLogLines + 1)
-      }
-
       /** 添加日志行 */
       logsRef.current.push(logItem)
 
-      /** 如果终端行数超过限制，清除一半的内容 */
-      if (selectedLevel === 'all' || logItem.level === selectedLevel) {
-        if (terminalInstance.current && terminalInstance.current.buffer.active.length >= maxLogLines) {
-          /** 清除一半的内容 */
+      /** 限制日志行数 */
+      if (logsRef.current.length > maxLogLines) {
+        // 如果超出限制，清除最早的日志
+        const excessCount = logsRef.current.length - maxLogLines
+        logsRef.current = logsRef.current.slice(excessCount)
+
+        // 如果终端行数也超过限制，清空终端并重新写入
+        if (terminalInstance.current && terminalInstance.current.buffer.active.length > maxLogLines) {
           terminalInstance.current.clear()
-          /** 获取最近一半的内容 */
-          const recentLogs = logsRef.current
-            .slice(-maxLogLines / 2)
-            .filter(log => selectedLevel === 'all' || log.level === selectedLevel)
-          /** 写入终端 */
-          recentLogs.forEach(log => terminalInstance.current?.writeln(log.message))
-        } else {
-          /** 写入终端 */
-          terminalInstance.current?.writeln(logItem.message)
+          const filteredLogs = logsRef.current.filter(
+            log => selectedLevel === 'all' || log.level === selectedLevel
+          )
+
+          // 分批次写入日志，减少终端闪烁
+          const batchCount = Math.ceil(filteredLogs.length / BATCH_SIZE)
+          for (let i = 0; i < batchCount; i++) {
+            const batch = filteredLogs.slice(i * BATCH_SIZE, (i + 1) * BATCH_SIZE)
+            const content = batch.map(log => log.message).join('\r\n') + '\r\n'
+            terminalInstance.current.write(content)
+          }
         }
+      }
+
+      // 将日志放入缓冲区，不立即渲染
+      logBufferRef.current.push(logItem)
+
+      // 使用requestAnimationFrame防止频繁渲染导致闪烁
+      if (animationFrameRef.current === null) {
+        animationFrameRef.current = requestAnimationFrame(() => {
+          flushLogBuffer()
+          animationFrameRef.current = null
+        })
       }
     }
 
@@ -152,8 +214,9 @@ export default function LogPage () {
 
   useEffect(() => {
     if (!terminalRef.current) return
+
     /** 创建终端 */
-    const terminal = createTerminal()
+    const terminal = createTerminal(isMobile)
     /** 创建终端适配器 */
     const fitAddon = new FitAddon()
     /** 加载终端适配器 */
@@ -164,18 +227,62 @@ export default function LogPage () {
     terminal.open(terminalRef.current)
     /** 调整终端大小 */
     fitAddon.fit()
-    /** 监听终端大小变化 */
+    /** 设置终端实例 */
     terminalInstance.current = terminal
+
     /** 创建终端大小观察器 */
-    const resizeObserver = new ResizeObserver(() => fitAddon.fit())
+    const resizeObserver = new ResizeObserver(() => {
+      fitAddon.fit()
+      // 重新调整大小后滚动到底部
+      setTimeout(scrollToBottom, 0)
+    })
+
     /** 观察终端大小变化 */
     resizeObserver.observe(terminalRef.current)
+
+    // 监听终端滚动
+    terminal.onScroll(() => {
+      // 判断是否用户手动滚动
+      const isAtBottom =
+        terminal.buffer.active.viewportY + terminal.rows >=
+        terminal.buffer.active.length
+
+      // 只有当用户手动滚动时，才更新自动滚动标志
+      shouldScrollRef.current = isAtBottom
+    })
+
+    // 优化移动端显示
+    const optimizeForMobile = () => {
+      const currentIsMobile = window.matchMedia('(max-width: 768px)').matches
+
+      if (currentIsMobile) {
+        // 移动端下调整字体大小使内容更紧凑
+        terminal.options.fontSize = 8
+        terminal.options.letterSpacing = -1 // 负字母间距在移动端更紧凑
+      } else {
+        terminal.options.fontSize = 14
+        terminal.options.letterSpacing = 0
+      }
+      // 应用新设置
+      fitAddon.fit()
+
+      // 滚动到底部
+      setTimeout(scrollToBottom, 0)
+    }
+
+    // 窗口大小变化时重新优化
+    window.addEventListener('resize', optimizeForMobile)
+
     /** 清理终端 */
     return () => {
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current)
+      }
       resizeObserver.disconnect()
+      window.removeEventListener('resize', optimizeForMobile)
       terminal.dispose()
     }
-  }, [])
+  }, [isMobile])
 
   useEffect(() => {
     try {
@@ -198,8 +305,16 @@ export default function LogPage () {
       ? logsRef.current
       : logsRef.current.filter(log => log.level === selectedLevel)
 
-    /** 写入终端 */
-    filteredLogs.forEach(log => terminalInstance.current?.writeln(log.message))
+    // 分批次写入日志，减少终端闪烁
+    const batchCount = Math.ceil(filteredLogs.length / BATCH_SIZE)
+    for (let i = 0; i < batchCount; i++) {
+      const batch = filteredLogs.slice(i * BATCH_SIZE, (i + 1) * BATCH_SIZE)
+      const content = batch.map(log => log.message).join('\r\n') + '\r\n'
+      terminalInstance.current.write(content)
+    }
+
+    // 滚动到底部
+    setTimeout(scrollToBottom, 0)
   }, [selectedLevel])
 
   /**
@@ -208,21 +323,38 @@ export default function LogPage () {
    */
   const fetchHistoryLog = async (file: string) => {
     if (!file) return
-    setMaxLogLines(9999)
+    setMaxLogLines(3000)
     const content = await request.serverGet<string>(`/api/v1/logs/file?file=${file}`)
 
     if (terminalInstance.current) {
       terminalInstance.current.clear()
       const logs: LogItem[] = []
+
       content.split('\n').forEach(line => {
         const logItem = parseLogLine(line)
         if (!logItem) return
         logs.push(logItem)
-        if (selectedLevel === 'all' || logItem.level === selectedLevel) {
-          terminalInstance.current?.writeln(logItem.message)
-        }
       })
-      setHistoryLogs(logs)
+
+      // 保留最新的3000条日志
+      const trimmedLogs = logs.length > maxLogLines ? logs.slice(-maxLogLines) : logs
+
+      setHistoryLogs(trimmedLogs)
+
+      // 过滤并分批写入终端
+      const filteredLogs = trimmedLogs.filter(
+        log => selectedLevel === 'all' || log.level === selectedLevel
+      )
+
+      const batchCount = Math.ceil(filteredLogs.length / BATCH_SIZE)
+      for (let i = 0; i < batchCount; i++) {
+        const batch = filteredLogs.slice(i * BATCH_SIZE, (i + 1) * BATCH_SIZE)
+        const content = batch.map(log => log.message).join('\r\n') + '\r\n'
+        terminalInstance.current.write(content)
+      }
+
+      // 滚动到底部
+      setTimeout(scrollToBottom, 0)
     }
   }
 
@@ -342,14 +474,30 @@ export default function LogPage () {
   const handleTabChange = (key: Key) => {
     setSelectedTab(key as string)
     if (key === 'realtime') {
-      setMaxLogLines(1000)
+      setMaxLogLines(DEFAULT_MAX_LOG_LINES)
       // 重新显示实时日志...
       if (terminalInstance.current) {
         terminalInstance.current.clear()
+
+        // 确保实时日志数量不超过限制
+        if (logsRef.current.length > DEFAULT_MAX_LOG_LINES) {
+          logsRef.current = logsRef.current.slice(-DEFAULT_MAX_LOG_LINES)
+        }
+
         const filteredLogs = selectedLevel === 'all'
           ? logsRef.current
           : logsRef.current.filter(log => log.level === selectedLevel)
-        filteredLogs.forEach(log => terminalInstance.current?.writeln(log.message))
+
+        // 分批写入日志
+        const batchCount = Math.ceil(filteredLogs.length / BATCH_SIZE)
+        for (let i = 0; i < batchCount; i++) {
+          const batch = filteredLogs.slice(i * BATCH_SIZE, (i + 1) * BATCH_SIZE)
+          const content = batch.map(log => log.message).join('\r\n') + '\r\n'
+          terminalInstance.current.write(content)
+        }
+
+        // 滚动到底部
+        setTimeout(scrollToBottom, 0)
       }
     } else {
       // 获取历史日志文件列表

@@ -7,6 +7,11 @@ import '@xterm/xterm/css/xterm.css'
 import clsx from 'clsx'
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 
+/**
+ * 导入HarmonyOS字体
+ */
+import './xterm.css'
+
 export type XTermRef = {
   write: (
     ...args: Parameters<Terminal['write']>
@@ -27,7 +32,9 @@ export interface XTermProps
   onResize?: (cols: number, rows: number) => void // 新增属性
 }
 
-// 判断是否为移动设备的函数
+/**
+ * 判断是否为移动设备的函数
+ */
 const isMobileDevice = () => {
   return window.innerWidth < 768 // 通常 768px 是移动设备和平板的分界点
 }
@@ -37,17 +44,21 @@ const XTerm = forwardRef<XTermRef, XTermProps>((props, ref) => {
   const terminalRef = useRef<Terminal | null>(null)
   const { className, onInput, onKey, onResize, ...rest } = props
   // 添加字体大小状态
-  const [fontSize, setFontSize] = useState(isMobileDevice() ? 12 : 15)
+  const [fontSize, setFontSize] = useState(isMobileDevice() ? 8 : 14)
 
   useEffect(() => {
     const terminal = new Terminal({
       allowTransparency: true,
       fontFamily:
-        '"JetBrains Mono", "Aa偷吃可爱长大的", "Noto Serif SC", monospace',
+        '"HarmonyOS", "Consolas", monospace',
+      cursorStyle: 'bar',
+      cursorWidth: 1,
+      cursorBlink: true,
       cursorInactiveStyle: 'outline',
       drawBoldTextInBrightColors: false,
       fontSize, // 使用响应式字体大小
-      lineHeight: 1.2,
+      lineHeight: 0.8, // 极大减少行高以缩小字体间隙
+      letterSpacing: -0.1, // 使用负值减少字符间距
       theme: {
         background: '#0C0C0C',
         foreground: '#CCCCCC',
@@ -69,6 +80,11 @@ const XTerm = forwardRef<XTermRef, XTermProps>((props, ref) => {
         brightWhite: '#F2F2F2',
         selectionBackground: '#FFFFFF40',
         cursor: '#FFFFFF'
+      },
+      allowProposedApi: true,
+      windowsMode: true, // 添加Windows特定模式
+      windowsPty: {
+        backend: 'conpty'
       }
     })
     terminalRef.current = terminal
@@ -98,7 +114,7 @@ const XTerm = forwardRef<XTermRef, XTermProps>((props, ref) => {
 
     // 监听窗口大小变化，调整字体大小
     const handleResize = () => {
-      const newFontSize = isMobileDevice() ? 12 : 15
+      const newFontSize = isMobileDevice() ? 12 : 14
       if (newFontSize !== fontSize) {
         setFontSize(newFontSize)
         terminal.options.fontSize = newFontSize
