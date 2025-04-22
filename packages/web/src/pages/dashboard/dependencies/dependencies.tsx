@@ -1,7 +1,8 @@
 import { toast } from 'react-hot-toast'
 import { Progress } from '@heroui/progress'
-import { useState, useCallback, memo, useMemo } from 'react'
+import { useState, useCallback, memo, useMemo, useEffect } from 'react'
 import { LuPackage, LuDownload } from 'react-icons/lu'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   DependencyTable,
   DependencySettings,
@@ -70,6 +71,7 @@ export default function DependenciesPage () {
     handleSelectAll,
     updateDependencyVersion,
     formatVersionForAlias,
+    isRealTimeData,
   } = useDependencyManagement()
 
   // 使用依赖操作Hook
@@ -220,7 +222,7 @@ export default function DependenciesPage () {
       <StatCard
         title='总依赖'
         count={stats.total}
-        description='总依赖数 (当前页面的依赖均为缓存)'
+        description={isRealTimeData ? '总依赖数 (实时数据)' : '总依赖数 (当前页面的依赖均为缓存)'}
         icon={renderIcon(16, 20, LuPackage)}
         gradient='bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20'
         border='border border-blue-200/50 dark:border-blue-800/30'

@@ -28,6 +28,8 @@ export const useDependencyManagement = () => {
   const [loading, setLoading] = useState<boolean>(true)
   /** 过滤模式 */
   const [filterMode, setFilterMode] = useState<FilterMode>('all')
+  /** 是否为实时数据 */
+  const [isRealTimeData, setIsRealTimeData] = useState<boolean>(false)
 
   /**
    * 获取依赖列表
@@ -49,6 +51,9 @@ export const useDependencyManagement = () => {
         targetVersion: null,
       }))
       setDependenciesData(enhancedDeps)
+
+      // 更新数据状态，如果强制刷新则为实时数据
+      setIsRealTimeData(isForceRefresh)
     } catch (error) {
       toast.error('获取依赖列表时发生错误')
       console.error(error)
@@ -58,11 +63,20 @@ export const useDependencyManagement = () => {
   }, [])
 
   /**
-   * 初始加载依赖列表
+   * 初始加载依赖列表和从URL读取初始过滤模式
    */
   useEffect(() => {
+    // 从URL获取filter参数
+    const searchParams = new URLSearchParams(location.search)
+    const filterParam = searchParams.get('filter') as FilterMode | null
+
+    // 如果URL中有有效的filter参数，则使用它
+    if (filterParam && ['all', 'plugins', 'updatable'].includes(filterParam)) {
+      setFilterMode(filterParam)
+    }
+
     fetchDependencies(false)
-  }, [fetchDependencies])
+  }, [fetchDependencies, location.search])
 
   /**
    * 过滤依赖列表
@@ -211,6 +225,20 @@ export const useDependencyManagement = () => {
     })
   }, [formatVersionForAlias])
 
+  /**
+   * 设置过滤模式并更新 URL
+   * @param mode - 过滤模式
+   */
+  const setFilterModeWithURL = useCallback((mode: FilterMode) => {
+    setFilterMode(mode)
+
+    // 更新 URL 参数
+    const searchParams = new URLSearchParams(location.search)
+    searchParams.set('filter', mode)
+    const newURL = `${location.pathname}?${searchParams.toString()}`
+    window.history.replaceState(null, '', newURL)
+  }, [location.pathname, location.search])
+
   return {
     dependenciesData,
     setDependenciesData,
@@ -218,7 +246,7 @@ export const useDependencyManagement = () => {
     setSearchTerm,
     loading,
     filterMode,
-    setFilterMode,
+    setFilterMode: setFilterModeWithURL, // 使用带URL更新的版本替换
     filteredDependencies,
     stats,
     selectedDependencies,
@@ -228,5 +256,6 @@ export const useDependencyManagement = () => {
     handleSelectAll,
     updateDependencyVersion,
     formatVersionForAlias,
+    isRealTimeData, // 添加实时数据标志
   }
 }
