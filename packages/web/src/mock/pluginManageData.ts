@@ -2,38 +2,19 @@
  * 插件管理页面的模拟数据
  */
 
+import type { PluginAdminListResponse } from 'node-karin'
+
 /**
  * 插件类型枚举
  */
 export type PluginType = 'git' | 'app' | 'all'
 
 /**
- * 插件更新状态枚举
- */
-export type UpdateStatus = 'up-to-date' | 'outdated' | 'pending'
-
-/**
- * 插件项数据结构
- */
-export interface PluginItem {
-  /** 插件ID `package.json中的名称` */
-  id: string
-  /** 插件名称 `文件夹根目录名称` */
-  name: string
-  /** 插件类型 */
-  type: Exclude<PluginType, 'all'>
-  /** 插件版本 App类型为空 */
-  version: string
-  /** 插件最新版本短哈希 App类型为空 */
-  latestHash: string
-}
-
-/**
  * 模拟获取插件列表的异步函数
  * @param type 插件类型过滤条件
  * @returns 返回过滤后的插件列表
  */
-export const fetchPluginList = async (type: PluginType = 'all'): Promise<PluginItem[]> => {
+export const fetchPluginList = async (type: PluginType = 'all'): Promise<PluginAdminListResponse[]> => {
   // 模拟网络请求延迟
   // await new Promise(resolve => setTimeout(resolve, 800))
 
@@ -44,7 +25,7 @@ export const fetchPluginList = async (type: PluginType = 'all'): Promise<PluginI
 /**
  * 模拟插件数据列表
  */
-const mockPluginList: PluginItem[] = [
+const mockPluginList: PluginAdminListResponse[] = [
   {
     id: 'karin-plugin-theme-dark',
     name: 'karin-plugin-theme-dark',

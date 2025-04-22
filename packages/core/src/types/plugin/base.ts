@@ -62,8 +62,22 @@ export interface PkgInfo {
   get pkgData (): PkgData
 }
 
-/** 获取插件返回 */
+/** 获取本地插件Api请求参数 */
+export type GetPluginLocalOptions<T extends boolean, R extends boolean> = {
+  /** 是否获取详细信息 */
+  info?: T,
+  /** 是否强制获取 忽略缓存 */
+  force?: boolean,
+  /** 在获取全部插件时多返回一个类型 */
+  returnType?: R
+}
+
+/** 获取插件Apii返回 */
 export type GetPluginReturn<T extends boolean> = T extends true ? PkgInfo[] : string[]
+/** 获取本地插件Api返回 */
+export type GetPluginLocalReturn<T extends boolean, R extends boolean> = T extends true
+  ? PkgInfo[]
+  : R extends true ? { name: string, type: Apps }[] : string[]
 
 /** 单个方法基本属性 */
 export interface PluginFile<T extends PluginFncTypes> {

@@ -1,9 +1,9 @@
 import type { CreateTaskParams } from './task'
 
-type PluginAdminBase = Omit<CreateTaskParams, 'operatorIp' | 'createTime' | 'spawn'> & {
-  /** 插件类型 */
-  pluginType: 'npm' | 'git' | 'app'
-}
+/** 插件类型 */
+type PluginType = 'npm' | 'git' | 'app'
+/** 插件管理任务参数 */
+type PluginAdminBase = Omit<CreateTaskParams, 'operatorIp' | 'createTime' | 'target'>
 
 // =============== install ===============
 
@@ -23,6 +23,8 @@ interface PluginAdminInstallBase extends PluginAdminBase {
  */
 interface PluginAdminCustomInstallBase extends PluginAdminInstallBase {
   source: 'custom'
+  /** 插件类型 */
+  pluginType: PluginType
 }
 
 /**
@@ -67,8 +69,13 @@ export interface PluginAdminCustomInstallApp extends PluginAdminCustomInstallBas
  */
 export interface PluginAdminUninstall extends PluginAdminBase {
   type: 'uninstall'
-  /** 插件名称 在app类型下是`插件包名称:ts、js文件名称` 包含后缀 */
-  target: string
+  /** 卸载目标 */
+  target: {
+    /** 插件类型 */
+    type: PluginType
+    /** 插件名称 在app类型下是`插件包名称:ts、js文件名称` 包含后缀 */
+    name: string
+  }[]
 }
 
 // =============== update ===============
@@ -79,9 +86,25 @@ export interface PluginAdminUninstall extends PluginAdminBase {
 export interface PluginAdminUpdate extends PluginAdminBase {
   type: 'update'
   /** 是否更新所有插件 */
-  isAll?: boolean
-  /** 插件名称 在isAll的时候这里是空字符串 */
-  target: string
+  isAll?: {
+    /** 是否更新全部npm插件 */
+    npm: boolean
+    /** 是否更新全部git插件 */
+    git: boolean
+    /** git插件是否强制更新 */
+    force: boolean
+  }
+  /** 更新目标 */
+  target: {
+    /** 插件类型 */
+    type: Omit<PluginType, 'app'>
+    /** 插件名称 */
+    name: string
+    /** 更新版本 默认为latest 仅在npm下有效 */
+    version?: string
+    /** 是否强制更新 仅在git下有效 */
+    force?: boolean
+  }[]
 }
 
 // TODO: 禁用和启用功能待适配
@@ -171,22 +194,13 @@ export type PluginAdminParams =
   | PluginAdminUpdate
 
 /**
- * 更新插件返回值
+ * 插件管理返回值
  */
-export interface PluginAdminUpdateResult {
-  /** 是否更新成功 */
+export interface PluginAdminResult {
+  /** 是否成功 */
   success: boolean
   /** 操作日志 */
   message: string
   /** 任务ID */
   taskId?: string
-}
-/**
- * 卸载插件返回值
- */
-export interface PluginAdminUninstallResult {
-  /** 是否卸载成功 */
-  success: boolean
-  /** 操作日志 */
-  message: string
 }

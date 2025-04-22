@@ -53,6 +53,7 @@ import {
   GET_NPM_CONFIG_ROUTER,
   GET_NPM_BASE_CONFIG_ROUTER,
   SAVE_NPMRC_ROUTER,
+  GET_PLUGIN_LIST_PLUGIN_ADMIN_ROUTER,
 } from './router'
 import { logMiddleware } from '../log'
 import { authMiddleware } from '../auth/middleware'
@@ -115,6 +116,7 @@ import { getDependenciesListRouter } from '../dependencies/list'
 import { manageDependenciesRouter } from '../dependencies/manage'
 import { taskListRouter, taskRunRouter, taskLogsRouter, taskDeleteRouter } from '../task/list'
 import { getNpmBaseConfigRouter, getNpmrcContentRouter, getNpmrcListRouter, saveNpmrcRouter } from '../dependencies/config'
+import { getPluginListPluginAdmin } from '../plugins/detail'
 
 /**
  * karin内部路由
@@ -189,6 +191,7 @@ router.post(GET_PLUGIN_CONFIG_ROUTER, pluginGetConfig)
 router.post(SAVE_PLUGIN_CONFIG_ROUTER, pluginSaveConfig)
 /** 判断插件配置是否存在 */
 router.post(IS_PLUGIN_CONFIG_EXIST_ROUTER, pluginIsConfigExist)
+
 /** 插件管理 */
 router.post(PLUGIN_ADMIN_ROUTER, pluginAdminRouter)
 /** 安装插件 */
@@ -201,8 +204,10 @@ router.post(GET_TASK_STATUS_ROUTER, pluginGetTaskStatus)
 router.post(GET_TASK_LIST_ROUTER, pluginGetTaskList)
 /** 更新任务状态 */
 router.post(UPDATE_TASK_STATUS_ROUTER, pluginUpdateTaskStatus)
-/** 获取本地插件列表 */
+/** 获取已安装插件详情 */
 router.post(GET_LOCAL_PLUGIN_LIST_ROUTER, pluginGetLocalList)
+/** @version 1.8.0 获取已安装插件名称列表 */
+router.post(GET_PLUGIN_LIST_PLUGIN_ADMIN_ROUTER, getPluginListPluginAdmin)
 
 /** 创建终端 */
 router.post(CREATE_TERMINAL_ROUTER, createTerminalHandler)
@@ -244,3 +249,5 @@ router.get(TASK_RUN_ROUTER, taskRunRouter)
 router.post(TASK_LOGS_ROUTER, taskLogsRouter)
 /** 删除任务记录 */
 router.post(TASK_DELETE_ROUTER, taskDeleteRouter)
+
+/** */

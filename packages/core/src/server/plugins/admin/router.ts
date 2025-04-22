@@ -35,7 +35,7 @@ export const pluginAdminRouter: RequestHandler<null, null, PluginAdminParams> = 
      * }
      * ```
      */
-    return uninstall(res, req.body.name, req.body.target, req.body.pluginType, req.ip!)
+    return uninstall(res, req.body.name, req.body.target, req.ip!)
   }
 
   if (req.body.type === 'update') {

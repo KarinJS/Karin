@@ -10,7 +10,14 @@ import { writeEnv } from '@/utils/config/file/env'
 import { requireFile, requireFileSync } from '@/utils/fs/require'
 
 import type { PkgData, PkgEnv } from '@/utils/fs/pkg'
-import type { GetPluginType, PkgInfo, GetPluginReturn } from '@/types/plugin'
+import type {
+  Apps,
+  GetPluginType,
+  PkgInfo,
+  GetPluginReturn,
+  GetPluginLocalReturn,
+  GetPluginLocalOptions,
+} from '@/types/plugin'
 
 let isInit = true
 
@@ -467,6 +474,7 @@ const collectAllPlugins = async (files: fs.Dirent[], list: string[]): Promise<vo
  * @param isForce 是否强制更新缓存
  * @param _isFirst 是否第一次获取
  * @returns 插件列表或详细信息
+ * @version 1.0.0
  */
 export const getPlugins = async <T extends boolean = false> (
   type: GetPluginType,
@@ -546,4 +554,44 @@ export const isNpmPlugin = async (name: string): Promise<boolean> => {
   } catch {
     return false
   }
+}
+
+/**
+ * 获取本地插件
+ * @param type 获取插件的方式
+ * @param options 获取插件的选项
+ * @returns 插件列表或详细信息
+ * @version 1.8.0
+ */
+export const getPluginLocal = async <T extends boolean = false, R extends boolean = false> (
+  type: GetPluginType,
+  options: GetPluginLocalOptions<T, R> = {}
+): Promise<GetPluginLocalReturn<T, R>> => {
+  if (options.info) {
+    const result = await getPlugins(type, true, options.force, false)
+    return result as GetPluginLocalReturn<T, R>
+  }
+
+  if (!options.returnType) {
+    const result = await getPlugins(type, false, options.force, false)
+    return result as GetPluginLocalReturn<T, R>
+  }
+
+  const list: { name: string, type: Apps }[] = []
+  const promise = []
+  const createGetPlugin = async (type: Apps) => {
+    const result = await getPlugins(type, false, options.force, false)
+    result.forEach(name => list.push({ name, type }))
+  }
+
+  if (type === 'all') {
+    promise.push(createGetPlugin('app'))
+    promise.push(createGetPlugin('git'))
+    promise.push(createGetPlugin('npm'))
+  } else {
+    promise.push(createGetPlugin(type))
+  }
+
+  await Promise.allSettled(promise)
+  return list as GetPluginLocalReturn<T, R>
 }

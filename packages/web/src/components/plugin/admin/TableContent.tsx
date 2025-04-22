@@ -6,14 +6,15 @@ import { Checkbox } from '@heroui/checkbox'
 import { Progress } from '@heroui/progress'
 import { TbRefresh } from 'react-icons/tb'
 import LazyPluginLoader from '@/components/plugins/LazyPluginLoader'
-import PluginRow, { type PluginItem } from './PluginRow'
+import PluginRow from './PluginRow'
+import type { PluginAdminListResponse } from 'node-karin'
 
 /**
  * 表格内容组件属性接口
  */
 export interface TableContentProps {
   /** 插件列表数据 */
-  plugins: PluginItem[]
+  plugins: PluginAdminListResponse[]
   /** 加载状态 */
   loading: boolean
   /** 选中的插件ID映射表 */
@@ -180,7 +181,7 @@ const TableContent: FC<TableContentProps> = ({
                 >
                   {/* 渲染插件行 */}
                   {processedPlugins.map((plugin, index) => {
-                    const isSelected = selectedMap.has(plugin.id)
+                    const isSelected = selectedMap.has(plugin.name)
 
                     return (
                       <div

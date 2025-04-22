@@ -1,12 +1,11 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { exec } from '@/utils/system/exec'
 import { getPlugins } from '@/plugin/system/list'
 import { karinPathPlugins } from '@/root'
 import { taskSystem as task } from '@/service/task'
-import { validatePluginRequest, createOperationResult, safelyExecuteFileOperation, handleReturn } from './tool'
+import { handleReturn, spawnProcess } from './tool'
 
-import type { PluginAdminParams } from '@/types/task'
+import type { PluginAdminUninstall } from '@/types/task'
 import type { Response } from 'express'
 
 /**
@@ -33,21 +32,12 @@ import type { Response } from 'express'
 export const uninstall = async (
   res: Response,
   name: string,
-  target: string,
-  pluginType: PluginAdminParams['pluginType'],
+  target: PluginAdminUninstall['target'],
   operatorIp: string = '0.0.0.0'
 ) => {
-  if (!validatePluginRequest(res, name, target, pluginType, ['npm', 'git', 'app'])) {
-    return
+  if (!Array.isArray(target) || target.length < 1) {
+    return handleReturn(res, false, '无效请求: 插件目标错误')
   }
-
-  /** 检查插件是否存在 */
-  const list = await getPlugins(pluginType)
-  if (!list.some(v => v === name)) {
-    return handleReturn(res, false, '无效请求: 插件不存在')
-  }
-
-  let message = ''
 
   /**
    * 执行不同类型插件的卸载操作
@@ -59,31 +49,112 @@ export const uninstall = async (
    *
    * @returns 操作结果对象
    */
-  const performUninstall = async () => {
-    if (pluginType === 'npm') {
-      const { error, stdout, stderr } = await exec(`pnpm remove ${name}`, { timeout: 60 * 1000 })
+  const performUninstall = async (emitLog: (message: string) => void) => {
+    const npm: string[] = []
+    const git: string[] = []
+    const app: string[] = []
+    /** 记录不存在的插件 */
+    const notExist: string[] = []
 
-      return error || stderr
-        ? createOperationResult(false, error?.stack || error?.message || stderr, '卸载')
-        : createOperationResult(true, stdout, '卸载')
+    /** 本地已安装插件列表 */
+    const list = await getPlugins('all')
+
+    target.forEach(async (v) => {
+      if (v.type === 'npm') {
+        list.includes(v.name) ? npm.push(v.name) : notExist.push(v.name)
+        return
+      }
+
+      if (v.type === 'git') {
+        list.includes(v.name) ? git.push(v.name) : notExist.push(v.name)
+        return
+      }
+
+      if (v.type === 'app') {
+        /** 等下直接判断路径更快 因为还需要判断路径穿越的问题 */
+        app.push(v.name)
+        return
+      }
+
+      notExist.push(v.name)
+    })
+
+    await spawnProcess('pnpm', ['remove', ...npm, '--save'], { timeout: 60 * 1000 }, emitLog)
+
+    /** tips: 不要使用异步 */
+    for (const v of git) {
+      emitLog('-----------------------')
+      emitLog(`开始卸载 git 插件: ${v}`)
+      if (v.includes('..')) {
+        emitLog(`卸载 ${v} 失败: 文件名称存在路径穿越风险`)
+        continue
+      }
+
+      /** 判断git文件夹是否存在 */
+      const dir = path.join(karinPathPlugins, v)
+      if (!fs.existsSync(path.join(dir, '.git'))) {
+        emitLog(`卸载 ${v} 失败: 非git仓库`)
+        continue
+      }
+
+      try {
+        await fs.promises.rm(dir, { recursive: true, force: true })
+        emitLog(`卸载 ${v} 成功`)
+      } catch (error) {
+        emitLog(`卸载 ${v} 失败: ${(error as Error).message}`)
+      }
+      emitLog('-----------------------\n\n')
     }
 
-    if (pluginType === 'git') {
-      return safelyExecuteFileOperation(async () => {
-        await fs.promises.rm(path.join(karinPathPlugins, name), { recursive: true, force: true })
-        return ''
-      }, '卸载')
+    for (const v of app) {
+      emitLog('-----------------------')
+      emitLog(`开始卸载 app 插件: ${v}`)
+      if (v.includes('..')) {
+        emitLog(`卸载 ${v} 失败: 文件名称存在路径穿越风险`)
+        continue
+      }
+
+      /** 判断app文件夹是否存在 */
+      const [pkg, file] = v.split(':')
+      if (!pkg || !file) {
+        emitLog(`卸载 ${v} 失败: 格式错误`)
+        continue
+      }
+
+      if (!list.includes(pkg)) {
+        emitLog(`卸载 ${v} 失败: 插件不存在`)
+        continue
+      }
+
+      const dir = path.join(karinPathPlugins, pkg)
+      if (!fs.existsSync(path.join(dir, file))) {
+        emitLog(`卸载 ${v} 失败: 文件不存在`)
+        continue
+      }
+
+      /** 判断后缀 必须是.js .mjs .cjs .ts .cts .mts */
+      const ext = path.extname(file)
+      if (!['.js', '.mjs', '.cjs', '.ts', '.cts', '.mts'].includes(ext)) {
+        emitLog(`卸载 ${v} 失败: 错误的文件类型`)
+        continue
+      }
+
+      try {
+        /** 这里是文件 不能使用rm函数 */
+        await fs.promises.unlink(path.join(dir, file))
+        emitLog(`卸载 ${v} 成功`)
+      } catch (error) {
+        emitLog(`卸载 ${v} 失败: ${(error as Error).message}`)
+      }
+      emitLog('-----------------------\n\n')
     }
 
-    if (target.includes('..')) {
-      return createOperationResult(false, '无效请求: 路径穿越', '卸载')
+    if (notExist.length) {
+      notExist.unshift('以下插件不存在:')
+      emitLog(notExist.join('\n') + '\n\n')
     }
 
-    return safelyExecuteFileOperation(async () => {
-      const [pkg, file] = target.split(':')
-      await fs.promises.rm(path.join(karinPathPlugins, pkg, file), { recursive: true, force: true })
-      return ''
-    }, '卸载')
+    emitLog('卸载任务完成')
   }
 
   /**
@@ -93,17 +164,21 @@ export const uninstall = async (
     {
       type: 'uninstall',
       name,
-      target,
+      target: target.map(v => `${v.type}:${v.name}`).join(','),
       operatorIp,
     },
-    async (options) => {
-      const result = await performUninstall()
-      message = result.message
-      await task.update.logs(options.id, result.message)
-      return result.success
+    async (options, emitLog) => {
+      try {
+        await performUninstall(emitLog)
+        await task.update.logs(options.id, '任务执行成功')
+        return true
+      } catch (error) {
+        await task.update.logs(options.id, `任务执行失败: ${(error as Error).message}`)
+        return false
+      }
     }
   )
 
   const success = await task.run(id)
-  return handleReturn(res, success, message)
+  return handleReturn(res, success, '卸载任务已创建，请通过taskId执行任务')
 }

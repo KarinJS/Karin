@@ -28,4 +28,6 @@ export const api = {
 
   /** 插件管理 POST */
   pluginAdmin: `${BASE_ROUTER}/plugin/admin`,
+  /** 获取插件管理所需的插件信息列表 POST */
+  getPluginListPluginAdmin: `${BASE_ROUTER}/plugin/detail/list`,
 }

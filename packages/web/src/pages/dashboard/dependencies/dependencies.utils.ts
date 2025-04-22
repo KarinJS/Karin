@@ -1,6 +1,8 @@
 import type { Dependency } from 'node-karin'
 
-// 定义过滤模式类型
+/**
+ * 定义过滤模式类型
+ */
 export type FilterMode = 'all' | 'plugins' | 'updatable'
 
 /**
@@ -25,10 +27,10 @@ export const getNpmLink = (packageName: string): string => {
 export const hasUpdate = (dependency: Dependency): boolean => {
   if (!dependency.latest.length) return false
 
-  // 获取最新版本（数组中的最后一个元素）
+  /** 获取最新版本（数组中的最后一个元素） */
   const latestVersion = dependency.latest[dependency.latest.length - 1]
 
-  // 直接比较当前版本和最新版本是否相同
+  /** 直接比较当前版本和最新版本是否相同 */
   return dependency.current !== latestVersion
 }
 
@@ -40,7 +42,7 @@ export const hasUpdate = (dependency: Dependency): boolean => {
 export const createUpdateData = (
   dep: { name: string; targetVersion: string | null; from?: string }
 ): { name: string; version: string } => {
-  // 优先使用用户选择的目标版本
+  /** 优先使用用户选择的目标版本 */
   if (dep.targetVersion) {
     return {
       name: dep.name,
@@ -48,10 +50,10 @@ export const createUpdateData = (
     }
   }
 
-  // 检查是否为别名依赖
+  /** 检查是否为别名依赖 */
   const isAlias = dep.from && dep.name !== dep.from
 
-  // 否则使用latest
+  /** 否则使用latest */
   return {
     name: dep.name,
     version: isAlias ? `npm:${dep.from}@latest` : 'latest',
@@ -68,7 +70,7 @@ export const formatVersionForAlias = (
   dependency: { from?: string; name: string },
   version: string
 ): string => {
-  // 如果name和from不一样，表示是别名依赖
+  /** 如果name和from不一样，表示是别名依赖 */
   if (dependency.from && dependency.name !== dependency.from) {
     return `npm:${dependency.from}@${version}`
   }

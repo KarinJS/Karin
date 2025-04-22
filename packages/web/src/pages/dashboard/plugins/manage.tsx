@@ -4,7 +4,7 @@ import { useRequest } from 'ahooks'
 import { Button } from '@heroui/button'
 import { TbArrowsUp, TbRefresh, TbTrash } from 'react-icons/tb'
 import { MdOutlineExtension } from 'react-icons/md'
-import { fetchPluginList } from '@/mock/pluginManageData'
+import { getLocalPluginNameListRequest } from '@/request/plugins'
 import { FilterCards, TableContent, UpdateOptionsModal, type PluginType } from '@/components/plugin/admin'
 
 /**
@@ -29,8 +29,17 @@ export const PluginManagePage = (): ReactElement => {
   /**
    * 获取插件列表的请求
    */
-  const { data: plugins = [], loading, run: fetchPlugins } = useRequest(
-    () => fetchPluginList(selectedType),
+  const { data: pluginsResponse, loading, run: fetchPlugins } = useRequest(
+    async () => {
+      const response = await getLocalPluginNameListRequest()
+      if (response.success && response.data) {
+        // 根据选中类型过滤插件
+        return selectedType === 'all'
+          ? response.data
+          : response.data.filter(plugin => plugin.type === selectedType)
+      }
+      return []
+    },
     {
       refreshDeps: [selectedType],
       onSuccess: () => {
@@ -40,6 +49,9 @@ export const PluginManagePage = (): ReactElement => {
     }
   )
 
+  // 处理API返回的响应数据
+  const plugins = pluginsResponse || []
+
   /** 行高定义 */
   const rowHeight = useMemo(() => {
     return window.innerWidth < 768 ? 50 : 60
@@ -48,9 +60,9 @@ export const PluginManagePage = (): ReactElement => {
   /** 容器高度 */
   const containerHeight = useMemo(() => {
     const availableHeight = window.innerHeight * 0.6
-    const contentHeight = plugins.length * rowHeight
+    const contentHeight = (plugins?.length || 0) * rowHeight
     return Math.min(Math.max(contentHeight || 300, 300), availableHeight)
-  }, [plugins.length, rowHeight])
+  }, [plugins, rowHeight])
 
   /** 为选中状态创建映射表以加速查找 */
   const selectedMap = useMemo(() => {
@@ -145,7 +157,7 @@ export const PluginManagePage = (): ReactElement => {
         /** 否则全选 */
         console.log('全选，选中所有项')
         const allKeys = new Set(plugins.map(plugin => plugin.id))
-        setSelectedKeys(allKeys)
+        setSelectedKeys(allKeys as Set<string>)
       }
     }
   }, [plugins, selectedKeys])
@@ -179,8 +191,9 @@ export const PluginManagePage = (): ReactElement => {
     const counts = { all: plugins.length, npm: 0, git: 0, app: 0 }
 
     plugins.forEach(plugin => {
-      if (plugin.type in counts) {
-        counts[plugin.type as keyof typeof counts]++
+      const pluginType = plugin.type as keyof typeof counts
+      if (pluginType in counts) {
+        counts[pluginType]++
       }
     })
 

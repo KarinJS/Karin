@@ -101,6 +101,8 @@ export const TASK_LOGS_ROUTER = '/task/logs'
 export const TASK_DELETE_ROUTER = '/task/delete_record'
 /** 插件管理 */
 export const PLUGIN_ADMIN_ROUTER = '/plugin/admin'
+/** @version 1.8.0 获取插件管理所需的插件信息列表 */
+export const GET_PLUGIN_LIST_PLUGIN_ADMIN_ROUTER = '/plugin/detail/list'
 
 /** 获取依赖列表 */
 export const GET_DEPENDENCIES_LIST_ROUTER = '/dependencies/list'

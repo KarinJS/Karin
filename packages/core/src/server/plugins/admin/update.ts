@@ -1,10 +1,10 @@
 import path from 'node:path'
 import { isWorkspace } from '@/env'
-import { exec } from '@/utils/system/exec'
 import { getPlugins } from '@/plugin/system/list'
 import { karinPathPlugins } from '@/root'
 import { taskSystem as task } from '@/service/task'
-import { validatePluginRequest, spawnProcess, handleReturn } from './tool'
+import { gitPull } from '@/utils/git/pull'
+import { spawnProcess, handleReturn } from './tool'
 
 import type { Response } from 'express'
 import type { PluginAdminUpdate, TaskEntity } from '@/types/task'
@@ -32,8 +32,8 @@ export const update = async (
   data: PluginAdminUpdate,
   ip: string = '0.0.0.0'
 ) => {
-  if (!validatePluginRequest(res, data.name, data.target, data.pluginType, ['npm', 'git'])) {
-    return
+  if (!Array.isArray(data.target) || data.target.length < 1) {
+    return handleReturn(res, false, '无效请求: 插件目标错误')
   }
 
   /** 更新全部插件 */
@@ -45,58 +45,83 @@ export const update = async (
         target: 'all',
         operatorIp: ip,
       },
-      updateAll
+      async (options, emitLog) => {
+        await updateAll(options, emitLog, data.isAll)
+        await task.update.logs(options.id, '任务执行成功')
+        return true
+      }
     )
 
     return handleReturn(res, true, '更新任务已创建，请通过taskId执行任务', id)
   }
 
-  /** 检查插件是否存在 */
-  const list = await getPlugins(data.pluginType)
-  if (!list.some(v => v === data.target)) {
-    return handleReturn(res, false, '无效请求: 插件不存在')
+  const performUpdate = async (_: TaskEntity, log: (message: string) => void) => {
+    const npm: { name: string, version: string }[] = []
+    const git: { name: string, version: string, force: boolean }[] = []
+    /** 记录不存在的插件 */
+    const notExist: string[] = []
+
+    const list = await getPlugins('all', false, true)
+
+    for (const item of data.target) {
+      if (item.type === 'npm') {
+        list.includes(item.name)
+          ? npm.push({ name: item.name, version: item.version || 'latest' })
+          : notExist.push(item.name)
+        continue
+      }
+
+      if (item.type === 'git') {
+        const force = typeof item.force === 'boolean' ? item.force : false
+        list.includes(item.name)
+          ? git.push({ name: item.name, version: item.version || 'latest', force })
+          : notExist.push(item.name)
+        continue
+      }
+
+      notExist.push(item.name)
+    }
+
+    if (npm.length > 0) {
+      const args = npm.map(item => `${item.name}@${item.version}`)
+      await spawnProcess('pnpm', ['update', ...args, '--save'], { timeout: 60 * 1000 }, log)
+    }
+
+    for (const item of git) {
+      const { name, force } = item
+      const cwd = path.join(karinPathPlugins, name)
+      const result = await gitPull(cwd, { force, timeout: 60 * 1000 })
+
+      if (result.status) {
+        log(`更新 ${name}(git) 插件成功: ${result.hash.before} -> ${result.hash.after}`)
+      } else {
+        log(`更新 ${name}(git) 插件失败: ${result.data}`)
+      }
+    }
+
+    return true
   }
 
-  /**
-   * 创建更新任务并返回响应
-   *
-   * 封装了创建任务和返回响应的通用逻辑，避免代码重复
-   *
-   * @param taskHandler - 任务处理函数，执行实际的更新操作
-   * @returns 包含任务ID的响应
-   */
-  const createUpdateTask = async (taskHandler: (options: TaskEntity, emitLog: (message: string) => void) => Promise<boolean>) => {
-    const id = await task.add(
-      {
-        type: 'update',
-        name: data.name,
-        target: data.target,
-        operatorIp: ip,
-      },
-      taskHandler
-    )
+  const id = await task.add(
+    {
+      type: 'update',
+      name: data.name,
+      target: data.target.map(item => `${item.type}:${item.name}`).join(','),
+      operatorIp: ip,
+    },
+    async (options, emitLog) => {
+      try {
+        await performUpdate(options, emitLog)
+        await task.update.logs(options.id, '任务执行成功')
+        return true
+      } catch (error) {
+        await task.update.logs(options.id, `任务执行失败: ${(error as Error).message}`)
+        return false
+      }
+    }
+  )
 
-    return handleReturn(res, true, '更新任务已创建，请通过taskId执行任务', id)
-  }
-
-  /**
-   * 处理不同类型插件的更新
-   */
-  if (data.pluginType === 'npm') {
-    return createUpdateTask(async (_, emitLog) => {
-      await spawnProcess('pnpm', ['update', data.target, '@latest', '--save'], {}, emitLog)
-      return true
-    })
-  }
-
-  if (data.pluginType === 'git') {
-    return createUpdateTask(async (_, emitLog) => {
-      await spawnProcess('git', ['pull'], { cwd: path.join(karinPathPlugins, data.target) }, emitLog)
-      return true
-    })
-  }
-
-  return handleReturn(res, false, '无效请求: 插件类型错误')
+  return handleReturn(res, true, '更新任务已创建，请通过taskId执行任务', id)
 }
 
 /**
@@ -108,11 +133,15 @@ export const update = async (
  * 3. 对git插件逐个执行更新
  * 4. 记录更新过程的日志
  *
- * @param _options - 任务参数，包含任务ID和相关信息
+ * @param _ - 任务参数，包含任务ID和相关信息
  * @param log - 日志函数，用于记录更新进度和结果
  * @returns 操作是否成功
  */
-const updateAll = async (_options: TaskEntity, log: (message: string) => void) => {
+const updateAll = async (
+  _: TaskEntity,
+  log: (message: string) => void,
+  options: PluginAdminUpdate['isAll']
+) => {
   /**
    * 将插件列表按类型分类
    * @returns 分类后的插件列表 {npm: string[], git: string[]}
@@ -144,9 +173,7 @@ const updateAll = async (_options: TaskEntity, log: (message: string) => void) =
     const args = ['update', npmPlugins.join('@latest '), '--save']
     if (isWorkspace()) args.push('-w')
 
-    await spawnProcess('pnpm', args, {}, (msg) => {
-      log(msg)
-    })
+    await spawnProcess('pnpm', args, {}, log)
   }
 
   /**
@@ -155,21 +182,14 @@ const updateAll = async (_options: TaskEntity, log: (message: string) => void) =
    * @returns 更新结果的日志消息
    */
   const updateGitPlugin = async (pluginName: string): Promise<string> => {
-    try {
-      const { error, stdout, stderr } = await exec('git pull', {
-        cwd: path.join(karinPathPlugins, pluginName),
-        timeout: 60 * 1000,
-      })
+    const cwd = path.join(karinPathPlugins, pluginName)
+    const result = await gitPull(cwd, { force: options?.force, timeout: 60 * 1000 })
 
-      if (error || stderr) {
-        return `[${pluginName}] 更新失败: ${error?.stack || error?.message || stderr}`
-      }
-
-      return `[${pluginName}] 更新完成: ${stdout}`
-    } catch (error) {
-      logger.error(error)
-      return `[${pluginName}] 更新失败: ${error instanceof Error ? error.message : String(error)}`
+    if (result.status) {
+      return `更新 ${pluginName}(git) 插件成功: ${result.hash.before} -> ${result.hash.after}`
     }
+
+    return `更新 ${pluginName}(git) 插件失败: ${result.data}`
   }
 
   /**
@@ -191,10 +211,12 @@ const updateAll = async (_options: TaskEntity, log: (message: string) => void) =
 
   // 主流程执行
   const { npm, git } = await categorizePlugins()
-  await Promise.all([
-    updateNpmPlugins(npm),
-    updateGitPlugins(git),
-  ])
+  try {
+    await updateNpmPlugins(npm)
+    await updateGitPlugins(git)
+  } catch (error) {
+    log(`* 发生错误: ${error instanceof Error ? error.message : String(error)}`)
+  }
 
   return true
 }

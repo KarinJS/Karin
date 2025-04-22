@@ -1,3 +1,5 @@
+import { Apps } from '../plugin'
+
 /**
  * 基类
  */
@@ -94,4 +96,20 @@ export interface PluginUpdateInfo extends PluginLists {
   updateLog?: string
   /** 更新数量 */
   updateCount?: number
+}
+
+/**
+ * 插件管理 获取插件列表Api响应
+ */
+export interface PluginAdminListResponse {
+  /** 插件ID `package.json中的名称` */
+  id: string
+  /** 插件名称 `文件夹根目录名称` */
+  name: string
+  /** 插件类型 */
+  type: Exclude<Apps, 'all'>
+  /** 插件版本 App类型为空 */
+  version: string
+  /** 插件最新版本短哈希 App类型为空 */
+  latestHash: string
 }

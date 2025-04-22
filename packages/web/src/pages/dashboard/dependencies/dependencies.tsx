@@ -139,7 +139,7 @@ export default function DependenciesPage () {
    * @returns 格式化的更新数据
    */
   const createUpdateData = useCallback((dep: EnhancedDependency) => {
-    // 优先使用用户明确选择的目标版本
+    /** 优先使用用户明确选择的目标版本 */
     if (dep.targetVersion) {
       return {
         name: dep.name,
@@ -147,10 +147,10 @@ export default function DependenciesPage () {
       }
     }
 
-    // 检查是否为别名依赖
+    /** 是否为别名依赖 */
     const isAlias = dep.from && dep.name !== dep.from
 
-    // 否则使用latest
+    /** 否则使用latest */
     return {
       name: dep.name,
       version: isAlias ? `npm:${dep.from}@latest` : 'latest',
@@ -161,24 +161,24 @@ export default function DependenciesPage () {
    * 处理更新按钮点击
    */
   const handleUpdateClick = useCallback(() => {
-    // 获取选中的依赖
+    /** 选中的依赖 */
     const selectedDeps = dependenciesData.filter(dep => dep.isSelected)
 
-    // 检查是否处于总依赖模式且选中了所有依赖且没有指定自定义版本
+    /** 检查是否处于总依赖模式且选中了所有依赖且没有指定自定义版本 */
     const isAllMode = filterMode === 'all'
     const isAllSelected = selectedDeps.length === dependenciesData.length
     const hasNoCustomVersions = selectedDeps.every(dep => dep.targetVersion === null)
 
-    // 如果满足全部条件或没有选中依赖，走更新全部路径
+    /** 如果满足全部条件或没有选中依赖，走更新全部路径 */
     if ((isAllMode && isAllSelected && hasNoCustomVersions) || selectedDeps.length === 0) {
       updateDependencies(true)
       return
     }
 
-    // 准备更新数据
+    /** 准备更新数据 */
     const updateData = selectedDeps.map(createUpdateData)
 
-    // 调用更新函数
+    /** 调用更新函数 */
     updateDependencies(false, updateData)
   }, [dependenciesData, filterMode, updateDependencies, createUpdateData])
 
