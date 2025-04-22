@@ -187,146 +187,88 @@ const mockPluginList: PluginItem[] = [
   },
   // Tool 应用组
   {
-    id: 'karin-plugin-app-tool-calculator/index.js',
-    name: 'karin-plugin-app-tool-calculator/index.js',
+    id: 'karin-plugin-example',
+    name: 'karin-plugin-example/index.js',
     version: '',
     type: 'app',
-    latestHash: ''
+    latestHash: '',
   },
   {
-    id: 'karin-plugin-app-tool-converter/index.js',
-    name: 'karin-plugin-app-tool-converter/index.js',
+    id: 'karin-plugin-example',
+    name: 'karin-plugin-example/app.js',
     version: '',
     type: 'app',
-    latestHash: ''
+    latestHash: '',
   },
   {
-    id: 'karin-plugin-app-tool-formatter/index.js',
-    name: 'karin-plugin-app-tool-formatter/index.js',
+    id: 'karin-plugin-example',
+    name: 'karin-plugin-example/abc.js',
     version: '',
     type: 'app',
-    latestHash: ''
+    latestHash: '',
   },
   {
-    id: 'karin-plugin-app-tool-validator/index.js',
-    name: 'karin-plugin-app-tool-validator/index.js',
+    id: 'karin-plugin-example',
+    name: 'karin-plugin-example/def.js',
     version: '',
     type: 'app',
-    latestHash: ''
+    latestHash: '',
   },
   {
-    id: 'karin-plugin-app-tool-generator/index.js',
-    name: 'karin-plugin-app-tool-generator/index.js',
+    id: 'karin-plugin-example',
+    name: 'karin-plugin-example/file.js',
     version: '',
     type: 'app',
-    latestHash: ''
-  },
-  // UI 应用组
-  {
-    id: 'karin-plugin-app-ui-chart/index.js',
-    name: 'karin-plugin-app-ui-chart/index.js',
-    version: '',
-    type: 'app',
-    latestHash: ''
+    latestHash: '',
   },
   {
-    id: 'karin-plugin-app-ui-table/index.js',
-    name: 'karin-plugin-app-ui-table/index.js',
+    id: 'karin-plugin-example',
+    name: 'karin-plugin-example/demo.js',
     version: '',
     type: 'app',
-    latestHash: ''
+    latestHash: '',
   },
   {
-    id: 'karin-plugin-app-ui-form/index.js',
-    name: 'karin-plugin-app-ui-form/index.js',
+    id: 'karin-plugin-example',
+    name: 'karin-plugin-example/ghi.js',
     version: '',
     type: 'app',
-    latestHash: ''
+    latestHash: '',
+  },
+
+  {
+    id: 'karin-plugin-example',
+    name: 'karin-plugin-example/pop.js',
+    version: '',
+    type: 'app',
+    latestHash: '',
   },
   {
-    id: 'karin-plugin-app-ui-grid/index.js',
-    name: 'karin-plugin-app-ui-grid/index.js',
+    id: 'karin-plugin-example',
+    name: 'karin-plugin-example/poke.js',
     version: '',
     type: 'app',
-    latestHash: ''
+    latestHash: '',
   },
   {
-    id: 'karin-plugin-app-ui-layout/index.js',
-    name: 'karin-plugin-app-ui-layout/index.js',
+    id: 'karin-plugin-example',
+    name: 'karin-plugin-example/at.js',
     version: '',
     type: 'app',
-    latestHash: ''
-  },
-  // Data 应用组
-  {
-    id: 'karin-plugin-app-data-viewer/index.js',
-    name: 'karin-plugin-app-data-viewer/index.js',
-    version: '',
-    type: 'app',
-    latestHash: ''
+    latestHash: '',
   },
   {
-    id: 'karin-plugin-app-data-editor/index.js',
-    name: 'karin-plugin-app-data-editor/index.js',
+    id: 'karin-plugin-example',
+    name: 'karin-plugin-example/image.js',
     version: '',
     type: 'app',
-    latestHash: ''
+    latestHash: '',
   },
   {
-    id: 'karin-plugin-app-data-explorer/index.js',
-    name: 'karin-plugin-app-data-explorer/index.js',
+    id: 'karin-plugin-example',
+    name: 'karin-plugin-example/mp4.js',
     version: '',
     type: 'app',
-    latestHash: ''
-  },
-  {
-    id: 'karin-plugin-app-data-analyzer/index.js',
-    name: 'karin-plugin-app-data-analyzer/index.js',
-    version: '',
-    type: 'app',
-    latestHash: ''
-  },
-  {
-    id: 'karin-plugin-app-data-transformer/index.js',
-    name: 'karin-plugin-app-data-transformer/index.js',
-    version: '',
-    type: 'app',
-    latestHash: ''
-  },
-  // Util 应用组
-  {
-    id: 'karin-plugin-app-util-logger/index.js',
-    name: 'karin-plugin-app-util-logger/index.js',
-    version: '',
-    type: 'app',
-    latestHash: ''
-  },
-  {
-    id: 'karin-plugin-app-util-monitor/index.js',
-    name: 'karin-plugin-app-util-monitor/index.js',
-    version: '',
-    type: 'app',
-    latestHash: ''
-  },
-  {
-    id: 'karin-plugin-app-util-profiler/index.js',
-    name: 'karin-plugin-app-util-profiler/index.js',
-    version: '',
-    type: 'app',
-    latestHash: ''
-  },
-  {
-    id: 'karin-plugin-app-util-debugger/index.js',
-    name: 'karin-plugin-app-util-debugger/index.js',
-    version: '',
-    type: 'app',
-    latestHash: ''
-  },
-  {
-    id: 'karin-plugin-app-util-inspector/index.js',
-    name: 'karin-plugin-app-util-inspector/index.js',
-    version: '',
-    type: 'app',
-    latestHash: ''
+    latestHash: '',
   },
 ]

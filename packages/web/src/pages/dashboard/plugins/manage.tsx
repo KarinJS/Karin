@@ -8,6 +8,7 @@ import { Button } from '@heroui/button'
 import { Spinner } from '@heroui/spinner'
 import { Checkbox } from '@heroui/checkbox'
 import { Progress } from '@heroui/progress'
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/dropdown'
 import { TbApps, TbBrandGit, TbCircleCheck, TbCircleDashed, TbArrowUp, TbRefresh, TbTrash, TbArrowsUp } from 'react-icons/tb'
 import { IoSettingsOutline } from 'react-icons/io5'
 import { MdOutlineExtension } from 'react-icons/md'
@@ -121,9 +122,26 @@ const PluginRow = memo(({
     onSelect(plugin.id, !isSelected)
   }, [plugin.id, isSelected, onSelect])
 
-  /** 处理设置按钮点击 */
-  const handleOpenSettings = useCallback(() => {
-    openSettings(plugin.id)
+  /** 处理下拉菜单操作 */
+  const handleDropdownAction = useCallback((key: React.Key) => {
+    console.log(`对插件 ${plugin.id} 执行操作: ${key}`)
+    // 根据key类型处理不同的操作
+    switch (key) {
+      case 'settings':
+        openSettings(plugin.id)
+        break
+      case 'update':
+        // TODO:  处理更新操作
+        break
+      case 'forceUpdate':
+        // TODO: 处理强制更新操作
+        break
+      case 'uninstall':
+        // TODO: 处理卸载操作
+        break
+      default:
+        break
+    }
   }, [plugin.id, openSettings])
 
   return (
@@ -146,7 +164,7 @@ const PluginRow = memo(({
       </div>
 
       {/* 插件名称 */}
-      <div className='py-3 md:py-4 px-2 md:px-4 text-sm col-span-4 sm:col-span-4 flex items-center'>
+      <div className='py-3 md:py-4 px-2 md:px-4 text-sm col-span-6 sm:col-span-4 flex items-center'>
         <div className='flex items-center w-full'>
           <div className='flex-shrink-0'>
             <div
@@ -158,7 +176,17 @@ const PluginRow = memo(({
             />
           </div>
           <div className='font-medium text-default-700 dark:text-default-300 w-full break-words whitespace-normal'>
-            {plugin.name}
+            {window.innerWidth <= 640
+              ? (
+                <span className='text-xs'>
+                  {
+                    plugin.type === 'app'
+                      ? plugin.name.replace('karin-plugin-', '')
+                      : plugin.name
+                  }
+                </span>
+              )
+              : plugin.name}
           </div>
         </div>
       </div>
@@ -230,8 +258,8 @@ const PluginRow = memo(({
       </div>
 
       {/* 状态 */}
-      <div className='py-3 md:py-4 px-2 md:px-4 text-sm text-center col-span-3 sm:col-span-1'>
-        <div className='flex justify-center items-center'>
+      <div className='py-3 md:py-4 px-0 md:px-4 text-sm text-center col-span-3 sm:col-span-1 pl-1'>
+        <div className='flex justify-end sm:justify-center items-center pr-0 sm:pr-0'>
           {plugin.type === 'app'
             ? (
               <div
@@ -274,18 +302,66 @@ const PluginRow = memo(({
       </div>
 
       {/* 操作 */}
-      <div className='py-3 md:py-4 px-0 sm:px-2 md:px-4 text-sm text-center col-span-3 sm:col-span-1' onClick={stopPropagation}>
-        <div className='flex justify-center'>
-          <Button
-            isIconOnly
-            size='sm'
-            variant='light'
-            color='primary'
-            onPress={handleOpenSettings}
-            className='opacity-70 hover:opacity-100 transition-opacity'
-          >
-            <IoSettingsOutline className='text-lg' />
-          </Button>
+      <div className='py-3 md:py-4 pl-0 pr-0 sm:px-2 md:px-4 text-sm text-center col-span-2 sm:col-span-1' onClick={stopPropagation}>
+        <div className='flex justify-end sm:justify-center pr-2 sm:pr-0'>
+          <Dropdown>
+            <DropdownTrigger>
+              <Button
+                isIconOnly
+                size='sm'
+                variant='light'
+                color='primary'
+                className='opacity-70 hover:opacity-100 transition-opacity'
+              >
+                <IoSettingsOutline className='text-lg' />
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu aria-label='插件操作' onAction={handleDropdownAction}>
+              {/* 配置选项 - 只有git类型才显示 */}
+              {plugin.type === 'git'
+                ? (
+                  <DropdownItem key='settings' description='调整插件配置'>
+                    <div className='flex items-center gap-2'>
+                      <IoSettingsOutline />
+                      <span>插件配置</span>
+                    </div>
+                  </DropdownItem>
+                )
+                : null}
+
+              {/* 更新按钮 - 对app类型不显示且必须是可更新状态 */}
+              {plugin.type !== 'app' && plugin.version !== plugin.latestHash
+                ? (
+                  <DropdownItem key='update' description='更新到最新版本' className='text-success'>
+                    <div className='flex items-center gap-2'>
+                      <TbArrowUp />
+                      <span>更新插件</span>
+                    </div>
+                  </DropdownItem>
+                )
+                : null}
+
+              {/* Git类型特有的强制更新按钮 */}
+              {plugin.type === 'git'
+                ? (
+                  <DropdownItem key='forceUpdate' description='强制拉取最新代码' className='text-warning'>
+                    <div className='flex items-center gap-2'>
+                      <TbArrowsUp />
+                      <span>强制更新</span>
+                    </div>
+                  </DropdownItem>
+                )
+                : null}
+
+              {/* 卸载按钮 - 所有类型都显示 */}
+              <DropdownItem key='uninstall' description='从系统移除此插件' className='text-danger'>
+                <div className='flex items-center gap-2'>
+                  <TbTrash />
+                  <span>卸载插件</span>
+                </div>
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
         </div>
       </div>
     </div>
@@ -478,7 +554,7 @@ export const PluginManagePage = (): ReactElement => {
         <StatCard
           title='App插件'
           count={counts.app}
-          description='App插件'
+          description={window.innerWidth <= 640 ? 'App插件 (插件名称省略了前缀)' : 'App插件'}
           icon={renderIcon(24, TbApps)}
           gradient='bg-gradient-to-br from-teal-400/10 to-teal-500/20 dark:from-teal-600/10 dark:to-teal-700/20'
           border='border border-teal-200/30 dark:border-teal-800/20'
@@ -556,22 +632,24 @@ export const PluginManagePage = (): ReactElement => {
                 <div className='bg-default-50/50 sticky top-0 z-10 w-full'>
                   <div className='grid grid-cols-12 w-full border-b border-default-100/70 -ml-[3px]'>
                     {/* 选择框列 */}
-                    <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 flex items-center justify-center col-span-1'>
-                      <Checkbox
-                        isSelected={isAllSelected()}
-                        onValueChange={handleSelectAll}
-                        size='sm'
-                        aria-label='全选'
-                        classNames={{
-                          base: 'w-4 h-4',
-                          wrapper: 'rounded-full w-4 h-4 border-1 border-default-300 data-[selected=true]:border-blue-500 data-[selected=true]:bg-blue-500 data-[indeterminate=true]:bg-blue-500 data-[indeterminate=true]:border-blue-500 data-[hover=true]:border-blue-400 data-[hover=true]:bg-blue-400/20 transition-all',
-                          icon: 'text-white text-[10px]',
-                        }}
-                      />
+                    <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-2 md:py-4 px-2 md:px-4 flex items-center justify-center col-span-1'>
+                      <div className='pl-1 sm:pl-0'>
+                        <Checkbox
+                          isSelected={isAllSelected()}
+                          onValueChange={handleSelectAll}
+                          size='sm'
+                          aria-label='全选'
+                          classNames={{
+                            base: 'w-4 h-4',
+                            wrapper: 'rounded-full w-4 h-4 border-1 border-default-300 data-[selected=true]:border-blue-500 data-[selected=true]:bg-blue-500 data-[indeterminate=true]:bg-blue-500 data-[indeterminate=true]:border-blue-500 data-[hover=true]:border-blue-400 data-[hover=true]:bg-blue-400/20 transition-all',
+                            icon: 'text-white text-[10px]',
+                          }}
+                        />
+                      </div>
                     </div>
 
                     {/* 插件名称列 */}
-                    <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 col-span-4 sm:col-span-4'>
+                    <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 col-span-6 sm:col-span-4'>
                       插件名称
                     </div>
 
@@ -591,13 +669,13 @@ export const PluginManagePage = (): ReactElement => {
                     </div>
 
                     {/* 状态列 */}
-                    <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 text-center col-span-3 sm:col-span-1'>
-                      状态
+                    <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-0 md:px-4 text-center col-span-3 sm:col-span-1'>
+                      <div className='flex justify-end sm:justify-center pr-8 sm:pr-0'>状态</div>
                     </div>
 
                     {/* 操作列 */}
-                    <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-0 sm:px-2 md:px-4 text-center col-span-3 sm:col-span-1'>
-                      操作
+                    <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 pl-0 pr-0 sm:px-2 md:px-4 text-center col-span-2 sm:col-span-1'>
+                      <div className='flex justify-end sm:justify-center pr-4 sm:pr-0'>操作</div>
                     </div>
                   </div>
                 </div>
