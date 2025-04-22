@@ -1,8 +1,10 @@
 import { FC } from 'react'
+import { FaNpm } from 'react-icons/fa6'
 import { IoSettingsOutline } from 'react-icons/io5'
 import { TbBrandGit, TbApps } from 'react-icons/tb'
 import StatCard from '@/components/card/StatCard'
 import { renderIcon, type PluginType } from './utils'
+import { useNavigate } from 'react-router-dom'
 
 /**
  * 插件数量统计接口
@@ -30,6 +32,7 @@ export interface FilterCardsProps {
  * 渲染筛选卡片组件
  */
 const FilterCards: FC<FilterCardsProps> = ({ counts, selectedType, onTypeChange }) => {
+  const navigate = useNavigate()
   return (
     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8'>
       <StatCard
@@ -72,6 +75,21 @@ const FilterCards: FC<FilterCardsProps> = ({ counts, selectedType, onTypeChange 
         ringColor='ring-teal-400 dark:ring-teal-500'
         isActive={selectedType === 'app'}
         onClick={() => onTypeChange('app')}
+      />
+
+      <StatCard
+        title='NPM插件'
+        count={0}
+        description='Npm包插件'
+        icon={renderIcon(24, FaNpm)}
+        gradient='bg-gradient-to-br from-rose-400/10 to-rose-500/20 dark:from-rose-600/10 dark:to-rose-700/20'
+        border='border border-rose-200/30 dark:border-rose-800/20'
+        iconBg='bg-rose-400/20 dark:bg-rose-700/30'
+        textColor='text-rose-700 dark:text-rose-300'
+        ringColor='ring-rose-400 dark:ring-rose-500'
+        isActive={selectedType === 'npm'}
+        /** npm插件跳转到依赖管理来处理 */
+        onClick={() => navigate('/dependencies?filter=plugins')}
       />
     </div>
   )
