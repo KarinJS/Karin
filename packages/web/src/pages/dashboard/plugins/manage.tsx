@@ -1,12 +1,11 @@
-/* eslint-disable @stylistic/indent */
 import { useState, useCallback, ReactElement, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useRequest } from 'ahooks'
 import { Button } from '@heroui/button'
-import { TbCircleCheck, TbCircleDashed, TbArrowsUp, TbRefresh, TbTrash } from 'react-icons/tb'
+import { TbArrowsUp, TbRefresh, TbTrash } from 'react-icons/tb'
 import { MdOutlineExtension } from 'react-icons/md'
 import { fetchPluginList } from '@/mock/pluginManageData'
-import { FilterCards, TableContent, type PluginType } from '@/components/plugin/admin'
+import { FilterCards, TableContent, UpdateOptionsModal, type PluginType } from '@/components/plugin/admin'
 
 /**
  * 插件管理页面组件
@@ -23,6 +22,9 @@ export const PluginManagePage = (): ReactElement => {
 
   /** 选中的插件ID列表（使用Set保证唯一性和便于操作） */
   const [selectedKeys, setSelectedKeys] = useState(new Set<string>())
+
+  /** 更新选项对话框状态 */
+  const [updateModalOpen, setUpdateModalOpen] = useState(false)
 
   /**
    * 获取插件列表的请求
@@ -56,6 +58,25 @@ export const PluginManagePage = (): ReactElement => {
     selectedKeys.forEach(id => map.set(id, true))
     return map
   }, [selectedKeys])
+
+  /** 全选状态 */
+  const selectionState = useMemo(() => {
+    if (!plugins || plugins.length === 0) return { isSelected: false, isIndeterminate: false }
+    const selectedCount = selectedKeys.size
+
+    // 完全选中
+    if (selectedCount === plugins.length) {
+      return { isSelected: true, isIndeterminate: false }
+    }
+
+    // 部分选中
+    if (selectedCount > 0 && selectedCount < plugins.length) {
+      return { isSelected: false, isIndeterminate: true }
+    }
+
+    // 未选中
+    return { isSelected: false, isIndeterminate: false }
+  }, [plugins, selectedKeys])
 
   /** 当 URL 参数变化时更新选中类型 */
   useEffect(() => {
@@ -112,26 +133,42 @@ export const PluginManagePage = (): ReactElement => {
   }, [selectedKeys])
 
   /**
-   * 判断是否全选状态
-   */
-  const isAllSelected = useCallback(() => {
-    if (!plugins || plugins.length === 0) return false
-    return selectedKeys.size === plugins.length
-  }, [plugins, selectedKeys])
-
-  /**
    * 处理全选/取消全选
    */
   const handleSelectAll = useCallback(() => {
-    if (isAllSelected()) {
-      /** 如果已经全选，则取消全选 */
-      setSelectedKeys(new Set())
-    } else if (plugins) {
-      /** 否则全选 */
-      const allKeys = new Set(plugins.map(plugin => plugin.id))
-      setSelectedKeys(allKeys)
+    if (plugins && plugins.length > 0) {
+      if (selectedKeys.size > 0) {
+        /** 如果有选中项，则取消全选 */
+        console.log('取消全选，清空所有选中项')
+        setSelectedKeys(new Set())
+      } else {
+        /** 否则全选 */
+        console.log('全选，选中所有项')
+        const allKeys = new Set(plugins.map(plugin => plugin.id))
+        setSelectedKeys(allKeys)
+      }
     }
-  }, [isAllSelected, plugins])
+  }, [plugins, selectedKeys])
+
+  /**
+   * 处理更新全部按钮点击
+   */
+  const handleUpdateAll = useCallback(() => {
+    // 打开更新选项对话框
+    setUpdateModalOpen(true)
+  }, [])
+
+  /**
+   * 处理更新选项确认
+   */
+  const handleUpdateOptionsConfirm = useCallback((options: {
+    updateNpm: boolean
+    updateGit: boolean
+    forceUpdateGit: boolean
+  }) => {
+    console.log('更新选项:', options)
+    // TODO: 实现具体的更新逻辑
+  }, [])
 
   /**
    * 计算每种类型的插件数量
@@ -175,7 +212,8 @@ export const PluginManagePage = (): ReactElement => {
         selectedMap={selectedMap}
         rowHeight={rowHeight}
         containerHeight={containerHeight}
-        isAllSelected={isAllSelected()}
+        isAllSelected={selectionState.isSelected}
+        isIndeterminate={selectionState.isIndeterminate}
         handleSelectAll={handleSelectAll}
         handleSelectPlugin={handleSelectPlugin}
         openSettings={openSettings}
@@ -192,26 +230,17 @@ export const PluginManagePage = (): ReactElement => {
           <h1 className='text-2xl font-semibold text-default-700'>插件管理</h1>
         </div>
         <div className='flex gap-3 justify-center w-full sm:w-auto sm:self-auto'>
-          <Button
-            color='primary'
-            size='sm'
-            variant='flat'
-            className='bg-primary-100/60 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
-            startContent={isAllSelected() ? <TbCircleCheck className='text-lg' /> : <TbCircleDashed className='text-lg' />}
-            onPress={handleSelectAll}
-            isDisabled={!plugins || plugins.length === 0}
-          >
-            {isAllSelected() ? '取消全选' : '全选'}
-          </Button>
+          {/* 全选按钮已移除，改由表头复选框处理全选和取消全选功能 */}
           <Button
             color='success'
             size='sm'
             variant='flat'
             className='bg-success-100/60 text-success-700 dark:bg-success-900/30 dark:text-success-400'
             startContent={<TbArrowsUp className='text-lg' />}
-            isDisabled={getSelectedCount() === 0}
+            isDisabled={(selectedType !== 'all' && getSelectedCount() === 0) || (!plugins || plugins.length === 0)}
+            onPress={selectedType === 'all' && getSelectedCount() === 0 ? handleUpdateAll : undefined}
           >
-            更新选中
+            {selectedType === 'all' && getSelectedCount() === 0 ? '更新全部' : '更新选中'}
           </Button>
           <Button
             color='danger'
@@ -240,6 +269,13 @@ export const PluginManagePage = (): ReactElement => {
       {renderFilterCards()}
 
       {renderTableContent()}
+
+      {/* 更新选项对话框 */}
+      <UpdateOptionsModal
+        isOpen={updateModalOpen}
+        onClose={() => setUpdateModalOpen(false)}
+        onConfirm={handleUpdateOptionsConfirm}
+      />
     </div>
   )
 }

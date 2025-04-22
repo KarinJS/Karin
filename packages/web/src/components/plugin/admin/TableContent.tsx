@@ -24,6 +24,8 @@ export interface TableContentProps {
   containerHeight: number
   /** 是否全选 */
   isAllSelected: boolean
+  /** 是否处于部分选中状态 */
+  isIndeterminate?: boolean
   /** 处理全选/取消全选 */
   handleSelectAll: () => void
   /** 处理选择插件 */
@@ -44,6 +46,7 @@ const TableContent: FC<TableContentProps> = ({
   rowHeight,
   containerHeight,
   isAllSelected,
+  isIndeterminate = false,
   handleSelectAll,
   handleSelectPlugin,
   openSettings,
@@ -116,6 +119,7 @@ const TableContent: FC<TableContentProps> = ({
                     <div className='pl-1 sm:pl-0'>
                       <Checkbox
                         isSelected={isAllSelected}
+                        isIndeterminate={isIndeterminate}
                         onValueChange={handleSelectAll}
                         size='sm'
                         aria-label='全选'
@@ -180,7 +184,7 @@ const TableContent: FC<TableContentProps> = ({
 
                     return (
                       <div
-                        key={plugin.id}
+                        key={plugin.name}
                         style={{
                           position: 'absolute',
                           top: `${index * rowHeight}px`,
