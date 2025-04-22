@@ -1,8 +1,9 @@
 import { FC, useState } from 'react'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
 import { Button } from '@heroui/button'
-import { Checkbox } from '@heroui/checkbox'
-import { TbArrowUp, TbArrowsUp } from 'react-icons/tb'
+import { TbPackage, TbBrandGit, TbRefreshAlert } from 'react-icons/tb'
+import { Divider } from '@heroui/divider'
+import UpdateOptionCard from '@/components/card/UpdateOptionCard'
 
 /**
  * 更新选项对话框属性接口
@@ -40,65 +41,56 @@ const UpdateOptionsModal: FC<UpdateOptionsModalProps> = ({ isOpen, onClose, onCo
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalContent>
-        <ModalHeader className='flex flex-col gap-1'>
-          <h3 className='text-lg font-medium'>选择更新选项</h3>
+    <Modal isOpen={isOpen} onClose={onClose} backdrop='blur'>
+      <ModalContent className='border border-divider/20 shadow-lg'>
+        <ModalHeader>
+          <h3 className='text-xl font-medium'>选择更新选项</h3>
         </ModalHeader>
-        <ModalBody>
-          <div className='space-y-4'>
-            <div className='flex items-center gap-2'>
-              <Checkbox
-                isSelected={updateNpm}
-                onValueChange={setUpdateNpm}
-                size='md'
-                classNames={{
-                  wrapper: 'rounded-md',
-                }}
-              />
-              <div className='flex items-center gap-2'>
-                <TbArrowUp className='text-blue-500' />
-                <span>更新全部NPM插件</span>
-              </div>
-            </div>
+        <Divider className='opacity-50' />
+        <ModalBody className='py-6'>
+          <div className='space-y-5'>
+            <UpdateOptionCard
+              isSelected={updateNpm}
+              onValueChange={setUpdateNpm}
+              icon={TbPackage}
+              title='更新全部 NPM 插件'
+              description='从 npm 获取最新版本的插件包并更新'
+              theme='primary'
+            />
 
-            <div className='flex items-center gap-2'>
-              <Checkbox
-                isSelected={updateGit}
-                onValueChange={setUpdateGit}
-                size='md'
-                classNames={{
-                  wrapper: 'rounded-md',
-                }}
-              />
-              <div className='flex items-center gap-2'>
-                <TbArrowUp className='text-amber-500' />
-                <span>更新全部GIT插件</span>
-              </div>
-            </div>
+            <UpdateOptionCard
+              isSelected={updateGit}
+              onValueChange={setUpdateGit}
+              icon={TbBrandGit}
+              title='更新全部 GIT 插件'
+              description='从 git 仓库拉取最新代码并更新所有插件'
+              theme='warning'
+            />
 
-            <div className='flex items-center gap-2'>
-              <Checkbox
-                isSelected={forceUpdateGit}
-                onValueChange={setForceUpdateGit}
-                size='md'
-                classNames={{
-                  wrapper: 'rounded-md',
-                }}
-              />
-              <div className='flex items-center gap-2'>
-                <TbArrowsUp className='text-orange-500' />
-                <span>强制更新全部GIT插件</span>
-              </div>
-            </div>
+            <UpdateOptionCard
+              isSelected={forceUpdateGit}
+              onValueChange={setForceUpdateGit}
+              icon={TbRefreshAlert}
+              title={
+                <div className='flex items-center gap-2'>
+                  <span>强制更新 GIT 插件</span>
+                  <div className='inline-flex items-center rounded-sm bg-danger/20 px-1 text-xs text-danger'>
+                    谨慎使用
+                  </div>
+                </div>
+              }
+              description='强制当前分支重置到最新提交'
+              theme='danger'
+            />
           </div>
         </ModalBody>
-        <ModalFooter>
-          <Button color='danger' variant='light' onPress={onClose}>
+        <Divider className='opacity-50' />
+        <ModalFooter className='flex justify-end gap-2'>
+          <Button color='default' variant='light' onPress={onClose} className='hover:bg-default-100'>
             取消
           </Button>
-          <Button color='primary' onPress={handleConfirm}>
-            确认
+          <Button color='primary' variant='flat' onPress={handleConfirm} className='shadow-sm'>
+            确认更新
           </Button>
         </ModalFooter>
       </ModalContent>
