@@ -80,6 +80,11 @@ export const defaultSiteConfig: SiteConfigType = {
       label: '插件管理',
       href: '/plugins/manage',
     },
+    {
+      Icon: TbPackages,
+      label: '依赖管理',
+      href: '/dependencies',
+    },
     // {
     //   Icon: FiCodesandbox,
     //   label: '沙箱调试',
@@ -89,11 +94,6 @@ export const defaultSiteConfig: SiteConfigType = {
       Icon: MdOutlineWebhook,
       label: 'WebUI插件',
       href: '/plugins/webui',
-    },
-    {
-      Icon: TbPackages,
-      label: '依赖管理',
-      href: '/dependencies',
     },
     {
       Icon: MdOutlineTerminal,

@@ -47,3 +47,4 @@ modules.d.ts
 !packages/core/src/server/api/plugins
 .windsurfrules
 /packages/test
+.lingma/rules/project_rule.md

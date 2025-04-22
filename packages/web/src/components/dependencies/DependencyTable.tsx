@@ -43,12 +43,19 @@ const getDependencyTypeText = (type: string): string => {
  * @returns 颜色类型
  */
 const getDependencyTypeColor = (type: string): 'primary' | 'secondary' | 'success' | 'warning' | 'danger' => {
+  /**
+   * - success: 生产依赖-绿色
+   * - secondary: 开发依赖-紫色
+   * - danger: 临时依赖-红色
+   * - primary: 对等依赖-蓝色
+   * - warning: 可选依赖-黄色
+   */
   const colorMap: Record<string, 'primary' | 'secondary' | 'success' | 'warning' | 'danger'> = {
-    dependencies: 'success',    // 生产依赖：绿色
-    devDependencies: 'secondary', // 开发依赖：紫色
-    unsavedDependencies: 'danger',  // 临时依赖：红色
-    peerDependencies: 'primary',   // 对等依赖：蓝色
-    optionalDependencies: 'warning',  // 可选依赖：黄色
+    dependencies: 'success',
+    devDependencies: 'secondary',
+    unsavedDependencies: 'danger',
+    peerDependencies: 'primary',
+    optionalDependencies: 'warning',
   }
 
   return colorMap[type] || 'primary'
@@ -80,37 +87,37 @@ const DependencyRow = memo(({
   openSettings: (dependency: Dependency) => void
   onSelectDependency: (name: string, isSelected: boolean) => void
 }) => {
-  // 查找当前版本是否在latest列表中
+  /** 当前版本是否在latest列表中 */
   const currentVersionExists = dependency.latest.includes(dependency.current)
-  // 如果不存在，默认选择最新版本（列表的最后一项）
+  /** 默认版本 */
   const defaultVersion = currentVersionExists
     ? dependency.current
     : dependency.latest[dependency.latest.length - 1]
 
-  // 获取待显示的版本：优先使用pendingChanges中的值，否则使用defaultVersion
+  /** 待显示的版本 */
   const displayedVersion = pendingChanges[dependency.name] || defaultVersion
 
-  // 构建package.json值的tooltip提示内容
+  /** package.json值的tooltip提示内容 */
   const packageTooltip = dependency.packageValue
     ? `package.json 中的值: ${dependency.packageValue}`
     : '未在 package.json 中定义'
 
-  // 处理选择状态变更，但不传递事件对象
+  /** 处理选择状态变更 */
   const handleSelectionChange = useCallback(() => {
     onSelectDependency(dependency.name, !isSelected)
   }, [dependency.name, isSelected, onSelectDependency])
 
-  // 处理设置按钮点击，但不传递事件对象
+  /** 处理设置按钮点击 */
   const handleOpenSettings = useCallback(() => {
     openSettings(dependency)
   }, [dependency, openSettings])
 
-  // 处理版本选择变更
+  /** 处理版本选择变更 */
   const handleVersionChange = useCallback((keys: any) => {
     const selectedKey = Array.from(keys as Set<string>)[0] as string
     if (selectedKey) {
       updateDependencyVersion(dependency.name, selectedKey)
-      // 当切换版本时自动选中
+      /** 当切换版本时自动选中 */
       if (!isSelected) {
         onSelectDependency(dependency.name, true)
       }
@@ -121,7 +128,7 @@ const DependencyRow = memo(({
     <div className='grid grid-cols-12 w-full border-b border-default-100/40 hover:bg-default-50/70 transition-colors'>
       {/* 选择框 */}
       <div className='py-3 md:py-4 px-2 md:px-4 text-sm flex items-center justify-center col-span-1' onClick={stopPropagation}>
-        <div className="flex items-center justify-center w-full">
+        <div className='flex items-center justify-center w-full'>
           <Checkbox
             isSelected={isSelected}
             onValueChange={handleSelectionChange}
@@ -286,7 +293,7 @@ const DependencyTable = memo(({
   onSelectDependency,
   onSelectAll,
 }: DependencyTableProps) => {
-  // 使用useMemo优化计算，避免每次重渲染都重新计算
+  /** 全选状态 */
   const allSelected = useMemo(
     () => dependencies.length > 0 && dependencies.every(d => selectedDependencies.includes(d.name)),
     [dependencies, selectedDependencies]
@@ -297,56 +304,56 @@ const DependencyTable = memo(({
     [dependencies, selectedDependencies, allSelected]
   )
 
-  // 表格容器引用
+  /** 表格容器引用 */
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
-  // 定义行高 - 根据不同屏幕尺寸优化行高
+  /** 定义行高 - 根据不同屏幕尺寸优化行高 */
   const rowHeight = useMemo(() => {
     // 我们可以根据窗口宽度调整行高，使移动设备上显示更紧凑
     return window.innerWidth < 768 ? 48 : 54
   }, [])
 
-  // 动态调整预渲染行数 - 在性能和平滑滚动间取得平衡
+  /** 动态调整预渲染行数 - 在性能和平滑滚动间取得平衡 */
   const overscanCount = useMemo(() => {
-    // 在低端设备上可以降低预渲染行数以提高性能
+    /** 在低端设备上可以降低预渲染行数以提高性能 */
     return window.innerWidth < 768 ? 3 : 5
   }, [])
 
-  // 为选中状态创建映射表以加速查找
+  /** 为选中状态创建映射表以加速查找 */
   const selectedMap = useMemo(() => {
     const map = new Map<string, boolean>()
     selectedDependencies.forEach(name => map.set(name, true))
     return map
   }, [selectedDependencies])
 
-  // 优化版本的虚拟滚动配置
+  /** 优化版本的虚拟滚动配置 */
   const rowVirtualizer = useVirtualizer({
     count: dependencies.length,
     getScrollElement: () => tableContainerRef.current,
     estimateSize: useCallback(() => rowHeight, [rowHeight]),
     overscan: overscanCount,
-    // 添加键控制，帮助React更好地复用组件
+    /** 添加键控制，帮助React更好地复用组件 */
     getItemKey: useCallback((index: number) => dependencies[index]?.name || index, [dependencies]),
   })
 
-  // 获取虚拟化列表项 - 使用useMemo避免不必要的列表重建
+  /** 获取虚拟化列表项 - 使用useMemo避免不必要的列表重建 */
   const virtualItems = rowVirtualizer.getVirtualItems()
 
-  // 处理全选变更
+  /** 处理全选变更 */
   const handleSelectAll = useCallback((isSelected: boolean) => {
     onSelectAll(isSelected)
   }, [onSelectAll])
 
-  // 计算容器高度 - 动态适应内容和可用空间
+  /** 计算容器高度 - 动态适应内容和可用空间 */
   const containerHeight = useMemo(() => {
-    // 根据内容量和可用屏幕空间调整高度
+    /** 根据内容量和可用屏幕空间调整高度 */
     const availableHeight = window.innerHeight * 0.6 // 屏幕高度的60%
     const contentHeight = dependencies.length * rowHeight
-    // 设置最小和最大高度限制，确保即使没有数据也至少有一定高度
+    /** 设置最小和最大高度限制，确保即使没有数据也至少有一定高度 */
     return Math.min(Math.max(contentHeight || 300, 300), availableHeight)
   }, [dependencies.length, rowHeight])
 
-  // 渲染表格
+  /** 渲染表格 */
   return (
     <div className='rounded-xl md:rounded-2xl bg-white dark:bg-content1 shadow-sm border border-default-100/50 overflow-hidden'>
       {/* 表格容器 */}
@@ -412,8 +419,7 @@ const DependencyTable = memo(({
             ? (
               <div className='flex items-center justify-center h-32'>
                 <p className='text-default-500'>没有找到依赖包</p>
-              </div>
-            )
+              </div>)
             : (
               <div
                 style={{
@@ -453,8 +459,7 @@ const DependencyTable = memo(({
                     </div>
                   )
                 })}
-              </div>
-            )}
+              </div>)}
         </div>
       </div>
     </div>

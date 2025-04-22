@@ -201,20 +201,20 @@ const DependencySettings = memo(({
         <ModalHeader className='flex flex-col gap-1 pb-3 md:pb-4'>
           <div className='flex flex-col md:flex-row md:items-center md:justify-between w-full'>
             <div className='flex items-center gap-2'>
-              {dependency.isKarinPlugin ? (
-                <div className='bg-emerald-100 dark:bg-emerald-800/30 text-emerald-600 dark:text-emerald-400 p-1.5 rounded-md flex-shrink-0 border border-emerald-200 dark:border-emerald-700/50'>
-                  <LuPlug size={20} className="drop-shadow-sm" />
-                </div>
-              ) : (
-                <div className='bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 p-1.5 rounded-md flex-shrink-0 border border-blue-200 dark:border-blue-800/50'>
-                  <LuPackage size={20} className="drop-shadow-sm" />
-                </div>
-              )}
+              {dependency.isKarinPlugin
+                ? (
+                  <div className='bg-emerald-100 dark:bg-emerald-800/30 text-emerald-600 dark:text-emerald-400 p-1.5 rounded-md flex-shrink-0 border border-emerald-200 dark:border-emerald-700/50'>
+                    <LuPlug size={20} className='drop-shadow-sm' />
+                  </div>)
+                : (
+                  <div className='bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 p-1.5 rounded-md flex-shrink-0 border border-blue-200 dark:border-blue-800/50'>
+                    <LuPackage size={20} className='drop-shadow-sm' />
+                  </div>)}
               <div className='text-lg md:text-xl font-light tracking-tight'>{dependency.name}</div>
             </div>
             <div className='flex items-center gap-3 mt-3 md:mt-0'>
               {/* 各种外部链接图标，包含全屏按钮 */}
-              <Tooltip content="在 npmjs.com 上查看" placement="top">
+              <Tooltip content='在 npmjs.com 上查看' placement='top'>
                 <Link
                   href={getNpmLink(dependency.name)}
                   isExternal
@@ -223,14 +223,14 @@ const DependencySettings = memo(({
                   onClick={stopPropagation}
                 >
                   {/* npm 官方红色图标 */}
-                  <svg width="18" height="18" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
-                    <path d="M0 256V0h256v256z" fill="#C12127" />
-                    <path d="M48 48h160v160h-32V80h-48v128H48z" fill="#FFF" />
+                  <svg width='18' height='18' viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMidYMid'>
+                    <path d='M0 256V0h256v256z' fill='#C12127' />
+                    <path d='M48 48h160v160h-32V80h-48v128H48z' fill='#FFF' />
                   </svg>
                 </Link>
               </Tooltip>
 
-              <Tooltip content="在 npmmirror.com 上查看" placement="top">
+              <Tooltip content='在 npmmirror.com 上查看' placement='top'>
                 <Link
                   href={`https://npmmirror.com/package/${dependency.name}`}
                   isExternal
@@ -240,14 +240,14 @@ const DependencySettings = memo(({
                 >
                   {/* npmmirror 图标 */}
                   <img
-                    src="https://npmmirror.com/cnpm.png"
-                    alt="npmmirror"
-                    className="w-5 h-5"
+                    src='https://npmmirror.com/cnpm.png'
+                    alt='npmmirror'
+                    className='w-5 h-5'
                   />
                 </Link>
               </Tooltip>
 
-              <Tooltip content="查看包大小 (pkg-size.dev)" placement="top">
+              <Tooltip content='查看包大小 (pkg-size.dev)' placement='top'>
                 <Link
                   href={`https://pkg-size.dev/${dependency.name}`}
                   isExternal
@@ -256,14 +256,14 @@ const DependencySettings = memo(({
                   onClick={stopPropagation}
                 >
                   <img
-                    src="https://pkg-size.dev/favicon.svg"
-                    alt="pkg-size"
-                    className="w-5 h-5"
+                    src='https://pkg-size.dev/favicon.svg'
+                    alt='pkg-size'
+                    className='w-5 h-5'
                   />
                 </Link>
               </Tooltip>
 
-              <Tooltip content="查看依赖图 (node-modules.dev)" placement="top">
+              <Tooltip content='查看依赖图 (node-modules.dev)' placement='top'>
                 <Link
                   href={`https://node-modules.dev/${dependency.name}`}
                   isExternal
@@ -272,34 +272,33 @@ const DependencySettings = memo(({
                   onClick={stopPropagation}
                 >
                   <img
-                    src="https://node-modules.dev/favicon.svg"
-                    alt="node-modules"
-                    className="w-5 h-5"
+                    src='https://node-modules.dev/favicon.svg'
+                    alt='node-modules'
+                    className='w-5 h-5'
                   />
                 </Link>
               </Tooltip>
 
-              <Tooltip content={isMaximized ? "退出全屏" : "全屏显示"} placement="top">
+              <Tooltip content={isMaximized ? '退出全屏' : '全屏显示'} placement='top'>
                 <Button
                   isIconOnly
-                  size="sm"
-                  variant="light"
+                  size='sm'
+                  variant='light'
                   onPress={() => {
                     console.log('全屏状态切换:', !isMaximized)
                     setIsMaximized(!isMaximized)
                   }}
                   className='text-default-500 hover:text-primary min-w-0 w-8 h-8 mr-8'
                 >
-                  {isMaximized ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M8 3v4a1 1 0 0 1-1 1H3"></path>
-                      <path d="M21 8h-4a1 1 0 0 1-1-1V3"></path>
-                      <path d="M3 16h4a1 1 0 0 1 1 1v4"></path>
-                      <path d="M16 21v-4a1 1 0 0 1 1-1h4"></path>
-                    </svg>
-                  ) : (
-                    <LuMaximize2 size={18} />
-                  )}
+                  {isMaximized
+                    ? (
+                      <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                        <path d='M8 3v4a1 1 0 0 1-1 1H3' />
+                        <path d='M21 8h-4a1 1 0 0 1-1-1V3' />
+                        <path d='M3 16h4a1 1 0 0 1 1 1v4' />
+                        <path d='M16 21v-4a1 1 0 0 1 1-1h4' />
+                      </svg>)
+                    : (<LuMaximize2 size={18} />)}
                 </Button>
               </Tooltip>
             </div>
@@ -338,7 +337,8 @@ const DependencySettings = memo(({
                 <span className={`text-xs ${dependency.isKarinPlugin
                   ? 'text-success-600 dark:text-success-400'
                   : ''
-                  }`}>
+                  }`}
+                >
                   {dependency.isKarinPlugin ? 'Karin 插件' : 'npm 包'}
                 </span>
               </div>
@@ -346,12 +346,12 @@ const DependencySettings = memo(({
                 <span className='text-default-500 text-xs w-24'>更新状态:</span>
                 <span className='text-xs'>
                   {dependency.latest && dependency.latest.length > 0 &&
-                    compareVersions(dependency.current, dependency.latest[dependency.latest.length - 1]) < 0 ?
-                    <span className='text-warning-600'>可更新</span> :
-                    dependency.latest && dependency.latest.length > 0 &&
-                      compareVersions(dependency.current, dependency.latest[dependency.latest.length - 1]) > 0 ?
-                      <span className='text-blue-600'>高于最新版</span> :
-                      <span className='text-success-600'>最新</span>}
+                    compareVersions(dependency.current, dependency.latest[dependency.latest.length - 1]) < 0
+                    ? <span className='text-warning-600'>可更新</span>
+                    : dependency.latest && dependency.latest.length > 0 &&
+                      compareVersions(dependency.current, dependency.latest[dependency.latest.length - 1]) > 0
+                      ? <span className='text-blue-600'>高于最新版</span>
+                      : <span className='text-success-600'>最新</span>}
                 </span>
               </div>
             </div>
@@ -388,9 +388,11 @@ const DependencySettings = memo(({
               <div className='text-xs md:text-sm text-default-600 font-medium'>
                 可用版本列表
                 <span className='ml-1 text-xs'>
-                  ({hasSearched ?
-                    <span className='text-blue-500 dark:text-blue-400 font-medium'>当前为实时数据</span> :
-                    <span className='text-amber-500 dark:text-amber-400 font-medium'>当前为缓存版本</span>})
+                  ({
+                    hasSearched
+                      ? <span className='text-blue-500 dark:text-blue-400 font-medium'>当前为实时数据</span>
+                      : <span className='text-amber-500 dark:text-amber-400 font-medium'>当前为缓存版本</span>
+                  })
                 </span>
               </div>
               {(hasSearched || dependency.latest.length > 0) && (
@@ -400,28 +402,28 @@ const DependencySettings = memo(({
               )}
             </div>
 
-            {isLoading ? (
-              <div className='flex items-center justify-center p-6 bg-white/50 dark:bg-black/10 rounded-md border border-default-200/50 dark:border-default-700/40'>
-                <Spinner size='sm' color='primary' />
-                <span className='ml-2 text-sm text-default-500'>正在加载版本信息...</span>
-              </div>
-            ) : (
-              <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5 md:gap-2 max-h-48 overflow-y-auto p-3 bg-white/50 dark:bg-black/10 rounded-md border border-default-200/50 dark:border-default-700/40'>
-                {(hasSearched ? versions : [...dependency.latest].reverse()).map((version) => (
-                  <Button
-                    key={version}
-                    variant={selectedVersion === version ? 'solid' : 'flat'}
-                    color={selectedVersion === version ? 'primary' : 'default'}
-                    className='font-mono text-xs md:text-sm justify-start px-2 md:px-3 h-7 md:h-8 min-h-0'
-                    size='sm'
-                    radius='md'
-                    onPress={() => handleVersionSelect(version)}
-                  >
-                    {version}
-                  </Button>
-                ))}
-              </div>
-            )}
+            {isLoading
+              ? (
+                <div className='flex items-center justify-center p-6 bg-white/50 dark:bg-black/10 rounded-md border border-default-200/50 dark:border-default-700/40'>
+                  <Spinner size='sm' color='primary' />
+                  <span className='ml-2 text-sm text-default-500'>正在加载版本信息...</span>
+                </div>)
+              : (
+                <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5 md:gap-2 max-h-48 overflow-y-auto p-3 bg-white/50 dark:bg-black/10 rounded-md border border-default-200/50 dark:border-default-700/40'>
+                  {(hasSearched ? versions : [...dependency.latest].reverse()).map((version) => (
+                    <Button
+                      key={version}
+                      variant={selectedVersion === version ? 'solid' : 'flat'}
+                      color={selectedVersion === version ? 'primary' : 'default'}
+                      className='font-mono text-xs md:text-sm justify-start px-2 md:px-3 h-7 md:h-8 min-h-0'
+                      size='sm'
+                      radius='md'
+                      onPress={() => handleVersionSelect(version)}
+                    >
+                      {version}
+                    </Button>
+                  ))}
+                </div>)}
           </div>
         </ModalBody>
 

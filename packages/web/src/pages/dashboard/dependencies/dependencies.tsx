@@ -1,8 +1,7 @@
 import { toast } from 'react-hot-toast'
 import { Progress } from '@heroui/progress'
-import { useState, useCallback, memo, useMemo, useEffect } from 'react'
+import { useState, useCallback, memo, useMemo } from 'react'
 import { LuPackage, LuDownload } from 'react-icons/lu'
-import { useLocation, useNavigate } from 'react-router-dom'
 import {
   DependencyTable,
   DependencySettings,
@@ -10,10 +9,10 @@ import {
   LazyDependencyLoader,
   InstallDependencyModal,
   NpmConfigModal,
-} from '../../../components/dependencies'
-import { StatCard } from '../../../components/card'
-import TaskLogModal from '../../../components/dependencies/TaskLogModal'
-import DependencyActionButtons from '../../../components/dependencies/DependencyActionButtons'
+} from '@/components/dependencies'
+import { StatCard } from '@/components/card'
+import TaskLogModal from '@/components/dependencies/TaskLogModal'
+import DependencyActionButtons from '@/components/dependencies/DependencyActionButtons'
 
 import {
   useDependencyManagement,
