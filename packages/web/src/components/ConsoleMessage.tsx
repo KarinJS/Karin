@@ -1,19 +1,13 @@
-import { request } from '@/lib/request'
-import { KarinStatus } from '@/types/server'
 import { useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
+import { getKarinStatusRequest } from '@/request/status'
 
 const ConsoleMessage = () => {
   const hasPrinted = useRef(false)
   const location = useLocation()
-  const fetchData = () => request.serverGet<KarinStatus>('/api/v1/status/karin')
+  const fetchData = () => getKarinStatusRequest()
 
   useEffect(() => {
-    // 如果当前路由是 /login，或者已经打印过，则不执行请求
-    if (location.pathname === '/login' || hasPrinted.current) {
-      return
-    }
-
     fetchData()
       .then((data) => {
         if (import.meta.env.MODE !== 'development') {
@@ -21,7 +15,7 @@ const ConsoleMessage = () => {
           console.log('%cVersion: %s', 'color: #9b59b6; font-size: 14px;', data?.version)
           console.log('%c© 2025 KarinJS. All rights reserved.', 'color: #7f8c8d; font-size: 12px;')
           console.log('%cPowered by @KarinJS/node-karin@%s', 'color: #3498db; font-size: 12px;', data?.version)
-          hasPrinted.current = true // 标记为已打印
+          hasPrinted.current = true
         }
       })
       .catch((error) => {

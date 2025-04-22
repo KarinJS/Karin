@@ -1,4 +1,4 @@
-import PluginRow, { type PluginItem, type PluginRowProps } from './PluginRow'
+import PluginRow, { type PluginRowProps } from './PluginRow'
 import FilterCards, { type PluginCounts, type FilterCardsProps } from './FilterCards'
 import TableContent, { type TableContentProps } from './TableContent'
 import UpdateOptionsModal, { type UpdateOptionsModalProps } from './UpdateOptionsModal'
@@ -16,7 +16,6 @@ export {
 }
 
 export type {
-  PluginItem,
   PluginRowProps,
   PluginCounts,
   FilterCardsProps,

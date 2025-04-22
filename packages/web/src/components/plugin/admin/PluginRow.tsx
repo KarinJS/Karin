@@ -7,25 +7,14 @@ import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/d
 import { TbArrowUp, TbTrash, TbArrowsUp, TbCircleDashed } from 'react-icons/tb'
 import { IoSettingsOutline } from 'react-icons/io5'
 import { getUpdateStatusConfig, getTypeConfig, stopPropagation } from './utils'
-
-/**
- * 插件项目接口定义
- */
-export interface PluginItem {
-  id: string
-  name: string
-  version: string
-  latestHash: string
-  type: 'git' | 'app'
-  description?: string
-}
+import type { PluginAdminListResponse } from 'node-karin'
 
 /**
  * 插件行组件属性接口
  */
 export interface PluginRowProps {
   /** 插件数据 */
-  plugin: PluginItem
+  plugin: PluginAdminListResponse
   /** 是否被选中 */
   isSelected: boolean
   /** 选择回调函数 */

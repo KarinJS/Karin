@@ -4,7 +4,6 @@ import { Card, CardBody, CardHeader } from '@heroui/card'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
 import clsx from 'clsx'
-import type { KarinStatus, NetworkStatus, SystemStatus } from '@/types/server'
 import { Button } from '@heroui/button'
 import { RiRestartLine, RiShutDownLine } from 'react-icons/ri'
 import { Tooltip } from '@heroui/tooltip'
@@ -18,6 +17,7 @@ import Counter from '@/components/counter.tsx'
 import RotatingText from '@/components/RotatingText'
 import SplitText from '@/components/SplitText'
 import type { AdapterType, LocalApiResponse } from 'node-karin'
+import type { NetworkStatus, SystemStatus } from '@/types/server'
 import {
   Tag,
   Cpu,
@@ -44,6 +44,8 @@ import { Spinner } from '@heroui/spinner'
 import { FullScreenLoader } from '@/components/FullScreenLoader'
 import NetworkMonitor from '@/components/NetworkMonitor'
 import { Switch } from '@heroui/switch'
+import ConsoleMessage from '@/components/ConsoleMessage'
+import { getKarinStatusRequest } from '@/request/status'
 
 interface IconMap {
   [key: string]: LucideIcon
@@ -88,7 +90,7 @@ function OnlineStatus () {
       // ready: location.pathname === '/dashboard',
     }
   )
-  const { data } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'))
+  const { data } = useRequest(() => getKarinStatusRequest())
   const msg = []
   data?.version && msg.push(data.version)
   error ? msg.push('离线') : msg.push('在线')
@@ -246,9 +248,10 @@ function Status () {
   const [hasCheckedNpm, setHasCheckedNpm] = useState(false)
   const [isLoadingRelease, setIsLoadingRelease] = useState(false)
 
-  const { data, error } = useRequest(() => request.serverGet<KarinStatus>('/api/v1/status/karin'), {
+  const { data, error } = useRequest(() => getKarinStatusRequest(), {
     pollingInterval: 1000,
   })
+
   const localPluginsList = useRequest(() => request.serverPost<LocalApiResponse[], {}>('/api/v1/plugin/local'))
   const botList = useRequest(() => request.serverGet<Array<AdapterType>>('/api/v1/system/get/bots'), {
     pollingInterval: 5000,
@@ -611,6 +614,7 @@ function ControlButtons () {
 }
 
 export default function IndexPage () {
+  ConsoleMessage()
   return (
     <section className='flex flex-col gap-4'>
       <Card shadow='sm'>

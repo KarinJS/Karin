@@ -4,7 +4,7 @@ import { TbCircleCheck, TbCircleDashed, TbArrowUp } from 'react-icons/tb'
 /**
  * 插件类型定义
  */
-export type PluginType = 'all' | 'git' | 'app'
+export type PluginType = 'all' | 'git' | 'app' | 'npm'
 
 /**
  * 获取更新状态配置

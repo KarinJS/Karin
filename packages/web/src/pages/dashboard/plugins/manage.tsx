@@ -2,10 +2,12 @@ import { useState, useCallback, ReactElement, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useRequest } from 'ahooks'
 import { Button } from '@heroui/button'
+import { Spinner } from '@heroui/spinner'
 import { TbArrowsUp, TbRefresh, TbTrash } from 'react-icons/tb'
 import { MdOutlineExtension } from 'react-icons/md'
 import { getLocalPluginNameListRequest } from '@/request/plugins'
 import { FilterCards, TableContent, UpdateOptionsModal, type PluginType } from '@/components/plugin/admin'
+import type { PluginAdminListResponse } from 'node-karin'
 
 /**
  * 插件管理页面组件
@@ -26,22 +28,29 @@ export const PluginManagePage = (): ReactElement => {
   /** 更新选项对话框状态 */
   const [updateModalOpen, setUpdateModalOpen] = useState(false)
 
+  /** 存储所有插件数据，用于前端筛选 */
+  const [allPlugins, setAllPlugins] = useState<PluginAdminListResponse[]>([])
+
+  /** 本地筛选时的加载状态 */
+  const [localFiltering, setLocalFiltering] = useState(false)
+
+  /** 延迟显示空结果的状态，避免与虚拟列表加载过程冲突 */
+  const [delayEmptyResult, setDelayEmptyResult] = useState(false)
+
   /**
-   * 获取插件列表的请求
+   * 获取插件列表的请求 - 只在组件挂载和手动刷新时触发
    */
-  const { data: pluginsResponse, loading, run: fetchPlugins } = useRequest(
+  const { loading: remoteLoading, run: fetchPlugins } = useRequest(
     async () => {
       const response = await getLocalPluginNameListRequest()
       if (response.success && response.data) {
-        // 根据选中类型过滤插件
-        return selectedType === 'all'
-          ? response.data
-          : response.data.filter(plugin => plugin.type === selectedType)
+        setAllPlugins(response.data)
+        return response.data
       }
       return []
     },
     {
-      refreshDeps: [selectedType],
+      loadingDelay: 300, // 增加加载延迟，避免短时间内的闪烁
       onSuccess: () => {
         /** 重置选中的插件 */
         setSelectedKeys(new Set())
@@ -49,8 +58,15 @@ export const PluginManagePage = (): ReactElement => {
     }
   )
 
-  // 处理API返回的响应数据
-  const plugins = pluginsResponse || []
+  // 综合加载状态，仅在远程加载时显示为true，本地筛选不显示加载状态
+  const loading = remoteLoading && !localFiltering
+
+  // 根据选择的筛选器类型在前端筛选插件数据
+  const plugins = useMemo(() => {
+    return selectedType === 'all'
+      ? allPlugins
+      : allPlugins.filter(plugin => plugin.type === selectedType)
+  }, [allPlugins, selectedType])
 
   /** 行高定义 */
   const rowHeight = useMemo(() => {
@@ -103,11 +119,22 @@ export const PluginManagePage = (): ReactElement => {
    * @param type - 新的筛选类型
    */
   const handleTypeChange = useCallback((type: PluginType) => {
+    // 本地筛选开始
+    setLocalFiltering(true)
+    // 启用延迟空结果显示
+    setDelayEmptyResult(true)
     setSelectedType(type)
     /** 更新 URL 参数 */
     setSearchParams({ type })
     /** 重置选中的插件 */
     setSelectedKeys(new Set())
+
+    // 筛选完成后重置筛选状态
+    // 延长时间以确保完全覆盖LazyPluginLoader的分片加载过程
+    setTimeout(() => setLocalFiltering(false), 800)
+
+    // 延迟更长时间后才显示"没有找到符合条件的插件"
+    setTimeout(() => setDelayEmptyResult(false), 1000)
   }, [setSearchParams])
 
   /**
@@ -212,16 +239,53 @@ export const PluginManagePage = (): ReactElement => {
         onTypeChange={handleTypeChange}
       />
     )
-  }
-
-  /**
+  }  /**
    * 渲染表格内容
    */
   const renderTableContent = () => {
+    // 如果正在筛选中，显示全局加载状态，彻底覆盖所有内容
+    if (localFiltering) {
+      return (
+        <div className='flex items-center justify-center h-60 bg-default-100/30 dark:bg-default-200/10 backdrop-blur-sm rounded-xl shadow-sm'>
+          <div className='flex flex-col items-center gap-3'>
+            <Spinner size='lg' color='primary' />
+            <span className='text-default-600'>加载中...</span>
+          </div>
+        </div>
+      )
+    }
+
+    // 如果是空结果且正在延迟显示，同样显示加载中状态
+    if (plugins.length === 0 && delayEmptyResult) {
+      return (
+        <div className='flex items-center justify-center h-60 bg-default-100/30 dark:bg-default-200/10 backdrop-blur-sm rounded-xl shadow-sm'>
+          <div className='flex flex-col items-center gap-3'>
+            <Spinner size='lg' color='primary' />
+            <span className='text-default-600'>加载中...</span>
+          </div>
+        </div>
+      )
+    }
+
+    // 当远程加载时显示加载状态
+    if (remoteLoading) {
+      return (
+        <div className='flex items-center justify-center h-60 bg-default-100/30 dark:bg-default-200/10 backdrop-blur-sm rounded-xl shadow-sm'>
+          <div className='flex flex-col items-center gap-3'>
+            <Spinner size='lg' color='primary' />
+            <span className='text-default-600'>加载中...</span>
+          </div>
+        </div>
+      )
+    }
+
+    // 对于小数据量，自动跳过LazyPluginLoader的分批加载
+    const skipLazyLoading = plugins.length <= 30
+
     return (
       <TableContent
         plugins={plugins}
-        loading={loading}
+        loading={false} // 完全禁用TableContent内部的加载状态
         selectedMap={selectedMap}
         rowHeight={rowHeight}
         containerHeight={containerHeight}
@@ -231,6 +295,7 @@ export const PluginManagePage = (): ReactElement => {
         handleSelectPlugin={handleSelectPlugin}
         openSettings={openSettings}
         fetchPlugins={fetchPlugins}
+        skipLazyLoading={skipLazyLoading} // 小数据量时跳过分批加载
       />
     )
   }

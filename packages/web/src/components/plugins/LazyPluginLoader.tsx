@@ -1,12 +1,12 @@
 /* eslint-disable @stylistic/indent */
+import { PluginAdminListResponse } from 'node-karin'
 import { useEffect, useState, useCallback, useRef, memo } from 'react'
-import type { PluginItem } from '@/mock/pluginManageData'
 
 interface LazyPluginLoaderProps {
   /**
    * 原始插件数据
    */
-  plugins: PluginItem[]
+  plugins: PluginAdminListResponse[]
 
   /**
    * 初始批量加载的数量
@@ -37,10 +37,10 @@ interface LazyPluginLoaderProps {
    * 加载后的数据渲染函数
    */
   children: (data: {
-    processedPlugins: PluginItem[]
+    processedPlugins: PluginAdminListResponse[]
     isLoading: boolean
     progress: number
-    visiblePlugins?: PluginItem[] // 仅可见的插件项
+    visiblePlugins?: PluginAdminListResponse[] // 仅可见的插件项
     containerProps?: React.HTMLAttributes<HTMLDivElement> // 虚拟列表容器属性
   }) => React.ReactNode
 }
@@ -51,7 +51,7 @@ interface LazyPluginLoaderProps {
  * @param plugins2 - 第二个插件列表
  * @returns 是否有实质性变化
  */
-const hasPluginsChanged = (plugins1: PluginItem[], plugins2: PluginItem[]): boolean => {
+const hasPluginsChanged = (plugins1: PluginAdminListResponse[], plugins2: PluginAdminListResponse[]): boolean => {
   if (plugins1.length !== plugins2.length) return true
 
   // 只比较关键属性，忽略UI状态类属性
@@ -88,7 +88,7 @@ const LazyPluginLoader = memo(({
   /** 是否正在加载 */
   const [isLoading, setIsLoading] = useState(false)
   /** 保存已处理的插件 */
-  const [processedPlugins, setProcessedPlugins] = useState<PluginItem[]>([])
+  const [processedPlugins, setProcessedPlugins] = useState<PluginAdminListResponse[]>([])
   /** 可见范围的起始索引 */
   const [startIndex, setStartIndex] = useState(0)
   /** 可见范围的结束索引 */
@@ -98,7 +98,7 @@ const LazyPluginLoader = memo(({
   /** 用于追踪滚动监听器是否已添加 */
   const scrollListenerAdded = useRef(false)
   /** 缓存插件数组的引用，避免无谓的重新处理 */
-  const pluginsRef = useRef<PluginItem[]>(plugins)
+  const pluginsRef = useRef<PluginAdminListResponse[]>(plugins)
   /** 标记是否已执行初始加载 */
   const initialLoadDone = useRef(false)
   /** 是否处于插件选中状态变更中 */

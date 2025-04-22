@@ -35,6 +35,8 @@ export interface TableContentProps {
   openSettings: (pluginId: string) => void
   /** 刷新插件列表 */
   fetchPlugins: () => void
+  /** 是否跳过分片加载（当插件数量少时） */
+  skipLazyLoading?: boolean
 }
 
 /**
@@ -52,6 +54,7 @@ const TableContent: FC<TableContentProps> = ({
   handleSelectPlugin,
   openSettings,
   fetchPlugins,
+  skipLazyLoading = false, // 默认不跳过分片加载
 }) => {
   /** 表格容器引用 */
   const tableContainerRef = useRef<HTMLDivElement>(null)
@@ -81,16 +84,81 @@ const TableContent: FC<TableContentProps> = ({
     )
   }
 
+  // 如果插件数量少，跳过分片加载过程，直接渲染全部内容
+  if (skipLazyLoading) {
+    return (
+      <Card className='overflow-hidden shadow-sm border-none bg-default-50/70 dark:bg-default-100/10 backdrop-blur-sm'>
+        <div className='min-w-full flex flex-col'>
+          {/* 表头 */}
+          <div className='bg-default-50/50 sticky top-0 z-10 w-full'>
+            <div className='grid grid-cols-12 w-full border-b border-default-100/70 -ml-[3px]'>
+              {/* 选择框列 */}
+              <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-2 md:py-4 px-2 md:px-4 flex items-center justify-center col-span-1'>
+                <div className='pl-1 sm:pl-0'>
+                  <Checkbox
+                    isSelected={isAllSelected}
+                    isIndeterminate={isIndeterminate}
+                    onValueChange={handleSelectAll}
+                    size='sm'
+                    aria-label='全选'
+                    classNames={{
+                      base: 'w-4 h-4',
+                      wrapper: 'rounded-full w-4 h-4 border-1 border-default-300 data-[selected=true]:border-blue-500 data-[selected=true]:bg-blue-500 data-[indeterminate=true]:bg-blue-500 data-[indeterminate=true]:border-blue-500 data-[hover=true]:border-blue-400 data-[hover=true]:bg-blue-400/20 transition-all',
+                      icon: 'text-white text-[10px]',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* 其他表头列（与原始实现相同）... */}
+              {/* 插件名称列 */}
+              <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 pl-7 sm:pl-2 pr-2 md:px-4 col-span-6 sm:col-span-4'>
+                插件名称
+              </div>
+
+              {/* 当前版本列 */}
+              <div className='hidden sm:block text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-1 sm:px-2 md:px-4 text-center col-span-3 sm:col-span-2'>
+                当前版本
+              </div>
+
+              {/* 最新版本列 */}
+              <div className='hidden sm:block text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-1 sm:px-2 md:px-4 text-center col-span-3 sm:col-span-2'>
+                最新版本
+              </div>
+            </div>
+          </div>
+
+          {/* 表格内容 - 直接渲染所有插件 */}
+          <div className='w-full'>
+            {plugins.map((plugin) => (
+              <PluginRow
+                key={plugin.id}
+                plugin={plugin}
+                isSelected={selectedMap.get(plugin.id) || false}
+                onSelect={handleSelectPlugin}
+                openSettings={openSettings}
+              />
+            ))}
+          </div>
+        </div>
+      </Card>
+    )
+  }
+
+  // 使用分片加载处理大量插件
+  // 根据插件数量动态设置批量加载大小
+  const isSmallPluginSet = plugins.length <= 10
+
   return (
     <LazyPluginLoader
       plugins={plugins}
-      initialBatchSize={2}
-      batchSize={3}
+      initialBatchSize={isSmallPluginSet ? plugins.length : 2} // 当插件数量少时，一次性加载全部
+      batchSize={isSmallPluginSet ? plugins.length : 3}        // 当插件数量少时，批处理大小设为全部
     >
       {({ processedPlugins, progress }) => (
         <>
-          {/* 显示加载进度 */}
-          {progress < 100 && (
+          {/* 只有在插件数量较多时，才显示加载进度 */}
+          {!isSmallPluginSet && progress < 100 && (
             <div className='mb-4'>
               <Progress
                 value={progress}

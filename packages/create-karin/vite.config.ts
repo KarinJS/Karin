@@ -77,7 +77,6 @@ export default defineConfig({
 
             /** 跳过忽略的文件或目录 */
             if (ignore.includes(entry.name)) {
-              console.log(`忽略: ${entry.name}`)
               continue
             }
 
