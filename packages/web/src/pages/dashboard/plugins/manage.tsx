@@ -7,12 +7,13 @@ import { Chip } from '@heroui/chip'
 import { Button } from '@heroui/button'
 import { Spinner } from '@heroui/spinner'
 import { Checkbox } from '@heroui/checkbox'
+import { Progress } from '@heroui/progress'
 import { TbApps, TbBrandGit, TbCircleCheck, TbCircleDashed, TbArrowUp, TbRefresh, TbTrash, TbArrowsUp } from 'react-icons/tb'
 import { IoSettingsOutline } from 'react-icons/io5'
 import { MdOutlineExtension } from 'react-icons/md'
-import { useVirtualizer } from '@tanstack/react-virtual'
 import { fetchPluginList, type PluginItem, type PluginType } from '@/mock/pluginManageData'
 import StatCard from '@/components/card/StatCard'
+import LazyPluginLoader from '@/components/plugins/LazyPluginLoader'
 
 /**
  * 获取更新状态配置
@@ -331,24 +332,12 @@ export const PluginManagePage = (): ReactElement => {
     return window.innerWidth < 768 ? 50 : 60
   }, [])
 
-  /** 虚拟列表 */
-  const rowVirtualizer = useVirtualizer({
-    count: plugins.length,
-    getScrollElement: () => tableContainerRef.current,
-    estimateSize: useCallback(() => rowHeight, [rowHeight]),
-    overscan: 5,
-    getItemKey: useCallback((index: number) => plugins[index]?.id || index, [plugins]),
-  })
-
   /** 容器高度 */
   const containerHeight = useMemo(() => {
     const availableHeight = window.innerHeight * 0.6
     const contentHeight = plugins.length * rowHeight
     return Math.min(Math.max(contentHeight || 300, 300), availableHeight)
   }, [plugins.length, rowHeight])
-
-  /** 虚拟项 */
-  const virtualItems = rowVirtualizer.getVirtualItems()
 
   /** 为选中状态创建映射表以加速查找 */
   const selectedMap = useMemo(() => {
@@ -533,105 +522,131 @@ export const PluginManagePage = (): ReactElement => {
     }
 
     return (
-      <Card className='overflow-hidden shadow-sm border-none bg-default-50/70 dark:bg-default-100/10 backdrop-blur-sm'>
-        <div className='min-w-full flex flex-col'>
-          {/* 表头 */}
-          <div className='bg-default-50/50 sticky top-0 z-10 w-full'>
-            <div className='grid grid-cols-12 w-full border-b border-default-100/70 -ml-[3px]'>
-              {/* 选择框列 */}
-              <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 flex items-center justify-center col-span-1'>
-                <Checkbox
-                  isSelected={isAllSelected()}
-                  onValueChange={handleSelectAll}
+      <LazyPluginLoader
+        plugins={plugins}
+        initialBatchSize={2}
+        batchSize={3}
+      >
+        {({ processedPlugins, progress }) => (
+          <>
+            {/* 显示加载进度 */}
+            {progress < 100 && (
+              <div className='mb-4'>
+                <Progress
+                  value={progress}
+                  color='primary'
                   size='sm'
-                  aria-label='全选'
+                  radius='sm'
                   classNames={{
-                    base: 'w-4 h-4',
-                    wrapper: 'rounded-full w-4 h-4 border-1 border-default-300 data-[selected=true]:border-blue-500 data-[selected=true]:bg-blue-500 data-[indeterminate=true]:bg-blue-500 data-[indeterminate=true]:border-blue-500 data-[hover=true]:border-blue-400 data-[hover=true]:bg-blue-400/20 transition-all',
-                    icon: 'text-white text-[10px]',
+                    base: 'max-w-md',
+                    track: 'drop-shadow-sm border border-default-100/50',
+                    indicator: 'bg-gradient-to-r from-primary-500 to-primary-400',
                   }}
+                  aria-label='加载插件进度'
                 />
+                <div className='text-xs text-default-500 mt-1'>
+                  正在加载插件 ({progress}%)... 总计:{plugins.length}个插件
+                </div>
               </div>
+            )}
 
-              {/* 插件名称列 */}
-              <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 col-span-4 sm:col-span-4'>
-                插件名称
-              </div>
+            <Card className='overflow-hidden shadow-sm border-none bg-default-50/70 dark:bg-default-100/10 backdrop-blur-sm'>
+              <div className='min-w-full flex flex-col'>
+                {/* 表头 */}
+                <div className='bg-default-50/50 sticky top-0 z-10 w-full'>
+                  <div className='grid grid-cols-12 w-full border-b border-default-100/70 -ml-[3px]'>
+                    {/* 选择框列 */}
+                    <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 flex items-center justify-center col-span-1'>
+                      <Checkbox
+                        isSelected={isAllSelected()}
+                        onValueChange={handleSelectAll}
+                        size='sm'
+                        aria-label='全选'
+                        classNames={{
+                          base: 'w-4 h-4',
+                          wrapper: 'rounded-full w-4 h-4 border-1 border-default-300 data-[selected=true]:border-blue-500 data-[selected=true]:bg-blue-500 data-[indeterminate=true]:bg-blue-500 data-[indeterminate=true]:border-blue-500 data-[hover=true]:border-blue-400 data-[hover=true]:bg-blue-400/20 transition-all',
+                          icon: 'text-white text-[10px]',
+                        }}
+                      />
+                    </div>
 
-              {/* 当前版本列 */}
-              <div className='hidden sm:block text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-1 sm:px-2 md:px-4 text-center col-span-3 sm:col-span-2'>
-                当前版本
-              </div>
+                    {/* 插件名称列 */}
+                    <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 col-span-4 sm:col-span-4'>
+                      插件名称
+                    </div>
 
-              {/* 最新版本列 */}
-              <div className='hidden sm:block text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-1 sm:px-2 md:px-4 text-center col-span-3 sm:col-span-2'>
-                最新版本
-              </div>
+                    {/* 当前版本列 */}
+                    <div className='hidden sm:block text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-1 sm:px-2 md:px-4 text-center col-span-3 sm:col-span-2'>
+                      当前版本
+                    </div>
 
-              {/* 插件类型列 */}
-              <div className='hidden sm:block text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 text-center col-span-1'>
-                插件类型
-              </div>
+                    {/* 最新版本列 */}
+                    <div className='hidden sm:block text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-1 sm:px-2 md:px-4 text-center col-span-3 sm:col-span-2'>
+                      最新版本
+                    </div>
 
-              {/* 状态列 */}
-              <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 text-center col-span-3 sm:col-span-1'>
-                状态
-              </div>
+                    {/* 插件类型列 */}
+                    <div className='hidden sm:block text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 text-center col-span-1'>
+                      插件类型
+                    </div>
 
-              {/* 操作列 */}
-              <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-0 sm:px-2 md:px-4 text-center col-span-3 sm:col-span-1'>
-                操作
-              </div>
-            </div>
-          </div>
+                    {/* 状态列 */}
+                    <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 text-center col-span-3 sm:col-span-1'>
+                      状态
+                    </div>
 
-          {/* 虚拟滚动容器 */}
-          <div
-            ref={tableContainerRef}
-            className='overflow-auto'
-            style={{ height: `${containerHeight}px` }}
-          >
-            {/* 内容容器 */}
-            <div
-              style={{
-                height: `${rowVirtualizer.getTotalSize()}px`,
-                width: '100%',
-                position: 'relative',
-              }}
-            >
-              {/* 虚拟滚动列表项 */}
-              {virtualItems.map(virtualRow => {
-                const plugin = plugins[virtualRow.index]
-                if (!plugin) return null
+                    {/* 操作列 */}
+                    <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-0 sm:px-2 md:px-4 text-center col-span-3 sm:col-span-1'>
+                      操作
+                    </div>
+                  </div>
+                </div>
 
-                const isSelected = selectedMap.has(plugin.id)
-
-                return (
+                {/* 虚拟滚动容器 */}
+                <div
+                  ref={tableContainerRef}
+                  className='overflow-auto'
+                  style={{ height: `${containerHeight}px` }}
+                >
+                  {/* 内容容器 */}
                   <div
-                    key={virtualRow.key}
-                    data-index={virtualRow.index}
                     style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
+                      height: `${processedPlugins.length * rowHeight}px`,
                       width: '100%',
-                      height: `${rowHeight}px`,
-                      transform: `translateY(${virtualRow.start}px)`,
+                      position: 'relative',
                     }}
                   >
-                    <PluginRow
-                      plugin={plugin}
-                      isSelected={isSelected}
-                      onSelect={handleSelectPlugin}
-                      openSettings={openSettings}
-                    />
+                    {/* 渲染插件行 */}
+                    {processedPlugins.map((plugin, index) => {
+                      const isSelected = selectedMap.has(plugin.id)
+
+                      return (
+                        <div
+                          key={plugin.id}
+                          style={{
+                            position: 'absolute',
+                            top: `${index * rowHeight}px`,
+                            left: 0,
+                            width: '100%',
+                            height: `${rowHeight}px`,
+                          }}
+                        >
+                          <PluginRow
+                            plugin={plugin}
+                            isSelected={isSelected}
+                            onSelect={handleSelectPlugin}
+                            openSettings={openSettings}
+                          />
+                        </div>
+                      )
+                    })}
                   </div>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      </Card>
+                </div>
+              </div>
+            </Card>
+          </>
+        )}
+      </LazyPluginLoader>
     )
   }
 

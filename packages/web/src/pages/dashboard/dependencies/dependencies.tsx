@@ -327,7 +327,7 @@ export default function DependenciesPage () {
         <MemoizedLazyDependencyLoader
           dependencies={filteredDependencies}
           initialBatchSize={2}
-          batchSize={2}
+          batchSize={3}
         >
           {({ processedDependencies, progress }) => (
             <>
