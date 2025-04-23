@@ -247,7 +247,7 @@ const PluginRow = memo(({
             </DropdownTrigger>
             <DropdownMenu aria-label='插件操作' onAction={handleDropdownAction}>
               {/* 配置选项 - 只有git类型才显示 */}
-              {plugin.type === 'git'
+              {/* {plugin.type === 'git'
                 ? (
                   <DropdownItem key='settings' description='调整插件配置'>
                     <div className='flex items-center gap-2'>
@@ -256,7 +256,7 @@ const PluginRow = memo(({
                     </div>
                   </DropdownItem>
                 )
-                : null}
+                : null} */}
 
               {/* 更新按钮 - 对app类型不显示且必须是可更新状态 */}
               {plugin.type !== 'app' && plugin.version !== plugin.latestHash
