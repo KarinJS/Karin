@@ -32,7 +32,7 @@ export const update = async (
   data: PluginAdminUpdate,
   ip: string = '0.0.0.0'
 ) => {
-  if (!Array.isArray(data.target) || data.target.length < 1) {
+  if (!Array.isArray(data.target) || (data.target.length < 1 && !data.isAll)) {
     return handleReturn(res, false, '无效请求: 插件目标错误')
   }
 
@@ -208,6 +208,13 @@ const updateAll = async (
 
     log('全部git插件更新完成')
   }
+
+  // /** 模拟任务 */
+  // log('* 模拟任务执行...')
+
+  // await new Promise(resolve => setTimeout(resolve, 2000))
+  // log('* 模拟任务执行完成')
+  // await task.update.logs(_, '模拟任务执行完成')
 
   // 主流程执行
   const { npm, git } = await categorizePlugins()

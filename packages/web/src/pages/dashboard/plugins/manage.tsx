@@ -1,13 +1,18 @@
-import { useState, useCallback, ReactElement, useEffect, useMemo } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import { useRequest } from 'ahooks'
 import { Button } from '@heroui/button'
 import { Spinner } from '@heroui/spinner'
-import { TbArrowsUp, TbRefresh, TbTrash } from 'react-icons/tb'
+import { useSearchParams } from 'react-router-dom'
 import { MdOutlineExtension } from 'react-icons/md'
+import { createUpdatePlugins } from '@/utils/updateplugins'
+import { TbArrowsUp, TbRefresh, TbTrash } from 'react-icons/tb'
+import TaskLogModal from '@/components/dependencies/TaskLogModal'
 import { getLocalPluginNameListRequest } from '@/request/plugins'
-import { FilterCards, TableContent, UpdateOptionsModal, type PluginType } from '@/components/plugin/admin'
-import type { PluginAdminListResponse } from 'node-karin'
+import { useState, useCallback, ReactElement, useEffect, useMemo } from 'react'
+import { FilterCards, TableContent, UpdateOptionsModal } from '@/components/plugin/admin'
+
+import type { PluginType } from '@/components/plugin/admin'
+import type { PluginAdminListResponse, PluginAdminParams } from 'node-karin'
+import { hideRocket } from '@/components/common/ScrollToTop.utils'
 
 /**
  * 插件管理页面组件
@@ -28,6 +33,18 @@ export const PluginManagePage = (): ReactElement => {
   /** 更新选项对话框状态 */
   const [updateModalOpen, setUpdateModalOpen] = useState(false)
 
+  /** 任务日志模态框是否打开 */
+  const [isLogModalOpen, setIsLogModalOpen] = useState(false)
+
+  /** 任务ID */
+  const [taskId, setTaskId] = useState<string>('')
+
+  /** 任务初始日志 */
+  const [taskLogs, setTaskLogs] = useState<string[]>([])
+
+  /** 任务名称 */
+  const [taskName, setTaskName] = useState<string>('更新全部插件')
+
   /** 存储所有插件数据，用于前端筛选 */
   const [allPlugins, setAllPlugins] = useState<PluginAdminListResponse[]>([])
 
@@ -42,15 +59,17 @@ export const PluginManagePage = (): ReactElement => {
    */
   const { loading: remoteLoading, run: fetchPlugins } = useRequest(
     async () => {
-      const response = await getLocalPluginNameListRequest()
-      if (response.success && response.data) {
-        setAllPlugins(response.data)
-        return response.data
+      try {
+        const response = await getLocalPluginNameListRequest()
+        setAllPlugins(response)
+        return response
+      } catch (error) {
+        console.error('获取插件列表失败:', error)
+        return []
       }
-      return []
     },
     {
-      loadingDelay: 300, // 增加加载延迟，避免短时间内的闪烁
+      loadingDelay: 300,
       onSuccess: () => {
         /** 重置选中的插件 */
         setSelectedKeys(new Set())
@@ -58,10 +77,10 @@ export const PluginManagePage = (): ReactElement => {
     }
   )
 
-  // 综合加载状态，仅在远程加载时显示为true，本地筛选不显示加载状态
+  /** 综合加载状态，仅在远程加载时显示为true，本地筛选不显示加载状态 */
   const loading = remoteLoading && !localFiltering
 
-  // 根据选择的筛选器类型在前端筛选插件数据
+  /** 根据选择的筛选器类型在前端筛选插件数据 */
   const plugins = useMemo(() => {
     return selectedType === 'all'
       ? allPlugins
@@ -193,7 +212,7 @@ export const PluginManagePage = (): ReactElement => {
    * 处理更新全部按钮点击
    */
   const handleUpdateAll = useCallback(() => {
-    // 打开更新选项对话框
+    hideRocket()
     setUpdateModalOpen(true)
   }, [])
 
@@ -205,9 +224,34 @@ export const PluginManagePage = (): ReactElement => {
     updateGit: boolean
     forceUpdateGit: boolean
   }) => {
-    console.log('更新选项:', options)
-    // TODO: 实现具体的更新逻辑
-  }, [])
+    /** 创建插件更新任务所需的参数 */
+    const updateParams: PluginAdminParams = {
+      type: 'update',
+      isAll: {
+        force: options.forceUpdateGit,
+        git: options.updateGit,
+        npm: options.updateNpm,
+      },
+      name: '更新插件',
+      target: [],
+    }
+
+    /** 状态更新函数 */
+    const stateUpdater = {
+      setIsLogModalOpen,
+      setTaskId,
+      setTaskLogs,
+      setTaskName,
+    }
+
+    /** 调用创建更新任务函数 */
+    createUpdatePlugins(
+      updateParams,
+      stateUpdater,
+      undefined,
+      () => setUpdateModalOpen(false)
+    )
+  }, [setUpdateModalOpen])
 
   /**
    * 计算每种类型的插件数量
@@ -353,6 +397,20 @@ export const PluginManagePage = (): ReactElement => {
         isOpen={updateModalOpen}
         onClose={() => setUpdateModalOpen(false)}
         onConfirm={handleUpdateOptionsConfirm}
+      />
+
+      {/* 任务日志模态框 */}
+      <TaskLogModal
+        isOpen={isLogModalOpen}
+        onClose={() => {
+          setIsLogModalOpen(false)
+          setTaskId('')
+          setTaskLogs([])
+          fetchPlugins() // 刷新插件列表
+        }}
+        taskId={taskId}
+        taskName={taskName}
+        initialLogs={taskLogs}
       />
     </div>
   )

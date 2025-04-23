@@ -1,13 +1,14 @@
 /* eslint-disable @stylistic/indent */
-import { useEffect, useRef, useState } from 'react'
+import { api } from '@/request/base'
+import { toast } from 'react-hot-toast'
 import { Button } from '@heroui/button'
 import { Divider } from '@heroui/divider'
 import { Spinner } from '@heroui/spinner'
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
-import { LuActivity, LuClipboard, LuX } from 'react-icons/lu'
+import { useEffect, useRef, useState } from 'react'
 import { eventSourcePolyfill } from '@/lib/request'
-import { toast } from 'react-hot-toast'
-import { api } from '@/request/base'
+import { LuActivity, LuClipboard, LuX } from 'react-icons/lu'
+import { hideRocket, showRocket } from '../common/ScrollToTop.utils'
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
 
 /** 前端日志前缀 */
 const CLIENT_LOG_PREFIX = '[webui] '
@@ -92,9 +93,11 @@ const TaskLogModal = ({
    */
   useEffect(() => {
     if (isOpen) {
+      hideRocket()
       // 设置初始日志，但不重置连接状态
-      setLogs(initialLogs || [])
+      setLogs(prevLogs => [`${CLIENT_LOG_PREFIX}开始执行任务\n--------------------\n\n`, ...prevLogs])
     } else {
+      showRocket()
       // 模态框关闭时完全重置状态
       resetState()
       prevTaskIdRef.current = ''
@@ -134,8 +137,19 @@ const TaskLogModal = ({
     eventSource.onmessage = (event) => {
       const data = event.data
       setLogIndex(prevIndex => prevIndex + 1)
-      setLogs(prevLogs => [...prevLogs, data])
+      /** 判断任务是否完成 */
+      if (data === 'end') {
+        setIsCompleted(true)
+        /** 关闭连接 */
+        if (eventSourceRef.current) {
+          eventSourceRef.current.close()
+          eventSourceRef.current = null
+        }
+        setLogs(prevLogs => [...prevLogs, `\n--------------------\n${CLIENT_LOG_PREFIX}任务已完成`])
+        return
+      }
 
+      setLogs(prevLogs => [...prevLogs, data])
       /** 滚动到底部 */
       if (logContainerRef.current) {
         setTimeout(() => {
@@ -144,21 +158,16 @@ const TaskLogModal = ({
           }
         }, 0)
       }
-
-      /** 判断任务是否完成 */
-      if (data === 'end') {
-        setIsCompleted(true)
-      }
     }
 
     /** 发生错误或连接断开 */
     eventSource.onerror = (error) => {
       /** 检查连接状态 */
       if (eventSource.readyState === EventSource.CLOSED) {
-        setLogs(prevLogs => [...prevLogs, `${CLIENT_LOG_PREFIX}连接已关闭`])
+        setLogs(prevLogs => [...prevLogs, `\n${CLIENT_LOG_PREFIX}连接已关闭`])
         setNeedReconnect(true)
       } else {
-        setLogs(prevLogs => [...prevLogs, `${CLIENT_LOG_PREFIX}连接发生错误`])
+        setLogs(prevLogs => [...prevLogs, `\n${CLIENT_LOG_PREFIX}连接发生错误`])
         setNeedReconnect(true)
         console.error('EventSource 错误:', error)
       }
@@ -237,15 +246,25 @@ const TaskLogModal = ({
     >
       <ModalContent>
         <ModalHeader className='flex flex-col gap-1 pb-3'>
-          <div className='flex items-center justify-between w-full'>
+          {/* 桌面端布局 */}
+          <div className='hidden md:flex items-center justify-between w-full'>
             <div className='flex items-center gap-2'>
               <LuActivity size={20} className='text-primary-500' />
               <div className='text-lg font-light tracking-tight'>{taskName}</div>
               {(isConnecting || isReconnecting) && <Spinner size='sm' color='primary' />}
             </div>
-            <div className='text-xs text-default-500'>
+            <div className='text-xs text-default-500 mr-7'>
               {taskId && <span>任务ID: {taskId}</span>}
             </div>
+          </div>
+          {/* 移动端布局，在小屏幕上将标题和任务ID分为两行 */}
+          <div className='md:hidden flex flex-col w-full'>
+            <div className='flex items-center gap-2'>
+              <LuActivity size={20} className='text-primary-500' />
+              <div className='text-base font-medium line-clamp-1'>{taskName}</div>
+              {(isConnecting || isReconnecting) && <Spinner size='sm' color='primary' />}
+            </div>
+            {taskId && <div className='text-xs text-default-500 mt-1'>任务ID: {taskId}</div>}
           </div>
         </ModalHeader>
 
@@ -254,7 +273,7 @@ const TaskLogModal = ({
         <ModalBody>
           <div
             ref={logContainerRef}
-            className='h-full w-full overflow-auto p-4 font-mono text-sm whitespace-pre-wrap bg-default-50'
+            className='h-full w-full overflow-auto p-4 font-mono text-sm whitespace-pre-wrap break-words bg-default-50'
           >
             {logs.length === 0
               ? (
@@ -264,7 +283,7 @@ const TaskLogModal = ({
               )
               : (
                 logs.map((log, index) => (
-                  <div key={index} className='py-0.5'>{log}</div>
+                  <div key={index} className='py-0.5 overflow-x-hidden break-words'>{log}</div>
                 ))
               )}
           </div>

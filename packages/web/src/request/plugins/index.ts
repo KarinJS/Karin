@@ -1,6 +1,4 @@
-import { api, request, getErrorMessage } from '@/request/base'
-
-import type { BaseResponse } from '@/request/base'
+import { api, request } from '@/request/base'
 import type { PluginAdminListResponse, PluginAdminParams, PluginAdminResult } from 'node-karin'
 
 /**
@@ -10,33 +8,22 @@ import type { PluginAdminListResponse, PluginAdminParams, PluginAdminResult } fr
  */
 export const pluginAdminRequest = async (
   params: PluginAdminParams
-): Promise<BaseResponse<PluginAdminResult>> => {
-  try {
-    const response = await request.serverPost<PluginAdminResult, PluginAdminParams>(
-      api.pluginAdmin,
-      params
-    )
+): Promise<PluginAdminResult> => {
+  const response = await request.serverPost<PluginAdminResult, PluginAdminParams>(
+    api.pluginAdmin,
+    params
+  )
 
-    if (response.success) {
-      return { success: true, data: response }
-    }
-    throw new Error(response.message)
-  } catch (error) {
-    return { success: false, data: error, message: getErrorMessage(error) }
-  }
+  return response
 }
 
 /**
  * 获取已安装插件名称列表
  * @returns 已安装插件名称列表
  */
-export const getLocalPluginNameListRequest = async (): Promise<BaseResponse<PluginAdminListResponse[]>> => {
-  try {
-    const response = await request.serverPost<PluginAdminListResponse[], null>(
-      api.getPluginListPluginAdmin
-    )
-    return { success: true, data: response }
-  } catch (error) {
-    return { success: false, data: error, message: getErrorMessage(error) }
-  }
+export const getLocalPluginNameListRequest = async (): Promise<PluginAdminListResponse[]> => {
+  const response = await request.serverPost<PluginAdminListResponse[], null>(
+    api.getPluginListPluginAdmin
+  )
+  return response
 }

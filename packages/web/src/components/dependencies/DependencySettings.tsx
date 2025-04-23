@@ -11,6 +11,7 @@ import { LuSearch, LuMaximize2, LuPackage, LuPlug } from 'react-icons/lu'
 import { raceRequest } from '@/request/base'
 import { toast } from 'react-hot-toast'
 import type { Dependency } from 'node-karin'
+import { hideRocket, showRocket } from '../common/ScrollToTop.utils'
 
 /**
  * 比较两个版本号
@@ -101,15 +102,9 @@ const DependencySettings = memo(({
   /** 是否选择了新版本 */
   const versionChanged = selectedVersion !== dependency.current
 
-  // 发送显示/隐藏的自定义事件，用于控制小火箭的显示
+  /** 小火箭隐藏显示控制 */
   useEffect(() => {
-    if (isOpen) {
-      // 弹窗打开时，发布事件通知隐藏小火箭
-      window.dispatchEvent(new CustomEvent('karin:modal-open', { detail: { name: 'DependencySettings' } }))
-    } else {
-      // 弹窗关闭时，发布事件通知可以显示小火箭
-      window.dispatchEvent(new CustomEvent('karin:modal-close', { detail: { name: 'DependencySettings' } }))
-    }
+    isOpen ? hideRocket() : showRocket()
   }, [isOpen])
 
   // 依赖切换时重置实时数据

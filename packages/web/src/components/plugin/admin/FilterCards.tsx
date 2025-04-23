@@ -38,7 +38,7 @@ const FilterCards: FC<FilterCardsProps> = ({ counts, selectedType, onTypeChange 
       <StatCard
         title='全部'
         count={counts.all}
-        description='全部插件'
+        description='全部插件 (不包含 NPM 插件)'
         icon={renderIcon(24, IoSettingsOutline)}
         gradient='bg-gradient-to-br from-indigo-400/10 to-indigo-500/20 dark:from-indigo-600/10 dark:to-indigo-700/20'
         border='border border-indigo-200/30 dark:border-indigo-800/20'

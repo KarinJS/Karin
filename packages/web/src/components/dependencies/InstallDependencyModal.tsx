@@ -170,7 +170,8 @@ const InstallDependencyModal = ({
       const response = await manageDependencies(params)
 
       if (!response.success || !response.data || !response.data.success) {
-        toast.error('安装依赖失败')
+        console.error('安装依赖失败:', response.data)
+        toast.error(`安装依赖失败: ${(response.data as Error).message || '未知错误'}`)
         return
       }
 
