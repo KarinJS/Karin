@@ -45,7 +45,7 @@ export const buildRawUrl = (plugin: PluginLists['repo'][number], github: (url: s
 export const checkPluginInstalled = async (name: string, type: GetPluginType): Promise<boolean> => {
   try {
     const plugins = await getPlugins(type, false)
-    return plugins.some(plugin => plugin === name)
+    return plugins.some(plugin => plugin === `${type}:${name}`)
   } catch {
     return false
   }

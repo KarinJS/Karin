@@ -21,6 +21,12 @@ export interface PluginRowProps {
   onSelect: (id: string, isSelected: boolean) => void
   /** 打开设置回调函数 */
   openSettings: (pluginId: string) => void
+  /** 更新单个插件回调 */
+  onUpdate?: (plugin: PluginAdminListResponse) => void
+  /** 强制更新单个插件回调 */
+  onForceUpdate?: (plugin: PluginAdminListResponse) => void
+  /** 卸载单个插件回调 */
+  onUninstall?: (plugin: PluginAdminListResponse) => void
 }
 
 /**
@@ -31,6 +37,9 @@ const PluginRow = memo(({
   isSelected,
   onSelect,
   openSettings,
+  onUpdate,
+  onForceUpdate,
+  onUninstall,
 }: PluginRowProps) => {
   /** 插件更新状态 */
   const statusConfig = getUpdateStatusConfig(plugin.type, plugin.version, plugin.latestHash)
@@ -39,33 +48,33 @@ const PluginRow = memo(({
 
   /** 处理选择状态变更 */
   const handleSelectionChange = useCallback(() => {
-    onSelect(plugin.id, !isSelected)
-  }, [plugin.id, isSelected, onSelect])
+    onSelect(plugin.name, !isSelected)
+  }, [plugin.name, isSelected, onSelect])
 
   /** 处理下拉菜单操作 */
   const handleDropdownAction = useCallback((key: React.Key) => {
-    console.log(`对插件 ${plugin.id} 执行操作: ${key}`)
+    console.log(`对插件 ${plugin.name} 执行操作: ${key}`)
     // 根据key类型处理不同的操作
     switch (key) {
       case 'settings':
-        openSettings(plugin.id)
+        openSettings(plugin.name)
         break
       case 'update':
-        // TODO:  处理更新操作
+        onUpdate?.(plugin)
         break
       case 'forceUpdate':
-        // TODO: 处理强制更新操作
+        onForceUpdate?.(plugin)
         break
       case 'uninstall':
-        // TODO: 处理卸载操作
+        onUninstall?.(plugin)
         break
       default:
         break
     }
-  }, [plugin.id, openSettings])
+  }, [plugin, openSettings, onUpdate, onForceUpdate, onUninstall])
 
   return (
-    <div className='grid grid-cols-12 w-full border-b border-default-100/40 hover:bg-default-50/70 transition-colors' onClick={() => onSelect(plugin.id, !isSelected)}>
+    <div className='grid grid-cols-12 w-full border-b border-default-100/40 hover:bg-default-50/70 transition-colors' onClick={() => onSelect(plugin.name, !isSelected)}>
       {/* 选择框 */}
       <div className='py-3 md:py-4 px-2 md:px-4 text-sm flex items-center justify-center col-span-1' onClick={stopPropagation}>
         <div className='flex items-center justify-center w-full'>

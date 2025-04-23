@@ -55,7 +55,7 @@ export const getDependenciesListRouter: RequestHandler = async (req, res) => {
     await Promise.allSettled(promises)
     const npmPlugin = await getPlugins('npm')
     list.forEach(item => {
-      item.isKarinPlugin = npmPlugin.some(plugin => plugin === item.name)
+      item.isKarinPlugin = npmPlugin.some(plugin => plugin === `npm:${item.name}`)
     })
 
     /**

@@ -7,6 +7,7 @@ import { getLocalCommitHash, getRemoteCommitHash } from '@/utils/git'
 
 import type { RequestHandler } from 'express'
 import type { PluginAdminListResponse } from '@/types/server/plugins'
+import path from 'node:path'
 
 /**
  * @webui 插件管理 获取插件列表Api
@@ -36,12 +37,14 @@ export const getPluginListPluginAdmin: RequestHandler = async (_, res) => {
     }))
 
     app.forEach(plugin => {
-      list.push({
-        type: 'app',
-        id: plugin.pkgData.name,
-        name: plugin.name,
-        version: '',
-        latestHash: '',
+      plugin.apps.forEach(v => {
+        list.push({
+          type: 'app',
+          id: plugin.name,
+          name: `${plugin.name}/${path.basename(v)}`,
+          version: '',
+          latestHash: '',
+        })
       })
     })
 

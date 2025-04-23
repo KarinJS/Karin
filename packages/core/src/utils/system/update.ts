@@ -160,6 +160,7 @@ export const updateAllPkg = async (): Promise<string> => {
     const result: string[] = []
 
     await Promise.all(list.map(async (name) => {
+      name = name.replace('npm:', '')
       /** 本地版本号 */
       const local = await getPkgVersion(name)
       /** 远程版本号 */
@@ -431,6 +432,7 @@ export const updateAllGitPlugin = async (cmd = 'git pull', time = 120): Promise<
     }
     const result: string[] = []
     await Promise.allSettled(list.map(async (name) => {
+      name = name.replace('git:', '')
       const filePath = `./plugins/${name}`
       const { status, data } = await updateGitPlugin(filePath, cmd, time)
       if (status === 'ok') {

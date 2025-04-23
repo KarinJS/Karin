@@ -37,6 +37,12 @@ export interface TableContentProps {
   fetchPlugins: () => void
   /** 是否跳过分片加载（当插件数量少时） */
   skipLazyLoading?: boolean
+  /** 更新单个插件回调 */
+  onUpdatePlugin?: (plugin: PluginAdminListResponse) => void
+  /** 强制更新单个插件回调 */
+  onForceUpdatePlugin?: (plugin: PluginAdminListResponse) => void
+  /** 卸载单个插件回调 */
+  onUninstallPlugin?: (plugin: PluginAdminListResponse) => void
 }
 
 /**
@@ -55,6 +61,9 @@ const TableContent: FC<TableContentProps> = ({
   openSettings,
   fetchPlugins,
   skipLazyLoading = false, // 默认不跳过分片加载
+  onUpdatePlugin,
+  onForceUpdatePlugin,
+  onUninstallPlugin,
 }) => {
   /** 表格容器引用 */
   const tableContainerRef = useRef<HTMLDivElement>(null)
@@ -132,11 +141,14 @@ const TableContent: FC<TableContentProps> = ({
           <div className='w-full'>
             {plugins.map((plugin) => (
               <PluginRow
-                key={plugin.id}
+                key={plugin.name}
                 plugin={plugin}
-                isSelected={selectedMap.get(plugin.id) || false}
+                isSelected={selectedMap.get(plugin.name) || false}
                 onSelect={handleSelectPlugin}
                 openSettings={openSettings}
+                onUpdate={onUpdatePlugin}
+                onForceUpdate={onForceUpdatePlugin}
+                onUninstall={onUninstallPlugin}
               />
             ))}
           </div>
@@ -267,6 +279,9 @@ const TableContent: FC<TableContentProps> = ({
                           isSelected={isSelected}
                           onSelect={handleSelectPlugin}
                           openSettings={openSettings}
+                          onUpdate={onUpdatePlugin}
+                          onForceUpdate={onForceUpdatePlugin}
+                          onUninstall={onUninstallPlugin}
                         />
                       </div>
                     )

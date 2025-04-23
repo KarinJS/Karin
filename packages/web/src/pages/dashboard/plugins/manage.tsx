@@ -3,16 +3,16 @@ import { Button } from '@heroui/button'
 import { Spinner } from '@heroui/spinner'
 import { useSearchParams } from 'react-router-dom'
 import { MdOutlineExtension } from 'react-icons/md'
-import { createUpdatePlugins } from '@/utils/updateplugins'
+import { createUpdatePlugins } from '@/utils/updatePlugins.utils'
 import { TbArrowsUp, TbRefresh, TbTrash } from 'react-icons/tb'
 import TaskLogModal from '@/components/dependencies/TaskLogModal'
 import { getLocalPluginNameListRequest } from '@/request/plugins'
+import { hideRocket } from '@/components/common/ScrollToTop.utils'
 import { useState, useCallback, ReactElement, useEffect, useMemo } from 'react'
 import { FilterCards, TableContent, UpdateOptionsModal } from '@/components/plugin/admin'
 
 import type { PluginType } from '@/components/plugin/admin'
 import type { PluginAdminListResponse, PluginAdminParams } from 'node-karin'
-import { hideRocket } from '@/components/common/ScrollToTop.utils'
 
 /**
  * 插件管理页面组件
@@ -202,11 +202,34 @@ export const PluginManagePage = (): ReactElement => {
       } else {
         /** 否则全选 */
         console.log('全选，选中所有项')
-        const allKeys = new Set(plugins.map(plugin => plugin.id))
+        const allKeys = new Set(plugins.map(plugin => plugin.name))
         setSelectedKeys(allKeys as Set<string>)
       }
     }
   }, [plugins, selectedKeys])
+
+  /**
+   * 通用的插件管理操作处理函数
+   * @param params 插件管理参数
+   * @param onComplete 操作完成后的回调函数
+   */
+  const handlePluginOperation = useCallback((params: PluginAdminParams, onComplete?: () => void) => {
+    /** 状态更新函数 */
+    const stateUpdater = {
+      setIsLogModalOpen,
+      setTaskId,
+      setTaskLogs,
+      setTaskName,
+    }
+
+    /** 调用创建任务函数 */
+    createUpdatePlugins(
+      params,
+      stateUpdater,
+      undefined,
+      onComplete
+    )
+  }, [createUpdatePlugins, setIsLogModalOpen, setTaskId, setTaskLogs, setTaskName])
 
   /**
    * 处理更新全部按钮点击
@@ -217,41 +240,125 @@ export const PluginManagePage = (): ReactElement => {
   }, [])
 
   /**
-   * 处理更新选项确认
+   * 处理更新选中插件按钮点击
    */
-  const handleUpdateOptionsConfirm = useCallback((options: {
-    updateNpm: boolean
-    updateGit: boolean
-    forceUpdateGit: boolean
-  }) => {
-    /** 创建插件更新任务所需的参数 */
-    const updateParams: PluginAdminParams = {
+  const handleUpdateSelected = useCallback(() => {
+    if (selectedKeys.size === 0) return
+
+    // 查找选中的插件详情
+    const selectedPlugins = plugins.filter(plugin => selectedKeys.has(plugin.name))
+
+    // 准备更新参数
+    const params: PluginAdminParams = {
       type: 'update',
-      isAll: {
-        force: options.forceUpdateGit,
-        git: options.updateGit,
-        npm: options.updateNpm,
-      },
-      name: '更新插件',
-      target: [],
+      name: '更新选中插件',
+      target: selectedPlugins.map(plugin => ({
+        type: plugin.type,
+        name: plugin.name,
+        force: false,
+        version: 'latest',
+      })),
     }
 
-    /** 状态更新函数 */
-    const stateUpdater = {
-      setIsLogModalOpen,
-      setTaskId,
-      setTaskLogs,
-      setTaskName,
+    // 使用通用处理函数
+    handlePluginOperation(params)
+  }, [plugins, selectedKeys, handlePluginOperation])
+
+  /**
+   * 处理卸载选中插件按钮点击
+   */
+  const handleUninstallSelected = useCallback(() => {
+    if (selectedKeys.size === 0) return
+
+    // 查找选中的插件详情
+    const selectedPlugins = plugins.filter(plugin => selectedKeys.has(plugin.name))
+
+    // 准备卸载参数
+    const params: PluginAdminParams = {
+      type: 'uninstall',
+      name: '卸载选中插件',
+      target: selectedPlugins.map(plugin => ({
+        type: plugin.type,
+        name: plugin.name,
+      })),
     }
 
-    /** 调用创建更新任务函数 */
-    createUpdatePlugins(
-      updateParams,
-      stateUpdater,
-      undefined,
-      () => setUpdateModalOpen(false)
-    )
-  }, [setUpdateModalOpen])
+    // 使用通用处理函数
+    handlePluginOperation(params)
+  }, [plugins, selectedKeys, handlePluginOperation])
+
+  /**
+   * 处理单个插件更新
+   * @param plugin 要更新的插件
+   */
+  const handleUpdateSinglePlugin = useCallback((plugin: PluginAdminListResponse) => {
+    // 准备更新参数
+    const params: PluginAdminParams = {
+      type: 'update',
+      name: `更新插件 ${plugin.name}`,
+      target: [{
+        type: plugin.type,
+        name: plugin.name,
+        force: false,
+        version: 'latest',
+      }],
+    }
+
+    // 使用通用处理函数
+    handlePluginOperation(params)
+  }, [handlePluginOperation])
+
+  /**
+   * 处理单个插件强制更新
+   * @param plugin 要强制更新的插件
+   */
+  const handleForceUpdateSinglePlugin = useCallback((plugin: PluginAdminListResponse) => {
+    // 强制更新仅对git类型插件有效
+    if (plugin.type !== 'git') return
+
+    // 准备强制更新参数
+    const params: PluginAdminParams = {
+      type: 'update',
+      name: `强制更新插件 ${plugin.name}`,
+      target: [{
+        type: 'git',
+        name: plugin.name,
+        force: true,
+        version: 'latest',
+      }],
+    }
+
+    // 使用通用处理函数
+    handlePluginOperation(params)
+  }, [handlePluginOperation])
+
+  /**
+   * 处理单个插件卸载
+   * @param plugin 要卸载的插件
+   */
+  const handleUninstallSinglePlugin = useCallback((plugin: PluginAdminListResponse) => {
+    // 准备卸载参数
+    const params: PluginAdminParams = {
+      type: 'uninstall',
+      name: `卸载插件 ${plugin.name}`,
+      target: [{
+        type: plugin.type,
+        name: plugin.name,
+      }],
+    }
+
+    // 使用通用处理函数
+    handlePluginOperation(params)
+  }, [handlePluginOperation])
+
+  /**
+   * 处理更新选项确认
+   * @param params 插件管理参数
+   */
+  const handleUpdateOptionsConfirm = useCallback((params: PluginAdminParams) => {
+    // 使用通用处理函数，并传递关闭模态框的回调
+    handlePluginOperation(params, () => setUpdateModalOpen(false))
+  }, [handlePluginOperation, setUpdateModalOpen])
 
   /**
    * 计算每种类型的插件数量
@@ -340,6 +447,9 @@ export const PluginManagePage = (): ReactElement => {
         openSettings={openSettings}
         fetchPlugins={fetchPlugins}
         skipLazyLoading={skipLazyLoading} // 小数据量时跳过分批加载
+        onUpdatePlugin={handleUpdateSinglePlugin}
+        onForceUpdatePlugin={handleForceUpdateSinglePlugin}
+        onUninstallPlugin={handleUninstallSinglePlugin}
       />
     )
   }
@@ -360,7 +470,7 @@ export const PluginManagePage = (): ReactElement => {
             className='bg-success-100/60 text-success-700 dark:bg-success-900/30 dark:text-success-400'
             startContent={<TbArrowsUp className='text-lg' />}
             isDisabled={(selectedType !== 'all' && getSelectedCount() === 0) || (!plugins || plugins.length === 0)}
-            onPress={selectedType === 'all' && getSelectedCount() === 0 ? handleUpdateAll : undefined}
+            onPress={selectedType === 'all' && getSelectedCount() === 0 ? handleUpdateAll : handleUpdateSelected}
           >
             {selectedType === 'all' && getSelectedCount() === 0 ? '更新全部' : '更新选中'}
           </Button>
@@ -371,6 +481,7 @@ export const PluginManagePage = (): ReactElement => {
             className='bg-danger-100/60 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400'
             startContent={<TbTrash className='text-lg' />}
             isDisabled={getSelectedCount() === 0}
+            onPress={handleUninstallSelected}
           >
             卸载选中
           </Button>

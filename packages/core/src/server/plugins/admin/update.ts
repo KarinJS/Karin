@@ -65,7 +65,7 @@ export const update = async (
 
     for (const item of data.target) {
       if (item.type === 'npm') {
-        list.includes(item.name)
+        list.includes(`${item.type}:${item.name}`)
           ? npm.push({ name: item.name, version: item.version || 'latest' })
           : notExist.push(item.name)
         continue
@@ -73,7 +73,7 @@ export const update = async (
 
       if (item.type === 'git') {
         const force = typeof item.force === 'boolean' ? item.force : false
-        list.includes(item.name)
+        list.includes(`${item.type}:${item.name}`)
           ? git.push({ name: item.name, version: item.version || 'latest', force })
           : notExist.push(item.name)
         continue

@@ -61,12 +61,12 @@ export const uninstall = async (
 
     target.forEach(async (v) => {
       if (v.type === 'npm') {
-        list.includes(v.name) ? npm.push(v.name) : notExist.push(v.name)
+        list.includes(`${v.type}:${v.name}`) ? npm.push(v.name) : notExist.push(v.name)
         return
       }
 
       if (v.type === 'git') {
-        list.includes(v.name) ? git.push(v.name) : notExist.push(v.name)
+        list.includes(`${v.type}:${v.name}`) ? git.push(v.name) : notExist.push(v.name)
         return
       }
 
@@ -115,13 +115,14 @@ export const uninstall = async (
       }
 
       /** 判断app文件夹是否存在 */
-      const [pkg, file] = v.split(':')
-      if (!pkg || !file) {
+      const arr = v.split('/')
+      const [pkg, file] = arr
+      if (arr.length !== 2 || !pkg || !file) {
         emitLog(`卸载 ${v} 失败: 格式错误`)
         continue
       }
 
-      if (!list.includes(pkg)) {
+      if (!list.includes(`app:${pkg}`)) {
         emitLog(`卸载 ${v} 失败: 插件不存在`)
         continue
       }
@@ -179,6 +180,5 @@ export const uninstall = async (
     }
   )
 
-  const success = await task.run(id)
-  return handleReturn(res, success, '卸载任务已创建，请通过taskId执行任务')
+  return handleReturn(res, true, '卸载任务已创建，请通过taskId执行任务', id)
 }

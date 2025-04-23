@@ -4,6 +4,7 @@ import { Button } from '@heroui/button'
 import { TbPackage, TbBrandGit, TbRefreshAlert } from 'react-icons/tb'
 import { Divider } from '@heroui/divider'
 import UpdateOptionCard from '@/components/card/UpdateOptionCard'
+import type { PluginAdminParams } from 'node-karin'
 
 /**
  * 更新选项对话框属性接口
@@ -14,11 +15,7 @@ export interface UpdateOptionsModalProps {
   /** 关闭对话框回调 */
   onClose: () => void
   /** 确认更新回调 */
-  onConfirm: (options: {
-    updateNpm: boolean
-    updateGit: boolean
-    forceUpdateGit: boolean
-  }) => void
+  onConfirm: (params: PluginAdminParams) => void
 }
 
 /**
@@ -32,11 +29,17 @@ const UpdateOptionsModal: FC<UpdateOptionsModalProps> = ({ isOpen, onClose, onCo
 
   // 处理确认按钮点击
   const handleConfirm = () => {
-    onConfirm({
-      updateNpm,
-      updateGit,
-      forceUpdateGit,
-    })
+    const params: PluginAdminParams = {
+      type: 'update',
+      isAll: {
+        force: forceUpdateGit,
+        git: updateGit,
+        npm: updateNpm,
+      },
+      name: '更新插件',
+      target: [],
+    }
+    onConfirm(params)
     onClose()
   }
 

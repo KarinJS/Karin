@@ -475,6 +475,13 @@ const collectAllPlugins = async (files: fs.Dirent[], list: string[]): Promise<vo
  * @param _isFirst 是否第一次获取
  * @returns 插件列表或详细信息
  * @version 1.0.0
+ * ```json // 注意 返回非想起信息时候，插件名称会附带类型前缀
+ * [
+ *  "npm:plugin-name",
+ *  "git:plugin-name",
+ *  "app:plugin-name"
+ * ]
+ * ```
  */
 export const getPlugins = async <T extends boolean = false> (
   type: GetPluginType,
