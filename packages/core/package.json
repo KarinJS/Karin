@@ -135,6 +135,7 @@
   },
   "files": [
     "dist",
+    "default",
     "CHANGELOG.md",
     "LICENSE"
   ],
