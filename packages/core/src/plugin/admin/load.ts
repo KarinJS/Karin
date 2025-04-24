@@ -68,18 +68,16 @@ export const pkgLoads = async (
 
   /** 收集入口文件加载的Promise */
   if (pkg.type !== 'app') {
-    if (isTsx() && pkg?.pkgData?.karin?.main) {
-      const file = path.join(pkg.dir, pkg.pkgData.karin.main)
-      if (fs.existsSync(file)) {
-        entryPromises.push(pkgLoadModule(pkg.name, file))
-      }
+    if (isTsx()) {
+      loadMainFile(entryPromises, pkg, pkg.pkgData?.karin?.main)
+    } else {
+      loadMainFile(entryPromises, pkg, pkg.pkgData?.main)
     }
 
-    if (!isTsx() && pkg?.pkgData?.main) {
-      const file = path.join(pkg.dir, pkg.pkgData.main)
-      if (fs.existsSync(file)) {
-        entryPromises.push(pkgLoadModule(pkg.name, file))
-      }
+    if (pkg.type === 'npm' || !isTsx()) {
+      loadMainFile(entryPromises, pkg, pkg.pkgData?.main)
+    } else {
+      loadMainFile(entryPromises, pkg, pkg.pkgData?.karin?.main)
     }
   }
 
@@ -92,6 +90,20 @@ export const pkgLoads = async (
   } else {
     /** 如果没有配置 默认使用 resource 目录 */
     cache.static.push(path.resolve(pkg.dir, 'resource'))
+  }
+}
+
+/**
+ * 加载入口文件
+ * @param entryPromises 入口文件Promise
+ * @param pkg 插件包
+ * @param dir 入口文件路径
+ */
+const loadMainFile = async (entryPromises: Promise<void>[], pkg: PkgInfo, dir?: string) => {
+  if (!dir) return
+  const file = path.join(pkg.dir, dir)
+  if (fs.existsSync(file)) {
+    entryPromises.push(pkgLoadModule(pkg.name, file))
   }
 }
 

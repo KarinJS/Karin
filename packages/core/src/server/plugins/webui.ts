@@ -3,6 +3,7 @@ import path from 'node:path'
 import { exec } from '@/utils/system/exec'
 import { createServerErrorResponse, createSuccessResponse } from '@/server/utils/response'
 import type { RequestHandler } from 'express'
+import { initialize } from '../pty/terminalManager'
 
 interface PluginInfo {
   name: string
@@ -32,7 +33,7 @@ const plugins: PluginInfo[] = [
   {
     name: '@karinjs/node-pty',
     installed: false, // 会在运行时检测并更新
-    description: '提供终端功能支持，允许您在WebUI中使用命令行终端。安装此插件后可使用终端功能。',
+    description: '提供终端功能支持，允许您在WebUI中使用命令行终端。需要注意，此插件存在风险，安装后可运行一切命令。',
   },
   {
     name: '@karinjs/plugin-webui-network-monitor',
@@ -59,6 +60,14 @@ export const installWebui: RequestHandler = async (req, res) => {
     const isWorkspace = fs.existsSync(workspace)
 
     const result = await exec(`pnpm install ${name}${isWorkspace ? ' -w' : ''}`)
+    if (name === '@karinjs/node-pty') {
+      await initialize()
+    }
+
+    if (result.error) {
+      logger.error(new Error(`安装webui插件发生错误: ${name}`, { cause: result.error }))
+    }
+
     return createSuccessResponse(res, {
       status: result.status,
       data: result.status ? '安装成功' : result.error?.message || '安装失败',
