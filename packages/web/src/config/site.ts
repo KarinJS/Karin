@@ -36,20 +36,6 @@ export interface SiteConfigType {
   navItems: NavItem[]
 }
 
-/**
- * 获取已安装的插件列表
- */
-const getInstalledPlugins = async () => {
-  const list = (await request.serverPost<LocalApiResponse[], null>('/api/v1/plugin/local')) || []
-  return list.map((item) => ({
-    id: item.id,
-    label: item.name,
-    href: `/plugins/${item.id}`,
-    icon: item.icon,
-    type: item.type,
-  }))
-}
-
 export const defaultSiteConfig: SiteConfigType = {
   name: 'KarinJS WebUI',
   description: 'KarinJS WebUI.',
@@ -115,6 +101,23 @@ export const defaultSiteConfig: SiteConfigType = {
 
 export const siteConfig: SiteConfigType = { ...defaultSiteConfig }
 
+/**
+ * 获取已安装的插件列表
+ */
+const getInstalledPlugins = async () => {
+  const list = (await request.serverPost<LocalApiResponse[], null>('/api/v1/plugin/local')) || []
+  return list.map((item) => ({
+    id: item.id,
+    label: item.name,
+    href: `/plugins/${item.id}`,
+    icon: item.icon,
+    type: item.type,
+  }))
+}
+
+/**
+ * 初始化插件配置的二级菜单
+ */
 export const initSiteConfig = async () => {
   const plugins = await getInstalledPlugins()
   const pluginConfigIndex = siteConfig.navItems.findIndex(item => item.href === '/plugins')

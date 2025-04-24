@@ -25,15 +25,15 @@ const menuItemVariants = {
     x: 0,
     transition: {
       duration: 0.2,
-    }
+    },
   },
   exit: {
     opacity: 0,
     x: -20,
     transition: {
       duration: 0.2,
-    }
-  }
+    },
+  },
 }
 
 const subMenuVariants = {
@@ -47,9 +47,9 @@ const subMenuVariants = {
     transition: {
       type: 'tween',
       ease: [0.00, 0.00, 0.00, 1.00],
-      duration: 0.3
-    }
-  }
+      duration: 0.3,
+    },
+  },
 }
 
 export interface MenuButtonProps {
@@ -73,19 +73,22 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
     initSiteConfig().then(() => {
       setPluginsLoading(false)
     })
+  }, [])
+
+  useEffect(() => {
     siteConfig.navItems.forEach((item) => {
       if (item.children?.some(child => location.pathname === child.href)) {
         setExpandedMenu(item.href)
       }
     })
-  }, [location.pathname, siteConfig.navItems])
+  }, [location.pathname])
 
   return (
     <>
       <motion.div
         className={clsx(
           'overflow-hidden fixed top-0 left-0 h-full z-50 bg-background',
-          'md:bg-transparent md:static shadow-md md:shadow-none rounded-r-md md:rounded-none',
+          'md:bg-transparent md:static shadow-md md:shadow-none rounded-r-md md:rounded-none'
         )}
         initial={{ width: 0 }}
         animate={{ width: isOpen ? '15rem' : 0 }}
@@ -134,7 +137,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                     transition={{
                       type: 'tween',
                       ease: [0.00, 0.00, 0.00, 1.00],
-                      duration: 0.3
+                      duration: 0.3,
                     }}
                   />
 
@@ -147,7 +150,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                     transition={{
                       type: 'tween',
                       ease: [0.00, 0.00, 0.00, 1.00],
-                      duration: 0.3
+                      duration: 0.3,
                     }}
                   />
 
@@ -175,7 +178,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                         transition={{
                           type: 'tween',
                           ease: [0.00, 0.00, 0.00, 1.00],
-                          duration: 0.3
+                          duration: 0.3,
                         }}
                       />
                       <motion.path
@@ -188,7 +191,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                         transition={{
                           type: 'tween',
                           ease: [0.00, 0.00, 0.00, 1.00],
-                          duration: 0.3
+                          duration: 0.3,
                         }}
                       />
                     </svg>
@@ -215,7 +218,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                     transition={{
                       type: 'tween',
                       ease: [0.00, 0.00, 0.00, 1.00],
-                      duration: 0.3
+                      duration: 0.3,
                     }}
                   >
                     {/* k */}
@@ -230,7 +233,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                         duration: 3,
                         times: [0, 0.1, 0.9, 1],
                         repeat: Infinity,
-                        repeatDelay: 1
+                        repeatDelay: 1,
                       }}
                     >
                       k
@@ -248,7 +251,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                         times: [0, 0.1, 0.9, 1],
                         repeat: Infinity,
                         repeatDelay: 1,
-                        delay: 0.1
+                        delay: 0.1,
                       }}
                     >
                       a
@@ -266,7 +269,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                         times: [0, 0.1, 0.9, 1],
                         repeat: Infinity,
                         repeatDelay: 1,
-                        delay: 0.2
+                        delay: 0.2,
                       }}
                     >
                       r
@@ -285,7 +288,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                         times: [0, 0.1, 0.9, 1],
                         repeat: Infinity,
                         repeatDelay: 1,
-                        delay: 0.3
+                        delay: 0.3,
                       }}
                     >
                       i
@@ -304,7 +307,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                         times: [0, 0.1, 0.9, 1],
                         repeat: Infinity,
                         repeatDelay: 1,
-                        delay: 0.4
+                        delay: 0.4,
                       }}
                     >
                       n
@@ -321,7 +324,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                       transition={{
                         type: 'tween',
                         ease: [0.00, 0.00, 0.00, 1.00],
-                        duration: 0.3
+                        duration: 0.3,
                       }}
                     />
 
@@ -334,7 +337,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                       transition={{
                         type: 'tween',
                         ease: [0.00, 0.00, 0.00, 1.00],
-                        duration: 0.3
+                        duration: 0.3,
                       }}
                     />
 
@@ -347,7 +350,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                       transition={{
                         type: 'tween',
                         ease: [0.00, 0.00, 0.00, 1.00],
-                        duration: 0.3
+                        duration: 0.3,
                       }}
                     />
 
@@ -361,7 +364,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                       transition={{
                         type: 'tween',
                         ease: [0.00, 0.00, 0.00, 1.00],
-                        duration: 0.3
+                        duration: 0.3,
                       }}
                     />
                   </div>
@@ -377,7 +380,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                       duration: 2,
                       times: [0, 1],
                       repeat: Infinity,
-                      repeatDelay: 2
+                      repeatDelay: 2,
                     }}
                   />
                 </motion.div>
