@@ -56,7 +56,9 @@ const web = (dir: typeof root) => {
 
   /** 处理 /web 路径下的所有请求，确保 SPA 路由可以正常工作 */
   app.get('/web/{*splat}', (_, res) => {
-    res.sendFile(path.join(webDir, 'index.html'))
+    res.sendFile('index.html', {
+      root: path.resolve(webDir),
+    })
   })
 
   listeners.once('online', () => {
@@ -65,7 +67,7 @@ const web = (dir: typeof root) => {
        * 5秒后将所有根路径请求重定向到 /web
        * 等5秒是因为插件可能也使用了部分路由
        */
-      app.get('/', (_, res) => {
+      app.all('/{*splat}', (_, res) => {
         res.redirect('/web')
       })
     }, 5000)

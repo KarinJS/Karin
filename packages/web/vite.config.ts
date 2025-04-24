@@ -44,8 +44,8 @@ export default defineConfig({
       output: {
         /**
          * 自定义拆包策略，根据依赖类型和关联性进行分组
-         * @param {string} id - 模块ID
-         * @returns {string} chunk名称
+         * @param id - 模块ID
+         * @returns chunk名称
          */
         manualChunks: (id) => {
           // 处理node_modules中的依赖

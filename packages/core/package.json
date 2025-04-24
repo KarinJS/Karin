@@ -130,8 +130,8 @@
   "types": "./dist/index.d.ts",
   "bin": {
     "k": "./dist/cli/index.mjs",
-    "karin": "./dist/cli/index.mjs",
-    "ki": "./dist/cli/index.mjs"
+    "ki": "./dist/cli/index.mjs",
+    "karin": "./dist/cli/index.mjs"
   },
   "files": [
     "dist",

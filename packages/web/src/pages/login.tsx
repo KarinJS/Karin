@@ -19,7 +19,7 @@ import clsx from 'clsx'
 import { Tooltip } from '@heroui/tooltip'
 import { useTheme } from 'ahooks'
 import { FaHeart } from 'react-icons/fa'
-import ConsoleMessage from '@/components/ConsoleMessage.tsx'
+// import ConsoleMessage from '@/components/ConsoleMessage.tsx'
 
 /**
  * 加载外部 SHA256 脚本
@@ -100,7 +100,6 @@ export default function LoginPage () {
       localStorage.setItem(key.refreshToken, response.refreshToken)
 
       toast.success('登录成功')
-      ConsoleMessage()
       navigate(from, { replace: true })
     } catch (error) {
       console.error(error)
