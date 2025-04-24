@@ -143,13 +143,24 @@ export const getWebConfig = async (type: Apps, id: string, _?: () => void) => {
   const result = await loadConfig(webConfig)
   /** 检查一下version description是否存在 不存在则从插件对应的package.json中获取 */
   if (!result.info.version || !result.info.description) {
-    const dir = type === 'npm'
-      ? path.join(process.cwd(), 'node_modules', id)
-      : path.join(process.cwd(), 'plugins', id)
+    let dir = ''
+    if (type === 'npm') {
+      dir = path.join(process.cwd(), 'node_modules', id)
+    } else {
+      dir = path.join(process.cwd(), 'plugins', id)
+      if (!fs.existsSync(dir)) {
+        dir = process.cwd()
+      }
+    }
 
     const pkg = requireFileSync<PkgData>(path.join(dir, 'package.json'))
-    if (!pkg.version) result.info.version = pkg.version
-    if (!pkg.description) result.info.description = pkg.description
+    if (!pkg || pkg.name !== id) {
+      if (!result.info.version) result.info.version = ''
+      if (!result.info.description) result.info.description = ''
+    } else {
+      if (!result.info.version) result.info.version = ''
+      if (!result.info.description) result.info.description = ''
+    }
   }
 
   return result

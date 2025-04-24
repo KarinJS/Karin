@@ -68,12 +68,6 @@ export const pkgLoads = async (
 
   /** 收集入口文件加载的Promise */
   if (pkg.type !== 'app') {
-    if (isTsx()) {
-      loadMainFile(entryPromises, pkg, pkg.pkgData?.karin?.main)
-    } else {
-      loadMainFile(entryPromises, pkg, pkg.pkgData?.main)
-    }
-
     if (pkg.type === 'npm' || !isTsx()) {
       loadMainFile(entryPromises, pkg, pkg.pkgData?.main)
     } else {

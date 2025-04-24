@@ -6,7 +6,6 @@ import { auth } from '../common/common'
 import { listeners } from '@/core/internal'
 import { WS_CONNECTION_TERMINAL } from '@/utils'
 
-import type * as PtyModule from '@karinjs/node-pty'
 import type { IncomingMessage } from 'node:http'
 import type { TerminalInstance, TerminalShell } from '@/types/server/pty'
 
@@ -18,7 +17,7 @@ const terminals: Map<string, TerminalInstance> = new Map()
 /**
  * PTY 模块
  */
-let pty: typeof PtyModule | null = null
+let pty: any | null = null
 
 /**
  * 检查 PTY 插件是否已安装
@@ -166,7 +165,7 @@ export const createTerminal = async (
     name,
   }
 
-  term.onData((data) => {
+  term.onData((data: unknown) => {
     // 追加数据到 buffer
     instance.buffer += data
     // 发送数据给已连接的 websocket
