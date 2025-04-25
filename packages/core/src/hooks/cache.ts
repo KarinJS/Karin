@@ -23,6 +23,8 @@ export const cache: HookCache = {
   sendMsg: {
     message: [],
     forward: [],
+    afterMessage: [],
+    afterForward: [],
   },
   empty: {
     message: [],

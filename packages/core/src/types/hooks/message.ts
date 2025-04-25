@@ -90,8 +90,27 @@ export type ForwardMessageCallback = BaseForwardCallback<void>
  */
 export type HookEmitForward = BaseForwardCallback<boolean>
 
+/**
+ * 消息发送后回调类型 这个由开发者调用
+ * @param contact 联系人
+ * @param elements 消息元素
+ * @param result 发送消息结果
+ * @param next 继续执行下一个钩子的函数
+ */
+export type AfterMessageCallback = (contact: Contact, elements: Array<Elements>, result: any, next: HookNext) => void | Promise<void>
+
+/**
+ * 转发消息发送后回调类型 这个由开发者调用
+ * @param contact 联系人
+ * @param elements 消息元素
+ * @param result 发送转发消息结果
+ * @param options 转发选项
+ * @param next 继续执行下一个钩子的函数
+ */
+export type AfterForwardMessageCallback = (contact: Contact, elements: Array<NodeElement>, result: any, options: ForwardOptions | undefined, next: HookNext) => void | Promise<void>
+
 /** 发送消息钩子项 */
-export interface SendMsgHookItem<T extends NormalMessageCallback | ForwardMessageCallback> {
+export interface SendMsgHookItem<T extends NormalMessageCallback | ForwardMessageCallback | AfterMessageCallback | AfterForwardMessageCallback> {
   /** 钩子ID */
   id: number
   /** 钩子优先级 */
@@ -110,13 +129,16 @@ export interface HookCache {
     guild: MessageHookItem<GuildMessage>[]
     direct: MessageHookItem<DirectMessage>[]
     groupTemp: MessageHookItem<GroupTempMessage>[]
-  },
-  /** 发送消息事件钩子 */
+  },  /** 发送消息事件钩子 */
   sendMsg: {
     /** 普通消息 */
     message: SendMsgHookItem<NormalMessageCallback>[]
     /** 转发消息 */
     forward: SendMsgHookItem<ForwardMessageCallback>[]
+    /** 发送消息后钩子 */
+    afterMessage: SendMsgHookItem<AfterMessageCallback>[]
+    /** 发送转发消息后钩子 */
+    afterForward: SendMsgHookItem<AfterForwardMessageCallback>[]
   },
   /** 未找到匹配插件钩子 */
   empty: {

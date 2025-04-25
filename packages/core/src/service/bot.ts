@@ -154,7 +154,6 @@ export const registerBot = (_: AdapterCommunication, bot: AdapterBase) => {
    */
   const originSendMsg = bot.sendMsg
   const originSendForwardMsg = bot.sendForwardMsg
-
   bot.sendMsg = async (
     contact: Contact,
     elements: Array<Elements>,
@@ -166,6 +165,8 @@ export const registerBot = (_: AdapterCommunication, bot: AdapterBase) => {
     /** 重试sendMsg */
     try {
       const result = await originSendMsg.call(bot, contact, elements, retryCount)
+      /** 触发发送消息后钩子 */
+      await hooksSendMsgEmit.afterMessage(contact, elements, result)
       return result
     } catch (error) {
       if (typeof retryCount === 'number' && retryCount > 0) {
@@ -174,7 +175,6 @@ export const registerBot = (_: AdapterCommunication, bot: AdapterBase) => {
       throw error
     }
   }
-
   bot.sendForwardMsg = async (
     contact: Contact,
     elements: Array<NodeElement>,
@@ -182,7 +182,10 @@ export const registerBot = (_: AdapterCommunication, bot: AdapterBase) => {
   ) => {
     const hook = await hooksSendMsgEmit.forward(contact, elements, options)
     if (!hook) return { messageId: '', forwardId: '' }
-    return originSendForwardMsg.call(bot, contact, elements, options)
+    const result = await originSendForwardMsg.call(bot, contact, elements, options)
+    /** 触发发送转发消息后钩子 */
+    await hooksSendMsgEmit.afterForward(contact, elements, result, options)
+    return result
   }
 
   setTimeout(async () => {

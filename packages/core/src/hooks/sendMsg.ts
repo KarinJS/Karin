@@ -6,11 +6,13 @@ import type {
   HookOptions,
   NormalMessageCallback,
   ForwardMessageCallback,
+  AfterMessageCallback,
+  AfterForwardMessageCallback,
   SendMsgHookItem,
 } from '@/types/hooks/message'
 import type { Contact, Elements, ForwardOptions, NodeElement } from '@/types'
 
-const addHook = <T extends NormalMessageCallback | ForwardMessageCallback> (
+const addHook = <T extends NormalMessageCallback | ForwardMessageCallback | AfterMessageCallback | AfterForwardMessageCallback> (
   list: SendMsgHookItem<T>[],
   callback: T,
   options: HookOptions = {}
@@ -51,6 +53,30 @@ export const sendMsg = {
     return id
   },
   /**
+   * 添加普通消息发送后钩子
+   * @param callback 消息处理回调函数
+   * @param options 钩子配置项
+   * @returns 钩子ID
+   */
+  afterMessage: (callback: AfterMessageCallback, options: HookOptions = {}) => {
+    const { id, list } = addHook(cache.sendMsg.afterMessage, callback, options)
+    logger.mark(`[hooks] 添加发送消息后钩子: ${id}`)
+    cache.sendMsg.afterMessage = list
+    return id
+  },
+  /**
+   * 添加转发消息发送后钩子
+   * @param callback 消息处理回调函数
+   * @param options 钩子配置项
+   * @returns 钩子ID
+   */
+  afterForward: (callback: AfterForwardMessageCallback, options: HookOptions = {}) => {
+    const { id, list } = addHook(cache.sendMsg.afterForward, callback, options)
+    logger.mark(`[hooks] 添加发送转发消息后钩子: ${id}`)
+    cache.sendMsg.afterForward = list
+    return id
+  },
+  /**
    * 删除钩子
    * @param id 钩子ID
    */
@@ -58,6 +84,8 @@ export const sendMsg = {
     logger.mark(`[hooks] 移除发送消息钩子: ${id}`)
     cache.sendMsg.message = cache.sendMsg.message.filter(item => item.id !== id)
     cache.sendMsg.forward = cache.sendMsg.forward.filter(item => item.id !== id)
+    cache.sendMsg.afterMessage = cache.sendMsg.afterMessage.filter(item => item.id !== id)
+    cache.sendMsg.afterForward = cache.sendMsg.afterForward.filter(item => item.id !== id)
   },
 }
 
@@ -67,7 +95,7 @@ export const sendMsg = {
  * @param callback 回调函数
  * @returns 是否继续正常流程
  */
-const emitHooks = async <T extends NormalMessageCallback | ForwardMessageCallback> (
+const emitHooks = async <T extends NormalMessageCallback | ForwardMessageCallback | AfterMessageCallback | AfterForwardMessageCallback> (
   hooks: SendMsgHookItem<T>[],
   callback: (hook: SendMsgHookItem<T>, next: () => void) => void | Promise<void>
 ): Promise<boolean> => {
@@ -116,6 +144,31 @@ export const hooksSendMsgEmit = {
     return emitHooks<ForwardMessageCallback>(
       cache.sendMsg.forward,
       (hook, next) => hook.callback(contact, elements, options, next)
+    )
+  },
+  /**
+   * 触发普通消息发送后钩子
+   * @param contact 联系人
+   * @param elements 消息元素
+   * @param result 消息发送结果
+   */
+  afterMessage: async (contact: Contact, elements: Array<Elements>, result: any) => {
+    await emitHooks<AfterMessageCallback>(
+      cache.sendMsg.afterMessage,
+      (hook, next) => hook.callback(contact, elements, result, next)
+    )
+  },
+  /**
+   * 触发转发消息发送后钩子
+   * @param contact 联系人
+   * @param elements 消息元素
+   * @param result 转发消息发送结果
+   * @param options 转发选项
+   */
+  afterForward: async (contact: Contact, elements: Array<NodeElement>, result: any, options?: ForwardOptions) => {
+    await emitHooks<AfterForwardMessageCallback>(
+      cache.sendMsg.afterForward,
+      (hook, next) => hook.callback(contact, elements, result, options, next)
     )
   },
 }
