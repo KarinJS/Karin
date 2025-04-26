@@ -43,14 +43,6 @@ export const initialize = async () => {
     return
   }
 
-  try {
-    await pty!.init()
-  } catch (error) {
-    logger.error('[terminal] 初始化失败')
-    logger.error(error)
-    return
-  }
-
   listeners.on(WS_CONNECTION_TERMINAL, (
     socket: WebSocket,
     request: IncomingMessage,
