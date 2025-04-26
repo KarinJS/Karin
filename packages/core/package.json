@@ -172,7 +172,7 @@
     "yaml": "2.7.0"
   },
   "devDependencies": {
-    "@karinjs/node-pty": "^1.0.4",
+    "@karinjs/node-pty": "^1.1.0",
     "@karinjs/plugin-webui-network-monitor": "^1.0.3",
     "@karinjs/plugins-list": "^1.5.0",
     "@types/express": "^5.0.1",

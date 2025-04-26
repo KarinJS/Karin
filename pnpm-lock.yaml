@@ -97,8 +97,8 @@ importers:
         version: 2.7.0
     devDependencies:
       '@karinjs/node-pty':
-        specifier: ^1.0.4
-        version: 1.0.4
+        specifier: ^1.1.0
+        version: 1.1.0
       '@karinjs/plugin-webui-network-monitor':
         specifier: ^1.0.3
         version: 1.0.3
@@ -1714,10 +1714,9 @@ packages:
   '@karinjs/moment@1.1.5':
     resolution: {integrity: sha512-g2jFz1WkWsadLR7GeQWLLUFlBkfLMyND3Eh94Te32OGnKrFWScXub/wGFhiaCsCHDFRi0rRhsIMJPB2cIuME4A==}
 
-  '@karinjs/node-pty@1.0.4':
-    resolution: {integrity: sha512-w9j1wL2OAyan4rAoUvYESfFL19kDLCNUixtka/9yYFrINJQeOqOMtKRfQlKySN1TEz1KV7XSbnZ4q9uL3nhxYA==}
-    engines: {node: '>=16'}
-    hasBin: true
+  '@karinjs/node-pty@1.1.0':
+    resolution: {integrity: sha512-YsLM2JvK/wK9qjabuuYYVTFtMuMa41DK5yzfAAKqXm5W90l/+HMX9gznnbzJULTNr4z0PjKc3dVT1BKLMZll0A==}
+    engines: {node: '>=18'}
 
   '@karinjs/node-schedule@1.0.0':
     resolution: {integrity: sha512-dHhYKcprM/5DQhVX/CFZGsJcNhbfUuE14zFuNunvzU5WdX+mqnpPpOAOaHdKMOLJunaq6zMdBHDYNw/NgEBQyg==}
@@ -7336,7 +7335,7 @@ snapshots:
 
   '@karinjs/moment@1.1.5': {}
 
-  '@karinjs/node-pty@1.0.4': {}
+  '@karinjs/node-pty@1.1.0': {}
 
   '@karinjs/node-schedule@1.0.0': {}
 
