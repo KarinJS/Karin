@@ -51,9 +51,13 @@ export const restart = async (
 export const restartDirect = async () => {
   logger.mark('收到重启请求，正在重启...')
   if (process?.send) {
-    process.send('restart')
+    process.send(JSON.stringify({
+      type: 'restart',
+      port: process.env.HTTP_PORT,
+      token: process.env.HTTP_AUTH_KEY,
+    }))
     logger.mark('正在通知父进程重启...')
-    return
+    process.exit(0)
   }
 
   if (process.env.RUNTIME === 'pm2') {

@@ -65,6 +65,22 @@ class AdapterConsole extends AdapterBase implements AdapterType {
       }
     }
 
+    if (text === 'rs' || text === 'restart') {
+      process.send!(JSON.stringify({
+        type: 'restart',
+        port: process.env.HTTP_PORT,
+        token: process.env.HTTP_AUTH_KEY,
+      }))
+      return
+    }
+
+    if (text === 'stop') {
+      process.send!(JSON.stringify({
+        type: 'stop',
+      }))
+      return
+    }
+
     /** 如果带`group`前缀 则视为群环境 */
     if (text.startsWith('group')) {
       const contact = contactGroup('10010')

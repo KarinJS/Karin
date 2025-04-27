@@ -1,3 +1,4 @@
+import net from 'node:net'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { fork, type ChildProcess } from 'node:child_process'
@@ -35,23 +36,24 @@ const start = (): ChildProcess => {
 
   /** 处理子进程消息 */
   child.on('message', message => {
-    if (message === 'restart') {
-      console.log('收到重启指令，准备重启')
-      restart()
+    const { port, type, token } = JSON.parse(message as string) || {}
+    if (type === 'restart') {
+      restart(port, token)
+      return
+    }
+
+    if (type === 'stop') {
+      process.exit(0)
     }
   })
 
   /** 处理子进程退出 */
-  child.on('exit', (code, signal) => {
+  child.on('exit', (code) => {
     isStart = false
-    console.log(`子进程退出 [PID: ${child?.pid}] 退出码: ${code} 信号: ${signal}`)
 
     /** 如果不是手动关闭并且不在最小重启间隔内，则自动重启 */
     if (!isClosing && Date.now() - lastStartTime > minRestartInterval) {
-      console.log('子进程异常退出，准备重启')
-      setTimeout(() => {
-        start()
-      }, 1000)
+      process.exit(code!)
     }
   })
 
@@ -64,68 +66,92 @@ const start = (): ChildProcess => {
 }
 
 /**
- * 关闭子进程
- * @returns 是否成功关闭
- */
-export const stop = async (): Promise<boolean> => {
-  if (!child || child.killed) {
-    return true
-  }
-
-  /** 标记为正在关闭，防止自动重启 */
-  isClosing = true
-
-  return new Promise((resolve) => {
-    if (!child) {
-      resolve(true)
-      return
-    }
-
-    /** 设置超时处理 */
-    const timeoutId = setTimeout(() => {
-      if (child && !child.killed) {
-        child.kill('SIGKILL')
-      }
-      resolve(true)
-    }, 5000)
-
-    /** 监听退出事件 */
-    child.once('exit', () => {
-      clearTimeout(timeoutId)
-      resolve(true)
-    })
-
-    /** 发送终止信号 */
-    child.kill('SIGTERM')
-  })
-}
-
-/**
  * 重启子进程
  * @returns 新的子进程实例
  */
-export const restart = async (): Promise<ChildProcess | null> => {
+const restart = async (
+  port: number,
+  token: string,
+  isFetch = true
+): Promise<ChildProcess | null> => {
   isClosing = true
-  child.kill('SIGTERM')
+  if (isFetch) {
+    await sendExit(port, token)
+  }
+
+  /** 等待端口释放，最多尝试10次 */
+  let portAvailable = false
+  const maxTries = 10
+  for (let i = 0; i < maxTries; i++) {
+    portAvailable = await checkPort(port)
+    if (portAvailable) {
+      break
+    }
+    await sleep(1000)
+  }
+
+  if (!portAvailable) {
+    console.warn(`警告：端口 ${port} 在多次尝试后仍被占用，可能需要手动处理`)
+  }
+
+  /** 重置状态并启动新进程 */
   isStart = false
   child = start()
   return child
 }
 
 /**
- * 获取子进程状态
- * @returns 进程状态信息
+ * 延迟函数
+ * @param ms - 延迟的毫秒数
+ * @returns Promise对象，resolved后表示延迟结束
  */
-export const getStatus = () => ({
-  running: !!child && !child.killed,
-  pid: child?.pid,
-  lastStartTime,
-  uptime: child ? Date.now() - lastStartTime : 0,
-})
+const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms))
+
+/**
+ * 检查端口是否被占用
+ * @param port 端口号
+ * @returns 是否可用（true表示可用，false表示被占用）
+ */
+const checkPort = (port: number): Promise<boolean> => {
+  const server = net.createServer()
+  return new Promise((resolve) => {
+    server.on('error', () => {
+      resolve(false)
+    })
+
+    server.listen(port)
+
+    server.once('listening', () => {
+      server.close(() => {
+        resolve(true)
+      })
+    })
+  })
+}
+
+const sendExit = async (port: number, token: string) => {
+  try {
+    const result = await fetch(`http://127.0.0.1:${port}/api/v1/exit`, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    })
+
+    if (result.status === 200) {
+      console.log(await result.json())
+    } else {
+      console.log('发送重启请求失败:', result.status)
+    }
+    await sleep(1000)
+  } catch { }
+}
 
 /** 主进程退出时清理子进程 */
 process.on('exit', () => {
-  child.kill('SIGTERM')
+  if (child && !child.killed) {
+    child.kill('SIGTERM')
+  }
 })
 
 start()
