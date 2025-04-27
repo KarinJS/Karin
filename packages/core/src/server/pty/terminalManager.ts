@@ -217,5 +217,3 @@ export const getTerminalList = () => {
     name: terminals.get(id)!.name,
   }))
 }
-
-initialize()

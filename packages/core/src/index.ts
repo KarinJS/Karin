@@ -5,7 +5,6 @@ import root from '@/root'
 import { createInnerLogger } from '@/utils/logger'
 import { initConfig } from '@/utils/config/init'
 import { initProcess } from './service/process'
-import { initExpress } from './server/app/app'
 import { initPlugin } from './plugin'
 import { printStartLog } from './service/start'
 import { createDB, createRedis } from '@/core/db'
@@ -97,11 +96,13 @@ export const start = async () => {
    * - 设置静态文件目录
    * - 设置根路径请求
    */
+  const { initExpress } = await import('@/server/app/app')
+  const { initialize } = await import('@/server/pty/terminalManager')
   await initExpress(root, +process.env.HTTP_PORT, process.env.HTTP_HOST)
   await initTaskSystem(root.karinPathTaskDb)
   await createRedis()
   await createDB()
-
+  await initialize()
   /**
    * 8. 初始化插件
    */
