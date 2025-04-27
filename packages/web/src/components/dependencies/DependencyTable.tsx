@@ -1,9 +1,11 @@
+/* eslint-disable @stylistic/indent */
 import { Button } from '@heroui/button'
 import { Chip } from '@heroui/chip'
 import { Select, SelectItem } from '@heroui/select'
 import { Link } from '@heroui/link'
 import { Tooltip } from '@heroui/tooltip'
 import { Checkbox } from '@heroui/checkbox'
+import { Spinner } from '@heroui/spinner'
 import { LuSettings, LuDownload, LuCheck } from 'react-icons/lu'
 import { getNpmLink, hasUpdate } from '../../pages/dashboard/dependencies/dependencies.utils'
 import { useRef, memo, useCallback, useMemo } from 'react'
@@ -18,6 +20,7 @@ interface DependencyTableProps {
   openSettings: (dependency: Dependency) => void
   onSelectDependency: (name: string, isSelected: boolean) => void
   onSelectAll: (isSelected: boolean) => void
+  isLoading?: boolean
 }
 
 /**
@@ -292,6 +295,7 @@ const DependencyTable = memo(({
   openSettings,
   onSelectDependency,
   onSelectAll,
+  isLoading = false,
 }: DependencyTableProps) => {
   /** 全选状态 */
   const allSelected = useMemo(
@@ -415,51 +419,61 @@ const DependencyTable = memo(({
           className='overflow-auto'
           style={{ height: `${containerHeight}px` }}
         >
-          {dependencies.length === 0
+          {isLoading
             ? (
               <div className='flex items-center justify-center h-32'>
-                <p className='text-default-500'>没有找到依赖包</p>
-              </div>)
-            : (
-              <div
-                style={{
-                  height: `${rowVirtualizer.getTotalSize()}px`,
-                  width: '100%',
-                  position: 'relative',
-                }}
-              >
-                {/* 根据虚拟化列表渲染可见行 */}
-                {virtualItems.map((virtualItem) => {
-                  const dependency = dependencies[virtualItem.index]
-                  if (!dependency) return null
+                <Spinner color='primary' size='md' labelColor='foreground'>
+                  <span className='text-default-500 ml-2'>加载中...</span>
+                </Spinner>
+              </div>
+            )
+            : dependencies.length === 0
+              ? (
+                <div className='flex items-center justify-center h-32'>
+                  <p className='text-default-500'>没有找到依赖包</p>
+                </div>
+              )
+              : (
+                <div
+                  style={{
+                    height: `${rowVirtualizer.getTotalSize()}px`,
+                    width: '100%',
+                    position: 'relative',
+                  }}
+                >
+                  {/* 根据虚拟化列表渲染可见行 */}
+                  {virtualItems.map((virtualItem) => {
+                    const dependency = dependencies[virtualItem.index]
+                    if (!dependency) return null
 
-                  const isSelected = selectedMap.has(dependency.name)
+                    const isSelected = selectedMap.has(dependency.name)
 
-                  return (
-                    <div
-                      key={virtualItem.key}
-                      data-index={virtualItem.index}
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: `${rowHeight}px`,
-                        transform: `translateY(${virtualItem.start}px)`,
-                      }}
-                    >
-                      <DependencyRow
-                        dependency={dependency}
-                        pendingChanges={pendingChanges}
-                        isSelected={isSelected}
-                        updateDependencyVersion={updateDependencyVersion}
-                        openSettings={openSettings}
-                        onSelectDependency={onSelectDependency}
-                      />
-                    </div>
-                  )
-                })}
-              </div>)}
+                    return (
+                      <div
+                        key={virtualItem.key}
+                        data-index={virtualItem.index}
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: `${rowHeight}px`,
+                          transform: `translateY(${virtualItem.start}px)`,
+                        }}
+                      >
+                        <DependencyRow
+                          dependency={dependency}
+                          pendingChanges={pendingChanges}
+                          isSelected={isSelected}
+                          updateDependencyVersion={updateDependencyVersion}
+                          openSettings={openSettings}
+                          onSelectDependency={onSelectDependency}
+                        />
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
         </div>
       </div>
     </div>

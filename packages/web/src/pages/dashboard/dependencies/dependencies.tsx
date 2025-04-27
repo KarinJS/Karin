@@ -361,6 +361,7 @@ export default function DependenciesPage () {
                 openSettings={openSettings}
                 onSelectDependency={handleSelectDependency}
                 onSelectAll={handleSelectAll}
+                isLoading={loading}
               />
             </>
           )}

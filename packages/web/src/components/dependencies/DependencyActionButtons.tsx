@@ -49,8 +49,8 @@ const DependencyActionButtons = ({
         radius='full'
         variant='flat'
         className='font-normal'
-        isLoading={isOperating || isLoading}
-        isDisabled={(filterMode !== 'all' && selectedCount === 0) || isOperating}
+        isLoading={isOperating}
+        isDisabled={(filterMode !== 'all' && selectedCount === 0) || isOperating || isLoading}
       >
         {selectedCount > 0 ? '更新选中' : '更新全部'}
       </Button>
@@ -63,8 +63,8 @@ const DependencyActionButtons = ({
         radius='full'
         variant='flat'
         className='font-normal'
-        isDisabled={selectedCount === 0 || isOperating}
-        isLoading={isOperating || isLoading}
+        isDisabled={selectedCount === 0 || isOperating || isLoading}
+        isLoading={isOperating}
       >
         卸载依赖
       </Button>
