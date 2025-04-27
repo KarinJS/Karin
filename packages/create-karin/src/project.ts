@@ -11,25 +11,27 @@ import { green, magenta, yellow } from 'kolorist'
  * @param registrySuffix - 镜像源后缀
  * @param httpAuthKey - http鉴权秘钥
  * @param wsAuthKey - ws鉴权秘钥
+ * @param karinVersion - node-karin版本，可以是版本号或URL
  */
 export const createProject = async (
   projectName: string,
   registrySuffix: string,
   httpAuthKey: string,
-  wsAuthKey: string
+  wsAuthKey: string,
+  karinVersion: string = 'latest'
 ) => {
   const spinner = ora('📦 正在创建项目目录...').start()
   const dir = path.join(process.cwd(), projectName)
   fs.mkdirSync(dir, { recursive: true })
   spinner.succeed(green('✨ 项目目录结构创建完成'))
 
-  spinner.start('正在安装最新版本的node-karin...')
+  spinner.start(`正在安装 node-karin@${karinVersion}...`)
   await exec('pnpm init', { cwd: dir })
-  const cmd = `pnpm install node-karin@latest${registrySuffix}`
+  const cmd = `pnpm install node-karin@${karinVersion}${registrySuffix}`
   const { error, stderr } = await exec(cmd, { cwd: dir })
   if (error) throw error
   if (stderr) throw new Error(stderr)
-  spinner.succeed(green('✨ node-karin 安装成功'))
+  spinner.succeed(green(`✨ node-karin@${karinVersion} 安装成功`))
 
   spinner.start('正在执行初始化...')
   await exec('npx karin init', { cwd: dir })
@@ -57,13 +59,15 @@ export const createProject = async (
  * @param registrySuffix - 镜像源后缀
  * @param httpAuthKey - http鉴权秘钥
  * @param wsAuthKey - ws鉴权秘钥
+ * @param karinVersion - node-karin版本，可以是版本号或URL
  */
 export const createPlugin = async (
   type: 'karin-plugin-ts' | 'karin-plugin-js',
   projectName: string,
   registrySuffix: string,
   httpAuthKey: string,
-  wsAuthKey: string
+  wsAuthKey: string,
+  karinVersion: string = 'latest'
 ) => {
   const spinner = ora('📦 正在创建项目目录...').start()
   const dir = path.join(process.cwd(), projectName)
@@ -78,13 +82,12 @@ export const createPlugin = async (
   fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify(pkg, null, 2))
   spinner.succeed(green('✨ 模板复制完成'))
 
-  spinner.start('正在安装依赖...')
-  const cmd = `pnpm install${registrySuffix}`
-  const { error, stderr } = await exec(cmd, { cwd: dir })
-  if (error) throw error
-  if (stderr) throw new Error(stderr)
-
-  spinner.succeed(green('✨ 依赖安装完成'))
+  spinner.start(`正在安装 node-karin@${karinVersion}...`)
+  const karinCmd = `pnpm install -D node-karin@${karinVersion}${registrySuffix}`
+  const { error: karinError, stderr: karinStderr } = await exec(karinCmd, { cwd: dir })
+  if (karinError) throw karinError
+  if (karinStderr) throw new Error(karinStderr)
+  spinner.succeed(green(`✨ node-karin@${karinVersion} 安装成功`))
 
   spinner.start('正在执行初始化...')
   await exec('npx karin init', { cwd: dir })

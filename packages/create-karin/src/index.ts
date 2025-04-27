@@ -134,9 +134,6 @@ const getDefaultProjectName = (template: string) => {
 }
 
 /**
- * 选择项目模板
- */
-/**
  * 显示再见信息
  */
 const showGoodbye = () => {
@@ -168,11 +165,53 @@ ${border}
 const handleFixEnvironment = async () => {
   console.log(yellow('警告：强制修复将会尝试刷新当前目录的Karin环境，可能会覆盖已有的node-karin版本。'))
 
+  /** 选择版本 */
+  const versionResponse = await prompts({
+    type: 'select',
+    name: 'karinVersionType',
+    message: '选择node-karin版本:',
+    initial: 0,
+    choices: [
+      { title: '最新版本(latest)', value: 'latest' },
+      { title: '自定义版本/URL', value: 'custom' },
+    ],
+  }, {
+    onCancel: () => {
+      showGoodbye()
+      process.exit(0)
+    },
+  })
+
+  let karinVersion = 'latest'
+  if (versionResponse.karinVersionType === 'custom') {
+    const customVersionResponse = await prompts({
+      type: 'text',
+      name: 'customKarinVersion',
+      message: '请输入自定义版本号或URL:',
+      initial: 'https://pkg.pr.new/node-karin@',
+      validate: (value: string) => {
+        if (!value) {
+          return '版本号不能为空'
+        }
+        return true
+      },
+    }, {
+      onCancel: () => {
+        showGoodbye()
+        process.exit(0)
+      },
+    })
+
+    if (customVersionResponse.customKarinVersion) {
+      karinVersion = customVersionResponse.customKarinVersion
+    }
+  }
+
   /** 再次确认 */
   const confirmResponse = await prompts({
     type: 'confirm' as const,
     name: 'confirm',
-    message: '你确定要继续吗？这将更新当前环境的node-karin到最新版本。',
+    message: `你确定要继续吗？这将更新当前环境的node-karin到${karinVersion}版本。`,
     initial: false,
   }, {
     onCancel: () => {
@@ -258,12 +297,12 @@ const handleFixEnvironment = async () => {
   }
 
   /** 安装最新版本的node-karin */
-  spinner.start('正在安装最新版本的node-karin...')
+  spinner.start(`正在安装 node-karin@${karinVersion}...`)
   try {
     const { registry } = await checkEnvironment()
     const registrySuffix = registry ? ` --registry=${registry}` : ''
-    await exec(`pnpm install node-karin@latest${registrySuffix}`, { cwd })
-    spinner.succeed('node-karin安装成功')
+    await exec(`pnpm install node-karin@${karinVersion}${registrySuffix}`, { cwd })
+    spinner.succeed(`node-karin@${karinVersion} 安装成功`)
   } catch (error) {
     spinner.fail('node-karin安装失败: ' + String(error))
     return
@@ -446,6 +485,34 @@ const buildProjectConfigOptions = (
     })
   }
 
+  /** 添加node-karin版本选择选项 */
+  options.push({
+    type: 'select',
+    name: 'karinVersionType',
+    message: '选择node-karin版本:',
+    initial: 0,
+    choices: [
+      { title: '最新版本(latest)', value: 'latest' },
+      { title: '自定义版本/URL', value: 'custom' },
+    ],
+  })
+
+  /** 基于选择添加自定义版本输入选项 */
+  options.push({
+    type: (prev, values) => {
+      return values.karinVersionType === 'custom' ? 'text' : null
+    },
+    name: 'customKarinVersion',
+    message: '请输入自定义版本号或URL:',
+    initial: 'https://pkg.pr.new/node-karin@',
+    validate: (value: string) => {
+      if (!value) {
+        return '版本号不能为空'
+      }
+      return true
+    },
+  })
+
   /** 添加鉴权选项 */
   options.push(
     {
@@ -485,15 +552,16 @@ const handleProjectCreation = async (
   projectName: string,
   registrySuffix: string,
   httpAuthKey: string,
-  wsAuthKey: string
+  wsAuthKey: string,
+  karinVersion: string
 ) => {
   try {
     if (templateChoice === 'production') {
-      return await createProject(projectName, registrySuffix, httpAuthKey, wsAuthKey)
+      return await createProject(projectName, registrySuffix, httpAuthKey, wsAuthKey, karinVersion)
     }
 
     if (templateChoice === 'karin-plugin-ts' || templateChoice === 'karin-plugin-js') {
-      return await createPlugin(templateChoice, projectName, registrySuffix, httpAuthKey, wsAuthKey)
+      return await createPlugin(templateChoice, projectName, registrySuffix, httpAuthKey, wsAuthKey, karinVersion)
     }
 
     throw new Error('发生未知错误: 无效的模板选择')
@@ -563,6 +631,11 @@ const main = async () => {
   const changeRegistry = result.changeRegistry
   const installPnpm = !pnpmVersion || result?.upgradePnpm || result?.downgradePnpm
 
+  /** 获取node-karin版本 */
+  const karinVersion = result.karinVersionType === 'custom'
+    ? result.customKarinVersion
+    : 'latest'
+
   /** 构建registry后缀 */
   const registrySuffix = changeRegistry ? ` --registry=${changeRegistry}` : ''
 
@@ -584,7 +657,8 @@ const main = async () => {
     projectName,
     registrySuffix,
     result?.httpServerAuthKey,
-    result?.wsServerAuthKey?.trim?.()
+    result?.wsServerAuthKey?.trim?.(),
+    karinVersion
   )
 }
 
