@@ -1,3 +1,4 @@
+import path from 'node:path'
 import { getPlugins } from '@/plugin/system/list'
 import {
   createSuccessResponse,
@@ -6,8 +7,9 @@ import {
 import { getLocalCommitHash, getRemoteCommitHash } from '@/utils/git'
 
 import type { RequestHandler } from 'express'
+import type { LoadedPluginCacheList } from '@/types/plugin/cache'
 import type { PluginAdminListResponse } from '@/types/server/plugins'
-import path from 'node:path'
+import { cache } from '@/plugin/system'
 
 /**
  * @webui 插件管理 获取插件列表Api
@@ -45,6 +47,58 @@ export const getPluginListPluginAdmin: RequestHandler = async (_, res) => {
           version: '',
           latestHash: '',
         })
+      })
+    })
+
+    createSuccessResponse(res, list)
+  } catch (error) {
+    createServerErrorResponse(res, (error as Error).message)
+    logger.error(error)
+  }
+}
+
+/**
+ * @webui 获取已加载命令插件缓存信息列表
+ */
+export const getLoadedCommandPluginCacheList: RequestHandler = async (_, res) => {
+  try {
+    const list: LoadedPluginCacheList[] = []
+    /**
+     * @example
+     * ```ts
+     * {
+     *  'karin-plugin-example': {
+     *    'index.ts': ['fnc'],
+     *  }
+     * }
+     * ```
+     */
+    const map: Record<string, Record<string, string[]>> = {}
+
+    cache.command.forEach(plugin => {
+      const { name: key } = plugin.pkg
+      if (!map[key]) {
+        map[key] = {}
+      }
+
+      if (!map[key][plugin.file.basename]) {
+        map[key][plugin.file.basename] = []
+      }
+
+      map[key][plugin.file.basename].push(plugin.file.method)
+    })
+
+    Object.keys(map).forEach(key => {
+      const files: LoadedPluginCacheList['files'] = []
+      Object.keys(map[key]).forEach(file => {
+        files.push({
+          fileName: file,
+          command: map[key][file],
+        })
+      })
+      list.push({
+        name: key,
+        files,
       })
     })
 

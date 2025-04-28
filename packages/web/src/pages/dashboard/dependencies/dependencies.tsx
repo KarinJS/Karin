@@ -171,12 +171,22 @@ export default function DependenciesPage () {
 
     /** 如果满足全部条件或没有选中依赖，走更新全部路径 */
     if ((isAllMode && isAllSelected && hasNoCustomVersions) || selectedDeps.length === 0) {
-      updateDependencies(true)
+      // 提示用户正在进行全部更新
+      toast.success('正在更新全部可更新依赖，本地依赖（link:、file:）将被自动排除')
+      updateDependencies(true, undefined, true) // 传递第三个参数为true，表示排除本地依赖
       return
     }
 
     /** 准备更新数据 */
-    const updateData = selectedDeps.map(createUpdateData)
+    const updateData = selectedDeps
+      // 过滤掉本地依赖
+      .filter(dep => !dep.current.startsWith('link:') && !dep.current.startsWith('file:'))
+      .map(createUpdateData)
+
+    if (updateData.length === 0) {
+      toast.error('没有可更新的依赖，本地依赖（link:、file:）不会参与更新')
+      return
+    }
 
     /** 调用更新函数 */
     updateDependencies(false, updateData)

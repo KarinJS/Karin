@@ -27,6 +27,12 @@ export const getNpmLink = (packageName: string): string => {
 export const hasUpdate = (dependency: Dependency): boolean => {
   if (!dependency.latest.length) return false
 
+  /** 检查是否为本地依赖（link:或file:前缀），本地依赖始终显示为最新 */
+  const current = dependency.current || ''
+  if (current.startsWith('link:') || current.startsWith('file:')) {
+    return false
+  }
+
   /** 获取最新版本（数组中的最后一个元素） */
   const latestVersion = dependency.latest[dependency.latest.length - 1]
 

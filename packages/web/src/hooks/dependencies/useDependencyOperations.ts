@@ -1,8 +1,16 @@
 import { useState, useCallback } from 'react'
 import { toast } from 'react-hot-toast'
 import { manageDependencies } from '@/request/dependencies'
-import type { DependenciesManage, UpgradeDependenciesParams, RemoveDependenciesParams } from 'node-karin'
+import type { DependenciesManage, UpgradeDependenciesParams as BaseUpgradeDependenciesParams, RemoveDependenciesParams } from 'node-karin'
 import { getErrorMessage } from '@/request/base'
+
+/**
+ * 扩展的依赖更新参数接口，添加excludeLocalDependencies选项
+ */
+interface UpgradeDependenciesParams extends BaseUpgradeDependenciesParams {
+  /** 是否排除本地依赖（带有link:或file:前缀） */
+  excludeLocalDependencies?: boolean
+}
 
 /**
  * 依赖操作Hook，处理依赖更新和卸载等操作
@@ -51,7 +59,7 @@ export const useDependencyOperations = (onSuccess: () => void) => {
 
       if (params.type === 'upgrade') {
         if (params.isAll) {
-          logs = ['开始更新所有依赖', '正在创建任务...']
+          logs = ['开始更新所有依赖（自动排除本地依赖，如link:、file:）', '正在创建任务...']
         } else {
           logs = [
             `开始更新 ${params.data.length} 个依赖`,
@@ -118,10 +126,12 @@ export const useDependencyOperations = (onSuccess: () => void) => {
    * 更新依赖
    * @param isAll - 是否更新所有依赖
    * @param dependencies - 要更新的依赖列表
+   * @param excludeLocalDependencies - 是否排除本地依赖（带有link:或file:前缀）
    */
   const updateDependencies = async (
     isAll: boolean,
-    dependencies?: Array<{ name: string; version: string }>
+    dependencies?: Array<{ name: string; version: string }>,
+    excludeLocalDependencies: boolean = true
   ) => {
     if (!isAll && (!dependencies || dependencies.length === 0)) {
       toast.error('未选择要更新的依赖')
@@ -132,6 +142,7 @@ export const useDependencyOperations = (onSuccess: () => void) => {
       type: 'upgrade',
       isAll,
       data: dependencies || [],
+      excludeLocalDependencies, // 添加排除本地依赖的标记
     }
 
     await executeDependencyOperation(params, '更新依赖')

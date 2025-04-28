@@ -54,6 +54,7 @@ import {
   GET_NPM_BASE_CONFIG_ROUTER,
   SAVE_NPMRC_ROUTER,
   GET_PLUGIN_LIST_PLUGIN_ADMIN_ROUTER,
+  GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER,
 } from './router'
 import { logMiddleware } from '../log'
 import { authMiddleware } from '../auth/middleware'
@@ -116,7 +117,7 @@ import { getDependenciesListRouter } from '../dependencies/list'
 import { manageDependenciesRouter } from '../dependencies/manage'
 import { taskListRouter, taskRunRouter, taskLogsRouter, taskDeleteRouter } from '../task/list'
 import { getNpmBaseConfigRouter, getNpmrcContentRouter, getNpmrcListRouter, saveNpmrcRouter } from '../dependencies/config'
-import { getPluginListPluginAdmin } from '../plugins/detail'
+import { getLoadedCommandPluginCacheList, getPluginListPluginAdmin } from '../plugins/detail'
 
 /**
  * karin内部路由
@@ -250,4 +251,5 @@ router.post(TASK_LOGS_ROUTER, taskLogsRouter)
 /** 删除任务记录 */
 router.post(TASK_DELETE_ROUTER, taskDeleteRouter)
 
-/** */
+/** 获取已加载命令插件缓存信息列表 */
+router.post(GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER, getLoadedCommandPluginCacheList)

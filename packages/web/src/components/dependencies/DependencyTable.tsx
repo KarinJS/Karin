@@ -100,15 +100,19 @@ const DependencyRow = memo(({
   /** 待显示的版本 */
   const displayedVersion = pendingChanges[dependency.name] || defaultVersion
 
-  /** package.json值的tooltip提示内容 */
-  const packageTooltip = dependency.packageValue
-    ? `package.json 中的值: ${dependency.packageValue}`
-    : '未在 package.json 中定义'
+  /** 是否为本地依赖（link:或file:前缀） */
+  const isLocalDependency = dependency.current?.startsWith('link:') || dependency.current?.startsWith('file:')
+
+  /** Tooltip提示信息 */
+  const checkboxTooltip = isLocalDependency
+    ? '本地依赖（link:、file:）不参与批量更新，无需选择'
+    : `选择 ${dependency.name}`
 
   /** 处理选择状态变更 */
   const handleSelectionChange = useCallback(() => {
+    if (isLocalDependency) return // 本地依赖不允许选择
     onSelectDependency(dependency.name, !isSelected)
-  }, [dependency.name, isSelected, onSelectDependency])
+  }, [dependency.name, isSelected, onSelectDependency, isLocalDependency])
 
   /** 处理设置按钮点击 */
   const handleOpenSettings = useCallback(() => {
@@ -121,28 +125,33 @@ const DependencyRow = memo(({
     if (selectedKey) {
       updateDependencyVersion(dependency.name, selectedKey)
       /** 当切换版本时自动选中 */
-      if (!isSelected) {
+      if (!isSelected && !isLocalDependency) {
         onSelectDependency(dependency.name, true)
       }
     }
-  }, [dependency.name, isSelected, onSelectDependency, updateDependencyVersion])
+  }, [dependency.name, isSelected, onSelectDependency, updateDependencyVersion, isLocalDependency])
 
   return (
     <div className='grid grid-cols-12 w-full border-b border-default-100/40 hover:bg-default-50/70 transition-colors'>
       {/* 选择框 */}
       <div className='py-3 md:py-4 px-2 md:px-4 text-sm flex items-center justify-center col-span-1' onClick={stopPropagation}>
         <div className='flex items-center justify-center w-full'>
-          <Checkbox
-            isSelected={isSelected}
-            onValueChange={handleSelectionChange}
-            size='sm'
-            aria-label={`选择 ${dependency.name}`}
-            classNames={{
-              base: 'w-4 h-4',
-              wrapper: 'rounded-full w-4 h-4 border-1 border-default-300 data-[selected=true]:border-blue-500 data-[selected=true]:bg-blue-500 data-[hover=true]:border-blue-400 data-[hover=true]:bg-blue-400/20 transition-all',
-              icon: 'text-white text-[10px]',
-            }}
-          />
+          <Tooltip content={checkboxTooltip}>
+            <div className={isLocalDependency ? 'opacity-50 cursor-not-allowed' : ''}>
+              <Checkbox
+                isSelected={isSelected}
+                onValueChange={handleSelectionChange}
+                size='sm'
+                isDisabled={isLocalDependency}
+                aria-label={checkboxTooltip}
+                classNames={{
+                  base: 'w-4 h-4',
+                  wrapper: 'rounded-full w-4 h-4 border-1 border-default-300 data-[selected=true]:border-blue-500 data-[selected=true]:bg-blue-500 data-[hover=true]:border-blue-400 data-[hover=true]:bg-blue-400/20 transition-all',
+                  icon: 'text-white text-[10px]',
+                }}
+              />
+            </div>
+          </Tooltip>
         </div>
       </div>
 
@@ -175,16 +184,34 @@ const DependencyRow = memo(({
 
       {/* 当前版本 */}
       <div className='py-3 md:py-4 px-1 sm:px-2 md:px-4 text-sm col-span-3 sm:col-span-2 text-center'>
-        <Tooltip content={packageTooltip} delay={100} placement='top'>
-          <Chip
-            color={pendingChanges[dependency.name] ? 'warning' : 'primary'}
-            variant='flat'
-            size='sm'
-            className='font-mono bg-opacity-20 text-xs cursor-help whitespace-nowrap max-w-full'
-            radius='sm'
-          >
-            {pendingChanges[dependency.name] || dependency.current}
-          </Chip>
+        <Tooltip
+          content={
+            <div className='text-left max-w-[300px]'>
+              <div className='font-semibold mb-1'>当前版本</div>
+              <div className='font-mono text-xs break-all'>{dependency.current}</div>
+              <div className='font-semibold mt-2 mb-1'>package.json中的值</div>
+              <div className='font-mono text-xs break-all'>{dependency.packageValue || '未在package.json中定义'}</div>
+            </div>
+          }
+          delay={100}
+          placement='top'
+          showArrow
+        >
+          <div className='w-full flex justify-center'>
+            <div className='w-[100px] md:w-[100px] inline-block overflow-hidden'>
+              <Chip
+                color={pendingChanges[dependency.name] ? 'warning' : 'primary'}
+                variant='flat'
+                size='sm'
+                className='font-mono bg-opacity-20 text-xs cursor-help !max-w-full'
+                radius='sm'
+              >
+                <span className='block max-w-full overflow-hidden text-ellipsis whitespace-nowrap'>
+                  {pendingChanges[dependency.name] || dependency.current}
+                </span>
+              </Chip>
+            </div>
+          </div>
         </Tooltip>
       </div>
 
@@ -234,7 +261,7 @@ const DependencyRow = memo(({
           radius='full'
           classNames={{
             trigger: 'bg-default-50 border border-default-200 shadow-sm h-8 md:h-9 min-h-0 w-full',
-            value: 'font-mono text-xs md:text-sm',
+            value: 'font-mono text-xs md:text-sm truncate',
             listbox: 'text-xs',
             base: 'w-full',
           }}
@@ -242,7 +269,7 @@ const DependencyRow = memo(({
         >
           {dependency.latest.map((version) => (
             <SelectItem key={version} textValue={version}>
-              <span className='font-mono text-xs md:text-sm'>{version}</span>
+              <span className='font-mono text-xs md:text-sm truncate'>{version}</span>
             </SelectItem>
           ))}
         </Select>
@@ -297,15 +324,27 @@ const DependencyTable = memo(({
   onSelectAll,
   isLoading = false,
 }: DependencyTableProps) => {
-  /** 全选状态 */
+  /** 检查是否为本地依赖 */
+  const isLocalDependency = useCallback((dep: Dependency): boolean => {
+    const current = dep.current || ''
+    return current.startsWith('link:') || current.startsWith('file:')
+  }, [])
+
+  /** 过滤掉本地依赖的列表 */
+  const selectableDependencies = useMemo(() => {
+    return dependencies.filter(dep => !isLocalDependency(dep))
+  }, [dependencies, isLocalDependency])
+
+  /** 全选状态 - 只考虑非本地依赖 */
   const allSelected = useMemo(
-    () => dependencies.length > 0 && dependencies.every(d => selectedDependencies.includes(d.name)),
-    [dependencies, selectedDependencies]
+    () => selectableDependencies.length > 0 && selectableDependencies.every(d => selectedDependencies.includes(d.name)),
+    [selectableDependencies, selectedDependencies]
   )
 
+  /** 部分选中状态 - 只考虑非本地依赖 */
   const someSelected = useMemo(
-    () => dependencies.length > 0 && !allSelected && dependencies.some(d => selectedDependencies.includes(d.name)),
-    [dependencies, selectedDependencies, allSelected]
+    () => selectableDependencies.length > 0 && !allSelected && selectableDependencies.some(d => selectedDependencies.includes(d.name)),
+    [selectableDependencies, selectedDependencies, allSelected]
   )
 
   /** 表格容器引用 */

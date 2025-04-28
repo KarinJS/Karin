@@ -41,16 +41,12 @@ interface LazyDependencyLoaderProps {
 const hasDependenciesChanged = (deps1: Dependency[], deps2: Dependency[]): boolean => {
   if (deps1.length !== deps2.length) return true
 
-  // 只比较关键属性，忽略UI状态类属性
-  for (let i = 0; i < deps1.length; i++) {
-    const dep1 = deps1[i]
-    const dep2 = deps2[i]
+  // 创建一个映射加速查找
+  const depMap = new Map(deps1.map(d => [d.name, d]))
 
-    if (dep1.name !== dep2.name ||
-      dep1.current !== dep2.current ||
-      dep1.type !== dep2.type) {
-      return true
-    }
+  // 检查依赖组成是否发生变化
+  for (const dep of deps2) {
+    if (!depMap.has(dep.name)) return true
   }
 
   return false
@@ -83,12 +79,28 @@ const LazyDependencyLoader = memo(({
   const isSelectingRef = useRef(false)
   /** 是否需要重新开始加载 */
   const needReloadRef = useRef(false)
+  /** 上一次处理的依赖数量，用于检测筛选器变化 */
+  const prevTotalDepsCountRef = useRef(dependencies.length)
 
-  /** 当依赖数组引用变化且内容确实不同时更新引用 */
+  /** 当依赖数组引用变化时更新引用并重置处理状态 */
   useEffect(() => {
     if (dependencies !== dependenciesRef.current) {
-      /** 检查数组内容是否真的变化（忽略UI状态变化），避免不必要的重置 */
+      /** 检查数组长度或内容是否变化，用于检测筛选器切换 */
+      const hasLengthChanged = dependencies.length !== prevTotalDepsCountRef.current
       const hasSubstantialChanges = hasDependenciesChanged(dependencies, dependenciesRef.current)
+
+      prevTotalDepsCountRef.current = dependencies.length
+
+      /** 如果筛选器变化（长度改变）或内容发生实质性变化，强制重置 */
+      if (hasLengthChanged || hasSubstantialChanges) {
+        needReloadRef.current = true
+        dependenciesRef.current = dependencies
+        setProcessedCount(0)
+        setProcessedDependencies([])
+        initialLoadDone.current = false
+        setIsLoading(false) // 确保不卡在加载状态
+        return
+      }
 
       /** 如果只是选中状态变化，避免触发重载 */
       if (!hasSubstantialChanges) {
@@ -116,13 +128,6 @@ const LazyDependencyLoader = memo(({
 
         /** 更新引用但不重置加载进度 */
         dependenciesRef.current = dependencies
-      } else {
-        /** 有实质性变化，需要重置 */
-        needReloadRef.current = true
-        dependenciesRef.current = dependencies
-        setProcessedCount(0)
-        setProcessedDependencies([])
-        initialLoadDone.current = false
       }
     }
   }, [dependencies, processedCount])
@@ -193,8 +198,8 @@ const LazyDependencyLoader = memo(({
       setProcessedDependencies([...deps])
       setProcessedCount(deps.length)
       initialLoadDone.current = true
-    } else if (processedCount === 0) {
-      /** 只有在需要重新开始加载时才调用loadNextBatch */
+    } else if (processedCount === 0 || needReloadRef.current) {
+      /** 在需要重新开始加载或尚未开始加载时调用loadNextBatch */
       loadNextBatch()
       initialLoadDone.current = true
     }

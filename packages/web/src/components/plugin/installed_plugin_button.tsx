@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Button } from "@heroui/button"
-import { IoSettingsOutline } from "react-icons/io5"
+import { Button } from '@heroui/button'
+import { IoSettingsOutline } from 'react-icons/io5'
 import { PluginInfoModal } from './plugin_info_modal'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
@@ -31,12 +31,12 @@ export function InstalledPluginButton ({ plugin }: InstalledPluginButtonProps) {
     <>
       <Button
         isIconOnly
-        variant="light"
-        color="primary"
-        size="sm"
+        variant='light'
+        color='primary'
+        size='sm'
         onPress={() => setIsOpen(true)}
       >
-        <IoSettingsOutline className="text-lg" />
+        <IoSettingsOutline className='text-lg' />
       </Button>
 
       <PluginInfoModal
@@ -51,9 +51,11 @@ export function InstalledPluginButton ({ plugin }: InstalledPluginButtonProps) {
           await handleUninstall()
           setIsOpen(false)
         }}
-        onViewApps={plugin.type.toLowerCase() === 'app' ? () => {
-          setIsAppsOpen(true)
-        } : undefined}
+        onViewApps={plugin.type.toLowerCase() === 'app'
+          ? () => {
+            setIsAppsOpen(true)
+          }
+          : undefined}
         onViewConfig={() => setIsConfigOpen(true)}
       />
 

@@ -116,14 +116,14 @@ export const useDependencyManagement = () => {
   }, [dependenciesData, searchTerm, filterMode, filterBySearchTerm, filterByMode])
 
   /**
-   * 统计信息
+   * 检查依赖是否为本地依赖（带有link:或file:前缀）
+   * @param dependency - 依赖对象
+   * @returns 是否为本地依赖
    */
-  const stats = useMemo(() => {
-    const total = dependenciesData.length
-    const plugins = dependenciesData.filter(d => d.isKarinPlugin).length
-    const updatable = dependenciesData.filter(d => hasUpdate(d)).length
-    return { total, plugins, updatable }
-  }, [dependenciesData])
+  const isLocalDependency = useCallback((dependency: EnhancedDependency): boolean => {
+    const currentVersion = dependency.current || ''
+    return currentVersion.startsWith('link:') || currentVersion.startsWith('file:')
+  }, [])
 
   /**
    * 选中的依赖列表
@@ -185,10 +185,18 @@ export const useDependencyManagement = () => {
       // 创建一个Set来加速查找
       const filteredSet = new Set(filteredDependencies.map(dep => dep.name))
 
+      // 创建一个本地依赖集合，加速判断
+      const localDependencySet = new Set(
+        filteredDependencies
+          .filter(dep => isLocalDependency(dep))
+          .map(dep => dep.name)
+      )
+
       // 检查是否有需要变更的项
       let hasChanges = false
       for (const dep of prev) {
-        if (filteredSet.has(dep.name) && dep.isSelected !== isSelected) {
+        // 仅考虑当前过滤视图中的非本地依赖
+        if (filteredSet.has(dep.name) && !localDependencySet.has(dep.name) && dep.isSelected !== isSelected) {
           hasChanges = true
           break
         }
@@ -197,13 +205,29 @@ export const useDependencyManagement = () => {
       // 如果没有变化，直接返回原数据避免不必要的渲染
       if (!hasChanges) return prev
 
-      // 只更新过滤视图中的依赖
+      // 只更新过滤视图中的依赖，排除本地依赖（link:或file:前缀）
       return prev.map(dep => {
+        // 如果不在过滤视图中，保持不变
         if (!filteredSet.has(dep.name)) return dep
+
+        // 如果是本地依赖，保持不变（始终不选中）
+        if (localDependencySet.has(dep.name)) return dep
+
         return { ...dep, isSelected }
       })
     })
-  }, [filteredDependencies])
+  }, [filteredDependencies, isLocalDependency])
+
+  /**
+   * 获取可更新的依赖（排除本地依赖）
+   */
+  const getUpdatableDependencies = useCallback(() => {
+    return dependenciesData.filter(dep => {
+      // 排除本地依赖（link:或file:前缀）
+      if (isLocalDependency(dep)) return false
+      return hasUpdate(dep)
+    })
+  }, [dependenciesData, isLocalDependency])
 
   /**
    * 更新依赖版本
@@ -239,6 +263,16 @@ export const useDependencyManagement = () => {
     window.history.replaceState(null, '', newURL)
   }, [location.pathname, location.search])
 
+  /**
+   * 统计信息
+   */
+  const stats = useMemo(() => {
+    const total = dependenciesData.length
+    const plugins = dependenciesData.filter(d => d.isKarinPlugin).length
+    const updatable = getUpdatableDependencies().length
+    return { total, plugins, updatable }
+  }, [dependenciesData, getUpdatableDependencies])
+
   return {
     dependenciesData,
     setDependenciesData,
@@ -256,6 +290,8 @@ export const useDependencyManagement = () => {
     handleSelectAll,
     updateDependencyVersion,
     formatVersionForAlias,
-    isRealTimeData, // 添加实时数据标志
+    isRealTimeData,
+    isLocalDependency,
+    getUpdatableDependencies,
   }
 }

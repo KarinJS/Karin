@@ -116,3 +116,6 @@ export const GET_NPM_CONFIG_ROUTER = '/dependencies/npmrc/get'
 export const GET_NPM_BASE_CONFIG_ROUTER = '/dependencies/npm/base'
 /** 保存npmrc文件 */
 export const SAVE_NPMRC_ROUTER = '/dependencies/npmrc/save'
+
+/** 获取已加载命令插件缓存信息列表 */
+export const GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER = '/plugin/loaded/command'

@@ -82,6 +82,7 @@ const createDir = (isDev: boolean, dir: string) => {
 const npmrc = (dir: string) => {
   // TODO: 后续改为远程api拉取 动态更新
   const list = [
+    'package-lock=false',
     'public-hoist-pattern[]=*sqlite3*',
     'public-hoist-pattern[]=*express*',
     'sqlite3_binary_host_mirror=https://registry.npmmirror.com/-/binary/sqlite3',
