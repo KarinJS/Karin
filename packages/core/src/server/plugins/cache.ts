@@ -1,7 +1,7 @@
 import type { PluginLists } from '@/types/server/plugins'
 
 const CACHE_KEY = 'karin:web:plugin:list'
-const CACHE_EXPIRE = 300 // 5分钟缓存
+const CACHE_EXPIRE = 24 * 60 * 60 // 24小时缓存
 
 /**
  * 获取插件列表缓存

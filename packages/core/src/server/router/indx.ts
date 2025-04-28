@@ -251,5 +251,5 @@ router.post(TASK_LOGS_ROUTER, taskLogsRouter)
 /** 删除任务记录 */
 router.post(TASK_DELETE_ROUTER, taskDeleteRouter)
 
-/** 获取已加载命令插件缓存信息列表 */
+/** @version 1.8.0 获取已加载命令插件缓存信息列表 */
 router.post(GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER, getLoadedCommandPluginCacheList)
