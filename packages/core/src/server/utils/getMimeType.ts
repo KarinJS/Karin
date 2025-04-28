@@ -5,7 +5,7 @@ import path from 'node:path'
  * @param filePath 文件路径
  * @returns MIME 类型
  */
-const getMimeType = (filePath: string): string => {
+export const getMimeType = (filePath: string): string => {
   const ext = path.extname(filePath).toLowerCase()
   switch (ext) {
     case '.js': return 'application/javascript'

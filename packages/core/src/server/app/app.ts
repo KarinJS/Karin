@@ -6,7 +6,7 @@ import { createBrotliDecompress } from 'node:zlib'
 import getMimeType from '../utils/getMimeType'
 import { rootRouter } from '../system/root'
 import { listeners } from '@/core/internal/listeners'
-import { router } from '../router/indx'
+import { router } from '../router'
 import { BASE_ROUTER } from '../router/router'
 
 import type root from '@/root'
