@@ -167,7 +167,7 @@
     "moment": "npm:@karinjs/moment@1.1.5",
     "node-schedule": "npm:@karinjs/node-schedule@1.0.0",
     "redis": "npm:@karinjs/redis@1.1.3",
-    "sqlite3": "npm:@karinjs/sqlite3@0.1.3",
+    "sqlite3": "npm:@karinjs/sqlite3-cjs@0.1.0",
     "ws": "npm:@karinjs/ws@1.0.4",
     "yaml": "2.7.0"
   },
