@@ -5,6 +5,8 @@ import { Button } from '@heroui/button'
 import { IoCloseCircle } from 'react-icons/io5'
 import { toast } from 'react-hot-toast'
 import { Controller } from 'react-hook-form'
+import { FaList } from 'react-icons/fa'
+import { PluginSelectorDialog } from './PluginSelectorDialog'
 
 import type { JSX } from 'react'
 import type { Control } from 'react-hook-form'
@@ -16,6 +18,7 @@ import type { Control } from 'react-hook-form'
  * @param label - 输入框组标签
  * @param description - 输入框组描述
  * @param control - 表单控制器
+ * @param showPluginSelector - 是否显示插件选择器
  * @returns 输入框组组件
  */
 export const createInputGroup = (
@@ -23,7 +26,8 @@ export const createInputGroup = (
   defaultValue: string[],
   label: string,
   description: string,
-  control: Control<any>
+  control: Control<any>,
+  showPluginSelector = false
 ): JSX.Element => {
   const InputGroupComponent = () => {
     /** 最大输入框数量 */
@@ -32,6 +36,8 @@ export const createInputGroup = (
     const itemsPerRow = 5
     /** 最大行数 */
     const maxRows = 5
+    /** 插件选择器对话框是否开启 */
+    const [isPluginSelectorOpen, setIsPluginSelectorOpen] = useState(false)
 
     const [columns, setColumns] = useState('1fr')
 
@@ -73,6 +79,33 @@ export const createInputGroup = (
               onChange(newValues)
             }
 
+            /**
+             * 处理插件选择器确认
+             * @param selectedItems 已选择的项目
+             */
+            const handlePluginSelectorConfirm = (selectedItems: string[]) => {
+              // 首先过滤掉已存在的值，避免重复添加
+              const existingValues = new Set(value)
+              const newItems = selectedItems.filter(item => !existingValues.has(item))
+
+              // 检查是否会超出最大输入框数量
+              if (value.length + newItems.length > maxInputs) {
+                toast.error(`最多只能添加 ${maxInputs} 个项目`)
+                setIsPluginSelectorOpen(false)
+                return
+              }
+
+              // 合并新值
+              if (newItems.length > 0) {
+                onChange([...value, ...newItems])
+                toast.success(`已添加 ${newItems.length} 个项目`)
+              } else {
+                toast('没有添加新项目')
+              }
+
+              setIsPluginSelectorOpen(false)
+            }
+
             return (
               <>
                 <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 mb-2'>
@@ -85,6 +118,19 @@ export const createInputGroup = (
                       {value.length}
                       {maxInputs ? `/${maxInputs}` : ''}
                     </span>
+                    {showPluginSelector && (
+                      <Button
+                        variant='solid'
+                        color='default'
+                        size='sm'
+                        onPress={() => setIsPluginSelectorOpen(true)}
+                        className='flex items-center gap-1 px-2 h-7 min-w-[60px]'
+                        disabled={value.length >= maxInputs}
+                      >
+                        <FaList size={14} />
+                        选择
+                      </Button>
+                    )}
                     <Button
                       variant='solid'
                       color='primary'
@@ -141,6 +187,17 @@ export const createInputGroup = (
                       ))
                     )}
                 </div>
+
+                {/* 插件选择器对话框 - 仅在需要时渲染 */}
+                {showPluginSelector && isPluginSelectorOpen && (
+                  <PluginSelectorDialog
+                    isOpen
+                    onClose={() => setIsPluginSelectorOpen(false)}
+                    onConfirm={handlePluginSelectorConfirm}
+                    currentSelected={value}
+                    title={`选择${label}`}
+                  />
+                )}
               </>
             )
           }}

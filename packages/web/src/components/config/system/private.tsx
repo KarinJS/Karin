@@ -29,14 +29,14 @@ const getPrivateComponent = (
       values: Object.entries(data).map(([key, value]) => ({
         ...value,
         mode: value.mode + '',
-        key
-      }))
-    }
+        key,
+      })),
+    },
   })
 
   const { fields, append, remove } = useFieldArray({
     control: methods.control,
-    name: 'values'
+    name: 'values',
   })
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -68,7 +68,7 @@ const getPrivateComponent = (
       ...item,
       cd: Number(item.cd) ?? 0,
       userCD: Number(item.userCD) ?? 0,
-      mode: Number(item.mode) ?? 0
+      mode: Number(item.mode) ?? 0,
     }))
 
     saveConfig('privates', data)
@@ -186,7 +186,7 @@ const getPrivateComponent = (
                             label='机器人响应模式'
                             description='设置在当前配置下机器人的响应模式'
                             classNames={{
-                              wrapper: 'grid grid-cols-1 md:grid-cols-2 gap-4'
+                              wrapper: 'grid grid-cols-1 md:grid-cols-2 gap-4',
                             }}
                           >
                             <CustomRadio
@@ -238,14 +238,16 @@ const getPrivateComponent = (
                         val.enable,
                         '白名单插件、功能',
                         '只有在白名单中的插件、功能才会响应 例如: `karin-plugin-test:app.js` `karin-plugin-test:测试转发`',
-                        methods.control
+                        methods.control,
+                        true
                       )}
                       {createInputGroup(
                         `values.${index}.disable`,
                         val.disable,
                         '黑名单插件、功能',
                         '黑名单中的插件、功能不会响应 例如: `karin-plugin-test:app.js` `karin-plugin-test:测试转发`',
-                        methods.control
+                        methods.control,
+                        true
                       )}
                     </div>
                   </div>

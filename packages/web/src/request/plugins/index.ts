@@ -1,5 +1,10 @@
 import { api, request } from '@/request/base'
-import type { PluginAdminListResponse, PluginAdminParams, PluginAdminResult } from 'node-karin'
+import type {
+  LoadedPluginCacheList,
+  PluginAdminListResponse,
+  PluginAdminParams,
+  PluginAdminResult,
+} from 'node-karin'
 
 /**
  * 插件管理
@@ -26,4 +31,56 @@ export const getLocalPluginNameListRequest = async (): Promise<PluginAdminListRe
     api.getPluginListPluginAdmin
   )
   return response
+}
+
+/** 插件缓存类型 */
+interface PluginCache {
+  /** 插件数据 */
+  data: LoadedPluginCacheList[]
+  /** 缓存时间戳 */
+  timestamp: number
+}
+
+/** 缓存过期时间（毫秒） */
+const CACHE_EXPIRY = 60 * 1000 // 1分钟
+
+/** 插件缓存 */
+let pluginCache: PluginCache | null = null
+
+/**
+ * 获取已加载命令插件缓存信息列表
+ * @returns 已加载命令插件缓存信息列表
+ */
+export const getLoadedCommandPluginCacheListRequest = async (): Promise<LoadedPluginCacheList[]> => {
+  const response = await request.serverPost<LoadedPluginCacheList[], null>(
+    api.getLoadedCommandPluginCacheList
+  )
+
+  return response
+}
+
+/**
+ * 获取已加载命令插件缓存信息列表（带缓存）
+ * @param forceRefresh 是否强制刷新缓存
+ * @returns 已加载命令插件缓存信息列表
+ */
+export const getLoadedCommandPluginCacheList = async (
+  forceRefresh = false
+): Promise<LoadedPluginCacheList[]> => {
+  const now = Date.now()
+
+  // 缓存有效且不强制刷新时返回缓存
+  if (
+    !forceRefresh &&
+    pluginCache &&
+    now - pluginCache.timestamp < CACHE_EXPIRY
+  ) {
+    return pluginCache.data
+  }
+
+  // 获取新数据并更新缓存
+  const data = await getLoadedCommandPluginCacheListRequest()
+  pluginCache = { data, timestamp: now }
+
+  return data
 }

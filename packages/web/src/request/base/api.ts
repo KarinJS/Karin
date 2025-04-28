@@ -33,4 +33,7 @@ export const api = {
 
   /** 获取karin状态 */
   getKarinStatus: `${BASE_ROUTER}/status/karin`,
+
+  /** @version 1.8.0 获取已加载命令插件缓存信息列表 */
+  getLoadedCommandPluginCacheList: `${BASE_ROUTER}/plugin/loaded/command`,
 }
