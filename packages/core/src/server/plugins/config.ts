@@ -19,6 +19,19 @@ interface BaseConfig {
 }
 
 /**
+ * 检查文件是否存在
+ * @param filepath 文件路径
+ * @returns 存在返回true，否则返回false
+ */
+const fileExists = (filepath: string): boolean => {
+  try {
+    return fs.existsSync(filepath)
+  } catch (error) {
+    return false
+  }
+}
+
+/**
  * 从package.json中获取web配置路径
  * @param pkg package.json内容
  * @param baseDir 插件根目录
@@ -29,16 +42,25 @@ const getWebConfigPathFromPkg = (pkg: PkgData, baseDir: string): string | null =
 
   /** 如果该插件处于node_modules中 视其为正式插件的环境 仅加载web */
   if (baseDir.includes('node_modules')) {
-    if (pkg.karin.web) return path.join(baseDir, pkg.karin.web)
+    if (pkg.karin.web) {
+      const configPath = path.join(baseDir, pkg.karin.web)
+      return fileExists(configPath) ? configPath : null
+    }
     return null
   }
 
+  let configPath = null
+
   if (isTsx()) {
     if (pkg.karin['ts-web']) {
-      return path.join(baseDir, pkg.karin['ts-web'])
+      configPath = path.join(baseDir, pkg.karin['ts-web'])
+      if (fileExists(configPath)) return configPath
     }
-  } else {
-    if (pkg.karin.web) return path.join(baseDir, pkg.karin.web)
+  }
+
+  if (pkg.karin.web) {
+    configPath = path.join(baseDir, pkg.karin.web)
+    if (fileExists(configPath)) return configPath
   }
 
   return null
@@ -51,18 +73,31 @@ const getWebConfigPathFromPkg = (pkg: PkgData, baseDir: string): string | null =
  */
 const getNpmPluginConfigPath = (name: string): string | null => {
   const dir = path.join(process.cwd(), 'node_modules', name)
-  if (fs.existsSync(dir)) {
-    const pkg = requireFileSync<PkgData>(path.join(dir, 'package.json'))
-    const configPath = getWebConfigPathFromPkg(pkg, dir)
-    if (configPath) return configPath
+  if (fileExists(dir)) {
+    try {
+      const pkgPath = path.join(dir, 'package.json')
+      if (fileExists(pkgPath)) {
+        const pkg = requireFileSync<PkgData>(pkgPath)
+        const configPath = getWebConfigPathFromPkg(pkg, dir)
+        if (configPath) return configPath
+      }
+    } catch (error) {
+      return null
+    }
   }
 
   /** 开发环境检查根目录 */
   if (isDev()) {
-    const rootPkgPath = path.join(process.cwd(), 'package.json')
-    const pkg = requireFileSync<PkgData>(rootPkgPath)
-    if (pkg?.name === name) {
-      return getWebConfigPathFromPkg(pkg, process.cwd())
+    try {
+      const rootPkgPath = path.join(process.cwd(), 'package.json')
+      if (fileExists(rootPkgPath)) {
+        const pkg = requireFileSync<PkgData>(rootPkgPath)
+        if (pkg?.name === name) {
+          return getWebConfigPathFromPkg(pkg, process.cwd())
+        }
+      }
+    } catch (error) {
+      return null
     }
   }
 
@@ -76,13 +111,30 @@ const getNpmPluginConfigPath = (name: string): string | null => {
  */
 const getLocalPluginConfigPath = (name: string): string | null => {
   const pluginDir = path.join(process.cwd(), 'plugins', name)
-  if (fs.existsSync(pluginDir)) {
-    const pkg = requireFileSync<PkgData>(path.join(pluginDir, 'package.json'))
-    return getWebConfigPathFromPkg(pkg, pluginDir)
+  if (fileExists(pluginDir)) {
+    try {
+      const pkgPath = path.join(pluginDir, 'package.json')
+      if (fileExists(pkgPath)) {
+        const pkg = requireFileSync<PkgData>(pkgPath)
+        const configPath = getWebConfigPathFromPkg(pkg, pluginDir)
+        if (configPath) return configPath
+      }
+    } catch (error) {
+      return null
+    }
   }
 
-  const pkg = requireFileSync<PkgData>(path.join(process.cwd(), 'package.json'))
-  return getWebConfigPathFromPkg(pkg, process.cwd()) || null
+  try {
+    const pkgPath = path.join(process.cwd(), 'package.json')
+    if (fileExists(pkgPath)) {
+      const pkg = requireFileSync<PkgData>(pkgPath)
+      return getWebConfigPathFromPkg(pkg, process.cwd())
+    }
+  } catch (error) {
+    return null
+  }
+
+  return null
 }
 
 /**
@@ -91,13 +143,17 @@ const getLocalPluginConfigPath = (name: string): string | null => {
  * @returns 配置路径
  */
 const getConfigPath = (options: BaseConfig): string | null => {
-  switch (options.type) {
-    case 'npm':
-      return getNpmPluginConfigPath(options.name)
-    case 'git':
-      return getLocalPluginConfigPath(options.name)
-    default:
-      return null
+  try {
+    switch (options.type) {
+      case 'npm':
+        return getNpmPluginConfigPath(options.name)
+      case 'git':
+        return getLocalPluginConfigPath(options.name)
+      default:
+        return null
+    }
+  } catch (error) {
+    return null
   }
 }
 
@@ -106,13 +162,18 @@ const getConfigPath = (options: BaseConfig): string | null => {
  * @param configPath 配置路径
  */
 const loadConfig = async (configPath: string) => {
-  /** 如果处于开发环境，则使用动态导入 */
-  const result = await import(
-    `${pathToFileURL(configPath).toString()}${isDev() ? '?t=' + Date.now() : ''}`
-  ) as {
-    default: DefineConfig
+  try {
+    /** 如果处于开发环境，则使用动态导入 */
+    const fileUrl = pathToFileURL(configPath).toString()
+    const result = await import(
+      `${fileUrl}${isDev() ? '?t=' + Date.now() : ''}`
+    ) as {
+      default: DefineConfig
+    }
+    return result.default
+  } catch (error) {
+    throw new Error(`加载插件配置失败: ${error instanceof Error ? error.message : String(error)}`)
   }
-  return result.default
 }
 
 /**
