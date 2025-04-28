@@ -5,8 +5,10 @@ import { Button } from '@heroui/button'
 import { Checkbox } from '@heroui/checkbox'
 import { Spinner } from '@heroui/spinner'
 import { Input } from '@heroui/input'
-import { IoSearch, IoCheckmark } from 'react-icons/io5'
-import { FaList, FaChevronRight, FaChevronDown, FaCode } from 'react-icons/fa'
+import { IoSearch } from 'react-icons/io5'
+import { Puzzle, FileText, Terminal, ChevronRight, ChevronDown, CheckCircle } from 'lucide-react'
+import { hideRocket, showRocket } from '@/components/common/ScrollToTop.utils'
+
 import { getLoadedCommandPluginCacheList } from '@/request/plugins'
 import toast from 'react-hot-toast'
 
@@ -56,6 +58,15 @@ export const PluginSelectorDialog = ({
   const initialized = useRef(false)
   const abortController = useRef<AbortController | null>(null)
 
+  /**
+   * 检查节点是否已被选中
+   * @param value 节点值
+   * @returns 是否选中
+   */
+  const isNodeSelected = useCallback((value: string) => {
+    return currentSelected.some(selected => selected === value)
+  }, [currentSelected])
+
   // 加载数据
   const loadData = useCallback(async () => {
     if (loading || !isOpen) return
@@ -71,41 +82,39 @@ export const PluginSelectorDialog = ({
       const data = await getLoadedCommandPluginCacheList()
       if (unmounted.current) return
 
-      // 构建简化的树结构
+      /** 构建简化的树结构，所有节点默认折叠 */
       const tree: TreeNode[] = []
 
       data.forEach(plugin => {
-        // 包节点
         const packageNode: TreeNode = {
           id: `pkg-${plugin.name}`,
           type: 'package',
           value: plugin.name,
           name: plugin.name,
-          selected: currentSelected.includes(plugin.name),
-          expanded: true,
+          selected: isNodeSelected(plugin.name),
+          expanded: false, // 默认折叠
           children: [],
         }
 
-        // 文件和命令节点
         plugin.files.forEach(file => {
           const fileNode: TreeNode = {
             id: `file-${plugin.name}-${file.fileName}`,
             type: 'file',
             value: `${plugin.name}:${file.fileName}`,
             name: file.fileName,
-            selected: currentSelected.includes(`${plugin.name}:${file.fileName}`),
-            expanded: true,
+            selected: isNodeSelected(`${plugin.name}:${file.fileName}`),
+            expanded: false, // 默认折叠
             children: [],
           }
 
-          // 命令节点
           file.command.forEach(cmd => {
+            const cmdValue = `${plugin.name}:${cmd}`
             fileNode.children?.push({
               id: `cmd-${plugin.name}-${cmd}`,
               type: 'command',
-              value: `${plugin.name}:${cmd}`,
+              value: cmdValue,
               name: cmd,
-              selected: currentSelected.includes(`${plugin.name}:${cmd}`),
+              selected: isNodeSelected(cmdValue),
               expanded: false,
             })
           })
@@ -129,7 +138,7 @@ export const PluginSelectorDialog = ({
         setLoading(false)
       }
     }
-  }, [currentSelected, isOpen, loading])
+  }, [currentSelected, isOpen, loading, isNodeSelected])
 
   // 重置状态
   const resetState = useCallback(() => {
@@ -143,12 +152,49 @@ export const PluginSelectorDialog = ({
 
   // 处理节点选择
   const handleNodeSelect = useCallback((nodeId: string, checked: boolean) => {
-    setTreeData(prev =>
-      updateNodeInTree(prev, nodeId, node => ({
-        ...node,
-        selected: checked,
-      }))
-    )
+    setTreeData(prev => {
+      // 更新节点及其子节点的函数
+      const updateNode = (node: TreeNode): TreeNode => {
+        // 如果是目标节点
+        if (node.id === nodeId) {
+          // 如果是选中操作，则将自身选中，并确保子节点都不选中
+          if (checked) {
+            return {
+              ...node,
+              selected: true,
+              children: node.children?.map(child => ({
+                ...child,
+                selected: false,
+                children: child.children?.map(grandChild => ({
+                  ...grandChild,
+                  selected: false,
+                })),
+              })),
+            }
+            // 如果是取消选中操作，则仅取消自身选中
+          } else {
+            return {
+              ...node,
+              selected: false,
+            }
+          }
+        }
+
+        // 如果不是目标节点，但有子节点，递归处理子节点
+        if (node.children?.length) {
+          return {
+            ...node,
+            children: node.children.map(updateNode),
+          }
+        }
+
+        // 如果都不是，保持不变
+        return node
+      }
+
+      // 对每个根节点应用更新
+      return prev.map(updateNode)
+    })
   }, [])
 
   // 处理节点展开/折叠
@@ -211,7 +257,8 @@ export const PluginSelectorDialog = ({
       return values
     }
 
-    onConfirm(getSelectedValues(treeData))
+    const selectedValues = getSelectedValues(treeData)
+    onConfirm(selectedValues)
   }, [onConfirm, treeData])
 
   // 过滤节点
@@ -250,10 +297,10 @@ export const PluginSelectorDialog = ({
     return (
       <div
         key={node.id}
-        className={`flex items-center py-2 px-3 rounded-lg mb-1 ${node.selected
-          ? 'bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700'
-          : 'hover:bg-gray-100 dark:hover:bg-gray-700 border border-transparent'
-          }`}
+        className={`flex items-center py-2 px-3 rounded-2xl mb-1 transition-colors border ${node.selected
+          ? 'bg-blue-50 dark:bg-blue-900/40 border-blue-300 dark:border-blue-700 shadow'
+          : 'hover:bg-gray-100 dark:hover:bg-gray-700 border-transparent'}
+        `}
         style={{ paddingLeft: `${depth * 20 + 8}px` }}
       >
         {/* 展开/折叠按钮 */}
@@ -262,12 +309,12 @@ export const PluginSelectorDialog = ({
             ? (
               <button
                 type='button'
-                className='text-gray-500 hover:text-blue-600 transition-colors'
+                className='text-gray-500 hover:text-blue-600 transition-colors rounded-full p-0.5'
                 onClick={() => handleNodeToggle(node.id)}
               >
                 {node.expanded
-                  ? <FaChevronDown size={14} />
-                  : <FaChevronRight size={14} />}
+                  ? <ChevronDown size={16} />
+                  : <ChevronRight size={16} />}
               </button>
             )
             : <span className='w-5' />}
@@ -276,22 +323,25 @@ export const PluginSelectorDialog = ({
         {/* 复选框 */}
         <Checkbox
           checked={node.selected}
+          isSelected={node.selected}
+          defaultSelected={node.selected}
           onChange={(e) => handleNodeSelect(node.id, e.target.checked)}
           color='primary'
+          aria-checked={node.selected}
         />
 
         {/* 图标和名称 */}
         <div className='ml-2 flex items-center'>
-          {node.type === 'command'
-            ? <FaCode className='text-gray-500' />
-            : <FaList className='text-gray-500' />}
+          {node.type === 'package' && <Puzzle className='text-blue-500' size={16} />}
+          {node.type === 'file' && <FileText className='text-gray-500' size={16} />}
+          {node.type === 'command' && <Terminal className='text-gray-500' size={16} />}
           <span className='ml-1.5 text-sm'>{node.name}</span>
         </div>
 
         {/* 选中标记 */}
         {node.selected && (
           <span className='ml-auto text-green-600'>
-            <IoCheckmark />
+            <CheckCircle size={18} />
           </span>
         )}
       </div>
@@ -357,6 +407,15 @@ export const PluginSelectorDialog = ({
   const selectedCount = getSelectedCount()
   const totalCount = treeData.length
 
+  // Dialog打开时隐藏小火箭，关闭时显示小火箭
+  useEffect(() => {
+    if (isOpen) {
+      hideRocket()
+    } else {
+      showRocket()
+    }
+  }, [isOpen])
+
   return (
     <Modal
       isOpen={isOpen}
@@ -367,7 +426,7 @@ export const PluginSelectorDialog = ({
       <ModalContent className='p-0 rounded-xl bg-white dark:bg-gray-900 overflow-hidden border border-gray-200 dark:border-gray-700 shadow-xl'>
         <ModalHeader className='sticky top-0 z-10 p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800'>
           <h2 className='text-lg font-semibold flex items-center'>
-            <FaList className='mr-2 text-gray-500' />
+            <Puzzle className='mr-2 text-blue-500' size={20} />
             {title}
           </h2>
         </ModalHeader>

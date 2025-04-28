@@ -5,7 +5,6 @@ import { Button } from '@heroui/button'
 import { IoCloseCircle } from 'react-icons/io5'
 import { toast } from 'react-hot-toast'
 import { Controller } from 'react-hook-form'
-import { FaList } from 'react-icons/fa'
 import { PluginSelectorDialog } from './PluginSelectorDialog'
 
 import type { JSX } from 'react'
@@ -95,12 +94,13 @@ export const createInputGroup = (
                 return
               }
 
-              // 合并新值
-              if (newItems.length > 0) {
-                onChange([...value, ...newItems])
-                toast.success(`已添加 ${newItems.length} 个项目`)
+              // 将所有选中的项目合并到当前值
+              if (selectedItems.length > 0) {
+                onChange(selectedItems)
+                toast.success(`已选择 ${selectedItems.length} 个项目`)
               } else {
-                toast('没有添加新项目')
+                onChange([])
+                toast('未选择任何项目')
               }
 
               setIsPluginSelectorOpen(false)
@@ -120,15 +120,13 @@ export const createInputGroup = (
                     </span>
                     {showPluginSelector && (
                       <Button
-                        variant='solid'
-                        color='default'
+                        variant='flat'
+                        color='primary'
                         size='sm'
                         onPress={() => setIsPluginSelectorOpen(true)}
-                        className='flex items-center gap-1 px-2 h-7 min-w-[60px]'
                         disabled={value.length >= maxInputs}
                       >
-                        <FaList size={14} />
-                        选择
+                        一键选择
                       </Button>
                     )}
                     <Button
