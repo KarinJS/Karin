@@ -55,6 +55,11 @@ export interface LoadedPluginCacheList {
     /** 文件名称 */
     fileName: string
     /** 该文件下所有的command函数名称 */
-    command: string[]
+    command: {
+      /** 此函数的插件名称 */
+      pluginName: string
+      /** 此函数的导出名称 */
+      method: string
+    }[]
   }[]
 }

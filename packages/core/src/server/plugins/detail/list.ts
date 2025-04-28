@@ -73,7 +73,7 @@ export const getLoadedCommandPluginCacheList: RequestHandler = async (_, res) =>
      * }
      * ```
      */
-    const map: Record<string, Record<string, string[]>> = {}
+    const map: Record<string, Record<string, { pluginName: string; method: string }[]>> = {}
 
     cache.command.forEach(plugin => {
       const { name: key } = plugin.pkg
@@ -85,7 +85,10 @@ export const getLoadedCommandPluginCacheList: RequestHandler = async (_, res) =>
         map[key][plugin.file.basename] = []
       }
 
-      map[key][plugin.file.basename].push(plugin.file.method)
+      map[key][plugin.file.basename].push({
+        pluginName: plugin.file.name,
+        method: plugin.file.method,
+      })
     })
 
     Object.keys(map).forEach(key => {

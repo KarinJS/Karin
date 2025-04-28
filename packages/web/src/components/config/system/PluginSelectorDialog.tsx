@@ -1,16 +1,15 @@
 /* eslint-disable @stylistic/indent */
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { Modal, ModalContent, ModalHeader } from '@heroui/modal'
-import { Button } from '@heroui/button'
-import { Checkbox } from '@heroui/checkbox'
-import { Spinner } from '@heroui/spinner'
-import { Input } from '@heroui/input'
-import { IoSearch } from 'react-icons/io5'
-import { Puzzle, FileText, Terminal, ChevronRight, ChevronDown, CheckCircle } from 'lucide-react'
-import { hideRocket, showRocket } from '@/components/common/ScrollToTop.utils'
-
-import { getLoadedCommandPluginCacheList } from '@/request/plugins'
 import toast from 'react-hot-toast'
+import { Input } from '@heroui/input'
+import { Button } from '@heroui/button'
+import { Spinner } from '@heroui/spinner'
+import { IoSearch } from 'react-icons/io5'
+import { Checkbox } from '@heroui/checkbox'
+import { Modal, ModalContent, ModalHeader } from '@heroui/modal'
+import React, { useState, useEffect, useRef, useCallback, ReactElement } from 'react'
+import { getLoadedCommandPluginCacheList } from '@/request/plugins'
+import { hideRocket, showRocket } from '@/components/common/ScrollToTop.utils'
+import { Puzzle, FileText, Terminal, ChevronRight, ChevronDown, CheckCircle } from 'lucide-react'
 
 /**
  * 插件选择对话框属性
@@ -32,12 +31,24 @@ interface PluginSelectorDialogProps {
  * 简化的树节点类型
  */
 interface TreeNode {
+  /** 节点ID */
   id: string
+  /** 节点类型 */
   type: 'package' | 'file' | 'command'
+  /** 节点值 */
   value: string
-  name: string
+  /** 节点名称 */
+  name: {
+    /** 插件名称 */
+    pluginName: string
+    /** 方法名称，对于package和file类型，与pluginName相同 */
+    method: string
+  }
+  /** 是否选中 */
   selected: boolean
+  /** 是否展开 */
   expanded: boolean
+  /** 子节点 */
   children?: TreeNode[]
 }
 
@@ -57,6 +68,7 @@ export const PluginSelectorDialog = ({
   const [keyword, setKeyword] = useState('')
   const initialized = useRef(false)
   const abortController = useRef<AbortController | null>(null)
+  const [isAllExpanded, setIsAllExpanded] = useState(false)
 
   /**
    * 检查节点是否已被选中
@@ -67,7 +79,9 @@ export const PluginSelectorDialog = ({
     return currentSelected.some(selected => selected === value)
   }, [currentSelected])
 
-  // 加载数据
+  /**
+   * 加载数据
+   */
   const loadData = useCallback(async () => {
     if (loading || !isOpen) return
 
@@ -90,9 +104,12 @@ export const PluginSelectorDialog = ({
           id: `pkg-${plugin.name}`,
           type: 'package',
           value: plugin.name,
-          name: plugin.name,
+          name: {
+            pluginName: plugin.name,
+            method: plugin.name,
+          },
           selected: isNodeSelected(plugin.name),
-          expanded: false, // 默认折叠
+          expanded: false, /** 默认折叠 */
           children: [],
         }
 
@@ -101,16 +118,22 @@ export const PluginSelectorDialog = ({
             id: `file-${plugin.name}-${file.fileName}`,
             type: 'file',
             value: `${plugin.name}:${file.fileName}`,
-            name: file.fileName,
+            name: {
+              pluginName: plugin.name,
+              method: file.fileName,
+            },
             selected: isNodeSelected(`${plugin.name}:${file.fileName}`),
-            expanded: false, // 默认折叠
+            expanded: false, /** 默认折叠 */
             children: [],
           }
 
           file.command.forEach(cmd => {
-            const cmdValue = `${plugin.name}:${cmd}`
+            const cmdValue = `${plugin.name}:${cmd.method}`
+            /** 使用完整路径生成唯一ID，包含插件名、文件名和方法名 */
+            const cmdId = `cmd-${plugin.name}-${file.fileName}-${cmd.method}`
+
             fileNode.children?.push({
-              id: `cmd-${plugin.name}-${cmd}`,
+              id: cmdId,
               type: 'command',
               value: cmdValue,
               name: cmd,
@@ -140,7 +163,9 @@ export const PluginSelectorDialog = ({
     }
   }, [currentSelected, isOpen, loading, isNodeSelected])
 
-  // 重置状态
+  /**
+   * 重置状态
+   */
   const resetState = useCallback(() => {
     setKeyword('')
     initialized.current = false
@@ -150,14 +175,18 @@ export const PluginSelectorDialog = ({
     }
   }, [])
 
-  // 处理节点选择
+  /**
+   * 处理节点选择
+   * @param nodeId 节点ID
+   * @param checked 是否选中
+   */
   const handleNodeSelect = useCallback((nodeId: string, checked: boolean) => {
     setTreeData(prev => {
-      // 更新节点及其子节点的函数
+      /** 更新节点及其子节点的函数 */
       const updateNode = (node: TreeNode): TreeNode => {
-        // 如果是目标节点
+        /** 如果是目标节点 */
         if (node.id === nodeId) {
-          // 如果是选中操作，则将自身选中，并确保子节点都不选中
+          /** 如果是选中操作，则将自身选中，并确保子节点都不选中 */
           if (checked) {
             return {
               ...node,
@@ -171,7 +200,7 @@ export const PluginSelectorDialog = ({
                 })),
               })),
             }
-            // 如果是取消选中操作，则仅取消自身选中
+            /** 如果是取消选中操作，则仅取消自身选中 */
           } else {
             return {
               ...node,
@@ -180,7 +209,7 @@ export const PluginSelectorDialog = ({
           }
         }
 
-        // 如果不是目标节点，但有子节点，递归处理子节点
+        /** 如果不是目标节点，但有子节点，递归处理子节点 */
         if (node.children?.length) {
           return {
             ...node,
@@ -188,16 +217,19 @@ export const PluginSelectorDialog = ({
           }
         }
 
-        // 如果都不是，保持不变
+        /** 如果都不是，保持不变 */
         return node
       }
 
-      // 对每个根节点应用更新
+      /** 对每个根节点应用更新 */
       return prev.map(updateNode)
     })
   }, [])
 
-  // 处理节点展开/折叠
+  /**
+   * 处理节点展开/折叠
+   * @param nodeId 节点ID
+   */
   const handleNodeToggle = useCallback((nodeId: string) => {
     setTreeData(prev =>
       updateNodeInTree(prev, nodeId, node => ({
@@ -207,7 +239,13 @@ export const PluginSelectorDialog = ({
     )
   }, [])
 
-  // 更新树中的节点
+  /**
+   * 更新树中的节点
+   * @param nodes 树节点数组
+   * @param nodeId 目标节点ID
+   * @param updater 节点更新函数
+   * @returns 更新后的树节点数组
+   */
   const updateNodeInTree = (nodes: TreeNode[], nodeId: string, updater: (node: TreeNode) => TreeNode): TreeNode[] => {
     return nodes.map(node => {
       if (node.id === nodeId) {
@@ -225,7 +263,10 @@ export const PluginSelectorDialog = ({
     })
   }
 
-  // 全选/全不选
+  /**
+   * 全选/全不选
+   * @param checked 是否全选
+   */
   const handleSelectAll = useCallback((checked: boolean) => {
     setTreeData(prev => {
       const updateAll = (nodes: TreeNode[]): TreeNode[] => {
@@ -239,7 +280,30 @@ export const PluginSelectorDialog = ({
     })
   }, [])
 
-  // 确认选择
+  /**
+   * 一键折叠/展开全部
+   */
+  const handleExpandAll = useCallback(() => {
+    /** 切换展开状态 */
+    const newExpandedState = !isAllExpanded
+    setIsAllExpanded(newExpandedState)
+
+    /** 更新树节点 */
+    setTreeData(prev => {
+      const updateExpanded = (nodes: TreeNode[]): TreeNode[] => {
+        return nodes.map(node => ({
+          ...node,
+          expanded: newExpandedState,
+          children: node.children ? updateExpanded(node.children) : undefined,
+        }))
+      }
+      return updateExpanded(prev)
+    })
+  }, [isAllExpanded])
+
+  /**
+   * 确认选择
+   */
   const handleConfirm = useCallback(() => {
     const getSelectedValues = (nodes: TreeNode[]): string[] => {
       let values: string[] = []
@@ -261,21 +325,27 @@ export const PluginSelectorDialog = ({
     onConfirm(selectedValues)
   }, [onConfirm, treeData])
 
-  // 过滤节点
+  /**
+   * 过滤节点
+   * @param nodes 树节点数组
+   * @returns 过滤后的树节点数组
+   */
   const filterNodes = useCallback((nodes: TreeNode[]): TreeNode[] => {
     if (!keyword) return nodes
 
     return nodes.map(node => {
-      // 节点自身匹配
-      const selfMatches = node.name.toLowerCase().includes(keyword.toLowerCase()) ||
+      /** 节点自身匹配 */
+      const selfMatches =
+        node.name.method.toLowerCase().includes(keyword.toLowerCase()) ||
+        node.name.pluginName.toLowerCase().includes(keyword.toLowerCase()) ||
         node.value.toLowerCase().includes(keyword.toLowerCase())
 
-      // 处理子节点
+      /** 处理子节点 */
       const filteredChildren = node.children?.length
         ? filterNodes(node.children)
         : []
 
-      // 子节点有匹配
+      /** 子节点有匹配 */
       const hasMatchingChildren = !!filteredChildren.length
 
       if (selfMatches || hasMatchingChildren) {
@@ -290,37 +360,43 @@ export const PluginSelectorDialog = ({
     }).filter(Boolean) as TreeNode[]
   }, [keyword])
 
-  // 渲染树节点
-  const renderTreeNode = useCallback((node: TreeNode, depth = 0) => {
+  /**
+   * 渲染单个树节点
+   * @param node 节点数据
+   * @param depth 节点深度
+   * @param nodeKey 节点唯一键
+   */
+  const renderTreeNode = useCallback((node: TreeNode, depth = 0, nodeKey: string) => {
     const hasChildren = !!node.children?.length
 
     return (
       <div
-        key={node.id}
+        key={nodeKey}
         className={`flex items-center py-2 px-3 rounded-2xl mb-1 transition-colors border ${node.selected
           ? 'bg-blue-50 dark:bg-blue-900/40 border-blue-300 dark:border-blue-700 shadow'
           : 'hover:bg-gray-100 dark:hover:bg-gray-700 border-transparent'}
         `}
         style={{ paddingLeft: `${depth * 20 + 8}px` }}
       >
-        {/* 展开/折叠按钮 */}
-        <div className='w-6 flex justify-center'>
+        {/** 展开/折叠按钮 */}
+        <div className='w-8 flex justify-center mr-2'>
           {hasChildren
             ? (
               <button
                 type='button'
-                className='text-gray-500 hover:text-blue-600 transition-colors rounded-full p-0.5'
+                className='text-gray-500 hover:text-blue-600 transition-colors rounded-full p-1.5 w-8 h-8 hover:bg-gray-100 dark:hover:bg-gray-700'
                 onClick={() => handleNodeToggle(node.id)}
+                aria-label={node.expanded ? '折叠' : '展开'}
               >
                 {node.expanded
                   ? <ChevronDown size={16} />
                   : <ChevronRight size={16} />}
               </button>
             )
-            : <span className='w-5' />}
+            : <span className='w-8' />}
         </div>
 
-        {/* 复选框 */}
+        {/** 复选框 */}
         <Checkbox
           checked={node.selected}
           isSelected={node.selected}
@@ -330,15 +406,19 @@ export const PluginSelectorDialog = ({
           aria-checked={node.selected}
         />
 
-        {/* 图标和名称 */}
+        {/** 图标和名称 */}
         <div className='ml-2 flex items-center'>
           {node.type === 'package' && <Puzzle className='text-blue-500' size={16} />}
           {node.type === 'file' && <FileText className='text-gray-500' size={16} />}
           {node.type === 'command' && <Terminal className='text-gray-500' size={16} />}
-          <span className='ml-1.5 text-sm'>{node.name}</span>
+          <span className='ml-1.5 text-sm'>
+            {node.type === 'command'
+              ? `${node.name.method}(${node.name.pluginName})`
+              : node.name.method}
+          </span>
         </div>
 
-        {/* 选中标记 */}
+        {/** 选中标记 */}
         {node.selected && (
           <span className='ml-auto text-green-600'>
             <CheckCircle size={18} />
@@ -348,28 +428,38 @@ export const PluginSelectorDialog = ({
     )
   }, [handleNodeSelect, handleNodeToggle])
 
-  // 渲染树
+  /**
+   * 渲染整棵树
+   * @param nodes 树节点数组
+   */
   const renderTree = useCallback((nodes: TreeNode[]) => {
-    return nodes.map(node => {
-      const result = [renderTreeNode(node, 0)]
+    /** 记录渲染的所有元素 */
+    const renderedItems: ReactElement[] = []
 
-      if (node.expanded && node.children?.length) {
-        node.children.forEach(child => {
-          result.push(renderTreeNode(child, 1))
+    /** 递归渲染树节点函数 */
+    const renderNodes = (nodeList: TreeNode[], depth = 0, parentPath = '') => {
+      nodeList.forEach((node, index) => {
+        /** 为每个节点生成稳定且唯一的键 */
+        const nodePath = `${parentPath}-${index}`
+        /** 渲染当前节点 */
+        renderedItems.push(renderTreeNode(node, depth, nodePath))
 
-          if (child.expanded && child.children?.length) {
-            child.children.forEach(grandChild => {
-              result.push(renderTreeNode(grandChild, 2))
-            })
-          }
-        })
-      }
+        /** 如果节点展开且有子节点，递归渲染子节点 */
+        if (node.expanded && node.children?.length) {
+          renderNodes(node.children, depth + 1, nodePath)
+        }
+      })
+    }
 
-      return result
-    }).flat()
+    /** 从根节点开始渲染整棵树 */
+    renderNodes(nodes)
+
+    return renderedItems
   }, [renderTreeNode])
 
-  // 计算选中数量
+  /**
+   * 计算选中数量
+   */
   const getSelectedCount = useCallback(() => {
     let count = 0
 
@@ -384,7 +474,9 @@ export const PluginSelectorDialog = ({
     return count
   }, [treeData])
 
-  // 初始化和清理
+  /**
+   * 初始化和清理
+   */
   useEffect(() => {
     if (isOpen && !initialized.current) {
       loadData()
@@ -402,12 +494,12 @@ export const PluginSelectorDialog = ({
     }
   }, [])
 
-  // 过滤树节点
+  /** 过滤树节点 */
   const filteredTree = keyword ? filterNodes(treeData) : treeData
   const selectedCount = getSelectedCount()
   const totalCount = treeData.length
 
-  // Dialog打开时隐藏小火箭，关闭时显示小火箭
+  /** Dialog打开时隐藏小火箭，关闭时显示小火箭 */
   useEffect(() => {
     if (isOpen) {
       hideRocket()
@@ -431,9 +523,31 @@ export const PluginSelectorDialog = ({
           </h2>
         </ModalHeader>
 
-        <div className='flex flex-col h-[80vh] max-h-[80vh]'>
-          {/* 搜索和控制 */}
-          <div className='p-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700'>
+        {/** 节点类型说明 */}
+        <div className='px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700'>
+          <div className='text-xs text-gray-500 dark:text-gray-400'>
+            <div className='font-medium mb-1'>节点类型说明：</div>
+            <div className='flex flex-col gap-1'>
+              <div className='flex items-center'>
+                <Puzzle className='text-blue-500 mr-1.5' size={14} />
+                <span>插件包：根节点，选中后对整个插件包生效</span>
+              </div>
+              <div className='flex items-center'>
+                <FileText className='text-gray-500 mr-1.5' size={14} />
+                <span>文件：选中后对文件中的所有命令生效</span>
+              </div>
+              <div className='flex items-center'>
+                <Terminal className='text-gray-500 mr-1.5' size={14} />
+                <span>命令：选中后对插件包中的具体函数生效</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/** 使用flex-1替代固定高度，确保自适应 */}
+        <div className='flex flex-col flex-1 max-h-[calc(100vh-13rem)] sm:max-h-[70vh]'>
+          {/** 搜索和控制 */}
+          <div className='p-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700'>
             <div className='flex items-center justify-between gap-2'>
               <Input
                 startContent={<IoSearch className='text-gray-400' />}
@@ -445,18 +559,28 @@ export const PluginSelectorDialog = ({
                 color='primary'
                 autoFocus
               />
-              <Button
-                size='sm'
-                variant='flat'
-                color='primary'
-                onPress={() => handleSelectAll(selectedCount < totalCount)}
-              >
-                {selectedCount < totalCount ? '全选' : '取消全选'}
-              </Button>
+              <div className='flex gap-2'>
+                <Button
+                  size='sm'
+                  variant='flat'
+                  color='primary'
+                  onPress={handleExpandAll}
+                >
+                  {isAllExpanded ? '折叠全部' : '展开全部'}
+                </Button>
+                <Button
+                  size='sm'
+                  variant='flat'
+                  color='primary'
+                  onPress={() => handleSelectAll(selectedCount < totalCount)}
+                >
+                  {selectedCount < totalCount ? '全选' : '取消全选'}
+                </Button>
+              </div>
             </div>
           </div>
 
-          {/* 内容区域 */}
+          {/** 内容区域 - 允许滚动 */}
           <div className='flex-1 overflow-auto p-2'>
             {loading
               ? (
@@ -471,13 +595,11 @@ export const PluginSelectorDialog = ({
                     没有找到匹配的插件
                   </div>
                 )
-                : (
-                  renderTree(filteredTree)
-                )}
+                : renderTree(filteredTree)}
           </div>
 
-          {/* 底部操作栏 */}
-          <div className='p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex justify-between items-center'>
+          {/** 底部操作栏 */}
+          <div className='p-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex justify-between items-center'>
             <div className='text-sm text-gray-500'>
               已选择 <span className='font-medium text-blue-600'>{selectedCount}</span> 项
             </div>
@@ -485,14 +607,16 @@ export const PluginSelectorDialog = ({
               <Button
                 variant='flat'
                 onPress={onClose}
-                className='px-4'
+                className='px-3'
+                size='sm'
               >
                 取消
               </Button>
               <Button
                 color='primary'
                 onPress={handleConfirm}
-                className='px-4'
+                className='px-3'
+                size='sm'
                 isDisabled={selectedCount === 0}
               >
                 确认选择

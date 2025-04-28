@@ -69,7 +69,7 @@ export const getLoadedCommandPluginCacheList = async (
 ): Promise<LoadedPluginCacheList[]> => {
   const now = Date.now()
 
-  // 缓存有效且不强制刷新时返回缓存
+  /** 缓存有效且不强制刷新时返回缓存 */
   if (
     !forceRefresh &&
     pluginCache &&
@@ -78,7 +78,7 @@ export const getLoadedCommandPluginCacheList = async (
     return pluginCache.data
   }
 
-  // 获取新数据并更新缓存
+  /** 获取新数据并更新缓存 */
   const data = await getLoadedCommandPluginCacheListRequest()
   pluginCache = { data, timestamp: now }
 
