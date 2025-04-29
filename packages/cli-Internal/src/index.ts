@@ -7,7 +7,6 @@ import { init } from './init'
 import { start } from './start'
 import { updateAll } from './update'
 import { program } from 'commander'
-import { installSqlite3 } from './sqlite3'
 
 /** 讨厌的报错 */
 if (!process.argv?.[2]) process.argv.push('-h')
@@ -42,10 +41,6 @@ program.command('up')
   .option('-f, --force', '强制更新')
   .option('-s, --serial', '并发更新')
   .action((options) => updateAll(options.force, !options.serial))
-
-program.command('sqlite3')
-  .description('安装 sqlite3 二进制')
-  .action(installSqlite3)
 
 program.command('init')
   .description('初始化项目')
