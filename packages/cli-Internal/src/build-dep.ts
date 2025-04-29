@@ -37,22 +37,41 @@ const writeWorkspaceFile = (content: any): void => {
 
 /**
  * 添加构建依赖
- * @param dependency 依赖包名称
+ * @param dependencies 依赖包名称，可以是单个依赖或以空格分隔的多个依赖
  */
-const addBuildDependency = (dependency: string): void => {
+const addBuildDependency = (dependencies: string): void => {
   try {
     const content = readWorkspaceFile()
+    const depList = dependencies.split(' ').filter(dep => dep.trim() !== '')
+
+    if (depList.length === 0) {
+      console.log('提示：请提供有效的依赖名称')
+      return
+    }
 
     if (!content.onlyBuiltDependencies) {
       content.onlyBuiltDependencies = []
     }
 
-    if (!content.onlyBuiltDependencies.includes(dependency)) {
-      content.onlyBuiltDependencies.push(dependency)
+    let addedCount = 0
+    let existCount = 0
+
+    depList.forEach(dependency => {
+      if (!content.onlyBuiltDependencies.includes(dependency)) {
+        content.onlyBuiltDependencies.push(dependency)
+        addedCount++
+      } else {
+        existCount++
+      }
+    })
+
+    if (addedCount > 0) {
       writeWorkspaceFile(content)
-      console.log(`成功：依赖 ${dependency} 已添加到 onlyBuiltDependencies 中`)
-    } else {
-      console.log(`提示：依赖 ${dependency} 已存在于 onlyBuiltDependencies 中，无需添加`)
+      console.log(`成功：已添加 ${addedCount} 个依赖到 onlyBuiltDependencies 中`)
+    }
+
+    if (existCount > 0) {
+      console.log(`提示：${existCount} 个依赖已存在于 onlyBuiltDependencies 中，无需添加`)
     }
   } catch (error) {
     console.error(`错误：添加构建依赖失败 - ${(error as Error).message}`)
@@ -61,24 +80,44 @@ const addBuildDependency = (dependency: string): void => {
 
 /**
  * 删除构建依赖
- * @param dependency 依赖包名称
+ * @param dependencies 依赖包名称，可以是单个依赖或以空格分隔的多个依赖
  */
-const removeBuildDependency = (dependency: string): void => {
+const removeBuildDependency = (dependencies: string): void => {
   try {
     const content = readWorkspaceFile()
+    const depList = dependencies.split(' ').filter(dep => dep.trim() !== '')
+
+    if (depList.length === 0) {
+      console.log('提示：请提供有效的依赖名称')
+      return
+    }
 
     if (!content.onlyBuiltDependencies) {
       console.log('提示：onlyBuiltDependencies 列表为空或不存在，无需删除')
       return
     }
 
-    const list = content.onlyBuiltDependencies.filter((dep: string) => dep !== dependency)
-    if (list.length !== content.onlyBuiltDependencies.length) {
-      content.onlyBuiltDependencies = list
+    let removedCount = 0
+    let notExistCount = 0
+
+    depList.forEach(dependency => {
+      const originalLength = content.onlyBuiltDependencies.length
+      content.onlyBuiltDependencies = content.onlyBuiltDependencies.filter((dep: string) => dep !== dependency)
+
+      if (content.onlyBuiltDependencies.length !== originalLength) {
+        removedCount++
+      } else {
+        notExistCount++
+      }
+    })
+
+    if (removedCount > 0) {
       writeWorkspaceFile(content)
-      console.log(`成功：依赖 ${dependency} 已从 onlyBuiltDependencies 中删除`)
-    } else {
-      console.log(`提示：依赖 ${dependency} 不存在于 onlyBuiltDependencies 中，无需删除`)
+      console.log(`成功：已从 onlyBuiltDependencies 中删除 ${removedCount} 个依赖`)
+    }
+
+    if (notExistCount > 0) {
+      console.log(`提示：${notExistCount} 个依赖不存在于 onlyBuiltDependencies 中，无需删除`)
     }
   } catch (error) {
     console.error(`错误：删除构建依赖失败 - ${(error as Error).message}`)
