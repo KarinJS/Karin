@@ -23,11 +23,11 @@ import { getPluginMarket } from '@/plugin/system'
 
 /**
  * 获取完整的插件列表
+ * @param refresh 刷新缓存
  */
-export const getFullPluginList = async () => {
-  // 并发获取基础数据
+export const getFullPluginList = async (refresh: boolean = false) => {
   const [list, createUrl, localPlugins] = await Promise.all([
-    getPluginMarket(),
+    getPluginMarket(refresh),
     testGithub(),
     getPlugins('all', true, true),
   ])
@@ -169,7 +169,7 @@ export const getOnlinePluginList: RequestHandler = async (req, res) => {
 
     // 如果缓存不存在或强制刷新，则重新获取数据
     if (!plugins) {
-      plugins = await getFullPluginList()
+      plugins = await getFullPluginList(refresh)
       // 设置缓存
       await setPluginListCache(plugins)
     }
