@@ -9,6 +9,7 @@
  * 7. 创建基本配置文件
  */
 
+import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import { URL, fileURLToPath } from 'node:url'
@@ -394,6 +395,15 @@ export const init = async (force?: boolean) => {
   pnpmfile(isDev, dir)
   createEntryFile(isDev, dir)
   createOrUpdateEnv(dir)
+
+  /** 删掉pnpm-lock.yaml */
+  if (fs.existsSync(path.join(dir, 'pnpm-lock.yaml'))) {
+    fs.rmSync(path.join(dir, 'pnpm-lock.yaml'))
+    execSync('pnpm install -f', {
+      stdio: 'inherit',
+      cwd: dir,
+    })
+  }
 
   if (process.env.KARIN_CLI) {
     console.log('[cli] 初始化完成 请使用 pnpm app 启动项目')
