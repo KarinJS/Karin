@@ -38,5 +38,8 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
-  "time": "2025-04-10T19:55:45.123Z"
+  "time": "2025-04-10T19:55:45.123Z",
+  "dependencies": {
+    "yaml": "2.7.0"
+  }
 }

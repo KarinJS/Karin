@@ -9,10 +9,11 @@
  * 7. 创建基本配置文件
  */
 
-import { execSync } from 'node:child_process'
+import yaml from 'yaml'
 import fs from 'node:fs'
 import path from 'node:path'
 import { URL, fileURLToPath } from 'node:url'
+import { execSync } from 'node:child_process'
 
 /**
  * 判断是否处于插件开发环境
@@ -234,13 +235,91 @@ const createOrUpdateEnv = (dir: string) => {
  * @param dir - 目标目录
  */
 const createWorkspace = (isDev: boolean, dir: string) => {
-  if (isDev) return
+  const dedupe = <T> (arr: T[]) => Array.from(new Set(arr))
 
   const workspace = path.join(dir, 'pnpm-workspace.yaml')
-  if (fs.existsSync(workspace)) return
 
-  const content = "packages:\n  - 'plugins/*'\n"
-  fs.writeFileSync(workspace, content)
+  let data: {
+    lockfile?: boolean
+    packages?: string[]
+    onlyBuiltDependencies?: string[]
+    publicHoistPattern?: string[]
+  } = {}
+  if (fs.existsSync(workspace)) {
+    data = yaml.parse(fs.readFileSync(workspace, 'utf-8'))
+  }
+
+  if (typeof data.lockfile !== 'boolean') {
+    data.lockfile = false
+  }
+
+  if (!isDev) {
+    if (!data.packages || !Array.isArray(data.packages)) {
+      data.packages = []
+    }
+
+    data.packages.forEach((v, index) => {
+      if (v === 'plugins/**') {
+        data.packages![index] = 'plugins/*'
+      }
+    })
+
+    if (!data.packages?.includes('plugins/*')) {
+      data.packages.push('plugins/*')
+    }
+
+    data.packages = dedupe(data.packages)
+  }
+
+  /**
+   * pnpm 10.x
+   * 允许执行构建命令的包
+   */
+  if (!data.onlyBuiltDependencies || !Array.isArray(data.onlyBuiltDependencies)) {
+    data.onlyBuiltDependencies = []
+  }
+
+  const onlyBuiltDependencies = [
+    '@karinjs/node-pty',
+    '@karinjs/sqlite3-cjs',
+    'canvas',
+    'sqlite3',
+    'sharp',
+    'puppeteer',
+    'classic-level',
+    ...data.onlyBuiltDependencies,
+  ]
+
+  data.onlyBuiltDependencies = dedupe(onlyBuiltDependencies)
+
+  /**
+   * pnpm 10.x
+   * 依赖提升
+   */
+  if (!data.publicHoistPattern || !Array.isArray(data.publicHoistPattern)) {
+    data.publicHoistPattern = []
+  }
+
+  const publicHoistPattern = [
+    '*sqlite3*',
+    '*express*',
+    ...data.publicHoistPattern
+  ]
+
+  data.publicHoistPattern = dedupe(publicHoistPattern)
+  /** 保证写入顺序 */
+  fs.writeFileSync(workspace, yaml.stringify(
+    Object.assign(
+      {
+        lockfile: false,
+        packages: [],
+        publicHoistPattern: [],
+        onlyBuiltDependencies: [],
+      },
+      data
+    )),
+    'utf-8'
+  )
 }
 
 /**

@@ -6,6 +6,7 @@ import { pm2 } from './pm2'
 import { init } from './init'
 import { start } from './start'
 import { updateAll } from './update'
+import { buildDep } from './build-dep'
 import { program } from 'commander'
 
 /** 讨厌的报错 */
@@ -30,6 +31,7 @@ program.command('start').description('前台启动').action(start)
 program.command('pm2').description('后台运行').action(pm2.start)
 program.command('stop').description('停止后台服务').action(pm2.stop)
 program.command('rs')
+  .alias('restart')
   .description('重启后台服务')
   .option('-f, --force', '强制重启')
   .action((options) => pm2.restart(options.force))
@@ -53,6 +55,23 @@ program.command('init')
     }
 
     init(options.force)
+  })
+
+program.command('b')
+  .alias('allow-build')
+  .description('构建依赖管理 (pnpm v10.x)')
+  .argument('<action>', '操作类型: add, rm, ls')
+  .argument('[dependency]', '依赖包名称 (add/rm操作需要)')
+  .action((action, dependency) => {
+    if (action === 'add' && dependency) {
+      buildDep.add(dependency)
+    } else if (action === 'rm' && dependency) {
+      buildDep.rm(dependency)
+    } else if (action === 'ls') {
+      buildDep.ls()
+    } else {
+      console.log('无效的命令。有效命令: add <dependency>, rm <dependency>, ls')
+    }
   })
 
 program.parse(process.argv)
