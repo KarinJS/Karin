@@ -4,7 +4,7 @@ import path from 'node:path'
 import util from 'node:util'
 import schedule from 'node-schedule'
 
-import { isTsx } from '@/env'
+import { isTs } from '@/env'
 import { cache } from '../system/cache'
 import { formatPath } from '@/utils'
 import { createLogger } from '../tools'
@@ -68,7 +68,7 @@ export const pkgLoads = async (
 
   /** 收集入口文件加载的Promise */
   if (pkg.type !== 'app') {
-    if (pkg.type === 'npm' || !isTsx()) {
+    if (pkg.type === 'npm' || !isTs()) {
       loadMainFile(entryPromises, pkg, pkg.pkgData?.main)
     } else {
       loadMainFile(entryPromises, pkg, pkg.pkgData?.karin?.main)
@@ -82,8 +82,9 @@ export const pkgLoads = async (
       : [pkg.pkgData.karin.static]
     cache.static.push(...list.map(file => path.resolve(pkg.dir, file)))
   } else {
-    /** 如果没有配置 默认使用 resource 目录 */
+    /** 如果没有配置 默认使用 resource、resources 目录 */
     cache.static.push(path.resolve(pkg.dir, 'resource'))
+    cache.static.push(path.resolve(pkg.dir, 'resources'))
   }
 }
 

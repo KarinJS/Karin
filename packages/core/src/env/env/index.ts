@@ -81,7 +81,7 @@ export const setRuntime = (runtime: 'node' | 'pm2' | 'tsx') => setProcessEnv('RU
  * @description 获取当前环境可加载的模块后缀类型
  */
 export const getModuleType = () => {
-  if (isTsx()) {
+  if (isTs()) {
     return ['.ts', '.js', '.cts', '.mts', '.mjs', '.cjs']
   }
 

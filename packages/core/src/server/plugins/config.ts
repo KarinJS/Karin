@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import util from 'node:util'
-import { isDev, isTsx } from '@/env'
+import { isDev, isTs } from '@/env'
 import { pathToFileURL } from 'node:url'
 import { requireFileSync } from '@/utils/fs/require'
 import { createServerErrorResponse, createSuccessResponse } from '@/server/utils/response'
@@ -51,7 +51,7 @@ const getWebConfigPathFromPkg = (pkg: PkgData, baseDir: string): string | null =
 
   let configPath = null
 
-  if (isTsx()) {
+  if (isTs()) {
     if (pkg.karin['ts-web']) {
       configPath = path.join(baseDir, pkg.karin['ts-web'])
       if (fileExists(configPath)) return configPath

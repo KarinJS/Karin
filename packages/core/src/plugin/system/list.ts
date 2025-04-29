@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import lodash from 'lodash'
-import { isTsx } from '@/env'
+import { isTs } from '@/env'
 import { createAddEnv } from './env'
 import { satisfies } from '@/utils/system'
 import { pluginDir as dir } from '@/root'
@@ -207,7 +207,7 @@ const getGitInfo = async (
   }
 
   /** 根据环境决定使用哪些应用路径 */
-  if (isTsx()) {
+  if (isTs()) {
     pkg.karin['ts-apps'] && pushApps(pkg.karin['ts-apps'])
   } else {
     pkg.karin.apps && pushApps(pkg.karin.apps)
@@ -294,7 +294,7 @@ const getPluginsInfo = async (
   isFirst: boolean
 ): Promise<PkgInfo[]> => {
   const info: PkgInfo[] = []
-  const ext = isTsx() ? ['.ts', '.js'] : ['.js']
+  const ext = isTs() ? ['.ts', '.js'] : ['.js']
   const env: PkgEnv[] | null = isFirst ? [] : null
 
   /** 处理每个插件 */
