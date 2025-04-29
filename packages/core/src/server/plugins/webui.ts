@@ -68,6 +68,8 @@ export const installWebui: RequestHandler = async (req, res) => {
       logger.error(new Error(`安装webui插件发生错误: ${name}`, { cause: result.error }))
     }
 
+    logger.mark(`[webui] 安装 ${name} 插件成功`)
+
     return createSuccessResponse(res, {
       status: result.status,
       data: result.status ? '安装成功' : result.error?.message || '安装失败',
@@ -94,6 +96,8 @@ export const uninstallWebui: RequestHandler = async (req, res) => {
     }
 
     const result = await exec(`pnpm uninstall ${name}`)
+
+    logger.mark(`[webui] 卸载 ${name} 插件成功`)
     return createSuccessResponse(res, {
       status: result.status,
       data: result.status ? '卸载成功' : result.error?.message || '卸载失败',
