@@ -22,11 +22,11 @@ import type {
 import type { OB11ApiParams, OB11ApiRequest } from '@/adapter/onebot'
 
 /** 适配器类型 */
-export interface AdapterType {
-  /** 原生方法 请自行as为对应的适配器类型 */
-  super: any
-  /** 原生方法 请自行as为对应的适配器类型 */
-  raw: any
+export interface AdapterType<T = any> {
+  /** 原生方法 */
+  super: T
+  /** 原生方法 */
+  raw: T
   /**
    * onebot专属方法
    * @param action 请求的方法

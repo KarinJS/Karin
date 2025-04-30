@@ -25,13 +25,15 @@ import { Contact } from '@/types/event'
  * 适配器基类 一个示例
  * @class AdapterBase
  */
-export abstract class AdapterBase implements AdapterType {
+export abstract class AdapterBase<T = any> implements AdapterType<T> {
   account: AdapterType['account']
   adapter: AdapterType['adapter']
-  super: any
-  raw: any
+  super: T
+  raw: T
 
   constructor () {
+    this.raw = {} as T
+    this.super = {} as T
     this.account = { uin: '', uid: '', selfId: '', subId: {}, name: '', avatar: '' }
     this.adapter = {
       index: -1,

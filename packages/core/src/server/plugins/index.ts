@@ -5,7 +5,10 @@ import './local'
 import path from 'node:path'
 import { testGithub } from './test-url'
 import { getPlugins } from '@/plugin/system/list'
+import { getPluginMarket } from '@/plugin/system'
+import { getAuthorAvatar, getNpmInfo, getGitInfo } from './info'
 import { handleAppPlugin, handleGitPlugin, handleNpmPlugin } from './file'
+import { getPluginListCache, setPluginListCache, paginatePlugins } from './cache'
 import { createServerErrorResponse, createSuccessResponse } from '@/server/utils/response'
 import {
   getHash,
@@ -14,12 +17,10 @@ import {
   updateGitPlugin,
   checkGitPluginUpdate,
 } from '@/utils/system/update'
-import { getAuthorAvatar, getNpmInfo, getGitInfo } from './info'
-import { getPluginListCache, setPluginListCache, paginatePlugins } from './cache'
+
 import type { RequestHandler } from 'express'
 import type { GetPluginType } from '@/types/plugin'
 import type { PluginLists, PluginUpdateInfo } from '@/types/server/plugins'
-import { getPluginMarket } from '@/plugin/system'
 
 /**
  * 获取完整的插件列表

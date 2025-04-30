@@ -14,6 +14,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { URL, fileURLToPath } from 'node:url'
 import { execSync } from 'node:child_process'
+import { MAIN } from './main'
 
 /**
  * 判断是否处于插件开发环境
@@ -390,6 +391,7 @@ const modifyPackageJson = (isDev: boolean, dir: string) => {
     if (!pkg.scripts.rs) pkg.scripts.rs = 'ki rs'
     if (!pkg.scripts.log) pkg.scripts.log = 'ki log'
     if (!pkg.scripts.up) pkg.scripts.up = 'ki up'
+    pkg.main = MAIN
   }
 
   if (!isDev && !pkg?.dependencies?.['node-karin']) {
