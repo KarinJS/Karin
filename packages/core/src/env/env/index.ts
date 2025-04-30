@@ -1,6 +1,7 @@
 import fs from 'node:fs'
+import yaml from 'yaml'
 
-const workspace = fs.existsSync(`${process.cwd()}/pnpm-workspace.yaml`)
+
 
 /**
  * @description 是否为Windows
@@ -50,7 +51,12 @@ export const isProd = () => !isDev()
 /**
  * @description 当前环境是否为pnpm工作区
  */
-export const isWorkspace = () => workspace
+export const isWorkspace = () => {
+  const workspace = fs.existsSync(`${process.cwd()}/pnpm-workspace.yaml`)
+  if (!workspace) return false
+  const data = yaml.parse(fs.readFileSync(`${process.cwd()}/pnpm-workspace.yaml`, 'utf-8'))
+  return Array.isArray(data.packages) && data.packages.length > 0
+}
 
 /**
  * @description 设置环境变量
