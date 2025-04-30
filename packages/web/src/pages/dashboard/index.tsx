@@ -46,6 +46,7 @@ import NetworkMonitor from '@/components/NetworkMonitor'
 import { Switch } from '@heroui/switch'
 import ConsoleMessage from '@/components/ConsoleMessage'
 import { getKarinStatusRequest } from '@/request/status'
+import key from '@/consts/key'
 
 interface IconMap {
   [key: string]: LucideIcon
@@ -80,17 +81,9 @@ function getWindowSizeCategory () {
 }
 
 function OnlineStatus () {
-  const { error } = useRequest(
-    () =>
-      request.serverGet<{
-        ping: string
-      }>('/api/v1/ping'),
-    {
-      pollingInterval: 1000,
-      // ready: location.pathname === '/dashboard',
-    }
-  )
-  const { data } = useRequest(() => getKarinStatusRequest())
+  const { data, error } = useRequest(() => getKarinStatusRequest(), {
+    pollingInterval: 1000,
+  })
   const msg = []
   data?.version && msg.push(data.version)
   error ? msg.push('离线') : msg.push('在线')
@@ -648,11 +641,23 @@ export default function IndexPage () {
 }
 
 function NetworkMonitorCard () {
-  const [showNetworkMonitor, setShowNetworkMonitor] = useState(false)
+  const [showNetworkMonitor, setShowNetworkMonitor] = useState(() => {
+    // 从localStorage读取之前的状态，如果存在则使用，否则默认为false
+    return localStorage.getItem(key.networkMonitorVisible) === 'true'
+  })
   const [enablePolling, setEnablePolling] = useState(true)
   const [showChart, setShowChart] = useState(true)
   const [initialCheckDone, setInitialCheckDone] = useState(false)
   const pollingIntervalRef = useRef<number | null>(null)
+
+  // 当网络监控状态改变时，更新localStorage
+  useEffect(() => {
+    if (showNetworkMonitor) {
+      localStorage.setItem(key.networkMonitorVisible, 'true')
+    } else {
+      localStorage.removeItem(key.networkMonitorVisible)
+    }
+  }, [showNetworkMonitor])
 
   // 初始检查接口是否可用
   const { data: initialData, error: initialError } = useRequest(
