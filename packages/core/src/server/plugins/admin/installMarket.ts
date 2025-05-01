@@ -8,6 +8,7 @@ import { mkdirSync } from '@/utils/fs/fsSync'
 import { downloadFile } from '@/utils/fs/file'
 import { taskSystem as task } from '@/service/task'
 import { getPluginMarket } from '@/plugin/system'
+import { pkgHotReload } from '@/plugin/admin/load'
 
 import type { Response } from 'express'
 import type { KarinPluginType } from '@karinjs/plugins-list'
@@ -84,6 +85,7 @@ const installNpm = async (
       await spawnProcess(
         'pnpm', args, {}, emitLog
       )
+      await pkgHotReload('npm', data.target)
       return true
     })
 
@@ -139,6 +141,7 @@ const installGit = async (
       await spawnProcess(
         'git', args, {}, emitLog
       )
+      await pkgHotReload('git', plugin.name)
       return true
     }
   )

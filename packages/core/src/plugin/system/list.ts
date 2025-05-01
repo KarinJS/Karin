@@ -288,7 +288,7 @@ const getNpmInfo = async (
  * @param isFirst 是否第一次获取
  * @returns 插件详细信息数组
  */
-const getPluginsInfo = async (
+export const getPluginsInfo = async (
   list: string[],
   isForce: boolean,
   isFirst: boolean

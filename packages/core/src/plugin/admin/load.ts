@@ -24,8 +24,10 @@ import type {
   PluginFncTypes,
   LoadPluginResult,
   AllPluginMethods,
+  KarinPluginAppsType,
 } from '@/types/plugin'
 import type { Plugin as ClassPluginType } from '../class'
+import { getPluginsInfo } from '../system/list'
 
 /** 插件ID */
 let seq = 0
@@ -300,4 +302,33 @@ export const pkgSort = () => {
   for (const key of Object.keys(cache.handler)) {
     cache.handler[key] = lodash.sortBy(cache.handler[key], ['rank'], ['asc'])
   }
+}
+
+/**
+ * 热加载一个插件包
+ * @version 1.8.0
+ * @param type 插件类型
+ * @param name 插件名称
+ */
+export const pkgHotReload = async (
+  type: KarinPluginAppsType,
+  name: string
+) => {
+  /** 收集所有插件加载的Promise */
+  const allPromises: Promise<void>[] = []
+  /** 收集入口文件加载的Promise */
+  const entryPromises: Promise<void>[] = []
+
+  const pkg = await getPluginsInfo([`${type}:${name}`], true, true)
+  if (pkg.length === 0) {
+    throw new Error(`[load][${type}:${name}] 插件不存在`)
+  }
+
+  await pkgLoads(pkg[0], allPromises, entryPromises)
+  await Promise.allSettled([...allPromises, ...entryPromises])
+  /** 回收缓存 */
+  allPromises.length = 0
+  entryPromises.length = 0
+  /** 排序 */
+  pkgSort()
 }

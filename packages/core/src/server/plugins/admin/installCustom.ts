@@ -6,6 +6,7 @@ import { karinPathPlugins } from '@/root'
 import { mkdirSync } from '@/utils/fs/fsSync'
 import { downloadFile } from '@/utils/fs/file'
 import { taskSystem as task } from '@/service/task'
+import { pkgHotReload } from '@/plugin/admin/load'
 
 import type { Response } from 'express'
 import type { PluginAdminCustomInstall, TaskEntity } from '@/types/task'
@@ -68,6 +69,7 @@ const installNpm = async (
       if (data.registry) args.push(`--registry=${data.registry}`)
 
       await spawnProcess('pnpm', args, {}, emitLog)
+      await pkgHotReload('npm', data.target)
       return true
     }
   )
@@ -112,6 +114,7 @@ const installGit = async (
         `./plugins/${pkgName}`,
       ]
       await spawnProcess('git', args, {}, emitLog)
+      await pkgHotReload('git', pkgName)
       return true
     }
   )
