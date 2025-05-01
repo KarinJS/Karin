@@ -8,7 +8,7 @@ import { Card, CardBody } from '@heroui/card'
 import { useState, useEffect } from 'react'
 import { formatTimeAgo, formatNumber } from '@/lib/utils'
 import { MarketPluginInstallButton } from './MarketPluginInstallButton'
-import { InstalledPluginButton } from '@/components/plugin/installed_plugin_button'
+import { InstalledPluginButton } from './InstalledPluginButton'
 import { IoRefreshOutline, IoDownloadOutline, IoSync } from 'react-icons/io5'
 import { getPackageDownloads, getPackageInfo } from './npmjs'
 

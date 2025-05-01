@@ -165,7 +165,7 @@ router.post(CHECK_PLUGIN_ROUTER, checkPlugin)
 router.post(GET_PLUGIN_CONFIG_ROUTER, pluginGetConfig)
 /** 保存插件配置 */
 router.post(SAVE_PLUGIN_CONFIG_ROUTER, pluginSaveConfig)
-/** 判断插件配置是否存在 */
+/** 判断插件web.config是否存在 */
 router.post(IS_PLUGIN_CONFIG_EXIST_ROUTER, pluginIsConfigExist)
 
 /** 插件管理 */
