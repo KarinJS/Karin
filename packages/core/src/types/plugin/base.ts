@@ -3,6 +3,8 @@ import type { AdapterProtocol } from '../adapter'
 
 /** 插件类型 */
 export type Apps = 'app' | 'git' | 'npm'
+/** karin插件类型 */
+export type KarinPluginAppsType = Apps
 /** 获取插件的方式 */
 export type GetPluginType = 'app' | 'git' | 'npm' | 'all'
 

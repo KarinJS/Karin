@@ -36,4 +36,6 @@ export const api = {
 
   /** @version 1.8.0 获取已加载命令插件缓存信息列表 */
   getLoadedCommandPluginCacheList: `${BASE_ROUTER}/plugin/loaded/command`,
+  /** @version 1.8.0 获取插件市场列表 */
+  getPluginMarketList: `${BASE_ROUTER}/plugin/market`,
 }

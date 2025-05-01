@@ -1,8 +1,6 @@
-/* eslint-disable @stylistic/indent */
-import isEqual from 'lodash.isequal'
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react'
 import { useRequest } from 'ahooks'
-import { request } from '@/lib/request'
+import { getPluginMarketListRequest } from '@/request/plugins'
 import { Pagination } from '@heroui/pagination'
 import { Button } from '@heroui/button'
 import { FaNpm } from 'react-icons/fa6'
@@ -21,7 +19,7 @@ import {
   IoChevronDownOutline,
   IoSyncOutline,
 } from 'react-icons/io5'
-import type { PluginLists } from 'node-karin'
+import type { PluginMarketResponse } from 'node-karin'
 import PluginCard from '@/components/plugin/market/card'
 
 /**
@@ -97,76 +95,50 @@ const MarketPage = () => {
     }
   }, [page, location.pathname, location.search, navigate])
 
-  // 获取在线插件列表
-  const { data: pluginsData, error: onlineError, loading: onlineLoading, refresh: refreshPlugins } = useRequest<{
-    list: PluginLists[]
-    total: number
-    page: number
-    pageSize: number
-  }, any>(
-    async () => {
-      try {
-        // 发送请求获取插件列表，直接返回原始数据
-        const response = await request.serverPost<{
-          list: PluginLists[]
-          total: number
-          page: number
-          pageSize: number
-        }, { page: number; pageSize: number; refresh?: boolean }>('/api/v1/plugin/index', {
-          page,
-          pageSize: 16,
-          refresh: isRefreshing,
-        })
-
-        // 直接返回服务器响应，不再使用模拟数据
-        return response
-      } catch (error) {
-        console.error('❌ 插件列表刷新失败:', error)
-        throw error
-      }
-    },
+  const {
+    data: plugins = [],
+    error: onlineError,
+    loading: onlineLoading,
+    refresh: refreshPlugins,
+  } = useRequest<PluginMarketResponse[], [boolean]>(
+    () => getPluginMarketListRequest(isRefreshing),
     {
-      refreshDeps: [page, isRefreshing],
-      onFinally: () => {
-        setIsRefreshing(false)
-      },
-      onSuccess: (data, oldData) => {
-        const hasChanged = !oldData || !isEqual(data, oldData)
-        if (hasChanged) {
-          return data
-        } else {
-          return oldData
-        }
-      },
+      refreshDeps: [isRefreshing],
+      onFinally: () => setIsRefreshing(false),
     }
   )
 
-  // 初始化或错误时提供默认值
-  const currentPluginsData = pluginsData || { list: [], total: 0, page: 1, pageSize: 16 }
-  const plugins = currentPluginsData.list
-
   const pageSize = 16
+
+  // 筛选和搜索逻辑
   const filteredPlugins = useMemo(() => {
-    let filtered = plugins || []
+    let filtered = [...plugins]
 
     // 类型筛选
     if (filterType === 'installed') {
-      filtered = filtered.filter(plugin => plugin.installed)
+      filtered = filtered.filter(plugin => plugin.local.installed)
     } else if (filterType !== 'all') {
-      filtered = filtered.filter(plugin => plugin.type && plugin.type.toLowerCase() === filterType.toLowerCase())
+      filtered = filtered.filter(plugin => {
+        if (plugin.type === 'market') {
+          return plugin.market.type.toLowerCase() === filterType.toLowerCase()
+        }
+        return plugin.local.type.toLowerCase() === filterType.toLowerCase()
+      })
     }
 
     // 搜索筛选
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim()
       filtered = filtered.filter(plugin => {
+        const name = plugin.type === 'market' ? plugin.market.name : plugin.local.name
+        const description = plugin.type === 'market' ? plugin.market.description : plugin.local.description || ''
+        const type = plugin.type === 'market' ? plugin.market.type : plugin.local.type
+
         return (
-          plugin.name.toLowerCase().includes(query) ||
-          (plugin.description && plugin.description !== '-' &&
-            plugin.description.toLowerCase().includes(query)) ||
-          plugin.author.some(author =>
-            author.name.toLowerCase().includes(query)) ||
-          (plugin.type && plugin.type.toLowerCase().includes(query))
+          name.toLowerCase().includes(query) ||
+          (description && description !== '-' && description.toLowerCase().includes(query)) ||
+          plugin.author.name.toLowerCase().includes(query) ||
+          (type && type.toLowerCase().includes(query))
         )
       })
     }
@@ -192,9 +164,8 @@ const MarketPage = () => {
   // 当前页插件数据
   const currentPagePlugins = useMemo(
     () => {
-      // 如果有筛选条件，仍然分页显示
       const startIndex = (page - 1) * pageSize
-      return (filteredPlugins || []).slice(startIndex, startIndex + pageSize)
+      return filteredPlugins.slice(startIndex, startIndex + pageSize)
     },
     [filteredPlugins, page, pageSize]
   )
@@ -211,7 +182,7 @@ const MarketPage = () => {
     }
   }, [refreshPlugins])
 
-  // 恢复 handleRefresh 函数
+  // 刷新函数
   const handleRefresh = useCallback(() => {
     if (onlineLoading || isRefreshing) return
 
@@ -219,13 +190,12 @@ const MarketPage = () => {
       clearTimeout(refreshTimeoutRef.current)
     }
     setIsRefreshing(true)
-    // 使用 setTimeout 延迟执行，确保 isRefreshing 状态更新先生效
     refreshTimeoutRef.current = setTimeout(() => {
       refreshPlugins()
-    }, 100) // 延迟 100ms
+    }, 100)
   }, [onlineLoading, isRefreshing, refreshPlugins])
 
-  if (onlineError && !pluginsData) {
+  if (onlineError) {
     return (
       <div className='h-full flex items-center justify-center'>
         <Card className='max-w-md mx-auto'>
@@ -333,7 +303,7 @@ const MarketPage = () => {
       <div className='flex-1 flex flex-col items-center justify-start w-full relative z-10'>
         <div className='w-full max-w-[1600px] mx-auto flex-1 flex flex-col py-4 px-4'>
           <ScrollShadow className='w-full h-full flex-1' hideScrollBar>
-            {onlineLoading && !pluginsData?.list.length && (
+            {onlineLoading && plugins.length === 0 && (
               <div className='h-full flex items-center justify-center'>
                 <Spinner size='lg' color='primary' />
               </div>
@@ -342,7 +312,12 @@ const MarketPage = () => {
               ? (
                 <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 p-2'>
                   {currentPagePlugins.map(plugin => (
-                    <PluginCard key={plugin.name + plugin.time} plugin={plugin} isRefreshing={isRefreshing} cardClassName='shadow-md border border-default-200 dark:border-default-700 hover:border-primary-400 dark:hover:border-primary-500 transition-colors' />
+                    <PluginCard
+                      key={plugin.type === 'market' ? plugin.market.name + plugin.market.time : plugin.local.name}
+                      plugin={plugin}
+                      isRefreshing={isRefreshing}
+                      cardClassName='shadow-md border border-default-200 dark:border-default-700 hover:border-primary-400 dark:hover:border-primary-500 transition-colors'
+                    />
                   ))}
                 </div>
               )

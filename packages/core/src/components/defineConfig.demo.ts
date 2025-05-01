@@ -7,22 +7,22 @@ export default defineConfig({
     name: 'demo',
     author: {
       name: 'shijin',
-      avatar: 'https://github.com/sj817.png'
+      avatar: 'https://github.com/sj817.png',
     },
     version: '1.0.0',
-    description: 'demo'
+    description: 'demo',
   },
   components: () => {
     return [
       cron.create('cron', {
-        defaultValue: '* * * * * *'
-      })
+        defaultValue: '* * * * * *',
+      }),
     ]
   },
   save: (_: Record<string, any>) => {
     return {
       success: true,
-      message: '保存成功'
+      message: '保存成功',
     }
-  }
+  },
 })

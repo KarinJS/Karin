@@ -304,7 +304,7 @@ const createWorkspace = (isDev: boolean, dir: string) => {
   const publicHoistPattern = [
     '*sqlite3*',
     '*express*',
-    ...data.publicHoistPattern
+    ...data.publicHoistPattern,
   ]
 
   data.publicHoistPattern = dedupe(publicHoistPattern)
@@ -319,7 +319,7 @@ const createWorkspace = (isDev: boolean, dir: string) => {
       },
       data
     )),
-    'utf-8'
+  'utf-8'
   )
 }
 

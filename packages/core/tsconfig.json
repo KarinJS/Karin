@@ -25,7 +25,8 @@
     "./plugins",
     "./exports",
     "sandbox",
-    "tsup.config.*.ts"
+    "tsup.config.*.ts",
+    "dist",
   ],
   "include": [
     "src"

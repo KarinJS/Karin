@@ -127,8 +127,8 @@ export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOne
           type: 'record',
           data: {
             file: fileToBase64(i.file, onebot.adapter.address),
-            magic: (i.magic ?? false) ? 1 : 0
-          }
+            magic: (i.magic ?? false) ? 1 : 0,
+          },
         })
         break
       }
@@ -143,16 +143,16 @@ export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOne
               audio,
               title,
               content: author,
-              image: pic
-            }
+              image: pic,
+            },
           })
         } else {
           elements.push({
             type: 'music',
             data: {
               type: i.platform as 'qq' | '163' | 'xm',
-              id: i.id
-            }
+              id: i.id,
+            },
           })
         }
         break

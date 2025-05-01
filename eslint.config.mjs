@@ -10,6 +10,16 @@ const commaDangle = val => {
     val.rules['@stylistic/comma-dangle'][1] = rule
   }
 
+  /** 三元表达式 */
+  if (val?.rules?.['@stylistic/indent']) {
+    console.log(val?.rules?.['@stylistic/indent'])
+    val.rules['@stylistic/indent'][2] = {
+      ...val.rules?.['@stylistic/indent']?.[2],
+      flatTernaryExpressions: true,
+      offsetTernaryExpressions: false,
+    }
+  }
+
   return val
 }
 

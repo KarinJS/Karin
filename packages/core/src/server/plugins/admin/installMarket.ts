@@ -7,10 +7,10 @@ import { raceRequest } from '@/utils/request'
 import { mkdirSync } from '@/utils/fs/fsSync'
 import { downloadFile } from '@/utils/fs/file'
 import { taskSystem as task } from '@/service/task'
-import { MarketType } from '@karinjs/plugins-list'
 import { getPluginMarket } from '@/plugin/system'
 
 import type { Response } from 'express'
+import type { KarinPluginType } from '@karinjs/plugins-list'
 import type { PluginAdminMarketInstall, PluginAdminMarketInstallApp, TaskEntity } from '@/types/task'
 
 /**
@@ -29,19 +29,27 @@ export const installMarket = async (
   const market = await getPluginMarket(true)
   const plugin = market.plugins.find(item => item.name === data.target)
   if (!plugin) {
-    return handleReturn(res, false, '插件包不存在')
+    return handleReturn(
+      res, false, '插件包不存在'
+    )
   }
 
   if (data.pluginType === 'app' && plugin.type === 'app') {
-    return installApp(res, plugin, data)
+    return installApp(
+      res, plugin, data
+    )
   }
 
   if (data.pluginType === 'npm' && plugin.type === 'npm') {
-    return installNpm(res, plugin, data, ip)
+    return installNpm(
+      res, plugin, data, ip
+    )
   }
 
   if (data.pluginType === 'git' && plugin.type === 'git') {
-    return installGit(res, plugin, data, ip)
+    return installGit(
+      res, plugin, data, ip
+    )
   }
 }
 
@@ -55,7 +63,7 @@ export const installMarket = async (
  */
 const installNpm = async (
   res: Response,
-  _: MarketType & { type: 'npm' },
+  _: KarinPluginType & { type: 'npm' },
   data: PluginAdminMarketInstall,
   ip: string
 ) => {
@@ -73,12 +81,15 @@ const installNpm = async (
       const args = ['add', data.target, '--save']
       if (isWorkspace()) args.push('-w')
 
-      await spawnProcess('pnpm', args, {}, emitLog)
+      await spawnProcess(
+        'pnpm', args, {}, emitLog
+      )
       return true
-    }
-  )
+    })
 
-  return handleReturn(res, true, '安装任务已创建，请通过taskId执行任务', id)
+  return handleReturn(
+    res, true, '安装任务已创建，请通过taskId执行任务', id
+  )
 }
 
 /**
@@ -91,7 +102,7 @@ const installNpm = async (
  */
 const installGit = async (
   res: Response,
-  plugin: MarketType & { type: 'git' },
+  plugin: KarinPluginType & { type: 'git' },
   data: PluginAdminMarketInstall,
   ip: string
 ) => {
@@ -108,7 +119,9 @@ const installGit = async (
   })
 
   if (repo?.status !== 200) {
-    return handleReturn(res, false, '测试访问仓库失败，请检查当前网络环境是否正常')
+    return handleReturn(
+      res, false, '测试访问仓库失败，请检查当前网络环境是否正常'
+    )
   }
 
   /**
@@ -123,12 +136,16 @@ const installGit = async (
     },
     async (_: TaskEntity, emitLog: (message: string) => void) => {
       const args = ['clone', '--depth=1', repo.config.url!, `./plugins/${plugin.name}`]
-      await spawnProcess('git', args, {}, emitLog)
+      await spawnProcess(
+        'git', args, {}, emitLog
+      )
       return true
     }
   )
 
-  return handleReturn(res, true, '安装任务已创建，请通过taskId执行任务', id)
+  return handleReturn(
+    res, true, '安装任务已创建，请通过taskId执行任务', id
+  )
 }
 
 /**
@@ -140,34 +157,53 @@ const installGit = async (
  */
 const installApp = async (
   res: Response,
-  plugin: MarketType & { type: 'app' },
+  plugin: KarinPluginType & { type: 'app' },
   data: PluginAdminMarketInstallApp
 ) => {
-  const file = plugin.files.find(item => item.name === data.appName)
-  if (!file) {
-    return handleReturn(res, false, 'app插件不存在')
+  if (!data.urls || !Array.isArray(data.urls)) {
+    return handleReturn(
+      res, false, 'app插件名称不能为空'
+    )
   }
 
+  /** 排除掉files中 不存在插件市场的文件 */
+  const urls = plugin.files.filter(item => data.urls.includes(item.url))
+
+  if (!urls.length) {
+    return handleReturn(
+      res, false, '请传递正确的app插件名称'
+    )
+  }
+
+  const msg = ['安装任务完成']
   /** 插件目录 统一下载到这里方便管理 */
   const dir = path.join(karinPathPlugins, 'karin-plugin-example')
-  const fileUrl = path.join(dir, file.name)
-  mkdirSync(dir)
 
-  const result = await downloadFile(file.url, fileUrl)
-  if (!result.success) {
-    let msg = 'app插件下载失败: '
-    if (result.data instanceof AxiosError) {
-      msg += result.data.message
-    } else if (result.data instanceof Error) {
-      msg += result.data.message || result.data.stack || '未知错误'
-    } else {
-      msg += String(result.data)
+  await Promise.all(urls.map(async (app) => {
+    const filename = path.basename(app.url)
+    const fileUrl = path.join(dir, filename)
+    mkdirSync(dir)
+
+    const result = await downloadFile(app.url, fileUrl)
+    if (!result.success) {
+      let err = `${filename} 下载失败: `
+      if (result.data instanceof AxiosError) {
+        err += result.data.message
+      } else if (result.data instanceof Error) {
+        err += result.data.message || result.data.stack || '未知错误'
+      } else {
+        err += String(result.data)
+      }
+
+      logger.error(`[install] 下载app插件失败:\n  url: ${app.url}\n  message: ${err}`)
+      msg.push(err)
+      return
     }
 
-    logger.error(`[install] 下载app插件失败:\n  url: ${file.url}\n  message: ${msg}`)
+    msg.push(`${filename} 下载成功`)
+  }))
 
-    return handleReturn(res, false, msg)
-  }
-
-  return handleReturn(res, true, '安装成功')
+  return handleReturn(
+    res, true, msg.join('\n')
+  )
 }

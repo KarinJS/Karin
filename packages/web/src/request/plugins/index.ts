@@ -4,6 +4,8 @@ import type {
   PluginAdminListResponse,
   PluginAdminParams,
   PluginAdminResult,
+  PluginMarketRequest,
+  PluginMarketResponse,
 } from 'node-karin'
 
 /**
@@ -83,4 +85,31 @@ export const getLoadedCommandPluginCacheList = async (
   pluginCache = { data, timestamp: now }
 
   return data
+}
+
+/**
+ * 获取插件市场列表
+ * @param forceRefresh 是否强制刷新数据
+ * @returns 插件市场列表
+ */
+export const getPluginMarketListRequest = async (
+  forceRefresh = false
+): Promise<PluginMarketResponse[]> => {
+  const response = await request.serverPost<PluginMarketResponse[], PluginMarketRequest>(
+    api.getPluginMarketList,
+    { refresh: forceRefresh }
+  )
+  return response
+}
+
+/**
+ * 创建任务结果
+ */
+export interface CreateTaskResult {
+  /** 任务ID */
+  taskId?: string
+  /** 操作是否成功 */
+  success: boolean
+  /** 操作消息 */
+  message?: string
 }

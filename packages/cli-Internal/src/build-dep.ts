@@ -152,5 +152,5 @@ const listBuildDependencies = (): void => {
 export const buildDep = {
   add: addBuildDependency,
   rm: removeBuildDependency,
-  ls: listBuildDependencies
-} 
+  ls: listBuildDependencies,
+}

@@ -104,18 +104,20 @@ export const PLUGIN_ADMIN_ROUTER = '/plugin/admin'
 /** @version 1.8.0 获取插件管理所需的插件信息列表 */
 export const GET_PLUGIN_LIST_PLUGIN_ADMIN_ROUTER = '/plugin/detail/list'
 
-/** 获取依赖列表 */
+/** @version 1.8.0 获取依赖列表 */
 export const GET_DEPENDENCIES_LIST_ROUTER = '/dependencies/list'
-/** 依赖管理路由 */
+/** @version 1.8.0 依赖管理路由 */
 export const MANAGE_DEPENDENCIES_ROUTER = '/dependencies/manage'
-/** 获取.npmrc文件列表 */
+/** @version 1.8.0 获取.npmrc文件列表 */
 export const GET_NPMRC_LIST_ROUTER = '/dependencies/npmrc/list'
-/** 获取npm config文件内容 */
+/** @version 1.8.0 获取npm config文件内容 */
 export const GET_NPM_CONFIG_ROUTER = '/dependencies/npmrc/get'
-/** 获取npm registry、proxy、https-proxy配置 */
+/** @version 1.8.0 获取npm registry、proxy、https-proxy配置 */
 export const GET_NPM_BASE_CONFIG_ROUTER = '/dependencies/npm/base'
-/** 保存npmrc文件 */
+/** @version 1.8.0 保存npmrc文件 */
 export const SAVE_NPMRC_ROUTER = '/dependencies/npmrc/save'
 
-/** 获取已加载命令插件缓存信息列表 */
+/** @version 1.8.0 获取已加载命令插件缓存信息列表 */
 export const GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER = '/plugin/loaded/command'
+/** @version 1.8.0 获取插件市场列表 */
+export const GET_PLUGIN_MARKET_LIST_ROUTER = '/plugin/market'

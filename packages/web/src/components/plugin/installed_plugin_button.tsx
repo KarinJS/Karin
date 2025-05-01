@@ -4,26 +4,23 @@ import { IoSettingsOutline } from 'react-icons/io5'
 import { PluginInfoModal } from './plugin_info_modal'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
-import type { pluginLists } from '@/types/plugins'
 import { PluginAppsModal } from './plugin_apps_modal'
 import { PluginConfig } from './config'
 
-interface InstalledPluginButtonProps {
-  plugin: pluginLists
-}
+import type { PluginMarketResponse } from 'node-karin'
 
-export function InstalledPluginButton ({ plugin }: InstalledPluginButtonProps) {
+export function InstalledPluginButton ({ plugin }: { plugin: PluginMarketResponse }) {
   const [isOpen, setIsOpen] = useState(false)
   const [isAppsOpen, setIsAppsOpen] = useState(false)
   const [isConfigOpen, setIsConfigOpen] = useState(false)
 
   const { runAsync: handleUpdate } = useRequest(
-    () => request.serverPost('/api/v1/plugin/update', { name: plugin.name }),
+    () => request.serverPost('/api/v1/plugin/update', { name: plugin.local.name }),
     { manual: true }
   )
 
   const { runAsync: handleUninstall } = useRequest(
-    () => request.serverPost('/api/v1/plugin/uninstall', { name: plugin.name }),
+    () => request.serverPost('/api/v1/plugin/uninstall', { name: plugin.local.name }),
     { manual: true }
   )
 
@@ -42,7 +39,7 @@ export function InstalledPluginButton ({ plugin }: InstalledPluginButtonProps) {
       <PluginInfoModal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        plugin={plugin}
+        plugin={plugin.local}
         onUpdate={async () => {
           await handleUpdate()
           setIsOpen(false)
@@ -62,13 +59,13 @@ export function InstalledPluginButton ({ plugin }: InstalledPluginButtonProps) {
       <PluginAppsModal
         isOpen={isAppsOpen}
         onClose={() => setIsAppsOpen(false)}
-        pluginName={plugin.name}
+        pluginName={plugin.local.name}
       />
 
       <PluginConfig
         open={isConfigOpen}
-        name={plugin.name}
-        type={plugin.type}
+        name={plugin.local.name}
+        type={plugin.local.type}
         onClose={() => setIsConfigOpen(false)}
         onViewConfig={() => setIsConfigOpen(true)}
       />

@@ -38,3 +38,40 @@ export const raceRequest = async <R = AxiosRequestConfig, T = any> (
   const results = await Promise.race(requests)
   return results
 }
+
+/**
+ * 返回最快的npm registry
+ * @description 阿里云兜底
+ * @returns 返回最快的npm registry
+ */
+export const getFastRegistry = async (): Promise<string> => {
+  const urls = [
+    'https://registry.npmmirror.com',
+    'https://registry.npmjs.com',
+    'https://mirrors.cloud.tencent.com/npm',
+  ]
+
+  const result = await raceRequest(urls)
+  return result?.config.url || urls[0]
+}
+
+/**
+ * 获取指定仓库的package.json
+ * @param owner - 仓库所属用户名
+ * @param repo - 仓库名
+ * @returns 返回指定仓库的package.json
+ */
+export const getPackageJson = async (owner: string, repo: string): Promise<any> => {
+  try {
+    const urls = [
+      `https://jsd.cdn.zzko.cn/gh/${owner}/${repo}/package.json`,
+      `https://jsd.onmicrosoft.cn/gh/${owner}/${repo}/package.json`,
+    ]
+
+    const result = await raceRequest(urls)
+    return result?.data || { version: '0.0.0' }
+  } catch (error) {
+    logger.debug(error)
+    return { version: '0.0.0' }
+  }
+}

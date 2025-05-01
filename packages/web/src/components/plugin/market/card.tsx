@@ -1,4 +1,3 @@
-/* eslint-disable @stylistic/indent */
 import { Link } from '@heroui/link'
 import { Chip } from '@heroui/chip'
 import { Avatar } from '@heroui/avatar'
@@ -8,13 +7,13 @@ import { BadgeCheck } from 'lucide-react'
 import { Card, CardBody } from '@heroui/card'
 import { useState, useEffect } from 'react'
 import { formatTimeAgo, formatNumber } from '@/lib/utils'
-import { InstallPluginButton } from '@/components/plugin/install_plugin_button'
+import { MarketPluginInstallButton } from './MarketPluginInstallButton'
 import { InstalledPluginButton } from '@/components/plugin/installed_plugin_button'
 import { IoRefreshOutline, IoDownloadOutline, IoSync } from 'react-icons/io5'
 import { getPackageDownloads, getPackageInfo } from './npmjs'
 
 import type { FC } from 'react'
-import type { PluginLists } from 'node-karin'
+import type { PluginMarketResponse } from 'node-karin'
 
 /**
  * 缓存配置
@@ -96,23 +95,23 @@ const IsInstallIcon: FC<{
  * @param plugin - 插件信息
  * @returns 返回插件名称组件
  */
-const PluginName: FC<{ plugin: PluginLists }> = ({ plugin }) => {
-  if (plugin.home && plugin.home !== '-') {
+const PluginName: FC<{ plugin: PluginMarketResponse }> = ({ plugin }) => {
+  if (plugin.local.home) {
     return (
       <Tooltip content='点击访问插件主页'>
         <Link
-          href={plugin.home}
+          href={plugin.local.home}
           isExternal
           className='text-sm font-medium text-default-900 hover:text-primary-500 transition-colors truncate'
         >
-          {plugin.name}
+          {plugin.local.name}
         </Link>
       </Tooltip>
     )
   }
 
   return (
-    <span className='text-sm font-medium text-default-900 truncate'>{plugin.name}</span>
+    <span className='text-sm font-medium text-default-900 truncate'>{plugin.local.name}</span>
   )
 }
 
@@ -121,7 +120,7 @@ const PluginName: FC<{ plugin: PluginLists }> = ({ plugin }) => {
  * @param plugin - 插件信息
  * @returns 返回插件描述组件
  */
-const PluginDescription: FC<{ plugin: PluginLists }> = ({ plugin }) => {
+const PluginDescription: FC<{ plugin: PluginMarketResponse }> = ({ plugin }) => {
   const getDefaultDescription = (name: string) => {
     const descriptions = [
       '为您的工作流程带来更多可能性和效率提升',
@@ -177,15 +176,15 @@ const PluginDescription: FC<{ plugin: PluginLists }> = ({ plugin }) => {
     return text.substring(0, truncateIndex) + '...'
   }
 
-  const description = plugin.description === '-'
-    ? getDefaultDescription(plugin.name)
-    : plugin.description
+  const description = !plugin.local.description
+    ? getDefaultDescription(plugin.local.name)
+    : plugin.local.description
 
   /** 处理可能过长的描述 */
   const displayText = truncateText(description)
 
   return (
-    <p className='text-xs text-default-500 line-clamp-2 leading-relaxed' title={plugin.description}>
+    <p className='text-xs text-default-500 line-clamp-2 leading-relaxed' title={plugin.local.description}>
       {displayText}
     </p>
   )
@@ -196,8 +195,8 @@ const PluginDescription: FC<{ plugin: PluginLists }> = ({ plugin }) => {
  * @param plugin - 插件信息
  * @returns 返回卡片头像组件
  */
-const CardAvatar: FC<{ plugin: PluginLists }> = ({ plugin }) => {
-  if (plugin.author.length < 1) {
+const CardAvatar: FC<{ plugin: PluginMarketResponse }> = ({ plugin }) => {
+  if (!plugin.author) {
     return (
       <Avatar
         isBordered
@@ -212,20 +211,23 @@ const CardAvatar: FC<{ plugin: PluginLists }> = ({ plugin }) => {
     <Tooltip
       content={
         <div className='text-center'>
-          <p className='text-sm text-default-600'>{plugin.author[0].name}</p>
-          {plugin.author[0].home && plugin.author[0].home !== '-' && (
-            <p className='text-xs text-default-400'>点击访问主页</p>
-          )}
+          <p className='text-sm text-default-600'>{plugin.author.name}</p>
+          {
+            plugin.author.home &&
+            (
+              <p className='text-xs text-default-400'>点击访问主页</p>
+            )
+          }
         </div>
       }
     >
-      {plugin.author[0].home && plugin.author[0].home !== '-'
+      {plugin.author.home
         ? (
-          <Link href={plugin.author[0].home} isExternal>
+          <Link href={plugin.author.home} isExternal>
             <Avatar
               isBordered
               size='sm'
-              src={plugin.author[0].avatar || 'https://avatar.vercel.sh/ikenxuan'}
+              src={plugin.author.avatar || 'https://avatar.vercel.sh/ikenxuan'}
               className='bg-default-100 border-white dark:border-default-800'
             />
           </Link>
@@ -234,7 +236,7 @@ const CardAvatar: FC<{ plugin: PluginLists }> = ({ plugin }) => {
           <Avatar
             isBordered
             size='sm'
-            src={plugin.author[0].avatar || 'https://avatar.vercel.sh/ikenxuan'}
+            src={plugin.author.avatar || 'https://avatar.vercel.sh/ikenxuan'}
             className='bg-default-100 border-white dark:border-default-800'
           />
         )}
@@ -268,12 +270,8 @@ const NpmInfo: FC<{ name: string, isRefreshing: boolean }> = ({ name, isRefreshi
 
       setLoading(true)
 
-      // 提取基础包名 - 移除我们测试中添加的下划线和数字后缀
-      // 例如 karin-plugin-mc-rcon_2 -> karin-plugin-mc-rcon
-      const baseName = name.replace(/_\d+$/, '')
-
-      const downloadsCacheKey = `${baseName}_downloads`
-      const updatedCacheKey = `${baseName}_updated`
+      const downloadsCacheKey = `${name}_downloads`
+      const updatedCacheKey = `${name}_updated`
 
       const downloadsCache = getCache<number>(downloadsCacheKey)
       const updatedCache = getCache<string>(updatedCacheKey)
@@ -290,8 +288,8 @@ const NpmInfo: FC<{ name: string, isRefreshing: boolean }> = ({ name, isRefreshi
 
           // 使用Promise.allSettled确保即使一个请求失败也能继续处理
           const results = await Promise.allSettled([
-            getPackageDownloads(baseName),
-            getPackageInfo(baseName),
+            getPackageDownloads(name),
+            getPackageInfo(name),
           ])
 
           if (results[0].status === 'fulfilled') {
@@ -361,11 +359,15 @@ const NpmInfo: FC<{ name: string, isRefreshing: boolean }> = ({ name, isRefreshi
  * @param cardClassName - 可选，外部自定义卡片className
  * @returns 返回插件卡片组件
  */
-const PluginCard: FC<{ plugin: PluginLists, isRefreshing: boolean, cardClassName?: string }> = ({ plugin, isRefreshing, cardClassName }) => {
+const PluginCard: FC<{
+  plugin: PluginMarketResponse,
+  isRefreshing: boolean,
+  cardClassName?: string
+}> = ({ plugin, isRefreshing, cardClassName }) => {
   return (
     <Card
       className={`group w-full h-[140px] flex flex-col overflow-hidden cursor-pointer relative bg-default-50/10 dark:bg-default-100/0 hover:shadow-sm transition-all duration-300 rounded-xl border border-default-200/60 dark:border-default-100/20 ${cardClassName || ''}`}
-      isPressable={false}
+      isPressable
       radius='sm'
     >
       {/* 优化边框动画效果 */}
@@ -374,7 +376,7 @@ const PluginCard: FC<{ plugin: PluginLists, isRefreshing: boolean, cardClassName
         <div className='flex items-start justify-between gap-3 mb-2'>
           <div className='flex-1 min-w-0'>
             <div className='flex items-center gap-2 mb-1.5'>
-              <IsInstallIcon installed={plugin.installed} />
+              <IsInstallIcon installed={plugin.local.installed} />
               <PluginName plugin={plugin} />
             </div>
             <PluginDescription plugin={plugin} />
@@ -394,19 +396,28 @@ const PluginCard: FC<{ plugin: PluginLists, isRefreshing: boolean, cardClassName
               size='sm'
               className='h-5 px-2 bg-default-100/80 border-small border-default-200/50'
             >
-              <span className='text-xs font-mono'>
-                {plugin.version === '-' ? '未知版本' : `v${plugin.version}`}
-              </span>
+              {plugin.local.version
+                ? (
+                  <span className='text-xs font-mono'>
+                    {`v${plugin.local.version}`}
+                  </span>
+                )
+                : (
+                  <span className='text-xs font-mono'>
+                    ⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄
+                  </span>
+                )}
+
             </Chip>
             {/* 只有NPM类型的插件才显示下载量和更新时间信息 */}
-            {plugin.type === 'npm' && <NpmInfo name={plugin.name} isRefreshing={isRefreshing} />}
+            {plugin.local.type === 'npm' && <NpmInfo name={plugin.local.name} isRefreshing={isRefreshing} />}
           </div>
 
           <div className='flex items-center gap-2'>
             {
-              plugin.installed
+              plugin.local.installed
                 ? <InstalledPluginButton plugin={plugin} />
-                : <InstallPluginButton plugin={plugin} />
+                : <MarketPluginInstallButton plugin={plugin} />
             }
           </div>
         </div>

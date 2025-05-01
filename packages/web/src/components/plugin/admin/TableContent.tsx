@@ -119,7 +119,6 @@ const TableContent: FC<TableContentProps> = ({
                 </div>
               </div>
 
-              {/* 其他表头列（与原始实现相同）... */}
               {/* 插件名称列 */}
               <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 pl-7 sm:pl-2 pr-2 md:px-4 col-span-6 sm:col-span-4'>
                 插件名称
@@ -133,6 +132,21 @@ const TableContent: FC<TableContentProps> = ({
               {/* 最新版本列 */}
               <div className='hidden sm:block text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-1 sm:px-2 md:px-4 text-center col-span-3 sm:col-span-2'>
                 最新版本
+              </div>
+
+              {/* 插件类型列 */}
+              <div className='hidden sm:block text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-2 md:px-4 text-center col-span-1'>
+                插件类型
+              </div>
+
+              {/* 状态列 */}
+              <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 px-0 md:px-4 text-center col-span-3 sm:col-span-1'>
+                <div className='flex justify-end sm:justify-center pr-8 sm:pr-0'>状态</div>
+              </div>
+
+              {/* 操作列 */}
+              <div className='text-default-500 font-normal text-xs uppercase tracking-wider py-3 md:py-4 pl-0 pr-0 sm:px-2 md:px-4 text-center col-span-2 sm:col-span-1'>
+                <div className='flex justify-end sm:justify-center pr-4 sm:pr-0'>操作</div>
               </div>
             </div>
           </div>

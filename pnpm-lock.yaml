@@ -15,6 +15,9 @@ importers:
       '@types/node':
         specifier: ^18.19.84
         version: 18.19.84
+      eslint:
+        specifier: ^9.7.0
+        version: 9.21.0(jiti@1.21.7)
       eslint-plugin-prettier:
         specifier: ^5.2.5
         version: 5.2.5(eslint@9.21.0(jiti@1.21.7))(prettier@3.5.3)
@@ -107,8 +110,8 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3
       '@karinjs/plugins-list':
-        specifier: ^1.5.0
-        version: 1.5.0
+        specifier: ^1.6.1
+        version: 1.6.1
       '@types/express':
         specifier: ^5.0.1
         version: 5.0.1
@@ -1731,8 +1734,8 @@ packages:
   '@karinjs/plugin-webui-network-monitor@1.0.3':
     resolution: {integrity: sha512-FloMaA3/41ZWOy0oVReH2tvS3FUABgzj2+EZ/6f7FkyC1aK4sQYsEDRuB2ru8RC7uycRxU2E0Tufj3jtnU5AGA==}
 
-  '@karinjs/plugins-list@1.5.0':
-    resolution: {integrity: sha512-lbxoLAp757yGparirfcDGpvLLmA91Pq+xc+IrIW2kcRMglTr+wTkrr6PQ9OtYO7HhTuqpYefIoxwuL7dVEeoWA==}
+  '@karinjs/plugins-list@1.6.1':
+    resolution: {integrity: sha512-yOMcsGDaPiLpwImxzU5+2tAUBAaik0eFezNEzxxWqPHw685DHFZFe6sD5NewT2UkKJPivqX0SrEshJb5U56GPg==}
 
   '@karinjs/redis@1.1.3':
     resolution: {integrity: sha512-Keo+1pJxvddTqBF4BE7AnZqvbBRXZ4QaZa8uJCKngmQ303TV3M0x0gHuKBfDNXQAkiHylw09a3YAzj68sh/Dhw==}
@@ -7226,7 +7229,7 @@ snapshots:
     dependencies:
       systeminformation: 5.25.11
 
-  '@karinjs/plugins-list@1.5.0': {}
+  '@karinjs/plugins-list@1.6.1': {}
 
   '@karinjs/redis@1.1.3': {}
 

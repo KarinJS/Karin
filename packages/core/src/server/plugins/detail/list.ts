@@ -1,15 +1,12 @@
 import path from 'node:path'
 import { getPlugins } from '@/plugin/system/list'
-import {
-  createSuccessResponse,
-  createServerErrorResponse,
-} from '@/server/utils/response'
+import { cache } from '@/plugin/system'
 import { getLocalCommitHash, getRemoteCommitHash } from '@/utils/git'
+import { createSuccessResponse, createServerErrorResponse } from '@/server/utils/response'
 
 import type { RequestHandler } from 'express'
 import type { LoadedPluginCacheList } from '@/types/plugin/cache'
 import type { PluginAdminListResponse } from '@/types/server/plugins'
-import { cache } from '@/plugin/system'
 
 /**
  * @webui 插件管理 获取插件列表Api

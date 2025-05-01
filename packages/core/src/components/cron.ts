@@ -23,5 +23,5 @@ export const cron = {
    * @param key 唯一标识符
    * @param options 分隔线配置
    */
-  create: (key: string, options: Omit<CronProps, 'key' | 'componentType'> = {}) => createCron(key, options)
+  create: (key: string, options: Omit<CronProps, 'key' | 'componentType'> = {}) => createCron(key, options),
 }

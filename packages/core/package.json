@@ -174,7 +174,7 @@
   "devDependencies": {
     "@karinjs/node-pty": "^1.1.0",
     "@karinjs/plugin-webui-network-monitor": "^1.0.3",
-    "@karinjs/plugins-list": "^1.5.0",
+    "@karinjs/plugins-list": "^1.6.1",
     "@types/express": "^5.0.1",
     "@types/lodash": "^4.17.16",
     "cross-env": "^7.0.3",

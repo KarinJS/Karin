@@ -18,12 +18,6 @@ import {
   PING_ROUTER,
   SYSTEM_STATUS_KARIN_ROUTER,
   SYSTEM_STATUS_ROUTER,
-  GET_ONLINE_PLUGIN_LIST_ROUTER,
-  GET_PLUGIN_LIST_ROUTER,
-  GET_PLUGIN_APPS_ROUTER,
-  GET_PLUGIN_FILE_ROUTER,
-  GET_UPDATABLE_PLUGINS_ROUTER,
-  BATCH_UPDATE_PLUGINS_ROUTER,
   GET_PLUGIN_CONFIG_ROUTER,
   SAVE_PLUGIN_CONFIG_ROUTER,
   IS_PLUGIN_CONFIG_EXIST_ROUTER,
@@ -55,6 +49,7 @@ import {
   SAVE_NPMRC_ROUTER,
   GET_PLUGIN_LIST_PLUGIN_ADMIN_ROUTER,
   GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER,
+  GET_PLUGIN_MARKET_LIST_ROUTER,
 } from './router'
 import { logMiddleware } from '../log'
 import { authMiddleware } from '../auth/middleware'
@@ -62,8 +57,6 @@ import { loginRouter } from '../auth/login'
 import { refreshRouter } from '../auth/refresh'
 import { getConfig, saveConfig } from '../config'
 import { pingRouter } from '../system/ping'
-// import { pluginUpdateRouter } from '../plugins/admin'
-import { handlePluginFile } from '../plugins/file'
 import { pluginGetLocalList } from '../plugins/local'
 import { consoleRouter } from '../console'
 import { getBotsRouter } from '../system/botList'
@@ -80,13 +73,6 @@ import {
   getLogFileRouter,
   getLogRouter, logLevelRouter,
 } from '../log/getLog'
-import {
-  getOnlinePluginList,
-  getPluginListRouter,
-  getPluginApps,
-  getUpdatablePlugins,
-  batchUpdatePlugins,
-} from '../plugins'
 import {
   pluginGetConfig,
   pluginIsConfigExist,
@@ -118,6 +104,7 @@ import { manageDependenciesRouter } from '../dependencies/manage'
 import { taskListRouter, taskRunRouter, taskLogsRouter, taskDeleteRouter } from '../task/list'
 import { getNpmBaseConfigRouter, getNpmrcContentRouter, getNpmrcListRouter, saveNpmrcRouter } from '../dependencies/config'
 import { getLoadedCommandPluginCacheList, getPluginListPluginAdmin } from '../plugins/detail'
+import { getPluginMarketList } from '../plugins/market'
 
 /**
  * karin内部路由
@@ -174,18 +161,6 @@ router.get(SYSTEM_STATUS_ROUTER, systemStatusRealTimeHandler)
 /** 检查是否安装了指定的npm包 */
 router.post(CHECK_PLUGIN_ROUTER, checkPlugin)
 
-/** 获取在线插件列表 */
-router.post(GET_ONLINE_PLUGIN_LIST_ROUTER, getOnlinePluginList)
-/** 获取插件列表 */
-router.post(GET_PLUGIN_LIST_ROUTER, getPluginListRouter)
-/** 获取插件应用 */
-router.post(GET_PLUGIN_APPS_ROUTER, getPluginApps)
-/** 获取插件文件 */
-router.post(GET_PLUGIN_FILE_ROUTER, handlePluginFile)
-/** 获取可更新插件 */
-router.post(GET_UPDATABLE_PLUGINS_ROUTER, getUpdatablePlugins)
-/** 批量更新插件 */
-router.post(BATCH_UPDATE_PLUGINS_ROUTER, batchUpdatePlugins)
 /** 获取插件配置 */
 router.post(GET_PLUGIN_CONFIG_ROUTER, pluginGetConfig)
 /** 保存插件配置 */
@@ -253,3 +228,5 @@ router.post(TASK_DELETE_ROUTER, taskDeleteRouter)
 
 /** @version 1.8.0 获取已加载命令插件缓存信息列表 */
 router.post(GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER, getLoadedCommandPluginCacheList)
+/** @version 1.8.0 获取插件市场列表 */
+router.post(GET_PLUGIN_MARKET_LIST_ROUTER, getPluginMarketList)
