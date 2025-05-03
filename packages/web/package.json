@@ -110,7 +110,7 @@
     "react-scan": "^0.3.3",
     "sass": "^1.86.0",
     "typescript": "5.7.3",
-    "vite": "^6.2.3",
+    "vite": "^6.2.7",
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-static-copy": "^2.3.0",
     "vite-tsconfig-paths": "^5.1.4"
