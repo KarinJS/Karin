@@ -13,12 +13,6 @@ jobs:
   release-please:
     # 设置任务运行环境为 ubuntu-latest
     runs-on: ubuntu-latest
-    outputs:
-      releases_created: ${{ steps.release.outputs.release_created }}
-      core_release: ${{ steps.release.outputs['packages/core--release_created'] }}
-      cli_release: ${{ steps.release.outputs['packages/cli--release_created'] }}
-      create_karin_release: ${{ steps.release.outputs['packages/create-karin--release_created'] }}
-      web_release: ${{ steps.release.outputs['packages/web--release_created'] }}
     steps:
       # 使用 release-please-action 动作来自动创建发布 PR
       - uses: googleapis/release-please-action@v4
@@ -26,53 +20,49 @@ jobs:
         with:
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
-  
-  # 只有当实际创建了发布时才执行发布任务
-  publish:
-    needs: release-please
-    # 同时检查单数和复数形式，确保兼容性
-    if: ${{ needs.release-please.outputs.releases_created == 'true' || needs.release-please.outputs.release_created == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
       - name: 检出代码
         uses: actions/checkout@v4
+        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/cli--release_created'] || steps.release.outputs['packages/create-karin--release_created'] || steps.release.outputs['packages/web--release_created'] }}
 
       - name: 设置 node
         uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
+        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/cli--release_created'] || steps.release.outputs['packages/create-karin--release_created'] || steps.release.outputs['packages/web--release_created'] }}
 
       - name: 设置 pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 9
+        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/create-karin--release_created'] || steps.release.outputs['packages/web--release_created'] }}
 
       # 安装所有依赖
       - name: 安装依赖
         run: pnpm install
+        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/create-karin--release_created'] || steps.release.outputs['packages/web--release_created'] }}
+
+      # 编译
+      - name: 编译
+        run: pnpm build
+        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/create-karin--release_created'] || steps.release.outputs['packages/web--release_created'] }}
 
       # cp README.md 到 core 目录
       - name: 复制 README.md 到 core 目录
         run: cp README.md packages/core
-        if: ${{ needs.release-please.outputs.core_release == 'true' || needs.release-please.outputs.web_release == 'true' }}
-
-      # 全局构建
-      - name: 全局构建
-        run: pnpm build
-        if: ${{ needs.release-please.outputs.core_release == 'true' || needs.release-please.outputs.web_release == 'true' }}
+        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/web--release_created'] }}
 
       # 发布 core 包
       - name: 发布 core 包
-        if: ${{ needs.release-please.outputs.core_release == 'true' || needs.release-please.outputs.web_release == 'true' }}
+        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/web--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         working-directory: packages/core
-        run: npm pkg delete peerDependencies && pnpm run pub
+        run: pnpm run pub
 
       # 发布 cli 包
       - name: 发布 cli 包
-        if: ${{ needs.release-please.outputs.cli_release == 'true' }}
+        if: ${{ steps.release.outputs['packages/cli--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         working-directory: packages/cli
@@ -80,11 +70,11 @@ jobs:
 
       # 发布 create-karin 包
       - name: 发布 create-karin 包
-        if: ${{ needs.release-please.outputs.create_karin_release == 'true' }}
+        if: ${{ steps.release.outputs['packages/create-karin--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         working-directory: packages/create-karin
-        run: pnpm pub
+        run: pnpm run pub
 
       - name: Sync repo status
         uses: benc-uk/workflow-dispatch@v1
