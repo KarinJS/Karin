@@ -1,5 +1,13 @@
 # 更新日志
 
+## [1.8.3](https://github.com/KarinJS/Karin/compare/core-v1.8.2...core-v1.8.3) (2025-05-03)
+
+
+### 🐛 Bug Fixes
+
+* 修正axios ([8d093c0](https://github.com/KarinJS/Karin/commit/8d093c0f7cb2dfafdab79fd1ec8aa2a35f60b848))
+* 更新axios版本至1.1.6 ([ee1b0b9](https://github.com/KarinJS/Karin/commit/ee1b0b94dfa58fc5d3774d75f31168c180b0073a))
+
 ## [1.8.2](https://github.com/KarinJS/Karin/compare/core-v1.8.1...core-v1.8.2) (2025-05-03)
 
 
