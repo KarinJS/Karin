@@ -37,7 +37,7 @@ jobs:
       
       # 构建项目
       - name: 构建项目
-        run: pnpm build:all
+        run: pnpm build
       
       # 更新版本号
       - name: 更新版本号
