@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/KarinJS/Karin/compare/create-karin-v1.1.1...create-karin-v1.1.2) (2025-05-03)
+
+
+### 🐛 Bug Fixes
+
+* **create:** 干掉锁 ([7805043](https://github.com/KarinJS/Karin/commit/78050437afdb4bfbca4a339ab0ac3c62abd73fa8))
+
 ## [1.1.1](https://github.com/KarinJS/Karin/compare/create-karin-v1.1.0...create-karin-v1.1.1) (2025-05-03)
 
 
