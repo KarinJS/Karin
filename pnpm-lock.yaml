@@ -70,8 +70,8 @@ importers:
         specifier: npm:@karinjs/art-template@1.1.0
         version: '@karinjs/art-template@1.1.0'
       axios:
-        specifier: npm:@karinjs/axios@1.0.1
-        version: '@karinjs/axios@1.0.1'
+        specifier: npm:@karinjs/axios@1.1.4
+        version: '@karinjs/axios@1.1.4'
       chalk:
         specifier: 5.4.1
         version: 5.4.1
@@ -1848,12 +1848,20 @@ packages:
   '@karinjs/axios@1.0.1':
     resolution: {integrity: sha512-brYm4KN/KH9geXPTEHWawyi1Y0Z79WB9rp5MG3EblS0SMYa1ta22Mqx6wKRCUiCpRn7cxvmyYG1+O8YdAD2k9g==}
 
+  '@karinjs/axios@1.1.4':
+    resolution: {integrity: sha512-F9gBxD0GPrelJmpl2WK09TfMNvZXQtuL9gHYoYeLVTIopeSq8hu/FxfILRh1GP7RMvGxSXG2n7Hzx11QIXnDqw==}
+    engines: {node: '>=18'}
+
   '@karinjs/dotenv@1.1.2':
     resolution: {integrity: sha512-F1YCmSWxh3hvunVkxKco+4dsEL/DHqwuWVesB4M0fDh/sa/jhhQ6YrD3V03j0oTH9+jtszehTFEetcvjr8IH1g==}
     engines: {node: '>=18'}
 
   '@karinjs/express@1.0.3':
     resolution: {integrity: sha512-xHsKbxh7SJLCosg/iXYtaH1WHSMKe+FkLIlvj8/nJui3MhgQsso7OkHZHOoooAJkZ3U+41DkbPV2nVav3AYFWQ==}
+    engines: {node: '>=18'}
+
+  '@karinjs/form-data@1.1.0':
+    resolution: {integrity: sha512-ifGLmHhQhqnMAQEUt+sMZ94SHtRD1WyUNJZy/zbZtAV10YyH7WZt+fboq8Q7f1xE9Ey8DFiykiUM10ziERuvCA==}
     engines: {node: '>=18'}
 
   '@karinjs/jsonwebtoken@1.1.1':
@@ -7542,9 +7550,15 @@ snapshots:
 
   '@karinjs/axios@1.0.1': {}
 
+  '@karinjs/axios@1.1.4':
+    dependencies:
+      form-data: '@karinjs/form-data@1.1.0'
+
   '@karinjs/dotenv@1.1.2': {}
 
   '@karinjs/express@1.0.3': {}
+
+  '@karinjs/form-data@1.1.0': {}
 
   '@karinjs/jsonwebtoken@1.1.1': {}
 
