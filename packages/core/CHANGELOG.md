@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.8.4](https://github.com/KarinJS/Karin/compare/core-v1.8.3...core-v1.8.4) (2025-05-03)
+
+
+### 🐛 Bug Fixes
+
+* axios入口错误 ([8da00d9](https://github.com/KarinJS/Karin/commit/8da00d97f821830dc0added6dff3474405686747))
+
 ## [1.8.3](https://github.com/KarinJS/Karin/compare/core-v1.8.2...core-v1.8.3) (2025-05-03)
 
 
