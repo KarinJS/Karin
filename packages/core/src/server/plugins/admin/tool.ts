@@ -52,7 +52,9 @@ export const spawnProcess = (
   command: string,
   args: string[],
   options: Parameters<typeof spawn>[2] = {},
-  emitLog: (message: string) => void
+  emitLog: (message: string) => void,
+  /** 兼容ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF */
+  pnpm?: () => void
 ) => {
   return new Promise((resolve) => {
     const proc = spawn(command, args, {
@@ -65,13 +67,19 @@ export const spawnProcess = (
     })
 
     proc.stdout.on('data', (data) => {
-      logger.debug(data.toString())
-      emitLog(data.toString())
+      const message = data.toString()
+      logger.debug(message)
+      emitLog(message)
     })
 
     proc.stderr.on('data', (data) => {
-      logger.debug(data.toString())
-      emitLog(data.toString())
+      const message = data.toString()
+      if (message.includes('ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF')) {
+        emitLog('检测到 ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF 错误')
+      }
+
+      logger.debug(message)
+      emitLog(message)
     })
 
     proc.on('close', (code) => {

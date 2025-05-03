@@ -68,7 +68,24 @@ const installNpm = async (
       if (isWorkspace()) args.push('-w')
       if (data.registry) args.push(`--registry=${data.registry}`)
 
-      await spawnProcess('pnpm', args, {}, emitLog)
+      /** 处理 ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF 错误 */
+      let isERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF = false
+
+      await spawnProcess('pnpm', args, {}, emitLog, () => {
+        isERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF = true
+      })
+
+      if (isERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF) {
+        emitLog('检测到 ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF 错误，尝试修复...')
+        emitLog('执行 pnpm install 重建模块目录')
+        /** 先执行 pnpm install 重建模块目录 */
+        await spawnProcess('pnpm', ['install'], {}, emitLog)
+        emitLog('模块目录重建完成，重新尝试安装插件')
+        /** 重新尝试安装 */
+        await spawnProcess('pnpm', args, {}, emitLog)
+        emitLog('安装完成，尝试加载插件')
+      }
+
       await pkgHotReload('npm', data.target)
       return true
     }
