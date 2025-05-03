@@ -1,5 +1,48 @@
 # Changelog
 
+## [1.8.0](https://github.com/KarinJS/Karin/compare/web-v1.7.12...web-v1.8.0) (2025-05-03)
+
+
+### ✨ Features
+
+* 1.8.0 ([#344](https://github.com/KarinJS/Karin/issues/344)) ([be97fae](https://github.com/KarinJS/Karin/commit/be97fae5815b808b3453853c9ed6929540f2b340))
+* 优化组件和接口，增强功能和可用性 ([8fcc2f9](https://github.com/KarinJS/Karin/commit/8fcc2f9d20eed76121271b1c9f8cb281132716f7))
+* 在依赖管理中添加加载状态指示器 ([dceb90b](https://github.com/KarinJS/Karin/commit/dceb90b561b259694595590d76ba1c7d2769a8e2))
+* 增强插件安装功能 ([1013ed9](https://github.com/KarinJS/Karin/commit/1013ed92c680db13fcd09fe2076b4c1ef4454155))
+* 更新插件选择器和命令插件缓存逻辑 ([9c60dfd](https://github.com/KarinJS/Karin/commit/9c60dfd67f2d6f4bd4bba3196a40185af078ff43))
+* 添加已加载命令插件缓存信息列表接口 ([d1219ec](https://github.com/KarinJS/Karin/commit/d1219ec28282bb391e97391fed8047bb86fb1606))
+* 添加文件存在性检查和优化配置路径获取逻辑 ([21122a2](https://github.com/KarinJS/Karin/commit/21122a271a7a42cdeb2618abce91fbe9eaab37b4))
+
+
+### 🐛 Bug Fixes
+
+* 修复web静态资源路径错误 ([b1fc1e1](https://github.com/KarinJS/Karin/commit/b1fc1e1ca7d241617e64edacb7656c0b5f27e222))
+* 修复插件行组件中下拉菜单的条件渲染逻辑，注释掉不必要的代码 ([e12567d](https://github.com/KarinJS/Karin/commit/e12567d78eeeb133b68e9fbf7e4867fa20eedb16))
+* 移除不必要的 React 导入 ([1c33d5a](https://github.com/KarinJS/Karin/commit/1c33d5a2eb931a867270ccb138b6563305872249))
+
+
+### ⚡️ Performance
+
+* 优化网络状态获取和监控可见性管理 ([9ff1ad5](https://github.com/KarinJS/Karin/commit/9ff1ad5b84e7db81069c1441123bc70aabc7c00c))
+
+
+### 💄 Styles
+
+* close [#357](https://github.com/KarinJS/Karin/issues/357)  更新输入组和插件选择器组件，优化用户体验 ([c915ae4](https://github.com/KarinJS/Karin/commit/c915ae4799d1224e02137bd0592b8488989bacb3))
+* 优化插件市场二次确认弹窗的样式 ([8d7d42b](https://github.com/KarinJS/Karin/commit/8d7d42b673118639e0c9618ac7a9242c2c355990))
+
+
+### ♻️ Code Refactoring
+
+* 重构插件市场 ([fb19543](https://github.com/KarinJS/Karin/commit/fb19543b9c2f55bd23bee40c682085fdd2949481))
+* 重构插件市场完成 ([24a47b1](https://github.com/KarinJS/Karin/commit/24a47b16915f7338e4b9ec7d7bf050641b6a2365))
+* 重构插件配置二级菜单 修正频繁获取。 ([0dd608a](https://github.com/KarinJS/Karin/commit/0dd608aaec61feeb26d0237d0f8f3ac18a613458))
+
+
+### 📦️ Build System
+
+* **deps-dev:** bump vite from 6.2.3 to 6.2.7 ([#373](https://github.com/KarinJS/Karin/issues/373)) ([93caf1a](https://github.com/KarinJS/Karin/commit/93caf1ab8563d83316d0f1d67350d7da1a44032d))
+
 ## [1.7.12](https://github.com/KarinJS/Karin/compare/web-v1.7.11...web-v1.7.12) (2025-03-28)
 
 

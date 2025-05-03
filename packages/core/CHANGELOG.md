@@ -1,5 +1,61 @@
 # 更新日志
 
+## [1.8.0](https://github.com/KarinJS/Karin/compare/core-v1.7.14...core-v1.8.0) (2025-05-03)
+
+
+### ✨ Features
+
+* `pingRequest` ([2fea411](https://github.com/KarinJS/Karin/commit/2fea411fd135d01b0caf628a2078ecc5608c8c2e))
+* 1.8.0 ([#344](https://github.com/KarinJS/Karin/issues/344)) ([be97fae](https://github.com/KarinJS/Karin/commit/be97fae5815b808b3453853c9ed6929540f2b340))
+* 在package.json中添加默认文件路径以支持新功能 ([d8f5619](https://github.com/KarinJS/Karin/commit/d8f56197dcbde9725da351a83da72e571791e0d5))
+* 增加插件热加载功能 ([2c8ff09](https://github.com/KarinJS/Karin/commit/2c8ff09c44fbdf78af3963170b1e6f8502fd7626))
+* 增强webui插件安装和卸载日志记录 ([6decbd5](https://github.com/KarinJS/Karin/commit/6decbd52181c4c533f04be64c677871a183ecd52))
+* 增强插件安装功能 ([1013ed9](https://github.com/KarinJS/Karin/commit/1013ed92c680db13fcd09fe2076b4c1ef4454155))
+* 处理WebSocket连接中的敏感信息 ([49869c2](https://github.com/KarinJS/Karin/commit/49869c2478d7aca1165384bf22508038498f0281))
+* 控制台支持 `rs` `restart` `stop` ([47cf9e3](https://github.com/KarinJS/Karin/commit/47cf9e3f78fa5a9036dd2cae0343656a88fe9d1f))
+* 更新插件选择器和命令插件缓存逻辑 ([9c60dfd](https://github.com/KarinJS/Karin/commit/9c60dfd67f2d6f4bd4bba3196a40185af078ff43))
+* 更新缓存过期时间和版本信息 ([b580908](https://github.com/KarinJS/Karin/commit/b58090815f8c77ad6079b4a49e5cdcf336b0e7be))
+* 更新获取完整插件列表的逻辑 ([e8c1768](https://github.com/KarinJS/Karin/commit/e8c17683cafc0b66f668ca16e971173f396dc6ea))
+* 更新适配器基类和插件管理逻辑 ([ca05cb6](https://github.com/KarinJS/Karin/commit/ca05cb6bfa429599b5e7777d3c327a84895b6dfe))
+* 添加发送消息和转发消息后的钩子功能，支持开发者自定义处理逻辑 ([2de67a1](https://github.com/KarinJS/Karin/commit/2de67a173b109753cd1fde1ef585d0845f269b5a))
+* 添加已加载命令插件缓存信息列表接口 ([d1219ec](https://github.com/KarinJS/Karin/commit/d1219ec28282bb391e97391fed8047bb86fb1606))
+* 添加文件存在性检查和优化配置路径获取逻辑 ([21122a2](https://github.com/KarinJS/Karin/commit/21122a271a7a42cdeb2618abce91fbe9eaab37b4))
+
+
+### 🐛 Bug Fixes
+
+* pty init ([12d7bbc](https://github.com/KarinJS/Karin/commit/12d7bbc9090f45d41e312869492a61d3048d691e))
+* sqlite3不转esm。 ([59933da](https://github.com/KarinJS/Karin/commit/59933dac81b57e93d0ca1939cd567174ff52fe6e))
+* 修复KarinConvertAdapter消息转换逻辑 ([4d0252c](https://github.com/KarinJS/Karin/commit/4d0252c9c3380aac89c2f38bb148a6c4296c485e))
+* 修复web静态资源路径错误 ([b1fc1e1](https://github.com/KarinJS/Karin/commit/b1fc1e1ca7d241617e64edacb7656c0b5f27e222))
+* 修复编译后启动顺序造成的`logger`函数不存在的问题 ([2640e97](https://github.com/KarinJS/Karin/commit/2640e9741ef7799bcf64bdbed9e814b4cb457312))
+* 修正安装虚拟终端后，动态加载失败的问题 ([b9caf0e](https://github.com/KarinJS/Karin/commit/b9caf0e24649c8995a8695ed04c0dfd4d4012ddd))
+* 工作区 ([1635d9d](https://github.com/KarinJS/Karin/commit/1635d9d3015b53f055134cb6746ae338d0d8ce48))
+* 更新模块类型判断逻辑 ([ef2162a](https://github.com/KarinJS/Karin/commit/ef2162ab172a36d04ef2949ba0ec1f34eed47a0e))
+
+
+### ⚡️ Performance
+
+* 优化网络状态获取和监控可见性管理 ([9ff1ad5](https://github.com/KarinJS/Karin/commit/9ff1ad5b84e7db81069c1441123bc70aabc7c00c))
+
+
+### 🎫 Chores
+
+* 提升`node-pty`版本 支持`nodejs 23` ([59f07f6](https://github.com/KarinJS/Karin/commit/59f07f67470c43b5b18f5401940913da3d61df62))
+
+
+### ♻️ Code Refactoring
+
+* 优化插件加载逻辑，简化入口文件处理；增强本地插件配置获取功能 ([8008784](https://github.com/KarinJS/Karin/commit/80087840ac4c9e0b6f3d78125bf5e7cb448e1f43))
+* 重构插件市场 ([fb19543](https://github.com/KarinJS/Karin/commit/fb19543b9c2f55bd23bee40c682085fdd2949481))
+* 重构插件市场完成 ([24a47b1](https://github.com/KarinJS/Karin/commit/24a47b16915f7338e4b9ec7d7bf050641b6a2365))
+* 重构路由导出和工具函数 ([12b2a7e](https://github.com/KarinJS/Karin/commit/12b2a7ee6938e9eb7079e4567cc2c8f139ce3797))
+
+
+### 📦️ Build System
+
+* fix error ([832f3d8](https://github.com/KarinJS/Karin/commit/832f3d8daa841b5771c052ba6a3f0c4339cebc49))
+
 ## [1.7.14](https://github.com/KarinJS/Karin/compare/core-v1.7.13...core-v1.7.14) (2025-03-28)
 
 
