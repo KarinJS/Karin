@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/KarinJS/Karin/compare/cli-v1.0.2...cli-v1.1.0) (2025-05-03)
+
+
+### ✨ Features
+
+* 1.8.0 ([#344](https://github.com/KarinJS/Karin/issues/344)) ([be97fae](https://github.com/KarinJS/Karin/commit/be97fae5815b808b3453853c9ed6929540f2b340))
+* cli ([10f43bd](https://github.com/KarinJS/Karin/commit/10f43bd85e9b47c7d1465ea366c140178bfa860d))
+
 ## [1.0.2](https://github.com/KarinJS/Karin/compare/cli-v1.0.1...cli-v1.0.2) (2025-03-24)
 
 

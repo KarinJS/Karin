@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/KarinJS/Karin/compare/create-karin-v1.0.5...create-karin-v1.1.0) (2025-05-03)
+
+
+### ✨ Features
+
+* 1.8.0 ([#344](https://github.com/KarinJS/Karin/issues/344)) ([be97fae](https://github.com/KarinJS/Karin/commit/be97fae5815b808b3453853c9ed6929540f2b340))
+* **create:** 自定义`node-karin`版本 ([0a5d73d](https://github.com/KarinJS/Karin/commit/0a5d73d348e1addf5add43b478d878b4fc658be9))
+
 ## [1.0.5](https://github.com/KarinJS/Karin/compare/create-karin-v1.0.4...create-karin-v1.0.5) (2025-03-23)
 
 
