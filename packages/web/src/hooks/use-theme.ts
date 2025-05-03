@@ -93,6 +93,6 @@ export const useTheme = (defaultTheme?: Theme) => {
     setDarkTheme,
     setSystemTheme,
     toggleTheme,
-    isSystem: theme === ThemeProps.system
+    isSystem: theme === ThemeProps.system,
   }
 }

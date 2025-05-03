@@ -63,7 +63,7 @@ export const mkdir = async (dirname: string): Promise<boolean> => {
  */
 export const existToMkdir = async (file: string): Promise<boolean> => {
   try {
-    if (!await exists(file)) await mkdir(file)
+    if (!(await exists(file))) await mkdir(file)
     return true
   } catch {
     return false

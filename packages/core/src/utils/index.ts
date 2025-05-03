@@ -1,10 +1,12 @@
 /** 尽量全是实现为纯函数 */
 export * from '@/utils/button'
 export * from '@/utils/fs/index'
+export * from '@/utils/git'
 export * from '@/utils/logger/logger'
 export * from '@/utils/system/index'
 export * from '@/utils/message/index'
-
+export * from '@/utils/request/index'
+export * from '@/utils/ini/index'
 export * as fs from '@/utils/fs/index'
 export * as system from '@/utils/system/index'
 export * as common from '@/utils/common'

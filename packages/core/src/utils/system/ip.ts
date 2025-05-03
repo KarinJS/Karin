@@ -1,6 +1,6 @@
 import { LookupAddress } from 'dns'
 import { lookup } from 'dns/promises'
-import { type Request } from 'express'
+import type { Request } from 'express'
 
 /**
  * 判断给定的 hostname 或 IP 是否为本机的回环地址 支持v6(可能不全)

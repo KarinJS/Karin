@@ -1,4 +1,4 @@
-import { cache } from '@/plugin/cache'
+import { cache } from '@/plugin/system/cache'
 import type { Event } from '@/types/event'
 import type { ButtonElement, KeyboardElement } from '@/types/segment'
 

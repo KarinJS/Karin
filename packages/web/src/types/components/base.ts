@@ -10,7 +10,7 @@ export const enum ComponentType {
   /** 手风琴项 */
   ACCORDION_ITEM = 'accordion-item',
   /** 手风琴Pro */
-  ACCORDION_PRO = 'accordion-pro'
+  ACCORDION_PRO = 'accordion-pro',
 }
 
 /** 组件通用属性 */

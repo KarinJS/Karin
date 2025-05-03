@@ -5,7 +5,7 @@ import {
   friendHandler,
   groupHandler,
   groupTempHandler,
-  guildHandler
+  guildHandler,
 } from '../handler/message'
 import {
   FriendMessage,

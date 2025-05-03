@@ -1,5 +1,5 @@
 import { isSubPath } from './path'
-import { cache } from '@/plugin/cache'
+import { cache } from '@/plugin/system/cache'
 
 /**
  * @description 传入一个文件路径，检查是否是静态资源中的文件

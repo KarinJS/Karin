@@ -1,22 +1,22 @@
 #!/usr/bin/env node
 
-const fs = require('fs')
-const path = require('path')
+import { join } from 'path'
+import { existsSync, readFileSync } from 'fs'
 
 /**
  * 检查当前目录是否为有效的 package 目录
  */
 const checkPackageDir = () => {
-  const pkgPath = path.join(process.cwd(), 'package.json')
-  return fs.existsSync(pkgPath)
+  const pkgPath = join(process.cwd(), 'package.json')
+  return existsSync(pkgPath)
 }
 
 /**
  * 检查是否安装了 node-karin
  */
 const checkKarinDependency = () => {
-  const pkgPath = path.join(process.cwd(), 'package.json')
-  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'))
+  const pkgPath = join(process.cwd(), 'package.json')
+  const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'))
   return !!(pkg.dependencies?.['node-karin'] || pkg.devDependencies?.['node-karin'])
 }
 
@@ -24,8 +24,8 @@ const checkKarinDependency = () => {
  * 检查 CLI 入口文件是否存在
  */
 const checkCliExists = () => {
-  const cliPath = path.join(process.cwd(), 'node_modules/node-karin/dist/cli/index.cjs')
-  return fs.existsSync(cliPath)
+  const cliPath = join(process.cwd(), 'index.mjs')
+  return existsSync(cliPath)
 }
 
 try {
@@ -51,8 +51,8 @@ try {
   }
 
   // 执行 node-karin CLI
-  const cliPath = path.join(process.cwd(), 'node_modules/node-karin/dist/cli/index.cjs')
-  require(cliPath)
+  const cliPath = join(process.cwd(), 'index.mjs')
+  import(`file://${cliPath}`)
 } catch (error) {
   console.error('执行出错:', error)
   process.exit(1)

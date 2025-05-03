@@ -1,0 +1,54 @@
+{
+  "name": "karin-plugin-template-js",
+  "version": "1.0.0",
+  "author": "shijin",
+  "type": "module",
+  "description": "karin plugin template",
+  "homepage": "https://github.com/KarinJS/karin",
+  "bugs": {
+    "url": "https://github.com/KarinJS/karin/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarinJS/karin.git"
+  },
+  "scripts": {
+    "app": "node index.mjs",
+    "dev": "cross-env EBV_FILE=\"development.env\" node index.mjs",
+    "pub": "npm publish --access public"
+  },
+  "main": "lib/index.js",
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/lodash": "^4.17.16",
+    "@types/node": "^20.17.8",
+    "cross-env": "^7.0.3",
+    "eslint": "^9.7.0",
+    "neostandard": "^0.11.9",
+    "node-karin": "workspace:*",
+    "typescript": "^5.5.3"
+  },
+  "karin": {
+    "apps": [
+      "apps"
+    ],
+    "static": [
+      "resources"
+    ],
+    "files": [
+      "config",
+      "data",
+      "resources"
+    ]
+  },
+  "files": [
+    "/lib/**/*.js",
+    "/config/*.json",
+    "resources",
+    "!lib/app.js"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
+}

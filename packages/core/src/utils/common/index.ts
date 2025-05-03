@@ -3,7 +3,7 @@ import path from 'node:path'
 import { tempPath } from '@/root'
 import { YamlEditor } from '@/utils/fs/yaml'
 import { ffprobe, ffmpeg } from '@/utils/system/ffmpeg'
-import { getPlugins as GetPlugin } from '@/plugin/list'
+import { getPlugins as GetPlugin } from '@/plugin/system/list'
 import { formatTime as FormatTime } from '@/utils/system/time'
 import Axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
 
@@ -145,7 +145,7 @@ export const getNpmPlugins = async (showDetails = false) => GetPlugin('npm', sho
  * 获取git插件列表
  * @param isPack - 是否屏蔽不带package.json的插件，默认为false
  */
-export const getPlugins = async (isPack = false) => GetPlugin('git', false)
+export const getPlugins = async (_ = false) => GetPlugin('git', false)
 
 /**
  * @deprecated 已废弃
@@ -273,7 +273,7 @@ const buildFilterComplex = async (files: string[], perRow: number) => {
   const maxHeight = Math.max(...list.map((d) => d.height))
 
   let cmd = ''
-  list.forEach((dim, index) => {
+  list.forEach((_, index) => {
     // 将每个图像填充到最大宽度和高度 居中图像
     cmd += `[${index}:v]pad=${maxWidth}:${maxHeight}:(ow-iw)/2:(oh-ih)/2[p${index}]; `
   })

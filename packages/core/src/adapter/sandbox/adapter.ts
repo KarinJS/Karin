@@ -8,7 +8,7 @@ import {
   getFriend,
   getFriendList,
   getGroupList,
-  getGroupMemberList
+  getGroupMemberList,
 } from '@/service/sandbox/db'
 
 import type WebSocket from 'ws'
@@ -20,7 +20,7 @@ import type {
   SandboxSendApi,
   SandboxSendSendFriendMsg,
   SandboxSendSendGroupMsg,
-  SandboxSendSendMsg
+  SandboxSendSendMsg,
 } from '@/types/sandbox/sendApi'
 
 /**
@@ -36,7 +36,7 @@ export class AdapterSandbox extends AdapterBase implements AdapterType {
   constructor (
     socket: WebSocket,
 
-    request: IncomingMessage,
+    request: IncomingMessage
   ) {
     super()
     this.socket = socket
@@ -89,7 +89,7 @@ export class AdapterSandbox extends AdapterBase implements AdapterType {
 
   async sendMsg (
     contact: Contact,
-    elements: Array<Elements>,
+    elements: Array<Elements>
   ): Promise<SendMsgResults> {
     if (contact.scene !== 'friend' && contact.scene !== 'group') {
       throw new TypeError('web沙盒目前仅支持好友和群聊')

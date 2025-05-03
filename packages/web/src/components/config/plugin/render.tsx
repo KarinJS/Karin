@@ -4,13 +4,14 @@ import { createSwitch } from '../../heroui/switchs'
 import { createRadioGroup } from '../../heroui/radioGroups'
 import { createCheckboxGroup } from '../../heroui/checkboxs'
 import { createInput, createInputGroup } from '../../heroui/inputs'
+import { createCron } from './createCron'
 import { Accordion as HeroAccordion, AccordionItem as HeroAccordionItem } from '@heroui/accordion'
+import { createErrorCard } from '../../heroui/error'
 
 import type { JSX } from 'react'
 import type { DefaultValues, Value } from './values'
 import type { Control, UseFormRegister } from 'react-hook-form'
 import type { AccordionProProps, AccordionProps, ComponentConfig } from 'node-karin'
-import { createErrorCard } from '../../heroui/error'
 
 /**
  * 表单控制器类型
@@ -72,6 +73,11 @@ export const RenderComponent: React.FC<{
 
       if (option.componentType === 'accordion-pro') {
         list.push(createAccordionPro(option, register, control))
+        return
+      }
+
+      if (option.componentType === 'cron') {
+        list.push(createCron(option, control, basePath))
         return
       }
 

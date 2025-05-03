@@ -1,4 +1,3 @@
-export * from './init'
 export * from './tools'
 export * from './default'
 export * from './admin'

@@ -5,16 +5,14 @@ import root from '@/root'
 import { createInnerLogger } from '@/utils/logger'
 import { initConfig } from '@/utils/config/init'
 import { initProcess } from './service/process'
-import { initExpress } from './server/app/app'
 import { initPlugin } from './plugin'
 import { printStartLog } from './service/start'
 import { createDB, createRedis } from '@/core/db'
 import { initRender } from '@/adapter/render'
 import { initOneBot } from '@/adapter/onebot'
-import type { Client } from '@/core/db/redis/redis'
+import { initTaskSystem } from '@/service/task'
 
 export * from '@/service/debug'
-
 export * from '@/root'
 export * from '@/service'
 export * from '@/core/karin'
@@ -28,31 +26,30 @@ export * from '@/components'
 export * from '@/hooks'
 export { renderTpl } from '@/adapter/render/admin/template'
 export { AdapterBase } from '@/adapter/base/index'
-export { getPlugins } from '@/plugin/list'
+export { getPlugins } from '@/plugin/system/list'
 export { Plugin } from '@/plugin/class'
 export { karin as default } from '@/core/karin'
 export { db } from '@/core/db/kv'
+export { redis } from '@/core/db/redis/redis'
+export { logger } from '@/utils/logger'
+
 export type * from '@/types'
 
+let isStart = false
 if (!process.env.EBV_FILE) process.env.EBV_FILE = '.env'
-
-/**
- * @public
- * @description 日志管理器
- */
-export let logger: ReturnType<typeof createInnerLogger>
-
-/**
- * @public
- * @description Redis数据库
- */
-export let redis: Client
 
 /**
  * @public
  * @description 启动框架
  */
 export const start = async () => {
+  if (isStart) {
+    console.error('karin 已经启动，请勿重复启动')
+    return
+  }
+
+  isStart = true
+
   /**
    * 1. 加载环境变量
    * - 加载环境变量到process.env
@@ -65,7 +62,7 @@ export const start = async () => {
    * - 创建日志目录
    * - 初始化日志模块
    */
-  logger = createInnerLogger(root.logsPath)
+  createInnerLogger(root.logsPath)
 
   /**
    * 3. 初始化配置文件
@@ -90,7 +87,7 @@ export const start = async () => {
    * - 检查是否存在后台进程
    * - 关闭后台进程
    */
-  await initProcess(Number(process.env.HTTP_PORT))
+  await initProcess(+process.env.HTTP_PORT)
 
   /**
    * 6. 初始化express
@@ -99,11 +96,13 @@ export const start = async () => {
    * - 设置静态文件目录
    * - 设置根路径请求
    */
-  await initExpress(root, Number(process.env.HTTP_PORT), process.env.HTTP_HOST)
-
-  redis = await createRedis()
+  const { initExpress } = await import('@/server/app/app')
+  const { initialize } = await import('@/server/pty/terminalManager')
+  await initExpress(root, +process.env.HTTP_PORT, process.env.HTTP_HOST)
+  await initTaskSystem(root.karinPathTaskDb)
+  await createRedis()
   await createDB()
-
+  await initialize()
   /**
    * 8. 初始化插件
    */
@@ -133,6 +132,6 @@ export const start = async () => {
   initWebSocketPuppeteerServer()
   initSnapkaClient()
   initSnapkaHttp()
-}
 
-start()
+  logger.mark(`karin 启动完成: 耗时 ${logger.green(process.uptime().toFixed(2))} 秒...`)
+}

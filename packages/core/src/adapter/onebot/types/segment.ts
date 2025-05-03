@@ -168,7 +168,7 @@ export interface MusicSegment extends Segment {
 
 /** 音乐自定义分享消息段 */
 export interface CustomMusicSegment extends Segment {
-  type: 'music_custom'
+  type: 'music'
   data: {
     type: 'custom'
     url: string

@@ -25,4 +25,6 @@ export type ExecOptions<T extends boolean> = Parameters<typeof exec>[1] & {
   log?: boolean
   /** 是否只返回布尔值 表示命令是否成功执行 优先级比抛错误高 */
   booleanResult?: T
+  /** 是否去除日志中的换行符 默认不去除 */
+  trim?: boolean
 }

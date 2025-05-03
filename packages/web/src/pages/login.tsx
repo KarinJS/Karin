@@ -19,6 +19,7 @@ import clsx from 'clsx'
 import { Tooltip } from '@heroui/tooltip'
 import { useTheme } from 'ahooks'
 import { FaHeart } from 'react-icons/fa'
+// import ConsoleMessage from '@/components/ConsoleMessage.tsx'
 
 /**
  * 加载外部 SHA256 脚本

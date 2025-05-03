@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import { exec } from './exec'
 import { requireFile } from '../fs/require'
-import { getPlugins } from '@/plugin/list'
+import { getPlugins } from '@/plugin/system/list'
 
 import type { Package } from '@/types/config'
 import type { ExecException } from 'node:child_process'
@@ -160,6 +160,7 @@ export const updateAllPkg = async (): Promise<string> => {
     const result: string[] = []
 
     await Promise.all(list.map(async (name) => {
+      name = name.replace('npm:', '')
       /** 本地版本号 */
       const local = await getPkgVersion(name)
       /** 远程版本号 */
@@ -212,7 +213,7 @@ export const updateAllPkg = async (): Promise<string> => {
     })
 
     /** 排序 成功在上 */
-    result.sort((a, b) => a.includes('成功') ? -1 : 1)
+    result.sort((a) => a.includes('成功') ? -1 : 1)
     logger.info(result.join('\n'))
     return result.join('\n')
   } catch (error) {
@@ -431,6 +432,7 @@ export const updateAllGitPlugin = async (cmd = 'git pull', time = 120): Promise<
     }
     const result: string[] = []
     await Promise.allSettled(list.map(async (name) => {
+      name = name.replace('git:', '')
       const filePath = `./plugins/${name}`
       const { status, data } = await updateGitPlugin(filePath, cmd, time)
       if (status === 'ok') {

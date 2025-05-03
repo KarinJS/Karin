@@ -96,43 +96,64 @@ export const fileToBase64 = (file: string, url: string): string => {
    * @param data karin格式消息
    */
 export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOneBot): Array<OB11Segment> => {
-  const elements = []
+  const elements: OB11Segment[] = []
 
   for (const i of data) {
-    const type = i.type
     switch (i.type) {
       case 'text':
-        elements.push({ type, data: { text: i.text } })
+        elements.push({ type: 'text', data: { text: i.text } })
         break
       case 'face':
-        elements.push({ type, data: { id: i.id } })
+        elements.push({ type: 'face', data: { id: i.id + '' } })
         break
       case 'at':
-        elements.push({ type, data: { qq: String(i.targetId), name: i.name } })
+        elements.push({ type: 'at', data: { qq: String(i.targetId), name: i.name } })
         break
       case 'reply':
-        elements.push({ type, data: { id: i.messageId } })
+        elements.push({ type: 'reply', data: { id: i.messageId } })
         break
       case 'image':
       case 'video': {
-        elements.push({ type, data: { file: fileToBase64(i.file, onebot.adapter.address) } })
+        elements.push({ type: 'image', data: { file: fileToBase64(i.file, onebot.adapter.address) } })
         break
       }
       case 'json':
       case 'xml': {
-        elements.push({ type, data: { data: i.data } })
+        elements.push({ type: 'json', data: { data: i.data } })
         break
       }
       case 'record': {
-        elements.push({ type, data: { file: fileToBase64(i.file, onebot.adapter.address), magic: i.magic || false } })
+        elements.push({
+          type: 'record',
+          data: {
+            file: fileToBase64(i.file, onebot.adapter.address),
+            magic: (i.magic ?? false) ? 1 : 0,
+          },
+        })
         break
       }
       case 'music': {
         if (i.platform === 'custom') {
           const { url, audio, title, author, pic } = i
-          elements.push({ type: 'music', data: { type: 'custom', url, audio, title, content: author, image: pic } })
+          elements.push({
+            type: 'music',
+            data: {
+              type: 'custom',
+              url,
+              audio,
+              title,
+              content: author,
+              image: pic,
+            },
+          })
         } else {
-          elements.push({ type: 'music', data: { type: i.platform, id: i.id } })
+          elements.push({
+            type: 'music',
+            data: {
+              type: i.platform as 'qq' | '163' | 'xm',
+              id: i.id,
+            },
+          })
         }
         break
       }
@@ -144,24 +165,27 @@ export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOne
       //   elements.push({ type, data: { lat: i.lat, lon: i.lon, title: i.title, content: i.address } })
       //   break
       // }
-      case 'longMsg':
-      case 'basketball':
+      // case 'longMsg':
+      // case 'basketball':
+      // case 'marketFace': {
+      //   elements.push({ type: 'marketFace', data: { id: i.id + '' } })
+      //   break
+      // }
+      // case 'gift': {
+      //   elements.push({ type: 'gift', data: { qq: i.qq, id: i.id } })
+      //   break
+      // }
+      // case 'weather': {
+      //   elements.push({ type: 'weather', data: { city: i.city, type: i.type } })
+      //   break
+      // }
       case 'dice':
-      case 'marketFace':
       case 'rps': {
-        elements.push({ type: i.type, data: { id: i.id } })
-        break
-      }
-      case 'gift': {
-        elements.push({ type: 'gift', data: { qq: i.qq, id: i.id } })
+        elements.push({ type: i.type, data: {} })
         break
       }
       case 'share': {
         elements.push({ type: 'share', data: { url: i.url, title: i.title, content: i.content, image: i.image } })
-        break
-      }
-      case 'weather': {
-        elements.push({ type: 'weather', data: { city: i.city, type: i.type } })
         break
       }
       case 'raw':
@@ -189,7 +213,7 @@ export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOne
       case 'markdown':
       case 'keyboard':
       default: {
-        elements.push(i)
+        elements.push(i as any)
         break
       }
     }

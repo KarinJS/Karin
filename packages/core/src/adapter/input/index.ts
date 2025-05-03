@@ -25,7 +25,7 @@ class AdapterConsole extends AdapterBase implements AdapterType {
   constructor () {
     super()
     listeners.on('karin:adapter:open', () =>
-      process.stdin.on('data', data => this.createEvent(data)),
+      process.stdin.on('data', data => this.createEvent(data))
     )
     listeners.on('karin:adapter:close', () => process.stdin.removeAllListeners('data'))
 
@@ -65,6 +65,22 @@ class AdapterConsole extends AdapterBase implements AdapterType {
       }
     }
 
+    if (text === 'rs' || text === 'restart') {
+      process.send!(JSON.stringify({
+        type: 'restart',
+        port: process.env.HTTP_PORT,
+        token: process.env.HTTP_AUTH_KEY,
+      }))
+      return
+    }
+
+    if (text === 'stop') {
+      process.send!(JSON.stringify({
+        type: 'stop',
+      }))
+      return
+    }
+
     /** 如果带`group`前缀 则视为群环境 */
     if (text.startsWith('group')) {
       const contact = contactGroup('10010')
@@ -101,7 +117,7 @@ class AdapterConsole extends AdapterBase implements AdapterType {
   async sendMsg (
     contact: Contact,
     elements: Array<Elements>,
-    retryCount?: number,
+    _?: number
   ): Promise<SendMsgResults> {
     const time = Date.now()
     const messageId = (++index).toString()
@@ -163,18 +179,18 @@ class AdapterConsole extends AdapterBase implements AdapterType {
     return `http://127.0.0.1:${process.env.HTTP_PORT}/api/v1/console/${name}${ext}?token=${cfg.console.token}`
   }
 
-  async getAvatarUrl (userId: string, size?: 0 | 40 | 100 | 140) {
+  async getAvatarUrl (userId: string, _?: 0 | 40 | 100 | 140) {
     if (userId === botID) {
       return process.env.ADAPTER_CONSOLE_AVATAR || 'https://p.qlogo.cn/gh/967068507/967068507/0'
     }
     return ''
   }
 
-  async getGroupAvatarUrl (groupId: string, size?: 0 | 40 | 100 | 140, history?: number) {
+  async getGroupAvatarUrl (_: string, __?: 0 | 40 | 100 | 140, ___?: number) {
     return 'https://p.qlogo.cn/gh/967068507/967068507/0'
   }
 
-  async recallMsg (contact: Contact, messageId: string) {
+  async recallMsg (_: Contact, messageId: string) {
     logger.info(`[recallMsg] ${messageId}`)
     return true
   }

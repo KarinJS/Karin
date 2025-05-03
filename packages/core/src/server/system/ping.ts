@@ -10,6 +10,6 @@ export const pingRouter: RequestHandler = (_req, res) => {
     {
       ping: 'pong',
     },
-    '成功',
+    '成功'
   )
 }

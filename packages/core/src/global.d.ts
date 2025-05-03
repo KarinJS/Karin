@@ -2,6 +2,7 @@
 declare global {
   var logger: import('@/types/system').Logger
   var debug: ReturnType<typeof import('@/utils/debug/debug').createDebug>
+  type EventEmitter = import('events').EventEmitter
 }
 
 declare global {

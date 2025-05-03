@@ -1,13 +1,13 @@
 import {
   refreshAccessToken,
-  verifyRefreshToken
+  verifyRefreshToken,
 } from '@/server/auth/jwt'
 import {
   createSuccessResponse,
   createBadRequestResponse,
   createUnauthorizedResponse,
   createServerErrorResponse,
-  createRefreshTokenExpiredResponse
+  createRefreshTokenExpiredResponse,
 } from '@/server/utils/response'
 
 import type { RequestHandler } from 'express'

@@ -262,7 +262,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param contact ob11无需提供contact参数
    * @param messageId 消息ID
    */
-  async recallMsg (contact: Contact, messageId: string) {
+  async recallMsg (_: Contact, messageId: string) {
     try {
       await this.sendApi(OB11ApiAction.deleteMsg, { message_id: Number(messageId) })
       return true
@@ -417,7 +417,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param kickReason 踢出原因，可选
    * @returns 此接口的返回值不值得信任
    */
-  async groupKickMember (groupId: string, targetId: string, rejectAddRequest?: boolean, kickReason?: string) {
+  async groupKickMember (groupId: string, targetId: string, rejectAddRequest?: boolean, _?: string) {
     try {
       await this.sendApi(OB11ApiAction.setGroupKick, {
         group_id: Number(groupId),
@@ -671,7 +671,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param refresh 是否刷新好友列表
    * @returns 好友列表数组
    */
-  async getFriendList (refresh?: boolean) {
+  async getFriendList (_?: boolean) {
     const friendList = await this.sendApi(OB11ApiAction.getFriendList, {})
     return friendList.map(v => {
       const userId = v.user_id + ''
@@ -980,7 +980,7 @@ export abstract class AdapterOneBot extends AdapterBase {
   /**
    * @deprecated 已废弃，请使用`getGroupHonor`
    */
-  async GetGroupHonor (groupId: string, refresh = false) {
+  async GetGroupHonor (groupId: string, _ = false) {
     return this.getGroupHonor(groupId)
   }
 
@@ -991,7 +991,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param faceId 表情ID
    * @returns 此接口的返回值不值得信任
    */
-  async setMsgReaction (contact: Contact, messageId: string, faceId: number, isSet: boolean) {
+  async setMsgReaction (_: Contact, messageId: string, faceId: number, isSet: boolean) {
     try {
       await this.sendApi(OB11ApiAction.setMsgEmojiLike, { message_id: messageId, emoji_id: faceId, is_set: isSet })
       return true
@@ -1021,7 +1021,7 @@ export abstract class AdapterOneBot extends AdapterBase {
     }
   }
 
-  async DownloadForwardMessage (resId: string): Promise<any> {
+  async DownloadForwardMessage (_: string): Promise<any> {
     throw new Error('Method not implemented.')
   }
 
@@ -1032,7 +1032,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param pageSize 每页数量
    * @returns EssenceMessageBody对象
    */
-  async getGroupHighlights (groupId: string, page: number, pageSize: number) {
+  async getGroupHighlights (groupId: string, _: number, __: number) {
     const list: Array<GetGroupHighlightsResponse & {
       group_id: string
       sender_uid: string
@@ -1148,7 +1148,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param messageId 群消息ID
    * @param create true为添加精华消息，false为删除精华消息 默认为true
    */
-  async setGgroupHighlights (groupId: string, messageId: string, create: boolean) {
+  async setGgroupHighlights (_: string, messageId: string, create: boolean) {
     try {
       await this.sendApi(create ? OB11ApiAction.setEssenceMsg : OB11ApiAction.deleteEssenceMsg, { message_id: Number(messageId) })
       return true
@@ -1171,7 +1171,7 @@ export abstract class AdapterOneBot extends AdapterBase {
     return this.setGgroupHighlights(_groupId, messageId, false)
   }
 
-  async PokeMember (groupId: string, targetId: string) {
+  async PokeMember (_: string, __: string) {
     // 这个接口比较特殊 暂时先搁置 lgl单独接口 shamrock单独接口 gocq字段不一样 llob貌似没实现？
     throw new Error('Method not implemented.')
   }
@@ -1245,7 +1245,7 @@ export abstract class AdapterOneBot extends AdapterBase {
   /**
    * @deprecated 已废弃，请使用`setInvitedJoinGroupResult`
    */
-  async SetInvitedJoinGroupResult (requestId: string, isApprove: boolean, denyReason?: string) {
+  async SetInvitedJoinGroupResult (requestId: string, isApprove: boolean, _?: string) {
     return this.setInvitedJoinGroupResult(requestId, isApprove)
   }
 
@@ -1326,9 +1326,9 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param params API参数
    */
   async sendApi<T extends keyof OB11ApiParams> (
-    action: T | `${T}`,
-    params: OB11ApiParams[T],
-    time = 120
+    _: T | `${T}`,
+    __: OB11ApiParams[T],
+    ___ = 120
   ): Promise<OB11ApiRequest[T]> {
     throw new Error('tips: 请在子类中实现此方法')
   }

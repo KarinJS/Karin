@@ -11,7 +11,7 @@ const createSwitch = (
 ): SwitchProps => ({
   ...config,
   key,
-  componentType: 'switch'
+  componentType: 'switch',
 })
 
 /**
@@ -40,6 +40,6 @@ export const switchComponent = {
     isReadOnly: false,
     isDisabled: false,
     disableAnimation: false,
-    ...config
-  })
+    ...config,
+  }),
 }

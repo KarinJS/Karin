@@ -4,6 +4,12 @@ import log4js, { type Configuration } from 'log4js'
 import type { Logger, LoggerLevel, LoggerOptions } from '@/types/system/logger'
 
 /**
+ * @public
+ * @description 日志管理器
+ */
+export let logger: Logger
+
+/**
  * 创建日志记录器
  * @param options - 配置项
  */
@@ -141,7 +147,7 @@ const createLogger = (dir: string, options: LoggerOptions = {}) => {
  * @param dir - 日志文件夹
  */
 export const createInnerLogger = (dir: string) => {
-  return createLogger(dir, {
+  logger = createLogger(dir, {
     log4jsCfg: {
       level: process.env.LOG_LEVEL as LoggerLevel || 'info',
       daysToKeep: Number(process.env.LOG_DAYS_TO_KEEP) || 30,
@@ -149,4 +155,6 @@ export const createInnerLogger = (dir: string) => {
       logColor: process.env.LOG_FNC_COLOR || '#E1D919',
     },
   })
+
+  return logger
 }

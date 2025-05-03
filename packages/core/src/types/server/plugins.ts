@@ -1,3 +1,6 @@
+import type { KarinPluginAppsType } from '../plugin'
+import type { KarinPluginType } from '@karinjs/plugins-list'
+
 /**
  * 基类
  */
@@ -45,26 +48,6 @@ interface Base {
 }
 
 /**
- * 单应用插件类型
- */
-interface App extends Base {
-  type: 'app'
-  /** app文件直链 */
-  files: string[]
-}
-
-type Plugins = Base | App
-
-/**
- * 官方Api返回类型
- * https://registry.npmjs.com/@karinjs/plugins-list/latest
- * https://registry.npmmirror.com/@karinjs/plugins-list/latest
- */
-export interface OnlinePluginInfo {
-  plugins: Plugins[]
-}
-
-/**
  * karin api返回类型
  */
 export interface PluginLists extends Base {
@@ -95,3 +78,123 @@ export interface PluginUpdateInfo extends PluginLists {
   /** 更新数量 */
   updateCount?: number
 }
+
+/**
+ * 插件管理 获取插件列表Api响应
+ */
+export interface PluginAdminListResponse {
+  /** 插件ID `package.json中的名称` */
+  id: string
+  /** 插件名称 `文件夹根目录名称` */
+  name: string
+  /** 插件类型 */
+  type: KarinPluginAppsType
+  /** 插件版本 App类型为空 */
+  version: string
+  /** 插件最新版本短哈希 App类型为空 */
+  latestHash: string
+}
+
+/**
+ * 插件市场响应 作者信息
+ * @description 因为前端只方便展示一个作者 这里进行解耦
+ */
+export interface PluginMarketAuthor {
+  /** 名字 */
+  name: string
+  /** 主页 */
+  home: string
+  /** 头像 */
+  avatar: string
+}
+
+/**
+ * 插件市场响应 本地插件基本参数
+ */
+export interface PluginMarketLocalBase {
+  /**
+   * 是否已安装到本地
+   */
+  installed: boolean
+  /**
+   * 插件名称
+   */
+  name: string
+  /**
+   * 在本地的插件类型
+   * @description 此项一般用于追踪插件配置 比如`npm`插件，在开发环境是`git`类型
+   */
+  type: KarinPluginAppsType
+  /**
+   * 插件当前版本
+   * @description 如果是`app`类型 则返回空字符串
+   */
+  version?: string
+  /**
+   * 插件描述
+   */
+  description?: string
+  /**
+   * 插件主页
+   */
+  home?: string
+}
+
+/**
+ * 插件市场请求参数
+ */
+export interface PluginMarketRequest {
+  /**
+   * 是否强制刷新
+   * @default false
+   */
+  refresh?: boolean
+}
+
+/**
+ * 插件市场 type=market响应参数
+ */
+export interface PluginMarketOptions {
+  /**
+   * - `market`: 插件市场
+   * - `local`: 本地
+   */
+  type: 'market'
+  /**
+   * 插件市场参数
+   * @description api返回什么这里就是什么
+   */
+  market: KarinPluginType
+  /**
+   * 本地配置
+   */
+  local: PluginMarketLocalBase
+  /**
+   * 插件作者
+   */
+  author: PluginMarketAuthor
+}
+
+/**
+ * 插件市场 type=local响应参数
+ */
+export interface PluginMarketLocalOptions {
+  /**
+   * - `market`: 插件市场
+   * - `local`: 本地
+   */
+  type: 'local'
+  /**
+   * 本地配置
+   */
+  local: PluginMarketLocalBase
+  /**
+   * 插件作者
+   */
+  author: PluginMarketAuthor
+}
+
+/**
+ * 插件市场响应参数
+ */
+export type PluginMarketResponse = PluginMarketOptions | PluginMarketLocalOptions

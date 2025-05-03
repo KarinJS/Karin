@@ -3,7 +3,9 @@
   "version": "1.0.2",
   "description": "Karin CLI tool",
   "main": "index.js",
+  "type": "module",
   "bin": {
+    "ki": "karin.js",
     "karin": "index.js"
   },
   "engines": {

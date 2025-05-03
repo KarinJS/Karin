@@ -86,9 +86,9 @@ export default function DashboardLayout () {
 
   return (
     <div
-      className='relative flex h-screen w-full overflow-hidden'
+      className='relative flex h-screen w-full overflow-hidden bg-white dark:bg-neutral-900 transition-colors duration-300'
       style={{
-        height: '100dvh'
+        height: '100dvh',
       }}
     >
       {/* 侧边栏 */}
@@ -101,61 +101,66 @@ export default function DashboardLayout () {
         // onTouchEnd={() => setTouchStartX(0)}
         style={{
           touchAction: 'manipulation',
-          WebkitOverflowScrolling: 'touch'
+          WebkitOverflowScrolling: 'touch',
         }}
         className={clsx(
-          'overflow-y-auto flex flex-col  touch-auto',
+          'overflow-y-auto flex flex-col touch-auto bg-neutral-50 dark:bg-neutral-900',
           isNotSmallScreen ? 'flex-1' : 'w-full'
         )}
         initial={false}
         animate={{
           width: isNotSmallScreen ? (isOpen ? 'calc(100% - 240px)' : '100%') : '100%',
-          x: isOpen && !isNotSmallScreen ? 240 : 0
+          x: isOpen && !isNotSmallScreen ? 240 : 0,
         }}
         transition={{
           type: 'tween',
           ease: [0.00, 0.00, 0.00, 1.00],
-          duration: 0.3
+          duration: 0.3,
         }}
       >
-        {/* 顶部导航栏 */}
-        <motion.div
-          className={clsx(
-            isConfigPage && !isMediumOrLargeScreen ? 'static' : 'sticky top-0',
-            'z-40 w-full bg-opacity-50 backdrop-blur-md',
-            'border-b border-divider shadow-sm flex items-center justify-between',
-            'px-4 py-2'
-          )}
-          initial={{ y: -50 }}
-          animate={{ y: 0 }}
-          transition={{
-            type: 'tween',
-            ease: [0.00, 0.00, 0.00, 1.00],
-            duration: 0.3
-          }}
-        >
-          <div className='flex items-center gap-3'>
-            <motion.button
-              onClick={() => setIsOpen(!isOpen)}
-              className={clsx('p-2 rounded-lg text-xs')}
-            >
-              <div className='flex items-center gap-4'>
-                {isOpen
-                  ? <RiMenuUnfold2Line className='w-5 h-5' />
-                  : <IoMenu className='w-5 h-5' />}
-                {/* 标题 */}
-                <motion.h1 className='text-lg'>
-                  {title}
-                </motion.h1>
-              </div>
-            </motion.button>
-          </div>
-        </motion.div>
+        {/* 顶部导航栏，仅移动端显示 */}
+        {/**
+         * 顶部导航栏只在移动端显示，桌面端隐藏
+         */}
+        {!isNotSmallScreen && (
+          <motion.div
+            className={clsx(
+              isConfigPage && !isMediumOrLargeScreen ? 'static' : 'sticky top-0',
+              'z-40 w-full bg-opacity-50 backdrop-blur-md',
+              'border-b border-divider shadow-sm flex items-center justify-between',
+              'px-4 py-2'
+            )}
+            initial={{ y: -50 }}
+            animate={{ y: 0 }}
+            transition={{
+              type: 'tween',
+              ease: [0.00, 0.00, 0.00, 1.00],
+              duration: 0.3,
+            }}
+          >
+            <div className='flex items-center gap-3'>
+              <motion.button
+                onClick={() => setIsOpen(!isOpen)}
+                className={clsx('p-2 rounded-lg text-xs')}
+              >
+                <div className='flex items-center gap-4'>
+                  {isOpen
+                    ? <RiMenuUnfold2Line className='w-5 h-5' />
+                    : <IoMenu className='w-5 h-5' />}
+                  {/* 标题 */}
+                  <motion.h1 className='text-lg'>
+                    {title}
+                  </motion.h1>
+                </div>
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
 
         {/* 内容区域动画 - 根据是否显示导航栏调整类名 */}
         <motion.div
           className={clsx(
-            'container mx-auto px-3 flex-1 py-4',
+            'container mx-auto px-3 flex-1 py-4'
           )}
           key={currentMainPath} // 动态 key，只在主路径变化时触发动画
           initial={{ opacity: 0, scale: 0.9 }}
@@ -164,7 +169,7 @@ export default function DashboardLayout () {
           transition={{
             type: 'tween',
             ease: [0.00, 0.00, 0.00, 1.00],
-            duration: 0.3
+            duration: 0.3,
           }}
         >
           <AnimatePresence mode='popLayout'>

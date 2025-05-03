@@ -110,7 +110,7 @@ export default function TestPage () {
     try {
       const response = await request.serverPost<Record<string, any>, { type: string }>(
         '/api/v1/config/new/get',
-        { type },
+        { type }
       )
       return response as T
     } catch (err) {
@@ -380,8 +380,7 @@ export default function TestPage () {
 
   return (
     <div className='space-y-4'>
-      {/* 头部卡片 */}
-      <Card className='p-4 lg:p-6 sticky top-0 md:top-[53px] lg:top-[53px] z-10 bg-opacity-50 backdrop-blur-md shadow-xl'>
+      <Card className='p-4 lg:p-6 sticky top-0 md:top-[23px] lg:top-[23px] z-10 bg-opacity-50 backdrop-blur-md shadow-xl'>
         <div className='flex flex-col gap-2'>
           {/* PC端标题 - 仅在PC端显示 */}
           <div className='hidden md:flex items-center gap-2'>

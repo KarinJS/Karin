@@ -1,12 +1,18 @@
 import os from 'node:os'
 import path from 'node:path'
 import { isWin } from '@/env'
-import { redis } from '@/utils/config'
+import { redis as redisConfig } from '@/utils/config'
 import { redisSqlite3Path } from '@/root'
 import { exec } from '@/utils/system/exec'
 import { RedisClient } from '@/core/db/redis/mock'
 import { SQLiteWrapper } from '@/core/db/redis/mock/sqlite'
 import { createClient, RedisClientType, RedisClientOptions } from 'redis'
+
+/**
+ * @public
+ * @description Redis数据库
+ */
+export let redis: Client
 
 /** Redis 客户端类型 */
 export type Client = RedisClientType & { id: 'redis' | 'mock' }
@@ -55,11 +61,12 @@ const start = async () => {
  */
 export const createRedis = async (): Promise<Client> => {
   try {
-    const options = redis()
+    const options = redisConfig()
     let client = await create(options)
     if (client) {
       logger.info(`[redis] ${logger.green('Redis 连接成功')}`)
-      return client as Client
+      redis = client as Client
+      return redis
     }
 
     /** 第一次启动失败 */
@@ -70,13 +77,17 @@ export const createRedis = async (): Promise<Client> => {
     } else {
       logger.debug(logger.red('[redis] 主动拉起 Redis 失败'))
     }
-    if (client) return client as Client
+    if (client) {
+      redis = client as Client
+      return redis
+    }
     throw new Error('Redis 启动失败')
   } catch (error) {
     logger.debug(`[redis] ${logger.red('Redis 连接失败')}`)
     logger.debug(error)
     logger.debug(logger.yellow('[redis] 将降级为 redis-mock 实现'))
-    return mock()
+    redis = await mock()
+    return redis
   }
 }
 

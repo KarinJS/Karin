@@ -3,10 +3,10 @@
   "version": "1.0.5",
   "description": "CLI tool for creating Karin projects",
   "type": "module",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "bin": {
-    "create-karin": "./lib/index.cjs"
+    "create-karin": "dist/index.mjs"
   },
   "engines": {
     "node": ">=18"
@@ -17,7 +17,7 @@
   },
   "scripts": {
     "dev": "tsx src/index.ts",
-    "build": "tsup --config tsup.config.ts",
+    "build": "vite build",
     "pub": "npm publish --access public"
   },
   "keywords": [
@@ -28,17 +28,21 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "prompts": "^2.4.2",
-    "kolorist": "^1.8.0"
+    "kolorist": "^1.8.0",
+    "prompts": "^2.4.2"
   },
   "devDependencies": {
+    "@karinjs/axios": "^1.0.1",
     "@types/node": "^20.11.0",
     "@types/prompts": "^2.4.9",
+    "@types/strip-json-comments": "^3.0.0",
+    "ora": "^8.2.0",
+    "strip-json-comments": "^5.0.1",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3"
   },
   "files": [
-    "lib",
+    "dist",
     "templates"
   ]
 }

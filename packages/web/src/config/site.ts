@@ -7,8 +7,10 @@ import {
   MdStore,
   MdOutlineArticle, // 系统日志
   MdOutlineTerminal, // 仿真终端
-  MdOutlineWebhook // webui插件管理
+  MdOutlineWebhook, // webui插件管理
+  MdOutlineManageAccounts, // 插件管理
 } from 'react-icons/md'
+import { TbPackages } from 'react-icons/tb' // 依赖管理图标
 
 import type { LocalApiResponse } from 'node-karin'
 
@@ -34,20 +36,6 @@ export interface SiteConfigType {
   navItems: NavItem[]
 }
 
-/**
- * 获取已安装的插件列表
- */
-const getInstalledPlugins = async () => {
-  const list = await request.serverPost<LocalApiResponse[], null>('/api/v1/plugin/local') || []
-  return list.map((item) => ({
-    id: item.id,
-    label: item.name,
-    href: `/plugins/${item.id}`,
-    icon: item.icon,
-    type: item.type
-  }))
-}
-
 export const defaultSiteConfig: SiteConfigType = {
   name: 'KarinJS WebUI',
   description: 'KarinJS WebUI.',
@@ -59,7 +47,7 @@ export const defaultSiteConfig: SiteConfigType = {
     },
     {
       Icon: RiSettings2Fill,
-      label: '配置信息',
+      label: '系统配置',
       href: '/config',
     },
     {
@@ -72,6 +60,16 @@ export const defaultSiteConfig: SiteConfigType = {
       Icon: MdStore,
       label: '插件市场',
       href: '/plugins/list',
+    },
+    {
+      Icon: MdOutlineManageAccounts,
+      label: '插件管理',
+      href: '/plugins/manage',
+    },
+    {
+      Icon: TbPackages,
+      label: '依赖管理',
+      href: '/dependencies',
     },
     // {
     //   Icon: FiCodesandbox,
@@ -103,6 +101,23 @@ export const defaultSiteConfig: SiteConfigType = {
 
 export const siteConfig: SiteConfigType = { ...defaultSiteConfig }
 
+/**
+ * 获取已安装的插件列表
+ */
+const getInstalledPlugins = async () => {
+  const list = (await request.serverPost<LocalApiResponse[], null>('/api/v1/plugin/local')) || []
+  return list.map((item) => ({
+    id: item.id,
+    label: item.name,
+    href: `/plugins/${item.id}`,
+    icon: item.icon,
+    type: item.type,
+  }))
+}
+
+/**
+ * 初始化插件配置的二级菜单
+ */
 export const initSiteConfig = async () => {
   const plugins = await getInstalledPlugins()
   const pluginConfigIndex = siteConfig.navItems.findIndex(item => item.href === '/plugins')

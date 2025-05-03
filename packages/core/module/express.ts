@@ -1,0 +1,24 @@
+// @ts-ignore 不需要管类型 已经是esm包了
+export * from 'express'
+export { default } from 'express'
+export {
+  type Express,
+  type RouterOptions,
+  type Application,
+  type CookieOptions,
+  type Errback,
+  type ErrorRequestHandler,
+  type Handler,
+  type IRoute,
+  type IRouter,
+  type IRouterHandler,
+  type IRouterMatcher,
+  type MediaType,
+  type NextFunction,
+  type Locals,
+  type Request,
+  type RequestHandler,
+  type RequestParamHandler,
+  type Response,
+  type Send,
+} from 'express'

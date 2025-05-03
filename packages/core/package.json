@@ -24,76 +24,163 @@
   "license": "MIT",
   "author": "shijin",
   "type": "module",
-  "main": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "development": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    },
+    "./app": {
+      "types": "./dist/start/app.d.ts",
+      "development": "./src/start/app.ts",
+      "default": "./dist/start/app.mjs"
+    },
+    "./start": {
+      "types": "./dist/start/index.d.ts",
+      "development": "./src/start/index.ts",
+      "default": "./dist/start/index.mjs"
+    },
+    "./dir": {
+      "types": "./dist/root.d.ts",
+      "development": "./src/root.ts",
+      "default": "./dist/root.mjs"
+    },
+    "./cli": {
+      "types": "./dist/cli/index.d.ts",
+      "development": "./src/exports/cli/index.ts",
+      "default": "./dist/cli/index.mjs"
+    },
+    "./root": {
+      "types": "./dist/root.d.ts",
+      "development": "./src/root.ts",
+      "default": "./dist/root.mjs"
+    },
+    "./template": {
+      "types": "./dist/module/art-template.d.ts",
+      "development": "./exports/module/art-template.ts",
+      "default": "./dist/module/art-template.mjs"
+    },
+    "./art-template": {
+      "types": "./dist/module/art-template.d.ts",
+      "development": "./exports/module/art-template.ts",
+      "default": "./dist/module/art-template.mjs"
+    },
+    "./axios": {
+      "types": "./dist/module/axios.d.ts",
+      "development": "./exports/module/axios.ts",
+      "default": "./dist/module/axios.mjs"
+    },
+    "./chalk": {
+      "types": "./dist/module/chalk.d.ts",
+      "development": "./exports/module/chalk.ts",
+      "default": "./dist/module/chalk.mjs"
+    },
+    "./chokidar": {
+      "types": "./dist/module/chokidar.d.ts",
+      "development": "./exports/module/chokidar.ts",
+      "default": "./dist/module/chokidar.mjs"
+    },
+    "./express": {
+      "types": "./dist/module/express.d.ts",
+      "development": "./exports/module/express.ts",
+      "default": "./dist/module/express.mjs"
+    },
+    "./lodash": {
+      "types": "./dist/module/lodash.d.ts",
+      "development": "./exports/module/lodash.ts",
+      "default": "./dist/module/lodash.mjs"
+    },
+    "./moment": {
+      "types": "./dist/module/moment.d.ts",
+      "development": "./exports/module/moment.ts",
+      "default": "./dist/module/moment.mjs"
+    },
+    "./schedule": {
+      "types": "./dist/module/node-schedule.d.ts",
+      "development": "./exports/module/node-schedule.ts",
+      "default": "./dist/module/node-schedule.mjs"
+    },
+    "./node-schedule": {
+      "types": "./dist/module/node-schedule.d.ts",
+      "development": "./exports/module/node-schedule.ts",
+      "default": "./dist/module/node-schedule.mjs"
+    },
+    "./redis": {
+      "types": "./dist/module/redis.d.ts",
+      "development": "./exports/module/redis.ts",
+      "default": "./dist/module/redis.mjs"
+    },
+    "./ws": {
+      "types": "./dist/module/ws.d.ts",
+      "development": "./exports/module/ws.ts",
+      "default": "./dist/module/ws.mjs"
+    },
+    "./yaml": {
+      "types": "./dist/module/yaml.d.ts",
+      "development": "./exports/module/yaml.ts",
+      "default": "./dist/module/yaml.mjs"
+    },
+    "./sqlite3": {
+      "types": "./dist/module/sqlite3.d.ts",
+      "development": "./exports/module/sqlite3.ts",
+      "default": "./dist/module/sqlite3.mjs"
+    }
+  },
+  "main": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "bin": {
-    "k": "./dist/cli/index.cjs",
-    "karin": "./dist/cli/index.js",
-    "kr": "./dist/cli/index.cjs"
+    "k": "./dist/cli/index.mjs",
+    "ki": "./dist/cli/index.mjs",
+    "karin": "./dist/cli/index.mjs"
   },
   "files": [
-    "/dist/**/*.js",
-    "/dist/**/*.cjs",
-    "/dist/**/*.d.ts",
-    "/default/**",
-    "/dist/web/**",
+    "dist",
+    "default",
     "CHANGELOG.md",
-    "LICENSE",
-    "package.json",
-    "README.md"
-  ],
-  "workspaces": [
-    "plugins/**"
+    "LICENSE"
   ],
   "scripts": {
-    ".": "node dist/index.js",
-    "app": "node dist/index.js",
-    "build": "tsc --noEmit && tsup --config tsup.config.ts",
-    "build:cli": "tsup --tsconfig tsconfig.cli.json --config tsup.cli.ts",
-    "build:dev": "pnpm build && node cli/build.js -dev",
-    "build:module": "tsup --tsconfig tsconfig.module.json --config tsup.modules.ts && node cli/module.js",
-    "build:prod": "pnpm build:module && pnpm build:cli && pnpm build && node cli/build.js",
-    "bun:app": "bun dist/index.js",
-    "bun:dev": "cross-env EBV_FILE=\"development.env\" bun src/index.ts",
-    "cli": "node dist/cli/index.cjs",
-    "debug": "node dist/index.js --debug",
-    "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/index.ts",
-    "dev:cli": "tsx exports/cli/index.ts",
+    ".": "pnpm app",
+    "app": "node dist/start/index.mjs",
+    "build": "pnpm build:main && pnpm build:module",
+    "build:dev": "pnpm build:main",
+    "build:main": "tsc && tsup --config tsup.config.ts",
+    "build:module": "tsc && tsup --config tsup.config.module.ts",
+    "build:types": "tsc && tsup --config tsup.config.types.ts",
+    "app:bun": "bun dist/start/index.mjs",
+    "cli": "node dist/cli/index.mjs",
+    "cli:dev": "tsx exports/cli/index.ts",
+    "dev": "cross-env EBV_FILE=\"development.env\" node --conditions=development --import tsx src/start/index.ts",
+    "dev:bun": "cross-env EBV_FILE=\"development.env\" bun --conditions=development src/start/index.ts",
     "pr": "node cli/pr.js all",
     "pub": "npm publish --access public",
     "pub-beta": "npm publish --access public --tag beta",
     "sort": "sort-package-json && sort-json tsconfig.json"
   },
   "dependencies": {
-    "@types/express": "^4.17.21",
-    "@types/lodash": "^4.17.10",
-    "@types/node-schedule": "^2.1.7",
-    "@types/ws": "^8.5.12",
-    "art-template": "4.13.2",
-    "axios": "1.8.2",
+    "art-template": "npm:@karinjs/art-template@1.1.0",
+    "axios": "npm:@karinjs/axios@1.0.1",
     "chalk": "5.4.1",
-    "chokidar": "3.6.0",
-    "commander": "^13.0.0",
-    "dotenv": "^16.4.7",
-    "express": "4.21.2",
-    "jsonwebtoken": "^9.0.2",
-    "lodash": "4.17.21",
-    "log4js": "6.9.1",
-    "moment": "2.30.1",
-    "node-schedule": "2.1.1",
-    "redis": "4.7.0",
-    "sqlite3": "5.1.6",
-    "ws": "8.18.0",
+    "chokidar": "4.0.3",
+    "express": "npm:@karinjs/express@1.0.3",
+    "lodash": "npm:@karinjs/lodash@1.1.1",
+    "moment": "npm:@karinjs/moment@1.1.5",
+    "node-schedule": "npm:@karinjs/node-schedule@1.0.0",
+    "redis": "npm:@karinjs/redis@1.1.3",
+    "sqlite3": "npm:@karinjs/sqlite3-cjs@0.1.0",
+    "ws": "npm:@karinjs/ws@1.0.4",
     "yaml": "2.7.0"
   },
   "devDependencies": {
-    "@karinjs/node-pty": "^1.0.4",
+    "@karinjs/node-pty": "^1.1.0",
     "@karinjs/plugin-webui-network-monitor": "^1.0.3",
-    "@types/jsonwebtoken": "^9.0.9",
-    "cross-env": "^7.0.3"
-  },
-  "peerDependencies": {
-    "node-karin": "workspace:*"
+    "@karinjs/plugins-list": "^1.6.1",
+    "@types/express": "^5.0.1",
+    "@types/lodash": "^4.17.16",
+    "cross-env": "^7.0.3",
+    "dotenv": "npm:@karinjs/dotenv@^1.1.2",
+    "jsonwebtoken": "npm:@karinjs/jsonwebtoken@^1.1.1",
+    "log4js": "npm:@karinjs/log4js@1.1.4"
   },
   "engines": {
     "node": ">=18"
@@ -102,104 +189,5 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
-  "time": "2025-03-12T19:55:45.123Z",
-  "exports": {
-    ".": {
-      "import": "./src/index.ts",
-      "types": "./dist/index.d.ts"
-    },
-    "./dir": {
-      "import": "./dist/root.js",
-      "types": "./dist/root.d.ts"
-    },
-    "./cli": {
-      "import": "./dist/cli/index.js",
-      "types": "./dist/cli/index.d.ts",
-      "require": "./dist/cli/index.cjs"
-    },
-    "./root": {
-      "import": "./dist/root.js",
-      "types": "./dist/root.d.ts"
-    },
-    "./template": {
-      "import": "./dist/module/art-template.js",
-      "types": "./dist/module/art-template.d.ts",
-      "require": "./dist/module/art-template.cjs"
-    },
-    "./art-template": {
-      "import": "./dist/module/art-template.js",
-      "types": "./dist/module/art-template.d.ts",
-      "require": "./dist/module/art-template.cjs"
-    },
-    "./axios": {
-      "import": "./dist/module/axios.js",
-      "types": "./dist/module/axios.d.ts",
-      "require": "./dist/module/axios.cjs"
-    },
-    "./chalk": {
-      "import": "./dist/module/chalk.js",
-      "types": "./dist/module/chalk.d.ts",
-      "require": "./dist/module/chalk.cjs"
-    },
-    "./chokidar": {
-      "import": "./dist/module/chokidar.js",
-      "types": "./dist/module/chokidar.d.ts",
-      "require": "./dist/module/chokidar.cjs"
-    },
-    "./dotenv": {
-      "import": "./dist/module/dotenv.js",
-      "types": "./dist/module/dotenv.d.ts",
-      "require": "./dist/module/dotenv.cjs"
-    },
-    "./express": {
-      "import": "./dist/module/express.js",
-      "types": "./dist/module/express.d.ts",
-      "require": "./dist/module/express.cjs"
-    },
-    "./lodash": {
-      "import": "./dist/module/lodash.js",
-      "types": "./dist/module/lodash.d.ts",
-      "require": "./dist/module/lodash.cjs"
-    },
-    "./log4js": {
-      "import": "./dist/module/log4js.js",
-      "types": "./dist/module/log4js.d.ts",
-      "require": "./dist/module/log4js.cjs"
-    },
-    "./moment": {
-      "import": "./dist/module/moment.js",
-      "types": "./dist/module/moment.d.ts",
-      "require": "./dist/module/moment.cjs"
-    },
-    "./schedule": {
-      "import": "./dist/module/node-schedule.js",
-      "types": "./dist/module/node-schedule.d.ts",
-      "require": "./dist/module/node-schedule.cjs"
-    },
-    "./node-schedule": {
-      "import": "./dist/module/node-schedule.js",
-      "types": "./dist/module/node-schedule.d.ts",
-      "require": "./dist/module/node-schedule.cjs"
-    },
-    "./redis": {
-      "import": "./dist/module/redis.js",
-      "types": "./dist/module/redis.d.ts",
-      "require": "./dist/module/redis.cjs"
-    },
-    "./sqlite3": {
-      "import": "./dist/module/sqlite3.js",
-      "types": "./dist/module/sqlite3.d.ts",
-      "require": "./dist/module/sqlite3.cjs"
-    },
-    "./ws": {
-      "import": "./dist/module/ws.js",
-      "types": "./dist/module/ws.d.ts",
-      "require": "./dist/module/ws.cjs"
-    },
-    "./yaml": {
-      "import": "./dist/module/yaml.js",
-      "types": "./dist/module/yaml.d.ts",
-      "require": "./dist/module/yaml.cjs"
-    }
-  }
+  "time": "2025-04-10T19:55:45.123Z"
 }

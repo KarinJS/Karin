@@ -27,7 +27,7 @@ export enum InputDataType {
   /** 颜色 */
   COLOR = 'color',
   /** JSON */
-  JSON = 'json'
+  JSON = 'json',
 }
 
 /**

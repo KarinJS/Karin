@@ -7,7 +7,7 @@ import type {
   GroupMessage,
   GuildMessage,
   DirectMessage,
-  GroupTempMessage
+  GroupTempMessage,
 } from '@/event'
 import type { Message } from '@/types/event/event'
 import type { MessageHookItem, HookCallback, HookOptions, UnionMessage } from '@/types/hooks/message'
@@ -24,7 +24,7 @@ const addHook = <T extends UnionMessage> (
   list.push({
     id,
     priority: options.priority ?? 10000,
-    callback
+    callback,
   })
   return { id, list: lodash.orderBy(list, ['priority'], ['asc']) }
 }
@@ -188,5 +188,5 @@ export const hooksMessageEmit = {
    * @param event 群临时消息事件
    * @returns 是否继续正常流程
    */
-  groupTemp: (event: GroupTempMessage) => emitHooks(event, cache.message.groupTemp)
+  groupTemp: (event: GroupTempMessage) => emitHooks(event, cache.message.groupTemp),
 }

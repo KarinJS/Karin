@@ -1,11 +1,12 @@
 import fs from 'node:fs'
+import axios from 'axios'
 import path from 'node:path'
 import { basePath } from '@/root'
 import { promisify } from 'node:util'
 import { pipeline } from 'node:stream'
-import axios, { AxiosError } from 'axios'
 
 import type { AxiosRequestConfig } from 'axios'
+import type { DownloadFileResult, DownloadFilesOptions } from '@/types'
 
 /** promisify stream.pipeline */
 const streamPipeline = promisify(pipeline)
@@ -14,25 +15,42 @@ const streamPipeline = promisify(pipeline)
 export const sep = path.sep === '/' ? /^file:\/\// : /^file:[/]{2,3}/
 
 /**
+ * 下载文件
+ * @param fileUrl 下载地址
+ * @param savePath 保存路径
+ * @param options 请求参数 基本是axios参数，额外拓展了returnBoolean
+ */
+export const downloadFile = async<T extends boolean = false> (
+  fileUrl: string,
+  savePath: string,
+  options: DownloadFilesOptions<T> = {}
+): Promise<DownloadFileResult<T>> => {
+  try {
+    await fs.promises.mkdir(path.dirname(savePath), { recursive: true })
+    const response = await axios.get(fileUrl, { ...options, responseType: 'stream' })
+    await streamPipeline(response.data, fs.createWriteStream(savePath))
+
+    if (options.returnBoolean) {
+      return true as DownloadFileResult<T>
+    }
+
+    return { success: true, data: response.data } as DownloadFileResult<T>
+  } catch (error) {
+    if (options.returnBoolean) {
+      return false as DownloadFileResult<T>
+    }
+    return { success: false, data: error } as DownloadFileResult<T>
+  }
+}
+
+/**
  * 下载保存文件
  * @param fileUrl 下载地址
  * @param savePath 保存路径
  * @param param axios参数
  */
 export const downFile = async (fileUrl: string, savePath: string, param: AxiosRequestConfig = {}) => {
-  try {
-    await fs.promises.mkdir(path.dirname(savePath), { recursive: true })
-    const response = await axios.get(fileUrl, { ...param, responseType: 'stream' })
-    await streamPipeline(response.data, fs.createWriteStream(savePath))
-    return true
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      logger.error(`下载文件错误：${error.stack}`)
-    } else {
-      logger.error(`下载文件错误：${error}`)
-    }
-    return false
-  }
+  return downloadFile(fileUrl, savePath, { ...param, returnBoolean: true })
 }
 
 /**

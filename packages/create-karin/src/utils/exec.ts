@@ -9,7 +9,7 @@ const shell = process.platform === 'win32' ? 'cmd' : '/bin/sh'
  */
 export const execSync = (
   cmd: string,
-  options: import('node:child_process').ExecSyncOptions = {},
+  options: import('node:child_process').ExecSyncOptions = {}
 ): { status: boolean; error: Error | null; stdout: string; stderr: string } => {
   try {
     const result = execSyncCmd(cmd, { ...options, shell })
@@ -26,11 +26,14 @@ export const execSync = (
  */
 export const exec = (
   cmd: string,
-  options: import('node:child_process').ExecOptions = {},
+  options: import('node:child_process').ExecOptions = {}
 ): Promise<{ status: boolean; error: Error | null; stdout: string; stderr: string }> => {
   return new Promise(resolve => {
     execCmd(cmd, { ...options, shell }, (error, stdout, stderr) => {
       const status = !error
+      if (typeof stdout !== 'string') {
+        stdout = String(stdout)
+      }
       resolve({ status, error, stdout, stderr })
     })
   })

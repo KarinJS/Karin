@@ -15,7 +15,7 @@ export const saveConfig = async <T> (type: ConfigType, data: T) => {
       '/api/v1/config/new/save',
       {
         type,
-        data
+        data,
       }
     )
 

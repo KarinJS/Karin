@@ -4,12 +4,12 @@ import {
   PointerSensor,
   closestCenter,
   useSensor,
-  useSensors
+  useSensors,
 } from '@dnd-kit/core'
 import {
   SortableContext,
   arrayMove,
-  horizontalListSortingStrategy
+  horizontalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import toast from 'react-hot-toast'
 import { Input } from '@heroui/input'
@@ -74,7 +74,7 @@ export default function TerminalPage () {
 
       const newTabs = terminals.map((terminal) => ({
         id: terminal.id,
-        title: terminal.name
+        title: terminal.name,
       }))
 
       setTabs(newTabs)
@@ -116,7 +116,7 @@ export default function TerminalPage () {
       const { id } = await terminalManager.createTerminal(80, 24, shell, name)
       const newTab = {
         id,
-        title: name || id
+        title: name || id,
       }
 
       setTabs((prev) => [...prev, newTab])
@@ -222,8 +222,8 @@ export default function TerminalPage () {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8
-      }
+        distance: 8,
+      },
     })
   )
 

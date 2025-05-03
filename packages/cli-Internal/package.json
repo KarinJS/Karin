@@ -1,0 +1,45 @@
+{
+  "name": "node-karin-cli",
+  "version": "1.0.0",
+  "description": "node-karin cli",
+  "keywords": [],
+  "homepage": "https://github.com/KarinJS/Karin",
+  "bugs": {
+    "url": "https://github.com/KarinJS/Karin/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarinJS/Karin.git"
+  },
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "main": "./index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "app": "node dist/index.mjs",
+    "cp": "node index.mjs",
+    "dev": "tsx src/index.ts",
+    "build": "pnpm cp && tsc && vite build&& tsup ",
+    "build:dev": "pnpm cp && tsc && vite build --mode development && tsup --development"
+  },
+  "devDependencies": {
+    "commander": "^13.1.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "time": "2025-04-10T19:55:45.123Z",
+  "dependencies": {
+    "yaml": "2.7.0"
+  }
+}

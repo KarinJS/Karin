@@ -1,5 +1,9 @@
 packages:
   - packages/*
 onlyBuiltDependencies:
-  - '@parcel/watcher'
-  - '@swc/core'
+  - "@heroui/shared-utils"
+  - "@karinjs/node-pty"
+  - "@karinjs/sqlite3-cjs"
+  - "@parcel/watcher"
+  - "@swc/core"
+  - esbuild

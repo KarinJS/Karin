@@ -8,7 +8,7 @@ import {
   getAccessToken,
   getRefreshToken,
   getUserId,
-  setAccessToken
+  setAccessToken,
 } from './token'
 
 import type { ServerResponse } from '@/types/server'
@@ -26,7 +26,7 @@ const cacheToken: {
   userId: string | null
 } = {
   token: null,
-  userId: null
+  userId: null,
 }
 
 /**
@@ -75,7 +75,7 @@ const redirectToLogin = (message: string) => {
     return
   }
 
-  toast.error(`${message}，5秒后将跳转登录界面`, { duration: 5000 })
+  toast.error(`${message}，2秒后将跳转登录界面`, { duration: 2000 })
 
   setTimeout(() => {
     isRedirecting = false

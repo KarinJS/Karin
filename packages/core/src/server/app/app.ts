@@ -6,7 +6,8 @@ import { createBrotliDecompress } from 'node:zlib'
 import getMimeType from '../utils/getMimeType'
 import { rootRouter } from '../system/root'
 import { listeners } from '@/core/internal/listeners'
-import { router } from '../router/indx'
+import { router } from '../router'
+import { BASE_ROUTER } from '../router/router'
 
 import type root from '@/root'
 import type { Express } from 'express'
@@ -54,8 +55,10 @@ const web = (dir: typeof root) => {
   app.use('/sandbox/file', express.static(dir.sandboxTempPath))
 
   /** 处理 /web 路径下的所有请求，确保 SPA 路由可以正常工作 */
-  app.get('/web/*', (req, res) => {
-    res.sendFile(path.join(webDir, 'index.html'))
+  app.get('/web/{*splat}', (_, res) => {
+    res.sendFile('index.html', {
+      root: path.resolve(webDir),
+    })
   })
 
   listeners.once('online', () => {
@@ -64,7 +67,7 @@ const web = (dir: typeof root) => {
        * 5秒后将所有根路径请求重定向到 /web
        * 等5秒是因为插件可能也使用了部分路由
        */
-      app.get('/', (req, res) => {
+      app.all('/{*splat}', (_, res) => {
         res.redirect('/web')
       })
     }, 5000)
@@ -118,7 +121,7 @@ export const initExpress = async (
 
   await import('./ws')
 
-  app.use('/api/v1', router)
+  app.use(BASE_ROUTER, router)
   app.get('/', rootRouter)
   web(dir)
   listen(port, host)

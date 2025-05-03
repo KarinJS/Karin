@@ -1,6 +1,6 @@
 import lodash from 'lodash'
 import { privateCD } from '../other/cd'
-import { cache } from '@/plugin/cache'
+import { cache } from '@/plugin/system/cache'
 import { listeners } from '@/core/internal'
 import { context as CTX } from '../other/context'
 import { config as cfg, getFriendCfg } from '@/utils/config'
@@ -179,7 +179,7 @@ const privateCmd = async (
   if (!disableViaPluginWhitelist(plugin, config)) return true
   if (!disableViaPluginBlacklist(plugin, config)) return true
 
-  ctx.logFnc = `[${plugin.pkg.name}][${plugin.file.method}]`
+  ctx.logFnc = `[${plugin.pkg.name}][${plugin.file.name}]`
   const logFnc = logger.fnc(ctx.logFnc)
   plugin.log(ctx.selfId, `${logFnc}${ctx.logText} ${lodash.truncate(ctx.msg, { length: 100 })}`)
 

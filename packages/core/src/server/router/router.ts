@@ -1,3 +1,5 @@
+/** 基本路由 */
+export const BASE_ROUTER = '/api/v1'
 /** 登录路由 */
 export const LOGIN_ROUTER = '/login'
 /** 刷新令牌路由 */
@@ -25,7 +27,7 @@ export const UPDATE_CORE_ROUTER = '/system/update'
 /** 获取所有bot列表路由 */
 export const GET_BOTS_ROUTER = '/system/get/bots'
 /** console适配器路由 */
-export const CONSOLE_ROUTER = '/console/*'
+export const CONSOLE_ROUTER = '/console/{*path}'
 /** ping路由 */
 export const PING_ROUTER = '/ping'
 /** 系统状态路由 */
@@ -86,3 +88,36 @@ export const UNINSTALL_WEBUI_PLUGIN_ROUTER = '/plugin/webui/uninstall'
 export const GET_WEBUI_PLUGIN_VERSIONS_ROUTER = '/plugin/webui/versions'
 /** 更新WebUI插件到指定版本 */
 export const UPDATE_WEBUI_PLUGIN_VERSION_ROUTER = '/plugin/webui/update-version'
+
+/** 获取任务列表 */
+export const TASK_LIST_ROUTER = '/task/list'
+// /** 新增任务 */
+// export const TASK_ADD_ROUTER = '/task/add'
+/** 执行任务 */
+export const TASK_RUN_ROUTER = '/task/run'
+/** 获取任务日志 */
+export const TASK_LOGS_ROUTER = '/task/logs'
+/** 删除任务记录 */
+export const TASK_DELETE_ROUTER = '/task/delete_record'
+/** 插件管理 */
+export const PLUGIN_ADMIN_ROUTER = '/plugin/admin'
+/** @version 1.8.0 获取插件管理所需的插件信息列表 */
+export const GET_PLUGIN_LIST_PLUGIN_ADMIN_ROUTER = '/plugin/detail/list'
+
+/** @version 1.8.0 获取依赖列表 */
+export const GET_DEPENDENCIES_LIST_ROUTER = '/dependencies/list'
+/** @version 1.8.0 依赖管理路由 */
+export const MANAGE_DEPENDENCIES_ROUTER = '/dependencies/manage'
+/** @version 1.8.0 获取.npmrc文件列表 */
+export const GET_NPMRC_LIST_ROUTER = '/dependencies/npmrc/list'
+/** @version 1.8.0 获取npm config文件内容 */
+export const GET_NPM_CONFIG_ROUTER = '/dependencies/npmrc/get'
+/** @version 1.8.0 获取npm registry、proxy、https-proxy配置 */
+export const GET_NPM_BASE_CONFIG_ROUTER = '/dependencies/npm/base'
+/** @version 1.8.0 保存npmrc文件 */
+export const SAVE_NPMRC_ROUTER = '/dependencies/npmrc/save'
+
+/** @version 1.8.0 获取已加载命令插件缓存信息列表 */
+export const GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER = '/plugin/loaded/command'
+/** @version 1.8.0 获取插件市场列表 */
+export const GET_PLUGIN_MARKET_LIST_ROUTER = '/plugin/market'

@@ -1,6 +1,6 @@
 import {
   createServerErrorResponse,
-  createSuccessResponse
+  createSuccessResponse,
 } from '@/server/utils/response'
 import {
   closeTerminal,

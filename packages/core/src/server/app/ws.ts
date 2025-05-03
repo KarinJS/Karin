@@ -64,9 +64,15 @@ wss.on('error', (error: NodeJS.ErrnoException) => {
 
 /** 监听 ws 连接 */
 wss.on('connection', (socket, request) => {
+  /** 对url进行处理 去除url中的敏感信息打印在控制台 */
+  const url = (request.url || '')
+    .replace(/token=[^&]+/, 'token=******')
+    .replace(/user_id=[^&]+/, 'user_id=******')
+    .replace(/access_token=[^&]+/, 'access_token=******')
+
   logger.mark(`[WebSocket] ${logger.green('connection')}:\n` +
     `ip: ${request.socket.remoteAddress}\n` +
-    `host: ${request.headers.host}${request.url}\n` +
+    `host: ${request.headers.host}${url}\n` +
     `headers: ${JSON.stringify(request.headers, null, 2)}`
   )
 

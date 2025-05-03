@@ -11,7 +11,7 @@ import type {
   FriendData,
   GroupData,
   GroupMemberData,
-  DbStreams
+  DbStreams,
 } from '@/types/sandbox/db'
 import type { SandBoxAccountInfo } from '@/types/sandbox/account'
 
@@ -64,40 +64,40 @@ export const dir = {
 const stream: DbStreams = {
   frinendList: {
     count: 0,
-    stream: undefined
+    stream: undefined,
   },
   friendHistory: {
     count: 0,
-    stream: undefined
+    stream: undefined,
   },
   friendNotice: {
     count: 0,
-    stream: undefined
+    stream: undefined,
   },
   friendRequest: {
     count: 0,
-    stream: undefined
+    stream: undefined,
   },
   groupList: {
     count: 0,
-    stream: undefined
+    stream: undefined,
   },
   groupMemberList: {
     count: 0,
-    stream: undefined
+    stream: undefined,
   },
   groupHistory: {
     count: 0,
-    stream: undefined
+    stream: undefined,
   },
   groupNotice: {
     count: 0,
-    stream: undefined
+    stream: undefined,
   },
   groupRequest: {
     count: 0,
-    stream: undefined
-  }
+    stream: undefined,
+  },
 }
 
 /**
@@ -111,7 +111,7 @@ const addWrite = <T> (
   name: keyof DbStreams,
   file: string,
   key: string,
-  value: T,
+  value: T
 ) => {
   if (!stream[name].stream) {
     stream[name].stream = createWriteStream(file, {
@@ -306,13 +306,13 @@ export const getGroupMemberList = async (
 ): Promise<(GroupMemberData & FriendData)[]> => {
   const content = await fs.readFile(dir.groupMemberList, 'utf-8')
   if (!content) return []
-  const list = await Promise.all(
+  const list = (await Promise.all(
 
     content.split('\n').filter(Boolean).map(async line => {
       const [k, v] = line.split('="')
       const [groupId, userId] = k.split(':')
       /** 获取这个群成员的信息 从好友列表中获取 */
-      const friend = await getFriend(userId) || {}
+      const friend = (await getFriend(userId)) || {}
       return {
 
         groupId,
@@ -321,11 +321,11 @@ export const getGroupMemberList = async (
           ...JSON.parse(v),
           ...friend,
           userId,
-        }
+        },
       }
     })
 
-  ) || []
+  )) || []
 
   return list?.filter(item => item.groupId === groupId)?.map(item => item.value) || []
 }

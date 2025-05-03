@@ -1,49 +1,34 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "alwaysStrict": true,
     "baseUrl": ".",
-    "declaration": true,
-    "declarationDir": "./lib/types",
-    "declarationMap": true,
-    "esModuleInterop": true,
-    "module": "ES2022",
-    "moduleResolution": "Bundler",
-    "noImplicitAny": true,
-    "outDir": "./lib",
     "paths": {
       "@/*": [
         "./src/*"
       ],
       "@fs": [
         "./src/utils/fs/main"
+      ],
+      "events": [
+        "node_modules/@types/node/events.d.ts"
+      ],
+      "node:events": [
+        "node_modules/@types/node/events.d.ts"
       ]
     },
-    "resolveJsonModule": true,
     "rootDir": "./src",
-    "skipLibCheck": false,
-    "sourceMap": true,
-    "strict": true,
-    "target": "ES2022",
     "types": [
-      "@types/node",
-      "@types/express"
-    ]
+      "./src/global.d.ts"
+    ],
   },
   "exclude": [
-    "@karinjs",
-    "default",
-    "lib",
-    "plugins",
-    "node_modules",
-    "logs"
+    "./plugins",
+    "./exports",
+    "sandbox",
+    "tsup.config.*.ts",
+    "dist",
   ],
   "include": [
-    "./src/**/*",
-    "./src/global.d.ts"
-  ],
-  "tsc-alias": {
-    "resolveFullExtension": ".js",
-    "resolveFullPaths": true
-  }
+    "src"
+  ]
 }

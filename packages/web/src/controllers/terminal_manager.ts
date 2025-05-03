@@ -104,7 +104,7 @@ class TerminalManager {
         callbacks: new Set([callback]),
         isConnected: false,
         buffer: [], // 初始化缓存
-        statusCallbacks: new Set(statusCallback ? [statusCallback] : [])
+        statusCallbacks: new Set(statusCallback ? [statusCallback] : []),
       }
 
       ws.onmessage = (event) => {

@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { isWorkspace } from '@/env'
 import { spawn } from 'child_process'
 import { deletePluginListCache } from './cache'
 import { createServerErrorResponse, createSuccessResponse } from '@/server/utils/response'
@@ -16,24 +17,24 @@ interface InstallTask {
   error?: string
 }
 
-// 全局任务队列
+/** 全局任务队列 */
 const taskQueue = new Map<string, InstallTask>()
 
 /**
  * 执行命令并实时获取输出
+ * @param command 命令
+ * @param args 参数
+ * @param task 任务
  */
-function spawnCommand (command: string, args: string[], task: InstallTask): Promise<void> {
-  const workspace = path.join(process.cwd(), 'pnpm-workspace.yaml')
-  const isWorkspace = fs.existsSync(workspace)
-  if (isWorkspace) args.push('-w')
+const spawnCommand = (command: string, args: string[], task: InstallTask): Promise<void> => {
+  if (isWorkspace()) args.push('-w')
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       stdio: ['ignore', 'pipe', 'pipe'],
       shell: true,
-      cwd: process.cwd()
+      cwd: process.cwd(),
     })
 
-    // 捕获标准输出
     child.stdout.on('data', (data) => {
       const lines = data.toString().split('\n').filter(Boolean)
       lines.forEach((line: string) => {
@@ -41,7 +42,6 @@ function spawnCommand (command: string, args: string[], task: InstallTask): Prom
       })
     })
 
-    // 捕获标准错误
     child.stderr.on('data', (data) => {
       const lines = data.toString().split('\n').filter(Boolean)
       lines.forEach((line: string) => {
@@ -49,7 +49,6 @@ function spawnCommand (command: string, args: string[], task: InstallTask): Prom
       })
     })
 
-    // 命令执行完成
     child.on('close', (code) => {
       if (code === 0) {
         resolve()
@@ -58,17 +57,15 @@ function spawnCommand (command: string, args: string[], task: InstallTask): Prom
       }
     })
 
-    // 命令执行错误
-    child.on('error', (error) => {
-      reject(error)
-    })
+    child.on('error', (error) => reject(error))
   })
 }
 
 /**
  * 安装 NPM 插件
+ * @param task 任务
  */
-async function installNpmPlugin (task: InstallTask) {
+const installNpmPlugin = async (task: InstallTask) => {
   task.logs.push(`开始安装 NPM 插件: ${task.name}`)
   task.logs.push('正在解析依赖...')
 
@@ -78,8 +75,10 @@ async function installNpmPlugin (task: InstallTask) {
 
 /**
  * 安装 Git 插件
+ * @param task 任务
+ * @param url 下载地址
  */
-async function installGitPlugin (task: InstallTask, url?: string) {
+const installGitPlugin = async (task: InstallTask, url?: string) => {
   if (!url) throw new Error('Git 插件需要提供仓库地址')
 
   const pluginDir = path.join(process.cwd(), 'plugins', task.name)
@@ -87,10 +86,10 @@ async function installGitPlugin (task: InstallTask, url?: string) {
   task.logs.push(`目标目录: ${pluginDir}`)
 
   await fs.promises.mkdir(pluginDir, { recursive: true })
-  // git clone --depth=1 https://github.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-kkk/
+  /** git clone --depth=1 https://github.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-kkk/ */
   await spawnCommand('git', ['clone', '--depth=1', url, `./plugins/${task.name}`], task)
 
-  // 检查是否有 package.json
+  /** 检查是否有 package.json */
   const pkgPath = path.join(pluginDir, 'package.json')
   if (fs.existsSync(pkgPath)) {
     task.logs.push('检测到 package.json，开始安装依赖...')
@@ -100,8 +99,10 @@ async function installGitPlugin (task: InstallTask, url?: string) {
 
 /**
  * 安装 App 插件
+ * @param task 任务
+ * @param url 下载地址
  */
-async function installAppPlugin (task: InstallTask, url?: string) {
+const installAppPlugin = async (task: InstallTask, url?: string) => {
   if (!url) throw new Error('App 插件需要提供下载地址')
 
   /** 非js、ts不允许下载 */
@@ -115,14 +116,14 @@ async function installAppPlugin (task: InstallTask, url?: string) {
 
   await fs.promises.mkdir(pluginDir, { recursive: true })
 
-  // 使用 curl 下载文件，以获取下载进度
+  /** 使用 curl 下载文件，以获取下载进度 */
   await spawnCommand(
     'curl',
     [
       '-L',
       '-o',
       pluginDir,
-      url
+      url,
     ],
     task
   )
@@ -130,8 +131,10 @@ async function installAppPlugin (task: InstallTask, url?: string) {
 
 /**
  * 执行插件安装任务
+ * @param task 任务
+ * @param url 下载地址
  */
-async function installPluginTask (task: InstallTask, url?: string) {
+const installPluginTask = async (task: InstallTask, url?: string) => {
   try {
     task.status = 'running'
     task.logs.push(`开始安装插件: ${task.name}`)
@@ -156,7 +159,7 @@ async function installPluginTask (task: InstallTask, url?: string) {
     task.logs.push('🎉 安装完成!')
     task.status = 'completed'
 
-    // 清除插件列表缓存
+    /** 清除插件列表缓存 */
     await deletePluginListCache()
   } catch (error) {
     task.status = 'failed'
@@ -175,7 +178,7 @@ export const pluginInstall: RequestHandler = async (req, res) => {
     const { name, type, url } = req.body
     const taskId = `${type}-${name}-${Date.now()}`
 
-    // 检查是否已在安装队列中
+    /** 检查是否已在安装队列中 */
     const existingTask = Array.from(taskQueue.values()).find(
       task => task.name === name && task.status === 'running'
     )
@@ -183,18 +186,18 @@ export const pluginInstall: RequestHandler = async (req, res) => {
       return createServerErrorResponse(res, '该插件正在安装中')
     }
 
-    // 创建新任务
+    /** 创建新任务 */
     const task: InstallTask = {
       id: taskId,
       name,
       type,
       status: 'pending',
       logs: [],
-      minimized: false
+      minimized: false,
     }
     taskQueue.set(taskId, task)
 
-    // 异步执行安装
+    /** 异步执行安装 */
     installPluginTask(task, url).catch(error => {
       task.status = 'failed'
       task.error = error.message
@@ -211,31 +214,33 @@ export const pluginInstall: RequestHandler = async (req, res) => {
 /**
  * 卸载 NPM 插件
  */
-async function uninstallNpmPlugin (task: InstallTask) {
+const uninstallNpmPlugin = async (task: InstallTask) => {
   task.logs.push(`开始卸载 NPM 插件: ${task.name}`)
   await spawnCommand('pnpm', ['rm', task.name], task)
 }
 
 /**
  * 卸载 Git 插件
+ * @param task 任务
  */
-async function uninstallGitPlugin (task: InstallTask) {
+const uninstallGitPlugin = async (task: InstallTask) => {
   const pluginDir = path.join(process.cwd(), 'plugins', task.name)
   task.logs.push(`开始删除插件目录: ${pluginDir}`)
 
-  // 删除插件目录
+  /** 删除插件目录 */
   await fs.promises.rm(pluginDir, { recursive: true, force: true })
   task.logs.push('插件目录已删除')
 
-  // 清理依赖缓存
+  /** 清理依赖缓存 */
   task.logs.push('正在清理依赖缓存...')
   await spawnCommand('pnpm', ['install', '-P'], task)
 }
 
 /**
  * 执行插件卸载任务
+ * @param task 任务
  */
-async function uninstallPluginTask (task: InstallTask) {
+const uninstallPluginTask = async (task: InstallTask) => {
   try {
     task.status = 'running'
     task.logs.push(`开始卸载插件: ${task.name}`)
@@ -258,7 +263,7 @@ async function uninstallPluginTask (task: InstallTask) {
     task.logs.push('⚠️ 建议重启 Bot 以使更改生效')
     task.status = 'completed'
 
-    // 清除插件列表缓存
+    /** 清除插件列表缓存 */
     await deletePluginListCache()
   } catch (error) {
     task.status = 'failed'
@@ -277,7 +282,7 @@ export const pluginUninstall: RequestHandler = async (req, res) => {
     const { name, type } = req.body
     const taskId = `uninstall-${type}-${name}-${Date.now()}`
 
-    // 检查是否已在卸载队列中
+    /** 检查是否已在卸载队列中 */
     const existingTask = Array.from(taskQueue.values()).find(
       task => task.name === name && task.status === 'running'
     )
@@ -285,18 +290,18 @@ export const pluginUninstall: RequestHandler = async (req, res) => {
       return createServerErrorResponse(res, '该插件正在卸载中')
     }
 
-    // 创建新任务
+    /** 创建新任务 */
     const task: InstallTask = {
       id: taskId,
       name,
       type,
       status: 'pending',
       logs: [],
-      minimized: false
+      minimized: false,
     }
     taskQueue.set(taskId, task)
 
-    // 异步执行卸载
+    /** 异步执行卸载 */
     uninstallPluginTask(task).catch(error => {
       task.status = 'failed'
       task.error = error.message
@@ -329,9 +334,9 @@ export const pluginGetTaskStatus: RequestHandler = (req, res) => {
   }
 }
 
-// 清理已完成的任务（保留作为备用清理机制）
-function cleanupTasks () {
-  const THIRTY_MINUTES = 30 * 60 * 1000 // 30分钟
+/** 清理已完成的任务（保留作为备用清理机制） */
+const cleanupTasks = () => {
+  const THIRTY_MINUTES = 30 * 60 * 1000 /** 30分钟 */
   for (const [taskId, task] of taskQueue.entries()) {
     if (
       (task.status === 'completed' || task.status === 'failed') &&
@@ -346,7 +351,7 @@ function cleanupTasks () {
  * 获取任务列表
  */
 export const pluginGetTaskList: RequestHandler = (_req, res) => {
-  // 清理过期任务
+  /** 清理过期任务 */
   cleanupTasks()
   const tasks = Array.from(taskQueue.values())
   createSuccessResponse(res, tasks)

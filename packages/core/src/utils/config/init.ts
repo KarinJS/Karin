@@ -1,7 +1,9 @@
 import fs from 'node:fs'
+import { URL, fileURLToPath } from 'node:url'
 import { setVersion, setRuntime } from '@/env'
 import { pkg } from '@/utils/config/pkg'
 import { defaultConfig } from './default'
+import { execSync } from 'node:child_process'
 
 import type root from '@/root'
 import { initConfigCache } from './file'
@@ -17,6 +19,17 @@ const env = () => {
   ]
 
   const file = `${process.cwd()}/${process.env.EBV_FILE!}`
+  if (!fs.existsSync(file)) {
+    /** 这里只需要考虑生产环境即可 */
+    logger.error(logger.yellow('检查到项目配置文件缺失，正在初始化...'))
+    const cwd = fileURLToPath(new URL('./cli/index.mjs', import.meta.url))
+    execSync(`node ${cwd} init`, {
+      cwd: process.cwd(),
+      stdio: 'inherit',
+    })
+    logger.info(logger.green('初始化成功~'))
+  }
+
   const content = fs.readFileSync(file, 'utf-8')
 
   list.forEach(v => {

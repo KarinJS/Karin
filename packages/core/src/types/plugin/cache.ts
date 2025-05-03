@@ -43,3 +43,23 @@ export interface Cache {
   /** 静态资源目录 */
   static: string[]
 }
+
+/**
+ * 已加载插件缓存信息列表
+ */
+export interface LoadedPluginCacheList {
+  /** 插件名称 */
+  name: string
+  /** 插件文件列表 */
+  files: {
+    /** 文件名称 */
+    fileName: string
+    /** 该文件下所有的command函数名称 */
+    command: {
+      /** 此函数的插件名称 */
+      pluginName: string
+      /** 此函数的导出名称 */
+      method: string
+    }[]
+  }[]
+}

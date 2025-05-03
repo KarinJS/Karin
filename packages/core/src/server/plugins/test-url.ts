@@ -17,7 +17,7 @@ export const githubMirror = [
   'https://gh.zhaojun.im/',
   'https://gh-proxy.com',
   'https://ghfast.top',
-  'https://ghp.ci/'
+  'https://ghp.ci/',
 ]
 
 /**

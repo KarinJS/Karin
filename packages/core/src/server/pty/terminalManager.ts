@@ -6,7 +6,6 @@ import { auth } from '../common/common'
 import { listeners } from '@/core/internal'
 import { WS_CONNECTION_TERMINAL } from '@/utils'
 
-import type * as PtyModule from '@karinjs/node-pty'
 import type { IncomingMessage } from 'node:http'
 import type { TerminalInstance, TerminalShell } from '@/types/server/pty'
 
@@ -18,14 +17,16 @@ const terminals: Map<string, TerminalInstance> = new Map()
 /**
  * PTY 模块
  */
-let pty: typeof PtyModule | null = null
+let pty: any | null = null
 
 /**
  * 检查 PTY 插件是否已安装
  */
 export const isPtyInstalled = async (): Promise<boolean> => {
   try {
-    pty = await import('@karinjs/node-pty')
+    /** 不要直接import 不然打包之后会有类型问题 */
+    const name = '@karinjs/node-pty'
+    pty = await import(name)
     return true
   } catch (error) {
     return false
@@ -39,14 +40,6 @@ export const initialize = async () => {
   const installed = await isPtyInstalled()
   if (!installed) {
     logger.debug('[terminal] PTY 模块未安装，终端功能不可用')
-    return
-  }
-
-  try {
-    await pty!.init()
-  } catch (error) {
-    logger.error('[terminal] 初始化失败')
-    logger.error(error)
     return
   }
 
@@ -164,7 +157,7 @@ export const createTerminal = async (
     name,
   }
 
-  term.onData((data) => {
+  term.onData((data: unknown) => {
     // 追加数据到 buffer
     instance.buffer += data
     // 发送数据给已连接的 websocket
@@ -224,5 +217,3 @@ export const getTerminalList = () => {
     name: terminals.get(id)!.name,
   }))
 }
-
-initialize()

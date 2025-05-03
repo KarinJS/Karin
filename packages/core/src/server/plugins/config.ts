@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import util from 'node:util'
-import { isDev, isTsx } from '@/env'
+import { isDev, isTs } from '@/env'
 import { pathToFileURL } from 'node:url'
 import { requireFileSync } from '@/utils/fs/require'
 import { createServerErrorResponse, createSuccessResponse } from '@/server/utils/response'
@@ -9,13 +9,26 @@ import { createServerErrorResponse, createSuccessResponse } from '@/server/utils
 import type { Apps } from '@/types/plugin'
 import type { RequestHandler } from 'express'
 import type { PkgData } from '@/utils/fs/pkg'
-import type { GetConfigResponse, LocalApiResponse } from '@/types/server/local'
+import type { DefineConfig, GetConfigResponse } from '@/types/server/local'
 
 interface BaseConfig {
   /** 插件类型 */
   type: Apps,
   /** 插件名称 */
   name: string,
+}
+
+/**
+ * 检查文件是否存在
+ * @param filepath 文件路径
+ * @returns 存在返回true，否则返回false
+ */
+const fileExists = (filepath: string): boolean => {
+  try {
+    return fs.existsSync(filepath)
+  } catch (error) {
+    return false
+  }
 }
 
 /**
@@ -29,15 +42,27 @@ const getWebConfigPathFromPkg = (pkg: PkgData, baseDir: string): string | null =
 
   /** 如果该插件处于node_modules中 视其为正式插件的环境 仅加载web */
   if (baseDir.includes('node_modules')) {
-    if (pkg.karin.web) return path.join(baseDir, pkg.karin.web)
+    if (pkg.karin.web) {
+      const configPath = path.join(baseDir, pkg.karin.web)
+      return fileExists(configPath) ? configPath : null
+    }
     return null
   }
 
-  if (isTsx() && pkg.karin['ts-web']) {
-    return path.join(baseDir, pkg.karin['ts-web'])
+  let configPath = null
+
+  if (isTs()) {
+    if (pkg.karin['ts-web']) {
+      configPath = path.join(baseDir, pkg.karin['ts-web'])
+      if (fileExists(configPath)) return configPath
+    }
   }
 
-  if (pkg.karin.web) return path.join(baseDir, pkg.karin.web)
+  if (pkg.karin.web) {
+    configPath = path.join(baseDir, pkg.karin.web)
+    if (fileExists(configPath)) return configPath
+  }
+
   return null
 }
 
@@ -48,18 +73,31 @@ const getWebConfigPathFromPkg = (pkg: PkgData, baseDir: string): string | null =
  */
 const getNpmPluginConfigPath = (name: string): string | null => {
   const dir = path.join(process.cwd(), 'node_modules', name)
-  if (fs.existsSync(dir)) {
-    const pkg = requireFileSync<PkgData>(path.join(dir, 'package.json'))
-    const configPath = getWebConfigPathFromPkg(pkg, dir)
-    if (configPath) return configPath
+  if (fileExists(dir)) {
+    try {
+      const pkgPath = path.join(dir, 'package.json')
+      if (fileExists(pkgPath)) {
+        const pkg = requireFileSync<PkgData>(pkgPath)
+        const configPath = getWebConfigPathFromPkg(pkg, dir)
+        if (configPath) return configPath
+      }
+    } catch (error) {
+      return null
+    }
   }
 
   /** 开发环境检查根目录 */
   if (isDev()) {
-    const rootPkgPath = path.join(process.cwd(), 'package.json')
-    const pkg = requireFileSync<PkgData>(rootPkgPath)
-    if (pkg?.name === name) {
-      return getWebConfigPathFromPkg(pkg, process.cwd())
+    try {
+      const rootPkgPath = path.join(process.cwd(), 'package.json')
+      if (fileExists(rootPkgPath)) {
+        const pkg = requireFileSync<PkgData>(rootPkgPath)
+        if (pkg?.name === name) {
+          return getWebConfigPathFromPkg(pkg, process.cwd())
+        }
+      }
+    } catch (error) {
+      return null
     }
   }
 
@@ -73,13 +111,30 @@ const getNpmPluginConfigPath = (name: string): string | null => {
  */
 const getLocalPluginConfigPath = (name: string): string | null => {
   const pluginDir = path.join(process.cwd(), 'plugins', name)
-  if (fs.existsSync(pluginDir)) {
-    const pkg = requireFileSync<PkgData>(path.join(pluginDir, 'package.json'))
-    return getWebConfigPathFromPkg(pkg, pluginDir)
+  if (fileExists(pluginDir)) {
+    try {
+      const pkgPath = path.join(pluginDir, 'package.json')
+      if (fileExists(pkgPath)) {
+        const pkg = requireFileSync<PkgData>(pkgPath)
+        const configPath = getWebConfigPathFromPkg(pkg, pluginDir)
+        if (configPath) return configPath
+      }
+    } catch (error) {
+      return null
+    }
   }
 
-  const pkg = requireFileSync<PkgData>(path.join(process.cwd(), 'package.json'))
-  return getWebConfigPathFromPkg(pkg, process.cwd()) || null
+  try {
+    const pkgPath = path.join(process.cwd(), 'package.json')
+    if (fileExists(pkgPath)) {
+      const pkg = requireFileSync<PkgData>(pkgPath)
+      return getWebConfigPathFromPkg(pkg, process.cwd())
+    }
+  } catch (error) {
+    return null
+  }
+
+  return null
 }
 
 /**
@@ -88,13 +143,17 @@ const getLocalPluginConfigPath = (name: string): string | null => {
  * @returns 配置路径
  */
 const getConfigPath = (options: BaseConfig): string | null => {
-  switch (options.type) {
-    case 'npm':
-      return getNpmPluginConfigPath(options.name)
-    case 'git':
-      return getLocalPluginConfigPath(options.name)
-    default:
-      return null
+  try {
+    switch (options.type) {
+      case 'npm':
+        return getNpmPluginConfigPath(options.name)
+      case 'git':
+        return getLocalPluginConfigPath(options.name)
+      default:
+        return null
+    }
+  } catch (error) {
+    return null
   }
 }
 
@@ -103,19 +162,18 @@ const getConfigPath = (options: BaseConfig): string | null => {
  * @param configPath 配置路径
  */
 const loadConfig = async (configPath: string) => {
-  /** 如果处于开发环境，则使用动态导入 */
-  const result = await import(
-    `${pathToFileURL(configPath).toString()}${isDev() ? '?t=' + Date.now() : ''}`
-  ) as {
-    default: {
-      info: LocalApiResponse
-      components: () => any
-      save: (config: Record<string, any>) =>
-        { success: boolean, message: string } |
-        Promise<{ success: boolean, message: string }>
+  try {
+    /** 如果处于开发环境，则使用动态导入 */
+    const fileUrl = pathToFileURL(configPath).toString()
+    const result = await import(
+      `${fileUrl}${isDev() ? '?t=' + Date.now() : ''}`
+    ) as {
+      default: DefineConfig
     }
+    return result.default
+  } catch (error) {
+    throw new Error(`加载插件配置失败: ${error instanceof Error ? error.message : String(error)}`)
   }
-  return result.default
 }
 
 /**
@@ -125,7 +183,7 @@ const loadConfig = async (configPath: string) => {
  * @param fnc 配置文件不符合要求时回调
  * @returns web.config配置
  */
-export const getWebConfig = async (type: Apps, id: string, fnc?: () => void) => {
+export const getWebConfig = async (type: Apps, id: string, _?: () => void) => {
   /** 只支持git npm */
   if (!['git', 'npm'].includes(type)) {
     return null
@@ -143,7 +201,46 @@ export const getWebConfig = async (type: Apps, id: string, fnc?: () => void) => 
     return null
   }
 
-  return await loadConfig(webConfig)
+  const result = await loadConfig(webConfig)
+  /** 检查一下version description是否存在 不存在则从插件对应的package.json中获取 */
+  if (!result.info.version || !result.info.description) {
+    let dir = ''
+    if (type === 'npm') {
+      dir = path.join(process.cwd(), 'node_modules', id)
+    } else {
+      dir = path.join(process.cwd(), 'plugins', id)
+      if (!fs.existsSync(dir)) {
+        dir = process.cwd()
+      }
+    }
+
+    const pkg = requireFileSync<PkgData>(path.join(dir, 'package.json'))
+    if (!pkg || pkg.name !== id) {
+      if (!result.info.version) result.info.version = ''
+      if (!result.info.description) result.info.description = ''
+    } else {
+      if (!result.info.version) result.info.version = ''
+      if (!result.info.description) result.info.description = ''
+    }
+  }
+
+  return result
+}
+
+/**
+ * 标准化插件作者字段
+ * @param author 插件作者
+ * @returns 标准化后的作者
+ */
+export const normalizeAuthor = (author: DefineConfig['info']['author']) => {
+  const list: GetConfigResponse['info']['author'] = []
+  if (Array.isArray(author)) {
+    list.push(...author)
+  } else if (author) {
+    list.push(author)
+  }
+
+  return list
 }
 
 /**
@@ -183,7 +280,10 @@ export const pluginGetConfig: RequestHandler = async (req, res) => {
 
   const data: GetConfigResponse = {
     options: list as GetConfigResponse['options'],
-    info: config.info,
+    info: {
+      ...config.info,
+      author: normalizeAuthor(config.info.author),
+    },
   }
 
   createSuccessResponse(res, data)
