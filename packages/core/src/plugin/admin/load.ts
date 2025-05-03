@@ -12,6 +12,7 @@ import { isClass } from '@/utils/system/class'
 import { createPluginDir } from '@/utils/fs/file'
 import { importModule } from '@/utils/system/import'
 import { errorHandler } from '@/core/internal'
+import { getPluginsInfo } from '../system/list'
 
 import type {
   Task,
@@ -27,7 +28,6 @@ import type {
   KarinPluginAppsType,
 } from '@/types/plugin'
 import type { Plugin as ClassPluginType } from '../class'
-import { getPluginsInfo } from '../system/list'
 
 /** 插件ID */
 let seq = 0
@@ -286,7 +286,14 @@ const cacheClassPlugin = (
 export const findPkgByFile = (file: string): PkgInfo | null => {
   file = formatPath(file)
   return Object.values(cache.index).find(pkg =>
-    pkg.apps.includes(file) || pkg.allApps.some(dir => file.startsWith(dir))
+    pkg.apps.includes(file) ||
+    pkg.allApps.some(dir => file.startsWith(dir)) ||
+    /**
+     * 第三种情况
+     * - 例如karin-plugin-example文件夹为空 则需要判断pkg是否为app类型
+     * - 并且文件是否处于karin-plugin-example文件夹下
+     */
+    (pkg.type === 'app' && path.normalize(file).startsWith(path.normalize(pkg.dir)))
   ) || null
 }
 

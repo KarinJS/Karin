@@ -18,7 +18,7 @@ import type { PluginMarketResponse } from 'node-karin'
 /**
  * 缓存配置
  */
-const CACHE_EXPIRATION = 24 * 60 * 60 * 1000 // 缓存有效期：24小时
+const CACHE_EXPIRATION = 24 * 60 * 60 * 1000
 const LOCAL_STORAGE_PREFIX = 'plugin_npm_cache_'
 
 /**
@@ -44,7 +44,7 @@ const getCache = <T,> (key: string): CacheData<T> | undefined => {
       }
     }
   } catch (error) {
-    console.error('[getCache] 获取缓存数据失败:', error)
+    return undefined
   }
   return undefined
 }
@@ -62,7 +62,6 @@ const setCache = <T,> (key: string, data: T): void => {
     }
     localStorage.setItem(`${LOCAL_STORAGE_PREFIX}${key}`, JSON.stringify(cacheData))
   } catch (error) {
-    console.error('[setCache] 保存缓存数据失败:', error)
   }
 }
 
@@ -277,16 +276,13 @@ const NpmInfo: FC<{ name: string, isRefreshing: boolean }> = ({ name, isRefreshi
       const updatedCache = getCache<string>(updatedCacheKey)
 
       if (!isRefreshing && downloadsCache?.data !== undefined && updatedCache?.data) {
-        // 使用缓存
         setDownloads(downloadsCache.data)
         setUpdated(updatedCache.data)
         setLoading(false)
       } else {
-        // 强制获取新数据或缓存无效/不存在
         try {
           setError(false)
 
-          // 使用Promise.allSettled确保即使一个请求失败也能继续处理
           const results = await Promise.allSettled([
             getPackageDownloads(name),
             getPackageInfo(name),
@@ -308,12 +304,10 @@ const NpmInfo: FC<{ name: string, isRefreshing: boolean }> = ({ name, isRefreshi
             setUpdated(null)
           }
 
-          // 只有当两个请求都失败时才设置错误状态
           if (results[0].status === 'rejected' && results[1].status === 'rejected') {
             setError(true)
           }
         } catch (err) {
-          console.error('[NpmInfo] 获取NPM包信息失败:', err)
           setError(true)
         } finally {
           setLoading(false)
@@ -322,9 +316,8 @@ const NpmInfo: FC<{ name: string, isRefreshing: boolean }> = ({ name, isRefreshi
     }
 
     fetchNpmInfo()
-  }, [name, isRefreshing]) // 依赖项包括 name 和 isRefreshing
+  }, [name, isRefreshing])
 
-  // 即使错误也显示一个默认的界面，避免完全不显示
   return (
     <div className='flex items-center gap-2 text-xs text-default-400'>
       <div className='flex items-center gap-1'>
@@ -370,9 +363,7 @@ const PluginCard: FC<{
       isPressable
       radius='sm'
     >
-      {/* 优化边框动画效果 */}
       <CardBody className='p-4 flex flex-col h-full relative'>
-        {/* 顶部区域 */}
         <div className='flex items-start justify-between gap-3 mb-2'>
           <div className='flex-1 min-w-0'>
             <div className='flex items-center gap-2 mb-1.5'>
@@ -382,13 +373,11 @@ const PluginCard: FC<{
             <PluginDescription plugin={plugin} />
           </div>
 
-          {/* 作者头像组 */}
           <div className='flex shrink-0'>
             <CardAvatar plugin={plugin} />
           </div>
         </div>
 
-        {/* 底部区域 */}
         <div className='flex items-center justify-between mt-auto'>
           <div className='flex items-center gap-2'>
             <Chip
@@ -409,7 +398,6 @@ const PluginCard: FC<{
                 )}
 
             </Chip>
-            {/* 只有NPM类型的插件才显示下载量和更新时间信息 */}
             {plugin.local.type === 'npm' && <NpmInfo name={plugin.local.name} isRefreshing={isRefreshing} />}
           </div>
 

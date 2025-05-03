@@ -1,3 +1,4 @@
+import { URL } from 'node:url'
 import { pingRequest } from './race'
 
 export interface GithubConfig {
@@ -12,19 +13,16 @@ export interface GithubConfig {
   isRaw: boolean
   /**
    * 获取raw地址
-   * @param owner - 仓库所属用户名
-   * @param repo - 仓库名
-   * @param path - 路径
+   * @param url - github地址
    * @returns 返回raw地址
    */
-  raw: (owner: string, repo: string, path: string) => string
+  raw: (url: string) => string
   /**
    * 克隆地址
-   * @param owner - 仓库所属用户名
-   * @param repo - 仓库名
+   * @param url - github地址
    * @returns 返回克隆地址
    */
-  clone: (owner: string, repo: string) => string
+  clone: (url: string) => string
 }
 
 /**
@@ -38,13 +36,29 @@ export const buildGithub = (proxy: string): GithubConfig => {
     proxy,
     isClone: true,
     isRaw: true,
-    raw: function (owner: string, repo: string, path: string) {
-      return `${this.proxy}/https://raw.githubusercontent.com/${owner}/${repo}/HEAD/${path}`
+    raw: function (url: string) {
+      return `${this.proxy}/${url}`
     },
-    clone: function (owner: string, repo: string) {
-      return `${this.proxy}/https://raw.githubusercontent.com/${owner}/${repo}`
+    clone: function (url: string) {
+      return `${this.proxy}/${url}`
     },
   }
+}
+
+/**
+ * 解析github地址
+ * @param url - github地址
+ * @returns 返回解析后的地址
+ */
+export const parseGithubUrl = (url: string) => {
+  const urlObj = new URL(url)
+  /** 用户名 */
+  const owner = urlObj.pathname.split('/')[1]
+  /** 仓库名 */
+  const repo = urlObj.pathname.split('/')[2]
+  /** 路径 */
+  const path = urlObj.pathname.split('/').slice(3).join('/')
+  return { owner, repo, path }
 }
 
 /**
@@ -60,21 +74,23 @@ export const getFastGithub = async (type: 'raw' | 'clone'): Promise<GithubConfig
       proxy: 'https://github.com',
       isClone: true,
       isRaw: true,
-      raw: function (owner: string, repo: string, path: string) {
-        return `https://raw.githubusercontent.com/${owner}/${repo}/HEAD/${path}`
+      raw: function (url: string) {
+        return url
       },
-      clone: function (owner: string, repo: string) {
-        return `${this.proxy}/${owner}/${repo}.git`
+      clone: function (url: string) {
+        return url
       },
     },
     {
       proxy: 'https://jsd.cdn.zzko.cn/gh',
       isClone: false,
       isRaw: true,
-      raw: function (owner: string, repo: string, path: string) {
-        return `${this.proxy}/${owner}/${repo}/HEAD/${path}`
+      raw: function (url: string) {
+        const { owner, repo, path } = parseGithubUrl(url)
+        return `${this.proxy}/${owner}/${repo}/${path}`
       },
-      clone: function (owner: string, repo: string) {
+      clone: function (url: string) {
+        const { owner, repo } = parseGithubUrl(url)
         return `${this.proxy}/${owner}/${repo}`
       },
     },
@@ -82,10 +98,12 @@ export const getFastGithub = async (type: 'raw' | 'clone'): Promise<GithubConfig
       proxy: 'https://jsd.onmicrosoft.cn/gh',
       isClone: false,
       isRaw: true,
-      raw: function (owner: string, repo: string, path: string) {
-        return `${this.proxy}/${owner}/${repo}/HEAD/${path}`
+      raw: function (url: string) {
+        const { owner, repo, path } = parseGithubUrl(url)
+        return `${this.proxy}/${owner}/${repo}/${path}`
       },
-      clone: function (owner: string, repo: string) {
+      clone: function (url: string) {
+        const { owner, repo } = parseGithubUrl(url)
         return `${this.proxy}/${owner}/${repo}`
       },
     },
@@ -105,21 +123,20 @@ export const getFastGithub = async (type: 'raw' | 'clone'): Promise<GithubConfig
     }
   })
 
-  const owner = 'karinjs'
-  const repo = 'karin'
+  const rawUrl = 'https://raw.githubusercontent.com/github/docs/refs/heads/main/README.md'
+  const gitCloneUrl = 'https://github.com/github/docs.git'
   /** 最终需要ping的url */
   const pingUrls: string[] = []
   /** 测试url和github配置map */
   const map: Record<string, GithubConfig> = {}
 
   urls.forEach(item => {
-    const url = type === 'raw' ? item.raw(owner, repo, 'package.json') : item.clone(owner, repo)
+    const url = type === 'raw' ? item.raw(rawUrl) : item.clone(gitCloneUrl)
     pingUrls.push(url)
     map[url] = item
   })
 
   const result = await pingRequest(pingUrls, { detailed: true, isRace: true })
-  console.log(result)
   if (!result) {
     return list[0]
   }

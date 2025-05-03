@@ -3,7 +3,7 @@ import { AxiosError } from 'axios'
 import { isWorkspace } from '@/env'
 import { handleReturn, spawnProcess } from './tool'
 import { karinPathPlugins } from '@/root'
-import { raceRequest } from '@/utils/request'
+import { getFastGithub, raceRequest } from '@/utils/request'
 import { mkdirSync } from '@/utils/fs/fsSync'
 import { downloadFile } from '@/utils/fs/file'
 import { taskSystem as task } from '@/service/task'
@@ -36,21 +36,15 @@ export const installMarket = async (
   }
 
   if (data.pluginType === 'app' && plugin.type === 'app') {
-    return installApp(
-      res, plugin, data
-    )
+    return installApp(res, plugin, data, ip)
   }
 
   if (data.pluginType === 'npm' && plugin.type === 'npm') {
-    return installNpm(
-      res, plugin, data, ip
-    )
+    return installNpm(res, plugin, data, ip)
   }
 
   if (data.pluginType === 'git' && plugin.type === 'git') {
-    return installGit(
-      res, plugin, data, ip
-    )
+    return installGit(res, plugin, data, ip)
   }
 }
 
@@ -156,12 +150,14 @@ const installGit = async (
  * @param res - 响应对象
  * @param plugin - 插件信息
  * @param data - 安装数据，包含插件名称、目标、类型等
+ * @param ip - 操作者IP地址
  * @returns 操作响应
  */
 const installApp = async (
   res: Response,
   plugin: KarinPluginType & { type: 'app' },
-  data: PluginAdminMarketInstallApp
+  data: PluginAdminMarketInstallApp,
+  ip: string
 ) => {
   if (!data.urls || !Array.isArray(data.urls)) {
     return handleReturn(
@@ -170,7 +166,7 @@ const installApp = async (
   }
 
   /** 排除掉files中 不存在插件市场的文件 */
-  const urls = plugin.files.filter(item => data.urls.includes(item.url))
+  let urls = plugin.files.filter(item => data.urls.includes(item.url))
 
   if (!urls.length) {
     return handleReturn(
@@ -178,35 +174,77 @@ const installApp = async (
     )
   }
 
-  const msg = ['安装任务完成']
-  /** 插件目录 统一下载到这里方便管理 */
-  const dir = path.join(karinPathPlugins, 'karin-plugin-example')
+  let isRace = false
 
-  await Promise.all(urls.map(async (app) => {
-    const filename = path.basename(app.url)
-    const fileUrl = path.join(dir, filename)
-    mkdirSync(dir)
-
-    const result = await downloadFile(app.url, fileUrl)
-    if (!result.success) {
-      let err = `${filename} 下载失败: `
-      if (result.data instanceof AxiosError) {
-        err += result.data.message
-      } else if (result.data instanceof Error) {
-        err += result.data.message || result.data.stack || '未知错误'
-      } else {
-        err += String(result.data)
-      }
-
-      logger.error(`[install] 下载app插件失败:\n  url: ${app.url}\n  message: ${err}`)
-      msg.push(err)
-      return
+  /** 对每个url进行判断 如果是github的 竞速换源 */
+  for (const app of urls) {
+    if (app.url.startsWith('https://raw.githubusercontent.com')) {
+      isRace = true
+      break
     }
+  }
 
-    msg.push(`${filename} 下载成功`)
-  }))
+  if (isRace) {
+    const result = await getFastGithub('raw')
+    urls = urls.map(item => {
+      return {
+        ...item,
+        url: item.url.startsWith('https://raw.githubusercontent.com')
+          ? result.raw(item.url)
+          : item.url,
+      }
+    })
+  }
+
+  /**
+   * 创建安装任务并执行
+   */
+  const id = await task.add(
+    {
+      type: 'install',
+      name: data.name,
+      target: data.target,
+      operatorIp: ip,
+    },
+    async (_: TaskEntity, emitLog: (message: string) => void) => {
+      const msg = ['安装任务执行中']
+      /** 插件目录 统一下载到这里方便管理 */
+      const dir = path.join(karinPathPlugins, 'karin-plugin-example')
+      mkdirSync(dir)
+
+      emitLog('开始下载插件文件...')
+      await Promise.all(urls.map(async (app) => {
+        const filename = path.basename(app.url)
+        const fileUrl = path.join(dir, filename)
+
+        emitLog(`正在下载: ${filename}`)
+        const result = await downloadFile(app.url, fileUrl)
+        if (!result.success) {
+          let err = `${filename} 下载失败: `
+          if (result.data instanceof AxiosError) {
+            err += result.data.message
+          } else if (result.data instanceof Error) {
+            err += result.data.message || result.data.stack || '未知错误'
+          } else {
+            err += String(result.data)
+          }
+
+          logger.error(`[install] 下载app插件失败:\n  url: ${app.url}\n  message: ${err}`)
+          msg.push(err)
+          emitLog(err)
+          return
+        }
+
+        msg.push(`${app.url} 下载成功`)
+        emitLog(`${app.url} 下载成功`)
+      }))
+
+      emitLog('安装完成')
+      return true
+    }
+  )
 
   return handleReturn(
-    res, true, msg.join('\n')
+    res, true, '安装任务已创建，请通过taskId执行任务', id
   )
 }

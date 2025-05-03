@@ -1,7 +1,7 @@
 import { Link } from '@heroui/link'
 import { Button } from '@heroui/button'
 import { toast } from 'react-hot-toast'
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { pluginAdminRequest } from '@/request/plugins'
 import { IoCloudDownloadOutline } from 'react-icons/io5'
 import TaskLogModal from '@/components/dependencies/TaskLogModal'
@@ -9,6 +9,7 @@ import { Modal, ModalContent } from '@heroui/modal'
 import { Card } from '@heroui/card'
 import { Avatar } from '@heroui/avatar'
 import { FaUser } from 'react-icons/fa6'
+import { Checkbox } from '@heroui/checkbox'
 
 import type { FC } from 'react'
 import type { PluginMarketResponse, PluginAdminMarketInstall } from 'node-karin'
@@ -48,6 +49,57 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
   const gradientBg = useMemo(() => getRandomGradient(), [isOpen])
 
   /**
+   * 获取app类型插件的文件列表
+   * 优先market.files，其次local.files
+   */
+  let files: {
+    name: string
+    url: string
+    description?: string
+  }[] = []
+  if (
+    plugin.type === 'market' &&
+    plugin.market.type === 'app' &&
+    Array.isArray(plugin.market.files)
+  ) {
+    files = plugin.market.files
+  }
+
+  /**
+   * app类型插件选中的文件url
+   */
+  const [selectedFiles, setSelectedFiles] = useState<string[]>([])
+
+  /**
+   * 是否允许点击确认安装按钮
+   * 初始值设置逻辑：如果是app类型且有文件但未选择时，应禁用
+   */
+  const [isInstallButtonEnabled, setIsInstallButtonEnabled] = useState(() => {
+    const shouldBeDisabled = plugin.local.type === 'app' && files.length > 0 && selectedFiles.length === 0
+    return !shouldBeDisabled
+  })
+
+  /**
+   * 监听文件选择状态和插件类型变化
+   */
+  useEffect(() => {
+    const isEnabled = !(plugin.local.type === 'app' && files.length > 0 && selectedFiles.length === 0)
+    setIsInstallButtonEnabled(isEnabled)
+  }, [plugin.local.type, files.length, selectedFiles.length])
+
+  /**
+   * 处理文件选择变更
+   * @param url 变更的文件url
+   * @param checked 是否选中
+   */
+  const handleFileChange = useCallback((url: string, checked: boolean) => {
+    setSelectedFiles(prev => {
+      const newFiles = checked ? [...prev, url] : prev.filter(f => f !== url)
+      return newFiles
+    })
+  }, [selectedFiles])
+
+  /**
    * 处理安装按钮点击
    */
   const handleInstall = useCallback(async () => {
@@ -56,6 +108,9 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
       setTaskId('')
       setInitialLogs([])
 
+      /**
+       * 构造安装参数
+       */
       const params: PluginAdminMarketInstall = plugin.local.type === 'app'
         ? {
           name: `插件市场: 安装${plugin.local.name}`,
@@ -63,7 +118,7 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
           source: 'market',
           pluginType: plugin.local.type,
           target: plugin.local.name,
-          urls: [],
+          urls: selectedFiles,
         }
         : {
           name: `插件市场: 安装${plugin.local.name}`,
@@ -80,16 +135,13 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
         '正在创建任务...',
       ]
 
-      // 使用已有的插件管理API
       const response = await pluginAdminRequest(params)
 
       if (!response.success) {
-        console.error('安装插件失败:', response)
         toast.error(`安装插件失败: ${response.message || '未知错误'}`)
         return
       }
 
-      // 设置任务信息
       const taskId = response.taskId || ''
       setTaskId(taskId)
       setInitialLogs([
@@ -99,18 +151,15 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
         '正在连接任务执行日志...',
       ])
 
-      // 打开日志模态框
       setIsLogModalOpen(true)
 
-      // 关闭安装确认模态框
       setIsOpen(false)
     } catch (error: any) {
-      console.error('安装插件失败:', error)
       toast.error(`安装插件失败: ${error?.message || '未知错误'}`)
     } finally {
       setIsInstalling(false)
     }
-  }, [plugin])
+  }, [plugin, selectedFiles])
 
   /**
    * 处理日志模态框关闭
@@ -119,7 +168,6 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
     setIsLogModalOpen(false)
     setTaskId('')
     setInitialLogs([])
-    // 通知插件列表更新
     window.dispatchEvent(new Event('plugin-list-update'))
   }, [])
 
@@ -264,6 +312,50 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
                         </div>
                       )}
                   </div>
+
+                  {/* app类型插件文件选择区（列表风格） */}
+                  {plugin.local.type === 'app' && files.length > 0 && (
+                    <>
+                      <div style={{ height: 16 }} />
+                      <div className='mb-6'>
+                        <div className='text-sm font-medium text-default-700 mb-2'>
+                          请选择要安装的文件
+                        </div>
+                        <div className='flex flex-col gap-2'>
+                          {files.map(file => {
+                            const checked = selectedFiles.includes(file.url)
+                            return (
+                              <div
+                                key={file.url}
+                                className={`flex items-center justify-between px-4 py-2 rounded-xl border transition
+                                  ${checked
+                                    ? 'border-primary-400 bg-primary-50/60 dark:bg-primary-900/20'
+                                    : 'border-default-200 bg-default-100/60 dark:bg-default-800/30'}
+                                  hover:border-primary-300 hover:bg-primary-50/40 dark:hover:bg-primary-900/10'
+                                }`}
+                                style={{ minHeight: 44 }}
+                                onClick={() => handleFileChange(file.url, !checked)}
+                              >
+                                <div className='flex flex-col flex-1 min-w-0 cursor-pointer'>
+                                  <span className='font-medium text-sm text-default-800 truncate'>{file.name}</span>
+                                  {file.description && (
+                                    <span className='text-xs text-default-400 mt-0.5 truncate'>{file.description}</span>
+                                  )}
+                                </div>
+                                <Checkbox
+                                  isSelected={checked}
+                                  onChange={checked => handleFileChange(file.url, Boolean(checked))}
+                                  className='ml-4 rounded-full'
+                                  size='sm'
+                                  onClick={e => e.stopPropagation()}
+                                />
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -291,6 +383,7 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
                     isLoading={isInstalling}
                     startContent={<IoCloudDownloadOutline className='text-base' />}
                     className={`bg-gradient-to-r ${gradientBg.replace('/20', '/70')} hover:opacity-80 transition-opacity shadow-sm`}
+                    isDisabled={!isInstallButtonEnabled}
                   >
                     确认安装
                   </Button>

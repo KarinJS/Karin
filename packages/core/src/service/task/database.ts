@@ -1,5 +1,4 @@
-import path from 'node:path'
-import { mkdirSync } from 'node:fs'
+import fs from 'node:fs'
 import { randomUUID } from 'node:crypto'
 import sqlite3, { type Database } from 'sqlite3'
 import type { TaskEntity, TaskStatus, TaskType, TaskFilter, CreateTaskParams, TaskExecutor } from '../../types/task/task'
@@ -82,10 +81,16 @@ const handleUnfinishedTasks = async (db: Database): Promise<void> => {
  * @returns - 数据库连接对象
  */
 const initDatabase = async (dbPath: string): Promise<TaskDB> => {
-  mkdirSync(path.dirname(dbPath), { recursive: true })
+  const filename = `${dbPath}/task.db`
+  /** dbPath如果存在并且是文件 重命名为filename.bak */
+  if (fs.existsSync(dbPath) && fs.statSync(dbPath).isFile()) {
+    fs.renameSync(dbPath, `${dbPath}.bak`)
+  }
+
+  fs.mkdirSync(dbPath, { recursive: true })
 
   return new Promise((resolve, reject) => {
-    const db = new sqlite3.Database(dbPath, async (err) => {
+    const db = new sqlite3.Database(filename, async (err) => {
       if (err) {
         reject(err)
         return

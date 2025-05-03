@@ -45,7 +45,7 @@ export const initPluginHmr = async (
   })
 
   watchDirs.clear()
-  logger.debug('\n[hmr] 开始监听文件夹:\n', relativePaths.join('\n'))
+  logger.info(`\n[hmr] ${logger.magenta('正在监听文件夹')}:\n${relativePaths.join('\n')}`)
 }
 
 /**
