@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.8.1](https://github.com/KarinJS/Karin/compare/core-v1.8.0...core-v1.8.1) (2025-05-03)
+
+
+### 🐛 Bug Fixes
+
+* main error ([878c141](https://github.com/KarinJS/Karin/commit/878c141452fd550baedf2d2f2a6e129b777e9e7e))
+
 ## [1.8.0](https://github.com/KarinJS/Karin/compare/core-v1.7.14...core-v1.8.0) (2025-05-03)
 
 
