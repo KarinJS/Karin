@@ -1,5 +1,14 @@
 # 更新日志
 
+## [1.8.2](https://github.com/KarinJS/Karin/compare/core-v1.8.1...core-v1.8.2) (2025-05-03)
+
+
+### 🐛 Bug Fixes
+
+* build error ([7facb80](https://github.com/KarinJS/Karin/commit/7facb80f5f7e4968916a57459c0293c856398147))
+* 处理`ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF` 提升兼容性 ([3ecb7d0](https://github.com/KarinJS/Karin/commit/3ecb7d0ac30245b18a0702da6a6604e7510e099b))
+* 强制修复`ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF` ([b48b1b0](https://github.com/KarinJS/Karin/commit/b48b1b073a035dd6fe8d9f544f4a684761fabf37))
+
 ## [1.8.1](https://github.com/KarinJS/Karin/compare/core-v1.8.0...core-v1.8.1) (2025-05-03)
 
 
