@@ -46,7 +46,7 @@ importers:
         specifier: ^5.8.2
         version: 5.8.2
       vite:
-        specifier: ^6.2.7
+        specifier: ^6.2.3
         version: 6.2.7(@types/node@18.19.84)(jiti@1.21.7)(sass@1.86.0)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
       vite-plugin-dts:
         specifier: ^4.5.3
