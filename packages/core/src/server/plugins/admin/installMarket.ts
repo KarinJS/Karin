@@ -85,9 +85,9 @@ const installNpm = async (
 
       if (isERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF) {
         emitLog('检测到 ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF 错误，尝试修复...')
-        emitLog('执行 pnpm install 重建模块目录')
-        /** 先执行 pnpm install 重建模块目录 */
-        await spawnProcess('pnpm', ['install'], {}, emitLog)
+        emitLog('执行 pnpm install -f 强制重建模块目录')
+        /** 先执行 pnpm install -f 强制重建模块目录 */
+        await spawnProcess('pnpm', ['install', '-f'], {}, emitLog)
         emitLog('模块目录重建完成，重新尝试安装插件')
         /** 重新尝试安装 */
         await spawnProcess('pnpm', args, {}, emitLog)
