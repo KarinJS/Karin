@@ -1,29 +1,6 @@
 import { URL } from 'node:url'
 import { pingRequest } from './race'
-
-export interface GithubConfig {
-  proxy: string
-  /**
-   * 是否支持克隆
-   */
-  isClone: boolean
-  /**
-   * 是否支持raw
-   */
-  isRaw: boolean
-  /**
-   * 获取raw地址
-   * @param url - github地址
-   * @returns 返回raw地址
-   */
-  raw: (url: string) => string
-  /**
-   * 克隆地址
-   * @param url - github地址
-   * @returns 返回克隆地址
-   */
-  clone: (url: string) => string
-}
+import type { GithubConfig } from '@/types/utils/request'
 
 /**
  * 构建符合 https://github.akams.cn/ 标准的github加速源

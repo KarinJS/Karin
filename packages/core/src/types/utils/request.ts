@@ -79,7 +79,24 @@ export type PingRequestResult<T extends boolean = false, R extends boolean = fal
 
 export interface GithubConfig {
   proxy: string
+  /**
+   * 是否支持克隆
+   */
   isClone: boolean
+  /**
+   * 是否支持raw
+   */
   isRaw: boolean
-  raw: (owner: string, repo: string) => string
+  /**
+   * 获取raw地址
+   * @param url - github地址
+   * @returns 返回raw地址
+   */
+  raw: (url: string) => string
+  /**
+   * 克隆地址
+   * @param url - github地址
+   * @returns 返回克隆地址
+   */
+  clone: (url: string) => string
 }
