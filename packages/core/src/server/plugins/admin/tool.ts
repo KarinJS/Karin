@@ -75,7 +75,7 @@ export const spawnProcess = (
     proc.stderr.on('data', (data) => {
       const message = data.toString()
       if (message.includes('ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF')) {
-        emitLog('检测到 ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF 错误')
+        pnpm && pnpm()
       }
 
       logger.debug(message)
