@@ -63,30 +63,22 @@
     "packages/core": {
       "release-type": "node",
       "package-name": "node-karin",
-      "component": "core",
-      "tag-separator": "-",
-      "scope": "core"
+      "component": "core"
     },
     "packages/cli": {
       "release-type": "node",
       "package-name": "@karinjs/cli",
-      "component": "cli",
-      "tag-separator": "-",
-      "scope": "cli"
+      "component": "cli"
     },
     "packages/create-karin": {
       "release-type": "node",
       "package-name": "create-karin",
-      "component": "create-karin",
-      "tag-separator": "-",
-      "scope": "create-karin"
+      "component": "create-karin"
     },
     "packages/web": {
       "release-type": "node",
       "package-name": "karin-webui",
-      "component": "web",
-      "tag-separator": "-",
-      "scope": "web"
+      "component": "web"
     }
   },
   "commit-search-depth": 50
