@@ -86,6 +86,10 @@ const InstallDependencyModal = ({
   const [initialLogs, setInitialLogs] = useState<string[]>([])
   /** 安装中 */
   const [isInstalling, setIsInstalling] = useState(false)
+  /** 允许安装的包名列表 */
+  const [allowBuild, setAllowBuild] = useState<string[]>([])
+  /** 当前输入的包名 */
+  const [currentAllowBuildInput, setCurrentAllowBuildInput] = useState('')
 
   /** 每页显示版本数量 */
   const versionsPerPage = 25
@@ -101,6 +105,8 @@ const InstallDependencyModal = ({
     setIsLoading(false)
     setHasSearched(false)
     setLocation('dependencies')
+    setAllowBuild([])
+    setCurrentAllowBuildInput('')
   }, [])
 
   /** 模态框关闭时重置状态 */
@@ -133,6 +139,36 @@ const InstallDependencyModal = ({
   }, [packageName])
 
   /**
+   * 处理允许安装的包名添加
+   */
+  const handleAddAllowBuild = useCallback(() => {
+    if (!currentAllowBuildInput.trim()) return
+
+    if (!allowBuild.includes(currentAllowBuildInput.trim())) {
+      setAllowBuild([...allowBuild, currentAllowBuildInput.trim()])
+    }
+
+    setCurrentAllowBuildInput('')
+  }, [currentAllowBuildInput, allowBuild])
+
+  /**
+   * 处理允许安装的包名删除
+   */
+  const handleRemoveAllowBuild = useCallback((packageToRemove: string) => {
+    setAllowBuild(allowBuild.filter(pkg => pkg !== packageToRemove))
+  }, [allowBuild])
+
+  /**
+   * 处理按键事件 - 回车添加包名
+   */
+  const handleAllowBuildKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleAddAllowBuild()
+    }
+  }, [handleAddAllowBuild])
+
+  /**
    * 处理安装按钮点击
    */
   const handleInstall = useCallback(async () => {
@@ -156,6 +192,7 @@ const InstallDependencyModal = ({
           name: packageName.trim(),
           location,
           version,
+          allowBuild,
         },
       }
 
@@ -200,7 +237,7 @@ const InstallDependencyModal = ({
     } finally {
       setIsInstalling(false)
     }
-  }, [packageName, customVersion, selectedVersion, location, onClose, onSuccess])
+  }, [packageName, customVersion, selectedVersion, location, onClose, onSuccess, allowBuild])
 
   /**
    * 处理版本选择
@@ -294,7 +331,7 @@ const InstallDependencyModal = ({
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     size='sm'
                     color='primary'
-                    className='font-light flex-1'
+                    className='font-light flex-1 h-10'
                   />
                   <Button
                     color='primary'
@@ -318,8 +355,50 @@ const InstallDependencyModal = ({
                   onChange={(e) => setCustomVersion(e.target.value)}
                   size='sm'
                   color='primary'
-                  className='font-light'
+                  className='font-light h-10'
                 />
+              </div>
+              {/* 允许pnpm在安装期间执行安装的包名列表 */}
+              <div>
+                <label className='block text-sm text-default-700 mb-1'>允许pnpm在安装期间执行安装的包名列表</label>
+                <div className='flex gap-2'>
+                  <Input
+                    placeholder='输入包名，例如：lodash'
+                    value={currentAllowBuildInput}
+                    onChange={(e) => setCurrentAllowBuildInput(e.target.value)}
+                    onKeyDown={handleAllowBuildKeyDown}
+                    size='sm'
+                    color='primary'
+                    className='font-light flex-1 h-10'
+                  />
+                  <Button
+                    color='primary'
+                    size='sm'
+                    radius='md'
+                    onPress={handleAddAllowBuild}
+                    startContent={<LuPlus size={16} />}
+                    isDisabled={!currentAllowBuildInput.trim()}
+                  >
+                    添加
+                  </Button>
+                </div>
+                {allowBuild.length > 0 && (
+                  <div className='flex flex-wrap gap-1 mt-2'>
+                    {allowBuild.map((pkg) => (
+                      <Chip
+                        key={pkg}
+                        variant='flat'
+                        color='primary'
+                        size='sm'
+                        radius='sm'
+                        onClose={() => handleRemoveAllowBuild(pkg)}
+                        className='text-xs'
+                      >
+                        {pkg}
+                      </Chip>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* 依赖安装位置 */}
@@ -386,7 +465,7 @@ const InstallDependencyModal = ({
                                 size='sm'
                                 color='primary'
                                 startContent={<LuSearch size={16} className='text-primary-400' />}
-                                className='font-light'
+                                className='font-light h-10'
                               />
                             </div>
 

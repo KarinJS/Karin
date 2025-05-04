@@ -17,6 +17,8 @@ export interface AddDependenciesParams extends DependenciesManageBase {
     location: 'dependencies' | 'devDependencies' | 'optionalDependencies'
     /** 依赖版本 */
     version?: string
+    /** 允许pnpm在安装期间执行安装的包名列表 */
+    allowBuild?: string[]
   }
 }
 
