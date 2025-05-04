@@ -290,7 +290,7 @@ export default function DependenciesPage () {
   }, [])
 
   return (
-    <div className='w-full p-4 sm:p-6 md:p-8 bg-background'>
+    <div className='w-full p-4 sm:p-6 md:p-8'>
       {/* 页面标题和信息卡片 */}
       <div className='mb-6 md:mb-10'>
         <div className='flex flex-wrap items-start justify-between gap-3 md:gap-6'>

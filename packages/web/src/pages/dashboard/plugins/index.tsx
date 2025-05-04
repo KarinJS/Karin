@@ -221,7 +221,7 @@ const MarketPage = () => {
     <div className='h-full w-full flex flex-col overflow-hidden relative'>
       {/* 顶部大Banner卡片（无底色，仅细腻阴影和内容） */}
       <div className='w-full flex justify-center pt-10 pb-4 px-4'>
-        <div className='w-full max-w-[1600px] rounded-3xl shadow-md p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden bg-transparent border border-default-200 dark:border-default-700'>
+        <div className='w-full max-w-[1600px] rounded-3xl shadow-md p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden bg-transparent border border-default-200 dark:border-default-200'>
           <div className='absolute right-8 top-8 opacity-10 text-[120px] pointer-events-none select-none hidden md:block'>
             <TbApps className='text-primary-400 dark:text-primary-700' />
           </div>
@@ -239,7 +239,7 @@ const MarketPage = () => {
               classNames={{
                 base: 'max-w-[220px]',
                 input: 'text-sm text-default-900 dark:text-default-100 placeholder:text-default-400 dark:placeholder:text-default-500',
-                inputWrapper: 'h-9 bg-transparent border border-default-200 dark:border-default-700 focus-within:border-primary-500 dark:focus-within:border-primary-400',
+                inputWrapper: 'h-9 bg-transparent border border-default-200 dark:border-default-200 focus-within:border-primary-500 dark:focus-within:border-primary-400',
               }}
               placeholder='搜索插件...'
               value={searchQuery}
@@ -254,7 +254,7 @@ const MarketPage = () => {
                 <Button
                   variant='flat'
                   size='md'
-                  className='h-9 px-3 min-w-[120px] bg-transparent border border-default-200 dark:border-default-700 text-default-700 dark:text-default-200 font-semibold rounded-xl hover:border-primary-500 dark:hover:border-primary-400 transition-colors'
+                  className='h-9 px-3 min-w-[120px] bg-transparent border border-default-200 dark:border-default-200 text-default-700 dark:text-default-200 font-semibold rounded-xl hover:border-primary-500 dark:hover:border-primary-400 transition-colors'
                   startContent={
                     <div className='w-6 h-6 flex items-center justify-center'>
                       {filterType === 'all' && <FaTh className='text-lg text-default-500' />}
@@ -316,7 +316,7 @@ const MarketPage = () => {
                       key={plugin.type === 'market' ? plugin.market.name + plugin.market.time : plugin.local.name}
                       plugin={plugin}
                       isRefreshing={isRefreshing}
-                      cardClassName='shadow-md border border-default-200 dark:border-default-700 hover:border-primary-400 dark:hover:border-primary-500 transition-colors'
+                      cardClassName='shadow-md border border-default-200 dark:border-default-200 hover:border-primary-400 dark:hover:border-primary-500 transition-colors'
                     />
                   ))}
                 </div>
