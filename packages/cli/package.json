@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "bin": {
-    "ki": "karin.js",
+    "ki": "index.js",
     "karin": "index.js"
   },
   "engines": {
