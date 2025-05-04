@@ -112,9 +112,12 @@ export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOne
       case 'reply':
         elements.push({ type: 'reply', data: { id: i.messageId } })
         break
-      case 'image':
-      case 'video': {
+      case 'image': {
         elements.push({ type: 'image', data: { file: fileToBase64(i.file, onebot.adapter.address) } })
+        break
+      }
+      case 'video': {
+        elements.push({ type: 'video', data: { file: i.file } })
         break
       }
       case 'json':
