@@ -85,7 +85,6 @@ const createDir = (isDev: boolean, dir: string) => {
 const npmrc = (dir: string) => {
   // TODO: 后续改为远程api拉取 动态更新
   const list = [
-    'package-lock=false',
     'public-hoist-pattern[]=*sqlite3*',
     'public-hoist-pattern[]=*express*',
     'sqlite3_binary_host_mirror=https://registry.npmmirror.com/-/binary/sqlite3',
@@ -106,6 +105,7 @@ const npmrc = (dir: string) => {
     fs.writeFileSync(npmrc, list.join('\n'))
     return
   }
+
   const data = fs.readFileSync(npmrc, 'utf-8')
   const dataLines = data.split('\n').map(line => line.trim())
 
@@ -119,6 +119,12 @@ const npmrc = (dir: string) => {
     return !data.includes(key)
   })
 
+  /** 如果存在package-lock=false 则删除 */
+  if (data.includes('package-lock=false')) {
+    fs.writeFileSync(npmrc, data.replace(/^package-lock=false.*\n?/gm, ''))
+  }
+
+  /** 写入配置 */
   if (newEntries.length > 0) {
     fs.appendFileSync(npmrc, '\n' + newEntries.join('\n'))
   }
@@ -318,9 +324,7 @@ const createWorkspace = (isDev: boolean, dir: string) => {
         onlyBuiltDependencies: [],
       },
       data
-    )),
-  'utf-8'
-  )
+    )), 'utf-8')
 }
 
 /**
@@ -479,7 +483,6 @@ export const init = async (force?: boolean) => {
 
   /** 删掉pnpm-lock.yaml */
   if (fs.existsSync(path.join(dir, 'pnpm-lock.yaml'))) {
-    fs.rmSync(path.join(dir, 'pnpm-lock.yaml'))
     execSync('pnpm install -f', {
       stdio: 'inherit',
       cwd: dir,
