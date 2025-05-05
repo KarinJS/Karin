@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.8.1](https://github.com/KarinJS/Karin/compare/web-v1.8.0...web-v1.8.1) (2025-05-05)
+
+
+### 🐛 Bug Fixes
+
+* close [#372](https://github.com/KarinJS/Karin/issues/372) ([#388](https://github.com/KarinJS/Karin/issues/388)) ([f1d1556](https://github.com/KarinJS/Karin/commit/f1d1556019099a5da8a3f3801640e76c17a65ded))
+
+
+### 💄 Styles
+
+* 移除不必要的背景色和调整暗模式边框颜色 ([8797072](https://github.com/KarinJS/Karin/commit/8797072ca9a5483f3cd0a524b9dbc22ae6434fe3))
+
 ## [1.8.0](https://github.com/KarinJS/Karin/compare/web-v1.7.12...web-v1.8.0) (2025-05-03)
 
 

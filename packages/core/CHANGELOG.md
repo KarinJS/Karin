@@ -1,5 +1,18 @@
 # 更新日志
 
+## [1.8.6](https://github.com/KarinJS/Karin/compare/core-v1.8.5...core-v1.8.6) (2025-05-05)
+
+
+### 🐛 Bug Fixes
+
+* axios 1.1.8 ([0584a20](https://github.com/KarinJS/Karin/commit/0584a20af136bbce157dccf3e634513e28c9e455))
+* close [#372](https://github.com/KarinJS/Karin/issues/372) ([#388](https://github.com/KarinJS/Karin/issues/388)) ([f1d1556](https://github.com/KarinJS/Karin/commit/f1d1556019099a5da8a3f3801640e76c17a65ded))
+
+
+### ♻️ Code Refactoring
+
+* 重构`getHistoryMsg`接口 支持传入`seq` ([#387](https://github.com/KarinJS/Karin/issues/387)) ([77f4292](https://github.com/KarinJS/Karin/commit/77f429202477f6dd2ff3df563b2b958d50e6ee32))
+
 ## [1.8.5](https://github.com/KarinJS/Karin/compare/core-v1.8.4...core-v1.8.5) (2025-05-04)
 
 
