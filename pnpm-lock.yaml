@@ -70,8 +70,8 @@ importers:
         specifier: npm:@karinjs/art-template@1.1.0
         version: '@karinjs/art-template@1.1.0'
       axios:
-        specifier: npm:@karinjs/axios@1.1.7
-        version: '@karinjs/axios@1.1.7'
+        specifier: npm:@karinjs/axios@1.1.8
+        version: '@karinjs/axios@1.1.8'
       chalk:
         specifier: 5.4.1
         version: 5.4.1
@@ -1848,8 +1848,8 @@ packages:
   '@karinjs/axios@1.0.1':
     resolution: {integrity: sha512-brYm4KN/KH9geXPTEHWawyi1Y0Z79WB9rp5MG3EblS0SMYa1ta22Mqx6wKRCUiCpRn7cxvmyYG1+O8YdAD2k9g==}
 
-  '@karinjs/axios@1.1.7':
-    resolution: {integrity: sha512-gTQm08w3igPIeWl/TAHrGEN5Nq8orI+F4NLGQSXdHzsWecf26xvUbBno5QH1dbTaETDvDcBOom1QKdvoiybxSg==}
+  '@karinjs/axios@1.1.8':
+    resolution: {integrity: sha512-xFeSp1LmpyIi+oy9g5+OwbdP4zn5/vkA6P1TXUkA6jhTHqtR552E8SR8J5CTS/I+HybvR4O590bb743DumqsmA==}
     engines: {node: '>=18'}
 
   '@karinjs/dotenv@1.1.2':
@@ -7550,7 +7550,7 @@ snapshots:
 
   '@karinjs/axios@1.0.1': {}
 
-  '@karinjs/axios@1.1.7':
+  '@karinjs/axios@1.1.8':
     dependencies:
       form-data: '@karinjs/form-data@1.1.0'
 

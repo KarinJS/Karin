@@ -159,7 +159,7 @@
   },
   "dependencies": {
     "art-template": "npm:@karinjs/art-template@1.1.0",
-    "axios": "npm:@karinjs/axios@1.1.7",
+    "axios": "npm:@karinjs/axios@1.1.8",
     "chalk": "5.4.1",
     "chokidar": "4.0.3",
     "express": "npm:@karinjs/express@1.0.3",
