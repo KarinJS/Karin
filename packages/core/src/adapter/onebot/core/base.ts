@@ -284,7 +284,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param messageId 消息ID
    */
   async getMsg (contact: Contact, messageId: string) {
-    const result = await this.sendApi(OB11ApiAction.getMsg, { message_id: Number(messageId) ?? messageId as unknown as number })
+    const result = await this.sendApi(OB11ApiAction.getMsg, { message_id: Number(messageId) || messageId as unknown as number })
     const userId = result.sender.user_id + ''
     const messageSeq = result.message_seq || result.message_id
     const messageID = result.message_id + ''
