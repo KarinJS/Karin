@@ -29,10 +29,7 @@ export const createProject = async (
   await exec('pnpm init', { cwd: dir })
   const cmd = `pnpm install node-karin@${karinVersion}${registrySuffix}`
   const { error, stderr } = await exec(cmd, { cwd: dir })
-  /** 干掉锁文件 */
-  if (fs.existsSync(path.join(dir, 'pnpm-lock.yaml'))) {
-    fs.unlinkSync(path.join(dir, 'pnpm-lock.yaml'))
-  }
+
   if (error) throw error
   if (stderr) throw new Error(stderr)
   spinner.succeed(green(`✨ node-karin@${karinVersion} 安装成功`))
