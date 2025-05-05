@@ -4,6 +4,7 @@ import { OB11Event } from '@/adapter/onebot/types/event'
 import { createMessage } from '@/adapter/onebot/create/message'
 import { createNotice } from '@/adapter/onebot/create/notice'
 import { createRequest } from '@/adapter/onebot/create/request'
+import { senderGroup } from '@/event'
 import {
   AdapterConvertKarin,
   KarinConvertAdapter,
@@ -17,10 +18,9 @@ import type {
   OB11ApiRequest,
   OB11AllEvent,
 } from '@/adapter/onebot/types'
-import { Contact, GroupSender } from '@/types/event'
-import { Elements, ForwardOptions, NodeElement, SendElement } from '@/types/segment'
-import { GetGroupHighlightsResponse, QQGroupHonorInfo, SendMsgResults } from '@/types/adapter'
-import { senderGroup } from '@/event'
+import type { Contact, GroupSender } from '@/types/event'
+import type { Elements, ForwardOptions, NodeElement, SendElement } from '@/types/segment'
+import type { GetGroupHighlightsResponse, QQGroupHonorInfo, SendMsgResults } from '@/types/adapter'
 
 export abstract class AdapterOneBot extends AdapterBase {
   protected constructor () {
@@ -284,7 +284,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param messageId 消息ID
    */
   async getMsg (contact: Contact, messageId: string) {
-    const result = await this.sendApi(OB11ApiAction.getMsg, { message_id: Number(messageId) })
+    const result = await this.sendApi(OB11ApiAction.getMsg, { message_id: Number(messageId) ?? messageId as unknown as number })
     const userId = result.sender.user_id + ''
     const messageSeq = result.message_seq || result.message_id
     const messageID = result.message_id + ''
@@ -327,27 +327,77 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param count 获取消息数量 默认为1
    * @returns 包含历史消息的数组
    */
-  async getHistoryMsg (contact: Contact, startMsgId: string, count: number) {
-    let options: any
+  async getHistoryMsg (contact: Contact, startMsgId: string | number, count: number) {
+    /**
+     * 通过message_seq获取历史消息
+     * @param startMsgId 起始消息ID
+     * @param count 获取消息数量 默认为1
+     * @returns 包含历史消息的数组
+     */
+    const getHistoryMsgSeq = async (startMsgId: number, count: number) => {
+      if (contact.scene === 'group') {
+        return this.sendApi(OB11ApiAction.getGroupMsgHistory, { message_seq: startMsgId, count, group_id: Number(contact.peer) })
+      }
 
-    if (this.adapter.name === 'Lagrange.OneBot') {
-      options = { message_id: Number(startMsgId), count }
-    } else {
-      // 后续检查一下llob napcat是支持传递message_id的
-      const messageSeq = (await this.getMsg(contact, startMsgId)).message_seq
-      options = { message_seq: messageSeq, count }
+      return this.sendApi(OB11ApiAction.getFriendMsgHistory, { message_seq: startMsgId, count, user_id: Number(contact.peer) })
     }
 
-    let res
-    if (contact.scene === 'group') {
-      options.group_id = Number(contact.peer)
-      res = await this.sendApi(OB11ApiAction.getGroupMsgHistory, options)
-    } else {
+    /**
+     * 通过get_msg获取seq
+     * @param msgId 消息ID
+     * @returns seq
+     */
+    const getSeq = async (msgId: string) => {
+      const result = await this.getMsg(contact, msgId)
+      return result.message_seq
+    }
+
+    /**
+     * Lagrange.OneBot专属接口
+     * 通过message_id获取历史消息
+     * @param startMsgId 起始消息ID
+     * @param count 获取消息数量 默认为1
+     * @returns 包含历史消息的数组
+     */
+    const getLglHistoryMsg = async (startMsgId: string, count: number) => {
+      const options: any = { message_id: Number(startMsgId), count }
+      if (contact.scene === 'group') {
+        options.group_id = Number(contact.peer)
+        return this.sendApi(OB11ApiAction.getGroupMsgHistory, options)
+      }
+
       options.user_id = Number(contact.peer)
-      res = await this.sendApi(OB11ApiAction.getFriendMsgHistory, options)
+      return this.sendApi(OB11ApiAction.getFriendMsgHistory, options)
+    }
+
+    /**
+     * 最终获取历史消息的函数
+     */
+    const getHistory = async () => {
+      /** seq */
+      if (typeof startMsgId === 'number') {
+        if (this.adapter.name === 'Lagrange.OneBot') {
+          throw new Error('Lagrange.OneBot不支持通过seq获取历史消息')
+        }
+
+        return getHistoryMsgSeq(startMsgId, count)
+      }
+
+      /** msgId */
+      if (typeof startMsgId === 'string') {
+        if (this.adapter.name === 'Lagrange.OneBot') {
+          return getLglHistoryMsg(startMsgId, count)
+        }
+
+        const seq = await getSeq(startMsgId)
+        return getHistoryMsgSeq(seq, count)
+      }
+
+      throw new Error('startMsgId类型错误')
     }
 
     const all = []
+    const res = await getHistory()
 
     for (const v of res.messages) {
       const userId = v.sender.user_id + '' || ''
