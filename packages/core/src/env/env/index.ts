@@ -50,13 +50,14 @@ export const isTs = () => isTsx()
 export const isProd = () => !isDev()
 
 /**
- * @description 是否为pnpm
+ * @description 是否>= pnpm10
  */
 export const isPnpm10 = () => {
   try {
     if (IS_PNPM10 === null) {
-      const version = execSync('pnpm -v').toString()
-      IS_PNPM10 = version.includes('10')
+      const version = execSync('pnpm -v').toString().trim()
+      const majorVersion = parseInt(version.split('.')[0], 10)
+      IS_PNPM10 = !isNaN(majorVersion) && majorVersion >= 10
     }
 
     return IS_PNPM10
