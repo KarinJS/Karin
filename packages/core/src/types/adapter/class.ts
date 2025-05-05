@@ -117,6 +117,15 @@ export interface AdapterType<T = any> {
   /**
    * 获取msgId获取历史消息
    * @param contact 目标信息
+   * @param startMsgSeq 起始消息序列号
+   * @param count 获取消息数量 默认为1
+   * @returns 包含历史消息的数组
+   */
+  getHistoryMsg (contact: Contact, startMsgSeq: number, count: number): Promise<Array<MessageResponse>>
+
+  /**
+   * 获取msgId获取历史消息
+   * @param contact 目标信息
    * @param startMsgId 起始消息ID
    * @param count 获取消息数量 默认为1
    * @returns 包含历史消息的数组

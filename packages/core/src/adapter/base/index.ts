@@ -147,7 +147,25 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _count 获取消息数量 默认为1
    * @returns 包含历史消息的数组
    */
-  getHistoryMsg (_contact: Contact, _startMsgId: string, _count: number): Promise<Array<MessageResponse>> {
+  getHistoryMsg (_contact: Contact, _startMsgId: string, _count: number): Promise<Array<MessageResponse>>
+
+  /**
+   * 获取msgSeq获取历史消息
+   * @param _contact 目标信息
+   * @param _startMsgSeq 起始消息序列号
+   * @param _count 获取消息数量 默认为1
+   * @returns 包含历史消息的数组
+   */
+  getHistoryMsg (_contact: Contact, _startMsgSeq: number, _count: number): Promise<Array<MessageResponse>>
+
+  /**
+   * 获取msgId获取历史消息
+   * @param _contact 目标信息
+   * @param _startMsgId 起始消息ID
+   * @param _count 获取消息数量 默认为1
+   * @returns 包含历史消息的数组
+   */
+  getHistoryMsg (_contact: Contact, _startMsgId: string | number, _count: number): Promise<Array<MessageResponse>> {
     throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
   }
 
