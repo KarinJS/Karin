@@ -1,4 +1,4 @@
-import { isWorkspace } from '@/env'
+import { isPnpm10, isWorkspace } from '@/env'
 import { taskSystem as task } from '@/service/task'
 import { handleReturn, spawnProcess } from '../plugins/admin/tool'
 
@@ -176,17 +176,22 @@ const addDependencies = async (
       return handleReturn(res, false, '无效请求：缺少必要参数')
     }
 
-    const version = `${dependencies.name}@${dependencies.version || 'latest'}`
+    const name = `${dependencies.name}@${dependencies.version || 'latest'}`
 
     const id = await task.add(
       {
         type: 'add-dependencies' as TaskType,
         name: '依赖新增',
-        target: version,
+        target: name,
         operatorIp: ip,
       },
       async (_: TaskEntity, emitLog: (message: string) => void) => {
-        const args = ['add', version]
+        const args = ['add', name]
+
+        if (Array.isArray(dependencies.allowBuild) && dependencies.allowBuild.length && isPnpm10()) {
+          dependencies.allowBuild.forEach(pkg => args.unshift(`--allow-build=${pkg}`))
+        }
+
         if (dependencies.location === 'devDependencies') {
           args.push('-D')
         } else if (dependencies.location === 'optionalDependencies') {

@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { AxiosError } from 'axios'
-import { isWorkspace } from '@/env'
+import { isPnpm10, isWorkspace } from '@/env'
 import { handleReturn, spawnProcess } from './tool'
 import { karinPathPlugins } from '@/root'
 import { mkdirSync } from '@/utils/fs/fsSync'
@@ -67,6 +67,9 @@ const installNpm = async (
       const args = ['add', pkg, '--save']
       if (isWorkspace()) args.push('-w')
       if (data.registry) args.push(`--registry=${data.registry}`)
+      if (Array.isArray(data.allowBuild) && data.allowBuild.length && isPnpm10()) {
+        data.allowBuild.forEach(pkg => args.unshift(`--allow-build=${pkg}`))
+      }
 
       /** 处理 ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF 错误 */
       let IS_ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF = false

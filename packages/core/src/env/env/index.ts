@@ -1,5 +1,8 @@
 import fs from 'node:fs'
 import yaml from 'yaml'
+import { execSync } from 'node:child_process'
+
+let IS_PNPM10: boolean | null = null
 
 /**
  * @description 是否为Windows
@@ -45,6 +48,24 @@ export const isTs = () => isTsx()
  * @description 是否为生产环境
  */
 export const isProd = () => !isDev()
+
+/**
+ * @description 是否>= pnpm10
+ */
+export const isPnpm10 = () => {
+  try {
+    if (IS_PNPM10 === null) {
+      const version = execSync('pnpm -v').toString().trim()
+      const majorVersion = parseInt(version.split('.')[0], 10)
+      IS_PNPM10 = !isNaN(majorVersion) && majorVersion >= 10
+    }
+
+    return IS_PNPM10
+  } catch {
+    IS_PNPM10 = false
+    return false
+  }
+}
 
 /**
  * @description 当前环境是否为pnpm工作区
