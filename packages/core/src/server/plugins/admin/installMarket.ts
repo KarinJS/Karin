@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { AxiosError } from 'axios'
-import { isWorkspace } from '@/env'
+import { isPnpm10, isWorkspace } from '@/env'
 import { handleReturn, spawnProcess } from './tool'
 import { karinPathPlugins } from '@/root'
 import { getFastGithub, raceRequest } from '@/utils/request'
@@ -40,6 +40,10 @@ export const installMarket = async (
   }
 
   if (data.pluginType === 'npm' && plugin.type === 'npm') {
+    if (Array.isArray(plugin.allowBuild) && plugin.allowBuild.length) {
+      data.allowBuild = plugin.allowBuild
+    }
+
     return installNpm(res, plugin, data, ip)
   }
 
@@ -59,7 +63,7 @@ export const installMarket = async (
 const installNpm = async (
   res: Response,
   _: KarinPluginType & { type: 'npm' },
-  data: PluginAdminMarketInstall,
+  data: PluginAdminMarketInstall & { pluginType: 'npm' },
   ip: string
 ) => {
   /**
@@ -75,6 +79,9 @@ const installNpm = async (
     async (_: TaskEntity, emitLog: (message: string) => void) => {
       const args = ['add', data.target, '--save']
       if (isWorkspace()) args.push('-w')
+      if (Array.isArray(data.allowBuild) && data.allowBuild.length && isPnpm10()) {
+        data.allowBuild.forEach(pkg => args.unshift(`--allow-build=${pkg}`))
+      }
 
       /** 处理 ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF 错误 */
       let IS_ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF = false

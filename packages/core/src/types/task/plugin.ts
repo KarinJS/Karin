@@ -36,6 +36,8 @@ interface PluginAdminCustomInstallNpm extends PluginAdminCustomInstallBase {
   version?: string
   /** 指定registry源 */
   registry?: string
+  /** 允许pnpm在安装期间执行安装的包名列表 */
+  allowBuild?: string[]
 }
 
 /**
@@ -155,6 +157,8 @@ export interface PluginAdminMarketInstallApp extends PluginAdminMarketInstallBaa
  */
 interface PluginAdminMarketInstallNpm extends PluginAdminMarketInstallBaase {
   pluginType: 'npm'
+  /** 允许pnpm在安装期间执行脚本的包名列表 */
+  allowBuild?: string[]
 }
 
 /**
