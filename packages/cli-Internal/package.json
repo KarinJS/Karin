@@ -19,7 +19,8 @@
   "files": [
     "dist",
     "CHANGELOG.md",
-    "LICENSE"
+    "LICENSE",
+    "REAME.md"
   ],
   "scripts": {
     "app": "node dist/index.mjs",
