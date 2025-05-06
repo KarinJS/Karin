@@ -15,7 +15,8 @@
     "ki": "index.js"
   },
   "files": [
-    "index.js"
+    "index.js",
+    "REAME.md"
   ],
   "scripts": {
     "pub": "npm publish --access public"
