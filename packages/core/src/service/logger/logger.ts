@@ -113,7 +113,9 @@ export const createLogger = (config?: Partial<LoggerConfig>): Logger => {
     white: chalk.white,
     gray: chalk.gray,
     violet: chalk.hex('#868ECC'),
-    fnc: chalk.hex(state.config.color || '#FFFF00'),
+    get fnc () {
+      return chalk.hex(state.config.color || '#FFFF00');
+    },
 
     get level (): LoggerLevel {
       return state.level
