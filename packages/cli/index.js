@@ -24,8 +24,24 @@ const checkKarinDependency = () => {
  * 检查 CLI 入口文件是否存在
  */
 const checkCliExists = () => {
-  const cliPath = join(process.cwd(), 'index.mjs')
-  return existsSync(cliPath)
+  const cjsPath = join(process.cwd(), 'node_modules/node-karin/dist/cli/index.cjs')
+  const mjsPath = join(process.cwd(), 'node_modules/node-karin/dist/cli/index.mjs')
+  return existsSync(cjsPath) || existsSync(mjsPath)
+}
+
+/**
+ * 获取可用的 CLI 路径
+ */
+const getCliPath = () => {
+  const cjsPath = join(process.cwd(), 'node_modules/node-karin/dist/cli/index.cjs')
+  const mjsPath = join(process.cwd(), 'node_modules/node-karin/dist/cli/index.mjs')
+
+  if (existsSync(cjsPath)) {
+    return cjsPath
+  } else if (existsSync(mjsPath)) {
+    return mjsPath
+  }
+  return null
 }
 
 try {
@@ -51,7 +67,12 @@ try {
   }
 
   // 执行 node-karin CLI
-  const cliPath = join(process.cwd(), 'index.mjs')
+  const cliPath = getCliPath()
+  if (!cliPath) {
+    console.error('错误: 无法找到有效的 CLI 入口文件')
+    process.exit(1)
+  }
+
   import(`file://${cliPath}`)
 } catch (error) {
   console.error('执行出错:', error)
