@@ -35,7 +35,7 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           version: 9
-        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/create-karin--release_created'] || steps.release.outputs['packages/web--release_created'] }}
+        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/cli--release_created'] || steps.release.outputs['packages/create-karin--release_created'] || steps.release.outputs['packages/web--release_created'] }}
 
       # 安装所有依赖
       - name: 安装依赖
