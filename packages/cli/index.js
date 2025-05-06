@@ -23,9 +23,12 @@ const checkKarinDependency = () => {
 /**
  * 检查 CLI 入口文件是否存在
  */
-const checkCliExists = () => {
-  const cliPath = join(process.cwd(), 'index.mjs')
-  return existsSync(cliPath)
+const getValidCliPath = () => {
+  const cliPaths = [
+    join(process.cwd(), 'node_modules/node-karin/dist/cli/index.cjs'),
+    join(process.cwd(), 'node_modules/node-karin/dist/cli/index.mjs'),
+  ]
+  return cliPaths.find(path => existsSync(path)) || null
 }
 
 try {
@@ -44,14 +47,12 @@ try {
   }
 
   // 检查 CLI 文件是否存在
-  const cliExists = checkCliExists()
-  if (!cliExists) {
+  const cliPath = getValidCliPath()
+  if (!cliPath) {
     console.error('错误: node-karin CLI 文件不存在，请升级 node-karin 依赖版本')
     process.exit(1)
   }
 
-  // 执行 node-karin CLI
-  const cliPath = join(process.cwd(), 'index.mjs')
   import(`file://${cliPath}`)
 } catch (error) {
   console.error('执行出错:', error)
