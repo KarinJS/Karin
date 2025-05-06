@@ -2,11 +2,23 @@
   "name": "@karinjs/cli",
   "version": "1.1.2",
   "description": "Karin CLI tool",
-  "main": "index.js",
+  "keywords": [
+    "cli",
+    "karin"
+  ],
+  "license": "MIT",
+  "author": "",
   "type": "module",
+  "main": "index.js",
   "bin": {
-    "ki": "index.js",
-    "karin": "index.js"
+    "karin": "index.js",
+    "ki": "index.js"
+  },
+  "files": [
+    "index.js"
+  ],
+  "scripts": {
+    "pub": "npm publish --access public"
   },
   "engines": {
     "node": ">=18"
@@ -15,16 +27,5 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
-  "scripts": {
-    "pub": "npm publish --access public"
-  },
-  "files": [
-    "index.js"
-  ],
-  "keywords": [
-    "cli",
-    "karin"
-  ],
-  "author": "",
-  "license": "MIT"
+  "time": "2025-05-06T15:37:09.119Z"
 }
