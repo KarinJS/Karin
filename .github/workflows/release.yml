@@ -28,7 +28,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: "https://registry.npmjs.org"
         if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/cli--release_created'] || steps.release.outputs['packages/create-karin--release_created'] || steps.release.outputs['packages/web--release_created'] }}
 
       - name: 设置 pnpm
@@ -83,3 +83,13 @@ jobs:
           repo: KarinJS/repo-status
           # Required when using the `repo` option. Either a PAT or a token generated from the GitHub app or CLI
           token: ${{ secrets.RELEASE }}
+
+      # 同步所有包
+      - name: 同步所有包
+        run: |
+          # 同步主包
+          curl -X PUT "https://registry-direct.npmmirror.com/-/package/node-karin/syncs"
+          # 同步 cli 包
+          curl -X PUT "https://registry-direct.npmmirror.com/-/package/@karinjs/cli/syncs"
+          # 同步 create-karin 包
+          curl -X PUT "https://registry-direct.npmmirror.com/-/package/create-karin/syncs"

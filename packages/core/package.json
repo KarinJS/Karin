@@ -155,7 +155,8 @@
     "pr": "node cli/pr.js all",
     "pub": "npm publish --access public",
     "pub-beta": "npm publish --access public --tag beta",
-    "sort": "sort-package-json && sort-json tsconfig.json"
+    "sort": "sort-package-json && sort-json tsconfig.json",
+    "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/node-karin/syncs\""
   },
   "dependencies": {
     "art-template": "npm:@karinjs/art-template@1.1.0",
