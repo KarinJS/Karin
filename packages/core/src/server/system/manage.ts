@@ -6,9 +6,10 @@ import type { RequestHandler } from 'express'
 /**
  * 重启karin
  */
-export const restartRouter: RequestHandler = async (_req, res) => {
+export const restartRouter: RequestHandler = async (req, res) => {
+  const { isPm2 } = req.body
   createSuccessResponse(res, null, '重启指令发送成功')
-  restartDirect()
+  restartDirect(isPm2 ?? false)
 }
 
 /**

@@ -47,10 +47,11 @@ export const restart = async (
 
 /**
  * 直接重启
+ * @param isPm2 - 是否为pm2重启 默认false
  */
-export const restartDirect = async () => {
+export const restartDirect = async (isPm2 = false) => {
   logger.mark('收到重启请求，正在重启...')
-  if (process?.send) {
+  if (!isPm2 && process?.send) {
     process.send(JSON.stringify({
       type: 'restart',
       port: process.env.HTTP_PORT,
@@ -69,8 +70,7 @@ export const restartDirect = async () => {
     throw new Error('tsx 不支持重启')
   }
 
-  if (process?.send) {
-    process.send('restart')
-    logger.mark('发送重启信号成功')
-  }
+  /** 调用pm2启动 */
+  const { error } = await exec('npx karin pm2')
+  if (error) throw error
 }

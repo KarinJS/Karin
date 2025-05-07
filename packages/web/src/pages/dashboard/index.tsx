@@ -1,4 +1,3 @@
-/* eslint-disable @stylistic/indent */
 import { title } from '@/components/primitives.ts'
 import { Card, CardBody, CardHeader } from '@heroui/card'
 import { useRequest } from 'ahooks'
@@ -181,7 +180,7 @@ function UpdateButtons ({ handleCloseModal }: { handleCloseModal: () => void }) 
             const { status } = await request.serverGet<{ status: 'ok' | 'failed' }>('/api/v1/system/update', { timeout: 30000 })
             if (status === 'ok') {
               toast.success('更新成功，正在重启......')
-              await request.serverPost('/api/v1/restart')
+              await request.serverPost('/api/v1/restart', { isPm2: true })
               await new Promise(resolve => {
                 const interval = setInterval(async () => {
                   try {
