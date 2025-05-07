@@ -1,5 +1,13 @@
 # 更新日志
 
+## [1.8.8](https://github.com/KarinJS/Karin/compare/core-v1.8.7...core-v1.8.8) (2025-05-07)
+
+
+### 🐛 Bug Fixes
+
+* `.npmrc` ([#404](https://github.com/KarinJS/Karin/issues/404)) ([7769c31](https://github.com/KarinJS/Karin/commit/7769c31b63f7d458d4f4ca21ba4c2cd523c83b5e))
+* **onebot:** 控制台不输出`base64://...` ([#402](https://github.com/KarinJS/Karin/issues/402)) ([a51d382](https://github.com/KarinJS/Karin/commit/a51d382feda71bc5838a085d0123ea7ec9e56213))
+
 ## [1.8.7](https://github.com/KarinJS/Karin/compare/core-v1.8.6...core-v1.8.7) (2025-05-07)
 
 
