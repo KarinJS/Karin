@@ -1,5 +1,8 @@
 {
   "lines": 1000,
+  "maxLogDays": 14,
+  "maxErrorLogSize": 50,
+  "maxOutLogSize": 50,
   "apps": [
     {
       "name": "karin",

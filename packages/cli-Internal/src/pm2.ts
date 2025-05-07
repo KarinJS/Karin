@@ -34,6 +34,22 @@ const ensureLogDir = (dirPath: string): boolean => {
 }
 
 /**
+ * 将字节大小转换为可读格式
+ * @param bytes 字节数
+ * @param decimals 小数位数
+ * @returns 格式化后的大小字符串
+ */
+const formatBytes = (bytes: number, decimals = 2): string => {
+  if (bytes === 0) return '0 Bytes'
+
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(decimals))} ${sizes[i]}`
+}
+
+/**
  * 按大小切割日志文件
  * @param logPath 日志文件路径
  * @param logDirPath 日志目录路径
@@ -51,14 +67,26 @@ const rotateLogFile = async (
 
   const stats = fs.statSync(logPath)
   const maxSizeBytes = maxSizeMB * 1024 * 1024
+  const minKeepSizeBytes = 2 * 1024 * 1024 // 无论如何至少保留2MB内容
+
+  console.log(`[pm2] 检查${logType}日志文件: ${logPath}`)
+  console.log(`[pm2] 当前大小: ${formatBytes(stats.size)}, 切割阈值: ${formatBytes(maxSizeBytes)}`)
 
   /** 如果文件大小小于最大限制，不处理 */
-  if (stats.size < maxSizeBytes) return false
+  if (stats.size < maxSizeBytes) {
+    console.log(`[pm2] ${logType}日志文件大小未超过阈值，无需切割\n`)
+    return false
+  }
 
   const fileName = path.basename(logPath)
   const timestamp = Date.now()
   const archivedName = `${fileName}.${timestamp}`
   const archivedPath = path.join(logDirPath, archivedName)
+
+  console.log(`\n[pm2] 准备切割${logType}日志文件:`)
+  console.log(`[pm2] - 源文件: ${logPath}`)
+  console.log(`[pm2] - 归档文件名称: ${archivedName}`)
+  console.log(`[pm2] - 归档文件路径: ${archivedPath}`)
 
   try {
     /** 将当前日志内容复制到归档文件 */
@@ -69,9 +97,15 @@ const rotateLogFile = async (
     /** 保留原始文件的访问权限 */
     const originalMode = fs.statSync(logPath).mode
 
-    /** 保留日志文件大小的1/5作为新文件的起始内容 */
+    /** 计算需要保留的内容大小 */
     const fileSize = stats.size
-    const keepSize = Math.floor(fileSize / 5) // 保留原大小的1/5
+    const keepSize = Math.max(
+      minKeepSizeBytes,
+      Math.floor(fileSize / 5) // 保留原大小的1/5或至少2MB
+    )
+
+    console.log(`[pm2] 将保留${formatBytes(keepSize)}内容到新的日志文件中`)
+
     const keepBuffer = Buffer.alloc(keepSize)
 
     const fd = fs.openSync(logPath, 'r')
@@ -82,7 +116,9 @@ const rotateLogFile = async (
     fs.writeFileSync(logPath, keepBuffer)
     fs.chmodSync(logPath, originalMode)
 
-    console.log(`[pm2] 日志已按大小切割: ${logType} => ${archivedName} (${(stats.size / 1024 / 1024).toFixed(2)}MB)`)
+    console.log(`[pm2] 日志已按大小切割: ${logType} => ${archivedName}`)
+    console.log(`[pm2] 原始文件大小: ${formatBytes(stats.size)}, 归档后保留: ${formatBytes(keepSize)}`)
+    console.log(`[pm2] 归档文件完整路径: ${archivedPath}`)
     return true
   } catch (err) {
     console.error(`[pm2] 切割日志失败: ${logType}`, err)
@@ -95,15 +131,18 @@ const rotateLogFile = async (
  * @param errorLogBaseName 错误日志文件基本名称
  * @param outLogBaseName 输出日志文件基本名称
  * @param logDirPath 日志目录路径
- * @param maxLogFiles 保留的最大文件数
+ * @param maxLogDays 保留日志的最大天数，0表示不清理
  */
 const cleanupLogFiles = (
   errorLogBaseName: string,
   outLogBaseName: string,
   logDirPath: string,
-  maxLogFiles: number
+  maxLogDays: number
 ): void => {
-  if (maxLogFiles <= 0) return
+  if (maxLogDays <= 0) {
+    console.log(`[pm2] 日志保留天数设置为${maxLogDays}，将保留所有日志文件`)
+    return
+  }
 
   const files = fs.readdirSync(logDirPath)
 
@@ -123,13 +162,23 @@ const cleanupLogFiles = (
       })
       .sort((a, b) => b.timestamp - a.timestamp) /** 按时间戳降序排序 */
 
-    /** 删除超出保留数量的文件 */
-    if (logFiles.length > maxLogFiles) {
-      logFiles.slice(maxLogFiles).forEach(item => {
+    /** 删除超出保留天数的文件 */
+    const now = Date.now()
+    const maxAgeMs = maxLogDays * 24 * 60 * 60 * 1000
+
+    let deletedCount = 0
+    logFiles.forEach(item => {
+      if (now - item.timestamp > maxAgeMs) {
         const filePath = path.join(logDirPath, item.file)
         fs.unlinkSync(filePath)
-        console.log(`[pm2] 删除过期${logType}日志: ${item.file}`)
-      })
+        const fileDate = new Date(item.timestamp).toISOString().split('T')[0]
+        deletedCount++
+        console.log(`[pm2] 删除过期${logType}日志: ${item.file} (${fileDate})`)
+      }
+    })
+
+    if (deletedCount > 0) {
+      console.log(`[pm2] 共删除${deletedCount}个超过${maxLogDays}天的${logType}日志文件`)
     }
   }
 
@@ -148,13 +197,24 @@ const rotateLogs = async (): Promise<void> => {
   if (!config) return
 
   try {
-    const maxLogFiles = Number(config.maxLogFiles) ?? 10
-    const maxErrorLogSize = Number(config.maxErrorLogSize) ?? 50 /** 默认50MB */
-    const maxOutLogSize = Number(config.maxOutLogSize) ?? 50 /** 默认50MB */
+    /** 最大保留天数 */
+    let maxLogDays = Number(config.maxLogDays) ?? 14
+    /** 最大错误日志大小 */
+    let maxErrorLogSize = Number(config.maxErrorLogSize)
+    /** 最大输出日志大小 */
+    let maxOutLogSize = Number(config.maxOutLogSize)
 
-    if (maxLogFiles === 0) {
-      /** 保留全部日志，不进行清理 */
-      return
+    /** 默认14天，0表示不清理保留所有日志 */
+    if (isNaN(maxLogDays) || maxLogDays < 0) maxLogDays = 14
+    /** 默认50MB */
+    if (isNaN(maxErrorLogSize) || maxErrorLogSize < 1) maxErrorLogSize = 50
+    /** 默认50MB */
+    if (isNaN(maxOutLogSize) || maxOutLogSize < 1) maxOutLogSize = 50
+
+    if (maxLogDays === 0) {
+      console.log('[pm2] 日志保留策略: 保留所有日志，不进行清理')
+    } else {
+      console.log(`[pm2] 日志保留策略: 最长${maxLogDays}天`)
     }
 
     /** 获取日志文件路径 */
@@ -174,7 +234,7 @@ const rotateLogs = async (): Promise<void> => {
     await rotateLogFile(errorLogPath, logDirPath, '错误', maxErrorLogSize)
 
     /** 清理过期日志文件 */
-    cleanupLogFiles(errorLogBaseName, outLogBaseName, logDirPath, maxLogFiles)
+    cleanupLogFiles(errorLogBaseName, outLogBaseName, logDirPath, maxLogDays)
   } catch (error) {
     console.error('[pm2] 日志切割过程中发生错误:', error)
   }
