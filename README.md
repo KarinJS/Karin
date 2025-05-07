@@ -48,7 +48,7 @@
 - docs: [ikenxuan](https://github.com/ikenxuan)
 - name: [fuqiuluo](https://github.com/fuqiuluo)
 
-> 🧙‍♂️ 感谢两位大佬的魔法加持！
+> 🧙‍♂️ 感谢三位大佬的魔法加持！
 
 ### 贡献者
 
