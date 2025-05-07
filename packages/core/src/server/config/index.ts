@@ -1,10 +1,10 @@
+import { karinPathConfig } from '@/root'
 import {
   createSuccessResponse,
   createBadRequestResponse,
   createServerErrorResponse,
 } from '@/server/utils/response'
 import {
-  config,
   adapter,
   groups,
   privates,
@@ -14,6 +14,7 @@ import {
   getEnv,
   setConfig,
   writeEnv,
+  readConfig,
 } from '@/utils/config'
 
 import type { RequestHandler } from 'express'
@@ -27,7 +28,7 @@ import type { RequestHandler } from 'express'
 export const getConfig: RequestHandler = async (req, res) => {
   const { type } = req.body as { type: string }
   if (type === 'config') {
-    const cfg = config()
+    const cfg = readConfig(karinPathConfig)
     return createSuccessResponse(res, cfg)
   }
 
