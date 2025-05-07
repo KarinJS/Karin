@@ -143,4 +143,17 @@ export const getGuildCfg = (
   return getCfg(keys)
 }
 
+/**
+ * @web 获取配置文件 不走缓存
+ * @param dir 配置文件根目录
+ * @returns 配置文件数据
+ */
+export const getGroupsFileData = (dir: string) => {
+  const name = 'groups.json'
+  const file = `${dir}/${name}`
+
+  const data = requireFileSync<Groups>(file, { type: 'json' })
+  return isOld(data) ? migrate(file, data) : format(data)
+}
+
 export default initGroups
