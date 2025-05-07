@@ -60,30 +60,32 @@ const rotateLogFile = async (
   const archivedName = `${fileName}.${timestamp}`
   const archivedPath = path.join(logDirPath, archivedName)
 
-  const tempPath = path.join(logDirPath, `${fileName}.temp`)
-
   try {
     /** 将当前日志内容复制到归档文件 */
     const sourceStream = createReadStream(logPath)
     const destStream = createWriteStream(archivedPath)
     await pipeline(sourceStream, destStream)
 
-    /** 创建空日志文件，保留原始文件的访问权限 */
+    /** 保留原始文件的访问权限 */
     const originalMode = fs.statSync(logPath).mode
-    fs.writeFileSync(tempPath, '')
-    fs.chmodSync(tempPath, originalMode)
 
-    /** 用空文件替换当前日志 */
-    fs.renameSync(tempPath, logPath)
+    /** 保留日志文件大小的1/5作为新文件的起始内容 */
+    const fileSize = stats.size
+    const keepSize = Math.floor(fileSize / 5) // 保留原大小的1/5
+    const keepBuffer = Buffer.alloc(keepSize)
+
+    const fd = fs.openSync(logPath, 'r')
+    fs.readSync(fd, keepBuffer, 0, keepSize, fileSize - keepSize)
+    fs.closeSync(fd)
+
+    /** 使用保留的内容重写日志文件 */
+    fs.writeFileSync(logPath, keepBuffer)
+    fs.chmodSync(logPath, originalMode)
 
     console.log(`[pm2] 日志已按大小切割: ${logType} => ${archivedName} (${(stats.size / 1024 / 1024).toFixed(2)}MB)`)
     return true
   } catch (err) {
     console.error(`[pm2] 切割日志失败: ${logType}`, err)
-    /** 清理临时文件 */
-    if (fs.existsSync(tempPath)) {
-      fs.unlinkSync(tempPath)
-    }
     return false
   }
 }
