@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.3](https://github.com/KarinJS/Karin/compare/web-v1.8.2...web-v1.8.3) (2025-05-07)
+
+
+### 🐛 Bug Fixes
+
+* `.npmrc` ([#404](https://github.com/KarinJS/Karin/issues/404)) ([7769c31](https://github.com/KarinJS/Karin/commit/7769c31b63f7d458d4f4ca21ba4c2cd523c83b5e))
+
 ## [1.8.2](https://github.com/KarinJS/Karin/compare/web-v1.8.1...web-v1.8.2) (2025-05-07)
 
 
