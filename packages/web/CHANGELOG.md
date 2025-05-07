@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.2](https://github.com/KarinJS/Karin/compare/web-v1.8.1...web-v1.8.2) (2025-05-07)
+
+
+### 📝 Documentation
+
+* 更新README文件并添加缺失的文档 ([#399](https://github.com/KarinJS/Karin/issues/399)) ([21a3010](https://github.com/KarinJS/Karin/commit/21a30101f1e41dfa35db1a70d18ac2f60df35611))
+
 ## [1.8.1](https://github.com/KarinJS/Karin/compare/web-v1.8.0...web-v1.8.1) (2025-05-05)
 
 
