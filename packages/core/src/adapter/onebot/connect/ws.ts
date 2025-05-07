@@ -3,7 +3,7 @@ import { AdapterOneBot } from '@/adapter/onebot/core/base'
 import { OB11ApiAction, OB11ApiParams, OB11ApiRequest } from '../types'
 import { OB11Event, type OB11AllEvent } from '@/adapter/onebot/types/event'
 import { registerBot, unregisterBot } from '@/service/bot'
-import { buildError } from '@/adapter/onebot/core/convert'
+import { buildError, formatLogString } from '@/adapter/onebot/core/convert'
 
 import type { WebSocket } from 'ws'
 
@@ -30,7 +30,7 @@ export abstract class WsAdapterOneBot11 extends AdapterOneBot {
       } as OB11AllEvent
 
       if (json.echo) {
-        logger.bot('debug', this.selfId, `Api调用回应: ${str}`)
+        logger.bot('debug', this.selfId, `Api调用回应: ${formatLogString(str)}`)
         return this.socket.emit(json.echo, json)
       } else {
         if (data.post_type === OB11Event.MetaEvent && data.meta_event_type === 'heartbeat') {
@@ -38,7 +38,7 @@ export abstract class WsAdapterOneBot11 extends AdapterOneBot {
           return
         }
 
-        logger.bot('debug', this.selfId, `收到上报事件: ${str}`)
+        logger.bot('debug', this.selfId, `收到上报事件: ${formatLogString(str)}`)
       }
 
       this.eventHandlers(data, str)
@@ -102,7 +102,7 @@ export abstract class WsAdapterOneBot11 extends AdapterOneBot {
     if (!time) time = timeout()
     const echo = ++this.seq + ''
     const request = JSON.stringify({ echo, action, params })
-    logger.bot('debug', this.selfId, `发送Api请求 ${action}: ${request}`)
+    logger.bot('debug', this.selfId, `发送Api请求 ${action}: ${formatLogString(request)}`)
 
     return new Promise((resolve, reject) => {
       const timeoutId = setTimeout(() => {
