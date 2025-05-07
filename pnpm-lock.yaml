@@ -127,9 +127,6 @@ importers:
       jsonwebtoken:
         specifier: npm:@karinjs/jsonwebtoken@^1.1.1
         version: '@karinjs/jsonwebtoken@1.1.1'
-      log4js:
-        specifier: npm:@karinjs/log4js@1.1.4
-        version: '@karinjs/log4js@1.1.4'
 
   packages/create-karin:
     dependencies:
@@ -1870,10 +1867,6 @@ packages:
 
   '@karinjs/lodash@1.1.1':
     resolution: {integrity: sha512-suq7TVHaaTrkD74WhEpzsm1SqZfiSf0yiWPEzoZhNbB1Kfwo/ys9yOwptZqTKXZyTghSrF+dfILvh2E32wBofw==}
-    engines: {node: '>=18'}
-
-  '@karinjs/log4js@1.1.4':
-    resolution: {integrity: sha512-/35rg9EV6vIhVwG3GmQl5Bmm8/l2hooAWbizsaPawj2aBu+koioz8/Ser6wEPUkr8mEwPBMJ/R7ax94tiU5LOg==}
     engines: {node: '>=18'}
 
   '@karinjs/moment@1.1.5':
@@ -7563,8 +7556,6 @@ snapshots:
   '@karinjs/jsonwebtoken@1.1.1': {}
 
   '@karinjs/lodash@1.1.1': {}
-
-  '@karinjs/log4js@1.1.4': {}
 
   '@karinjs/moment@1.1.5': {}
 

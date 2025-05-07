@@ -84,7 +84,7 @@ export const createSnapkaHttp = async (options: Renders['http_server'][number]) 
       const isAlive = await test()
       if (isAlive) {
         if (consecutiveFailures > 0) {
-          logger.log(`Snapka-http 服务 ${options.url} 恢复连接`)
+          logger.info(`Snapka-http 服务 ${options.url} 恢复连接`)
           consecutiveFailures = 0
         }
       } else {

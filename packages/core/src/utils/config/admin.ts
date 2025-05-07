@@ -3,6 +3,7 @@ import * as root from '@/root'
 import { setEnv } from './file/env'
 import { requireFileSync } from '../fs/require'
 
+import type { LogMethodNames } from '@/service/logger/types'
 import type { FileListMap, Groups, Privates } from '@/types/config'
 
 /**
@@ -81,13 +82,13 @@ export const clearFiles = (dir: string) => {
  * @param level 日志等级
  * @returns 返回更新后的日志等级
  */
-export const updateLevel = (level?: string): string => {
+export const updateLevel = (level?: LogMethodNames): string => {
   if (level) {
     logger.level = level
     return level
   }
 
-  const newLevel = process.env.LOG_LEVEL || 'info'
+  const newLevel = (process.env.LOG_LEVEL || 'info') as LogMethodNames
   logger.level = newLevel
   return newLevel
 }
