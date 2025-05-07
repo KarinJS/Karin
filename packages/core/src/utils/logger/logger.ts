@@ -4,7 +4,7 @@ import type { LoggerLevel } from '@/service/logger/types'
 /**
  * @description 日志管理器
  */
-export let logger: ReturnType<typeof createLogger>
+export const logger = createLogger({ prefix: '[karin]', level: 'info' })
 
 /**
  * @public
@@ -12,10 +12,10 @@ export let logger: ReturnType<typeof createLogger>
  * @param dir - 日志文件夹
  */
 export const createInnerLogger = (dir: string) => {
+  global.logger = logger
+  logger.level = process.env.LOG_LEVEL as LoggerLevel || 'info'
   const maxFileSize = Number(process.env.LOG_MAX_LOG_SIZE) || 0
-  logger = createLogger({
-    prefix: '[karin]',
-    level: process.env.LOG_LEVEL as LoggerLevel || 'info',
+  logger.configure({
     file: {
       dir,
       enabled: true,
@@ -26,15 +26,6 @@ export const createInnerLogger = (dir: string) => {
       separateErrorLog: true,
     },
   })
-  // logger = createLogger(dir, {
-  //   log4jsCfg: {
-  //     level: process.env.LOG_LEVEL as LoggerLevel || 'info',
-  //     daysToKeep: Number(process.env.LOG_DAYS_TO_KEEP) || 30,
-  //     maxLogSize: Number(process.env.LOG_MAX_LOG_SIZE) || 0,
-  //     logColor: process.env.LOG_FNC_COLOR || '#E1D919',
-  //   },
-  // })
 
-  global.logger = logger
   return logger
 }
