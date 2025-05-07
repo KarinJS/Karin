@@ -114,7 +114,7 @@ export const createLogger = (config?: Partial<LoggerConfig>): Logger => {
     gray: chalk.gray,
     violet: chalk.hex('#868ECC'),
     get fnc () {
-      return chalk.hex(state.config.color || '#FFFF00');
+      return chalk.hex(state.config.color || '#FFFF00')
     },
 
     get level (): LoggerLevel {
@@ -143,6 +143,7 @@ export const createLogger = (config?: Partial<LoggerConfig>): Logger => {
     error: createLogFunction('error'),
     fatal: createLogFunction('fatal'),
     mark: createLogFunction('mark'),
+    log: createLogFunction('info'),
 
     bot: (level: LogMethodNames, id: string, ...args: any[]): void => {
       logger[level as keyof LogMethodsOnly](logger.violet(`[Bot:${id}]`), ...args)

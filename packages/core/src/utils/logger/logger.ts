@@ -1,145 +1,10 @@
-import fs from 'node:fs'
-import chalk from 'chalk'
-import log4js, { type Configuration } from 'log4js'
-import type { Logger, LoggerLevel, LoggerOptions } from '@/types/system/logger'
+import { createLogger } from '@/service/logger'
+import type { LoggerLevel } from '@/service/logger/types'
 
 /**
- * @public
  * @description 日志管理器
  */
-export let logger: Logger
-
-/**
- * 创建日志记录器
- * @param options - 配置项
- */
-const initLogger = (options: LoggerOptions = {}) => {
-  /** 如果有传参直接用 无传参走默认 */
-  if (options.config) return log4js.configure(options.config)
-
-  const { level = 'info', daysToKeep = 14, maxLogSize = 0 } = options.log4jsCfg || {}
-
-  const config: Configuration = {
-    appenders: {
-      console: {
-        type: 'console',
-        layout: {
-          type: 'pattern',
-          pattern: `%[[Karin][%d{hh:mm:ss.SSS}][%4.4p]%] ${process.env.RUNTIME === 'tsx' ? '[%f{3}:%l] ' : ''}%m`,
-        },
-      },
-      overall: {
-        /** 输出到文件 */
-        type: 'file',
-        /** 日志文件名 */
-        filename: '@karinjs/logs/logger',
-        /** 日期后缀 */
-        pattern: 'yyyy-MM-dd.log',
-        /** 日期后缀 */
-        keepFileExt: true,
-        /** 日志文件名中包含日期模式 */
-        alwaysIncludePattern: true,
-        /** 日志文件保留天数 */
-        daysToKeep: daysToKeep || 14,
-        /** 日志输出格式 */
-        layout: {
-          type: 'pattern',
-          pattern: '[%d{hh:mm:ss.SSS}][%4.4p] %m',
-        },
-      },
-    },
-    categories: {
-      default: {
-        appenders: ['overall', 'console'],
-        level,
-        enableCallStack: process.env.RUNTIME === 'tsx',
-      },
-    },
-    levels: {
-      handler: { value: 15000, colour: 'cyan' },
-    },
-  }
-
-  /** 碎片化: 将日志分片，达到指定大小后自动切割 日志较多的情况下不建议与整体化同时开启 */
-  if (maxLogSize > 0) {
-    config.categories.default.appenders.unshift('fragments')
-    config.appenders.fragments = {
-      type: 'file',
-      filename: '@karinjs/logs/app.log',
-      pattern: 'MM-dd.log',
-      keepFileExt: true,
-      alwaysIncludePattern: true,
-      daysToKeep: daysToKeep || 14,
-      maxLogSize: (maxLogSize || 30) * 1024 * 1024,
-      /** 最大文件数 */
-      numBackups: 9999999,
-      /** 日志输出格式 */
-      layout: {
-        type: 'pattern',
-        pattern: '[%d{hh:mm:ss.SSS}][%4.4p] %m',
-      },
-    }
-  }
-  return log4js.configure(config)
-}
-
-/**
- * 为logger添加自定义颜色
- * @param logger - 日志记录器
- */
-const addColor = (Logger: log4js.Logger, color?: string) => {
-  const logger = Logger as Logger
-  logger.chalk = chalk
-  logger.red = chalk.red
-  logger.green = chalk.green
-  logger.yellow = chalk.yellow
-  logger.blue = chalk.blue
-  logger.magenta = chalk.magenta
-  logger.cyan = chalk.cyan
-  logger.white = chalk.white
-  logger.gray = chalk.gray
-  logger.violet = chalk.hex('#868ECC')
-  logger.fnc = chalk.hex(color || '#FFFF00')
-  logger.bot = (level, id, ...args) => {
-    switch (level) {
-      case 'trace':
-        return logger.trace(logger.violet(`[Bot:${id}]`), ...args)
-      case 'debug':
-        return logger.debug(logger.violet(`[Bot:${id}]`), ...args)
-      case 'mark':
-        return logger.mark(logger.violet(`[Bot:${id}]`), ...args)
-      case 'info':
-        return logger.info(logger.violet(`[Bot:${id}]`), ...args)
-      case 'warn':
-        return logger.warn(logger.violet(`[Bot:${id}]`), ...args)
-      case 'error':
-        return logger.error(logger.violet(`[Bot:${id}]`), ...args)
-      case 'fatal':
-        return logger.fatal(logger.violet(`[Bot:${id}]`), ...args)
-      default:
-        return logger.info(logger.violet(`[Bot:${id}]`), ...args)
-    }
-  }
-  return logger
-}
-
-/**
- * 创建日志记录器
- * @param dir - 日志文件夹
- * @param options - 配置项
- * @returns 日志记录器
- */
-const createLogger = (dir: string, options: LoggerOptions = {}) => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true })
-  }
-
-  initLogger(options)
-  const logger = addColor(log4js.getLogger('default'))
-
-  global.logger = logger
-  return logger
-}
+export let logger: ReturnType<typeof createLogger>
 
 /**
  * @public
@@ -147,14 +12,29 @@ const createLogger = (dir: string, options: LoggerOptions = {}) => {
  * @param dir - 日志文件夹
  */
 export const createInnerLogger = (dir: string) => {
-  logger = createLogger(dir, {
-    log4jsCfg: {
-      level: process.env.LOG_LEVEL as LoggerLevel || 'info',
-      daysToKeep: Number(process.env.LOG_DAYS_TO_KEEP) || 30,
-      maxLogSize: Number(process.env.LOG_MAX_LOG_SIZE) || 0,
-      logColor: process.env.LOG_FNC_COLOR || '#E1D919',
+  const maxFileSize = Number(process.env.LOG_MAX_LOG_SIZE) || 0
+  logger = createLogger({
+    prefix: '[karin]',
+    level: process.env.LOG_LEVEL as LoggerLevel || 'info',
+    file: {
+      dir,
+      enabled: true,
+      enableWholeMode: true,
+      enableFragmentMode: maxFileSize > 0,
+      maxFileSize,
+      daysToKeep: Number(process.env.LOG_DAYS_TO_KEEP) || 1,
+      separateErrorLog: true,
     },
   })
+  // logger = createLogger(dir, {
+  //   log4jsCfg: {
+  //     level: process.env.LOG_LEVEL as LoggerLevel || 'info',
+  //     daysToKeep: Number(process.env.LOG_DAYS_TO_KEEP) || 30,
+  //     maxLogSize: Number(process.env.LOG_MAX_LOG_SIZE) || 0,
+  //     logColor: process.env.LOG_FNC_COLOR || '#E1D919',
+  //   },
+  // })
 
+  global.logger = logger
   return logger
 }

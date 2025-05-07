@@ -18,7 +18,8 @@
     },
     "rootDir": "./src",
     "types": [
-      "./src/global.d.ts"
+      "./src/global.d.ts",
+      "node"
     ],
   },
   "exclude": [

@@ -1,6 +1,9 @@
 import chalk from 'chalk'
 
-/** 所有日志等级 */
+/**
+ * @description 所有日志等级
+ * @description 请使用`LogMethodNames`类型来获取日志方法名称
+ */
 export type LoggerLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal' | 'mark' | 'off'
 
 /** 日志方法名称 */
@@ -74,6 +77,9 @@ export interface Logger {
 
   /** @description 关闭日志 */
   off (): void
+
+  /** @description 打印日志 跟`info`日志相同 */
+  log (...args: any[]): void
 
   /** @description 获取、设置日志等级 */
   level: LoggerLevel

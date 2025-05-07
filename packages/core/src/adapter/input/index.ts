@@ -10,9 +10,7 @@ import { adapter as adapterConfig } from '@/utils/config'
 import { createFriendMessage, createGroupMessage } from '@/event/create'
 import { contactFriend, contactGroup, senderFriend, senderGroup } from '@/event'
 
-import type { AdapterType, SendMsgResults } from '@/types/adapter'
-import type { Contact } from '@/types/event'
-import type { Elements } from '@/types/segment'
+import type { Contact, Elements, LogMethodNames, AdapterType, SendMsgResults } from '@/types'
 
 let index = 0
 const botID = 'console'
@@ -53,7 +51,7 @@ class AdapterConsole extends AdapterBase implements AdapterType {
 
     /** 如果是日志等级更新命令 */
     if (text.startsWith('log')) {
-      const level = text.replace(/^log/, '').trim()
+      const level = text.replace(/^log/, '').trim() as LogMethodNames
       if (level) {
         const list = ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
         if (list.includes(level)) {

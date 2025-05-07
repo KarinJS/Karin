@@ -179,8 +179,7 @@
     "@types/lodash": "^4.17.16",
     "cross-env": "^7.0.3",
     "dotenv": "npm:@karinjs/dotenv@^1.1.2",
-    "jsonwebtoken": "npm:@karinjs/jsonwebtoken@^1.1.1",
-    "log4js": "npm:@karinjs/log4js@1.1.4"
+    "jsonwebtoken": "npm:@karinjs/jsonwebtoken@^1.1.1"
   },
   "engines": {
     "node": ">=18"

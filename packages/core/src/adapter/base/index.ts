@@ -1,4 +1,4 @@
-import type { LoggerLevel } from '@/types/system'
+import type { LogMethodNames } from '@/types/system'
 import {
   Elements,
   ForwardOptions,
@@ -66,7 +66,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param level 日志等级
    * @param args 日志内容
    */
-  logger (level: LoggerLevel, ...args: any[]): void {
+  logger (level: LogMethodNames, ...args: any[]): void {
     logger.bot(level, this.account.selfId, ...args)
   }
 
