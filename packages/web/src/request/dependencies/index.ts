@@ -40,7 +40,7 @@ export const getDependencies = async (
 export const manageDependencies = async (params: DependenciesManage): Promise<BaseResponse<CreateTaskResult>> => {
   try {
     const result = await request.serverPost<CreateTaskResult, DependenciesManage>(
-      api.manageDependencies,
+      `${api.manageDependencies}?time=${Date.now()}`,
       params,
       { timeout: TIMEOUT }
     )
@@ -60,7 +60,7 @@ export const manageDependencies = async (params: DependenciesManage): Promise<Ba
  */
 export const getNpmrcList = async (): Promise<BaseResponse<NpmrcFileResponse[]>> => {
   try {
-    const result = await request.serverPost<NpmrcFileResponse[], void>(api.getNpmrcList)
+    const result = await request.serverPost<NpmrcFileResponse[], void>(`${api.getNpmrcList}?time=${Date.now()}`)
     return { success: true, data: result }
   } catch (error) {
     return { success: false, data: error, message: getErrorMessage(error) }
@@ -72,7 +72,7 @@ export const getNpmrcList = async (): Promise<BaseResponse<NpmrcFileResponse[]>>
  */
 export const getNpmrcContent = async (path: string): Promise<BaseResponse<string>> => {
   try {
-    const result = await request.serverPost<Record<string, string>, { path: string }>(api.getNpmrcContent, { path })
+    const result = await request.serverPost<Record<string, string>, { path: string }>(`${api.getNpmrcContent}?time=${Date.now()}`, { path })
     /** 转成字符串 */
     let content = ''
     Object.entries(result).forEach(([key, value]) => {
@@ -89,7 +89,7 @@ export const getNpmrcContent = async (path: string): Promise<BaseResponse<string
  */
 export const getNpmBaseConfig = async (): Promise<BaseResponse<NpmBaseConfigResponse>> => {
   try {
-    const result = await request.serverPost<NpmBaseConfigResponse, void>(api.getNpmBaseConfig)
+    const result = await request.serverPost<NpmBaseConfigResponse, void>(`${api.getNpmBaseConfig}?time=${Date.now()}`)
     return { success: true, data: result }
   } catch (error) {
     return { success: false, data: error, message: getErrorMessage(error) }

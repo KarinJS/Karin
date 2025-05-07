@@ -88,7 +88,7 @@ export const getNpmConfig = async <T extends string | string[]> (
   keys: T
 ): Promise<T extends string ? string : { key: string; value: string }[]> => {
   if (typeof keys === 'string') {
-    const { stdout } = await exec(`npm config get ${keys}`)
+    const { stdout } = await exec(`npm config get ${keys}`, { env: {} as any })
     return stdout.trim() as T extends string ? string : { key: string; value: string }[]
   }
 
@@ -107,5 +107,5 @@ export const getNpmConfig = async <T extends string | string[]> (
  * @param value - 配置值
  */
 export const setNpmConfig = async (key: string, value: string) => {
-  await exec(`npm config set ${key} ${value}`)
+  await exec(`npm config set "${key}" "${value}"`)
 }
