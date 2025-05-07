@@ -5,6 +5,16 @@ import { Elements, SendElement } from '@/types/segment'
 import { segment } from '@/utils/message'
 
 /**
+ * 处理日志中可能存在的base64字符串
+ * @param str 需要处理的字符串
+ * @returns 处理后的字符串
+ */
+export const formatLogString = (str: string): string => {
+  // 匹配 "base64://..." 或 "base://..." 开头的长字符串
+  return str.replace(/(["']?(?:base64|base):\/\/)[^"',}\s]*["']?/g, '$1...')
+}
+
+/**
  * 构建错误信息
  * @param selfId 机器人ID
  * @param action 请求的action
@@ -14,10 +24,10 @@ import { segment } from '@/utils/message'
 export const buildError = (selfId: string, action: string, request: string, error?: unknown) => {
   if (error) {
     const err = JSON.stringify(error, null, 2).replace(/\\n/g, '\n')
-    return new Error(`[${selfId}][sendApi] 请求错误:\n  action: ${action}\n  params: ${request}\n  error: ${err}}`)
+    return new Error(`[${selfId}][sendApi] 请求错误:\n  action: ${action}\n  params: ${formatLogString(request)}\n  error: ${err}}`)
   }
 
-  logger.error(`[${selfId}][sendApi][请求错误]:\n  action: ${action}\n  params: ${request}`)
+  logger.error(`[${selfId}][sendApi][请求错误]:\n  action: ${action}\n  params: ${formatLogString(request)}`)
 }
 
 /**

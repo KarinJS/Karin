@@ -1,9 +1,9 @@
 import axios from 'axios'
 import { config } from '@/utils'
-import { buildError } from '@/adapter/onebot/core/convert'
 import { AdapterOneBot } from '@/adapter/onebot/core/base'
 import { listeners } from '@/core/internal/listeners'
 import { registerBot, unregisterBot } from '@/service/bot'
+import { buildError, formatLogString } from '@/adapter/onebot/core/convert'
 import { OB11ApiAction, OB11AllEvent, OB11ApiParams, OB11ApiRequest } from '../types'
 import { getHttpBotApiToken, unregisterHttpBot } from '@/adapter/onebot/post/register'
 
@@ -88,7 +88,7 @@ export class HttpAdapterOneBot11 extends AdapterOneBot {
   ): Promise<OB11ApiRequest[T]> {
     if (!time) time = config.timeout()
     const request = JSON.stringify(params)
-    logger.bot('debug', this.selfId, `发送Api请求 ${action}: ${request}`)
+    logger.bot('debug', this.selfId, `发送Api请求 ${action}: ${formatLogString(request)}`)
 
     try {
       const token = getHttpBotApiToken(this.selfId)
