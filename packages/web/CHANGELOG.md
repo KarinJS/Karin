@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.4](https://github.com/KarinJS/Karin/compare/web-v1.8.3...web-v1.8.4) (2025-05-07)
+
+
+### 🐛 Bug Fixes
+
+* 修复`web-config`读取的是缓存 ([#405](https://github.com/KarinJS/Karin/issues/405)) ([3335cef](https://github.com/KarinJS/Karin/commit/3335cefc70b811e11084f4cee1a87c8602ae6838))
+
 ## [1.8.3](https://github.com/KarinJS/Karin/compare/web-v1.8.2...web-v1.8.3) (2025-05-07)
 
 
