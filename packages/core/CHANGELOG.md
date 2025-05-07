@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.8.7](https://github.com/KarinJS/Karin/compare/core-v1.8.6...core-v1.8.7) (2025-05-07)
+
+
+### ♻️ Code Refactoring
+
+* 重构日志模块 ([#393](https://github.com/KarinJS/Karin/issues/393)) ([21d0878](https://github.com/KarinJS/Karin/commit/21d0878571c30353c7c852dd8edab6a715a811a0))
+
 ## [1.8.6](https://github.com/KarinJS/Karin/compare/core-v1.8.5...core-v1.8.6) (2025-05-05)
 
 

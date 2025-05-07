@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/KarinJS/Karin/compare/cli-v1.1.3...cli-v1.1.4) (2025-05-07)
+
+
+### 📝 Documentation
+
+* 更新README文件并添加缺失的文档 ([#399](https://github.com/KarinJS/Karin/issues/399)) ([21a3010](https://github.com/KarinJS/Karin/commit/21a30101f1e41dfa35db1a70d18ac2f60df35611))
+
 ## [1.1.3](https://github.com/KarinJS/Karin/compare/cli-v1.1.2...cli-v1.1.3) (2025-05-06)
 
 
