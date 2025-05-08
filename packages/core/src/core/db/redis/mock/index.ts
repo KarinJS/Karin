@@ -10,6 +10,7 @@ import type { SQLiteWrapper } from './sqlite'
  * @class RedisClient
  */
 export class RedisClient extends EventEmitter {
+  id: string
   /** 键、类型、过期时间映射 */
   store: Record<string, { type: Key, expire: number }> = {}
   /** 键值对 */
@@ -33,6 +34,7 @@ export class RedisClient extends EventEmitter {
 
   constructor (sqlite: SQLiteWrapper) {
     super()
+    this.id = 'mock'
     this.store = {}
     this.#str = {}
     this.#num = {}

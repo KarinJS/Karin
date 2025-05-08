@@ -149,9 +149,7 @@ const sendExit = async (port: number, token: string) => {
 
 /** 主进程退出时清理子进程 */
 process.on('exit', () => {
-  if (child && !child.killed) {
-    child.kill('SIGTERM')
-  }
+  child.kill('SIGTERM')
 })
 
 start()

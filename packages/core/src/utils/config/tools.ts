@@ -11,6 +11,27 @@ export const formatArray = (data: any[]) => {
 }
 
 /**
+ * 初始化count
+ * @param count 计数器
+ * @param key 键
+ */
+export const initCount = (
+  count: Record<string, {
+    /** 上一分钟调用次数 */
+    start: number,
+    /** 当前调用次数 */
+    count: number
+  }>,
+  key: string
+) => {
+  if (!count[key]) {
+    count[key] = { start: 0, count: 1 }
+  } else {
+    count[key].count++
+  }
+}
+
+/**
  * @internal
  * 传入一个对象 将对象中的嵌套数组中所有元素为字符串
  * @param data 数据
@@ -83,30 +104,39 @@ export const getCacheCfg = <T> (
   count: ReturnType<typeof createCount>,
   keys: string[]
 ) => {
+  /**
+   * 场景唯一标识符: Bot:selfId:groupId:userId
+   */
+  const key = keys[0]
   /** 优先走缓存 */
-  if (keys[0] in cache) {
-    if (!count[keys[0]]) {
-      count[keys[0]] = { start: 0, count: 0 }
-    }
-
-    count[keys[0]].count++
-    return cache[keys[0]]
+  if (cache[key]) {
+    initCount(count, key)
+    return cache[key]
   }
 
-  for (const index in keys) {
-    if (keys[index] in cache) {
-      if (index === '0') {
-        /** 如果是索引0 说明有键有对应的缓存 */
-        count[keys[index]] = { start: 0, count: 1 }
-      } else {
-        /** 如果索引不为0 说明有键没有对应的缓存 此时创建缓存 */
-        count[keys[0]] = { start: 0, count: 1 }
-        cache[keys[0]] = cache[keys[index]]
-      }
-
-      return cache[keys[index]]
+  /** 如果缓存不存在 需要遍历keys生成事件key */
+  keys.forEach((v, index) => {
+    if (!cache[v]) return
+    /**
+     * 如果是索引0 说明有键有对应的缓存
+     * - 2025-05-09 03:19:37 使用更严谨的判断方法
+     */
+    if (index === 0 && v === key) {
+      initCount(count, v)
+      return cache[v]
     }
-  }
+
+    /** 可能已经存在缓存了 */
+    if (v === key) {
+      initCount(count, v)
+      return cache[v]
+    }
+
+    /** 最后创建缓存 */
+    cache[key] = cache[v]
+    initCount(count, key)
+    return cache[key]
+  })
 
   return cache.default
 }
