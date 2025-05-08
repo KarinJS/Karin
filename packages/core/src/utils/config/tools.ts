@@ -84,7 +84,7 @@ export const getCacheCfg = <T> (
   keys: string[]
 ) => {
   /** 优先走缓存 */
-  if (cache[keys[0]]) {
+  if (keys[0] in cache) {
     if (!count[keys[0]]) {
       count[keys[0]] = { start: 0, count: 0 }
     }
@@ -94,14 +94,14 @@ export const getCacheCfg = <T> (
   }
 
   for (const index in keys) {
-    if (cache[keys[index]]) {
+    if (keys[index] in cache) {
       if (index === '0') {
         /** 如果是索引0 说明有键有对应的缓存 */
         count[keys[index]] = { start: 0, count: 1 }
       } else {
         /** 如果索引不为0 说明有键没有对应的缓存 此时创建缓存 */
-        count[keys['0']] = { start: 0, count: 1 }
-        cache[keys['0']] = cache[keys[index]]
+        count[keys[0]] = { start: 0, count: 1 }
+        cache[keys[0]] = cache[keys[index]]
       }
 
       return cache[keys[index]]
