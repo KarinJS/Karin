@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.8.12](https://github.com/KarinJS/Karin/compare/core-v1.8.11...core-v1.8.12) (2025-05-08)
+
+
+### 🐛 Bug Fixes
+
+* 修复主进程退出时子进程未被正确终止的问题 修复场景唯一标识符缓存问题 ([#413](https://github.com/KarinJS/Karin/issues/413)) ([e971438](https://github.com/KarinJS/Karin/commit/e971438892fe5726466ddfc1fd408599d8af6457))
+
 ## [1.8.11](https://github.com/KarinJS/Karin/compare/core-v1.8.10...core-v1.8.11) (2025-05-08)
 
 
