@@ -18,7 +18,12 @@ let cache: Record<string, GroupsObjectValue>
  * 获取群聊和频道配置
  * @param keys 键组
  */
-const getCfg = (keys: string[]) => getCacheCfg(cache, count, keys)
+const getCfg = (keys: string[]) => {
+  if (!cache) {
+    cache = {}
+  }
+  return getCacheCfg(cache, count, keys)
+}
 
 /**
  * 判断是否为旧版本配置文件
