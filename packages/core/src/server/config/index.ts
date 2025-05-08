@@ -6,15 +6,15 @@ import {
 } from '@/server/utils/response'
 import {
   adapter,
-  groups,
-  privates,
   getRenderCfg,
   pm2,
   redis,
   getEnv,
   setConfig,
   writeEnv,
-  readConfig,
+  config,
+  getGroupsFileData,
+  getPrivatesFileData,
 } from '@/utils/config'
 
 import type { RequestHandler } from 'express'
@@ -28,7 +28,7 @@ import type { RequestHandler } from 'express'
 export const getConfig: RequestHandler = async (req, res) => {
   const { type } = req.body as { type: string }
   if (type === 'config') {
-    const cfg = readConfig(karinPathConfig)
+    const cfg = config()
     return createSuccessResponse(res, cfg)
   }
 
@@ -38,12 +38,12 @@ export const getConfig: RequestHandler = async (req, res) => {
   }
 
   if (type === 'groups') {
-    const cfg = groups()
+    const cfg = getGroupsFileData(karinPathConfig)
     return createSuccessResponse(res, cfg)
   }
 
   if (type === 'privates') {
-    const cfg = privates()
+    const cfg = getPrivatesFileData(karinPathConfig)
     return createSuccessResponse(res, cfg)
   }
 

@@ -11,10 +11,10 @@ import type { GroupMessage, GroupTempMessage, GuildMessage } from '../../message
 
 /**
  * @description 日志
- * @param userId 用户ID
+ * @param logText 日志前缀
  * @param text 日志内容
  */
-export const log = (userId: string, text: string) => logger.debug(`[消息过滤][${userId}] ${text}`)
+export const log = (logText: string, text: string) => logger.debug(`[消息过滤]${logText} ${text}`)
 
 /**
  * @description 初始化`msg` `rawMessage`
@@ -179,32 +179,34 @@ export const privateFilterEvent = (
   friend: ReturnType<typeof getFriendCfg>,
   cd: boolean
 ): boolean => {
+  const runLog = (text: string) => log(ctx.logText, `${text}: ${ctx.eventId}`)
+
   if (ctx.isFriend) {
     if (!config?.friend?.enable) {
-      log(ctx.userId, `当前好友事件未启用: ${ctx.eventId}`)
+      runLog('当前好友事件未启用')
       return false
     }
   } else {
     if (!config?.directs?.enable) {
-      log(ctx.userId, `当前频道私信事件未启用: ${ctx.eventId}`)
+      runLog('当前频道私信事件未启用')
       return false
     }
   }
 
   if (!cd) {
-    log(ctx.userId, `当前处于CD中: ${ctx.eventId}`)
+    runLog('当前处于CD中')
     return false
   }
 
   /** 用户白名单 */
   if (config?.user?.enable_list?.length && !config?.user?.enable_list.includes(ctx.userId)) {
-    log(ctx.userId, `用户未处于白名单: ${ctx.eventId}`)
+    runLog('用户未处于白名单')
     return false
   }
 
   /** 用户黑名单 */
   if (config?.user?.disable_list?.length && config?.user?.disable_list.includes(ctx.userId)) {
-    log(ctx.userId, `用户处于黑名单: ${ctx.eventId}`)
+    runLog('用户处于黑名单')
     return false
   }
 
@@ -217,28 +219,28 @@ export const privateFilterEvent = (
     0: () => true,
     2: () => {
       if (!ctx.isAdmin && !ctx.isMaster) {
-        log(ctx.userId, `当前仅允许管理员使用: ${ctx.messageId}`)
+        runLog('当前仅允许管理员使用')
         return false
       }
       return true
     },
     3: () => {
       if (!ctx.alias) {
-        log(ctx.userId, `当前仅允许Bot别名触发使用: ${ctx.messageId}`)
+        runLog('当前仅允许Bot别名触发使用')
         return false
       }
       return true
     },
     5: () => {
       if (!ctx.isAdmin && !ctx.isMaster && !ctx.alias && !ctx.atBot) {
-        log(ctx.userId, `当前仅允许@或别名触发(管理员例外): ${ctx.messageId}`)
+        runLog('当前仅允许@或别名触发(管理员例外)')
         return false
       }
       return true
     },
     6: () => {
       if (!ctx.isMaster) {
-        log(ctx.userId, `当前仅允许主人使用: ${ctx.messageId}`)
+        runLog('当前仅允许主人使用')
         return false
       }
       return true
@@ -263,27 +265,29 @@ export const groupFilterEvent = (
   group: ReturnType<typeof getGroupCfg>,
   cd: boolean
 ): boolean => {
+  const runLog = (text: string) => log(ctx.logText, `${text}: ${ctx.eventId}`)
+
   if (ctx.isGroup) {
     if (!config?.group?.enable) {
-      log(ctx.groupId, `当前群事件未启用: ${ctx.eventId}`)
+      runLog('当前群事件未启用')
       return false
     }
   } else if (ctx.isGuild) {
     if (!config?.guilds?.enable) {
-      log(ctx.guildId, `当前频道事件未启用: ${ctx.eventId}`)
+      runLog('当前频道事件未启用')
       return false
     }
   }
 
   if (!cd) {
-    log(ctx.userId, `当前处于CD中: ${ctx.eventId}`)
+    runLog('当前处于CD中')
     return false
   }
 
   /** 用户白名单 */
   if (config?.user?.enable_list?.length) {
     if (!config?.user?.enable_list.includes(ctx.userId)) {
-      log(ctx.userId, `用户未处于白名单: ${ctx.eventId}`)
+      runLog('用户未处于白名单')
       return false
     }
   }
@@ -291,7 +295,7 @@ export const groupFilterEvent = (
   /** 用户黑名单 */
   if (config?.user?.disable_list?.length) {
     if (config?.user?.disable_list.includes(ctx.userId)) {
-      log(ctx.userId, `用户处于黑名单: ${ctx.eventId}`)
+      runLog('用户处于黑名单')
       return false
     }
   }
@@ -299,30 +303,30 @@ export const groupFilterEvent = (
   if (ctx.isGroup) {
     /** 群白名单 */
     if (config?.group?.enable_list?.length && !config?.group?.enable_list.includes(ctx.groupId)) {
-      log(ctx.groupId, `群未处于白名单: ${ctx.eventId}`)
+      runLog('群未处于白名单')
       return false
     }
 
     /** 群黑名单 */
     if (config?.group?.disable_list?.length && config?.group?.disable_list.includes(ctx.groupId)) {
-      log(ctx.groupId, `群处于黑名单: ${ctx.eventId}`)
+      runLog('群处于黑名单')
       return false
     }
 
     if (group.member_enable?.length && !group.member_enable.includes(ctx.userId)) {
-      log(ctx.userId, `用户未处于群成员白名单: ${ctx.eventId}`)
+      runLog('用户未处于群成员白名单')
       return false
     }
 
     if (group.member_disable?.length && group.member_disable.includes(ctx.userId)) {
-      log(ctx.userId, `用户处于群成员黑名单: ${ctx.eventId}`)
+      runLog('用户处于群成员黑名单')
       return false
     }
   }
   if (ctx.isGuild) {
     /** 频道白名单 */
     if (config?.guilds?.enable_list?.length && !config?.guilds?.enable_list.includes(ctx.guildId)) {
-      log(ctx.guildId, `频道未处于白名单: ${ctx.eventId}`)
+      runLog('频道未处于白名单')
       return false
     }
 
@@ -331,7 +335,7 @@ export const groupFilterEvent = (
       config?.guilds?.disable_list?.length &&
       config?.guilds?.disable_list.includes(ctx.guildId)
     ) {
-      log(ctx.guildId, `频道处于黑名单: ${ctx.eventId}`)
+      runLog('频道处于黑名单')
       return false
     }
 
@@ -339,7 +343,7 @@ export const groupFilterEvent = (
       config?.channels?.enable_list?.length &&
       !config?.channels?.enable_list.includes(ctx.channelId)
     ) {
-      log(ctx.channelId, `子频道未处于白名单: ${ctx.eventId}`)
+      runLog('子频道未处于白名单')
       return false
     }
 
@@ -347,17 +351,17 @@ export const groupFilterEvent = (
       config?.channels?.disable_list?.length &&
       config?.channels?.disable_list.includes(ctx.channelId)
     ) {
-      log(ctx.channelId, `子频道处于黑名单: ${ctx.eventId}`)
+      runLog('子频道处于黑名单')
       return false
     }
 
     if (group.member_enable?.length && !group.member_enable.includes(ctx.userId)) {
-      log(ctx.userId, `用户未处于频道成员白名单: ${ctx.eventId}`)
+      runLog('用户未处于频道成员白名单')
       return false
     }
 
     if (group.member_disable?.length && group.member_disable.includes(ctx.userId)) {
-      log(ctx.userId, `用户处于频道成员黑名单: ${ctx.eventId}`)
+      runLog('用户处于频道成员黑名单')
       return false
     }
   }
@@ -371,42 +375,42 @@ export const groupFilterEvent = (
     0: () => true,
     1: () => {
       if (!ctx.atBot) {
-        log(ctx.userId, `当前响应模式仅允许@机器人使用: ${ctx.messageId}`)
+        runLog('当前响应模式仅允许@机器人使用')
         return false
       }
       return true
     },
     2: () => {
       if (!ctx.isAdmin && !ctx.isMaster) {
-        log(ctx.userId, `当前仅允许管理员使用: ${ctx.messageId}`)
+        runLog('当前仅允许管理员使用')
         return false
       }
       return true
     },
     3: () => {
       if (!ctx.alias) {
-        log(ctx.userId, `当前仅允许Bot别名触发使用: ${ctx.messageId}`)
+        runLog('当前仅允许Bot别名触发使用')
         return false
       }
       return true
     },
     4: () => {
       if (!ctx.alias && !ctx.atBot) {
-        log(ctx.userId, `当前仅允许Bot别名或@机器人触发使用: ${ctx.messageId}`)
+        runLog('当前仅允许Bot别名或@机器人触发使用')
         return false
       }
       return true
     },
     5: () => {
       if (!ctx.isAdmin && !ctx.isMaster && !ctx.alias && !ctx.atBot) {
-        log(ctx.userId, `当前仅允许@或别名触发(管理员例外): ${ctx.messageId}`)
+        runLog('当前仅允许@或别名触发(管理员例外)')
         return false
       }
       return true
     },
     6: () => {
       if (!ctx.isMaster) {
-        log(ctx.userId, `当前仅允许主人使用: ${ctx.messageId}`)
+        runLog('当前仅允许主人使用')
         return false
       }
       return true
@@ -432,7 +436,7 @@ export const groupPrint = (
     config?.group?.log_enable_list?.length &&
     !config?.group?.log_enable_list.includes(ctx.groupId)
   ) {
-    log(ctx.groupId, `群未处于白名单: ${ctx.eventId}`)
+    log(ctx.logText, `群未处于白名单: ${ctx.eventId}`)
     return false
   }
 
@@ -440,7 +444,7 @@ export const groupPrint = (
     config?.group?.log_disable_list?.length &&
     config?.group?.log_disable_list.includes(ctx.groupId)
   ) {
-    log(ctx.groupId, `群处于黑名单: ${ctx.eventId}`)
+    log(ctx.logText, `群处于黑名单: ${ctx.eventId}`)
     return false
   }
 
@@ -454,11 +458,12 @@ export const groupPrint = (
  * @returns `true` 表示通过
  */
 export const guildPrint = (ctx: GuildMessage, config: ReturnType<typeof cfg>): boolean => {
+  const runLog = (text: string) => log(ctx.logText, `${text}: ${ctx.eventId}`)
   if (
     config?.guilds?.log_enable_list?.length &&
     !config?.guilds?.log_enable_list.includes(ctx.guildId)
   ) {
-    log(ctx.guildId, `频道日志未处于白名单: ${ctx.eventId}`)
+    runLog('频道日志未处于白名单')
     return false
   }
 
@@ -466,7 +471,7 @@ export const guildPrint = (ctx: GuildMessage, config: ReturnType<typeof cfg>): b
     config?.guilds?.log_disable_list?.length &&
     config?.guilds?.log_disable_list.includes(ctx.guildId)
   ) {
-    log(ctx.guildId, `频道日志处于黑名单: ${ctx.eventId}`)
+    runLog('频道日志处于黑名单')
     return false
   }
 
@@ -474,7 +479,7 @@ export const guildPrint = (ctx: GuildMessage, config: ReturnType<typeof cfg>): b
     config?.channels?.log_enable_list?.length &&
     !config?.channels?.log_enable_list.includes(ctx.channelId)
   ) {
-    log(ctx.channelId, `子频道日志未处于白名单: ${ctx.eventId}`)
+    runLog('子频道日志未处于白名单')
     return false
   }
 
@@ -482,7 +487,7 @@ export const guildPrint = (ctx: GuildMessage, config: ReturnType<typeof cfg>): b
     config?.channels?.log_disable_list?.length &&
     config?.channels?.log_disable_list.includes(ctx.channelId)
   ) {
-    log(ctx.channelId, `子频道日志处于黑名单: ${ctx.eventId}`)
+    runLog('子频道日志处于黑名单')
     return false
   }
 

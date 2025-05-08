@@ -31,17 +31,6 @@ const initConfig = (dir: string) => {
 }
 
 /**
- * 读取config.json 不走缓存
- */
-export const readConfig = (dir: string) => {
-  const name = 'config.json'
-  const file = `${dir}/${name}`
-
-  const data = requireFileSync<Config>(file, { type: 'json' })
-  return formatObject<Config>(data)
-}
-
-/**
  * @public 公开Api
  * @description 获取配置 `config.json`
  */

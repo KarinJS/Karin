@@ -7,6 +7,7 @@ import { createInput, createInputGroup } from '../../heroui/inputs'
 import { createCron } from './createCron'
 import { Accordion as HeroAccordion, AccordionItem as HeroAccordionItem } from '@heroui/accordion'
 import { createErrorCard } from '../../heroui/error'
+import { useState, useEffect } from 'react'
 
 import type { JSX } from 'react'
 import type { DefaultValues, Value } from './values'
@@ -201,9 +202,39 @@ export const createAccordionPro = (
     componentClassName,
     label,
     children: template,
-    data,
+    data: propData,
     ...options
   } = option
+
+  /**
+   * 创建本地data状态，初始化为props中的data
+   */
+  const [localData, setLocalData] = useState(propData || [])
+
+  /**
+   * 当fields变化时，同步更新localData
+   */
+  useEffect(() => {
+    /**
+     * 确保fields和localData长度一致
+     */
+    if (fields.length !== localData.length && propData && propData.length > 0) {
+      /**
+       * 根据fields的ID匹配localData
+       */
+      const newLocalData = fields.map((_, index) => {
+        /**
+         * 尝试找到对应的data项
+         */
+        if (index < propData.length) {
+          return propData[index]
+        }
+        return localData[index] || { title: '新项目', subtitle: '无描述' }
+      })
+
+      setLocalData(newLocalData)
+    }
+  }, [fields, localData, propData])
 
   /**
    * 递归注册器
@@ -242,7 +273,33 @@ export const createAccordionPro = (
       }
     })
 
+    /**
+     * 添加新的空项
+     */
     append(emptyItem)
+
+    /**
+     * 同步更新localData
+     */
+    setLocalData([...localData, { title: '新项目', subtitle: '无描述' }])
+  }
+
+  /**
+   * 自定义删除操作，同时更新fields和localData
+   * @param index - 要删除的索引
+   */
+  const handleRemove = (index: number) => {
+    /**
+     * 删除fields中的项
+     */
+    remove(index)
+
+    /**
+     * 同步删除localData中对应的项
+     */
+    const newLocalData = [...localData]
+    newLocalData.splice(index, 1)
+    setLocalData(newLocalData)
   }
 
   /**
@@ -251,7 +308,6 @@ export const createAccordionPro = (
    * @param key - 卡片key
    * @param index - 卡片索引
    * @param control - 控制器
-   * @param remove - 删除卡片
    * @param data - 卡片数据
    * @param template - 卡片模板
    * @param createPrefixedRegister - 递归注册器
@@ -261,8 +317,7 @@ export const createAccordionPro = (
     key: string,
     index: number,
     control: FormControl,
-    remove: (index: number) => void,
-    data: AccordionProProps['data'],
+    data: any[],
     template: AccordionProProps['children'],
     createPrefixedRegister: (index: number) => FormRegister
   ) => {
@@ -295,7 +350,11 @@ export const createAccordionPro = (
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                remove(index)
+
+                /**
+                 * 执行自定义删除操作，同步更新fields和localData
+                 */
+                handleRemove(index)
               }}
               onTouchStart={(e) => {
                 e.preventDefault()
@@ -304,7 +363,7 @@ export const createAccordionPro = (
               onTouchEnd={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                remove(index)
+                handleRemove(index)
               }}
               onMouseDown={(e) => {
                 e.preventDefault()
@@ -314,7 +373,7 @@ export const createAccordionPro = (
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault()
                   e.stopPropagation()
-                  remove(index)
+                  handleRemove(index)
                 }
               }}
               className='px-2 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors cursor-pointer'
@@ -368,8 +427,7 @@ export const createAccordionPro = (
           key,
           index,
           control,
-          remove,
-          data,
+          localData,
           template,
           createPrefixedRegister
         )).filter(Boolean)}
