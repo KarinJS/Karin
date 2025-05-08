@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.8.11](https://github.com/KarinJS/Karin/compare/core-v1.8.10...core-v1.8.11) (2025-05-08)
+
+
+### 🐛 Bug Fixes
+
+* 修复群消息下会话条件判断错误问题 ([#411](https://github.com/KarinJS/Karin/issues/411)) ([49d3b49](https://github.com/KarinJS/Karin/commit/49d3b498d8a5ae6d0f9f71b9b794ddbc148c3629))
+
 ## [1.8.10](https://github.com/KarinJS/Karin/compare/core-v1.8.9...core-v1.8.10) (2025-05-08)
 
 
