@@ -1,3 +1,5 @@
+import type { GroupsObjectValue, PrivatesObjectValue } from '@/types'
+
 /**
  * 传入一个数组 将数组中所有元素为字符串
  * @param data 数据
@@ -143,14 +145,24 @@ export const getCacheCfg = <T> (
 
 /**
  * 定时清理缓存
+ * @param data 数据
+ * @param count 计数器
+ * @param cache 缓存
  */
-export const clearCache = <T> (
+export const clearCache = <T extends GroupsObjectValue | PrivatesObjectValue> (
+  data: Record<string, T>,
   count: ReturnType<typeof createCount>,
   cache: Record<string, T>
 ) => {
   setInterval(() => {
     Object.keys(count).forEach((key) => {
       if (count[key].count - count[key].start < 10) {
+        /** 如果源数据中存在这个key 这个key在缓存中是不允许删除的 */
+        if (data[key]) {
+          delete count[key]
+          return
+        }
+
         delete count[key]
         delete cache[key]
       } else {

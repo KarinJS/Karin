@@ -79,7 +79,8 @@ const initPrivates = async (dir: string) => {
   const file = `${dir}/${name}`
 
   const data = requireFileSync<Privates>(file, { type: 'json' })
-  cache = isOld(data) ? migrate(file, data) : format(data)
+  const DATA = isOld(data) ? migrate(file, data) : format(data)
+  cache = DATA
 
   watch<Privates>(file, async (old, data) => {
     cache = format(data)
@@ -90,7 +91,7 @@ const initPrivates = async (dir: string) => {
   }, { type: 'json' })
 
   /** 定时清理缓存 */
-  clearCache(count, cache)
+  clearCache<PrivatesObjectValue>(DATA, count, cache)
 }
 
 /**
