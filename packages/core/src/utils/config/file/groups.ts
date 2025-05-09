@@ -80,7 +80,8 @@ const initGroups = async (dir: string) => {
   const file = `${dir}/${name}`
 
   const data = requireFileSync<Groups>(file, { type: 'json' })
-  cache = isOld(data) ? migrate(file, data) : format(data)
+  const DATA = isOld(data) ? migrate(file, data) : format(data)
+  cache = DATA
 
   watch<Groups>(file, async (old, data) => {
     cache = format(data)
@@ -91,7 +92,7 @@ const initGroups = async (dir: string) => {
   }, { type: 'json' })
 
   /** 定时清理缓存 */
-  clearCache(count, cache)
+  clearCache<GroupsObjectValue>(DATA, count, cache)
 }
 
 /**
@@ -99,7 +100,11 @@ const initGroups = async (dir: string) => {
  * @description 获取群聊、频道配置
  * @returns 群聊、频道配置
  */
-export const groups = () => cache
+export const groups = () => {
+  return {
+    get: () => cache,
+  }
+}
 
 /**
  * @public 公开Api
