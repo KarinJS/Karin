@@ -1,12 +1,9 @@
 name: publish-minimal-repro
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     types: [opened, reopened, synchronize]
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch: # 允许手动触发
 
 jobs:
   publish-temp:
@@ -16,7 +13,7 @@ jobs:
       - name: 拉取代码
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 获取完整历史记录，用于生成版本号
+          fetch-depth: 0 # 获取完整历史记录，用于生成版本号
 
       - name: 安装node
         uses: actions/setup-node@v4
@@ -57,14 +54,14 @@ jobs:
         run: |
           # 将标准输出和标准错误都重定向到文件
           pnpm dlx pkg-pr-new publish --json output.json --comment=update --compact --packageManager=pnpm './packages/core' > pkg-output.txt 2>&1
-          
+
           # 显示输出内容以便在日志中查看
           echo "命令输出内容："
           cat pkg-output.txt
-          
+
           # 提取安装URL并转换为pnpm格式
           INSTALL_URL=$(grep -E "npm i https://pkg.pr.new" pkg-output.txt | sed 's/.*npm i //' || echo "")
-          
+
           if [ ! -z "$INSTALL_URL" ]; then
             # 获取仓库名和短哈希
             REPO_NAME=$(basename ${{ github.repository }})
@@ -74,7 +71,7 @@ jobs:
           else
             PNPM_INSTALL_CMD="未找到安装命令"
           fi
-          
+
           echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
           echo "install_url=$SIMPLIFIED_URL" >> $GITHUB_OUTPUT
 
@@ -89,7 +86,7 @@ jobs:
           echo "${{ steps.publish_pkg.outputs.pnpm_install_cmd }}" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           # 添加完整输出到摘要，方便查看
           echo "## Complete output" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
@@ -104,7 +101,7 @@ jobs:
           script: |
             const fs = require('fs');
             const output = JSON.parse(fs.readFileSync('output.json', 'utf8'));
-            
+
             // 获取提交哈希
             let sha;
             try {
@@ -112,51 +109,51 @@ jobs:
             } catch (error) {
               console.log('无法获取提交哈希，使用环境变量中的值');
             }
-            
+
             // 如果无法从上下文获取SHA，则使用环境变量中的值
             const shortSha = sha ? sha.substring(0, 7) : '${{ env.SHORT_COMMIT_HASH }}';
             const commitUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            
+
             // 获取安装URL
             let installUrl = '';
             for (const pkg of output.packages) {
               installUrl = pkg.url;
               break; // 只取第一个包的URL
             }
-            
+
             // 简化安装URL格式为 包名@短哈希
             const repoName = context.repo.repo; // 获取仓库名
             const simplifiedUrl = `https://pkg.pr.new/node-karin@${shortSha}`;
-            
+
             // 获取Stackblitz链接
             let stackblitzUrl = '';
             for (const template of output.templates) {
               stackblitzUrl = template.url;
               break; // 只取第一个模板的URL
             }
-            
+
             // 获取当前中国标准时间
             const now = new Date();
             // 转换为北京时间 (UTC+8)
             now.setHours(now.getHours() + 8);
             const cstTime = now.toISOString().replace('T', ' ').substring(0, 19);
-            
+
             // 构建与摘要类似的评论内容
             const body = `## Published Packages :package:
-            
+
             commit: [\`${shortSha}\`](${commitUrl})
-            
+
             ${stackblitzUrl ? `[Open in Stackblitz](${stackblitzUrl})` : ''}
-            
+
             use pnpm:
             \`\`\`
             pnpm add ${simplifiedUrl} -w
             \`\`\`
-            
+
             pack time: <code>${cstTime} (CST)</code>`;
-            
+
             const botCommentIdentifier = '## Published Packages';
-            
+
             // 查找机器人评论的函数
             async function findBotComments(issueNumber) {
               if (!issueNumber) return [];
@@ -169,7 +166,7 @@ jobs:
                 comment.body.includes(botCommentIdentifier)
               );
             }
-            
+
             // 创建或更新评论
             async function createOrUpdateComment(issueNumber) {
               if (!issueNumber) {
@@ -206,7 +203,7 @@ jobs:
                 }
               }
             }
-            
+
             // 记录发布信息到控制台
             async function logPublishInfo() {
               console.log('\n' + '='.repeat(50));
@@ -216,7 +213,7 @@ jobs:
               console.log(`\nCommit URL: ${commitUrl}`);
               console.log('\n' + '='.repeat(50));
             }
-            
+
             // 只处理PR情况
             if (context.issue.number) {
               await createOrUpdateComment(context.issue.number);
