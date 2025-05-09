@@ -1,5 +1,18 @@
 # 更新日志
 
+## [1.8.13](https://github.com/KarinJS/Karin/compare/core-v1.8.12...core-v1.8.13) (2025-05-09)
+
+
+### 🐛 Bug Fixes
+
+* clearCache ([#418](https://github.com/KarinJS/Karin/issues/418)) ([652b8fd](https://github.com/KarinJS/Karin/commit/652b8fdd65bf461fbbe85c3ba7b4dfc948cce915))
+* restart ([#415](https://github.com/KarinJS/Karin/issues/415)) ([790ccdd](https://github.com/KarinJS/Karin/commit/790ccddf3c09ef1c91e5b344d3ff9afa7d116e8e))
+
+
+### 🎡 Continuous Integration
+
+* ban publish-minimal-repro ([#417](https://github.com/KarinJS/Karin/issues/417)) ([6ddcf80](https://github.com/KarinJS/Karin/commit/6ddcf803c99bac68662dbd95902f02bc8b6078cd))
+
 ## [1.8.12](https://github.com/KarinJS/Karin/compare/core-v1.8.11...core-v1.8.12) (2025-05-08)
 
 
