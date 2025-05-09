@@ -27,7 +27,11 @@ export const restart = async (
   await db.set(key, options)
 
   if (isFront && process.send) {
-    process.send('restart')
+    process.send(JSON.stringify({
+      type: 'restart',
+      port: process.env.HTTP_PORT,
+      token: process.env.HTTP_AUTH_KEY,
+    }))
     return { status: 'success', data: '已发送重启信号' }
   }
 
