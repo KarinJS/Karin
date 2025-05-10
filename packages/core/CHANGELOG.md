@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.9.0](https://github.com/KarinJS/Karin/compare/core-v1.8.13...core-v1.9.0) (2025-05-10)
+
+
+### ✨ Features
+
+* 增加Docker安装方式以及Docker构建工作流 ([#424](https://github.com/KarinJS/Karin/issues/424)) ([f58417d](https://github.com/KarinJS/Karin/commit/f58417d4593f74b710a5072f5aacdcc8c3d07fab))
+
 ## [1.8.13](https://github.com/KarinJS/Karin/compare/core-v1.8.12...core-v1.8.13) (2025-05-09)
 
 
