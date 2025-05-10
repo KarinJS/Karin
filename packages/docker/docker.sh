@@ -52,7 +52,7 @@ install_karin(){
     -e TZ=Asia/Shanghai \
     -e PORT="$PORT" \
     -p $PORT:$PORT \
-    -v /opt/karin:/app \
+    -v /opt/karin:/app/karin \
     $DOCKER_IMAGE
     if ! grep -q "alias karin=" ~/.bashrc; then
         echo "alias karin='docker exec -it karin karin'" >> ~/.bashrc
