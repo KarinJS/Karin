@@ -5,6 +5,10 @@ on:
     types: [opened, reopened, synchronize]
   workflow_dispatch: # 允许手动触发
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   publish-temp:
     runs-on: ubuntu-latest
@@ -15,16 +19,11 @@ jobs:
         with:
           fetch-depth: 0 # 获取完整历史记录，用于生成版本号
 
-      - name: 安装node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: "https://registry.npmjs.org"
-
       - name: 安装pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 9
+          run_install: true
 
       - name: 获取当前提交哈希
         run: |
@@ -34,11 +33,8 @@ jobs:
           echo "SHORT_COMMIT_HASH=$SHORT_COMMIT_HASH" >> $GITHUB_ENV
           echo "REPO_URL=https://github.com/${{ github.repository }}/tree/$COMMIT_HASH" >> $GITHUB_ENV
 
-      - name: 安装依赖
-        run: pnpm install
-
       - name: 编译
-        run: pnpm build:all && cd packages/core && npm pkg delete peerDependencies
+        run: pnpm build:all && cd packages/core && pnpm pkg delete peerDependencies
         id: build
         continue-on-error: true
 
@@ -64,7 +60,7 @@ jobs:
               PNPM_INSTALL_CMD="pnpm add ${ACTUAL_INSTALL_URL} -w"
           else
               # 尝试从npm格式提取
-              NPM_URL=$(grep -oP 'npm i \`\Khttps://pkg\.pr\.new/[^\`]+' pkg-output.txt | head -n 1 || echo "")
+              NPM_URL=$(grep -oP 'pnpm i \`\Khttps://pkg\.pr\.new/[^\`]+' pkg-output.txt | head -n 1 || echo "")
               if [ ! -z "$NPM_URL" ]; then
                   PNPM_INSTALL_CMD="pnpm add ${NPM_URL} -w"
                   ACTUAL_INSTALL_URL="$NPM_URL"
@@ -93,71 +89,19 @@ jobs:
           cat pkg-output.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
-      - name: 发布 PR 评论
+      - name: 发布/更新 PR 评论
         if: github.event_name == 'pull_request'
         uses: thollander/actions-comment-pull-request@v3
         with:
           pr-number: ${{ github.event.pull_request.number }}
+          comment-tag: execution
+          mode: recreate
           github-token: ${{ secrets.GITHUB_TOKEN  }}
           message: |
             你可以通过以下命令安装该版本：
             ```
             ${{ steps.publish_pkg.outputs.pnpm_install_cmd }}
             ```
-
-      - name: 删除机器人评论
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            // 查找机器人评论的函数
-            async function findBotComments(issueNumber) {
-              if (!issueNumber) return [];
-              const comments = await github.rest.issues.listComments({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issueNumber,
-              });
-              return comments.data.filter((comment) =>
-                comment.body.includes('pnpm add')
-              );
-            }
-
-            // 创建或更新评论
-            async function createOrUpdateComment(issueNumber) {
-              if (!issueNumber) {
-                console.log('No issue number provided. Cannot post or update comment.');
-                return;
-              }
-
-              // 获取所有机器人评论
-              const botComments = await findBotComments(issueNumber);
-
-              // 如果评论数超过3条，删除最旧的评论
-              if (botComments.length >= 3) {
-                // 按创建时间排序，旧的在前
-                const commentsToDelete = botComments
-                  .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-                  .slice(0, botComments.length - 2); // 删除最旧的，保留2条旧评论+1条新评论=3条
-                
-                for (const comment of commentsToDelete) {
-                  await github.rest.issues.deleteComment({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    comment_id: comment.id
-                  });
-                  console.log(`删除了旧评论 ID: ${comment.id}`);
-                }
-              }
-            }
-
-            // 只处理PR情况
-            if (context.issue.number) {
-              await createOrUpdateComment(context.issue.number);
-            } else {
-              console.log('No issue number found. Cannot post comment.');
-            }
 
       - name: 上传NPM包信息
         uses: actions/upload-artifact@v4
