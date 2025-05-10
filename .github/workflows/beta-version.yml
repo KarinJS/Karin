@@ -60,7 +60,7 @@ jobs:
           cat pkg-output.txt
 
           # 使用 grep 和 sed 提取 URL
-          ACTUAL_INSTALL_URL=$(grep -oE 'https://pkg\.pr\.new/[^[:space:]`]+' pkg-output.txt | head -n 1 || echo "")
+          ACTUAL_INSTALL_URL=$(grep -oE 'https://pkg\.pr\.new/[^[:space:]]+' pkg-output.txt | head -n 1 || echo "")
 
           if [ ! -z "$ACTUAL_INSTALL_URL" ]; then
             PNPM_INSTALL_CMD="pnpm add ${ACTUAL_INSTALL_URL} -w"
@@ -117,7 +117,7 @@ jobs:
                 issue_number: issueNumber,
               });
               return comments.data.filter((comment) =>
-                comment.body.includes('## Published Packages')
+                comment.body.includes('pnpm add')
               );
             }
 
