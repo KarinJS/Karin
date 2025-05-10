@@ -53,11 +53,11 @@ jobs:
       - name: 上传core构建产物
         uses: actions/upload-artifact@v4
         with:
-          name: coore
+          name: core
           path: |
             packages/core/dist
             packages/core/default
-            packages/core/CHANGELOG.md"
+            packages/core/CHANGELOG.md
             packages/core/README.md
             packages/core/package.json
 
@@ -133,7 +133,7 @@ jobs:
       - name: 导入构建产物
         uses: actions/download-artifact@v4
         with:
-          name: cli
+          name: create-karin
           path: ./
 
       - name: 发布到 NPM
@@ -146,8 +146,8 @@ jobs:
       - name: 生成发布摘要
         run: |
           echo "## 发布信息 :" >> $GITHUB_STEP_SUMMARY
-          echo "包名: \`${{ steps.cli.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "版本号: \`${{ steps.cli.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "包名: \`${{ steps.create-karin.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "版本号: \`${{ steps.create-karin.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
 
   syncn:
     runs-on: ubuntu-latest

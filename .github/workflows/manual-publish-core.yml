@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: '要发布的版本号 (例如: 1.0.0)'
+        description: "要发布的版本号 (例如: 1.0.0)"
         required: true
         type: string
 
@@ -48,4 +48,4 @@ jobs:
         run: |
           echo "## 发布信息 :" >> $GITHUB_STEP_SUMMARY
           echo "包名: \`${{ steps.publish-to-npm.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "版本号: \`${{ teps.publish-to-npm.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "版本号: \`${{ steps.publish-to-npm.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
