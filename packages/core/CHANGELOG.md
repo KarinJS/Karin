@@ -1,5 +1,17 @@
 # 更新日志
 
+## [1.9.0](https://github.com/KarinJS/Karin/compare/core-v1.8.13...core-v1.9.0) (2025-05-10)
+
+
+### ✨ Features
+
+* 增加Docker安装方式以及Docker构建工作流 ([#424](https://github.com/KarinJS/Karin/issues/424)) ([f58417d](https://github.com/KarinJS/Karin/commit/f58417d4593f74b710a5072f5aacdcc8c3d07fab))
+
+
+### 🎡 Continuous Integration
+
+* 优化ci ([#428](https://github.com/KarinJS/Karin/issues/428)) ([75fe5cb](https://github.com/KarinJS/Karin/commit/75fe5cb5a33b59e0089a39e540602202eb2c675b))
+
 ## [1.8.13](https://github.com/KarinJS/Karin/compare/core-v1.8.12...core-v1.8.13) (2025-05-09)
 
 
