@@ -58,7 +58,7 @@ jobs:
           ls -la
           
           # 将标准输出和标准错误都重定向到文件
-          pnpm dlx pkg-pr-new publish --json output.json --comment=off --compact --packageManager=pnpm './packages/core' './packages/create-karin' './packages/cli' > pkg-output.txt 2>&1
+          pnpx pkg-pr-new publish --compact './packages/core' './packages/create-karin' './packages/cli' --json output.json --comment=off > pkg-output.txt 2>&1
 
           # 显示文件内容和状态
           echo "pkg-output.txt 文件状态:"

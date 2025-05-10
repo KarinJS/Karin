@@ -2,31 +2,32 @@
   "name": "create-karin",
   "version": "1.1.4",
   "description": "CLI tool for creating Karin projects",
+  "keywords": [
+    "karin",
+    "cli",
+    "create-karin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarinJS/Karin.git"
+  },
+  "license": "MIT",
+  "author": "",
   "type": "module",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "bin": {
     "create-karin": "dist/index.mjs"
   },
-  "engines": {
-    "node": ">=18"
-  },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
-  },
+  "files": [
+    "dist",
+    "templates"
+  ],
   "scripts": {
-    "dev": "tsx src/index.ts",
     "build": "vite build",
+    "dev": "tsx src/index.ts",
     "pub": "npm publish --access public"
   },
-  "keywords": [
-    "karin",
-    "cli",
-    "create-karin"
-  ],
-  "author": "",
-  "license": "MIT",
   "dependencies": {
     "kolorist": "^1.8.0",
     "prompts": "^2.4.2"
@@ -41,8 +42,11 @@
     "tsup": "^8.0.1",
     "typescript": "^5.3.3"
   },
-  "files": [
-    "dist",
-    "templates"
-  ]
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
 }
