@@ -6,6 +6,10 @@
     "cli",
     "karin"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarinJS/Karin.git"
+  },
   "license": "MIT",
   "author": "",
   "type": "module",

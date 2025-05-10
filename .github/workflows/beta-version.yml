@@ -1,4 +1,4 @@
-name: publish-minimal-repro
+name: beta-version
 
 on:
   pull_request:
@@ -53,35 +53,35 @@ jobs:
         id: publish_pkg
         run: |
           # 将标准输出和标准错误都重定向到文件
-          pnpm dlx pkg-pr-new publish --json output.json --comment=update --compact --packageManager=pnpm './packages/core' > pkg-output.txt 2>&1
+          pnpm dlx pkg-pr-new publish --json output.json --comment=off --compact --packageManager=pnpm './packages/core' > pkg-output.txt 2>&1
 
           # 显示输出内容以便在日志中查看
           echo "命令输出内容："
           cat pkg-output.txt
 
-          # 提取安装URL并转换为pnpm格式
-          INSTALL_URL=$(grep -E "npm i https://pkg.pr.new" pkg-output.txt | sed 's/.*npm i //' || echo "")
-
-          if [ ! -z "$INSTALL_URL" ]; then
-            # 获取仓库名和短哈希
-            REPO_NAME=$(basename ${{ github.repository }})
-            # 生成简化的安装URL
-            SIMPLIFIED_URL="https://pkg.pr.new/node-karin@${SHORT_COMMIT_HASH}"
-            PNPM_INSTALL_CMD="pnpm add ${SIMPLIFIED_URL} -w"
+          ACTUAL_INSTALL_URL=$(grep -oP 'https://pkg\.pr\.new/[^\s`]+' pkg-output.txt | head -n 1 || echo "")
+          if [ ! -z "$ACTUAL_INSTALL_URL" ]; then
+              PNPM_INSTALL_CMD="pnpm add ${ACTUAL_INSTALL_URL} -w"
           else
-            PNPM_INSTALL_CMD="未找到安装命令"
+              # 尝试从npm格式提取
+              NPM_URL=$(grep -oP 'npm i \`\Khttps://pkg\.pr\.new/[^\`]+' pkg-output.txt | head -n 1 || echo "")
+              if [ ! -z "$NPM_URL" ]; then
+                  PNPM_INSTALL_CMD="pnpm add ${NPM_URL} -w"
+                  ACTUAL_INSTALL_URL="$NPM_URL"
+              else
+                  PNPM_INSTALL_CMD="未找到安装命令"
+                  ACTUAL_INSTALL_URL="未找到安装URL"
+              fi
           fi
 
           echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
-          echo "install_url=$SIMPLIFIED_URL" >> $GITHUB_OUTPUT
+          echo "install_url=$ACTUAL_INSTALL_URL" >> $GITHUB_OUTPUT
 
       - name: 生成发布摘要
         run: |
           # 在工作流摘要中添加信息
           echo "## Published Packages :package:" >> $GITHUB_STEP_SUMMARY
-          echo "commit: [\`${{ env.SHORT_COMMIT_HASH }}\`](${{ env.REPO_URL }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "use pnpm:" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "${{ steps.publish_pkg.outputs.pnpm_install_cmd }}" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
@@ -93,67 +93,24 @@ jobs:
           cat pkg-output.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
-      - name: 发布PR评论
+      - name: 发布 PR 评论
+        if: github.event_name == 'pull_request'
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          pr-number: ${{ github.event.pull_request.number }}
+          github-token: ${{ secrets.GITHUB_TOKEN  }}
+          message: |
+            你可以通过以下命令安装该版本：
+            ```
+            ${{ steps.publish_pkg.outputs.pnpm_install_cmd }}
+            ```
+
+      - name: 删除机器人评论
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fs = require('fs');
-            const output = JSON.parse(fs.readFileSync('output.json', 'utf8'));
-
-            // 获取提交哈希
-            let sha;
-            try {
-              sha = context.payload.pull_request.head.sha;
-            } catch (error) {
-              console.log('无法获取提交哈希，使用环境变量中的值');
-            }
-
-            // 如果无法从上下文获取SHA，则使用环境变量中的值
-            const shortSha = sha ? sha.substring(0, 7) : '${{ env.SHORT_COMMIT_HASH }}';
-            const commitUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-
-            // 获取安装URL
-            let installUrl = '';
-            for (const pkg of output.packages) {
-              installUrl = pkg.url;
-              break; // 只取第一个包的URL
-            }
-
-            // 简化安装URL格式为 包名@短哈希
-            const repoName = context.repo.repo; // 获取仓库名
-            const simplifiedUrl = `https://pkg.pr.new/node-karin@${shortSha}`;
-
-            // 获取Stackblitz链接
-            let stackblitzUrl = '';
-            for (const template of output.templates) {
-              stackblitzUrl = template.url;
-              break; // 只取第一个模板的URL
-            }
-
-            // 获取当前中国标准时间
-            const now = new Date();
-            // 转换为北京时间 (UTC+8)
-            now.setHours(now.getHours() + 8);
-            const cstTime = now.toISOString().replace('T', ' ').substring(0, 19);
-
-            // 构建与摘要类似的评论内容
-            const body = `## Published Packages :package:
-
-            commit: [\`${shortSha}\`](${commitUrl})
-
-            ${stackblitzUrl ? `[Open in Stackblitz](${stackblitzUrl})` : ''}
-
-            use pnpm:
-            \`\`\`
-            pnpm add ${simplifiedUrl} -w
-            \`\`\`
-
-            pack time: <code>${cstTime} (CST)</code>`;
-
-            const botCommentIdentifier = '## Published Packages';
-
             // 查找机器人评论的函数
             async function findBotComments(issueNumber) {
               if (!issueNumber) return [];
@@ -163,7 +120,7 @@ jobs:
                 issue_number: issueNumber,
               });
               return comments.data.filter((comment) =>
-                comment.body.includes(botCommentIdentifier)
+                comment.body.includes('pnpm add')
               );
             }
 
@@ -173,19 +130,10 @@ jobs:
                 console.log('No issue number provided. Cannot post or update comment.');
                 return;
               }
-              
+
               // 获取所有机器人评论
               const botComments = await findBotComments(issueNumber);
-              
-              // 创建新评论
-              const newComment = await github.rest.issues.createComment({
-                issue_number: issueNumber,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: body,
-              });
-              console.log(`创建了新评论 ID: ${newComment.data.id}`);
-              
+
               // 如果评论数超过3条，删除最旧的评论
               if (botComments.length >= 3) {
                 // 按创建时间排序，旧的在前
@@ -204,22 +152,11 @@ jobs:
               }
             }
 
-            // 记录发布信息到控制台
-            async function logPublishInfo() {
-              console.log('\n' + '='.repeat(50));
-              console.log('Publish Information');
-              console.log('='.repeat(50));
-              console.log(`\nInstall URL: ${installUrl}`);
-              console.log(`\nCommit URL: ${commitUrl}`);
-              console.log('\n' + '='.repeat(50));
-            }
-
             // 只处理PR情况
             if (context.issue.number) {
               await createOrUpdateComment(context.issue.number);
             } else {
               console.log('No issue number found. Cannot post comment.');
-              await logPublishInfo();
             }
 
       - name: 上传NPM包信息
