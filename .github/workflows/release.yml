@@ -8,11 +8,18 @@ on:
 permissions:
   contents: write
   pull-requests: write
+
 jobs:
   # 设置 release-please 任务
   release-please:
     # 设置任务运行环境为 ubuntu-latest
     runs-on: ubuntu-latest
+    outputs:
+      core: ${{ steps.release.outputs['packages/core--release_created'] }}
+      cli: ${{ steps.release.outputs['packages/cli--release_created'] }}
+      create-karin: ${{ steps.release.outputs['packages/create-karin--release_created'] }}
+      web: ${{ steps.release.outputs['packages/web--release_created'] }}
+
     steps:
       # 使用 release-please-action 动作来自动创建发布 PR
       - uses: googleapis/release-please-action@v4
@@ -20,63 +27,133 @@ jobs:
         with:
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
+
+  build:
+    runs-on: ubuntu-latest
+    needs: release-please
+    if: ${{ needs.release-please.outputs.core || needs.release-please.outputs.cli || needs.release-please.outputs.create-karin || needs.release-please.outputs.web }}
+    steps:
       - name: 检出代码
         uses: actions/checkout@v4
-        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/cli--release_created'] || steps.release.outputs['packages/create-karin--release_created'] || steps.release.outputs['packages/web--release_created'] }}
-
-      - name: 设置 node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: "https://registry.npmjs.org"
-        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/cli--release_created'] || steps.release.outputs['packages/create-karin--release_created'] || steps.release.outputs['packages/web--release_created'] }}
 
       - name: 设置 pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 9
-        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/cli--release_created'] || steps.release.outputs['packages/create-karin--release_created'] || steps.release.outputs['packages/web--release_created'] }}
-
-      # 安装所有依赖
-      - name: 安装依赖
-        run: pnpm install
-        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/create-karin--release_created'] || steps.release.outputs['packages/web--release_created'] }}
+          run_install: true
 
       # 编译
       - name: 编译
         run: pnpm build
-        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/create-karin--release_created'] || steps.release.outputs['packages/web--release_created'] }}
 
       # cp README.md 到 core 目录
       - name: 复制 README.md 到 core 目录
         run: cp README.md packages/core
-        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/web--release_created'] }}
+
+      - name: 上传core构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: coore
+          path: |
+            packages/core/dist
+            packages/core/default
+            packages/core/CHANGELOG.md"
+            packages/core/README.md
+            packages/core/package.json
+
+      - name: 上传cli构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli
+          path: |
+            packages/cli/index.js
+            packages/cli/package.json
+
+      - name: 上传create-karin构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: create-karin
+          path: |
+            packages/create-karin/dist
+            packages/create-karin/templates
+            packages/create-karin/package.json
+
+  publish-core:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: 导入构建产物
+        uses: actions/download-artifact@v4
+        with:
+          name: core
+          path: ./
 
       # 发布 core 包
-      - name: 发布 core 包
-        if: ${{ steps.release.outputs['packages/core--release_created'] || steps.release.outputs['packages/web--release_created'] }}
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-        working-directory: packages/core
-        run: pnpm run pub
+      - name: 发布到 NPM
+        id: core
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{secrets.NPM_TOKEN}}
+          access: public
+
+      - name: 生成发布摘要
+        run: |
+          echo "## 发布信息 :" >> $GITHUB_STEP_SUMMARY
+          echo "包名: \`${{ steps.core.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "版本号: \`${{ teps.core.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+
+  publish-cli:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: 导入构建产物
+        uses: actions/download-artifact@v4
+        with:
+          name: cli
+          path: ./
 
       # 发布 cli 包
-      - name: 发布 cli 包
-        if: ${{ steps.release.outputs['packages/cli--release_created'] }}
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-        working-directory: packages/cli
-        run: pnpm run pub
+      - name: 发布到 NPM
+        id: cli
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{secrets.NPM_TOKEN}}
+          access: public
 
-      # 发布 create-karin 包
-      - name: 发布 create-karin 包
-        if: ${{ steps.release.outputs['packages/create-karin--release_created'] }}
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-        working-directory: packages/create-karin
-        run: pnpm run pub
+      - name: 生成发布摘要
+        run: |
+          echo "## 发布信息 :" >> $GITHUB_STEP_SUMMARY
+          echo "包名: \`${{ steps.cli.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "版本号: \`${{ teps.cli.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
 
-      - name: Sync repo status
+  publish-create-karin:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: 导入构建产物
+        uses: actions/download-artifact@v4
+        with:
+          name: cli
+          path: ./
+
+      - name: 发布到 NPM
+        id: create-karin
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{secrets.NPM_TOKEN}}
+          access: public
+
+      - name: 生成发布摘要
+        run: |
+          echo "## 发布信息 :" >> $GITHUB_STEP_SUMMARY
+          echo "包名: \`${{ steps.cli.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "版本号: \`${{ teps.cli.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+
+  syncn:
+    runs-on: ubuntu-latest
+    needs: [release-please, build, publish-core, publish-cli, publish-create-karin]
+    steps:
+      - name: 同步仓库状态
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: sync.yml

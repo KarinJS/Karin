@@ -17,34 +17,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # 检出代码
-      - uses: actions/checkout@v4
-      
-      # 配置Node环境
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: "https://registry.npmjs.org"
-      
+      - name: 检出代码
+        uses: actions/checkout@v4
+
       # 安装pnpm
       - name: 配置pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 8
-      
-      # 安装项目依赖
-      - name: 安装依赖
-        run: pnpm install
-      
+          version: 9
+          run_install: true
+
       # 构建项目
       - name: 构建项目
         run: pnpm build
-      
+
       # 更新版本号
       - name: 更新版本号
-        run: cd packages/core && npm pkg set version=${{ inputs.version }} && npm pkg delete peerDependencies
-      
+        run: cd packages/core && pnpm pkg set version=${{ inputs.version }} && pnpm pkg delete peerDependencies
+
       # 发布到npm
       - name: 发布到NPM
-        run: cd packages/core && pnpm pub
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        id: publish-to-npm
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          package: packages/core
+          token: ${{ secrets.NPM_TOKEN }}
+          access: public
+
+      - name: 生成发布摘要
+        run: |
+          echo "## 发布信息 :" >> $GITHUB_STEP_SUMMARY
+          echo "包名: \`${{ steps.publish-to-npm.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "版本号: \`${{ teps.publish-to-npm.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY

@@ -18,7 +18,6 @@ const entry = [
   'src/root.ts',
   'src/start/index.ts',
   'src/start/app.ts',
-  'src/start/index.ts',
 ]
 
 export default defineConfig({
