@@ -354,11 +354,9 @@ export const createAccordionPro = (
             <Button
               size='sm'
               color='danger'
-              variant='flat'
+              variant='solid'
+              as='div'
               onPress={() => {
-                /**
-                 * 执行自定义删除操作，同步更新fields和localData
-                 */
                 handleRemove(index)
               }}
               onMouseDown={(e) => {
@@ -405,7 +403,7 @@ export const createAccordionPro = (
         <Button
           size='sm'
           color='primary'
-          variant='flat'
+          variant='solid'
           onPress={handleAddItem}
         >
           添加新卡片

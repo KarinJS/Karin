@@ -62,6 +62,11 @@ export const createInput = (
       <HeroInput
         {...options}
         {...registerOptions}
+        description={
+          <p className="text-xs text-default-500 mb-1 break-words w-full max-w-[300px]">
+            {options.description}
+          </p>
+        }
         className={componentClassName || 'w-full max-w-[300px]'}
         autoFocus={false}
         ref={(el) => {
