@@ -1,7 +1,7 @@
 FROM node:lts-slim
 
 # 安装pnpm
-RUN npm install -g pnpm
+RUN npm install -g pnpm@^9
 
 # 设置工作目录
 WORKDIR /app
