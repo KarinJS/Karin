@@ -39,7 +39,7 @@ check_docker() {
         return 0
     else
         echo "正在安装 Docker..."
-        bash -c "$(curl -fsSL https://get.docker.com)"
+        curl -fsSL https://get.docker.com | bash
         echo "Docker 安装完成"
     fi
 }
