@@ -208,6 +208,8 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
                     src={plugin.author?.avatar || 'https://avatar.vercel.sh/plugin'}
                     fallback={<FaUser />}
                     className='bg-default-100 border-white'
+                    color={['default', 'primary', 'secondary', 'success', 'warning', 'danger'][Math.floor(Math.random() * 6)] as
+                      'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger'}
                   />
                   <div>
                     <h3 className='text-xl font-semibold text-default-900'>{plugin.local.name}</h3>
@@ -234,47 +236,47 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
                   {/* 插件信息卡片 */}
                   <div className='grid grid-cols-3 gap-3'>
                     {/* 版本信息 */}
-                    <div className='group relative overflow-hidden rounded-xl bg-gradient-to-br from-primary-100/50 to-primary-200/50 dark:from-primary-900/50 dark:to-primary-800/50 p-4 transition-all hover:shadow-md cursor-help'>
+                    <div className='group relative overflow-hidden rounded-xl bg-primary-100/70 p-4 transition-all hover:shadow-md cursor-help'>
                       <div className='relative z-10'>
-                        <div className='text-xs text-primary-600/70 dark:text-primary-400/90 mb-1 flex items-center gap-1'>
+                        <div className='text-xs text-primary-600/80 mb-1 flex items-center gap-1'>
                           版本
-                          <span className='opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-primary-600/50 dark:text-primary-400/50'>
+                          <span className='opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-primary-600/60'>
                             (还没写好哦)
                           </span>
                         </div>
-                        <div className='text-sm text-primary-700 dark:text-primary-300 flex items-center gap-1.5'>
+                        <div className='text-sm text-primary-700 flex items-center gap-1.5'>
                           v{plugin.local.version || 'latest'}
                           <span className='opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100'>
                             {plugin.local.version ? '✨' : '🆕'}
                           </span>
                         </div>
                       </div>
-                      <div className='absolute right-2 top-2 text-primary-300/40 dark:text-primary-600/30 transition-transform group-hover:rotate-12'>
+                      <div className='absolute right-2 top-2 text-primary-400/50 transition-transform group-hover:rotate-12'>
                         <IoCloudDownloadOutline size={24} />
                       </div>
-                      <div className='absolute inset-0 bg-primary-400/0 group-hover:bg-primary-400/5 transition-colors duration-300' />
+                      <div className='absolute inset-0 bg-primary-400/0 group-hover:bg-primary-400/10 transition-colors duration-300' />
                     </div>
 
                     {/* 类型信息 */}
-                    <div className='group relative overflow-hidden rounded-xl bg-gradient-to-br from-success-100/50 to-success-200/50 dark:from-success-900/50 dark:to-success-800/50 p-4 transition-all hover:shadow-md cursor-help'>
+                    <div className='group relative overflow-hidden rounded-xl bg-success-100/70 p-4 transition-all hover:shadow-md cursor-help'>
                       <div className='relative z-10'>
-                        <div className='text-xs text-success-600/70 dark:text-success-400/90 mb-1 flex items-center gap-1'>
+                        <div className='text-xs text-success-600/80 mb-1 flex items-center gap-1'>
                           类型
-                          <span className='opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-success-600/50 dark:text-success-400/50'>
+                          <span className='opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-success-600/60'>
                             (敬请期待~)
                           </span>
                         </div>
-                        <div className='text-sm text-success-700 dark:text-success-300 flex items-center gap-1.5'>
+                        <div className='text-sm text-success-700 flex items-center gap-1.5'>
                           <span className='capitalize'>{plugin.local.type}</span>
                           <span className='opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100'>
                             {plugin.local.type === 'npm' ? '📦' : plugin.local.type === 'app' ? '🚀' : '🔌'}
                           </span>
                         </div>
                       </div>
-                      <div className='absolute right-2 top-2 text-success-300/40 dark:text-success-600/30 transition-transform group-hover:rotate-12'>
+                      <div className='absolute right-2 top-2 text-success-400/50 transition-transform group-hover:rotate-12'>
                         <FaUser size={24} />
                       </div>
-                      <div className='absolute inset-0 bg-success-400/0 group-hover:bg-success-400/5 transition-colors duration-300' />
+                      <div className='absolute inset-0 bg-success-400/0 group-hover:bg-success-400/10 transition-colors duration-300' />
                     </div>
 
                     {/* 主页链接 */}
@@ -283,30 +285,28 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
                         <Link
                           href={plugin.local.home}
                           isExternal
-                          className='group relative overflow-hidden rounded-xl bg-gradient-to-br from-warning-100/50 to-warning-200/50 dark:from-warning-900/50 dark:to-warning-800/50 p-4 transition-all hover:shadow-md hover:scale-[1.02] active:scale-[0.98]'
+                          className='group relative overflow-hidden rounded-xl bg-warning-100/70 p-4 transition-all hover:shadow-md hover:scale-[1.02] active:scale-[0.98]'
                         >
                           <div className='relative z-10'>
-                            <div className='text-xs text-warning-600/70 dark:text-warning-400/90 mb-1'>主页</div>
-                            <div className='text-sm text-warning-700 dark:text-warning-300 flex items-center gap-1'>
+                            <div className='text-xs text-warning-600/80 mb-1'>主页</div>
+                            <div className='text-sm text-warning-700 flex items-center gap-1'>
                               访问主页
                               <IoCloudDownloadOutline className='text-xs transition-transform group-hover:translate-x-0.5' />
                             </div>
                           </div>
-                          <div className='absolute right-2 top-2 text-warning-300/40 dark:text-warning-600/30 transition-transform group-hover:rotate-12'>
+                          <div className='absolute right-2 top-2 text-warning-400/50 transition-transform group-hover:rotate-12'>
                             <IoCloudDownloadOutline size={24} />
                           </div>
-                          <div className='absolute inset-0 bg-warning-400/0 group-hover:bg-warning-400/5 transition-colors duration-300' />
+                          <div className='absolute inset-0 bg-warning-400/0 group-hover:bg-warning-400/10 transition-colors duration-300' />
                         </Link>
                       )
                       : (
-                        <div className='group relative overflow-hidden rounded-xl bg-gradient-to-br from-warning-100/50 to-warning-200/50 dark:from-warning-900/50 dark:to-warning-800/50 p-4'>
+                        <div className='group relative overflow-hidden rounded-xl bg-warning-100/70 p-4'>
                           <div className='relative z-10'>
-                            <div className='text-xs text-warning-600/70 dark:text-warning-400/90 mb-1'>主页</div>
-                            <div className='text-sm text-warning-700 dark:text-warning-300'>
-                              暂无
-                            </div>
+                            <div className='text-xs text-warning-600/80 mb-1'>主页</div>
+                            <div className='text-sm text-warning-700'>暂无</div>
                           </div>
-                          <div className='absolute right-2 top-2 text-warning-300/40 dark:text-warning-600/30'>
+                          <div className='absolute right-2 top-2 text-warning-400/50'>
                             <IoCloudDownloadOutline size={24} />
                           </div>
                         </div>
@@ -362,7 +362,7 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
               {/* 底部操作区 */}
               <div className='flex flex-col gap-4'>
                 {/* 简短免责声明 */}
-                <p className='text-center text-xs text-default-400'>
+                <p className='font-bold text-center text-sm text-default-700'>
                   安装即表示您同意承担使用风险并遵守相关开源协议
                 </p>
 
