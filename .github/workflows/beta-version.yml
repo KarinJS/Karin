@@ -53,7 +53,7 @@ jobs:
         id: publish_pkg
         run: |
           # 将标准输出和标准错误都重定向到文件
-          pnpm dlx pkg-pr-new publish --json output.json --comment=update --compact --packageManager=pnpm './packages/core' > pkg-output.txt 2>&1
+          pnpm dlx pkg-pr-new publish --json output.json --comment=off --compact --packageManager=pnpm './packages/core' './packages/create-karin' './packages/cli' > pkg-output.txt 2>&1
 
           # 显示输出内容以便在日志中查看
           echo "命令输出内容："
@@ -81,9 +81,8 @@ jobs:
         run: |
           # 在工作流摘要中添加信息
           echo "## Published Packages :package:" >> $GITHUB_STEP_SUMMARY
-          echo "commit: [\`${{ env.SHORT_COMMIT_HASH }}\`](${{ env.REPO_URL }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "use pnpm:" >> $GITHUB_STEP_SUMMARY
+          echo "本体：" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "${{ steps.publish_pkg.outputs.pnpm_install_cmd }}" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
