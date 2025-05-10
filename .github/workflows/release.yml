@@ -171,3 +171,11 @@ jobs:
           curl -X PUT "https://registry-direct.npmmirror.com/-/package/@karinjs/cli/syncs"
           # 同步 create-karin 包
           curl -X PUT "https://registry-direct.npmmirror.com/-/package/create-karin/syncs"
+
+      # 当core包发布成功时触发Docker构建
+      - name: 触发Docker构建
+        if: ${{ needs.release-please.outputs.core == 'true' }}
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: docker.yaml
+          token: ${{ secrets.RELEASE }}
