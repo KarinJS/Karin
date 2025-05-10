@@ -34,7 +34,7 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) =>
         {
           name: info.id,
           type: info.type,
-          config: componentResult
+          config: componentResult,
         }
       )
 
@@ -112,7 +112,7 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) =>
       </Card>
       <Card
         shadow='sm'
-        className='flex-1 rounded-lg shadow-md mb-2 border border-default-200 dark:border-gray-600 overflow-auto'
+        className='flex-1 rounded-lg shadow-md mb-2 border border-default-200 dark:border-gray-600 overflow-auto no-scrollbar'
       >
         <FormProvider {...methods}>
           <Form

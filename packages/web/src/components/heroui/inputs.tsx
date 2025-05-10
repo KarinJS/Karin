@@ -62,6 +62,11 @@ export const createInput = (
       <HeroInput
         {...options}
         {...registerOptions}
+        description={
+          <p className='text-xs text-default-500 mb-1 break-words w-full max-w-[300px]'>
+            {options.description}
+          </p>
+        }
         className={componentClassName || 'w-full max-w-[300px]'}
         autoFocus={false}
         ref={(el) => {
@@ -186,34 +191,43 @@ export const createInputGroup = (
                   overflowX: 'hidden',
                 }}
               >
-                {value.map((inputValue: string, index: number) => (
-                  <div key={index} className='grid grid-cols-[1fr,auto] items-center gap-1'>
-                    <HeroInput
-                      {...templateOptions}
-                      className={`${componentClassName || 'w-full'}`}
-                      value={inputValue}
-                      onChange={(e) => handleInputChange(index, e.target.value)}
-                      validate={(val) => {
-                        if (!val) {
-                          if (templateOptions.isRequired) {
-                            return '( • ̀ω•́ )✧ 不能为空哦~'
-                          }
-                          return true
-                        }
-                        return validator?.(val)
-                      }}
-                    />
-                    <Button
-                      variant='light'
-                      color='danger'
-                      onPress={() => handleDeleteInput(index)}
-                      className='hover:bg-red-50 transition-colors duration-200 p-1 min-w-0 h-7 w-7 rounded-full'
-                      aria-label='删除输入框'
-                    >
-                      <IoCloseCircle size={16} />
-                    </Button>
-                  </div>
-                ))}
+                {value.length === 0
+                  ? (
+                    <div className='col-span-full flex flex-col items-center justify-center text-default-400 h-full w-full'>
+                      <p className='text-sm'>暂无配置项</p>
+                      <p className='text-xs'>点击右上角的 “添加” 按钮开始添加配置</p>
+                    </div>
+                  )
+                  : (
+                    value.map((inputValue: string, index: number) => (
+                      <div key={index} className='grid grid-cols-[1fr,auto] items-center gap-1'>
+                        <HeroInput
+                          {...templateOptions}
+                          className={`${componentClassName || 'w-full'}`}
+                          value={inputValue}
+                          onChange={(e) => handleInputChange(index, e.target.value)}
+                          validate={(val) => {
+                            if (!val) {
+                              if (templateOptions.isRequired) {
+                                return '( • ̀ω•́ )✧ 不能为空哦~'
+                              }
+                              return true
+                            }
+                            return validator?.(val)
+                          }}
+                        />
+                        <Button
+                          variant='light'
+                          color='danger'
+                          onPress={() => handleDeleteInput(index)}
+                          className='hover:bg-red-50 transition-colors duration-200 p-1 min-w-0 h-7 w-7 rounded-full'
+                          aria-label='删除输入框'
+                        >
+                          <IoCloseCircle size={16} />
+                        </Button>
+                      </div>
+                    ))
+                  )}
               </div>
             </>
           )
