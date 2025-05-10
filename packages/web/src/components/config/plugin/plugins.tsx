@@ -71,48 +71,61 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) =>
     <div className='flex flex-col w-full h-screen' key={info.id}>
       <Card
         shadow='sm'
-        className='border-b mb-1 rounded-lg border-gray-300 dark:border-gray-600'
+        className='border-b mb-1 rounded-lg border-default-200 hover:shadow-md transition-all duration-200 overflow-hidden'
       >
-        <div className='p-4 flex flex-col gap-2'>
-          {/* 头部信息区域 */}
-          <div className='flex items-center'>
-            <Avatar src={info?.author?.[0]?.avatar || `https://avatar.vercel.sh/${info?.name || 'ikenxuan'}`} size='sm' radius='full' />
-            <div className='flex flex-col ml-3'>
-              <div className='text-sm font-medium text-default-900'>
-                {`${info.name || '插件名称'}(${info.id})`}
-              </div>
-              <div className='text-xs text-default-500'>{info.description || '这个人很懒，什么都没写...'}</div>
-            </div>
-          </div>
+        {/* 顶部描述区域 */}
+        <div className='p-4'>
+          <div className='flex flex-col lg:flex-row lg:items-center gap-3'>
+            {/* 头像和信息区域 */}
+            <div className='flex items-start flex-grow min-w-0'>
+              <Avatar
+                src={info?.author?.[0]?.avatar || `https://avatar.vercel.sh/${info?.name || 'ikenxuan'}`}
+                size='sm'
+                radius='full'
+                className='flex-shrink-0'
+              />
 
-          {/* 操作按钮区域 */}
-          <div className='flex gap-2 justify-center sm:justify-end border-t border-gray-100 dark:border-gray-600 pt-3 mt-2'>
-            <ConfigDetailModal
-              showJsonModal={showJsonModal}
-              setShowJsonModal={setShowJsonModal}
-              handleFormResult={handleFormResult}
-            />
-            <Button
-              type='submit'
-              color='primary'
-              variant='solid'
-              radius='md'
-              size='sm'
-              className={`${BUTTON_COMMON_STYLES}`}
-              onPress={() => {
-                const form = document.getElementById('dashboard-form')
-                if (form instanceof HTMLFormElement) return form.requestSubmit()
-                console.error('表单元素不存在')
-              }}
-            >
-              保存
-            </Button>
+              <div className='flex flex-col ml-3 flex-grow min-w-0'>
+                <div className='text-sm font-medium text-default-900 truncate'>
+                  {`${info.name || '插件名称'}(${info.id})`}
+                </div>
+                <div className='text-xs text-default-600 line-clamp-2 lg:line-clamp-1'>
+                  {info.description || '这个人很懒，什么都没写...'}
+                </div>
+              </div>
+            </div>
+
+            {/* 操作按钮区域 */}
+            <div className='flex gap-2 justify-center sm:justify-end lg:justify-end lg:border-0 lg:pt-0 lg:mt-0 border-t border-default-200 pt-3 mt-2'>
+              <ConfigDetailModal
+                showJsonModal={showJsonModal}
+                setShowJsonModal={setShowJsonModal}
+                handleFormResult={handleFormResult}
+              />
+
+              {/* 保存按钮 - 使用Hero UI的Button但保留原有功能 */}
+              <Button
+                type='submit'
+                color='primary'
+                variant='solid'
+                radius='md'
+                size='sm'
+                className={`${BUTTON_COMMON_STYLES} px-4 py-2 flex items-center`}
+                onPress={() => {
+                  const form = document.getElementById('dashboard-form')
+                  if (form instanceof HTMLFormElement) return form.requestSubmit()
+                  console.error('表单元素不存在')
+                }}
+              >
+                保存
+              </Button>
+            </div>
           </div>
         </div>
       </Card>
       <Card
         shadow='sm'
-        className='flex-1 rounded-lg shadow-md mb-2 border border-default-200 dark:border-gray-600 overflow-auto no-scrollbar'
+        className='flex-1 rounded-lg shadow-md mb-2 border border-default-200 overflow-auto no-scrollbar'
       >
         <FormProvider {...methods}>
           <Form

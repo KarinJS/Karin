@@ -44,8 +44,8 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
   return (
     <>
       <Button
-        color='default'
-        variant='solid'
+        color='primary'
+        variant='flat'
         size='md'
         onPress={() => {
           const form = document.getElementById('dashboard-form')
@@ -71,23 +71,23 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
         size='2xl'
         scrollBehavior='inside'
         classNames={{
-          base: 'bg-white dark:bg-gray-900',
-          header: 'border-b border-gray-100 dark:border-gray-800',
-          footer: 'border-t border-gray-100 dark:border-gray-800',
+          base: 'bg-default-50',
+          header: 'border-b border-default',
+          footer: 'border-t border-default',
         }}
       >
         <ModalContent>
           <ModalHeader className='shrink-0'>
             <div className='flex items-center py-1 px-1'>
               <div className='flex items-center gap-2.5'>
-                <div className='w-7 h-7 flex items-center justify-center rounded-lg bg-blue-50/80 dark:bg-blue-900/20 transition-colors'>
-                  <VscJson className='text-base text-blue-600/90 dark:text-blue-400' />
+                <div className='w-7 h-7 flex items-center justify-center rounded-lg bg-primary-100/50 transition-colors'>
+                  <VscJson className='text-base text-primary' />
                 </div>
                 <div>
-                  <h2 className='text-[15px] font-medium text-gray-900 dark:text-gray-100 leading-[18px]'>
+                  <h2 className='text-[15px] font-medium text-default-900 leading-[18px]'>
                     配置详情
                   </h2>
-                  <p className='text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-[14px]'>
+                  <p className='text-xs font-light text-default-500 dark:text-default-400 mt-0.5 leading-[14px]'>
                     当前配置信息
                   </p>
                 </div>
@@ -95,54 +95,54 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
             </div>
           </ModalHeader>
           <ModalBody>
-            <pre className='bg-gray-50 dark:bg-gray-800 p-4 rounded-lg overflow-auto text-sm font-mono'>
+            <pre className='bg-default-100 p-4 rounded-lg overflow-auto text-sm font-mono'>
               {JSON.stringify(print, null, 2)}
             </pre>
           </ModalBody>
           <ModalFooter>
             <div className='flex justify-end gap-2'>
               <Button
-                color='default'
-                variant='bordered'
+                color='primary'
+                variant='ghost'
                 size='md'
                 onPress={() => {
                   console.log('配置详情:', print)
                   toast.success('打印成功 请查看控制台')
                 }}
-                className={`${BUTTON_COMMON_STYLES} hover:bg-gray-50 border-default-200 dark:hover:bg-gray-800`}
+                className={`${BUTTON_COMMON_STYLES}`}
                 startContent={<VscOutput className='text-lg' />}
               >
                 正常打印
               </Button>
               <Button
-                color='default'
-                variant='bordered'
+                color='primary'
+                variant='ghost'
                 size='md'
                 onPress={() => {
                   console.log('配置详情:', JSON.stringify(print, null, 2))
                   toast.success('打印成功 请查看控制台')
                 }}
-                className={`${BUTTON_COMMON_STYLES} hover:bg-gray-50 border-default-200 dark:hover:bg-gray-800`}
+                className={`${BUTTON_COMMON_STYLES}`}
                 startContent={<VscSymbolString className='text-lg' />}
               >
                 纯文本打印
               </Button>
               <Button
-                color='default'
-                variant='bordered'
+                color='primary'
+                variant='ghost'
                 size='md'
                 onPress={handleCopyConfig}
-                className={`${BUTTON_COMMON_STYLES} hover:bg-gray-50 border-default-200 dark:hover:bg-gray-800`}
+                className={`${BUTTON_COMMON_STYLES}`}
                 startContent={<VscCopy className='text-lg' />}
               >
                 复制
               </Button>
               <Button
                 color='primary'
-                variant='flat'
+                variant='solid'
                 size='md'
                 onPress={() => setShowJsonModal(false)}
-                className={`${BUTTON_COMMON_STYLES} bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400`}
+                className={`${BUTTON_COMMON_STYLES}`}
               >
                 关闭
               </Button>
