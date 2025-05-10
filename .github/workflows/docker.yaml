@@ -1,12 +1,11 @@
 name: Build Docker
 
 on:
-  # 自己改
   push:
     branches:
       - main
     tags:
-      - 'v*'
+      - "v*"
   workflow_dispatch:
 
 permissions:
@@ -65,7 +64,7 @@ jobs:
       - uses: docker/build-push-action@v6
         id: build
         with:
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
           labels: ${{ steps.meta.outputs.labels }}
           file: packages/docker/Dockerfile
           # 按需修改
