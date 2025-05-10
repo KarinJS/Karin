@@ -52,30 +52,35 @@ jobs:
       - name: 发布临时NPM包
         id: publish_pkg
         run: |
+          # 显示当前目录
+          echo "当前工作目录: $(pwd)"
+          echo "文件列表:"
+          ls -la
+          
           # 将标准输出和标准错误都重定向到文件
           pnpm dlx pkg-pr-new publish --json output.json --comment=off --compact --packageManager=pnpm './packages/core' './packages/create-karin' './packages/cli' > pkg-output.txt 2>&1
 
-          # 显示输出内容以便在日志中查看
-          echo "命令输出内容："
-          cat pkg-output.txt
+          # 显示文件内容和状态
+          echo "pkg-output.txt 文件状态:"
+          ls -la pkg-output.txt
+          echo "文件内容:"
+          cat pkg-output.txt || echo "无法显示文件内容"
 
-          ACTUAL_INSTALL_URL=$(grep -oP 'https://pkg\.pr\.new/[^\s`]+' pkg-output.txt | head -n 1 || echo "")
-          if [ ! -z "$ACTUAL_INSTALL_URL" ]; then
-              PNPM_INSTALL_CMD="pnpm add ${ACTUAL_INSTALL_URL} -w"
+          # 提取所有包的安装URL
+          INSTALL_URLS=$(grep -oP 'https://pkg\.pr\.new/[^\s`]+' pkg-output.txt || echo "")
+          if [ ! -z "$INSTALL_URLS" ]; then
+              # 为每个包生成安装命令
+              PNPM_INSTALL_CMD=""
+              while read -r url; do
+                  PNPM_INSTALL_CMD+="pnpm add ${url} -w\n"
+              done <<< "$INSTALL_URLS"
           else
-              # 尝试从npm格式提取
-              NPM_URL=$(grep -oP 'npm i \`\Khttps://pkg\.pr\.new/[^\`]+' pkg-output.txt | head -n 1 || echo "")
-              if [ ! -z "$NPM_URL" ]; then
-                  PNPM_INSTALL_CMD="pnpm add ${NPM_URL} -w"
-                  ACTUAL_INSTALL_URL="$NPM_URL"
-              else
-                  PNPM_INSTALL_CMD="未找到安装命令"
-                  ACTUAL_INSTALL_URL="未找到安装URL"
-              fi
+              PNPM_INSTALL_CMD="未找到安装命令"
           fi
 
-          echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
-          echo "install_url=$ACTUAL_INSTALL_URL" >> $GITHUB_OUTPUT
+          echo "pnpm_install_cmd<<EOF" >> $GITHUB_OUTPUT
+          echo "$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: 生成发布摘要
         run: |
