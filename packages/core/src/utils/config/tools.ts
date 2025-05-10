@@ -117,13 +117,17 @@ export const getCacheCfg = <T> (
   }
 
   /** 如果缓存不存在 需要遍历keys生成事件key */
-  keys.forEach((v, index) => {
-    if (!cache[v]) return
+  for (let i = 0; i < keys.length; i++) {
+    const v = keys[i]
+    if (!cache[v]) {
+      continue
+    }
+
     /**
      * 如果是索引0 说明有键有对应的缓存
      * - 2025-05-09 03:19:37 使用更严谨的判断方法
      */
-    if (index === 0 && v === key) {
+    if (i === 0 && v === key) {
       initCount(count, v)
       return cache[v]
     }
@@ -138,7 +142,7 @@ export const getCacheCfg = <T> (
     cache[key] = cache[v]
     initCount(count, key)
     return cache[key]
-  })
+  }
 
   return cache.default
 }
@@ -150,21 +154,21 @@ export const getCacheCfg = <T> (
  * @param cache 缓存
  */
 export const clearCache = <T extends GroupsObjectValue | PrivatesObjectValue> (
-  data: Record<string, T>,
   count: ReturnType<typeof createCount>,
-  cache: Record<string, T>
+  staticCache: Record<string, T>,
+  dynamicCache: Record<string, T>
 ) => {
   setInterval(() => {
     Object.keys(count).forEach((key) => {
       if (count[key].count - count[key].start < 10) {
         /** 如果源数据中存在这个key 这个key在缓存中是不允许删除的 */
-        if (data[key]) {
+        if (staticCache[key]) {
           delete count[key]
           return
         }
 
         delete count[key]
-        delete cache[key]
+        delete dynamicCache[key]
       } else {
         count[key].start = count[key].count
       }

@@ -11,14 +11,16 @@ import type { Groups, GroupsObjectValue } from '@/types/config'
 /** 缓存调用统计 */
 const count = createCount()
 
-/** groups.json 缓存 */
-let cache: Record<string, GroupsObjectValue>
+/** groups.json 静态缓存(也就是文件原始数据) */
+let staticCache: Record<string, GroupsObjectValue>
+/** groups.json 动态缓存(obj映射 动态生成) */
+let dynamicCache: Record<string, GroupsObjectValue>
 
 /**
  * 获取群聊和频道配置
  * @param keys 键组
  */
-const getCfg = (keys: string[]) => getCacheCfg(cache, count, keys)
+const getCfg = (keys: string[]) => getCacheCfg(dynamicCache, count, keys)
 
 /**
  * 判断是否为旧版本配置文件
@@ -80,19 +82,20 @@ const initGroups = async (dir: string) => {
   const file = `${dir}/${name}`
 
   const data = requireFileSync<Groups>(file, { type: 'json' })
-  const DATA = isOld(data) ? migrate(file, data) : format(data)
-  cache = DATA
+  staticCache = isOld(data) ? migrate(file, data) : format(data)
+  dynamicCache = format(data)
 
   watch<Groups>(file, async (old, data) => {
-    cache = format(data)
+    staticCache = isOld(data) ? migrate(file, data) : format(data)
+    dynamicCache = staticCache
 
-    const options = { file: name, old, data: cache }
+    const options = { file: name, old, data: dynamicCache }
     listeners.emit(FILE_CHANGE, options)
     listeners.emit(`${FILE_CHANGE}:${name}`, options)
   }, { type: 'json' })
 
   /** 定时清理缓存 */
-  clearCache<GroupsObjectValue>(DATA, count, cache)
+  clearCache<GroupsObjectValue>(count, staticCache, dynamicCache)
 }
 
 /**
@@ -102,7 +105,7 @@ const initGroups = async (dir: string) => {
  */
 export const groups = () => {
   return {
-    get: () => cache,
+    get: () => dynamicCache,
   }
 }
 
