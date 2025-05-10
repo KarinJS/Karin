@@ -4,7 +4,7 @@ import lodash from 'lodash'
 import { isTs } from '@/env'
 import { createAddEnv } from './env'
 import { satisfies } from '@/utils/system'
-import { pluginDir as dir } from '@/root'
+import { karinPathPlugins } from '@/root'
 import { filesByExt, formatPath } from '@/utils/fs/path'
 import { writeEnv } from '@/utils/config/file/env'
 import { requireFile, requireFileSync } from '@/utils/fs/require'
@@ -303,13 +303,13 @@ export const getPluginsInfo = async (
       const [type, name] = v.split(':')
 
       if (type === 'app') {
-        const file = path.join(dir, name)
+        const file = path.join(karinPathPlugins, name)
         await getAppInfo(info, file, name, ext, isForce)
         return
       }
 
       if (type === 'git' || type === 'root') {
-        const file = type === 'root' ? process.cwd() : path.join(dir, name)
+        const file = type === 'root' ? process.cwd() : path.join(karinPathPlugins, name)
         await getGitInfo(info, file, name, ext, isForce, env)
         return
       }
@@ -348,7 +348,7 @@ const collectAppPlugins = async (files: fs.Dirent[], list: string[]): Promise<vo
     files.map(async (v) => {
       if (!v.isDirectory()) return
       if (!v.name.startsWith('karin-plugin-')) return
-      if (fs.existsSync(`${dir}/${v.name}/package.json`)) return
+      if (fs.existsSync(`${karinPathPlugins}/${v.name}/package.json`)) return
 
       list.push(`app:${v.name}`)
     })
@@ -365,10 +365,10 @@ const collectGitPlugins = async (files: fs.Dirent[], list: string[]): Promise<vo
     files.map(async (v) => {
       if (!v.isDirectory()) return
       if (!v.name.startsWith('karin-plugin-')) return
-      if (!fs.existsSync(path.join(dir, v.name, 'package.json'))) return
+      if (!fs.existsSync(path.join(karinPathPlugins, v.name, 'package.json'))) return
 
       /** 验证版本兼容性 */
-      const pkg = await requireFile<PkgData>(path.join(dir, v.name, 'package.json'))
+      const pkg = await requireFile<PkgData>(path.join(karinPathPlugins, v.name, 'package.json'))
       if (pkg?.karin?.engines?.karin && !satisfies(pkg.karin.engines.karin, process.env.KARIN_VERSION)) {
         const msg = `[getPlugins][git] ${v.name} 要求 node-karin 版本为 ${pkg.karin.engines.karin}，当前不符合要求，跳过加载插件`
         isInit && setTimeout(() => logger.error(msg), 1000)
@@ -418,6 +418,7 @@ const NPM_EXCLUDE_LIST = [
  * @param list 结果列表（会被修改）
  */
 const collectNpmPlugins = async (list: string[]): Promise<void> => {
+  logger.debug('[collectNpmPlugins] 开始收集NPM插件')
   const pkg = await requireFile('./package.json', { force: true })
 
   /** 获取所有依赖并排除不需要的 */
@@ -510,7 +511,7 @@ export const getPlugins = async <T extends boolean = false> (
   const list: string[] = []
   const files = type === 'npm'
     ? []
-    : fs.existsSync(dir) ? await fs.promises.readdir(dir, { withFileTypes: true }) : []
+    : fs.existsSync(karinPathPlugins) ? await fs.promises.readdir(karinPathPlugins, { withFileTypes: true }) : []
 
   /** 根据类型收集插件 */
   switch (type) {

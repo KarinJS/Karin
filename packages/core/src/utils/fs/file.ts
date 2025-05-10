@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import axios from 'axios'
 import path from 'node:path'
-import { basePath } from '@/root'
+import { karinPathBase } from '@/root'
 import { promisify } from 'node:util'
 import { pipeline } from 'node:stream'
 
@@ -78,7 +78,7 @@ export const absPath = (file: string, absPath = true, prefix = false) => {
 export const createPluginDir = async (name: string, files?: string[]) => {
   if (!Array.isArray(files)) files = ['config', 'data', 'resources']
   if (files.length === 0) return
-  const pluginPath = path.join(basePath, name)
+  const pluginPath = path.join(karinPathBase, name)
   if (!fs.existsSync(pluginPath)) await fs.promises.mkdir(pluginPath, { recursive: true })
 
   await Promise.all(files.map(file => {

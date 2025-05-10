@@ -30,19 +30,26 @@ export const filesByExt = (
   const files = fs.readdirSync(filePath, { withFileTypes: true })
   const list: string[] = []
   if (!Array.isArray(ext)) ext = [ext]
-  files.forEach(v => {
-    if (v.isDirectory()) return
-    if (ext.includes(path.extname(v.name))) {
+
+  const allFiles = (dir: string, entry: fs.Dirent) => {
+    /** 如果是目录则递归查找 */
+    if (entry.isDirectory()) {
+      const subFiles = filesByExt(path.join(dir, entry.name), ext, returnType)
+      list.push(...subFiles)
+    } else if (ext.includes(path.extname(entry.name))) {
+      /** 如果是文件则添加到列表 */
       if (returnType === 'name') {
-        list.push(v.name)
+        list.push(entry.name)
       } else if (returnType === 'rel') {
-        const file = path.resolve(filePath, v.name)
+        const file = path.resolve(dir, entry.name)
         list.push(path.relative(process.cwd(), file))
       } else if (returnType === 'abs') {
-        list.push(formatPath(path.resolve(filePath, v.name)))
+        list.push(formatPath(path.resolve(dir, entry.name)))
       }
     }
-  })
+  }
+
+  files.forEach(entry => allFiles(filePath, entry))
   return list
 }
 
