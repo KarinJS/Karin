@@ -59,14 +59,19 @@ jobs:
           echo "命令输出内容："
           cat pkg-output.txt
 
-          # 使用 grep 和 sed 提取 URL
-          ACTUAL_INSTALL_URL=$(grep -oE 'https://pkg\.pr\.new/[^[:space:]]+' pkg-output.txt | head -n 1 || echo "")
-
+          ACTUAL_INSTALL_URL=$(grep -oP 'https://pkg\.pr\.new/[^\s`]+' pkg-output.txt | head -n 1 || echo "")
           if [ ! -z "$ACTUAL_INSTALL_URL" ]; then
-            PNPM_INSTALL_CMD="pnpm add ${ACTUAL_INSTALL_URL} -w"
+              PNPM_INSTALL_CMD="pnpm add ${ACTUAL_INSTALL_URL} -w"
           else
-            PNPM_INSTALL_CMD="未找到安装命令"
-            ACTUAL_INSTALL_URL="未找到安装URL"
+              # 尝试从npm格式提取
+              NPM_URL=$(grep -oP 'npm i \`\Khttps://pkg\.pr\.new/[^\`]+' pkg-output.txt | head -n 1 || echo "")
+              if [ ! -z "$NPM_URL" ]; then
+                  PNPM_INSTALL_CMD="pnpm add ${NPM_URL} -w"
+                  ACTUAL_INSTALL_URL="$NPM_URL"
+              else
+                  PNPM_INSTALL_CMD="未找到安装命令"
+                  ACTUAL_INSTALL_URL="未找到安装URL"
+              fi
           fi
 
           echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
@@ -80,7 +85,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "use pnpm:" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "$PNPM_INSTALL_CMD" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.publish_pkg.outputs.pnpm_install_cmd }}" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
