@@ -1,4 +1,3 @@
-/* eslint-disable @stylistic/indent */
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -687,13 +686,13 @@ const AboutUs = () => {
               ].map((feature, index) => (
                 <motion.div
                   key={index}
-                  className='bg-white dark:bg-black rounded-lg overflow-hidden shadow-sm border border-default-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500 group'
+                  className='bg-default-100/50 rounded-lg overflow-hidden shadow-sm border border-default-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500 group'
                   variants={item}
                   whileHover={{ y: -5, transition: { type: 'spring', stiffness: 300, damping: 10 } }}
                   transition={{ duration: 0.2 }}
                 >
                   <div className='p-6'>
-                    <div className='rounded-full w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-gray-900 mb-3 group-hover:scale-110 transition-transform'>
+                    <div className='rounded-full w-10 h-10 flex items-center justify-center bg-default-100 mb-3 group-hover:scale-110 transition-transform'>
                       {feature.icon}
                     </div>
                     <h3 className='text-base font-bold mb-1'>{feature.title}</h3>
@@ -798,7 +797,7 @@ const AboutUs = () => {
             <div className='items-center'>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                 <motion.div
-                  className='bg-white dark:bg-black p-6 rounded-xl shadow-sm hover:shadow-lg border border-default-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500'
+                  className='bg-default-100/50 p-6 rounded-xl shadow-sm hover:shadow-lg border border-default-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500'
                   whileHover={{ y: -5 }}
                   transition={{ type: 'spring', stiffness: 300 }}
                 >
@@ -806,7 +805,14 @@ const AboutUs = () => {
                   <h3 className='text-xl font-bold mb-2'>社区交流</h3>
                   <p className='text-gray-600 dark:text-gray-400 mb-4'>加入我们的用户交流群，与其他开发者分享经验。</p>
                   <div className='gap-2 grid grid-cols-2'>
-                    <Button as='a' href='#' size='sm' variant='shadow' color='secondary' radius='full'>
+                    <Button
+                      as='a'
+                      href='https://discord.gg/nT467eb3'
+                      size='sm'
+                      variant='shadow'
+                      color='secondary'
+                      radius='full'
+                    >
                       Discord
                     </Button>
                     <Button
@@ -823,7 +829,7 @@ const AboutUs = () => {
                 </motion.div>
 
                 <motion.div
-                  className='bg-white dark:bg-black p-6 rounded-xl shadow-sm hover:shadow-lg border border-default-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500'
+                  className='bg-default-100/50 p-6 rounded-xl shadow-sm hover:shadow-lg border border-default-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500'
                   whileHover={{ y: -5 }}
                   transition={{ type: 'spring', stiffness: 300 }}
                 >
