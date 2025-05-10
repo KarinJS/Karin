@@ -6,10 +6,13 @@ RUN npm install -g pnpm
 # 设置工作目录
 WORKDIR /app
 
-# 安装karin Cli工具
-RUN npm install -g @karinjs/cli
 # 初始化项目
-RUN karin init && \
+RUN apt update && \
+  apt install ffmpeg -y && \
+  apt clean && \
+  npm install -g @karinjs/cli && \
+  karin init && \
+  pnpm add @karinjs/plugin-puppeteer -w && \
   pnpm install
 
 COPY packages/docker/start.sh /app/start.sh
