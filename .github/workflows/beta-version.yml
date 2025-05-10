@@ -52,13 +52,28 @@ jobs:
       - name: 发布临时NPM包
         id: publish_pkg
         run: |
+          # 先单独测试core包
+          echo "测试单独发布core包..."
+          pnpm dlx pkg-pr-new publish './packages/core' --compact --json output.json --comment=off > core-output.txt 2>&1 || echo "core包发布失败"
+          cat core-output.txt
+          
+          # 测试create-karin包
+          echo "测试单独发布create-karin包..."
+          pnpm dlx pkg-pr-new publish './packages/create-karin' --compact --json output.json --comment=off > karin-output.txt 2>&1 || echo "create-karin包发布失败"
+          cat karin-output.txt
+          
+          # 如果单独发布成功再尝试多包发布
+          if [ -s core-output.txt ] && [ -s karin-output.txt ]; then
+            echo "尝试多包发布..."
+            pnpm dlx pkg-pr-new publish './packages/core' './packages/create-karin' './packages/cli' --compact --json output.json --comment=off > pkg-output.txt 2>&1
+          fi
           # 显示当前目录
           echo "当前工作目录: $(pwd)"
           echo "文件列表:"
           ls -la
           
           # 将标准输出和标准错误都重定向到文件
-          pnpx pkg-pr-new publish --compact './packages/core' './packages/create-karin' './packages/cli' --json output.json --comment=off > pkg-output.txt 2>&1
+          pnpm dlx pkg-pr-new publish --compact './packages/core' './packages/create-karin' './packages/cli' --json output.json --comment=off > pkg-output.txt 2>&1
 
           # 显示文件内容和状态
           echo "pkg-output.txt 文件状态:"
