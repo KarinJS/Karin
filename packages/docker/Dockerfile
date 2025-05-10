@@ -6,22 +6,12 @@ RUN npm install -g pnpm
 # 设置工作目录
 WORKDIR /app
 
-# 创建基本目录结构
-RUN mkdir -p \
-  @karinjs/logs \
-  @karinjs/config \
-  @karinjs/data \
-  @karinjs/resource \
-  @karinjs/temp/console \
-  @karinjs/temp/html \
-  plugins/karin-plugin-example
-
+# 安装karin Cli工具
+RUN npm install -g @karinjs/cli
 # 初始化项目
-RUN pnpm install node-karin@latest && \
-  npx karin init && \
+RUN karin init && \
   pnpm install
 
-RUN npm install -g @karinjs/cli
 COPY packages/docker/start.sh /app/start.sh
 
 # 数据卷
