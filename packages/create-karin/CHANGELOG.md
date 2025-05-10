@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.5](https://github.com/KarinJS/Karin/compare/create-karin-v1.1.4...create-karin-v1.1.5) (2025-05-10)
+
+
+### 🐛 Bug Fixes
+
+* ci ([#425](https://github.com/KarinJS/Karin/issues/425)) ([6954767](https://github.com/KarinJS/Karin/commit/69547673a85cce500e589c815ac362ada599bc41))
+
 ## [1.1.4](https://github.com/KarinJS/Karin/compare/create-karin-v1.1.3...create-karin-v1.1.4) (2025-05-07)
 
 
