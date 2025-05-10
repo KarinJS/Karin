@@ -6,6 +6,7 @@ import { createCheckboxGroup } from '../../heroui/checkboxs'
 import { createInput, createInputGroup } from '../../heroui/inputs'
 import { createCron } from './createCron'
 import { Accordion as HeroAccordion, AccordionItem as HeroAccordionItem } from '@heroui/accordion'
+import { Button } from '@heroui/button'
 import { createErrorCard } from '../../heroui/error'
 import { useState, useEffect } from 'react'
 
@@ -13,6 +14,7 @@ import type { JSX } from 'react'
 import type { DefaultValues, Value } from './values'
 import type { Control, UseFormRegister } from 'react-hook-form'
 import type { AccordionProProps, AccordionProps, ComponentConfig } from 'node-karin'
+import { toast } from 'react-hot-toast'
 
 /**
  * 表单控制器类型
@@ -300,6 +302,11 @@ export const createAccordionPro = (
     const newLocalData = [...localData]
     newLocalData.splice(index, 1)
     setLocalData(newLocalData)
+
+    /**
+     * 显示删除成功的通知提示
+     */
+    toast.success('已删除一个子项')
   }
 
   /**
@@ -336,7 +343,7 @@ export const createAccordionPro = (
         {...itemOptions}
         key={id}
         title={
-          <div className='flex justify-between items-center w-full pr-4'>
+          <div className='flex justify-between items-center w-full'>
             <span>{
               data &&
                 data[index]
@@ -344,25 +351,12 @@ export const createAccordionPro = (
                 : '手风琴默认标题'
             }
             </span>
-            <div
-              role='button'
-              tabIndex={0}
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-
-                /**
-                 * 执行自定义删除操作，同步更新fields和localData
-                 */
-                handleRemove(index)
-              }}
-              onTouchStart={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-              }}
-              onTouchEnd={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
+            <Button
+              size='sm'
+              color='danger'
+              variant='solid'
+              as='div'
+              onPress={() => {
                 handleRemove(index)
               }}
               onMouseDown={(e) => {
@@ -376,10 +370,9 @@ export const createAccordionPro = (
                   handleRemove(index)
                 }
               }}
-              className='px-2 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors cursor-pointer'
             >
               删除
-            </div>
+            </Button>
           </div>
         }
         subtitle={
@@ -407,13 +400,14 @@ export const createAccordionPro = (
     <div className={className || 'flex flex-col gap-4 max-w-[calc(100%-1rem)] mx-2'} key={key}>
       <div className='flex justify-between items-center'>
         <span className='text-default-500 text-md mt-2'>{label || '手风琴'}</span>
-        <button
-          type='button'
-          onClick={handleAddItem}
-          className='px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
+        <Button
+          size='sm'
+          color='primary'
+          variant='solid'
+          onPress={handleAddItem}
         >
           添加新卡片
-        </button>
+        </Button>
       </div>
       <HeroAccordion
         key={key}

@@ -39,7 +39,7 @@ export const createSwitch = (
   }
 
   return (
-    <div className={className || 'inline-flex p-1 w-full sm:w-auto'}>
+    <div className={className || 'inline-flex p-1 w-full sm:w-auto'} key={key}>
       <div
         className='w-full sm:w-[320px] min-h-[100px] relative border border-default-200 rounded-lg hover:bg-default-100 p-0 cursor-pointer'
         onClick={handleContainerClick}
