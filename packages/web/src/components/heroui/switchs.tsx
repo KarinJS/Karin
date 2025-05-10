@@ -63,7 +63,11 @@ export const createSwitch = (
               >
                 {props.description}
               </p>
-              <div className='text-xs text-primary-500 mt-0.5'>
+              <div className={cn(
+                'text-xs mt-0.5',
+                `text-${props.color || 'primary'}`
+              )}
+              >
                 {isDescriptionExpanded ? '点击收起' : '点击展开'}
               </div>
             </div>
