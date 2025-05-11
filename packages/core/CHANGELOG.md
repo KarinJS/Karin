@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.9.1](https://github.com/KarinJS/Karin/compare/core-v1.9.0...core-v1.9.1) (2025-05-11)
+
+
+### ♻️ Code Refactoring
+
+* **core:** 优化插件目录创建逻辑 ([#429](https://github.com/KarinJS/Karin/issues/429)) ([3828411](https://github.com/KarinJS/Karin/commit/382841192b4fe3f91a2797d2118d654a42308d1b))
+
 ## [1.9.0](https://github.com/KarinJS/Karin/compare/core-v1.8.13...core-v1.9.0) (2025-05-10)
 
 
