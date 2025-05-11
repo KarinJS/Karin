@@ -13,7 +13,7 @@ env:
   ALIYUN_REPO: registry.cn-hangzhou.aliyuncs.com/karinjs/karin
 
 jobs:
-  build:
+  build-amd64:
     runs-on: ubuntu-latest
     steps:
       - name: 检出代码
@@ -58,37 +58,75 @@ jobs:
       - uses: docker/build-push-action@v6
         id: build
         with:
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64
           labels: ${{ steps.meta.outputs.labels }}
           file: packages/docker/Dockerfile
-          # 按需修改
-          outputs: type=image,"name=${{ env.DOCKERHUB_REPO }},${{ env.ALIYUN_REPO }},${{ env.GHCR_REPO }}",push-by-digest=true,name-canonical=true,push=true
+          tags: |
+            ${{ env.DOCKERHUB_REPO }}:${{ steps.meta.outputs.version }}-amd64
+            ${{ env.GHCR_REPO }}:${{ steps.meta.outputs.version }}-amd64
+            ${{ env.ALIYUN_REPO }}:${{ steps.meta.outputs.version }}-amd64
+          push: true
 
-      - name: 导出摘要
-        run: |
-          mkdir -p ${{ runner.temp }}/digests
-          digest="${{ steps.build.outputs.digest }}"
-          touch "${{ runner.temp }}/digests/${digest#sha256:}"
+  build-arm64:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
 
-      - name: 上传摘要
-        uses: actions/upload-artifact@v4
+      - name: 设置Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker元数据
+        id: meta
+        uses: docker/metadata-action@v5
         with:
-          name: digests
-          path: ${{ runner.temp }}/digests/*
-          if-no-files-found: error
-          retention-days: 1
+          images: |
+            ${{ env.DOCKERHUB_REPO }}
+            ${{ env.GHCR_REPO }}
+            ${{ env.ALIYUN_REPO }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
 
-  push:
+      - name: 登录DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: 登录GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 登陆 阿里云 镜像仓库
+        uses: docker/login-action@v3
+        with:
+          registry: registry.cn-hangzhou.aliyuncs.com
+          username: ${{ secrets.ALIYUN_USERNAME }}
+          password: ${{ secrets.ALIYUN_PASSWORD }}
+
+      - uses: docker/build-push-action@v6
+        id: build
+        with:
+          platforms: linux/arm64
+          labels: ${{ steps.meta.outputs.labels }}
+          file: packages/docker/Dockerfile
+          tags: |
+            ${{ env.DOCKERHUB_REPO }}:${{ steps.meta.outputs.version }}-arm64
+            ${{ env.GHCR_REPO }}:${{ steps.meta.outputs.version }}-arm64
+            ${{ env.ALIYUN_REPO }}:${{ steps.meta.outputs.version }}-arm64
+          push: true
+
+  create-manifest:
     runs-on: ubuntu-latest
     needs:
-      - build
+      - build-amd64
+      - build-arm64
     steps:
-      - name: 下载摘要
-        uses: actions/download-artifact@v4
-        with:
-          path: ${{ runner.temp }}/digests
-          name: digests
-
       - name: 设置Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -116,7 +154,6 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          # 按需修改
           images: |
             ${{ env.DOCKERHUB_REPO }}
             ${{ env.GHCR_REPO }}
@@ -126,19 +163,27 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
 
-      - name: 创建清单列表并推送
-        working-directory: ${{ runner.temp }}/digests
-        # 按需修改
+      - name: 创建并推送多平台清单
         run: |
-          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf '${{ env.DOCKERHUB_REPO }}@sha256:%s ' *)
-          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf '${{ env.GHCR_REPO }}@sha256:%s ' *)
-          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf '${{ env.ALIYUN_REPO }}@sha256:%s ' *)
+          # 为DockerHub创建清单
+          docker buildx imagetools create \
+            -t ${{ env.DOCKERHUB_REPO }}:${{ steps.meta.outputs.version }} \
+            ${{ env.DOCKERHUB_REPO }}:${{ steps.meta.outputs.version }}-amd64 \
+            ${{ env.DOCKERHUB_REPO }}:${{ steps.meta.outputs.version }}-arm64
+
+          # 为GHCR创建清单
+          docker buildx imagetools create \
+            -t ${{ env.GHCR_REPO }}:${{ steps.meta.outputs.version }} \
+            ${{ env.GHCR_REPO }}:${{ steps.meta.outputs.version }}-amd64 \
+            ${{ env.GHCR_REPO }}:${{ steps.meta.outputs.version }}-arm64
+
+          # 为阿里云创建清单
+          docker buildx imagetools create \
+            -t ${{ env.ALIYUN_REPO }}:${{ steps.meta.outputs.version }} \
+            ${{ env.ALIYUN_REPO }}:${{ steps.meta.outputs.version }}-amd64 \
+            ${{ env.ALIYUN_REPO }}:${{ steps.meta.outputs.version }}-arm64
 
       - name: 检查镜像
-        # 按需修改
         run: |
           docker buildx imagetools inspect ${{ env.DOCKERHUB_REPO }}:${{ steps.meta.outputs.version }}
           docker buildx imagetools inspect ${{ env.GHCR_REPO }}:${{ steps.meta.outputs.version }}
