@@ -56,7 +56,7 @@ export const pkgLoads = async (
   }
 
   /** 创建插件基本文件夹 - 这个需要立即执行 */
-  await createPluginDir(pkg.name.replace(/\//g, '-'), files)
+  await createPluginDir(pkg.name, files)
   debug('debug: createPluginDir', pkg.name, files)
 
   /** 收集所有app加载的Promise */

@@ -49,7 +49,7 @@ export const downloadFile = async<T extends boolean = false> (
  * @param savePath 保存路径
  * @param param axios参数
  */
-export const downFile = async (fileUrl: string, savePath: string, param: AxiosRequestConfig = {}) => {
+export const downFile = async (fileUrl: string, savePath: string, param: AxiosRequestConfig = {}): Promise<DownloadFileResult<boolean>> => {
   return downloadFile(fileUrl, savePath, { ...param, returnBoolean: true })
 }
 
@@ -60,7 +60,7 @@ export const downFile = async (fileUrl: string, savePath: string, param: AxiosRe
  * @param prefix - 添加file://前缀 默认为false
  * @returns 标准化后的路径
  */
-export const absPath = (file: string, absPath = true, prefix = false) => {
+export const absPath = (file: string, absPath = true, prefix = false): string => {
   file = file.replace(/\\/g, '/')
   if (file.startsWith('file://')) file = file.replace(sep, '')
 
@@ -75,11 +75,21 @@ export const absPath = (file: string, absPath = true, prefix = false) => {
  * @param name 插件名称
  * @param files 需要创建的文件夹列表
  */
-export const createPluginDir = async (name: string, files?: string[]) => {
+export const createPluginDir = async (name: string, files?: string[]): Promise<void> => {
   if (!Array.isArray(files)) files = ['config', 'data', 'resources']
   if (files.length === 0) return
-  const pluginPath = path.join(karinPathBase, name)
-  if (!fs.existsSync(pluginPath)) await fs.promises.mkdir(pluginPath, { recursive: true })
+
+  /** 如果是组织包，优先使用旧版兼容格式(@org-pkg-name) */
+  const isOrgPkg = name.startsWith('@') && name.includes('/')
+  let pluginPath = isOrgPkg
+    ? path.join(karinPathBase, name.replace('/', '-'))
+    : path.join(karinPathBase, name)
+
+  /** 如果是组织包且旧版兼容格式(@org-pkg-name)不存在，则使用新版组织包结构(@org/pkg-name) */
+  if (isOrgPkg && !fs.existsSync(pluginPath)) {
+    const [orgName, pkgName] = name.split('/')
+    pluginPath = path.join(karinPathBase, orgName, pkgName)
+  }
 
   await Promise.all(files.map(file => {
     const filePath = path.join(pluginPath, file)
