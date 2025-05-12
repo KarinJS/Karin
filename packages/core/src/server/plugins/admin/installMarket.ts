@@ -11,7 +11,7 @@ import { getPluginMarket } from '@/plugin/system'
 import { pkgHotReload } from '@/plugin/admin/load'
 
 import type { Response } from 'express'
-import type { KarinPluginType } from '@karinjs/plugins-list'
+import type { KarinPluginType } from '@/types/plugin/market'
 import type { PluginAdminMarketInstall, PluginAdminMarketInstallApp, TaskEntity } from '@/types/task'
 
 /**

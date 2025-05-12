@@ -7,7 +7,7 @@ import { createSuccessResponse, createServerErrorResponse } from '@/server/utils
 import { REDIS_PLUGIN_MARKET_LIST_CACHE_KEY, REDIS_PLUGIN_MARKET_LIST_CACHE_EXPIRE } from '@/env/key/redis'
 
 import type { RequestHandler } from 'express'
-import type { KarinPluginType } from '@karinjs/plugins-list'
+import type { KarinPluginType } from '@/types/plugin/market'
 import type {
   PkgInfo,
   PluginMarketAuthor,

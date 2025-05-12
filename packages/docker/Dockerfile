@@ -1,11 +1,12 @@
-FROM node:lts-slim AS builder
+FROM node:lts-slim
 
 # 安装pnpm和karin cli工具
 RUN npm install -g pnpm@^9 @karinjs/cli
 
 # 初始化项目
-RUN karin init && \
+RUN pnpm init && \
   pnpm install node-karin && \
+  npx karin init && \
   pnpm add @karinjs/plugin-puppeteer -w
 
 # 设置工作目录
@@ -52,7 +53,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   xdg-utils \
   libxkbcommon0 \
   && apt-get clean \
-  && rm -rf /var/lib/apt/lists/* 
+  && rm -rf /var/lib/apt/lists/*
 
 # 复制启动脚本
 COPY packages/docker/start.sh /app/start.sh

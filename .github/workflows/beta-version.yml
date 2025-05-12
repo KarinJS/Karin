@@ -1,8 +1,10 @@
 name: beta-version
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, reopened, synchronize]
+    branches:
+      - main
   workflow_dispatch: # 允许手动触发
 
 permissions:
@@ -90,10 +92,10 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: 发布/更新 PR 评论
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request_target'
         uses: thollander/actions-comment-pull-request@v3
         with:
-          pr-number: ${{ github.event.pull_request.number }}
+          pr-number: ${{ github.event.pull_request_target.number }}
           comment-tag: execution
           mode: recreate
           github-token: ${{ secrets.GITHUB_TOKEN  }}

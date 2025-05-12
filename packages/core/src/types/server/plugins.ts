@@ -1,5 +1,5 @@
 import type { KarinPluginAppsType } from '../plugin'
-import type { KarinPluginType } from '@karinjs/plugins-list'
+import type { KarinPluginType } from '@/types/plugin/market'
 
 /**
  * 基类
