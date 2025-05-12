@@ -52,7 +52,8 @@ install_karin(){
     -e TZ=Asia/Shanghai \
     -e PORT="$PORT" \
     -p $PORT:$PORT \
-    -v /opt/karin:/app/karin \
+    -v /opt/karin:/app \
+    -v /opt/karin/puppteer:${HOME}/.cache/puppeteer \
     $DOCKER_IMAGE
     if ! grep -q "alias karin=" ~/.bashrc; then
         echo "alias karin='docker exec -it karin karin'" >> ~/.bashrc
@@ -61,7 +62,7 @@ install_karin(){
         echo "alias kr='docker exec -it karin karin'" >> ~/.bashrc
     fi
     source ~/.bashrc
-    echo "Karin 安装完成"
+    echo "Karin 安装完成, 安装目录为 /opt/karin"
 }
 
 # 主程序
