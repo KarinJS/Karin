@@ -1,5 +1,13 @@
 # 更新日志
 
+## [1.9.2](https://github.com/KarinJS/Karin/compare/core-v1.9.1...core-v1.9.2) (2025-05-12)
+
+
+### 🐛 Bug Fixes
+
+* close [#407](https://github.com/KarinJS/Karin/issues/407) ([#433](https://github.com/KarinJS/Karin/issues/433)) ([2af7499](https://github.com/KarinJS/Karin/commit/2af74998afc20213b731fa9680fb19a5c87e7937))
+* close [#431](https://github.com/KarinJS/Karin/issues/431) ([3ee87d6](https://github.com/KarinJS/Karin/commit/3ee87d6442ddeb35e82e0b6b28e2ede97ccd1654))
+
 ## [1.9.1](https://github.com/KarinJS/Karin/compare/core-v1.9.0...core-v1.9.1) (2025-05-11)
 
 
