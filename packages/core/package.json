@@ -144,7 +144,7 @@
     "app": "node dist/start/index.mjs",
     "build": "pnpm build:main && pnpm build:module",
     "build:dev": "pnpm build:main",
-    "build:main": "tsc && tsup --config tsup.config.ts",
+    "build:main": "tsc && tsup",
     "build:module": "tsc && tsup --config tsup.config.module.ts",
     "build:types": "tsc && tsup --config tsup.config.types.ts",
     "app:bun": "bun dist/start/index.mjs",
