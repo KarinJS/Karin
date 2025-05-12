@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import { defineConfig } from 'tsup'
+import { builtinModules } from 'node:module'
 import { options } from './tsup.config.base'
 
 /**
@@ -24,10 +25,10 @@ export default defineConfig({
   ...options,
   clean: false,
   splitting: false,
-  format: ['esm'],
   entry,
   treeshake: 'recommended',
   dts: {
+    resolve: true,
     entry: [
       ...entry,
       'src/global.d.ts',

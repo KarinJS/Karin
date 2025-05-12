@@ -349,25 +349,44 @@ const stop = async (): Promise<void> => {
 const restart = async (force?: boolean): Promise<void> => {
   /** 重启前切割日志 */
   rotateLogs()
+  try {
+    const forceRestart = () => {
+      const appName = readPm2Config()?.apps?.[0]?.name || 'karin'
+      execSync(`pm2 delete ${appName}`, { cwd: process.cwd() })
+      execSync(`pm2 start ${pm2Dir}`, { cwd: process.cwd() })
+      console.log('[pm2] 重启成功')
+    }
 
-  console.log('[pm2] 重启中...')
+    console.log('[pm2] 重启中...')
 
-  if (!fs.existsSync(pm2Dir) && !force) {
-    console.log(`[pm2] 配置文件不存在 请检查 ${pm2Dir} 是否存在`)
-    console.log('[pm2] 如果是新项目，请先前台启动生成配置文件: pnpm app')
-    process.exit(1)
+    if (!fs.existsSync(pm2Dir)) {
+      console.log(`[pm2] 配置文件不存在 请检查 ${pm2Dir} 是否存在`)
+      console.log('[pm2] 如果是新项目，请先前台启动生成配置文件: pnpm app')
+      process.exit(1)
+    }
+
+    if (force) {
+      forceRestart()
+      process.exit(0)
+    }
+
+    const appName = readPm2Config()?.apps?.[0]?.name || 'karin'
+    if (!appName) {
+      process.exit(1)
+    }
+
+    /** 先尝试直接重启 */
+    execSync(`pm2 restart ${appName}`, { cwd: process.cwd() })
+    console.log('[pm2] 重启成功')
+    process.exit(0)
+  } catch (error) {
+    console.log('[pm2] 尝试直接重启失败 尝试删除服务并重新启动')
+    const appName = readPm2Config()?.apps?.[0]?.name || 'karin'
+    execSync(`pm2 delete ${appName}`, { cwd: process.cwd() })
+    execSync(`pm2 start ${pm2Dir}`, { cwd: process.cwd() })
+    console.log('[pm2] 重启成功')
+    process.exit(0)
   }
-
-  const appName = force ? 'karin' : readPm2Config()?.apps[0].name
-  if (!appName) {
-    process.exit(1)
-  }
-
-  /** 直接使用重启命令存在问题 */
-  execSync(`pm2 delete ${appName}`, { cwd: process.cwd() })
-  execSync(`pm2 start ${pm2Dir}`, { cwd: process.cwd() })
-  console.log('[pm2] 重启成功')
-  process.exit(0)
 }
 
 export const pm2 = {

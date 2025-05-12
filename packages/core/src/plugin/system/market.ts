@@ -1,6 +1,6 @@
 import { REDIS_PLUGIN_LIST_CACHE_KEY } from '@/env/key'
 import { raceRequest } from '@/utils/request'
-import type { KarinPluginType } from '@karinjs/plugins-list'
+import type { KarinPluginType } from '@/types/plugin/market'
 
 /** 插件源地址列表 */
 const PLUGIN_SOURCES = [
