@@ -35,7 +35,7 @@ export const restart = async (
     return { status: 'success', data: '已发送重启信号' }
   }
 
-  if (process.env.PM2_RESTART === 'false') process.exit()
+  if (process.env.PM2_RESTART !== 'true') process.exit()
 
   if (process.env.pm_id) {
     const { error } = await exec('npx karin rs')
