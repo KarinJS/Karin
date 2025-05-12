@@ -66,6 +66,7 @@ export const restartDirect = async (isPm2 = false) => {
   }
 
   if (process.env.RUNTIME === 'pm2') {
+    if (process.env.PM2_RESTART !== 'true') process.exit()
     await exec('npx karin rs')
     return
   }
@@ -75,6 +76,7 @@ export const restartDirect = async (isPm2 = false) => {
   }
 
   /** 调用pm2启动 */
+  if (process.env.PM2_RESTART !== 'true') process.exit()
   const { error } = await exec('npx karin pm2')
   if (error) throw error
 }
