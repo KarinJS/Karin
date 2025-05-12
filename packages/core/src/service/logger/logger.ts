@@ -94,8 +94,16 @@ export const createLogger = (config?: Partial<LoggerConfig>): Logger => {
         process.stdout.write(`${prefixText} ${message}\n`)
       }
 
-      /** 输出到文件 */
-      state.fileWriter?.write(level, `[${timestamp}][${levelText}] ${message}\n`)
+      /** 输出到文件 - 添加错误处理，防止无限循环 */
+      if (state.fileWriter) {
+        try {
+          state.fileWriter.write(level, `[${timestamp}][${levelText}] ${message}\n`)
+        } catch (err) {
+          /** 错误只输出到控制台，避免无限循环 */
+          const errorMessage = err instanceof Error ? err.message : String(err)
+          process.stdout.write(`${chalk.red(`${state.config.prefix}[${timestamp}][ERROR]`)} 文件写入失败: ${errorMessage}\n`)
+        }
+      }
     }
   }
 

@@ -1,5 +1,7 @@
 packages:
   - packages/*
+  - "!packages/karin-plugin-ts"
+  - "!packages/karin-plugin-js"
 onlyBuiltDependencies:
   - "@heroui/shared-utils"
   - "@karinjs/node-pty"
