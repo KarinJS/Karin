@@ -1,5 +1,8 @@
 FROM node:lts-slim
 
+# 设置工作目录
+WORKDIR /app
+
 # 安装pnpm和karin cli工具
 RUN npm install -g pnpm@^9 @karinjs/cli
 
@@ -9,8 +12,6 @@ RUN pnpm init && \
   npx karin init && \
   pnpm add @karinjs/plugin-puppeteer -w
 
-# 设置工作目录
-WORKDIR /app
 
 # 安装精简的运行时依赖
 RUN apt-get update && apt-get install --no-install-recommends -y \
