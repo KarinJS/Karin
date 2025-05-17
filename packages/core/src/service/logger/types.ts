@@ -192,6 +192,12 @@ export interface LogWriter {
   write (level: LoggerLevel, message: string): void
 
   /**
+   * @description 更新配置
+   * @param newConfig - 新的配置
+   */
+  updateConfig?(newConfig: Partial<FileLogConfig>): void
+
+  /**
    * @description 关闭输出
    */
   close?(): void

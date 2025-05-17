@@ -50,6 +50,7 @@ export const createLogger = (config?: Partial<LoggerConfig>): Logger => {
   const configure = (newConfig: Partial<LoggerConfig>): void => {
     /** 保存旧配置的日志级别 */
     const oldLevel = state.config.level
+    const oldFileConfig = { ...state.config.file }
 
     /** 更新并归一化配置 */
     state.config = normalizeConfig({
@@ -62,8 +63,21 @@ export const createLogger = (config?: Partial<LoggerConfig>): Logger => {
       state.level = state.config.level
     }
 
-    /** 重新设置输出器 */
-    setupWriters()
+    /** 检查文件配置是否有变化 */
+    const fileConfigChanged = JSON.stringify(oldFileConfig) !== JSON.stringify(state.config.file)
+
+    /** 如果文件配置变化较大，需要重建输出器 */
+    if (fileConfigChanged && (
+      oldFileConfig.enabled !== state.config.file.enabled ||
+      oldFileConfig.enableWholeMode !== state.config.file.enableWholeMode ||
+      oldFileConfig.enableFragmentMode !== state.config.file.enableFragmentMode ||
+      oldFileConfig.dir !== state.config.file.dir
+    )) {
+      setupWriters()
+    } else if (state.fileWriter && state.fileWriter.updateConfig) {
+      /** 否则只更新文件输出器配置 */
+      state.fileWriter.updateConfig(state.config.file)
+    }
   }
 
   /**
@@ -130,6 +144,13 @@ export const createLogger = (config?: Partial<LoggerConfig>): Logger => {
     },
     set level (value: LoggerLevel) {
       state.level = value
+
+      // 当直接设置level属性时，同时更新文件日志级别
+      if (state.fileWriter && state.fileWriter.updateConfig) {
+        state.fileWriter.updateConfig({
+          level: value,
+        })
+      }
     },
 
     get config (): LoggerConfig {
