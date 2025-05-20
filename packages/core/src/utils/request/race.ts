@@ -8,10 +8,15 @@ import type {
   StandardResult,
 } from '@/types/utils/request'
 
+interface RaceRequestConfig extends AxiosRequestConfig {
+  /** 响应成功状态码 默认[200] */
+  successCodes?: number[]
+}
+
 /**
  * 竞速请求 返回最先成功响应的数据
  * @param urls - 请求地址数组
- * @param config - 请求配置 默认 { timeout: 10000, method: 'HEAD' }
+ * @param config - 请求配置 默认 { timeout: 10000, method: 'HEAD', successCodes: [200] }
  * @returns 返回最先成功响应的数据
  * @example
  * const urls = ['https://api.github.com', 'https://api.gitee.com']
@@ -22,28 +27,44 @@ import type {
  * const urls = ['https://api.github.com/post', 'https://api.gitee.com/post']
  * const data = await raceRequest(urls, {
  *   method: 'post',
- *   data: { foo: 'bar' }
+ *   data: { foo: 'bar' },
+ *   timeout: 10000,
+ *   successCodes: [200, 201]
  * })
  * console.log(data)
  */
 export const raceRequest = async <R = AxiosRequestConfig, T = any> (
   urls: string[],
-  config: AxiosRequestConfig = {
+  config: RaceRequestConfig = {
     method: 'HEAD',
     timeout: 2000,
+    successCodes: [200],
   }
 ): Promise<AxiosResponse<T, R> | null> => {
-  const requests = urls.map(async url => {
-    try {
-      const response = await axios.request<T>({ ...config, url, timeout: config.timeout || 2000 })
-      return response
-    } catch {
-      return null
-    }
-  })
+  const successCodes = Array.isArray(config.successCodes) && config.successCodes.length > 0 ? config.successCodes : [200]
 
-  const results = await Promise.race(requests)
-  return results
+  const requests = urls.map(
+    url =>
+      new Promise<AxiosResponse<T, R>>((resolve, reject) => {
+        axios
+          .request<T>({ ...config, url, timeout: config.timeout || 2000 })
+          .then(response => {
+            if (successCodes.includes(response.status)) {
+              resolve(response)
+            } else {
+              reject(new Error(`响应状态码 ${response.status} 不在 successCodes 范围内`))
+            }
+          })
+          .catch(reject)
+      })
+  )
+
+  try {
+    const result = await Promise.any(requests)
+    return result
+  } catch {
+    return null
+  }
 }
 
 /**
