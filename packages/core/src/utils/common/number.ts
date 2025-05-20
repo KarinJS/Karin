@@ -160,3 +160,35 @@ export const average = (numbers: number[]): number => {
 export const round = (num: number, decimals: number = 0): number => {
   return Number(Math.round(Number(num + 'e' + decimals)) + 'e-' + decimals)
 }
+
+/**
+ * 判断是否为数字 处理NaN的情况
+ * @param num 需要判断的数字
+ * @param defaultValue 默认值 如果非数字 返回默认值
+ * @returns 处理后的数字
+ * @example isNumber(NaN) // 返回 0
+ *          isNumber(123) // 返回 123
+ *          isNumber('abc', 123) // 返回 123
+ */
+export const isNumber = (num: unknown, defaultValue: number = 0): number => {
+  if (typeof num === 'number') return num
+  return defaultValue
+}
+
+/**
+ * 判断数组中的元素是否为数字
+ * @description 从索引0开始寻找，如果找到数字则返回数字，否则返回默认值
+ * @param arr 需要判断的数组
+ * @param defaultValue 默认值 如果非数字 返回默认值
+ * @returns 数字或默认值
+ * @example isNumberInArray([1, '2', 3], 0) // 返回 1
+ *          isNumberInArray(['1', '2', '3'], 0) // 返回 0
+ */
+export const isNumberInArray = <T = number> (arr: unknown[], defaultValue: number = 0): T => {
+  for (let i = 0; i < arr.length; i++) {
+    const item = arr[i]
+    if (typeof item === 'number') return item as T
+  }
+
+  return defaultValue as T
+}

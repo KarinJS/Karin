@@ -100,6 +100,17 @@ export const defaultConfig: {
       member_disable: [],
     },
     {
+      key: 'global',
+      cd: 0,
+      userCD: 0,
+      mode: 0,
+      alias: [],
+      enable: [],
+      disable: [],
+      member_enable: [],
+      member_disable: [],
+    },
+    {
       key: 'Bot:selfId',
       cd: 0,
       userCD: 0,
@@ -163,6 +174,14 @@ export const defaultConfig: {
   privates: [
     {
       key: 'default',
+      cd: 0,
+      mode: 0,
+      alias: [],
+      enable: [],
+      disable: [],
+    },
+    {
+      key: 'global',
       cd: 0,
       mode: 0,
       alias: [],

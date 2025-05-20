@@ -4,7 +4,8 @@ import { requireFileSync } from '../../fs/require'
 import { FILE_CHANGE } from '@/utils/fs'
 import { listeners } from '@/core/internal/listeners'
 import { defaultConfig } from '../default'
-import { clearCache, createCount, getCacheCfg, mergeDegAndCfg } from '../tools'
+import { isNumberInArray, strToBool } from '@/utils/common'
+import { clearCache, createCount, getCacheCfg } from '../tools'
 
 import type { Privates, PrivatesObjectValue } from '@/types/config'
 
@@ -59,13 +60,49 @@ const migrate = (
  * @returns 合并后的配置
  */
 const format = (data: Privates): Record<string, PrivatesObjectValue> => {
+  /** 初始: 全局配置 */
+  const defaultGlobal = defaultConfig.privates[1]
+  /** 初始: 好友默认配置 */
+  const defaultPrivates = defaultConfig.privates[0]
+
+  /** 用户: 全局配置 */
+  const userGlobal = data.find(item => item.key === 'global') || defaultGlobal
+  /** 用户: 好友默认配置 */
+  const userPrivates = data.find(item => item.key === 'default') || defaultPrivates
+
+  /**
+   * 合并全局配置或群聊默认配置
+   * @param key 键
+   * @param args 配置
+   * @returns 合并后的配置
+   */
+  const merge = (
+    key: string,
+    ...args: PrivatesObjectValue[]
+  ): PrivatesObjectValue => {
+    return {
+      key,
+      cd: isNumberInArray(args.map(item => item.cd), 0),
+      mode: isNumberInArray(args.map(item => item.mode), 0),
+      alias: strToBool.arrayString(args.map(item => item.alias)),
+      enable: strToBool.arrayString(args.map(item => item.enable)),
+      disable: strToBool.arrayString(args.map(item => item.disable)),
+    }
+  }
+
+  /** 合并后的全局配置 */
+  const global: PrivatesObjectValue = merge('global', userGlobal, defaultGlobal)
+  /** 合并后的好友默认配置 */
+  const def: PrivatesObjectValue = merge('default', userPrivates, defaultPrivates)
+
   /** 将缓存修改为kv格式 方便调用 */
   const kv: Record<string, PrivatesObjectValue> = {
-    default: defaultConfig.privates[0],
+    global,
+    default: def,
   }
 
   data.forEach((value) => {
-    kv[value.key] = mergeDegAndCfg(kv.default, value)
+    kv[value.key] = merge(value.key, value, kv.global, kv.default)
   })
 
   return kv
@@ -111,7 +148,7 @@ export const privates = () => dynamicCache
  * @param selfId 机器人ID
  */
 export const getFriendCfg = (userId: string, selfId: string) => {
-  const keys = [`Bot:${selfId}:${userId}`, `Bot:${selfId}`, userId, 'default']
+  const keys = [`Bot:${selfId}:${userId}`, `Bot:${selfId}`, userId, 'global', 'default']
   return getCfg(keys)
 }
 
@@ -122,7 +159,7 @@ export const getFriendCfg = (userId: string, selfId: string) => {
  * @param selfId 机器人ID
  */
 export const getDirectCfg = (userId: string, selfId: string) => {
-  const keys = [`Bot:${selfId}:${userId}`, `Bot:${selfId}`, userId, 'default']
+  const keys = [`Bot:${selfId}:${userId}`, `Bot:${selfId}`, userId, 'global', 'default']
   return getCfg(keys)
 }
 

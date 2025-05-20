@@ -10,6 +10,7 @@ import Axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
 // import { getAppPlugins, getNpmPlugins as GetNpmPlugins, getGitPlugins as GetGitPlugins } from '@/plugin/index'
 
 export * from './number'
+export * from './string'
 export { sleep } from './sleep'
 export { uptime } from './uptime'
 export { downFile, absPath } from '@/utils/fs/file'

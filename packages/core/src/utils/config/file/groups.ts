@@ -4,7 +4,8 @@ import { requireFileSync } from '../../fs/require'
 import { FILE_CHANGE } from '@/utils/fs'
 import { listeners } from '@/core/internal/listeners'
 import { defaultConfig } from '../default'
-import { clearCache, createCount, getCacheCfg, mergeDegAndCfg } from '../tools'
+import { isNumberInArray, strToBool } from '@/utils/common'
+import { clearCache, createCount, getCacheCfg } from '../tools'
 
 import type { Groups, GroupsObjectValue } from '@/types/config'
 
@@ -60,13 +61,55 @@ const migrate = (
  * @returns 合并后的配置
  */
 const format = (data: Groups): Record<string, GroupsObjectValue> => {
-  /** 将缓存修改为kv格式 方便调用 */
-  const kv: Record<string, GroupsObjectValue> = {
-    default: defaultConfig.groups[0],
+  /** 初始: 全局配置 */
+  const defaultGlobal = defaultConfig.groups[1]
+  /** 初始: 群聊默认配置 */
+  const defaultGroup = defaultConfig.groups[0]
+
+  /** 用户: 全局配置 */
+  const userGlobal = data.find(item => item.key === 'global') || defaultGlobal
+  /** 用户: 群聊默认配置 */
+  const userGroup = data.find(item => item.key === 'default') || defaultGroup
+
+  /**
+   * 合并全局配置或群聊默认配置
+   * @param key 键
+   * @param args 配置
+   * @returns 合并后的配置
+   */
+  const merge = (
+    key: string,
+    ...args: GroupsObjectValue[]
+  ): GroupsObjectValue => {
+    return {
+      key,
+      cd: isNumberInArray(args.map(item => item.cd), 0),
+      userCD: isNumberInArray(args.map(item => item.userCD), 0),
+      mode: isNumberInArray(args.map(item => item.mode), 0),
+      alias: strToBool.arrayString(args.map(item => item.alias)),
+      enable: strToBool.arrayString(args.map(item => item.enable)),
+      disable: strToBool.arrayString(args.map(item => item.disable)),
+      member_enable: strToBool.arrayString(args.map(item => item.member_enable)),
+      member_disable: strToBool.arrayString(args.map(item => item.member_disable)),
+    }
   }
 
-  data.forEach((value) => {
-    kv[value.key] = mergeDegAndCfg(kv.default, value)
+  /** 合并后的全局配置 */
+  const global: GroupsObjectValue = merge('global', userGlobal, defaultGlobal)
+  /** 合并后的群聊默认配置 */
+  const def: GroupsObjectValue = merge('default', userGroup, defaultGroup)
+
+  /** 将缓存修改为kv格式 方便调用 */
+  const kv: Record<string, GroupsObjectValue> = {
+    global,
+    default: def,
+  }
+
+  /**
+   * 将用户配置中的每个配置合并到kv中
+   */
+  data.forEach((item) => {
+    kv[item.key] = merge(item.key, item, kv.global, kv.default)
   })
 
   return kv
@@ -123,6 +166,7 @@ export const getGroupCfg = (
     `Bot:${selfId}:${groupId}`,
     `Bot:${selfId}`,
     groupId,
+    'global',
     'default',
   ]
   return getCfg(keys)
@@ -146,6 +190,7 @@ export const getGuildCfg = (
     `Bot:${selfId}`,
     guildId,
     channelId,
+    'global',
     'default',
   ]
   return getCfg(keys)

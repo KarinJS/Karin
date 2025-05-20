@@ -59,33 +59,6 @@ export const formatObject = <T extends Record<string, any>> (data: T): T => {
 }
 
 /**
- * 合并对象 专属privates、groups
- * @param def 默认配置
- * @param cfg 配置
- * @returns 合并后的配置
- */
-export const mergeDegAndCfg = <T extends Record<string, any>> (def: T, cfg: T): T => {
-  const list = {} as Record<string, any>
-
-  Object.entries(cfg).forEach(([key, value]) => {
-    if (Array.isArray(value)) {
-      list[key] = formatArray(value || def[key])
-      return
-    }
-
-    if (typeof value === 'number') {
-      value = Number(value)
-      list[key] = isNaN(value) ? def[key] : value
-      return
-    }
-
-    list[key] = value || def[key]
-  })
-
-  return list as T
-}
-
-/**
  * @internal
  * @description 创建缓存对象
  */
