@@ -4,6 +4,8 @@
 export interface PrivatesObjectValue {
   /** 配置键 `Bot:selfId:userId` */
   key: string
+  /** 是否继承全局配置 默认`true` */
+  inherit: boolean
   /** 好友消息冷却时间，单位秒，0则无限制 */
   cd: number
   /** 机器人响应模式，0-所有 2-仅回应管理员 3-仅回应别名 5-管理员无限制，非管理员别名 6-仅回应主人 */

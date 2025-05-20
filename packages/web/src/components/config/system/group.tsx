@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils'
 import { saveConfig } from './save'
 import type { Groups } from 'node-karin'
 import type { RadioProps } from '@heroui/radio'
+import { Switch } from '@heroui/switch'
 
 /**
  * 获取基本配置组件
@@ -51,6 +52,7 @@ const getGroupComponent = (
     // 添加新配置
     append({
       key: config,
+      inherit: true,
       cd: 0,
       userCD: 0,
       mode: '0',
@@ -131,7 +133,15 @@ const getGroupComponent = (
                   textValue={`${val.key}-${index}`}
                   title={
                     <div className='flex justify-between items-center w-full pr-4'>
-                      <span>{val.key}</span>
+                      <span className='flex flex-col'>
+                        <span>{val.key}</span>
+                        {val.key === 'global' && (
+                          <span className='text-xs text-gray-500 mt-1'>这里全局配置哦，配置后所有配置都会从这里继承，优先级比 default 高</span>
+                        )}
+                        {val.key === 'default' && (
+                          <span className='text-xs text-gray-500 mt-1'>这是默认配置，当其他配置不可用时将从这里读取</span>
+                        )}
+                      </span>
                       <div
                         role='button'
                         tabIndex={0}
@@ -154,6 +164,18 @@ const getGroupComponent = (
                   }
                 >
                   <div className='pt-2'>
+                    {/* 继承开关 */}
+                    <div className='inline-flex items-center gap-3 p-3 rounded-lg border border-default-200 mb-3'>
+                      <div className='flex flex-col gap-0.5'>
+                        <span className='text-sm font-medium'>继承全局配置</span>
+                        <span className='text-xs text-gray-500'>是否继承全局配置</span>
+                      </div>
+                      <Switch
+                        {...methods.register(`values.${index}.inherit`)}
+                        color='success'
+                      />
+                    </div>
+
                     {/* 冷却时间卡片 */}
                     <div className='border rounded-lg p-4 space-y-2'>
                       {/* 标题 */}

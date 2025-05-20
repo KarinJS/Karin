@@ -90,6 +90,7 @@ export const defaultConfig: {
   groups: [
     {
       key: 'default',
+      inherit: true,
       cd: 0,
       userCD: 0,
       mode: 0,
@@ -101,6 +102,7 @@ export const defaultConfig: {
     },
     {
       key: 'global',
+      inherit: true,
       cd: 0,
       userCD: 0,
       mode: 0,
@@ -112,6 +114,7 @@ export const defaultConfig: {
     },
     {
       key: 'Bot:selfId',
+      inherit: true,
       cd: 0,
       userCD: 0,
       mode: 0,
@@ -123,6 +126,7 @@ export const defaultConfig: {
     },
     {
       key: 'Bot:selfId:groupId',
+      inherit: true,
       cd: 0,
       userCD: 0,
       mode: 0,
@@ -134,6 +138,7 @@ export const defaultConfig: {
     },
     {
       key: 'Bot:selfId:guildId',
+      inherit: true,
       cd: 0,
       userCD: 0,
       mode: 0,
@@ -145,6 +150,7 @@ export const defaultConfig: {
     },
     {
       key: 'Bot:selfId:guildId:channelId',
+      inherit: true,
       cd: 0,
       userCD: 0,
       mode: 0,
@@ -174,6 +180,7 @@ export const defaultConfig: {
   privates: [
     {
       key: 'default',
+      inherit: true,
       cd: 0,
       mode: 0,
       alias: [],
@@ -182,6 +189,7 @@ export const defaultConfig: {
     },
     {
       key: 'global',
+      inherit: true,
       cd: 0,
       mode: 0,
       alias: [],
@@ -190,6 +198,7 @@ export const defaultConfig: {
     },
     {
       key: 'Bot:selfId',
+      inherit: true,
       cd: 0,
       mode: 0,
       alias: [],
@@ -198,6 +207,7 @@ export const defaultConfig: {
     },
     {
       key: 'Bot:selfId:userId',
+      inherit: true,
       cd: 0,
       mode: 0,
       alias: [],

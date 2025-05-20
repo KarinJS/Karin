@@ -74,30 +74,53 @@ const format = (data: Groups): Record<string, GroupsObjectValue> => {
   /**
    * 合并全局配置或群聊默认配置
    * @param key 键
+   * @param inherit 是否继承全局配置
    * @param args 配置
    * @returns 合并后的配置
+   * @description 合并配置 如果args有3个参数 则说明索引1是全局配置 应该进行继承
    */
   const merge = (
     key: string,
+    inherit: boolean,
     ...args: GroupsObjectValue[]
   ): GroupsObjectValue => {
+    if (typeof inherit !== 'boolean') {
+      inherit = true
+    }
+
+    let alias = args.map(item => item.alias)
+    let enable = args.map(item => item.enable)
+    let disable = args.map(item => item.disable)
+    let memberEnable = args.map(item => item.member_enable)
+    let memberDisable = args.map(item => item.member_disable)
+
+    if (inherit && args.length === 3) {
+      /** 需要将01合并 */
+      alias = [strToBool.mergeArray(alias[0], alias[1]), alias[2]]
+      enable = [strToBool.mergeArray(enable[0], enable[1]), enable[2]]
+      disable = [strToBool.mergeArray(disable[0], disable[1]), disable[2]]
+      memberEnable = [strToBool.mergeArray(memberEnable[0], memberEnable[1]), memberEnable[2]]
+      memberDisable = [strToBool.mergeArray(memberDisable[0], memberDisable[1]), memberDisable[2]]
+    }
+
     return {
       key,
+      inherit,
       cd: isNumberInArray(args.map(item => item.cd), 0),
       userCD: isNumberInArray(args.map(item => item.userCD), 0),
       mode: isNumberInArray(args.map(item => item.mode), 0),
-      alias: strToBool.arrayString(args.map(item => item.alias)),
-      enable: strToBool.arrayString(args.map(item => item.enable)),
-      disable: strToBool.arrayString(args.map(item => item.disable)),
-      member_enable: strToBool.arrayString(args.map(item => item.member_enable)),
-      member_disable: strToBool.arrayString(args.map(item => item.member_disable)),
+      alias: strToBool.arrayString(alias),
+      enable: strToBool.arrayString(enable),
+      disable: strToBool.arrayString(disable),
+      member_enable: strToBool.arrayString(memberEnable),
+      member_disable: strToBool.arrayString(memberDisable),
     }
   }
 
   /** 合并后的全局配置 */
-  const global: GroupsObjectValue = merge('global', userGlobal, defaultGlobal)
+  const global: GroupsObjectValue = merge('global', true, userGlobal, defaultGlobal)
   /** 合并后的群聊默认配置 */
-  const def: GroupsObjectValue = merge('default', userGroup, defaultGroup)
+  const def: GroupsObjectValue = merge('default', true, userGroup, defaultGroup)
 
   /** 将缓存修改为kv格式 方便调用 */
   const kv: Record<string, GroupsObjectValue> = {
@@ -109,7 +132,7 @@ const format = (data: Groups): Record<string, GroupsObjectValue> => {
    * 将用户配置中的每个配置合并到kv中
    */
   data.forEach((item) => {
-    kv[item.key] = merge(item.key, item, kv.global, kv.default)
+    kv[item.key] = merge(item.key, item.inherit, item, kv.global, kv.default)
   })
 
   return kv

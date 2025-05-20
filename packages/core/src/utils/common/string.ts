@@ -78,4 +78,20 @@ export const strToBool = {
 
     return []
   },
+  /**
+   * 合并多个数组为一个并去重 如果不是数组将会跳过
+   * @param arr 需要合并的数组
+   * @returns 合并后的数组
+   * @example strToBool.mergeArray(['1', '2', '3'], ['4', '5', '6']) // ['1', '2', '3', '4', '5', '6']
+   *          strToBool.mergeArray(['4', '5', '6'], ['4', '5', '6']) // ['4', '5', '6']
+   */
+  mergeArray: <T> (...arr: unknown[]): T[] => {
+    const list: T[] = []
+    for (const item of arr) {
+      if (!Array.isArray(item)) continue
+      list.push(...item)
+    }
+
+    return [...new Set(list)]
+  },
 }

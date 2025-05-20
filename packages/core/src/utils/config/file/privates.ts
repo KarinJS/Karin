@@ -73,27 +73,45 @@ const format = (data: Privates): Record<string, PrivatesObjectValue> => {
   /**
    * 合并全局配置或群聊默认配置
    * @param key 键
+   * @param inherit 是否继承全局配置
    * @param args 配置
    * @returns 合并后的配置
+   * @description 合并配置 如果args有3个参数 则说明索引1是全局配置 应该进行继承
    */
   const merge = (
     key: string,
+    inherit: boolean,
     ...args: PrivatesObjectValue[]
   ): PrivatesObjectValue => {
+    if (typeof inherit !== 'boolean') {
+      inherit = true
+    }
+
+    let alias = args.map(item => item.alias)
+    let enable = args.map(item => item.enable)
+    let disable = args.map(item => item.disable)
+
+    if (inherit && args.length === 3) {
+      /** 需要将01合并 */
+      alias = [strToBool.mergeArray(alias[0], alias[1]), alias[2]]
+      enable = [strToBool.mergeArray(enable[0], enable[1]), enable[2]]
+      disable = [strToBool.mergeArray(disable[0], disable[1]), disable[2]]
+    }
     return {
       key,
+      inherit,
       cd: isNumberInArray(args.map(item => item.cd), 0),
       mode: isNumberInArray(args.map(item => item.mode), 0),
-      alias: strToBool.arrayString(args.map(item => item.alias)),
-      enable: strToBool.arrayString(args.map(item => item.enable)),
-      disable: strToBool.arrayString(args.map(item => item.disable)),
+      alias: strToBool.arrayString(alias),
+      enable: strToBool.arrayString(enable),
+      disable: strToBool.arrayString(disable),
     }
   }
 
   /** 合并后的全局配置 */
-  const global: PrivatesObjectValue = merge('global', userGlobal, defaultGlobal)
+  const global: PrivatesObjectValue = merge('global', true, userGlobal, defaultGlobal)
   /** 合并后的好友默认配置 */
-  const def: PrivatesObjectValue = merge('default', userPrivates, defaultPrivates)
+  const def: PrivatesObjectValue = merge('default', true, userPrivates, defaultPrivates)
 
   /** 将缓存修改为kv格式 方便调用 */
   const kv: Record<string, PrivatesObjectValue> = {
@@ -102,7 +120,7 @@ const format = (data: Privates): Record<string, PrivatesObjectValue> => {
   }
 
   data.forEach((value) => {
-    kv[value.key] = merge(value.key, value, kv.global, kv.default)
+    kv[value.key] = merge(value.key, value.inherit, value, kv.global, kv.default)
   })
 
   return kv
