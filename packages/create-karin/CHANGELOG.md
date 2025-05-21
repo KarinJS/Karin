@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.8](https://github.com/KarinJS/Karin/compare/create-karin-v1.1.7...create-karin-v1.1.8) (2025-05-21)
+
+
+### 🐛 Bug Fixes
+
+* 修复模板缺少的依赖项 修正ci ([f891684](https://github.com/KarinJS/Karin/commit/f891684c22e68e90a8370fdc13a3541671b9d88b))
+
+
+### 🎡 Continuous Integration
+
+* 1.1.8 ([923f370](https://github.com/KarinJS/Karin/commit/923f370350448070a7961bfbad2477577ca9d3cd))
+
 ## [1.1.7](https://github.com/KarinJS/Karin/compare/create-karin-v1.1.6...create-karin-v1.1.7) (2025-05-21)
 
 
