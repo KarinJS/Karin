@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.6](https://github.com/KarinJS/Karin/compare/create-karin-v1.1.5...create-karin-v1.1.6) (2025-05-21)
+
+
+### 🐛 Bug Fixes
+
+* 修正创建开发模板 ([1f7138f](https://github.com/KarinJS/Karin/commit/1f7138fc6b209e72944aff2d35304fb0501efd0a))
+
 ## [1.1.5](https://github.com/KarinJS/Karin/compare/create-karin-v1.1.4...create-karin-v1.1.5) (2025-05-10)
 
 

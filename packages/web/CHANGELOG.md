@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.7](https://github.com/KarinJS/Karin/compare/web-v1.8.6...web-v1.8.7) (2025-05-21)
+
+
+### ⚡️ Performance
+
+* 优化全局配置 添加对应配置项 ([f6c81d3](https://github.com/KarinJS/Karin/commit/f6c81d38d20397f9391ec44703126bafc3c52197))
+
 ## [1.8.6](https://github.com/KarinJS/Karin/compare/web-v1.8.5...web-v1.8.6) (2025-05-10)
 
 
