@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.8](https://github.com/KarinJS/Karin/compare/web-v1.8.7...web-v1.8.8) (2025-05-21)
+
+
+### 🐛 Bug Fixes
+
+* 提升兼容性 ([506453e](https://github.com/KarinJS/Karin/commit/506453e1f4a7809ac4010581555ad6f4d3e9f205))
+
 ## [1.8.7](https://github.com/KarinJS/Karin/compare/web-v1.8.6...web-v1.8.7) (2025-05-21)
 
 
