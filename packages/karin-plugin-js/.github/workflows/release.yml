@@ -6,6 +6,7 @@ on:
 permissions:
   contents: write # 设置内容的权限为写
   pull-requests: write # 设置拉取请求的权限为写
+  issues: write # 设置问题的权限为写
 jobs:
   release-please:
     # 设置工作流程运行环境为 Ubuntu
