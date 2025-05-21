@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.7](https://github.com/KarinJS/Karin/compare/create-karin-v1.1.6...create-karin-v1.1.7) (2025-05-21)
+
+
+### 🐛 Bug Fixes
+
+* **create:** 修复模板缺少的文件 ([4f6172f](https://github.com/KarinJS/Karin/commit/4f6172f79a52eb2440adaf0c5a8d0e788a14fb03))
+
 ## [1.1.6](https://github.com/KarinJS/Karin/compare/create-karin-v1.1.5...create-karin-v1.1.6) (2025-05-21)
 
 
