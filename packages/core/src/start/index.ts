@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import net from 'node:net'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -14,8 +15,16 @@ const minRestartInterval = 5000 /** 最小重启间隔5秒 */
 const _filename = fileURLToPath(import.meta.url)
 /** 获取当前文件的目录路径 */
 const _dirname = path.dirname(_filename)
-/** 入口文件绝对路径 */
-const indexPath = path.join(_dirname, import.meta.url.includes('.mjs') ? 'app.mjs' : 'app.ts')
+/** 获取入口文件绝对路径 */
+const getMainPath = (): string => {
+  const filePath = path.join(_dirname, import.meta.url.includes('.mjs') ? 'app.mjs' : 'app.ts')
+  if (fs.existsSync(filePath)) {
+    return filePath
+  }
+
+  /** 如果文件不存在说明则是升级了版本 使用硬编码 */
+  return path.join(process.cwd(), 'node_modules', 'node-karin', 'dist', 'start', 'app.mjs')
+}
 
 /**
 /**
@@ -32,7 +41,7 @@ const start = (): ChildProcess => {
   lastStartTime = Date.now()
 
   /** 使用fork启动子进程 */
-  child = fork(indexPath)
+  child = fork(getMainPath())
 
   /** 处理子进程消息 */
   child.on('message', message => {
