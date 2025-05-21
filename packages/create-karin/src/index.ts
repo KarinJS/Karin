@@ -257,7 +257,7 @@ const handleFixEnvironment = async () => {
           packageJsonObj = JSON.parse(strippedJson)
           spinner.succeed('package.json修夌成功')
 
-          /** 写回修夌后的package.json */
+          /** 写回修复后的package.json */
           fs.writeFileSync(packageJsonPath, JSON.stringify(packageJsonObj, null, 2))
         } catch (stripError) {
           spinner.fail('package.json无法修夌，错误信息: ' + String(stripError))

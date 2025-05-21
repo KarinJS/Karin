@@ -76,7 +76,7 @@ export const createPlugin = async (
   spinner.succeed(green('✨ 项目目录结构创建完成'))
 
   spinner.start('正在复制模板...')
-  const templatePath = path.join(fileURLToPath(import.meta.url), '../templates', type)
+  const templatePath = path.join(fileURLToPath(import.meta.url), '../../templates', type)
   fs.cpSync(templatePath, dir, { recursive: true })
   const pkg = JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf-8'))
   pkg.name = projectName
