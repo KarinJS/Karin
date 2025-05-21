@@ -144,8 +144,8 @@ importers:
         version: 2.4.2
     devDependencies:
       '@karinjs/axios':
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: ^1.1.8
+        version: 1.1.8
       '@types/node':
         specifier: ^20.11.0
         version: 20.17.28
@@ -1798,9 +1798,6 @@ packages:
   '@karinjs/art-template@1.1.0':
     resolution: {integrity: sha512-OKf0WZ61SAs9J/K19nzx1XtmLQKc+lbbxiP7AH34TLIM46L3/wSUybV2hcFl001B3zwRcUlrCOZgDlcxyVcScA==}
     engines: {node: '>= 16.0.0'}
-
-  '@karinjs/axios@1.0.1':
-    resolution: {integrity: sha512-brYm4KN/KH9geXPTEHWawyi1Y0Z79WB9rp5MG3EblS0SMYa1ta22Mqx6wKRCUiCpRn7cxvmyYG1+O8YdAD2k9g==}
 
   '@karinjs/axios@1.1.8':
     resolution: {integrity: sha512-xFeSp1LmpyIi+oy9g5+OwbdP4zn5/vkA6P1TXUkA6jhTHqtR552E8SR8J5CTS/I+HybvR4O590bb743DumqsmA==}
@@ -7666,8 +7663,6 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.0
 
   '@karinjs/art-template@1.1.0': {}
-
-  '@karinjs/axios@1.0.1': {}
 
   '@karinjs/axios@1.1.8':
     dependencies:

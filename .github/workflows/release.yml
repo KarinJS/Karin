@@ -54,6 +54,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: core
+          include-hidden-files: true
           path: |
             packages/core/dist
             packages/core/default
@@ -65,6 +66,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cli
+          include-hidden-files: true
           path: |
             packages/cli/index.js
             packages/cli/package.json
@@ -73,6 +75,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: create-karin
+          include-hidden-files: true
           path: |
             packages/create-karin/dist
             packages/create-karin/templates
