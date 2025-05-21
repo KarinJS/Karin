@@ -37,17 +37,14 @@ export const createDivider = (props: DividerProps): JSX.Element => {
 
   // 横向分割线支持描述文本
   if (description) {
-    const leftWidth = `w-[${descPosition}%]`
-    const rightWidth = `w-[${100 - descPosition}%]`
-
     return (
       <Fragment key={`${key}-Fragment`}>
         <div key={key} className={`${transparent ? 'opacity-0' : ''} ${componentClassName || ''} flex items-center py-4`}>
-          <div className={leftWidth}>
+          <div style={{ width: `${descPosition}%` }}>
             <HeroDivider {...options} />
           </div>
           <span className='px-4 text-gray-500 shrink-0'>{description}</span>
-          <div className={rightWidth}>
+          <div style={{ width: `${100 - descPosition}%` }}>
             <HeroDivider {...options} />
           </div>
         </div>

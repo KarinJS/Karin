@@ -31,7 +31,14 @@ export const getPluginListPluginAdmin: RequestHandler = async (_, res) => {
           latestHash,
         })
       } catch (error) {
-        logger.error(error)
+        logger.debug(`获取插件${plugin.name}提交哈希失败: ${error}`)
+        list.push({
+          type: 'git',
+          id: plugin.pkgData.name,
+          name: plugin.name,
+          version: '0.0.0',
+          latestHash: '0.0.0',
+        })
       }
     }))
 

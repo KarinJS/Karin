@@ -95,6 +95,10 @@
       "development": "./exports/module/moment.ts",
       "default": "./dist/module/moment.mjs"
     },
+    "./moment/locale/*": {
+      "development": "./exports/module/locale/*.ts",
+      "default": "./dist/module/locale/*.mjs"
+    },
     "./schedule": {
       "types": "./dist/module/node-schedule.d.ts",
       "development": "./exports/module/node-schedule.ts",
@@ -145,8 +149,9 @@
     "build": "pnpm build:main && pnpm build:module",
     "build:dev": "pnpm build:main",
     "build:main": "tsc && tsup",
-    "build:module": "tsc && tsup --config tsup.config.module.ts",
+    "build:module": "tsc && tsup --config tsup.config.module.ts && pnpm build:locale",
     "build:types": "tsc && tsup --config tsup.config.types.ts",
+    "build:locale": "node cli/locale.js",
     "app:bun": "bun dist/start/index.mjs",
     "cli": "node dist/cli/index.mjs",
     "cli:dev": "tsx exports/cli/index.ts",
@@ -160,7 +165,7 @@
   },
   "dependencies": {
     "art-template": "npm:@karinjs/art-template@1.1.0",
-    "axios": "npm:@karinjs/axios@1.1.8",
+    "axios": "npm:@karinjs/axios@1.2.0",
     "chalk": "5.4.1",
     "chokidar": "4.0.3",
     "express": "npm:@karinjs/express@1.0.3",
