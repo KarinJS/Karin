@@ -1,5 +1,19 @@
 # 更新日志
 
+## [1.9.4](https://github.com/KarinJS/Karin/compare/core-v1.9.3...core-v1.9.4) (2025-05-21)
+
+
+### 🐛 Bug Fixes
+
+* close [#436](https://github.com/KarinJS/Karin/issues/436) ([9ff2938](https://github.com/KarinJS/Karin/commit/9ff2938a386193c42cef91160205d254865e77c3))
+* 升级版本后重启找不到入口文件 ([eadc52f](https://github.com/KarinJS/Karin/commit/eadc52f6e3206b9b5c399e689c64ab7c95f18c8a))
+
+
+### ⚡️ Performance
+
+* 优化`raceRequest`函数 ([0455a3c](https://github.com/KarinJS/Karin/commit/0455a3c3e9cba1f19c7b6ed1862a16f072cd3599))
+* 优化全局配置 添加对应配置项 ([f6c81d3](https://github.com/KarinJS/Karin/commit/f6c81d38d20397f9391ec44703126bafc3c52197))
+
 ## [1.9.3](https://github.com/KarinJS/Karin/compare/core-v1.9.2...core-v1.9.3) (2025-05-17)
 
 
