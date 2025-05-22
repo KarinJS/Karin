@@ -252,8 +252,10 @@ const createWorkspace = (isDev: boolean, dir: string) => {
     onlyBuiltDependencies?: string[]
     publicHoistPattern?: string[]
   } = {}
-  if (fs.existsSync(workspace)) {
-    data = yaml.parse(fs.readFileSync(workspace, 'utf-8'))
+  try {
+    data = fs.existsSync(workspace) ? yaml.parse(fs.readFileSync(workspace, 'utf-8')) : {}
+  } catch {
+    data = {}
   }
 
   if (typeof data.lockfile !== 'boolean') {
