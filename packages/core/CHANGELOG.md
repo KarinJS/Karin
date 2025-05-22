@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.9.6](https://github.com/KarinJS/Karin/compare/core-v1.9.5...core-v1.9.6) (2025-05-22)
+
+
+### 🐛 Bug Fixes
+
+* 发版 ([11a3701](https://github.com/KarinJS/Karin/commit/11a3701d38d0c51295c1afdfb0c652d5699877b2))
+
 ## [1.9.5](https://github.com/KarinJS/Karin/compare/core-v1.9.4...core-v1.9.5) (2025-05-21)
 
 
