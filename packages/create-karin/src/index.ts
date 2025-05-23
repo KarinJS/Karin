@@ -13,6 +13,51 @@ import { exec } from './utils/exec'
 import { createPlugin, createProject } from './project'
 import stripJsonComments from 'strip-json-comments'
 
+// 解析命令行参数
+const parseArgs = () => {
+  const args = process.argv.slice(2)
+  const flags = {
+    yes: false, // 静默安装标志
+    help: false, // 帮助信息标志
+  }
+
+  for (const arg of args) {
+    if (arg === '-y' || arg === '--yes') {
+      flags.yes = true
+    } else if (arg === '-h' || arg === '--help') {
+      flags.help = true
+    }
+  }
+
+  return flags
+}
+
+// 获取命令行参数
+const cliArgs = parseArgs()
+
+/**
+ * 显示帮助信息
+ */
+const showHelp = () => {
+  console.log(`
+${green('create-karin')} - Karin项目创建工具 ${blue(`v${process.env.npm_package_version || ''}`)}
+
+${yellow('用法:')}
+  ${green('pnpm create karin')} ${blue('[选项]')}
+
+${yellow('选项:')}
+  ${green('-y, --yes')}      静默安装，使用默认配置
+  ${green('-h, --help')}     显示此帮助信息
+
+${yellow('示例:')}
+  ${green('pnpm create karin')}           交互式创建Karin项目
+  ${green('pnpm create karin -y')}        使用默认配置静默创建Karin项目
+
+${yellow('更多信息:')}
+  ${blue('GitHub: https://github.com/KarinJS/Karin/tree/main/packages/create-karin')}
+`)
+}
+
 /**
  * 验证项目名称
  */
@@ -578,6 +623,12 @@ const handleProjectCreation = async (
  * 创建新项目的主函数
  */
 const main = async () => {
+  // 显示帮助信息
+  if (cliArgs.help) {
+    showHelp()
+    return
+  }
+
   /** 检查环境 */
   const {
     registry,
@@ -585,6 +636,51 @@ const main = async () => {
     pnpmVersion,
     pm2Version,
   } = await checkEnvironment()
+
+  // 处理静默安装模式
+  if (cliArgs.yes) {
+    console.log(blue('检测到静默安装标志 (-y)，将使用默认配置...'))
+
+    // 生成默认配置
+    let defaultProjectName = 'karin-project'
+
+    // 检查默认项目名称是否存在冲突
+    const defaultDir = path.join(process.cwd(), defaultProjectName)
+    if (fs.existsSync(defaultDir)) {
+      // 如果冲突，在项目名称后添加3个随机字母
+      defaultProjectName = `${defaultProjectName}-${getStr(3)}`
+      console.log(yellow(`默认项目名称冲突，已自动重命名为: ${defaultProjectName}`))
+    }
+
+    const httpAuthKey = getStr(6)
+    const wsAuthKey = getStr(6)
+    const registrySuffix = bestRegistry ? ` --registry=${bestRegistry}` : ''
+
+    // 检查Node版本
+    checkNodeVersion()
+
+    // 如果没有安装pnpm，则安装
+    if (!pnpmVersion) {
+      await installPnpmDependency(registrySuffix)
+    }
+
+    // 如果没有安装PM2，则安装
+    if (!pm2Version) {
+      await installPm2Dependency(registrySuffix)
+    }
+
+    // 创建项目
+    await handleProjectCreation(
+      'production',
+      defaultProjectName,
+      registrySuffix,
+      httpAuthKey,
+      wsAuthKey,
+      'latest'
+    )
+
+    return
+  }
 
   /** 选择项目模板 */
   const templateChoice = await selectProjectTemplate()
