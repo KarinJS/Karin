@@ -8,6 +8,7 @@ import type {
   Contact,
   EventParent,
   EventToSubEvent,
+  Permission,
   Reply,
   Sender,
   SrcReply,
@@ -233,5 +234,69 @@ export abstract class BaseEvent<T extends EventParent> {
   /** 是否为频道私信场景 */
   public get isDirect () {
     return this.#contact.scene === 'direct'
+  }
+
+  /**
+   * 传入目标权限，返回当前事件触发者是否拥有该权限
+   * @param permission - 目标权限
+   * @param isUpper - 是否向上检查 例如`group:admin`向上检查到`master` 默认`true`
+   * @returns 是否拥有该权限
+   */
+  public hasPermission (permission: Permission, isUpper = true): boolean {
+    if (permission === 'all') {
+      return true
+    }
+
+    if (permission === 'master') {
+      return this.isMaster
+    }
+
+    if (permission === 'admin') {
+      if (isUpper) return this.isMaster || this.isAdmin
+
+      return this.isAdmin
+    }
+
+    const permissionConfig: Record<string, {
+      sceneCheck: () => boolean,
+      roleValue: string,
+      includeAdmin?: boolean
+    }> = {
+      'group.owner': {
+        sceneCheck: () => this.isGroup,
+        roleValue: 'owner',
+        includeAdmin: true,
+      },
+      'group.admin': {
+        sceneCheck: () => this.isGroup,
+        roleValue: 'admin',
+        includeAdmin: true,
+      },
+      'guild.owner': {
+        sceneCheck: () => this.isGuild,
+        roleValue: 'owner',
+        includeAdmin: true,
+      },
+      'guild.admin': {
+        sceneCheck: () => this.isGuild,
+        roleValue: 'admin',
+      },
+    }
+
+    const config = permissionConfig[permission]
+    if (!config) {
+      throw new Error(`不支持的权限: ${permission}`)
+    }
+
+    if (!config.sceneCheck()) return false
+
+    // @ts-ignore
+    const role = this.sender?.role || 'unknown'
+
+    if (isUpper && config.includeAdmin) {
+      return this.isMaster || this.isAdmin || role === config.roleValue
+    }
+
+    return role === config.roleValue
   }
 }
