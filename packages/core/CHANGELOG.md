@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.9.7](https://github.com/KarinJS/Karin/compare/core-v1.9.6...core-v1.9.7) (2025-05-23)
+
+
+### ⚡️ Performance
+
+* 优化事件工具 新增`hasPermission` ([fb1d693](https://github.com/KarinJS/Karin/commit/fb1d693c0af1b90fbf2b9e417ac45ff54a7dab07))
+
 ## [1.9.6](https://github.com/KarinJS/Karin/compare/core-v1.9.5...core-v1.9.6) (2025-05-22)
 
 
