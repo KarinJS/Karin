@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/KarinJS/Karin/compare/create-karin-v1.1.8...create-karin-v1.2.0) (2025-05-23)
+
+
+### ✨ Features
+
+* 新增静默安装参数-y ([a70e481](https://github.com/KarinJS/Karin/commit/a70e48190a1a697191674e33a4def59e125e1c66))
+
 ## [1.1.8](https://github.com/KarinJS/Karin/compare/create-karin-v1.1.7...create-karin-v1.1.8) (2025-05-21)
 
 
