@@ -1,4 +1,5 @@
 import chalk from 'chalk'
+import type { Logger as Log4jsLogger } from 'log4js'
 
 /**
  * @description 所有日志等级
@@ -15,7 +16,7 @@ export type LogMethodsOnly = Pick<Logger, LogMethodNames>
 /**
  * @description 日志接口
  */
-export interface Logger {
+export interface Logger extends Log4jsLogger {
   /** @description chalk模块 */
   chalk: typeof chalk
   /** @description 将文本设置为红色 */
@@ -47,13 +48,6 @@ export interface Logger {
    */
   bot: (level: LogMethodNames, id: string, ...args: any[]) => void
 
-  /**
-   * @description 构建自定义前缀函数
-   * @param prefix - 前缀
-   * @returns 返回一个函数
-   */
-  prefix: (prefix: string) => (level: LogMethodNames, ...args: any[]) => void
-
   /** @description 打印追踪日志 */
   trace (...args: any[]): void
 
@@ -80,21 +74,6 @@ export interface Logger {
 
   /** @description 打印日志 跟`info`日志相同 */
   log (...args: any[]): void
-
-  /** @description 获取、设置日志等级 */
-  level: LoggerLevel
-
-  /** @description 获取当前配置 */
-  readonly config: LoggerConfig
-
-  /**
-   * @description 设置新的配置
-   * @param config - 日志配置
-   */
-  configure (config: Partial<LoggerConfig>): void
-
-  /** @description 关闭并清理资源 */
-  close (): void
 }
 
 /**
@@ -136,9 +115,6 @@ export interface FileLogConfig {
  * @description 日志配置
  */
 export interface LoggerConfig {
-  /** @description 日志前缀 @default '' */
-  prefix: string
-
   /** @description 日志级别 @default 'info' */
   level: LoggerLevel
 
@@ -153,7 +129,6 @@ export interface LoggerConfig {
  * @description 默认配置
  */
 export const DEFAULT_LOGGER_CONFIG: LoggerConfig = {
-  prefix: '',
   level: 'info',
   file: {
     enabled: false,
@@ -164,41 +139,4 @@ export const DEFAULT_LOGGER_CONFIG: LoggerConfig = {
     maxFileSize: 10,
     separateErrorLog: true,
   },
-}
-
-/**
- * @description 日志级别优先级
- */
-export const LoggerLevelPriority: Record<LoggerLevel, number> = {
-  trace: 111,
-  debug: 222,
-  info: 333,
-  warn: 444,
-  error: 555,
-  fatal: 666,
-  mark: 777,
-  off: 888,
-}
-
-/**
- * @description 日志输出接口
- */
-export interface LogWriter {
-  /**
-   * @description 输出日志
-   * @param level - 日志级别
-   * @param message - 日志消息
-   */
-  write (level: LoggerLevel, message: string): void
-
-  /**
-   * @description 更新配置
-   * @param newConfig - 新的配置
-   */
-  updateConfig?(newConfig: Partial<FileLogConfig>): void
-
-  /**
-   * @description 关闭输出
-   */
-  close?(): void
 }

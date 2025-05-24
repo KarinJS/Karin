@@ -2,7 +2,7 @@ import path from 'node:path'
 import '@/service/debug'
 import dotenv from 'dotenv'
 import root from '@/root'
-import { createInnerLogger } from '@/utils/logger'
+// import { createInnerLogger } from '@/utils/logger'
 import { initConfig } from '@/utils/config/init'
 import { initProcess } from './service/process'
 import { initPlugin } from './plugin'
@@ -62,7 +62,7 @@ export const start = async () => {
    * - 创建日志目录
    * - 初始化日志模块
    */
-  createInnerLogger(root.logsPath)
+  // createInnerLogger(root.logsPath)
 
   /**
    * 3. 初始化配置文件

@@ -1,6 +1,6 @@
 /* eslint-disable no-var */
 declare global {
-  var logger: import('@/service/logger').Logger
+  var logger: import('@/types/system/logger').Logger
   var debug: ReturnType<typeof import('@/utils/debug/debug').createDebug>
   type EventEmitter = import('events').EventEmitter
 }
