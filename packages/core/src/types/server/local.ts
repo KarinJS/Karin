@@ -8,7 +8,10 @@ export interface Author {
   name?: string
   /** 主页 */
   home?: string
-  /** 头像 */
+  /**
+   * 头像
+   * @description https://github.com/[owner].png
+   */
   avatar?: string
 }
 
@@ -16,7 +19,10 @@ export interface Author {
  * 插件图标
  */
 export interface Icon {
-  /** 图标名称 */
+  /**
+   * 图标名称
+   * @see https://fonts.google.com/icons
+   */
   name?: string
   /** 图标大小 */
   size?: number
