@@ -1,5 +1,27 @@
 # 更新日志
 
+## [1.9.9](https://github.com/KarinJS/Karin/compare/core-v1.9.8...core-v1.9.9) (2025-06-04)
+
+
+### 🐛 Bug Fixes
+
+* close [#450](https://github.com/KarinJS/Karin/issues/450) ([35aa118](https://github.com/KarinJS/Karin/commit/35aa118dc69c6370b9e090437b65e9a39a2a99c2))
+
+
+### ⚡️ Performance
+
+* 优化获取实时日志文件Api 限制大文件大小 ([a96de40](https://github.com/KarinJS/Karin/commit/a96de404497edbaaa40b10181341d3586234f73e))
+
+
+### 💄 Styles
+
+* 优化进程显示标题 ([08c284d](https://github.com/KarinJS/Karin/commit/08c284d317172e09b3e60049cbcc84f18355ff90))
+
+
+### ♻️ Code Refactoring
+
+* 优化子进程管理逻辑 ([f6629f8](https://github.com/KarinJS/Karin/commit/f6629f886e1f3e578353a1aa200543a45b27e0a2))
+
 ## [1.9.8](https://github.com/KarinJS/Karin/compare/core-v1.9.7...core-v1.9.8) (2025-05-24)
 
 
