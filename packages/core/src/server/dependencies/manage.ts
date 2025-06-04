@@ -1,3 +1,6 @@
+import fs from 'node:fs'
+import path from 'node:path'
+import util from 'node:util'
 import { isPnpm10, isWorkspace } from '@/env'
 import { taskSystem as task } from '@/service/task'
 import { handleReturn, spawnProcess } from '../plugins/admin/tool'
@@ -109,6 +112,7 @@ const installDependencies = async (
         if (isWorkspace()) args.push('-w')
 
         await spawnProcess('pnpm', args, {}, emitLog)
+        logger.mark(`安装依赖 ${logger.green(packagesToInstall)} 完成`)
         return true
       }
     )
@@ -116,6 +120,7 @@ const installDependencies = async (
     return handleReturn(res, true, '安装任务已创建', id)
   } catch (error) {
     logger.error('[installDependencies]', error)
+    logger.mark(`安装依赖 ${logger.red(dependencies.join(' '))} 失败`)
     return handleReturn(res, false, `安装失败: ${error instanceof Error ? error.message : String(error)}`)
   }
 }
@@ -148,6 +153,7 @@ const removeDependencies = async (
         if (isWorkspace()) args.push('-w')
 
         await spawnProcess('pnpm', args, {}, emitLog)
+        logger.mark(`删除依赖 ${logger.yellow(packagesToRemove)} 完成`)
         return true
       }
     )
@@ -155,6 +161,7 @@ const removeDependencies = async (
     return handleReturn(res, true, '删除任务已创建', id)
   } catch (error) {
     logger.error('[removeDependencies]', error)
+    logger.mark(`删除依赖 ${logger.red(dependencies.join(' '))} 失败`)
     return handleReturn(res, false, `删除失败: ${error instanceof Error ? error.message : String(error)}`)
   }
 }
@@ -201,6 +208,22 @@ const addDependencies = async (
         if (isWorkspace()) args.push('-w')
 
         await spawnProcess('pnpm', args, {}, emitLog)
+        /**
+         * @version 1.9.9
+         * 如果新增的依赖存在对等依赖 需要再执行一次pnpm install
+         */
+        const depDir = path.join(process.cwd(), 'packages', dependencies.name, 'package.json')
+        try {
+          const pkg = JSON.parse(fs.readFileSync(depDir, 'utf-8'))
+          if (!pkg.peerDependencies) return true
+
+          await spawnProcess('pnpm', ['install'], {}, emitLog)
+        } catch (error) {
+          logger.error('[addDependencies]', error)
+          emitLog(util.format(error))
+        }
+
+        logger.mark(`新增依赖 ${logger.green(dependencies.name)} 完成`)
         return true
       }
     )
@@ -208,6 +231,7 @@ const addDependencies = async (
     return handleReturn(res, true, '添加任务已创建', id)
   } catch (error) {
     logger.error('[addDependencies]', error)
+    logger.mark(`新增依赖 ${logger.red(dependencies.name)} 失败`)
     return handleReturn(res, false, `添加失败: ${error instanceof Error ? error.message : String(error)}`)
   }
 }
