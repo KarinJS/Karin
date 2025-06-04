@@ -3,6 +3,9 @@ import { listeners } from '@/core/internal/listeners'
 
 /** 处理基本信号 */
 export const processHandler = () => {
+  /** 设置程序标题 */
+  process.title = `karin v${process.env.KARIN_VERSION} © ${new Date().getFullYear()} - Karinjs`
+
   /** 监听挂起信号 在终端关闭时触发 */
   process.once('SIGHUP', code => processExit(code))
   /** 监听中断信号 用户按下 Ctrl + C 时触发 */

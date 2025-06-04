@@ -20,6 +20,7 @@ export const processExit = async (code: unknown) => {
     logger.debug('[child] redis数据保存完成')
 
     logger.mark(tips(`运行结束 运行时间：${uptime()} 退出码：${code ?? '未知'}`))
+
     /** 如果是pm2环境 */
     if (process.env.pm_id) {
       logger.mark(tips('[child] pm2环境 删除pm2进程'))
