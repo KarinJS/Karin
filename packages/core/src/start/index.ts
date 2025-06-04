@@ -4,20 +4,21 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { fork, type ChildProcess } from 'node:child_process'
 
+/** 是否已启动 */
 let isStart = false
-
-/** 状态变量 */
+/** 子进程实例 */
 let child: ChildProcess
-let lastStartTime = 0
-let isClosing = false
-const minRestartInterval = 5000 /** 最小重启间隔5秒 */
+
 /** 获取当前文件的绝对路径 */
 const _filename = fileURLToPath(import.meta.url)
 /** 获取当前文件的目录路径 */
 const _dirname = path.dirname(_filename)
+
 /** 获取入口文件绝对路径 */
 const getMainPath = (): string => {
-  const filePath = path.join(_dirname, import.meta.url.includes('.mjs') ? 'app.mjs' : 'app.ts')
+  const isESM = import.meta.url.includes('.mjs')
+  const filePath = path.join(_dirname, isESM ? 'app.mjs' : 'app.ts')
+
   if (fs.existsSync(filePath)) {
     return filePath
   }
@@ -26,7 +27,6 @@ const getMainPath = (): string => {
   return path.join(process.cwd(), 'node_modules', 'node-karin', 'dist', 'start', 'app.mjs')
 }
 
-/**
 /**
  * 启动index.mjs作为子进程
  * @returns 子进程实例
@@ -38,44 +38,35 @@ const start = (): ChildProcess => {
   }
 
   isStart = true
-  lastStartTime = Date.now()
 
   /** 使用fork启动子进程 */
   child = fork(getMainPath())
 
   /** 处理子进程消息 */
   child.on('message', message => {
-    const { port, type, token } = JSON.parse(message as string) || {}
-    if (type === 'restart') {
-      restart(port, token)
-      return
-    }
+    try {
+      const { port, type, token } = JSON.parse(message as string) || {}
+      if (type === 'restart') {
+        restart(port, token)
+        return
+      }
 
-    if (type === 'stop') {
-      process.exit(0)
+      if (type === 'stop') exit()
+    } catch (error) {
+      console.error('处理子进程消息时出错:', error)
     }
   })
 
   /** 处理子进程退出 */
-  child.on('exit', (code) => {
-    isStart = false
-
-    /** 如果不是手动关闭并且不在最小重启间隔内，则自动重启 */
-    if (!isClosing && Date.now() - lastStartTime > minRestartInterval) {
-      process.exit(code!)
-    }
-  })
-
-  /** 处理子进程错误 */
-  child.on('error', (err) => {
-    console.error('子进程发生错误:', err)
-  })
-
+  child.once('exit', exit)
   return child
 }
 
 /**
  * 重启子进程
+ * @param port 端口号
+ * @param token 令牌
+ * @param isFetch 是否发送退出信号
  * @returns 新的子进程实例
  */
 const restart = async (
@@ -83,7 +74,6 @@ const restart = async (
   token: string,
   isFetch = true
 ): Promise<ChildProcess | null> => {
-  isClosing = true
   if (isFetch) {
     await sendExit(port, token)
   }
@@ -138,6 +128,11 @@ const checkPort = (port: number): Promise<boolean> => {
   })
 }
 
+/**
+ * 给已有进程发送退出信号
+ * @param port 端口号
+ * @param token 令牌
+ */
 const sendExit = async (port: number, token: string) => {
   try {
     const result = await fetch(`http://127.0.0.1:${port}/api/v1/exit`, {
@@ -156,9 +151,21 @@ const sendExit = async (port: number, token: string) => {
   } catch { }
 }
 
-/** 主进程退出时清理子进程 */
-process.on('exit', () => {
-  child.kill('SIGTERM')
-})
+/**
+ * 退出
+ */
+const exit = () => {
+  try {
+    /** 先给子进程发送退出信号 */
+    child.kill('SIGTERM')
+    /** 再杀一次子进程 */
+    process.kill(child.pid!)
+  } catch {
+    child?.kill()
+  } finally {
+    process.exit(0)
+  }
+}
 
+process.on('exit', exit)
 start()
