@@ -42,6 +42,8 @@ let activeConnections = 0
  */
 export const getLogRouter: RequestHandler = async (req, res) => {
   const maxConnections = Number(process.env.LOG_API_MAX_CONNECTIONS) || 5
+  // 单次读取的最大字节数
+  const MAX_CHUNK_SIZE = Number(process.env.LOG_API_MAX_CHUNK_SIZE) || 1024 * 1024 // 默认1MB
 
   /** 检查连接数是否达到上限 */
   if (activeConnections >= maxConnections) {
@@ -55,6 +57,7 @@ export const getLogRouter: RequestHandler = async (req, res) => {
 
   /** 检查日期是否有效 */
   if (!date.isValid()) {
+    activeConnections--
     return createBadRequestResponse(res, '日期格式错误')
   }
 
@@ -71,6 +74,7 @@ export const getLogRouter: RequestHandler = async (req, res) => {
   res.setHeader('X-Accel-Buffering', 'no')
 
   let position = 0
+  let isStreaming = false
 
   // 检查是否是 EventSource 请求
   const isEventSource = req.headers.accept === 'text/event-stream'
@@ -83,6 +87,9 @@ export const getLogRouter: RequestHandler = async (req, res) => {
   }, 30000)
 
   const tailFile = () => {
+    // 如果已经在读取中，则跳过本次检查
+    if (isStreaming) return
+
     fs.stat(file, (err, stats) => {
       if (err) {
         logger.error('读取日志文件状态错误:', err)
@@ -96,28 +103,42 @@ export const getLogRouter: RequestHandler = async (req, res) => {
 
       if (position < stats.size) {
         /** 有新内容，读取并发送 */
-        const stream = fs.createReadStream(file, { start: position, encoding: 'utf-8' })
+        isStreaming = true
+
+        // 计算本次读取的字节数，限制单次读取量
+        const endPosition = Math.min(position + MAX_CHUNK_SIZE, stats.size)
+
+        const stream = fs.createReadStream(file, {
+          start: position,
+          end: endPosition - 1,
+          encoding: 'utf-8',
+          highWaterMark: 64 * 1024, // 设置较小的缓冲区，减少内存使用
+        })
 
         /** 监听数据流 */
         stream.on('data', (data: string) => {
           const lines = data.toString().split('\n')
           for (const line of lines) {
-            if (isEventSource) {
-              res.write(`data: ${line}\n\n`)
-            } else {
-              res.write(`${line}\n`)
+            if (line) {
+              if (isEventSource) {
+                res.write(`data: ${line}\n\n`)
+              } else {
+                res.write(`${line}\n`)
+              }
             }
           }
         })
 
         /** 文件读取完毕 */
         stream.on('end', () => {
-          position = stats.size
+          position = endPosition
+          isStreaming = false
         })
 
         /** 监听错误 */
         stream.on('error', (error: Error) => {
           logger.error('读取日志文件错误:', error.message)
+          isStreaming = false
         })
       }
     })
@@ -128,9 +149,17 @@ export const getLogRouter: RequestHandler = async (req, res) => {
   /** 定期检查文件变化 */
   const interval = setInterval(tailFile, 1000)
 
+  // 监听客户端断开连接
   req.on('close', () => {
     clearInterval(interval)
     clearInterval(heartbeat) // 清理心跳定时器
+    activeConnections--
+  })
+
+  // 监听错误
+  req.on('error', () => {
+    clearInterval(interval)
+    clearInterval(heartbeat)
     activeConnections--
   })
 }
@@ -159,6 +188,15 @@ export const getLogFileRouter: RequestHandler = async (req, res) => {
   const filePath = path.join(logsPath, `logger.${file}.log`)
   if (!fs.existsSync(filePath)) {
     return createBadRequestResponse(res, '日志文件不存在')
+  }
+
+  // 获取文件大小
+  const stats = fs.statSync(filePath)
+  // 设置大文件限制 (10MB)
+  const FILE_SIZE_LIMIT = Number(process.env.LOG_FILE_SIZE_LIMIT) || 10 * 1024 * 1024
+
+  if (stats.size > FILE_SIZE_LIMIT) {
+    return createBadRequestResponse(res, '日志文件过大，请使用流式接口获取或下载文件')
   }
 
   const content = fs.readFileSync(filePath, 'utf-8')
