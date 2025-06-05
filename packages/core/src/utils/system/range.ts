@@ -264,38 +264,38 @@ const satisfiesCondition = (version: string, condition: string): boolean => {
 
 /**
  * 一个简单的版本范围检查函数
- * @param range 版本范围
+ * @param satisfies 版本范围
  * @param version 版本
  * @description 检查版本是否在范围内
  * @example
  * ```ts
- * console.log(range('^1.0.0', '1.0.1')) // true
- * console.log(range('^1.0.0', '2.0.0')) // false
- * console.log(range('^1.0.0', '0.0.1')) // false
- * console.log(range('>=1.0.0', '1.0.0')) // true
- * console.log(range('>=1.0.0', '0.0.1')) // false
- * console.log(range('<=1.0.0', '1.0.0')) // true
- * console.log(range('<=1.0.0', '2.0.0')) // false
- * console.log(range('>=1.0.0 <2.0.0', '1.0.0')) // true
- * console.log(range('1.0.0-alpha', '1.0.0-beta')) // false
- * console.log(range('1.0.0-beta', '1.0.0-alpha')) // false
- * console.log(range('^1.0.0-beta', '1.0.0-alpha')) // false
- * console.log(range('>=1.0.0-beta', '1.0.0-alpha')) // false
- * console.log(range('^1.0.0-alpha', '1.0.0-beta')) // true
- * console.log(range('^1.0.0-beta', '1.0.0-beta')) // true
- * console.log(range('^1.0.0-alpha', '1.0.0-alpha')) // true
+ * console.log(satisfies('^1.0.0', '1.0.1')) // true
+ * console.log(satisfies('^1.0.0', '2.0.0')) // false
+ * console.log(satisfies('^1.0.0', '0.0.1')) // false
+ * console.log(satisfies('>=1.0.0', '1.0.0')) // true
+ * console.log(satisfies('>=1.0.0', '0.0.1')) // false
+ * console.log(satisfies('<=1.0.0', '1.0.0')) // true
+ * console.log(satisfies('<=1.0.0', '2.0.0')) // false
+ * console.log(satisfies('>=1.0.0 <2.0.0', '1.0.0')) // true
+ * console.log(satisfies('1.0.0-alpha', '1.0.0-beta')) // false
+ * console.log(satisfies('1.0.0-beta', '1.0.0-alpha')) // false
+ * console.log(satisfies('^1.0.0-beta', '1.0.0-alpha')) // false
+ * console.log(satisfies('>=1.0.0-beta', '1.0.0-alpha')) // false
+ * console.log(satisfies('^1.0.0-alpha', '1.0.0-beta')) // true
+ * console.log(satisfies('^1.0.0-beta', '1.0.0-beta')) // true
+ * console.log(satisfies('^1.0.0-alpha', '1.0.0-alpha')) // true
  *
  * // 通配符示例
- * console.log(range('1.0.x', '1.0.1')) // true
- * console.log(range('1.0.x', '1.1.0')) // false
- * console.log(range('1.x.x', '1.2.3')) // true
- * console.log(range('1.x.0', '1.2.0')) // true
- * console.log(range('1.x.0', '1.2.1')) // false
+ * console.log(satisfies('1.0.x', '1.0.1')) // true
+ * console.log(satisfies('1.0.x', '1.1.0')) // false
+ * console.log(satisfies('1.x.x', '1.2.3')) // true
+ * console.log(satisfies('1.x.0', '1.2.0')) // true
+ * console.log(satisfies('1.x.0', '1.2.1')) // false
  * ```
  */
-export const satisfies = (range: string, version: string): boolean => {
+export const satisfies = (satisfies: string, version: string): boolean => {
   /** 处理复合条件（用空格分隔的多个条件） */
-  const conditions = range.split(' ')
+  const conditions = satisfies.split(' ')
 
   /** 所有条件都必须满足 */
   return conditions.every(condition => satisfiesCondition(version, condition))
