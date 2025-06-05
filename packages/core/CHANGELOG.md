@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.9.11](https://github.com/KarinJS/Karin/compare/core-v1.9.10...core-v1.9.11) (2025-06-05)
+
+
+### 🐛 Bug Fixes
+
+* 转换文件消息段错误 ([5048bd1](https://github.com/KarinJS/Karin/commit/5048bd1108a926086467563bc2f96a5605e68475))
+
 ## [1.9.10](https://github.com/KarinJS/Karin/compare/core-v1.9.9...core-v1.9.10) (2025-06-05)
 
 
