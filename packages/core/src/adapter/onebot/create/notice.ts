@@ -1,4 +1,4 @@
-import { contactFriend, contactGroup, senderFriend, senderGroup } from '@/event'
+import { contactFriend, contactGroup, createPrivateFileUploadedNotice, senderFriend, senderGroup } from '@/event'
 import { AdapterOneBot } from '@/adapter/onebot/core/base'
 import { OB11NoticeType } from '@/adapter/onebot/types/event'
 import type { OB11Notice } from '@/adapter/onebot/types/event'
@@ -19,6 +19,7 @@ import {
   createPrivatePokeNotice,
   createPrivateRecallNotice,
 } from '@/event/create'
+import { getFileSegment } from '../core/convert'
 
 /**
  * 创建通知事件
@@ -243,6 +244,10 @@ export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
         name: event.file.name,
         size: event.file.size,
         subId: event.file.busid,
+        url: async () => {
+          const { file } = await getFileSegment(event.file, bot, contact)
+          return file
+        },
       },
     })
     return
@@ -378,6 +383,34 @@ export const createNotice = (event: OB11Notice, bot: AdapterOneBot) => {
         newCard: event.card_new,
         operatorId: '',
         targetId: userId,
+      },
+    })
+    return
+  }
+
+  // 好友离线文件
+  if (event.notice_type === OB11NoticeType.OfflineFile) {
+    const userId = event.user_id + ''
+    const contact = contactFriend(userId)
+    createPrivateFileUploadedNotice({
+      bot,
+      eventId: `notice:${userId}.${event.time}`,
+      rawEvent: event,
+      time,
+      contact,
+      sender: senderFriend(userId),
+      srcReply: (elements) => bot.sendMsg(contact, elements),
+      content: {
+        operatorId: userId,
+        subId: 0,
+        fid: event.file.id,
+        name: event.file.name,
+        size: event.file.size,
+        expireTime: 0,
+        url: async () => {
+          const { file } = await getFileSegment(event.file, bot, contact)
+          return file
+        },
       },
     })
     return

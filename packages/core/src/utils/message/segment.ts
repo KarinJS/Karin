@@ -30,7 +30,9 @@ import type {
   KarinButton,
   ReadyMusicElement,
   CustomMusicElement,
+  FileElement,
 } from '@/types/segment'
+
 /**
  * 构建文本元素
  * @param text 文本内容
@@ -346,4 +348,21 @@ export const node = (
  */
 export const nodeDirect = (id: string): DirectNodeElement => {
   return { type: 'node', subType: 'messageID', messageId: id, message_id: id }
+}
+
+/**
+ * 构建文件元素
+ * @deprecated 此类型不支持直接发送 请使用`uploadFile`方法
+ * @param file 文件url、路径或者base64
+ * @param options 其他可选参数
+ */
+export const file = (file: string, options?: Partial<FileElement>): FileElement => {
+  return {
+    type: 'file',
+    file,
+    name: options?.name,
+    hash: options?.hash,
+    size: options?.size,
+    fid: options?.fid,
+  }
 }

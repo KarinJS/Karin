@@ -360,15 +360,15 @@ export class PrivateRecallNotice extends NoticeBase {
  * @class PrivateFileUploadedNotice
  */
 export class PrivateFileUploadedNotice extends NoticeBase {
-  #subEvent: 'friendFileUploaded'
+  #subEvent: 'privateFileUploaded'
   #contact: PrivateFileUploadedOptions['contact']
   #sender: PrivateFileUploadedOptions['sender']
   content: PrivateFileUploadedOptions['content']
 
   constructor (options: PrivateFileUploadedOptions) {
-    super(Object.assign(options, { subEvent: 'friendFileUploaded' as const }))
+    super(Object.assign(options, { subEvent: 'privateFileUploaded' as const }))
 
-    this.#subEvent = 'friendFileUploaded'
+    this.#subEvent = 'privateFileUploaded'
     this.#contact = options.contact
     this.#sender = options.sender
     this.content = options.content

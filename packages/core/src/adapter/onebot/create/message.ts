@@ -9,7 +9,7 @@ import type { OB11Message } from '@/adapter/onebot/types/event'
  * @param event onebot11消息事件
  * @param bot 标准api实例
  */
-export const createMessage = (event: OB11Message, bot: AdapterOneBot) => {
+export const createMessage = async (event: OB11Message, bot: AdapterOneBot) => {
   debug('onebot:createMessage', event)
   const time = event.time
   if (event.message_type === 'private') {
@@ -31,7 +31,7 @@ export const createMessage = (event: OB11Message, bot: AdapterOneBot) => {
         messageId: event.message_id + '',
         messageSeq: event.message_id,
         eventId: `message:${event.message_id}`,
-        elements: AdapterConvertKarin(event.message),
+        elements: await AdapterConvertKarin(event.message, bot),
         srcReply: (elements) => bot.sendMsg(contact, elements),
       })
       return
@@ -46,7 +46,7 @@ export const createMessage = (event: OB11Message, bot: AdapterOneBot) => {
       createGroupTempMessage({
         bot,
         contact,
-        elements: AdapterConvertKarin(event.message),
+        elements: await AdapterConvertKarin(event.message, bot),
         eventId: `message:${event.message_id}`,
         messageId: event.message_id + '',
         messageSeq: event.message_id,
@@ -73,7 +73,7 @@ export const createMessage = (event: OB11Message, bot: AdapterOneBot) => {
     createGroupMessage({
       bot,
       contact,
-      elements: AdapterConvertKarin(event.message),
+      elements: await AdapterConvertKarin(event.message, bot),
       eventId: `message:${event.message_id}`,
       messageId: event.message_id + '',
       messageSeq: event.message_id,

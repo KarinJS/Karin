@@ -27,9 +27,9 @@ export const createRawMessage = (data: Elements[]) => {
         return `[${v.type}:base64://...]`
       }
       case 'file': {
-        if (Buffer.isBuffer(v.file)) return `[file:Buffer://..., fid:${v.fid}, md5:${v.md5}]`
-        if (/^http|^file/.test(v.file)) return `[file:${v.file}, fid:${v.fid}, md5:${v.md5}]`
-        return `[file:base64://..., fid:${v.fid}, md5:${v.md5}]`
+        if (Buffer.isBuffer(v.file)) return `[file:Buffer://..., fid:${v.fid}, hash:${v.hash}]`
+        if (/^http|^file/.test(v.file)) return `[file:${v.file}, fid:${v.fid}, hash:${v.hash}]`
+        return `[file:base64://..., fid:${v.fid}, hash:${v.hash}]`
       }
       case 'json':
       case 'xml': {

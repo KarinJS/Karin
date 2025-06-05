@@ -349,6 +349,14 @@ export interface AdapterType<T = any> {
   downloadFile (options?: DownloadFileOptions): Promise<DownloadFileResponse>
 
   /**
+   * 获取文件url
+   * @param contact 目标信息
+   * @param fileId 文件id
+   * @returns 文件url
+   */
+  getFileUrl (contact: Contact, fileId: string): Promise<string>
+
+  /**
    * 创建群文件夹
    * @param groupId 群号
    * @param name 文件夹名

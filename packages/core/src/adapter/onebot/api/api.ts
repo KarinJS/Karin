@@ -7,9 +7,9 @@ import { getHttpBot } from '@/adapter/onebot/post/register'
 import type { OB11AllEvent } from '../types'
 import type { RequestHandler } from 'express'
 
-const onebotPostRouter: RequestHandler = async (req, res) => {
+const onebotPostRouter: RequestHandler<null, {}, OB11AllEvent> = async (req, res) => {
   res.status(204).json({})
-  const data = req.body as OB11AllEvent
+  const data = req.body
   const info = getHttpBot(String(data.self_id))
   if (!data || !info || typeof data !== 'object') {
     logger.warn(`[onebot:http] 未知请求: ${JSON.stringify(data)}`)

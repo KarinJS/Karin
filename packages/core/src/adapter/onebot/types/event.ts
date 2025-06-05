@@ -61,6 +61,8 @@ export const enum OB11NoticeType {
   GroupEssence = 'essence',
   /** 群成员名片更新 */
   GroupCard = 'group_card',
+  /** 好友离线文件 Lagrange.OneBot */
+  OfflineFile = 'offline_file',
 }
 
 /** 请求事件类型 */
@@ -438,6 +440,27 @@ export interface OneBot11GroupCard extends OB11NoticeBaseType {
   card_old: string,
 }
 
+/** 好友离线文件事件 */
+export interface OneBot11FriendOfflineFile extends OB11NoticeBaseType {
+  /** 通知类型 */
+  notice_type: OB11NoticeType.OfflineFile
+  /** 好友 QQ 号 */
+  user_id: number
+  /** 文件信息 */
+  file: {
+    /** 文件 ID */
+    id: string
+    /** 文件名 */
+    name: string
+    /** 文件大小 */
+    size: number
+    /** 文件 hash */
+    hash: string
+    /** 文件 URL */
+    url: string
+  }
+}
+
 /** 通知事件 */
 export type OB11Notice = OneBot11GroupUpload
   | OneBot11GroupAdmin
@@ -454,6 +477,7 @@ export type OB11Notice = OneBot11GroupUpload
   | OneBot11GroupMessageReactionLagrange
   | OneBot11GroupEssence
   | OneBot11GroupCard
+  | OneBot11FriendOfflineFile
 
 /** 请求事件基类 */
 export interface OB11RequestBaseType extends OB11EventBase {

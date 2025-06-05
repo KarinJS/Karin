@@ -152,8 +152,8 @@ export interface FileElement extends Element {
   name?: string
   /** 文件大小 */
   size?: number
-  /** 文件md5 */
-  md5?: string
+  /** 文件hash */
+  hash?: string
 }
 
 /** 语音元素 */

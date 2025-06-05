@@ -101,6 +101,10 @@ export const enum OB11ApiAction {
   setEssenceMsg = 'set_essence_msg',
   /** 删除精华消息 */
   deleteEssenceMsg = 'delete_essence_msg',
+  /** 获取群文件url */
+  getGroupFileUrl = 'get_group_file_url',
+  /** 获取私聊文件url */
+  getPrivateFileUrl = 'get_private_file_url',
 }
 
 /** Api请求参数 */
@@ -453,6 +457,24 @@ export interface OB11ApiParams {
   [OB11ApiAction.deleteEssenceMsg]: {
     /** 消息ID */
     message_id: number
+  }
+  /**
+   * 获取群文件url
+   */
+  [OB11ApiAction.getGroupFileUrl]: {
+    /** 群号 */
+    group_id: number
+    /** 文件ID */
+    file_id: string
+  },
+  /**
+   * 获取私聊文件url
+   */
+  [OB11ApiAction.getPrivateFileUrl]: {
+    /** 对方 QQ 号 napcat不需要这个 随便传一个就行 */
+    user_id: number
+    /** 文件ID */
+    file_id: string
   }
 }
 
@@ -950,11 +972,23 @@ export interface OB11ApiRequest {
   }>
 
   /**
- * 设置精华消息
- */
+   * 设置精华消息
+   */
   [OB11ApiAction.setEssenceMsg]: {}
   /**
    * 移除精华消息
    */
   [OB11ApiAction.deleteEssenceMsg]: {}
+  /**
+   * 获取群文件url
+   */
+  [OB11ApiAction.getGroupFileUrl]: {
+    url: string
+  }
+  /**
+   * 获取私聊文件url
+   */
+  [OB11ApiAction.getPrivateFileUrl]: {
+    url: string
+  }
 }

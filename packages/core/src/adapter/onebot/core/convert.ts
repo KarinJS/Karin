@@ -1,8 +1,9 @@
 import fs from 'node:fs'
+import { segment } from '@/utils/message'
 import type { OB11Segment } from '../types'
 import type { AdapterOneBot } from './base'
-import { Elements, SendElement } from '@/types/segment'
-import { segment } from '@/utils/message'
+import type { Contact } from '@/types'
+import type { Elements, FileElement, SendElement } from '@/types/segment'
 
 /**
  * 处理日志中可能存在的base64字符串
@@ -32,9 +33,17 @@ export const buildError = (selfId: string, action: string, request: string, erro
 
 /**
    * onebot11转karin
+   * @param data onebot11格式消息
+   * @param onebot 机器人实例
    * @return karin格式消息
    */
-export function AdapterConvertKarin (data: Array<OB11Segment> = []): Array<Elements> {
+export const AdapterConvertKarin = async (
+  data: Array<OB11Segment>,
+  onebot: AdapterOneBot,
+  contact?: Contact
+): Promise<Array<Elements>> => {
+  if (!Array.isArray(data)) return []
+
   const elements = []
   try {
     for (const i of data) {
@@ -77,6 +86,9 @@ export function AdapterConvertKarin (data: Array<OB11Segment> = []): Array<Eleme
         case 'xml':
           elements.push(segment.xml(i.data.data))
           break
+        case 'file':
+          elements.push(await getFileSegment(i.data, onebot, contact!))
+          break
         default: {
           elements.push(segment.text(JSON.stringify(i)))
         }
@@ -88,6 +100,40 @@ export function AdapterConvertKarin (data: Array<OB11Segment> = []): Array<Eleme
     return elements
   }
   return elements
+}
+
+/**
+ * 获取文件消息段
+ * @param file 文件信息
+ * @param onebot 机器人实例
+ * @param contact 联系人信息
+ * @returns 文件消息段
+ */
+export const getFileSegment = async (
+  file: any,
+  onebot: AdapterOneBot,
+  contact: Contact
+): Promise<FileElement> => {
+  // lgl
+  if ('file_name' in file && 'file_hash' in file) {
+    return segment.file(file.url, {
+      name: file.file_name,
+      hash: file.file_hash,
+      fid: file.file_id,
+    })
+  }
+
+  // napcat 需要手动获取url
+  if (Object.keys(file).length === 3 && 'file_size' in file && 'file_id' in file) {
+    const url = await onebot.getFileUrl(contact!, file.file_id)
+    return segment.file(url, {
+      name: file.file,
+      size: file.file_size,
+      fid: file.file_id,
+    })
+  }
+
+  return segment.file(file.file, { ...file })
 }
 
 /**

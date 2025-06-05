@@ -49,6 +49,10 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
     }
   }
 
+  get #errMsg (): string {
+    return `[adapter][${this.adapter.protocol}] 此接口未实现`
+  }
+
   get selfId (): string {
     return this.account.selfId
   }
@@ -77,7 +81,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _retryCount 重试次数 默认为0
    */
   sendMsg (_contact: Contact, _elements: Array<Elements>, _retryCount?: number): Promise<SendMsgResults> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -86,7 +90,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _resId 资源ID
    */
   sendLongMsg (_contact: Contact, _resId: string): Promise<SendMsgResults> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -96,7 +100,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _options 首层小卡片外显参数
    */
   sendForwardMsg (_contact: Contact, _elements: Array<NodeElement>, _options?: ForwardOptions): Promise<{ messageId: string, forwardId: string }> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -106,7 +110,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 此接口的返回值不值得信任
    */
   recallMsg (_contact: Contact, _messageId: string): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -116,7 +120,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 头像的url地址
    */
   getAvatarUrl (_userId: string, _size?: 0 | 40 | 100 | 140): Promise<string> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -127,7 +131,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 头像的url地址
    */
   getGroupAvatarUrl (_groupId: string, _size?: 0 | 40 | 100 | 140, _history?: number): Promise<string> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -137,7 +141,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns MessageResponse对象
    */
   getMsg (_contact: Contact, _messageId: string): Promise<MessageResponse> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -166,7 +170,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 包含历史消息的数组
    */
   getHistoryMsg (_contact: Contact, _startMsgId: string | number, _count: number): Promise<Array<MessageResponse>> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -175,7 +179,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 包含MessageResponse对象的数组
    */
   getForwardMsg (_resId: string): Promise<Array<MessageResponse>> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -186,7 +190,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns EssenceMessageBody对象
    */
   getGroupHighlights (_groupId: string, _page: number, _pageSize: number): Promise<Array<GetGroupHighlightsResponse>> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -196,7 +200,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @description 此接口并不是所有协议端都支持的，因此在使用时请注意
    */
   createResId (_contact: Contact, _elements: Array<NodeElement>): Promise<string> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -206,7 +210,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _create true为添加精华消息，false为删除精华消息 默认为true
    */
   setGgroupHighlights (_groupId: string, _messageId: string, _create: boolean): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -216,7 +220,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 此接口的返回值不值得信任
    */
   sendLike (_targetId: string, _count: number): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -228,7 +232,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 此接口的返回值不值得信任
    */
   groupKickMember (_groupId: string, _targetId: string, _rejectAddRequest?: boolean, _kickReason?: string): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -239,7 +243,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 此接口的返回值不值得信任
    */
   setGroupMute (_groupId: string, _targetId: string, _duration: number): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -249,7 +253,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 此接口的返回值不值得信任
    */
   setGroupAllMute (_groupId: string, _isBan: boolean): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -260,7 +264,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 此接口的返回值不值得信任
    */
   setGroupAdmin (_groupId: string, _targetId: string, _isAdmin: boolean): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -271,7 +275,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 此接口的返回值不值得信任
    */
   setGroupMemberCard (_groupId: string, _targetId: string, _card: string): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -281,7 +285,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 此接口的返回值不值得信任
    */
   setGroupName (_groupId: string, _groupName: string): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -291,7 +295,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 此接口的返回值不值得信任
    */
   setGroupQuit (_groupId: string, _isDismiss: boolean): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -302,7 +306,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 此接口的返回值不值得信任
    */
   setGroupMemberTitle (_groupId: string, _targetId: string, _title: string): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -311,7 +315,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 陌生人信息数组
    */
   getStrangerInfo (_targetId: string): Promise<UserInfo> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -320,7 +324,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 好友列表数组
    */
   getFriendList (_refresh?: boolean): Promise<Array<UserInfo>> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -330,7 +334,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 群信息
    */
   getGroupInfo (_groupId: string, _noCache?: boolean): Promise<GroupInfo> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -339,7 +343,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 群列表数组
    */
   getGroupList (_refresh?: boolean): Promise<Array<GroupInfo>> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -351,7 +355,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 群成员信息
    */
   getGroupMemberInfo (_groupId: string, _targetId: string, _refresh?: boolean): Promise<GroupMemberInfo> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -361,7 +365,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 群成员列表数组
    */
   getGroupMemberList (_groupId: string, _refresh?: boolean): Promise<Array<GroupMemberInfo>> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -371,7 +375,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 群荣誉信息数组
    */
   getGroupHonor (_groupId: string): Promise<Array<QQGroupHonorInfo>> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -382,7 +386,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 设置结果
    */
   setFriendApplyResult (_requestId: string, _isApprove: boolean, _remark?: string): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -393,7 +397,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 此接口的返回值不值得信任
    */
   setGroupApplyResult (_requestId: string, _isApprove: boolean, _denyReason?: string): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -403,7 +407,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 此接口的返回值不值得信任
    */
   setInvitedJoinGroupResult (_requestId: string, _isApprove: boolean): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -414,7 +418,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 此接口的返回值不值得信任
    */
   setMsgReaction (_contact: Contact, _messageId: string, _faceId: number, _isSet: boolean): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -426,7 +430,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 此接口的返回值不值得信任
    */
   uploadFile (_contact: Contact, _file: string, _name: string, _folder?: string): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -435,7 +439,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 下载文件的绝对路径和文件MD5
    */
   downloadFile (_options?: DownloadFileOptions): Promise<DownloadFileResponse> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -445,7 +449,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 返回文件夹id和已使用空间
    */
   createGroupFolder (_groupId: string, _name: string): Promise<CreateGroupFolderResponse> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -456,7 +460,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 无返回值
    */
   renameGroupFolder (_groupId: string, _folderId: string, _name: string): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -466,7 +470,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 无返回值
    */
   delGroupFolder (_groupId: string, _folderId: string): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -478,7 +482,17 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 无返回值
    */
   uploadGroupFile (_groupId: string, _file: string, _name?: string): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
+  }
+
+  /**
+   * 获取文件url
+   * @param _contact 目标信息
+   * @param _fileId 文件id
+   * @returns 文件url
+   */
+  getFileUrl (_contact: Contact, _fileId: string): Promise<string> {
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -489,7 +503,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 无返回值
    */
   delGroupFile (_groupId: string, _fileId: string, _busId: number): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -498,7 +512,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 返回文件数量、文件数量上限、已使用空间和空间上限
    */
   getGroupFileSystemInfo (_groupId: string): Promise<GetGroupFileSystemInfoResponse> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -508,7 +522,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 返回文件和文件夹的列表
    */
   getGroupFileList (_groupId: string, _folderId?: string): Promise<GetGroupFileListResponse> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -518,7 +532,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 此接口的返回值不值得信任
    */
   setGroupRemark (_groupId: string, _remark: string): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -526,7 +540,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _groupId 群号
    */
   getNotJoinedGroupInfo (_groupId: string): Promise<GroupInfo> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -535,7 +549,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 返回是否允许at全体成员和全群剩余次数、个人剩余次数
    */
   getAtAllCount (_groupId: string): Promise<GetAtAllCountResponse> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -544,7 +558,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 返回禁言用户列表
    */
   getGroupMuteList (_groupId: string): Promise<Array<GetGroupMuteListResponse>> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -554,7 +568,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @returns 此接口的返回值不值得信任
    */
   pokeUser (_contact: Contact, _count?: number): Promise<boolean> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -562,7 +576,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _domain The domain to get cookies from
    */
   getCookies (_domain: string): Promise<{ cookie: string }> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -570,7 +584,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _domain The domain to get credentials from
    */
   getCredentials (_domain: string): Promise<{ cookies: string, csrf_token: number }> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -578,7 +592,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _domain The domain to get the CSRF token from
    */
   getCSRFToken (_domain: string): Promise<{ token: number }> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 
   /**
@@ -588,6 +602,6 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _jumpUrl The jump url
    */
   getHttpCookies (_appid: string, _daid: string, _jumpUrl: string): Promise<{ cookie: string }> {
-    throw new Error(`[adapter][${this.adapter.protocol}] 此接口未实现`)
+    throw new Error(this.#errMsg)
   }
 }

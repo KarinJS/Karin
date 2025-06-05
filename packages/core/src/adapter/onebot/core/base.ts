@@ -35,28 +35,22 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param str 事件字符串
    */
   eventHandlers (data: OB11AllEvent, str: string) {
-    debug('onebot', str)
-
     if (data.post_type === OB11Event.Message || data.post_type === OB11Event.MessageSent) {
-      debug('onebot:message', str)
       createMessage(data, this)
       return
     }
 
     if (data.post_type === OB11Event.Notice) {
-      debug('onebot:notice', str)
       createNotice(data, this)
       return
     }
 
     if (data.post_type === OB11Event.Request) {
-      debug('onebot:request', str)
       createRequest(data, this)
       return
     }
 
     if (data.post_type === OB11Event.MetaEvent) {
-      debug('onebot:meta', str)
       if (data.meta_event_type === 'lifecycle') {
         if (data.sub_type === 'enable') {
           logger.bot('debug', this.selfId, 'OneBot启用')
@@ -77,7 +71,6 @@ export abstract class AdapterOneBot extends AdapterBase {
     }
 
     if ((data as any).retcode) {
-      debug('onebot:retcode', str)
       const { retcode } = data as any
       if (retcode === 1401 || retcode === 1403) {
         logger.error(`[oneBot11][鉴权失败] address: ${this.adapter.address} event: ${str}`)
@@ -87,7 +80,6 @@ export abstract class AdapterOneBot extends AdapterBase {
       logger.bot('error', this.selfId, `发生未知错误: ${str}`)
     }
 
-    debug('onebot:unknown', str)
     logger.bot('warn', this.selfId, `收到未知事件: ${str}`)
   }
 
@@ -96,7 +88,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @return karin格式消息
    */
   AdapterConvertKarin (data: Array<OB11Segment>) {
-    return AdapterConvertKarin(data)
+    return AdapterConvertKarin(data, this)
   }
 
   /**
@@ -309,7 +301,7 @@ export abstract class AdapterOneBot extends AdapterBase {
         role: 'unknown' as const,
         name: result.sender.nickname,
       },
-      elements: this.AdapterConvertKarin(result.message),
+      elements: await this.AdapterConvertKarin(result.message),
     }
   }
 
@@ -420,7 +412,7 @@ export abstract class AdapterOneBot extends AdapterBase {
           role: v?.sender?.role || 'unknown',
           card: contact.scene === 'group' ? v?.sender?.card || '' : '',
         },
-        elements: this.AdapterConvertKarin(v.message),
+        elements: await this.AdapterConvertKarin(v.message),
       }
 
       all.push(data)
@@ -1368,6 +1360,32 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async sendForwardMessage (contact: Contact, elements: NodeElement[]) {
     return this.sendForwardMsg(contact, elements)
+  }
+
+  /**
+   * 获取文件url
+   * @param contact 目标信息
+   * @param fid 文件id
+   * @returns 文件url
+   */
+  async getFileUrl (contact: Contact, fid: string) {
+    if (contact.scene === 'group') {
+      const { url } = await this.sendApi(
+        OB11ApiAction.getGroupFileUrl,
+        { group_id: Number(contact.peer), file_id: fid }
+      )
+      return url
+    }
+
+    if (contact.scene === 'friend') {
+      const { url } = await this.sendApi(
+        OB11ApiAction.getPrivateFileUrl,
+        { user_id: Number(contact.peer), file_id: fid }
+      )
+      return url
+    }
+
+    throw TypeError(`不支持的场景类型: ${contact.scene}`)
   }
 
   /**

@@ -187,13 +187,6 @@ export interface ReplySegment extends Segment {
   }
 }
 
-export interface FileSegment extends Segment {
-  type: 'file'
-  data: {
-    file: string
-  }
-}
-
 /** 合并转发消息段 */
 export interface ForwardSegment extends Segment {
   type: 'forward'
@@ -240,6 +233,7 @@ export type OB11SegmentBase =
   | ForwardSegment
   | XmlSegment
   | JsonSegment
+  | FileSegment
 
 /** 合并转发已有消息节点消息段 */
 export interface DirectNodeSegment extends Segment {
@@ -260,6 +254,12 @@ export interface CustomNodeSegments extends Segment {
     summary?: string
     source?: string
   }
+}
+
+/** 文件消息段 */
+export interface FileSegment<T = any> extends Segment {
+  type: 'file'
+  data: T
 }
 
 /** 合并转发消息段 */

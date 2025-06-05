@@ -53,7 +53,7 @@ export type MessageEventSub = 'group' | 'friend' | 'guild' | 'direct' | 'groupTe
  * - `receiveLike`: 收到点赞
  * - `friendPoke`: 好友戳一戳
  * - `friendRecall`: 好友撤回消息
- * - `friendFileUploaded`: 好友发送文件
+ * - `privateFileUploaded`: 好友发送文件
  * - `friendIncrease`: 好友增加
  * - `friendDecrease`: 好友减少
  *
@@ -81,7 +81,7 @@ export type NoticeEventSub =
   /** 好友撤回消息 */
   | 'friendRecall'
   /** 好友发送文件 */
-  | 'friendFileUploaded'
+  | 'privateFileUploaded'
   /** 好友增加 */
   | 'friendIncrease'
   /** 好友减少 */

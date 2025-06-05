@@ -11,7 +11,7 @@ import {
   disableViaPluginBlacklist,
 } from './handler'
 
-import type { Notice, Request } from '@/types/event'
+import type { MessageEventSub, Notice, Request } from '@/types/event'
 
 /**
  * @description 初始化提示信息
@@ -30,8 +30,8 @@ export const initTips = (
     case 'friendRecall':
       ctx.tips = `撤回消息: ${ctx.content.messageId}`
       break
-    case 'friendFileUploaded':
-      ctx.tips = `文件上传: [fid:${ctx.content.fid}] [url:${ctx.content.url}] [name:${ctx.content.name}]`
+    case 'privateFileUploaded':
+      ctx.tips = `文件上传: [fid:${ctx.content.fid}] [fid:${ctx.content.fid}] [name:${ctx.content.name}]`
       break
     case 'friendIncrease':
       ctx.tips = `新增好友: ${ctx.content.targetId}`
@@ -49,7 +49,7 @@ export const initTips = (
       ctx.tips = `撤回消息: ${ctx.content.messageId}`
       break
     case 'groupFileUploaded':
-      ctx.tips = `文件上传: [fid:${ctx.content.fid}] [url:${ctx.content.url}] [name:${ctx.content.name}]`
+      ctx.tips = `文件上传: [fid:${ctx.content.fid}] [fid:${ctx.content.fid}] [name:${ctx.content.name}]`
       break
     case 'groupMemberAdd':
       ctx.tips = `新增成员: [操作者:${ctx.content.operatorId}] [目标成员:${ctx.content.targetId}]`
@@ -113,12 +113,21 @@ export const initTips = (
  */
 export const initPrint = (
   ctx: Notice | Request,
-  type: string,
+  type: MessageEventSub,
   prefix: string,
   level: 'info' | 'debug' = 'info'
 ) => {
-  ctx.logText = `[${type}:${ctx.userId}(${ctx.sender.nick || ''})]`
-  logger.bot(level, ctx.selfId, `${prefix}: [${ctx.userId}(${ctx.sender.nick || ''})] ${ctx.tips}`)
+  let idPath: string = '未知'
+
+  if (ctx.isFriend) {
+    idPath = ctx.userId
+  } else if (ctx.isGroup) {
+    idPath = `${ctx.groupId}-${ctx.userId}`
+  }
+
+  const nick = ctx.sender.nick || ''
+  ctx.logText = `[${type}:${idPath}(${nick})]`
+  logger.bot(level, ctx.selfId, `${prefix}: ${ctx.logText} ${ctx.tips}`)
 }
 
 /**

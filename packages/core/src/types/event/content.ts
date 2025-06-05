@@ -51,7 +51,7 @@ export interface PrivateFileUploadedType {
   operatorId: string
   /** 文件ID 此项没有则为空字符串 */
   fid: string
-  /** 文件子ID 此项没有则为空字符串 */
+  /** 文件子ID 此项没有则为0 */
   subId: number
   /** 文件名 此项没有则为空字符串 */
   name: string
@@ -60,7 +60,7 @@ export interface PrivateFileUploadedType {
   /** 过期时间 此项没有则为0 */
   expireTime: number
   /** 文件URL */
-  url: string
+  url: () => Promise<string>
 }
 
 /** 通知事件: 群聊戳一戳 */
@@ -109,7 +109,7 @@ export interface GroupFileUploadedType {
   /** 过期时间 */
   expireTime?: number
   /** 文件URL */
-  url?: string
+  url: () => Promise<string>
 }
 
 /** 通知事件: 群名片变动 */
