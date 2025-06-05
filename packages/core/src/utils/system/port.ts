@@ -1,5 +1,8 @@
 import { createServer } from 'node:net'
 import { sleep } from '@/utils/common/sleep'
+import { exec } from '@/utils/system/exec'
+import { getPid } from '@/utils/system/pid'
+import { isWin } from '@/utils/system/system'
 
 /**
  * 检查端口是否可用
@@ -47,4 +50,24 @@ export const waitPort = async (
   }
 
   return false
+}
+
+/**
+ * 结束指定PID或端口的程序
+ * @param identifier - PID号或端口号
+ * @param isPort - 是否为端口号
+ * @returns 是否成功结束程序
+ */
+export const killApp = async (
+  identifier: number,
+  isPort: boolean = false
+): Promise<boolean> => {
+  const pid: number | null = isPort ? await getPid(Number(identifier)) : Number(identifier)
+  if (!pid) return false
+  const command = isWin
+    ? `taskkill /F /PID ${pid}`
+    : `kill -9 ${pid}`
+  const { stderr } = await exec(command)
+  if (stderr) return false
+  return true
 }
