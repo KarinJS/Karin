@@ -57,7 +57,7 @@ export interface Package {
   devDependencies: Record<string, string>
   /** peer依赖 */
   peerDependencies: Record<string, string>
-  /** 引擎 */
+  /** @deprecated 请使用 engines.karin 代替 */
   engines: Record<string, string>
   /** 发布配置 */
   publishConfig: {

@@ -369,8 +369,9 @@ const collectGitPlugins = async (files: fs.Dirent[], list: string[]): Promise<vo
 
       /** 验证版本兼容性 */
       const pkg = await requireFile<PkgData>(path.join(karinPathPlugins, v.name, 'package.json'))
-      if (pkg?.karin?.engines?.karin && !satisfies(pkg.karin.engines.karin, process.env.KARIN_VERSION)) {
-        const msg = `[getPlugins][git] ${v.name} 要求 node-karin 版本为 ${pkg.karin.engines.karin}，当前不符合要求，跳过加载插件`
+      const engines = pkg?.karin?.engines?.karin || pkg?.engines?.karin
+      if (engines && !satisfies(engines, process.env.KARIN_VERSION)) {
+        const msg = `[getPlugins][git] ${v.name} 要求 node-karin 版本为 ${engines}，当前不符合要求，跳过加载插件`
         isInit && setTimeout(() => logger.error(msg), 1000)
         return
       }
@@ -435,10 +436,11 @@ const collectNpmPlugins = async (list: string[]): Promise<void> => {
       if (!pkg.karin) return
 
       /** 检查版本兼容性 */
-      if (pkg.karin?.engines?.karin) {
-        if (!satisfies(pkg.karin.engines.karin, process.env.KARIN_VERSION)) {
+      const engines = pkg.karin?.engines?.karin || pkg.engines?.karin
+      if (engines) {
+        if (!satisfies(engines, process.env.KARIN_VERSION)) {
           isInit && logger.error(
-            `[getPlugins][npm] ${name} 要求 node-karin 版本为 ${pkg.karin.engines.karin}，当前不符合要求，跳过加载插件`
+            `[getPlugins][npm] ${name} 要求 node-karin 版本为 ${engines}，当前不符合要求，跳过加载插件`
           )
           return
         }
