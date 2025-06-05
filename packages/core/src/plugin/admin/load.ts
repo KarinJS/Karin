@@ -36,14 +36,12 @@ let seq = 0
  * 加载插件包
  * @param pkg 插件包
  * @param allPromises 所有Promise
- * @param entryPromises 入口文件Promise
  *
  * @description 此处所有的加载都是异步的 所以需要传入Promise数组
  */
 export const pkgLoads = async (
   pkg: PkgInfo,
-  allPromises: Promise<void>[],
-  entryPromises: Promise<void>[]
+  allPromises: Promise<void>[]
 ) => {
   pkg.id = ++seq
   cache.index[pkg.id] = pkg
@@ -57,7 +55,22 @@ export const pkgLoads = async (
 
   /** 创建插件基本文件夹 - 这个需要立即执行 */
   await createPluginDir(pkg.name, files)
-  debug('debug: createPluginDir', pkg.name, files)
+
+  /** 收集入口文件加载的Promise */
+  if (pkg.type !== 'app') {
+    const main = pkg.type === 'npm' || !isTs()
+      ? await loadMainFile(pkg, pkg.pkgData?.main)
+      : await loadMainFile(pkg, pkg.pkgData?.karin?.main)
+
+    if (main && main.KARIN_PLUGIN_INIT) {
+      try {
+        await main.KARIN_PLUGIN_INIT()
+        logger.debug(`[load][${pkg.name}] 插件执行KARIN_PLUGIN_INIT函数成功`)
+      } catch (error) {
+        logger.error(new Error(`[load][${pkg.name}] 插件执行KARIN_PLUGIN_INIT函数失败`, { cause: error }))
+      }
+    }
+  }
 
   /** 收集所有app加载的Promise */
   pkg.apps.forEach(app => {
@@ -67,15 +80,6 @@ export const pkgLoads = async (
     }
     allPromises.push(promise())
   })
-
-  /** 收集入口文件加载的Promise */
-  if (pkg.type !== 'app') {
-    if (pkg.type === 'npm' || !isTs()) {
-      loadMainFile(entryPromises, pkg, pkg.pkgData?.main)
-    } else {
-      loadMainFile(entryPromises, pkg, pkg.pkgData?.karin?.main)
-    }
-  }
 
   /** 静态资源目录处理 */
   if (pkg.type !== 'app' && pkg?.pkgData?.karin?.static) {
@@ -92,16 +96,17 @@ export const pkgLoads = async (
 
 /**
  * 加载入口文件
- * @param entryPromises 入口文件Promise
  * @param pkg 插件包
  * @param dir 入口文件路径
  */
-const loadMainFile = async (entryPromises: Promise<void>[], pkg: PkgInfo, dir?: string) => {
+const loadMainFile = async (pkg: PkgInfo, dir?: string) => {
   if (!dir) return
   const file = path.join(pkg.dir, dir)
   if (fs.existsSync(file)) {
-    entryPromises.push(pkgLoadModule(pkg.name, file))
+    return pkgLoadModule(pkg.name, file)
   }
+
+  return null
 }
 
 /**
@@ -323,19 +328,16 @@ export const pkgHotReload = async (
 ) => {
   /** 收集所有插件加载的Promise */
   const allPromises: Promise<void>[] = []
-  /** 收集入口文件加载的Promise */
-  const entryPromises: Promise<void>[] = []
 
   const pkg = await getPluginsInfo([`${type}:${name}`], true, true)
   if (pkg.length === 0) {
     throw new Error(`[load][${type}:${name}] 插件不存在`)
   }
 
-  await pkgLoads(pkg[0], allPromises, entryPromises)
-  await Promise.allSettled([...allPromises, ...entryPromises])
+  await pkgLoads(pkg[0], allPromises)
+  await Promise.allSettled(allPromises)
   /** 回收缓存 */
   allPromises.length = 0
-  entryPromises.length = 0
   /** 排序 */
   pkgSort()
 }

@@ -13,17 +13,14 @@ export const initPlugins = async () => {
   logger.info('加载插件中...')
   /** 收集所有插件加载的Promise */
   const allPromises: Promise<void>[] = []
-  /** 收集入口文件加载的Promise */
-  const entryPromises: Promise<void>[] = []
   /** 并发加载所有插件 */
   const list = await getPlugins('all', true, false, true)
-  await Promise.all(list.map(async (pkg) => pkgLoads(pkg, allPromises, entryPromises)))
+  await Promise.all(list.map(async (pkg) => pkgLoads(pkg, allPromises)))
 
   /** 等待所有Promise完成 */
-  await Promise.allSettled([...allPromises, ...entryPromises])
+  await Promise.allSettled(allPromises)
   /** 回收缓存 */
   allPromises.length = 0
-  entryPromises.length = 0
 
   /** 排序 */
   pkgSort()
