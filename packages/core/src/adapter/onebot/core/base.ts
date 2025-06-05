@@ -85,10 +85,12 @@ export abstract class AdapterOneBot extends AdapterBase {
 
   /**
    * onebot11转karin
+   * @param data onebot11格式消息
+   * @param contact 联系人信息 如果需要转换napcat的文件消息则需要传入
    * @return karin格式消息
    */
-  AdapterConvertKarin (data: Array<OB11Segment>) {
-    return AdapterConvertKarin(data, this)
+  AdapterConvertKarin (data: Array<OB11Segment>, contact?: Contact) {
+    return AdapterConvertKarin(data, this, contact)
   }
 
   /**
@@ -301,7 +303,7 @@ export abstract class AdapterOneBot extends AdapterBase {
         role: 'unknown' as const,
         name: result.sender.nickname,
       },
-      elements: await this.AdapterConvertKarin(result.message),
+      elements: await this.AdapterConvertKarin(result.message, contact),
     }
   }
 
@@ -412,7 +414,7 @@ export abstract class AdapterOneBot extends AdapterBase {
           role: v?.sender?.role || 'unknown',
           card: contact.scene === 'group' ? v?.sender?.card || '' : '',
         },
-        elements: await this.AdapterConvertKarin(v.message),
+        elements: await this.AdapterConvertKarin(v.message, contact),
       }
 
       all.push(data)

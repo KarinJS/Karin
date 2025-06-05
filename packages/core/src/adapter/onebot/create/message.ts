@@ -31,7 +31,7 @@ export const createMessage = async (event: OB11Message, bot: AdapterOneBot) => {
         messageId: event.message_id + '',
         messageSeq: event.message_id,
         eventId: `message:${event.message_id}`,
-        elements: await AdapterConvertKarin(event.message, bot),
+        elements: await AdapterConvertKarin(event.message, bot, contact),
         srcReply: (elements) => bot.sendMsg(contact, elements),
       })
       return
@@ -46,7 +46,7 @@ export const createMessage = async (event: OB11Message, bot: AdapterOneBot) => {
       createGroupTempMessage({
         bot,
         contact,
-        elements: await AdapterConvertKarin(event.message, bot),
+        elements: await AdapterConvertKarin(event.message, bot, contact),
         eventId: `message:${event.message_id}`,
         messageId: event.message_id + '',
         messageSeq: event.message_id,
@@ -73,7 +73,7 @@ export const createMessage = async (event: OB11Message, bot: AdapterOneBot) => {
     createGroupMessage({
       bot,
       contact,
-      elements: await AdapterConvertKarin(event.message, bot),
+      elements: await AdapterConvertKarin(event.message, bot, contact),
       eventId: `message:${event.message_id}`,
       messageId: event.message_id + '',
       messageSeq: event.message_id,
