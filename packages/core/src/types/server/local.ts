@@ -110,13 +110,13 @@ export interface DefineConfig<T = any> {
     description?: string
   },
   /** 默认组件配置参数 */
-  components: () => ComponentConfig[] | Promise<ComponentConfig[]>
+  components?: () => ComponentConfig[] | Promise<ComponentConfig[]>
   /**
    * 保存配置
    * @param config 配置
    * @returns 保存结果
    */
-  save: (config: T) => SaveConfigResponse | Promise<SaveConfigResponse>
+  save?: (config: T) => SaveConfigResponse | Promise<SaveConfigResponse>
   /**
    * 自定义组件根路由
    * @returns 自定义组件根路由
