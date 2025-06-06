@@ -64,18 +64,12 @@ class AdapterConsole extends AdapterBase implements AdapterType {
     }
 
     if (text === 'rs' || text === 'restart') {
-      process.send!(JSON.stringify({
-        type: 'restart',
-        port: process.env.HTTP_PORT,
-        token: process.env.HTTP_AUTH_KEY,
-      }))
+      process.send!(JSON.stringify({ type: 'restart' }))
       return
     }
 
     if (text === 'stop') {
-      process.send!(JSON.stringify({
-        type: 'stop',
-      }))
+      process.send!(JSON.stringify({ type: 'stop' }))
       return
     }
 

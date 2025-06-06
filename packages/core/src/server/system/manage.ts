@@ -1,5 +1,5 @@
 import { restartDirect } from '@/utils/system/restart'
-import { createSuccessResponse } from '../utils/response'
+import { createSuccessResponse, createServerErrorResponse } from '../utils/response'
 
 import type { RequestHandler } from 'express'
 
@@ -7,9 +7,13 @@ import type { RequestHandler } from 'express'
  * 重启karin
  */
 export const restartRouter: RequestHandler = async (req, res) => {
-  const { isPm2 } = req.body
-  createSuccessResponse(res, null, '重启指令发送成功')
-  restartDirect(isPm2 ?? false)
+  try {
+    const { isPm2 = false, reloadDeps = false } = req.body
+    restartDirect({ isPm2, reloadDeps })
+    createSuccessResponse(res, null, '重启指令发送成功')
+  } catch (error) {
+    createServerErrorResponse(res, (error as Error).message)
+  }
 }
 
 /**

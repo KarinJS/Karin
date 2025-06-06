@@ -38,4 +38,7 @@ export const api = {
   getLoadedCommandPluginCacheList: `${BASE_ROUTER}/plugin/loaded/command`,
   /** @version 1.8.0 获取插件市场列表 */
   getPluginMarketList: `${BASE_ROUTER}/plugin/market`,
+
+  /** 重启karin */
+  restartKarin: `${BASE_ROUTER}/restart`,
 }

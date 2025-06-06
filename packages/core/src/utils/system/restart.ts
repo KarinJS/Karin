@@ -7,12 +7,14 @@ import { exec } from '@/utils/system/exec'
  * @param contact - 事件联系人信息 也就是从哪来的这条消息 传e.contact即可
  * @param messageId - 消息id 传e.message_id
  * @param isFront - 是否为前台重启 默认是 不支持的环境会强制为pm2重启
+ * @param reloadDeps - 是否为重新加载依赖 默认是false
  */
 export const restart = async (
   selfId: string,
   contact: Contact,
   messageId: string,
-  isFront = true
+  isFront = true,
+  reloadDeps = false
 ): Promise<{ status: 'success' | 'failed'; data: string | Error }> => {
   const options = {
     selfId,
@@ -27,11 +29,7 @@ export const restart = async (
   await db.set(key, options)
 
   if (isFront && process.send) {
-    process.send(JSON.stringify({
-      type: 'restart',
-      port: process.env.HTTP_PORT,
-      token: process.env.HTTP_AUTH_KEY,
-    }))
+    process.send(JSON.stringify({ type: 'restart', reloadDeps }))
     return { status: 'success', data: '已发送重启信号' }
   }
 
@@ -51,18 +49,21 @@ export const restart = async (
 
 /**
  * 直接重启
- * @param isPm2 - 是否为pm2重启 默认false
+ * @param options - 重启选项
  */
-export const restartDirect = async (isPm2 = false) => {
+export const restartDirect = async (options: {
+  /** 是否为pm2重启 */
+  isPm2?: boolean
+  /** 是否为重新加载依赖 */
+  reloadDeps?: boolean
+}) => {
+  const { isPm2 = false, reloadDeps = false } = options || {}
   logger.mark('收到重启请求，正在重启...')
+
   if (!isPm2 && process?.send) {
-    process.send(JSON.stringify({
-      type: 'restart',
-      port: process.env.HTTP_PORT,
-      token: process.env.HTTP_AUTH_KEY,
-    }))
-    logger.mark('正在通知父进程重启...')
-    process.exit(0)
+    process.send(JSON.stringify({ type: 'restart', reloadDeps }))
+    logger.debug('正在通知父进程重启...')
+    return
   }
 
   if (process.env.RUNTIME === 'pm2') {

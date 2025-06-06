@@ -46,6 +46,7 @@ import { Switch } from '@heroui/switch'
 import ConsoleMessage from '@/components/ConsoleMessage'
 import { getKarinStatusRequest } from '@/request/status'
 import key from '@/consts/key'
+import { restartRequest } from '@/request/restart'
 
 interface IconMap {
   [key: string]: LucideIcon
@@ -180,7 +181,7 @@ function UpdateButtons ({ handleCloseModal }: { handleCloseModal: () => void }) 
             const { status } = await request.serverGet<{ status: 'ok' | 'failed' }>('/api/v1/system/update', { timeout: 30000 })
             if (status === 'ok') {
               toast.success('更新成功，正在重启......')
-              await request.serverPost('/api/v1/restart', { isPm2: true })
+              await restartRequest({ isPm2: true })
               await new Promise(resolve => {
                 const interval = setInterval(async () => {
                   try {
@@ -532,7 +533,7 @@ function ControlButtons () {
       onConfirm: async () => {
         try {
           setRunning(true)
-          await request.serverPost('/api/v1/restart')
+          await restartRequest({ isPm2: false })
           await new Promise(resolve => {
             const interval = setInterval(async () => {
               try {
