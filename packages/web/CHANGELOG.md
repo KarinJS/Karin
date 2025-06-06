@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.9](https://github.com/KarinJS/Karin/compare/web-v1.8.8...web-v1.8.9) (2025-06-06)
+
+
+### 🐛 Bug Fixes
+
+* close [#460](https://github.com/KarinJS/Karin/issues/460) ([dd2bd1a](https://github.com/KarinJS/Karin/commit/dd2bd1aee7edd91dadf98617055426539b0881b8))
+
 ## [1.8.8](https://github.com/KarinJS/Karin/compare/web-v1.8.7...web-v1.8.8) (2025-05-21)
 
 
