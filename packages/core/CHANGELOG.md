@@ -1,5 +1,23 @@
 # 更新日志
 
+## [1.10.0](https://github.com/KarinJS/Karin/compare/core-v1.9.11...core-v1.10.0) (2025-06-06)
+
+
+### ✨ Features
+
+* **core:** 添加端口相关工具并优化 PID 获取逻辑 ([#457](https://github.com/KarinJS/Karin/issues/457)) ([dc4cda9](https://github.com/KarinJS/Karin/commit/dc4cda9889d52d4c2a4bd90992ce61c23ddf477d))
+
+
+### 🐛 Bug Fixes
+
+* close [#460](https://github.com/KarinJS/Karin/issues/460) ([dd2bd1a](https://github.com/KarinJS/Karin/commit/dd2bd1aee7edd91dadf98617055426539b0881b8))
+* 更新 HMR 日志输出，增加空插件列表提示 ([1d14be2](https://github.com/KarinJS/Karin/commit/1d14be295372096295af890bf45b53b8033e19be))
+
+
+### ⚡️ Performance
+
+* **core:** 优化端口功能，添加结束指定PID或端口程序 ([#459](https://github.com/KarinJS/Karin/issues/459)) ([0d13395](https://github.com/KarinJS/Karin/commit/0d13395d610b36f306cf56231f732a2ff39c5582))
+
 ## [1.9.11](https://github.com/KarinJS/Karin/compare/core-v1.9.10...core-v1.9.11) (2025-06-05)
 
 
