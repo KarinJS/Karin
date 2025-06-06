@@ -45,7 +45,9 @@ export const initPluginHmr = async (
   })
 
   watchDirs.clear()
-  logger.info(`\n[hmr] ${logger.magenta('正在监听文件夹')}:\n${relativePaths.join('\n')}`)
+  relativePaths.length
+    ? logger.info(`\n[hmr] ${logger.magenta('正在监听文件夹')}:\n  ${relativePaths.join('\n  ')}`)
+    : logger.info('[hmr] 当前监听的插件列表为空')
 }
 
 /**
