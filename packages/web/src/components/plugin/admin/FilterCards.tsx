@@ -49,6 +49,20 @@ const FilterCards: FC<FilterCardsProps> = ({ counts, selectedType, onTypeChange 
       />
 
       <StatCard
+        title='NPM插件'
+        count={counts.npm}
+        description='Npm包插件'
+        icon={renderIcon(24, FaNpm)}
+        gradient='bg-gradient-to-br from-rose-400/10 to-rose-500/20 dark:from-rose-600/10 dark:to-rose-700/20'
+        border='border border-rose-200/30 dark:border-rose-800/20'
+        iconBg='bg-rose-400/20 dark:bg-rose-700/30'
+        textColor='text-rose-700 dark:text-rose-300'
+        ringColor='ring-rose-400 dark:ring-rose-500'
+        isActive={selectedType === 'npm'}
+        onClick={() => onTypeChange('npm')}
+      />
+
+      <StatCard
         title='Git插件'
         count={counts.git}
         description='Git 插件'
@@ -76,19 +90,6 @@ const FilterCards: FC<FilterCardsProps> = ({ counts, selectedType, onTypeChange 
         onClick={() => onTypeChange('app')}
       />
 
-      <StatCard
-        title='NPM插件'
-        count={counts.npm}
-        description='Npm包插件'
-        icon={renderIcon(24, FaNpm)}
-        gradient='bg-gradient-to-br from-rose-400/10 to-rose-500/20 dark:from-rose-600/10 dark:to-rose-700/20'
-        border='border border-rose-200/30 dark:border-rose-800/20'
-        iconBg='bg-rose-400/20 dark:bg-rose-700/30'
-        textColor='text-rose-700 dark:text-rose-300'
-        ringColor='ring-rose-400 dark:ring-rose-500'
-        isActive={selectedType === 'npm'}
-        onClick={() => onTypeChange('npm')}
-      />
     </div>
   )
 }

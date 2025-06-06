@@ -62,6 +62,11 @@ export const getTypeConfig = (type: PluginType) => {
         color: 'primary',
         text: 'App插件',
       }
+    case 'npm':
+      return {
+        color: 'danger',
+        text: 'NPM插件',
+      }
     case 'all':
     default:
       return {

@@ -24,7 +24,7 @@ const convertNpmDependencyToPlugin = (npmDependency: Dependency): PluginAdminLis
   return {
     id: npmDependency.name,
     name: npmDependency.name,
-    type: 'npm' as const,
+    type: 'npm',
     version: npmDependency.current,
     latestHash: npmDependency.latest[npmDependency.latest.length - 1] || npmDependency.current,
   }
@@ -404,19 +404,24 @@ export const PluginManagePage = (): ReactElement => {
    * 计算每种类型的插件数量
    */
   const getPluginCounts = useCallback(() => {
-    if (!plugins || plugins.length === 0) return { all: 0, npm: 0, git: 0, app: 0 }
+    if (!allPlugins || allPlugins.length === 0) return { all: 0, npm: 0, git: 0, app: 0 }
 
-    const counts = { all: plugins.length, npm: 0, git: 0, app: 0 }
+    // 初始化总数为0，不再包含all
+    const counts = { all: 0, npm: 0, git: 0, app: 0 }
 
-    plugins.forEach(plugin => {
+    // 先统计每种类型的数量
+    allPlugins.forEach(plugin => {
       const pluginType = plugin.type as keyof typeof counts
       if (pluginType in counts) {
         counts[pluginType]++
       }
     })
 
+    // 然后计算总数
+    counts.all = allPlugins.length
+
     return counts
-  }, [plugins])
+  }, [allPlugins])
 
   /**
    * 渲染筛选卡片
@@ -430,7 +435,9 @@ export const PluginManagePage = (): ReactElement => {
         onTypeChange={handleTypeChange}
       />
     )
-  }  /**
+  }
+
+  /**
    * 渲染表格内容
    */
   const renderTableContent = () => {
