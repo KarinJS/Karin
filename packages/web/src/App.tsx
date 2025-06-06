@@ -18,6 +18,7 @@ const LogPage = lazy(() => import('@/pages/dashboard/log'))
 const TerminalPage = lazy(() => import('@/pages/dashboard/terminal'))
 const WebUIPluginPage = lazy(() => import('@/pages/dashboard/plugin/webui'))
 const DependenciesPage = lazy(() => import('@/pages/dashboard/dependencies/dependencies'))
+const PluginLoaderPage = lazy(() => import('@/pages/dashboard/plugin/components'))
 
 // Main App
 function App () {
@@ -50,6 +51,7 @@ function App () {
           <Route element={<PluginMarketPage />} path='/plugins/list' />
           <Route element={<PluginConfigPage />} path='/plugins/config' />
           <Route element={<PluginManagePage />} path='/plugins/manage' />
+          <Route element={<PluginLoaderPage />} path='/plugins/components/*' />
           <Route element={<LogPage />} path='/log' />
           <Route element={<AboutPage />} path='/about' />
           <Route path='*' element={<NotFoundPage />} />

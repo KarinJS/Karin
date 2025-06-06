@@ -50,6 +50,7 @@ import {
   GET_PLUGIN_LIST_PLUGIN_ADMIN_ROUTER,
   GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER,
   GET_PLUGIN_MARKET_LIST_ROUTER,
+  GET_PLUGIN_CUSTOM_COMPONENTS_ROUTER,
 } from './router'
 import { logMiddleware } from '../log'
 import { authMiddleware } from '../auth/middleware'
@@ -75,6 +76,7 @@ import {
 } from '../log/getLog'
 import {
   pluginGetConfig,
+  pluginGetCustomComponents,
   pluginIsConfigExist,
   pluginSaveConfig,
 } from '../plugins/config'
@@ -167,6 +169,8 @@ router.post(GET_PLUGIN_CONFIG_ROUTER, pluginGetConfig)
 router.post(SAVE_PLUGIN_CONFIG_ROUTER, pluginSaveConfig)
 /** 判断插件web.config是否存在 */
 router.post(IS_PLUGIN_CONFIG_EXIST_ROUTER, pluginIsConfigExist)
+/** 获取自定义组件入口 */
+router.post(GET_PLUGIN_CUSTOM_COMPONENTS_ROUTER, pluginGetCustomComponents)
 
 /** 插件管理 */
 router.post(PLUGIN_ADMIN_ROUTER, pluginAdminRouter)

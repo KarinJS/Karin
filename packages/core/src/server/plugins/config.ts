@@ -10,6 +10,7 @@ import type { Apps } from '@/types/plugin'
 import type { RequestHandler } from 'express'
 import type { PkgData } from '@/utils/fs/pkg'
 import type { DefineConfig, GetConfigResponse } from '@/types/server/local'
+import { getPlugins } from '@/plugin/system/list'
 
 interface BaseConfig {
   /** 插件类型 */
@@ -260,8 +261,8 @@ export const pluginGetConfig: RequestHandler = async (req, res) => {
     createSuccessResponse(res, null)
   })
 
-  if (!config) {
-    return createServerErrorResponse(res, '参数错误')
+  if (!config || !config.components) {
+    return createServerErrorResponse(res, '参数错误或插件没有默认组件')
   }
 
   const list: Record<string, any>[] = []
@@ -299,6 +300,7 @@ export const pluginSaveConfig: RequestHandler = async (req, res) => {
   if (!configPath) return createServerErrorResponse(res, '参数错误')
 
   const { save } = await loadConfig(configPath)
+  if (!save) return createServerErrorResponse(res, '插件没有实现 save 函数')
   const result = save(options.config)
   const response = util.types.isPromise(result) ? await result : result
   createSuccessResponse(res, response || { success: true, message: '没有返回值哦 φ(>ω<*) ' })
@@ -311,4 +313,35 @@ export const pluginIsConfigExist: RequestHandler = async (req, res) => {
   const options = req.body as BaseConfig
   const configPath = getConfigPath(options)
   createSuccessResponse(res, typeof configPath === 'string')
+}
+
+/**
+ * 获取自定义组件入口
+ */
+export const pluginGetCustomComponents: RequestHandler = async (req, res) => {
+  const { name } = req.body as { name: string }
+  if (!name) return createServerErrorResponse(res, '参数错误')
+
+  const list = await getPlugins('all')
+  const type = (() => {
+    for (const item of list) {
+      if (`npm:${name}` === item) return 'npm'
+      if (`git:${name}` === item) return 'git'
+      if (`app:${name}` === item) return 'app'
+      if (`root:${name}` === item) return 'git'
+    }
+    return null
+  })()
+  if (!type || type === 'app') return createServerErrorResponse(res, '插件不存在')
+
+  const config = await getWebConfig(type, name, () => {
+    logger.error(`[plugin] 插件${name}的web配置文件名称不正确: 需要以 web.config 命名`)
+    createSuccessResponse(res, null)
+  })
+
+  if (!config || !config.customComponents) return createServerErrorResponse(res, '插件不存在或没有自定义组件')
+
+  let result = config.customComponents()
+  result = util.types.isPromise(result) ? await result : result
+  createSuccessResponse(res, `${result.path}/${result.entry}`)
 }
