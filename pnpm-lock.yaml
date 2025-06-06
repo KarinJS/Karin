@@ -171,6 +171,34 @@ importers:
         specifier: ^5.3.3
         version: 5.8.2
 
+  packages/plugin-demo:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.1.0
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.1.0(react@19.1.0)
+    devDependencies:
+      '@types/node':
+        specifier: ^22.10.7
+        version: 22.10.7
+      '@types/react':
+        specifier: ^19.0.7
+        version: 19.0.7
+      '@types/react-dom':
+        specifier: ^19.0.2
+        version: 19.0.2(@types/react@19.0.7)
+      '@vitejs/plugin-react-swc':
+        specifier: ^3.8.1
+        version: 3.8.1(@swc/helpers@0.5.15)(vite@6.3.5(@types/node@22.10.7)(jiti@1.21.7)(sass@1.86.0)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.8.2
+      vite:
+        specifier: ^6.2.7
+        version: 6.3.5(@types/node@22.10.7)(jiti@1.21.7)(sass@1.86.0)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
+
   packages/pm2:
     dependencies:
       node-karin:
@@ -9338,11 +9366,11 @@ snapshots:
   '@types/body-parser@1.19.5':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 20.17.28
+      '@types/node': 22.10.7
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 20.17.28
+      '@types/node': 22.10.7
 
   '@types/cookie@0.6.0': {}
 
@@ -9362,7 +9390,7 @@ snapshots:
 
   '@types/express-serve-static-core@5.0.6':
     dependencies:
-      '@types/node': 20.17.28
+      '@types/node': 22.10.7
       '@types/qs': 6.9.18
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.4
@@ -9440,12 +9468,12 @@ snapshots:
   '@types/send@0.17.4':
     dependencies:
       '@types/mime': 1.3.5
-      '@types/node': 20.17.28
+      '@types/node': 22.10.7
 
   '@types/serve-static@1.15.7':
     dependencies:
       '@types/http-errors': 2.0.4
-      '@types/node': 20.17.28
+      '@types/node': 22.10.7
       '@types/send': 0.17.4
 
   '@types/stats.js@0.17.3': {}
@@ -9603,6 +9631,13 @@ snapshots:
     dependencies:
       '@swc/core': 1.11.13(@swc/helpers@0.5.15)
       vite: 6.2.7(@types/node@22.10.7)(jiti@1.21.7)(sass@1.86.0)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
+    transitivePeerDependencies:
+      - '@swc/helpers'
+
+  '@vitejs/plugin-react-swc@3.8.1(@swc/helpers@0.5.15)(vite@6.3.5(@types/node@22.10.7)(jiti@1.21.7)(sass@1.86.0)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))':
+    dependencies:
+      '@swc/core': 1.11.13(@swc/helpers@0.5.15)
+      vite: 6.3.5(@types/node@22.10.7)(jiti@1.21.7)(sass@1.86.0)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
     transitivePeerDependencies:
       - '@swc/helpers'
 
@@ -12931,6 +12966,23 @@ snapshots:
       tinyglobby: 0.2.13
     optionalDependencies:
       '@types/node': 18.19.84
+      fsevents: 2.3.3
+      jiti: 1.21.7
+      sass: 1.86.0
+      terser: 5.39.0
+      tsx: 4.19.3
+      yaml: 2.7.0
+
+  vite@6.3.5(@types/node@22.10.7)(jiti@1.21.7)(sass@1.86.0)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0):
+    dependencies:
+      esbuild: 0.25.3
+      fdir: 6.4.4(picomatch@4.0.2)
+      picomatch: 4.0.2
+      postcss: 8.5.3
+      rollup: 4.40.1
+      tinyglobby: 0.2.13
+    optionalDependencies:
+      '@types/node': 22.10.7
       fsevents: 2.3.3
       jiti: 1.21.7
       sass: 1.86.0

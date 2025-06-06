@@ -14,11 +14,18 @@ const ThemeProps = {
 type Theme = typeof ThemeProps.light | typeof ThemeProps.dark | typeof ThemeProps.system
 
 export const useTheme = (defaultTheme?: Theme) => {
+  // 检查localStorage中的主题值是否有效
   try {
-    JSON.parse(localStorage.getItem(ThemeProps.key) ?? '')
+    const storedTheme = localStorage.getItem(ThemeProps.key)
+    // 如果值不是有效的JSON或不是预期的主题值之一，重置为默认值
+    if (storedTheme && !['light', 'dark', 'system'].includes(storedTheme)) {
+      localStorage.setItem(ThemeProps.key, JSON.stringify(ThemeProps.light))
+    }
   } catch {
-    localStorage.setItem(ThemeProps.key, ThemeProps.light)
+    // 如果出现任何错误，重置为默认值
+    localStorage.setItem(ThemeProps.key, JSON.stringify(ThemeProps.light))
   }
+
   const [theme, setTheme] = useLocalStorageState<Theme>(key.theme, {
     defaultValue: defaultTheme ?? ThemeProps.system, // 默认使用系统主题
   })
@@ -45,7 +52,7 @@ export const useTheme = (defaultTheme?: Theme) => {
   }, [theme])
 
   const _setTheme = (theme: Theme) => {
-    localStorage.setItem(ThemeProps.key, theme)
+    localStorage.setItem(ThemeProps.key, JSON.stringify(theme))
     document.documentElement.classList.remove(ThemeProps.light, ThemeProps.dark)
 
     // 如果是系统主题，则应用系统当前的主题颜色

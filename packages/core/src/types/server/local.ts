@@ -76,6 +76,22 @@ export interface SaveConfigResponse {
   message: string
 }
 
+/**
+ * 自定义组件路由信息
+ */
+export interface CustomComponentsRoute {
+  /**
+   * 路由
+   * - 举例: /karin-plugin-demo
+   */
+  path: string
+  /**
+   * 组件入口
+   * - 举例: 'index.js'
+   */
+  entry: string
+}
+
 /** webui配置 */
 export interface DefineConfig<T = any> {
   /** 插件信息 */
@@ -93,7 +109,7 @@ export interface DefineConfig<T = any> {
     /** 插件描述 可不填 会自动读取package.json中的version */
     description?: string
   },
-  /** 组件配置参数 */
+  /** 默认组件配置参数 */
   components: () => ComponentConfig[] | Promise<ComponentConfig[]>
   /**
    * 保存配置
@@ -101,4 +117,9 @@ export interface DefineConfig<T = any> {
    * @returns 保存结果
    */
   save: (config: T) => SaveConfigResponse | Promise<SaveConfigResponse>
+  /**
+   * 自定义组件根路由
+   * @returns 自定义组件根路由
+   */
+  customComponents?: () => CustomComponentsRoute | Promise<CustomComponentsRoute>
 }

@@ -1,0 +1,24 @@
+{
+  "name": "karin-plugin-demo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react-swc": "^3.8.1",
+    "typescript": "^5.7.3",
+    "vite": "^6.2.7",
+    "vite-plugin-css-injected-by-js": "^3.5.2"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}

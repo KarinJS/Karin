@@ -56,6 +56,8 @@ export const GET_PLUGIN_CONFIG_ROUTER = '/plugin/config/get'
 export const SAVE_PLUGIN_CONFIG_ROUTER = '/plugin/config/save'
 /** 判断插件配置是否存在 */
 export const IS_PLUGIN_CONFIG_EXIST_ROUTER = '/plugin/config/is-exist'
+/** 获取自定义组件入口 */
+export const GET_PLUGIN_CUSTOM_COMPONENTS_ROUTER = '/plugin/custom-components'
 /** 更新插件 */
 export const UPDATE_PLUGIN_ROUTER = '/plugin/update'
 /** 安装插件 */

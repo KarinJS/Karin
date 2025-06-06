@@ -1,0 +1,64 @@
+.demo-container {
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f0f9ff;
+  border: 1px solid #93c5fd;
+  max-width: 400px;
+}
+
+.demo-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.demo-logo {
+  width: 32px;
+  height: 32px;
+  margin-right: 12px;
+}
+
+.demo-title {
+  color: #1e40af;
+  margin: 0;
+}
+
+.demo-description {
+  margin-bottom: 12px;
+}
+
+.demo-counter {
+  margin-bottom: 16px;
+}
+
+.btn {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #3b82f6;
+  color: white;
+  margin-right: 8px;
+}
+
+.btn-danger {
+  background-color: #ef4444;
+  color: white;
+}
+
+.test-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+}
+
+.demo-footer {
+  font-size: 12px;
+  color: #6b7280;
+  border-top: 1px solid #d1d5db;
+  padding-top: 8px;
+}

@@ -62,15 +62,15 @@ const web = (dir: typeof root) => {
   })
 
   listeners.once('online', () => {
-    setTimeout(() => {
-      /**
-       * 5秒后将所有根路径请求重定向到 /web
-       * 等5秒是因为插件可能也使用了部分路由
-       */
-      app.all('/{*splat}', (_, res) => {
-        res.redirect('/web')
-      })
-    }, 5000)
+    // setTimeout(() => {
+    //   /**
+    //    * 5秒后将所有根路径请求重定向到 /web
+    //    * 等5秒是因为插件可能也使用了部分路由
+    //    */
+    //   app.all('/{*splat}', (_, res) => {
+    //     res.redirect('/web')
+    //   })
+    // }, 5000)
   })
 }
 
