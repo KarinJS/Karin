@@ -51,7 +51,7 @@ export const restart = async (
  * 直接重启
  * @param options - 重启选项
  */
-export const restartDirect = async (options: {
+export const restartDirect = async (options?: {
   /** 是否为pm2重启 */
   isPm2?: boolean
   /** 是否为重新加载依赖 */

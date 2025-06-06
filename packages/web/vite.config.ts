@@ -1,14 +1,15 @@
-import { defineConfig, normalizePath } from 'vite'
+import { defineConfig } from 'vite'
+// import { defineConfig, normalizePath } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import viteCompression from 'vite-plugin-compression'
-import { viteStaticCopy } from 'vite-plugin-static-copy'
-import path from 'node:path'
+// import { viteStaticCopy } from 'vite-plugin-static-copy'
+// import path from 'node:path'
 import * as zlib from 'node:zlib'
 
-const monacoEditorPath = normalizePath(
-  path.resolve(__dirname, 'node_modules/monaco-editor/min/vs')
-)
+// const monacoEditorPath = normalizePath(
+//   path.resolve(__dirname, 'node_modules/monaco-editor/min/vs')
+// )
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -26,15 +27,16 @@ export default defineConfig({
           [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
         },
       },
+      threshold: 1024, // 只有大于1kb的文件才会被压缩
     }),
-    viteStaticCopy({
-      targets: [
-        {
-          src: monacoEditorPath,
-          dest: 'monaco-editor/min',
-        },
-      ],
-    }),
+    // viteStaticCopy({
+    //   targets: [
+    //     {
+    //       src: monacoEditorPath,
+    //       dest: 'monaco-editor/min',
+    //     },
+    //   ],
+    // }),
   ],
   base: '/web/',
   build: {
