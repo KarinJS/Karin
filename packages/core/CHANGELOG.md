@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.10.1](https://github.com/KarinJS/Karin/compare/core-v1.10.0...core-v1.10.1) (2025-06-06)
+
+
+### ♻️ Code Refactoring
+
+* 重构插件管理 引入npm ([#461](https://github.com/KarinJS/Karin/issues/461)) ([2b3de7e](https://github.com/KarinJS/Karin/commit/2b3de7ee4ff7c18b4cd082dbe72f504200048c2b))
+
 ## [1.10.0](https://github.com/KarinJS/Karin/compare/core-v1.9.11...core-v1.10.0) (2025-06-06)
 
 

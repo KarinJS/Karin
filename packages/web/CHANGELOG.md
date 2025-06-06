@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.10](https://github.com/KarinJS/Karin/compare/web-v1.8.9...web-v1.8.10) (2025-06-06)
+
+
+### ♻️ Code Refactoring
+
+* 重构插件管理 引入npm ([#461](https://github.com/KarinJS/Karin/issues/461)) ([2b3de7e](https://github.com/KarinJS/Karin/commit/2b3de7ee4ff7c18b4cd082dbe72f504200048c2b))
+
 ## [1.8.9](https://github.com/KarinJS/Karin/compare/web-v1.8.8...web-v1.8.9) (2025-06-06)
 
 
