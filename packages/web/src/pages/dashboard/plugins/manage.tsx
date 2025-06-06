@@ -1,7 +1,7 @@
 import { useRequest } from 'ahooks'
 import { Button } from '@heroui/button'
 import { Spinner } from '@heroui/spinner'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { MdOutlineExtension } from 'react-icons/md'
 import { createUpdatePlugins } from '@/utils/updatePlugins.utils'
 import { TbArrowsUp, TbRefresh, TbTrash } from 'react-icons/tb'
@@ -69,6 +69,8 @@ export const PluginManagePage = (): ReactElement => {
 
   /** 延迟显示空结果的状态，避免与虚拟列表加载过程冲突 */
   const [delayEmptyResult, setDelayEmptyResult] = useState(false)
+
+  const navigate = useNavigate()
 
   /**
    * 获取插件列表的请求 - 只在组件挂载和手动刷新时触发
@@ -215,13 +217,13 @@ export const PluginManagePage = (): ReactElement => {
     // 根据插件类型处理
     if (plugin.type === 'npm') {
       // NPM插件 - 找到该依赖并导航到依赖管理页面
-      window.location.href = `/dependencies?search=${encodeURIComponent(pluginId)}`
+      navigate(`/dependencies?search=${encodeURIComponent(pluginId)}`)
     } else {
       // 其他类型插件的设置逻辑
       console.log('打开插件设置:', pluginId)
       // 这里可以实现导航到设置页面或者打开设置模态框的逻辑
     }
-  }, [allPlugins])
+  }, [allPlugins, navigate])
 
   /**
    * 获取当前选中的插件数量
