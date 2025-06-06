@@ -45,11 +45,6 @@
       "development": "./src/root.ts",
       "default": "./dist/root.mjs"
     },
-    "./cli": {
-      "types": "./dist/cli/index.d.ts",
-      "development": "./src/exports/cli/index.ts",
-      "default": "./dist/cli/index.mjs"
-    },
     "./root": {
       "types": "./dist/root.d.ts",
       "development": "./src/root.ts",
@@ -57,76 +52,76 @@
     },
     "./template": {
       "types": "./dist/module/art-template.d.ts",
-      "development": "./exports/module/art-template.ts",
+      "development": "./module/art-template.ts",
       "default": "./dist/module/art-template.mjs"
     },
     "./art-template": {
       "types": "./dist/module/art-template.d.ts",
-      "development": "./exports/module/art-template.ts",
+      "development": "./module/art-template.ts",
       "default": "./dist/module/art-template.mjs"
     },
     "./axios": {
       "types": "./dist/module/axios.d.ts",
-      "development": "./exports/module/axios.ts",
+      "development": "./module/axios.ts",
       "default": "./dist/module/axios.mjs"
     },
     "./chalk": {
       "types": "./dist/module/chalk.d.ts",
-      "development": "./exports/module/chalk.ts",
+      "development": "./module/chalk.ts",
       "default": "./dist/module/chalk.mjs"
     },
     "./chokidar": {
       "types": "./dist/module/chokidar.d.ts",
-      "development": "./exports/module/chokidar.ts",
+      "development": "./module/chokidar.ts",
       "default": "./dist/module/chokidar.mjs"
     },
     "./express": {
       "types": "./dist/module/express.d.ts",
-      "development": "./exports/module/express.ts",
+      "development": "./module/express.ts",
       "default": "./dist/module/express.mjs"
     },
     "./lodash": {
       "types": "./dist/module/lodash.d.ts",
-      "development": "./exports/module/lodash.ts",
+      "development": "./module/lodash.ts",
       "default": "./dist/module/lodash.mjs"
     },
     "./moment": {
       "types": "./dist/module/moment.d.ts",
-      "development": "./exports/module/moment.ts",
+      "development": "./module/moment.ts",
       "default": "./dist/module/moment.mjs"
     },
     "./moment/locale/*": {
-      "development": "./exports/module/locale/*.ts",
-      "default": "./dist/module/locale/*.mjs"
+      "development": "./dist/module/locale/*.js",
+      "default": "./dist/module/locale/*.js"
     },
     "./schedule": {
       "types": "./dist/module/node-schedule.d.ts",
-      "development": "./exports/module/node-schedule.ts",
+      "development": "./module/node-schedule.ts",
       "default": "./dist/module/node-schedule.mjs"
     },
     "./node-schedule": {
       "types": "./dist/module/node-schedule.d.ts",
-      "development": "./exports/module/node-schedule.ts",
+      "development": "./module/node-schedule.ts",
       "default": "./dist/module/node-schedule.mjs"
     },
     "./redis": {
       "types": "./dist/module/redis.d.ts",
-      "development": "./exports/module/redis.ts",
+      "development": "./module/redis.ts",
       "default": "./dist/module/redis.mjs"
     },
     "./ws": {
       "types": "./dist/module/ws.d.ts",
-      "development": "./exports/module/ws.ts",
+      "development": "./module/ws.ts",
       "default": "./dist/module/ws.mjs"
     },
     "./yaml": {
       "types": "./dist/module/yaml.d.ts",
-      "development": "./exports/module/yaml.ts",
+      "development": "./module/yaml.ts",
       "default": "./dist/module/yaml.mjs"
     },
     "./sqlite3": {
       "types": "./dist/module/sqlite3.d.ts",
-      "development": "./exports/module/sqlite3.ts",
+      "development": "./module/sqlite3.ts",
       "default": "./dist/module/sqlite3.mjs"
     }
   },

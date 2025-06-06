@@ -3,7 +3,7 @@ import path from 'node:path'
 import 'moment/locale/zh-cn.js'
 
 /** 生成语言包文件 */
-const dir = './module/locale'
+const dir = './dist/module/locale'
 const files = fs.readdirSync('./node_modules/moment/locale')
 if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir, { recursive: true })

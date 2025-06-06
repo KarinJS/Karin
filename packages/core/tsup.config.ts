@@ -1,6 +1,5 @@
 import fs from 'node:fs'
 import { defineConfig } from 'tsup'
-import { builtinModules } from 'node:module'
 import { options } from './tsup.config.base'
 
 /**
