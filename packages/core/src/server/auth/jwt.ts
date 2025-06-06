@@ -46,9 +46,9 @@ export const createJwt = (): {
   initSecretOrPrivateKey()
   const userId = crypto.randomUUID()
   /** 生成访问令牌 */
-  const accessToken = jwt.sign({ userId }, secretOrPrivateKey, { expiresIn: EXPIRES_IN })
-  /** 生成刷新令牌 */
-  const refreshToken = jwt.sign({ userId, accessToken }, secretOrPrivateKey, { expiresIn: REFRESH_EXPIRES_IN })
+  const accessToken = jwt.sign({ userId, type: 'access' }, secretOrPrivateKey, { expiresIn: EXPIRES_IN })
+  /** 生成刷新令牌 - 只包含userId，不再绑定特定accessToken */
+  const refreshToken = jwt.sign({ userId, type: 'refresh' }, secretOrPrivateKey, { expiresIn: REFRESH_EXPIRES_IN })
   return { userId, accessToken, refreshToken }
 }
 
@@ -87,24 +87,24 @@ export const verifyJwt = (
 /**
  * 验证刷新令牌
  * @param token 刷新令牌
- * @param expiredToken 过期令牌
  * @returns 是否验证成功
  */
-export const verifyRefreshToken = (
-  token: string,
-  expiredToken: string
-) => {
+export const verifyRefreshToken = (token: string) => {
   try {
     initSecretOrPrivateKey()
-    const decoded = jwt.verify(token, secretOrPrivateKey) as { userId: string, accessToken: string }
-    if (decoded.accessToken === expiredToken) {
+
+    const decoded = jwt.verify(token, secretOrPrivateKey) as { userId: string, type: string }
+    if (decoded && decoded.userId && decoded.type === 'refresh') {
       return { status: true, data: decoded.userId }
     }
 
     return { status: false, data: '无效令牌' }
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
-      return { status: false, data: '刷新令牌已过期' }
+      if (error.name === 'TokenExpiredError') {
+        return { status: false, data: '刷新令牌已过期' }
+      }
+      return { status: false, data: '无效的刷新令牌' }
     }
 
     logger.error(error)
@@ -115,10 +115,11 @@ export const verifyRefreshToken = (
 /**
  * 刷新访问令牌
  * @param userId 用户id
- * @returns 访问令牌
+ * @returns 新的访问令牌
  */
 export const refreshAccessToken = (userId: string) => {
   initSecretOrPrivateKey()
+  // 只生成新的访问令牌，不再生成新的刷新令牌
   const accessToken = jwt.sign({ userId }, secretOrPrivateKey, { expiresIn: EXPIRES_IN })
   return accessToken
 }

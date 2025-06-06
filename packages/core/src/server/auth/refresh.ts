@@ -23,7 +23,7 @@ export const refreshRouter: RequestHandler = async (req, res) => {
     const { accessToken, refreshToken } = (req.body || {}) as { accessToken: string, refreshToken: string }
     if (!accessToken || !refreshToken) return createBadRequestResponse(res)
 
-    const { status, data } = verifyRefreshToken(refreshToken, accessToken)
+    const { status, data } = verifyRefreshToken(refreshToken)
     if (!status) {
       if (data.includes('过期')) {
         return createRefreshTokenExpiredResponse(res)
@@ -32,7 +32,7 @@ export const refreshRouter: RequestHandler = async (req, res) => {
     }
 
     const newAccessToken = refreshAccessToken(data)
-    logger.mark(`[refresh] 刷新成功: ${accessToken} -> ${newAccessToken}`)
+    logger.mark(`[refresh] 刷新访问令牌成功: ${accessToken} -> ${newAccessToken}`)
     createSuccessResponse(res, { accessToken: newAccessToken }, '刷新成功')
   } catch (error) {
     logger.error(error)
