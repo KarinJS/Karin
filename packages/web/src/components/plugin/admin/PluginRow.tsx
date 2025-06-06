@@ -1,4 +1,3 @@
-/* eslint-disable @stylistic/indent */
 import { memo, useCallback } from 'react'
 import { Checkbox } from '@heroui/checkbox'
 import { Chip } from '@heroui/chip'
@@ -99,8 +98,18 @@ const PluginRow = memo(({
             <div
               className='w-2 md:w-2.5 h-2 md:h-2.5 rounded-full mr-1.5 md:mr-2.5 flex-shrink-0 translate-y-[0.5px] sm:translate-y-0'
               style={{
-                backgroundColor: plugin.type === 'app' ? '#10b981' : '#f59e0b',
-                boxShadow: plugin.type === 'app' ? '0 0 6px rgba(16, 185, 129, 0.3)' : '0 0 6px rgba(245, 158, 11, 0.3)',
+                backgroundColor:
+                  plugin.type === 'app'
+                    ? '#10b981' // 绿色 - App插件
+                    : plugin.type === 'git'
+                      ? '#f59e0b' // 黄色 - Git插件
+                      : '#ef4444', // 红色 - NPM插件
+                boxShadow:
+                  plugin.type === 'app'
+                    ? '0 0 6px rgba(16, 185, 129, 0.3)' // 绿色阴影
+                    : plugin.type === 'git'
+                      ? '0 0 6px rgba(245, 158, 11, 0.3)' // 黄色阴影
+                      : '0 0 6px rgba(239, 68, 68, 0.3)', // 红色阴影
               }}
             />
           </div>

@@ -1,18 +1,34 @@
 import { useRequest } from 'ahooks'
 import { Button } from '@heroui/button'
 import { Spinner } from '@heroui/spinner'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { MdOutlineExtension } from 'react-icons/md'
 import { createUpdatePlugins } from '@/utils/updatePlugins.utils'
 import { TbArrowsUp, TbRefresh, TbTrash } from 'react-icons/tb'
 import TaskLogModal from '@/components/dependencies/TaskLogModal'
 import { getLocalPluginNameListRequest } from '@/request/plugins'
+import { getDependencies } from '@/request/dependencies'
 import { hideRocket } from '@/components/common/ScrollToTop.utils'
 import { useState, useCallback, ReactElement, useEffect, useMemo } from 'react'
 import { FilterCards, TableContent, UpdateOptionsModal } from '@/components/plugin/admin'
 
 import type { PluginType } from '@/components/plugin/admin'
-import type { PluginAdminListResponse, PluginAdminParams } from 'node-karin'
+import type { PluginAdminListResponse, PluginAdminParams, Dependency } from 'node-karin'
+
+/**
+ * 将NPM依赖转换为插件列表格式
+ * @param npmDependency - NPM依赖对象
+ * @returns 转换后的插件对象
+ */
+const convertNpmDependencyToPlugin = (npmDependency: Dependency): PluginAdminListResponse => {
+  return {
+    id: npmDependency.name,
+    name: npmDependency.name,
+    type: 'npm',
+    version: npmDependency.current,
+    latestHash: npmDependency.latest[npmDependency.latest.length - 1] || npmDependency.current,
+  }
+}
 
 /**
  * 插件管理页面组件
@@ -54,15 +70,31 @@ export const PluginManagePage = (): ReactElement => {
   /** 延迟显示空结果的状态，避免与虚拟列表加载过程冲突 */
   const [delayEmptyResult, setDelayEmptyResult] = useState(false)
 
+  const navigate = useNavigate()
+
   /**
    * 获取插件列表的请求 - 只在组件挂载和手动刷新时触发
    */
   const { loading: remoteLoading, run: fetchPlugins } = useRequest(
     async () => {
       try {
-        const response = await getLocalPluginNameListRequest()
-        setAllPlugins(response)
-        return response
+        // 并行获取普通插件和NPM插件
+        const [pluginsResponse, npmResponse] = await Promise.all([
+          getLocalPluginNameListRequest(),
+          getDependencies(true),
+        ])
+
+        // 筛选出NPM插件
+        const npmPlugins = npmResponse.success && npmResponse.data
+          ? npmResponse.data
+            .filter(dep => dep.isKarinPlugin)
+            .map(convertNpmDependencyToPlugin)
+          : []
+
+        // 合并两种插件
+        const allPluginsData = [...pluginsResponse, ...npmPlugins]
+        setAllPlugins(allPluginsData)
+        return allPluginsData
       } catch (error) {
         console.error('获取插件列表失败:', error)
         return []
@@ -178,10 +210,20 @@ export const PluginManagePage = (): ReactElement => {
    * @param pluginId - 插件ID
    */
   const openSettings = useCallback((pluginId: string) => {
-    // 在这里添加打开设置的逻辑
-    console.log('打开插件设置:', pluginId)
-    // 可以实现导航到设置页面或者打开设置模态框的逻辑
-  }, [])
+    // 查找该插件
+    const plugin = allPlugins.find(p => p.name === pluginId)
+    if (!plugin) return
+
+    // 根据插件类型处理
+    if (plugin.type === 'npm') {
+      // NPM插件 - 找到该依赖并导航到依赖管理页面
+      navigate(`/dependencies?search=${encodeURIComponent(pluginId)}`)
+    } else {
+      // 其他类型插件的设置逻辑
+      console.log('打开插件设置:', pluginId)
+      // 这里可以实现导航到设置页面或者打开设置模态框的逻辑
+    }
+  }, [allPlugins, navigate])
 
   /**
    * 获取当前选中的插件数量
@@ -229,7 +271,7 @@ export const PluginManagePage = (): ReactElement => {
       undefined,
       onComplete
     )
-  }, [createUpdatePlugins, setIsLogModalOpen, setTaskId, setTaskLogs, setTaskName])
+  }, [])
 
   /**
    * 处理更新全部按钮点击
@@ -364,19 +406,24 @@ export const PluginManagePage = (): ReactElement => {
    * 计算每种类型的插件数量
    */
   const getPluginCounts = useCallback(() => {
-    if (!plugins || plugins.length === 0) return { all: 0, npm: 0, git: 0, app: 0 }
+    if (!allPlugins || allPlugins.length === 0) return { all: 0, npm: 0, git: 0, app: 0 }
 
-    const counts = { all: plugins.length, npm: 0, git: 0, app: 0 }
+    // 初始化总数为0，不再包含all
+    const counts = { all: 0, npm: 0, git: 0, app: 0 }
 
-    plugins.forEach(plugin => {
+    // 先统计每种类型的数量
+    allPlugins.forEach(plugin => {
       const pluginType = plugin.type as keyof typeof counts
       if (pluginType in counts) {
         counts[pluginType]++
       }
     })
 
+    // 然后计算总数
+    counts.all = allPlugins.length
+
     return counts
-  }, [plugins])
+  }, [allPlugins])
 
   /**
    * 渲染筛选卡片
@@ -390,7 +437,9 @@ export const PluginManagePage = (): ReactElement => {
         onTypeChange={handleTypeChange}
       />
     )
-  }  /**
+  }
+
+  /**
    * 渲染表格内容
    */
   const renderTableContent = () => {
