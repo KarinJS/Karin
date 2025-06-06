@@ -1,5 +1,17 @@
 # 更新日志
 
+## [1.10.2](https://github.com/KarinJS/Karin/compare/core-v1.10.1...core-v1.10.2) (2025-06-06)
+
+
+### ⚡️ Performance
+
+* 优化前端文件体积 ([174aa91](https://github.com/KarinJS/Karin/commit/174aa914a3923e09c799c2517c8183fde1c230cb))
+
+
+### ♻️ Code Refactoring
+
+* 重构无感刷新 ([7555928](https://github.com/KarinJS/Karin/commit/7555928fadf412b7c6b8541cc8d2228104d45c13))
+
 ## [1.10.1](https://github.com/KarinJS/Karin/compare/core-v1.10.0...core-v1.10.1) (2025-06-06)
 
 
