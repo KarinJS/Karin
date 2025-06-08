@@ -150,7 +150,7 @@ class ProcessManager {
       const uptime = this.getProcessUptime()
 
       this.log(`正在关闭子进程 | PID: ${pid} | 运行时间: ${uptime}`)
-      this.terminateChildProcess(false)
+      this.terminateChildProcess()
       this.childProcess = null
       this.isStarted = false
       this.isRestarting = false
@@ -298,7 +298,7 @@ class ProcessManager {
   /**
    * 终止子进程
    */
-  private async terminateChildProcess (waitForTermination = true): Promise<void> {
+  private async terminateChildProcess (): Promise<void> {
     if (!this.childProcess) return
 
     try {
