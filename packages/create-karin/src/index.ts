@@ -581,7 +581,7 @@ const buildProjectConfigOptions = (
     {
       type: 'text',
       name: 'wsServerAuthKey',
-      message: 'ws_server鉴权秘钥(允许为空 按住空格):',
+      message: 'ws_server鉴权秘钥(允许为空 按一下空格键):',
       initial: getStr(6),
     }
   )
@@ -722,7 +722,7 @@ const main = async () => {
   }
 
   /** 提取配置结果 */
-  const projectName = result.projectName
+  const projectName = result.projectName.trim()
   const installPm2 = result.installPm2
   const changeRegistry = result.changeRegistry
   const installPnpm = !pnpmVersion || result?.upgradePnpm || result?.downgradePnpm
