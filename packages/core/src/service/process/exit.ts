@@ -7,8 +7,9 @@ let exitStatus = false
 /**
  * @description 处理退出事件
  * @param code 退出码
+ * @param isKillPm2 是否杀死pm2进程
  */
-export const processExit = async (code: unknown) => {
+export const processExit = async (code: unknown, isKillPm2 = false) => {
   logger.debug('[child] 子进程收到退出申请:', code)
   try {
     if (exitStatus) return
@@ -22,7 +23,7 @@ export const processExit = async (code: unknown) => {
     logger.mark(tips(`运行结束 运行时间：${uptime()} 退出码：${code ?? '未知'}`))
 
     /** 如果是pm2环境 */
-    if (process.env.pm_id) {
+    if (process.env.pm_id && isKillPm2) {
       logger.mark(tips('[child] pm2环境 删除pm2进程'))
       await exec(`pm2 delete ${process.env.pm_id}`)
     }

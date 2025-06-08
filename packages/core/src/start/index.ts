@@ -1,6 +1,8 @@
 import os from 'node:os'
 import fs from 'node:fs'
+import dotenv from 'dotenv'
 import path from 'node:path'
+import { createServer } from 'node:net'
 import { fileURLToPath } from 'node:url'
 import { fork, ChildProcess } from 'node:child_process'
 
@@ -58,6 +60,9 @@ class ProcessManager {
     /** 最后重启时间 */
     lastRestartTime: 0,
   }
+
+  /** 默认HTTP端口 */
+  private readonly DEFAULT_HTTP_PORT = 7777
 
   // ANSI 颜色代码
   private readonly COLORS = {
@@ -145,7 +150,7 @@ class ProcessManager {
       const uptime = this.getProcessUptime()
 
       this.log(`正在关闭子进程 | PID: ${pid} | 运行时间: ${uptime}`)
-      this.terminateChildProcess(false)
+      this.terminateChildProcess()
       this.childProcess = null
       this.isStarted = false
       this.isRestarting = false
@@ -221,9 +226,111 @@ class ProcessManager {
   }
 
   /**
+   * 等待端口释放
+   * @param port - 需要检查的端口号
+   * @param maxAttempts - 最大尝试次数
+   * @param interval - 检查间隔(ms)
+   * @returns 端口是否可用
+   */
+  private async waitForPortRelease (port: number, maxAttempts = 30, interval = 500): Promise<boolean> {
+    const checkPort = (port: number): Promise<boolean> => {
+      return new Promise(resolve => {
+        const server = createServer()
+
+        server.once('error', () => {
+          server.close()
+          resolve(false)
+        })
+
+        server.once('listening', () => {
+          server.close()
+          resolve(true)
+        })
+
+        server.listen(port, '127.0.0.1')
+      })
+    }
+
+    /**
+     * 检查指定进程是否存在
+     * @param pid - 进程ID
+     * @returns 进程是否存在
+     */
+    const isProcessAlive = (pid: number): boolean => {
+      try {
+        // 发送空信号检查进程是否存在
+        process.kill(pid, 0)
+        return true
+      } catch {
+        // 如果抛出异常，说明进程不存在
+        return false
+      }
+    }
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      // 首先检查目标进程是否已经退出
+      if (this.childProcess?.pid && !isProcessAlive(this.childProcess.pid)) {
+        this.log(`子进程已退出 | PID: ${this.childProcess.pid}`)
+
+        // 即使进程已退出，也需要验证端口是否已释放
+        const portAvailable = await checkPort(port)
+        if (portAvailable) {
+          this.log(`端口 ${port} 已释放，可以使用`)
+          return true
+        } else {
+          this.logWarn(`子进程已退出，但端口 ${port} 仍被占用 (可能被其他进程占用)`)
+        }
+      }
+
+      // 检查端口是否可用
+      const portAvailable = await checkPort(port)
+      if (portAvailable) {
+        this.log(`端口 ${port} 已释放，可以使用`)
+        return true
+      }
+
+      this.logWarn(`端口 ${port} 仍被占用，等待释放... (${attempt + 1}/${maxAttempts})`)
+      try {
+        // 尝试强制终止可能占用端口的子进程
+        if (this?.childProcess?.pid && isProcessAlive(this.childProcess.pid)) {
+          this.log(`尝试终止子进程 | PID: ${this.childProcess.pid}`)
+          process.kill(this.childProcess.pid)
+        }
+      } catch { /* 忽略终止过程中的错误 */ }
+      await new Promise(resolve => setTimeout(resolve, interval))
+    }
+
+    this.logError(`端口 ${port} 在 ${maxAttempts} 次尝试后仍被占用`)
+    return false
+  }
+
+  /**
+   * 获取HTTP端口号
+   * @returns HTTP端口号
+   */
+  private getHttpPort (): number {
+    try {
+      // 读取根目录的.env文件
+      const envPath = path.resolve(process.cwd(), '.env')
+      if (fs.existsSync(envPath)) {
+        const envConfig = dotenv.parse(fs.readFileSync(envPath))
+        if (envConfig.HTTP_PORT) {
+          return Number(envConfig.HTTP_PORT)
+        }
+      }
+
+      // 如果根目录没有.env文件或没有HTTP_PORT，返回默认值
+      return this.DEFAULT_HTTP_PORT
+    } catch (error) {
+      this.logWarn(`读取HTTP端口失败: ${(error as Error).message}，使用默认端口${this.DEFAULT_HTTP_PORT}`)
+      return this.DEFAULT_HTTP_PORT
+    }
+  }
+
+  /**
    * 终止子进程
    */
-  private async terminateChildProcess (waitForTermination = true): Promise<void> {
+  private async terminateChildProcess (): Promise<void> {
     if (!this.childProcess) return
 
     try {
@@ -231,13 +338,13 @@ class ProcessManager {
       this.log(`发送终止信号 | PID: ${pid} | 信号: SIGTERM`)
       this.childProcess.kill('SIGTERM')
 
-      if (waitForTermination) {
-        this.log(`等待进程终止 | PID: ${pid} | 超时: ${this.RESTART_DELAY_MS}ms`)
-        await new Promise(resolve => setTimeout(resolve, this.RESTART_DELAY_MS))
-      }
+      this.log(`等待进程终止 | PID: ${pid} | 超时: ${this.RESTART_DELAY_MS}ms`)
+
+      const port = this.getHttpPort()
+      await this.waitForPortRelease(port)
 
       try {
-        if (this.childProcess.pid) {
+        if (this?.childProcess?.pid) {
           this.log(`确保进程终止 | PID: ${pid} | 发送强制终止信号`)
           process.kill(this.childProcess.pid)
         }
