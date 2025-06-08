@@ -41,4 +41,6 @@ export const api = {
 
   /** 重启karin */
   restartKarin: `${BASE_ROUTER}/restart`,
+  /** @version 1.10.0 获取自定义组件入口 */
+  getPluginCustomComponents: `${BASE_ROUTER}/plugin/custom-components`,
 }

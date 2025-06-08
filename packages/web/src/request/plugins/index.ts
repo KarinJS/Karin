@@ -113,3 +113,16 @@ export interface CreateTaskResult {
   /** 操作消息 */
   message?: string
 }
+
+/**
+ * 获取自定义组件入口
+ * @param name 插件名称
+ * @returns 自定义组件入口
+ */
+export const getPluginCustomComponentsRequest = async (name: string): Promise<string> => {
+  const response = await request.serverPost<string, { name: string }>(
+    api.getPluginCustomComponents,
+    { name }
+  )
+  return response
+}
