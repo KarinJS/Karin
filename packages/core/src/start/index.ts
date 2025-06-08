@@ -251,9 +251,40 @@ class ProcessManager {
       })
     }
 
+    /**
+     * 检查指定进程是否存在
+     * @param pid - 进程ID
+     * @returns 进程是否存在
+     */
+    const isProcessAlive = (pid: number): boolean => {
+      try {
+        // 发送空信号检查进程是否存在
+        process.kill(pid, 0)
+        return true
+      } catch {
+        // 如果抛出异常，说明进程不存在
+        return false
+      }
+    }
+
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      const available = await checkPort(port)
-      if (available) {
+      // 首先检查目标进程是否已经退出
+      if (this.childProcess?.pid && !isProcessAlive(this.childProcess.pid)) {
+        this.log(`子进程已退出 | PID: ${this.childProcess.pid}`)
+
+        // 即使进程已退出，也需要验证端口是否已释放
+        const portAvailable = await checkPort(port)
+        if (portAvailable) {
+          this.log(`端口 ${port} 已释放，可以使用`)
+          return true
+        } else {
+          this.logWarn(`子进程已退出，但端口 ${port} 仍被占用 (可能被其他进程占用)`)
+        }
+      }
+
+      // 检查端口是否可用
+      const portAvailable = await checkPort(port)
+      if (portAvailable) {
         this.log(`端口 ${port} 已释放，可以使用`)
         return true
       }
@@ -261,7 +292,8 @@ class ProcessManager {
       this.logWarn(`端口 ${port} 仍被占用，等待释放... (${attempt + 1}/${maxAttempts})`)
       try {
         // 尝试强制终止可能占用端口的子进程
-        if (this?.childProcess?.pid) {
+        if (this?.childProcess?.pid && isProcessAlive(this.childProcess.pid)) {
+          this.log(`尝试终止子进程 | PID: ${this.childProcess.pid}`)
           process.kill(this.childProcess.pid)
         }
       } catch { /* 忽略终止过程中的错误 */ }

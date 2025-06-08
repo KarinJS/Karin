@@ -27,7 +27,6 @@ export const processExit = async (code: unknown, isKillPm2 = false) => {
       logger.mark(tips('[child] pm2环境 删除pm2进程'))
       await exec(`pm2 delete ${process.env.pm_id}`)
     }
-    process.exit()
   } catch (error) {
     logger.error(new Error('[child] 退出事件发生错误:', { cause: error }))
   } finally {
