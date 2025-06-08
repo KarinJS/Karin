@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/KarinJS/Karin/compare/create-karin-v1.2.0...create-karin-v1.2.1) (2025-06-08)
+
+
+### 🐛 Bug Fixes
+
+* 提升`create-karin`的兼容性 ([#468](https://github.com/KarinJS/Karin/issues/468)) ([23153fd](https://github.com/KarinJS/Karin/commit/23153fdbd8a022af567c095d00f37602d50dc085))
+
 ## [1.2.0](https://github.com/KarinJS/Karin/compare/create-karin-v1.1.8...create-karin-v1.2.0) (2025-05-23)
 
 
