@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.10.4](https://github.com/KarinJS/Karin/compare/core-v1.10.3...core-v1.10.4) (2025-06-08)
+
+
+### 🐛 Bug Fixes
+
+* 提升`create-karin`的兼容性 ([#468](https://github.com/KarinJS/Karin/issues/468)) ([23153fd](https://github.com/KarinJS/Karin/commit/23153fdbd8a022af567c095d00f37602d50dc085))
+
 ## [1.10.3](https://github.com/KarinJS/Karin/compare/core-v1.10.2...core-v1.10.3) (2025-06-08)
 
 
