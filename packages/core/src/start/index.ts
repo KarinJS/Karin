@@ -61,6 +61,9 @@ class ProcessManager {
     lastRestartTime: 0,
   }
 
+  /** 默认HTTP端口 */
+  private readonly DEFAULT_HTTP_PORT = 7777
+
   // ANSI 颜色代码
   private readonly COLORS = {
     green: '\x1b[32m',
@@ -257,9 +260,11 @@ class ProcessManager {
 
       this.logWarn(`端口 ${port} 仍被占用，等待释放... (${attempt + 1}/${maxAttempts})`)
       try {
-        // cnm 去死吧
-        process.kill(this?.childProcess!.pid!)
-      } catch { }
+        // 尝试强制终止可能占用端口的子进程
+        if (this?.childProcess?.pid) {
+          process.kill(this.childProcess.pid)
+        }
+      } catch { /* 忽略终止过程中的错误 */ }
       await new Promise(resolve => setTimeout(resolve, interval))
     }
 
@@ -282,11 +287,11 @@ class ProcessManager {
         }
       }
 
-      // 如果根目录没有.env文件或没有HTTP_PORT，返回默认值7777
-      return 7777
+      // 如果根目录没有.env文件或没有HTTP_PORT，返回默认值
+      return this.DEFAULT_HTTP_PORT
     } catch (error) {
-      this.logWarn(`读取HTTP端口失败: ${(error as Error).message}，使用默认端口7777`)
-      return 7777
+      this.logWarn(`读取HTTP端口失败: ${(error as Error).message}，使用默认端口${this.DEFAULT_HTTP_PORT}`)
+      return this.DEFAULT_HTTP_PORT
     }
   }
 
@@ -301,10 +306,7 @@ class ProcessManager {
       this.log(`发送终止信号 | PID: ${pid} | 信号: SIGTERM`)
       this.childProcess.kill('SIGTERM')
 
-      if (waitForTermination) {
-        this.log(`等待进程终止 | PID: ${pid} | 超时: ${this.RESTART_DELAY_MS}ms`)
-        await new Promise(resolve => setTimeout(resolve, this.RESTART_DELAY_MS))
-      }
+      this.log(`等待进程终止 | PID: ${pid} | 超时: ${this.RESTART_DELAY_MS}ms`)
 
       const port = this.getHttpPort()
       await this.waitForPortRelease(port)
