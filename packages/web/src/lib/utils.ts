@@ -8,6 +8,30 @@ import { twMerge } from 'tailwind-merge'
  * @returns 页面标题
  */
 export const getPageTitle = (pathname: string) => {
+  // 先检查具体的路径映射
+  const map = {
+    '/': '基础信息',
+    '/config': '配置信息',
+    '/plugins/list': '插件市场',
+    '/plugins/manage': '更新/卸载',
+    '/plugins/webui': 'WebUI插件',
+    '/plugins/:name': '插件配置',
+    '/sandbox': '沙箱调试',
+    '/sandbox/chat': '沙箱 | [聊天]',
+    '/sandbox/contact': '沙箱 | [联系人]',
+    '/about': '关于我们',
+    '/login': '登录',
+    '/log': '实时日志',
+    '/terminal': '仿真终端',
+    '/dependencies': '依赖管理',
+  } as Record<string, string>
+
+  // 优先检查精确匹配
+  if (map[pathname]) {
+    return map[pathname]
+  }
+
+  // 然后检查通用路径前缀
   if (pathname.startsWith('/config/')) {
     return '配置信息'
   }
@@ -20,22 +44,7 @@ export const getPageTitle = (pathname: string) => {
     return '沙箱调试'
   }
 
-  const map = {
-    '/': '基础信息',
-    '/config': '配置信息',
-    '/plugins/list': '插件市场',
-    '/plugins/:name': '插件配置',
-    '/sandbox': '沙箱调试',
-    '/sandbox/chat': '沙箱 | [聊天]',
-    '/sandbox/contact': '沙箱 | [联系人]',
-    '/about': '关于我们',
-    '/login': '登录',
-    '/log': '实时日志',
-    '/terminal': '仿真终端',
-    '/dependencies': '依赖管理',
-  } as Record<string, string>
-
-  return `${map?.[pathname] ?? '无人问津的角落...'}`
+  return '无人问津的角落...'
 }
 
 export function cn (...inputs: ClassValue[]) {

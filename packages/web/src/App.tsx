@@ -24,7 +24,7 @@ function App () {
   const location = useLocation()
 
   useEffect(() => {
-    document.title = getPageTitle(location.pathname) + ' - Karin WebUI | 永远相信美好的事情即将发生'
+    document.title = getPageTitle(location.pathname) + ' - Karin WebUI'
   }, [location])
 
   return (

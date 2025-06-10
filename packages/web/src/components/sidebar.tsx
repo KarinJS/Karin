@@ -67,6 +67,7 @@ interface SidebarProps {
 export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
   const isNotSmallScreen = useMediaQuery({ minWidth: 768 })
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null)
+  const [expandedSubMenu, setExpandedSubMenu] = useState<string | null>(null)
   const [pluginsLoading, setPluginsLoading] = useState(true)
   const [showsingOut, setShowsingOut] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -82,9 +83,25 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
 
   useEffect(() => {
     siteConfig.navItems.forEach((item) => {
+      // 检查一级菜单
+      if (location.pathname === item.href) {
+        setExpandedMenu(item.href)
+        return
+      }
+
+      // 检查二级菜单
       if (item.children?.some(child => location.pathname === child.href)) {
         setExpandedMenu(item.href)
+        return
       }
+
+      // 检查三级菜单
+      item.children?.forEach(child => {
+        if (child.children?.some(grandChild => location.pathname.includes(grandChild.id))) {
+          setExpandedMenu(item.href)
+          setExpandedSubMenu(child.href)
+        }
+      })
     })
   }, [location.pathname])
 
@@ -174,7 +191,16 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                         whileHover={{ x: isCollapsed ? 0 : 4 }}
                         onClick={() => {
                           if (item.children && !isCollapsed) {
-                            setExpandedMenu(expandedMenu === item.href ? null : item.href)
+                            if (expandedMenu === item.href) {
+                              setExpandedMenu(null)
+                              setExpandedSubMenu(null)
+                            } else {
+                              setExpandedMenu(item.href)
+                              // 如果是插件管理，默认展开配置选项卡
+                              if (item.href === '/plugins-management') {
+                                setExpandedSubMenu('/plugins')
+                              }
+                            }
                           } else {
                             navigate(item.href)
                           }
@@ -222,7 +248,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                               }}
                             >
                               <span className='select-none '>{item.label}</span>
-                              {item.href === '/plugins' && (
+                              {item.href === '/plugins-management' && (
                                 <>
                                   {pluginsLoading
                                     ? (
@@ -261,36 +287,98 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                               exit='hidden'
                               className='overflow-hidden mx-2'
                             >
-                              {pluginsLoading && item.href === '/plugins'
-                                ? (
-                                  <div className='flex items-center justify-center py-4'>
-                                    <Spinner className='w-2 h-4 text-primary -ml-7' variant='dots' size='lg' />
-                                  </div>
-                                )
-                                : (item.children
-                                  .sort((a, b) => a.id.localeCompare(b.id))
-                                  .map((child, index) => (
-                                    <Fragment key={child.id}>
-                                      <Button
-                                        variant='light' fullWidth
-                                        className={clsx(
-                                          'flex items-start justify-start gap-2 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary',
-                                          'transition-transform hover:-translate-y-[2px]',
-                                          {
-                                            '!text-primary bg-primary/10': location.pathname === child.href,
-                                            'mt-2': index === 0,
-                                          }
-                                        )}
-                                        onPress={() => {
-                                          navigate(`/plugins/config?name=${child.id}&type=${child.type || ''}`)
-                                        }}
+                              {item.children.map((child, index) => (
+                                <Fragment key={child.id}>
+                                  <Button
+                                    variant='light'
+                                    fullWidth
+                                    className={clsx(
+                                      'flex items-center justify-between gap-3 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary',
+                                      'transition-transform hover:-translate-y-[2px]',
+                                      {
+                                        '!text-primary bg-primary/10 font-medium':
+                                          location.pathname === child.href ||
+                                          (child.children?.some(grandChild => location.pathname.includes(grandChild.id))),
+                                        'mt-1': index === 0,
+                                      }
+                                    )}
+                                    onPress={() => {
+                                      if (child.children) {
+                                        // 如果有三级菜单，展开/折叠三级菜单
+                                        setExpandedSubMenu(expandedSubMenu === child.href ? null : child.href)
+                                      } else {
+                                        // 直接导航
+                                        navigate(child.href)
+                                      }
+                                    }}
+                                  >
+                                    <div className='flex items-center gap-3'>
+                                      {child.Icon && <child.Icon className='w-5 h-5' />}
+                                      <span>{child.label}</span>
+                                      {/* 为配置选项卡添加加载状态图标 */}
+                                      {child.id === 'plugin-config' && pluginsLoading && (
+                                        <Spinner className='w-3 h-3 text-primary' variant='dots' size='sm' />
+                                      )}
+                                    </div>
+                                    {child.children && (
+                                      <motion.div
+                                        initial={{ rotate: 0 }}
+                                        animate={{ rotate: expandedSubMenu === child.href ? 90 : 0 }}
+                                        transition={{ duration: 0.2 }}
                                       >
-                                        {child.icon && <Icon name={child.icon?.name || ''} size={child.icon?.size} color={child.icon?.color} />}
-                                        {child.id || child.href.split('/').pop()}
-                                      </Button>
-                                    </Fragment>
-                                  ))
-                                )}
+                                        <FaChevronRight className='w-3 h-3' />
+                                      </motion.div>
+                                    )}
+                                  </Button>
+
+                                  {/* 三级菜单 */}
+                                  {child.children && (
+                                    <AnimatePresence>
+                                      {expandedSubMenu === child.href && (
+                                        <motion.div
+                                          variants={subMenuVariants}
+                                          initial='hidden'
+                                          animate='visible'
+                                          exit='hidden'
+                                          className='overflow-hidden ml-4'
+                                        >
+                                          {pluginsLoading && child.id === 'plugin-config'
+                                            ? (
+                                              <div className='flex items-center justify-center py-4'>
+                                                <Spinner className='w-2 h-4 text-primary' variant='dots' size='lg' />
+                                              </div>
+                                            )
+                                            : (
+                                              child.children
+                                                .sort((a, b) => a.id.localeCompare(b.id))
+                                                .map((grandChild, index) => (
+                                                  <Fragment key={grandChild.id}>
+                                                    <Button
+                                                      variant='light' fullWidth
+                                                      className={clsx(
+                                                        'flex items-start justify-start gap-2 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary',
+                                                        'transition-transform hover:-translate-y-[2px]',
+                                                        {
+                                                          '!text-primary bg-primary/10': location.pathname.includes(grandChild.id),
+                                                          'mt-1': index === 0,
+                                                        }
+                                                      )}
+                                                      onPress={() => {
+                                                        navigate(`/plugins/config?name=${grandChild.id}&type=${grandChild.type || ''}`)
+                                                      }}
+                                                    >
+                                                      {grandChild.icon && <Icon name={grandChild.icon?.name || ''} size={grandChild.icon?.size} color={grandChild.icon?.color} />}
+                                                      {grandChild.label || grandChild.id}
+                                                    </Button>
+                                                  </Fragment>
+                                                ))
+                                            )}
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
+                                  )}
+                                </Fragment>
+                              ))}
                             </motion.div>
                           )}
                         </AnimatePresence>

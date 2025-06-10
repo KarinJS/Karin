@@ -7,26 +7,33 @@ import {
   MdStore,
   MdOutlineArticle, // 系统日志
   MdOutlineTerminal, // 仿真终端
-  MdOutlineWebhook, // webui插件管理
-  MdOutlineManageAccounts, // 插件管理
+  MdSystemUpdate, // 插件/卸载
+  MdWeb, // 插件管理
 } from 'react-icons/md'
 import { TbPackages } from 'react-icons/tb' // 依赖管理图标
 
 import type { LocalApiResponse } from 'node-karin'
 
 export interface NavItem {
-  Icon: React.ComponentType
+  Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   label: string
   href: string
   children?: {
     id: string
     href: string
-    icon?: {
-      name?: string
-      size?: number
-      color?: string
-    }
-    type?: 'git' | 'npm' | 'app'
+    label?: string
+    Icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>
+    children?: {
+      id: string
+      href: string
+      label?: string
+      icon?: {
+        name?: string
+        size?: number
+        color?: string
+      }
+      type?: 'git' | 'npm' | 'app'
+    }[]
   }[]
 }
 
@@ -51,35 +58,42 @@ export const defaultSiteConfig: SiteConfigType = {
       href: '/config',
     },
     {
-      Icon: MdExtension,
-      label: '插件配置',
-      href: '/plugins',
-      children: [],
-    },
-    {
-      Icon: MdStore,
-      label: '插件市场',
-      href: '/plugins/list',
-    },
-    {
-      Icon: MdOutlineManageAccounts,
+      Icon: MdExtension, // 改为插件图标
       label: '插件管理',
-      href: '/plugins/manage',
-    },
-    {
-      Icon: TbPackages,
-      label: '依赖管理',
-      href: '/dependencies',
-    },
-    // {
-    //   Icon: FiCodesandbox,
-    //   label: '沙箱调试',
-    //   href: '/sandbox',
-    // },
-    {
-      Icon: MdOutlineWebhook,
-      label: 'WebUI插件',
-      href: '/plugins/webui',
+      href: '/plugins-management',
+      children: [
+        {
+          id: 'plugin-config',
+          href: '/plugins',
+          label: '配置',
+          Icon: RiSettings2Fill, // 保持设置图标
+          children: [],
+        },
+        {
+          id: 'plugin-market',
+          href: '/plugins/list',
+          label: '市场',
+          Icon: MdStore, // 保持商店图标
+        },
+        {
+          id: 'plugin-manage',
+          href: '/plugins/manage',
+          label: '更新/卸载',
+          Icon: MdSystemUpdate, // 改为系统更新图标
+        },
+        {
+          id: 'dependencies',
+          href: '/dependencies',
+          label: '依赖管理',
+          Icon: TbPackages, // 保持包管理图标
+        },
+        {
+          id: 'webui-plugins',
+          href: '/plugins/webui',
+          label: 'WebUI',
+          Icon: MdWeb, // 改为网页图标
+        },
+      ],
     },
     {
       Icon: MdOutlineTerminal,
@@ -96,7 +110,6 @@ export const defaultSiteConfig: SiteConfigType = {
       label: '关于我们',
       href: '/about',
     },
-
   ],
 }
 
@@ -117,13 +130,16 @@ const getInstalledPlugins = async () => {
 }
 
 /**
- * 初始化插件配置的二级菜单
+ * 初始化插件配置的三级菜单
  */
 export const initSiteConfig = async () => {
   const plugins = await getInstalledPlugins()
-  const pluginConfigIndex = siteConfig.navItems.findIndex(item => item.href === '/plugins')
-  if (pluginConfigIndex !== -1) {
-    siteConfig.navItems[pluginConfigIndex].children = plugins
+  const pluginManagementIndex = siteConfig.navItems.findIndex(item => item.href === '/plugins-management')
+  if (pluginManagementIndex !== -1) {
+    const pluginConfigIndex = siteConfig.navItems[pluginManagementIndex].children?.findIndex(item => item.id === 'plugin-config')
+    if (pluginConfigIndex !== undefined && pluginConfigIndex !== -1 && siteConfig.navItems[pluginManagementIndex].children) {
+      // 将插件列表添加到"配置"的子菜单中
+      siteConfig.navItems[pluginManagementIndex].children[pluginConfigIndex].children = plugins
+    }
   }
-  return siteConfig
 }
