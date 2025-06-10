@@ -53,27 +53,29 @@ const Modal: React.FC<ModalProps> = React.memo(props => {
       <ModalContent>
         {nativeClose => (
           <>
-            {title && <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>}
+            {title && <ModalHeader className='flex flex-col gap-1'>{title}</ModalHeader>}
             <ModalBody>{content}</ModalBody>
             <ModalFooter>
               {showCancel && (
                 <Button
-                  color="danger"
-                  variant="light"
+                  color='danger'
+                  variant='flat'
                   onPress={() => {
                     onCancel?.()
                     nativeClose()
                   }}
+                  className='glass-effect'
                 >
                   取消
                 </Button>
               )}
               <Button
-                color="primary"
+                color='primary'
                 onPress={() => {
                   onConfirm?.()
                   nativeClose()
                 }}
+                className='glass-effect'
               >
                 确定
               </Button>

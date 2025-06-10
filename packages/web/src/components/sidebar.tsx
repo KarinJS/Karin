@@ -15,8 +15,8 @@ import { Fragment, useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { siteConfig, initSiteConfig } from '@/config/site'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
 import TextPressure from './TextPressure'
+import useDialog from '@/hooks/use-dialog'
 
 const menuItemVariants = {
   hidden: {
@@ -69,11 +69,11 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null)
   const [expandedSubMenu, setExpandedSubMenu] = useState<string | null>(null)
   const [pluginsLoading, setPluginsLoading] = useState(true)
-  const [showsingOut, setShowsingOut] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
   const { toggleTheme, isDark } = useTheme()
+  const dialog = useDialog()
 
   useEffect(() => {
     initSiteConfig().then(() => {
@@ -104,6 +104,27 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
       })
     })
   }, [location.pathname])
+
+  /** 退出登录 */
+  const signOut = async () => {
+    dialog.confirm({
+      title: '注销',
+      content: '确认注销此次登录吗？注销后需要重新登录',
+      onConfirm: async () => {
+        try {
+          localStorage.removeItem('userId')
+          localStorage.removeItem('accessToken')
+          localStorage.removeItem('refreshToken')
+          toast.success('退出登录成功！')
+          navigate('/login')
+        } catch (e) {
+          toast.error('退出登录失败！')
+        } finally {
+          navigate('/login')
+        }
+      },
+    })
+  }
 
   return (
     <>
@@ -310,7 +331,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                                       'flex items-center justify-between gap-3 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary',
                                       'transition-transform hover:-translate-y-[2px]',
                                       {
-                                        '!text-primary font-medium': (() => {
+                                        '!text-primary glass-effect': (() => {
                                           // 检查二级菜单直接匹配
                                           if (location.pathname === child.href) return true
 
@@ -382,7 +403,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                                                         'flex items-start justify-start gap-2 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary',
                                                         'transition-transform hover:-translate-y-[2px]',
                                                         {
-                                                          '!text-primary': (() => {
+                                                          '!text-primary glass-effect': (() => {
                                                             const urlParams = new URLSearchParams(location.search)
                                                             return location.pathname === '/plugins/config' && urlParams.get('name') === grandChild.id
                                                           })(),
@@ -418,7 +439,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
 
           {/* 底部按钮 */}
           <div className={clsx(
-            'flex-grow-0 flex-shrink-0 py-2 mb-2 flex flex-col gap-2',
+            'flex-grow-0 flex-shrink-0 py-2 mb-2 flex flex-col gap-4',
             isCollapsed ? 'px-2 items-center' : 'px-4'
           )}
           >
@@ -427,7 +448,8 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
               <Button
                 variant='light'
                 color='primary'
-                className='mb-2 w-full flex items-center justify-center gap-2'
+                radius='full'
+                className='w-full flex items-center justify-center gap-2 glass-effect'
                 isIconOnly={isCollapsed}
                 onPress={() => setIsCollapsed(!isCollapsed)}
               >
@@ -452,7 +474,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
               radius='full'
               variant='light'
               color='primary'
-              className='w-full flex items-center justify-center gap-2'
+              className='w-full flex items-center justify-center gap-2 glass-effect'
               isIconOnly={isCollapsed}
               onPress={toggleTheme}
             >
@@ -469,11 +491,9 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
               radius='full'
               variant='light'
               color='primary'
-              className='w-full flex items-center justify-center gap-2'
+              className='w-full flex items-center justify-center gap-2 glass-effect'
               isIconOnly={isCollapsed}
-              onPress={() => {
-                setShowsingOut(true)
-              }}
+              onPress={signOut}
             >
               {!isCollapsed && '退出登录'}
             </Button>
@@ -492,52 +512,6 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
           onClick={onToggle}
         />
       )}
-
-      {/* 退出登录确认弹窗 */}
-      <Modal
-        isOpen={showsingOut}
-        onOpenChange={(isOpen) => {
-          setShowsingOut(isOpen)
-        }}
-        size='lg'
-      >
-        <ModalContent>
-          <ModalHeader>
-            <h3 className='text-lg font-semibold'>确认注销登录</h3>
-          </ModalHeader>
-          <ModalBody>
-            <p className='text-sm text-default-600'>
-              您确定要注销登录吗？
-              <br />
-              注销后需重新登录才可进入
-            </p>
-          </ModalBody>
-          <ModalFooter>
-            <div className='flex gap-2'>
-              <Button
-                color='default'
-                variant='light'
-                onPress={() => setShowsingOut(false)}
-              >
-                取消
-              </Button>
-              <Button
-                color='danger'
-                onPress={() => {
-                  localStorage.removeItem('userId')
-                  localStorage.removeItem('accessToken')
-                  localStorage.removeItem('refreshToken')
-                  toast.success('退出登录成功！')
-                  navigate('/login')
-                  setShowsingOut(false)
-                }}
-              >
-                确认
-              </Button>
-            </div>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </>
   )
 }
