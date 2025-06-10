@@ -54,6 +54,7 @@ const StatCard = ({
         ${gradient}
         rounded-xl md:rounded-2xl p-3 md:p-5 shadow-sm ${border}
         transition-all duration-300 cursor-pointer hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
+        select-none
         ${isActive ? `ring-2 ${ringColor} ring-offset-1 ring-offset-background` : ''}
       `}
     >
