@@ -17,7 +17,6 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import React, { useState, useEffect } from 'react'
 import clsx from 'clsx'
 import { Tooltip } from '@heroui/tooltip'
-import { useTheme } from 'ahooks'
 import { FaHeart } from 'react-icons/fa'
 // import ConsoleMessage from '@/components/ConsoleMessage.tsx'
 
@@ -65,7 +64,6 @@ export default function LoginPage () {
   const navigate = useNavigate()
   const location = useLocation()
   const from = location.state?.from?.pathname || '/'
-  const { theme } = useTheme()
   const [isVisible, setIsVisible] = React.useState(false)
 
   const toggleVisibility = () => setIsVisible(!isVisible)
@@ -143,9 +141,7 @@ export default function LoginPage () {
         <div className='relative bg-white/20 dark:bg-neutral-900/20 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 dark:border-neutral-800/20'>
           <div className='absolute top-4 right-4 flex flex-col gap-3'>
             {/* 主题切换按钮 */}
-            <Tooltip content={theme === 'dark' ? '切换浅色模式' : '切换深色模式'} delay={1} closeDelay={1}>
-              <ThemeSwitch />
-            </Tooltip>
+            <ThemeSwitch />
             {/* 开启湍流动画效果 */}
             <Tooltip content={showSplashCursor ? '关闭湍流动画' : '开启湍流动画'} placement='bottom' delay={1} closeDelay={1}>
               <Button

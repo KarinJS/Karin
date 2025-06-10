@@ -1,10 +1,11 @@
-import React, { useState, useEffect, ReactNode } from 'react'
+import React, { useState, useEffect, ReactNode, useMemo } from 'react'
 import { SwitchProps } from '@heroui/switch'
 import clsx from 'clsx'
 
 import { useTheme } from '@/hooks/use-theme'
 import { Moon, Sun } from 'lucide-react'
 import { Button } from '@heroui/button'
+import { Tooltip } from '@heroui/tooltip'
 
 type Theme = 'system' | 'inverse'
 
@@ -12,9 +13,10 @@ export interface ThemeSwitchProps {
   className?: string
   classNames?: SwitchProps['classNames']
   children?: ReactNode | ((props: { theme: Theme; isDark: boolean }) => ReactNode)
+  tooltip?: string | ReactNode
 }
 
-export const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ classNames, children }) => {
+export const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ classNames, children, tooltip }) => {
   const [isMounted, setIsMounted] = useState(false)
   const { theme, toggleTheme, isDark } = useTheme()
 
@@ -22,9 +24,15 @@ export const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ classNames, children }
     setIsMounted(true)
   }, [])
 
+  // 动态计算 tooltip 内容，响应 theme 变化
+  const dynamicTooltip = useMemo(() => {
+    if (tooltip) return tooltip
+    return isDark ? '浅色模式' : '深色模式'
+  }, [tooltip, isDark])
+
   if (!isMounted) return <div className='w-6 h-6' />
 
-  return (
+  const buttonElement = (
     <Button
       onPress={toggleTheme}
       radius='full'
@@ -46,9 +54,15 @@ export const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ classNames, children }
         )}
       >
         {/* 根据当前显示的主题（而不是设置的主题模式）来显示图标 */}
-        {isDark ? <Moon size={22} /> : <Sun size={22} />}
+        {isDark ? <Sun size={22} /> : <Moon size={22} />}
       </div>
       {typeof children === 'function' ? children({ theme: theme as Theme, isDark }) : children}
     </Button>
+  )
+
+  return (
+    <Tooltip content={dynamicTooltip} delay={1} closeDelay={1}>
+      {buttonElement}
+    </Tooltip>
   )
 }
