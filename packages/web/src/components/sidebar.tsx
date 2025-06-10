@@ -301,7 +301,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                               exit='hidden'
                               className='overflow-hidden mx-2'
                             >
-                              {item.children.map((child, index) => (
+                              {item.children.map((child) => (
                                 <Fragment key={child.id}>
                                   <Button
                                     variant='light'
