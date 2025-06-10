@@ -24,7 +24,7 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({
 }) => {
   const chartRef = useRef<HTMLDivElement>(null)
   const chartInstance = useRef<echarts.ECharts | null>(null)
-  const { theme } = useTheme()
+  const { theme, isDark } = useTheme()
   const [networkData, setNetworkData] = useState<NetworkStatus[]>([])
   const [currentUpload, setCurrentUpload] = useState<number>(0)
   const [currentDownload, setCurrentDownload] = useState<number>(0)
@@ -192,7 +192,7 @@ const NetworkMonitor: React.FC<NetworkMonitorProps> = ({
 
     // 简化图表配置，减少不必要的视觉效果
     const option: echarts.EChartsOption = {
-      darkMode: theme === 'dark',
+      darkMode: isDark,
       // 减少动画效果
       animation: true,
       animationDuration: 200, // 减少动画时间
