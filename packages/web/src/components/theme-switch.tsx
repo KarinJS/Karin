@@ -3,10 +3,10 @@ import { SwitchProps } from '@heroui/switch'
 import clsx from 'clsx'
 
 import { useTheme } from '@/hooks/use-theme'
-import { Moon, Sun, Laptop } from 'lucide-react'
+import { Moon, Sun } from 'lucide-react'
 import { Button } from '@heroui/button'
 
-type Theme = 'system' | 'light' | 'dark'
+type Theme = 'system' | 'inverse'
 
 export interface ThemeSwitchProps {
   className?: string
@@ -42,12 +42,11 @@ export const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ classNames, children }
           'pt-px',
           'px-0',
           'mx-0',
-          classNames?.wrapper,
+          classNames?.wrapper
         )}
       >
-        {theme === 'light' && <Sun size={22} />}
-        {theme === 'dark' && <Moon size={22} />}
-        {theme === 'system' && <Laptop size={22} />}
+        {/* 根据当前显示的主题（而不是设置的主题模式）来显示图标 */}
+        {isDark ? <Moon size={22} /> : <Sun size={22} />}
       </div>
       {typeof children === 'function' ? children({ theme: theme as Theme, isDark }) : children}
     </Button>

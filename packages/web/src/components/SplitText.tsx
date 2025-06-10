@@ -1,102 +1,129 @@
-import { useSprings, animated, SpringConfig } from '@react-spring/web'
-import { useEffect, useRef, useState } from 'react'
+import React, { useRef, useEffect } from 'react'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { SplitText as GSAPSplitText } from 'gsap/SplitText'
 
-interface SplitTextProps {
-  text?: string
+gsap.registerPlugin(ScrollTrigger, GSAPSplitText)
+
+export interface SplitTextProps {
+  text: string
   className?: string
   delay?: number
-  animationFrom?: { opacity: number; transform: string }
-  animationTo?: { opacity: number; transform: string }
-  easing?: SpringConfig['easing']
+  duration?: number
+  ease?: string | ((t: number) => number)
+  splitType?: 'chars' | 'words' | 'lines' | 'words, chars'
+  from?: gsap.TweenVars
+  to?: gsap.TweenVars
   threshold?: number
   rootMargin?: string
-  textAlign?: 'left' | 'right' | 'center' | 'justify' | 'start' | 'end'
+  textAlign?: React.CSSProperties['textAlign']
   onLetterAnimationComplete?: () => void
 }
 
 const SplitText: React.FC<SplitTextProps> = ({
-  text = '',
+  text,
   className = '',
   delay = 100,
-  animationFrom = { opacity: 0, transform: 'translate3d(0,50px,0)' },
-  animationTo = { opacity: 1, transform: 'translate3d(0,0,0)' },
-  easing = (t: number) => t,
-  threshold = 0.2,
-  rootMargin = '-50px',
+  duration = 0.6,
+  ease = 'power3.out',
+  splitType = 'chars',
+  from = { opacity: 0, y: 40 },
+  to = { opacity: 1, y: 0 },
+  threshold = 0.1,
+  rootMargin = '-100px',
   textAlign = 'center',
   onLetterAnimationComplete,
 }) => {
-  const words = text.split(' ').map(word => word.split(''))
-  const letters = words.flat()
-  const [inView, setInView] = useState(false)
   const ref = useRef<HTMLParagraphElement>(null)
-  const animatedCount = useRef(0)
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true)
-          if (ref.current) {
-            observer.unobserve(ref.current)
-          }
-        }
-      },
-      { threshold, rootMargin }
-    )
+    const el = ref.current
+    if (!el) return
 
-    if (ref.current) {
-      observer.observe(ref.current)
+    const absoluteLines = splitType === 'lines'
+    if (absoluteLines) el.style.position = 'relative'
+
+    const splitter = new GSAPSplitText(el, {
+      type: splitType,
+      absolute: absoluteLines,
+      linesClass: 'split-line',
+    })
+
+    let targets: Element[]
+    switch (splitType) {
+      case 'lines':
+        targets = splitter.lines
+        break
+      case 'words':
+        targets = splitter.words
+        break
+      case 'words, chars':
+        targets = [...splitter.words, ...splitter.chars]
+        break
+      default:
+        targets = splitter.chars
     }
 
-    return () => observer.disconnect()
-  }, [threshold, rootMargin])
+    targets.forEach((t) => {
+      (t as HTMLElement).style.willChange = 'transform, opacity'
+    })
 
-  const springs = useSprings(
-    letters.length,
-    letters.map((_, i) => ({
-      from: animationFrom,
-      to: inView
-        ? async (next: (props: any) => Promise<void>) => {
-          await next(animationTo)
-          animatedCount.current += 1
-          if (animatedCount.current === letters.length && onLetterAnimationComplete) {
-            onLetterAnimationComplete()
-          }
-        }
-        : animationFrom,
-      delay: i * delay,
-      config: { easing },
-    }))
-  )
+    const startPct = (1 - threshold) * 100
+    const m = /^(-?\d+)px$/.exec(rootMargin)
+    const raw = m ? parseInt(m[1], 10) : 0
+    const sign = raw < 0 ? `-=${Math.abs(raw)}px` : `+=${raw}px`
+    const start = `top ${startPct}%${sign}`
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: el,
+        start,
+        toggleActions: 'play none none none',
+        once: true,
+      },
+      smoothChildTiming: true,
+      onComplete: onLetterAnimationComplete,
+    })
+
+    tl.set(targets, { ...from, immediateRender: false, force3D: true })
+    tl.to(targets, {
+      ...to,
+      duration,
+      ease,
+      stagger: delay / 1000,
+      force3D: true,
+    })
+
+    return () => {
+      tl.kill()
+      ScrollTrigger.getAll().forEach((t) => t.kill())
+      gsap.killTweensOf(targets)
+      splitter.revert()
+    }
+  }, [
+    text,
+    delay,
+    duration,
+    ease,
+    splitType,
+    from,
+    to,
+    threshold,
+    rootMargin,
+    onLetterAnimationComplete,
+  ])
 
   return (
-    <p
+    <div
       ref={ref}
-      className={`split-parent overflow-hidden inline ${className}`}
-      style={{ textAlign, whiteSpace: 'normal', wordWrap: 'break-word' }}
+      className={`split-parent overflow-hidden whitespace-normal text-primary-400 ${className}`}
+      style={{
+        textAlign,
+        wordWrap: 'break-word',
+      }}
     >
-      {words.map((word, wordIndex) => (
-        <span key={wordIndex} style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>
-          {word.map((letter, letterIndex) => {
-            const index = words
-              .slice(0, wordIndex)
-              .reduce((acc, w) => acc + w.length, 0) + letterIndex
-
-            return (
-              // @ts-ignore
-              <animated.span
-                key={index}
-                style={springs[index] as unknown as React.CSSProperties}
-                className='inline-block transform transition-opacity will-change-transform text-primary-400'
-              >
-                {letter}
-              </animated.span>
-            )
-          })}
-        </span>
-      ))}
-    </p>
+      {text}
+    </div>
   )
 }
 

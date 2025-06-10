@@ -9,15 +9,16 @@ const ThemeProps = {
   light: 'light',
   dark: 'dark',
   system: 'system',
+  inverse: 'inverse',
 } as const
 
-type Theme = typeof ThemeProps.light | typeof ThemeProps.dark | typeof ThemeProps.system
+type Theme = typeof ThemeProps.system | typeof ThemeProps.inverse
 
 export const useTheme = (defaultTheme?: Theme) => {
   try {
     JSON.parse(localStorage.getItem(ThemeProps.key) ?? '')
   } catch {
-    localStorage.setItem(ThemeProps.key, ThemeProps.light)
+    localStorage.setItem(ThemeProps.key, ThemeProps.system)
   }
   const [theme, setTheme] = useLocalStorageState<Theme>(key.theme, {
     defaultValue: defaultTheme ?? ThemeProps.system, // 默认使用系统主题
@@ -30,42 +31,48 @@ export const useTheme = (defaultTheme?: Theme) => {
       : ThemeProps.light
   }
 
+  // 获取反向系统主题
+  const getInverseSystemTheme = (): typeof ThemeProps.light | typeof ThemeProps.dark => {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? ThemeProps.light
+      : ThemeProps.dark
+  }
+
   const isDark = useMemo(() => {
     if (theme === ThemeProps.system) {
       return getSystemTheme() === ThemeProps.dark
     }
-    return theme === ThemeProps.dark
+    // inverse 模式下，返回反向系统主题的暗色状态
+    return getInverseSystemTheme() === ThemeProps.dark
   }, [theme])
 
   const isLight = useMemo(() => {
     if (theme === ThemeProps.system) {
       return getSystemTheme() === ThemeProps.light
     }
-    return theme === ThemeProps.light
+    // inverse 模式下，返回反向系统主题的亮色状态
+    return getInverseSystemTheme() === ThemeProps.light
   }, [theme])
 
   const _setTheme = (theme: Theme) => {
     localStorage.setItem(ThemeProps.key, theme)
     document.documentElement.classList.remove(ThemeProps.light, ThemeProps.dark)
 
-    // 如果是系统主题，则应用系统当前的主题颜色
-    const appliedTheme = theme === ThemeProps.system ? getSystemTheme() : theme
+    // 根据主题模式应用相应的颜色
+    const appliedTheme = theme === ThemeProps.system ? getSystemTheme() : getInverseSystemTheme()
     document.documentElement.classList.add(appliedTheme)
 
     setTheme(theme)
   }
 
-  const setLightTheme = () => _setTheme(ThemeProps.light)
-  const setDarkTheme = () => _setTheme(ThemeProps.dark)
   const setSystemTheme = () => _setTheme(ThemeProps.system)
+  const setInverseTheme = () => _setTheme(ThemeProps.inverse)
 
   const toggleTheme = () => {
-    if (theme === ThemeProps.dark) {
-      setLightTheme()
-    } else if (theme === ThemeProps.light) {
-      setSystemTheme()
+    if (theme === ThemeProps.system) {
+      setInverseTheme()
     } else {
-      setDarkTheme()
+      setSystemTheme()
     }
   }
 
@@ -75,10 +82,10 @@ export const useTheme = (defaultTheme?: Theme) => {
     // 监听系统主题变化
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handleChange = () => {
-      if (theme === ThemeProps.system) {
-        document.documentElement.classList.remove(ThemeProps.light, ThemeProps.dark)
-        document.documentElement.classList.add(getSystemTheme())
-      }
+      // 无论是系统模式还是反向模式，都需要重新应用主题
+      const appliedTheme = theme === ThemeProps.system ? getSystemTheme() : getInverseSystemTheme()
+      document.documentElement.classList.remove(ThemeProps.light, ThemeProps.dark)
+      document.documentElement.classList.add(appliedTheme)
     }
 
     mediaQuery.addEventListener('change', handleChange)
@@ -89,10 +96,10 @@ export const useTheme = (defaultTheme?: Theme) => {
     theme,
     isDark,
     isLight,
-    setLightTheme,
-    setDarkTheme,
     setSystemTheme,
+    setInverseTheme,
     toggleTheme,
     isSystem: theme === ThemeProps.system,
+    isInverse: theme === ThemeProps.inverse,
   }
 }

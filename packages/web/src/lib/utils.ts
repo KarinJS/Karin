@@ -32,6 +32,7 @@ export const getPageTitle = (pathname: string) => {
     '/login': '登录',
     '/log': '实时日志',
     '/terminal': '仿真终端',
+    '/dependencies': '依赖管理',
   } as Record<string, string>
 
   return `${map?.[pathname] ?? '无人问津的角落...'}`

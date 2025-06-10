@@ -1,4 +1,3 @@
-/* eslint-disable @stylistic/indent */
 import clsx from 'clsx'
 import { Icon } from './ui/icon'
 import toast from 'react-hot-toast'
@@ -9,7 +8,7 @@ import { Spinner } from '@heroui/spinner'
 import { useTheme } from '@/hooks/use-theme'
 import { FaChevronRight } from 'react-icons/fa6'
 import { useMediaQuery } from 'react-responsive'
-import { Moon, Sun, Laptop } from 'lucide-react'
+import { Moon, Sun } from 'lucide-react'
 import { RiMenuUnfold2Line } from 'react-icons/ri'
 import { ScrollShadow } from '@heroui/scroll-shadow'
 import { Fragment, useState, useEffect } from 'react'
@@ -72,7 +71,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
-  const { theme, toggleTheme } = useTheme()
+  const { toggleTheme, isDark } = useTheme()
 
   useEffect(() => {
     initSiteConfig().then(() => {
@@ -638,11 +637,9 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
             {/* 主题切换按钮 - 使用自定义Button实现 */}
             <Button
               startContent={
-                theme === 'dark'
+                !isDark
                   ? <Moon className='w-5 h-5' />
-                  : theme === 'light'
-                    ? <Sun className='w-5 h-5' />
-                    : <Laptop className='w-5 h-5' />
+                  : <Sun className='w-5 h-5' />
               }
               radius='full'
               variant='light'
@@ -652,11 +649,9 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
               onPress={toggleTheme}
             >
               {!isCollapsed && (
-                theme === 'dark'
+                !isDark
                   ? '深色模式'
-                  : theme === 'light'
-                    ? '浅色模式'
-                    : '跟随系统'
+                  : '浅色模式'
               )}
             </Button>
 

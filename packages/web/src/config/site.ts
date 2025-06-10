@@ -37,8 +37,8 @@ export interface SiteConfigType {
 }
 
 export const defaultSiteConfig: SiteConfigType = {
-  name: 'KarinJS WebUI',
-  description: 'KarinJS WebUI.',
+  name: 'Karin WebUI',
+  description: 'Karin WebUI.',
   navItems: [
     {
       Icon: MdSpaceDashboard,
@@ -96,6 +96,7 @@ export const defaultSiteConfig: SiteConfigType = {
       label: '关于我们',
       href: '/about',
     },
+
   ],
 }
 

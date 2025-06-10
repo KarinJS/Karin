@@ -1,4 +1,3 @@
-import { title } from '@/components/primitives.ts'
 import { Card, CardBody, CardHeader } from '@heroui/card'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
@@ -58,7 +57,7 @@ const iconMap: IconMap = {
   'PM2 ID': Server,
   运行时间: Clock,
   插件数量: Puzzle,
-  BOT数量: Bot,
+  适配器数量: Bot,
   运行环境: Terminal,
   版本: GitBranch,
 }
@@ -320,7 +319,7 @@ function Status () {
         <MemoizedStatusItem title='PID' value={data.pid} />
         <MemoizedStatusItem title='PM2 ID' value={data.pm2_id} />
         <MemoizedStatusItem title='插件数量' value={localPluginsList.data?.length || '--'} />
-        <MemoizedStatusItem title='BOT数量' value={botList.data?.length} />
+        <MemoizedStatusItem title='适配器数量' value={botList.data?.length} />
         <MemoizedStatusItem
           title='版本'
           value={
@@ -575,7 +574,7 @@ function ControlButtons () {
   }
 
   return (
-    <div className='flex gap-2 ml-auto'>
+    <div className='flex gap-2'>
       <Tooltip content='重启' showArrow>
         <Button
           className='btn btn-primary text-lg'
@@ -612,19 +611,27 @@ export default function IndexPage () {
     <section className='flex flex-col gap-4'>
       <Card shadow='sm'>
         <CardHeader className='px-6 pt-6 pb-0'>
-          <div
-            className={title({
-              size: 'sm',
-              color: 'blue',
-            })}
-          >
-            <SplitText
-              text='Karin'
-              className='text-4xl'
-            />
+          <div className='flex flex-col flex-grow gap-4'>
+            <div>
+              <SplitText
+                text='Hello, Karin !'
+                className='text-4xl font-semibold text-center tracking-wider'
+                delay={100}
+                duration={0.6}
+                ease='power3.out'
+                splitType='chars'
+                from={{ opacity: 0, y: 40 }}
+                to={{ opacity: 1, y: 0 }}
+                threshold={0.1}
+                rootMargin='-100px'
+                textAlign='center'
+              />
+            </div>
+            <div className='flex justify-end gap-4'>
+              <OnlineStatus />
+              <ControlButtons />
+            </div>
           </div>
-          <OnlineStatus />
-          <ControlButtons />
         </CardHeader>
         <CardBody className='px-6 py-6'>
           <Status />
