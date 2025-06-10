@@ -166,12 +166,26 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                     <div
                       className={clsx(
                         'mb-2 my-1 block text-default-600 hover:text-primary rounded-xl transition-all cursor-default md:cursor-pointer group',
-                        'hover:bg-neutral-200 dark:hover:bg-neutral-700',
                         isCollapsed ? 'mx-auto' : 'mx-1',
                         {
-                          '!text-primary bg-primary/10 font-medium ring-1 ring-primary/15':
-                            location.pathname === item.href ||
-                            (item.children?.some(child => location.pathname === child.href)),
+                          '!text-primary font-medium': (() => {
+                            // 检查一级菜单直接匹配
+                            if (location.pathname === item.href) return true
+
+                            // 检查二级菜单匹配
+                            if (item.children?.some(child => location.pathname === child.href)) return true
+
+                            // 检查三级菜单匹配
+                            const urlParams = new URLSearchParams(location.search)
+                            const currentPluginName = urlParams.get('name')
+                            if (location.pathname === '/plugins/config' && currentPluginName) {
+                              return item.children?.some(child =>
+                                child.children?.some(grandChild => grandChild.id === currentPluginName)
+                              )
+                            }
+
+                            return false
+                          })(),
                         }
                       )}
                     >
@@ -296,10 +310,19 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                                       'flex items-center justify-between gap-3 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary',
                                       'transition-transform hover:-translate-y-[2px]',
                                       {
-                                        '!text-primary bg-primary/10 font-medium':
-                                          location.pathname === child.href ||
-                                          (child.children?.some(grandChild => location.pathname.includes(grandChild.id))),
-                                        'mt-1': index === 0,
+                                        '!text-primary font-medium': (() => {
+                                          // 检查二级菜单直接匹配
+                                          if (location.pathname === child.href) return true
+
+                                          // 检查三级菜单匹配
+                                          const urlParams = new URLSearchParams(location.search)
+                                          const currentPluginName = urlParams.get('name')
+                                          if (location.pathname === '/plugins/config' && currentPluginName) {
+                                            return child.children?.some(grandChild => grandChild.id === currentPluginName)
+                                          }
+
+                                          return false
+                                        })(),
                                       }
                                     )}
                                     onPress={() => {
@@ -359,7 +382,10 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                                                         'flex items-start justify-start gap-2 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary',
                                                         'transition-transform hover:-translate-y-[2px]',
                                                         {
-                                                          '!text-primary bg-primary/10': location.pathname.includes(grandChild.id),
+                                                          '!text-primary': (() => {
+                                                            const urlParams = new URLSearchParams(location.search)
+                                                            return location.pathname === '/plugins/config' && urlParams.get('name') === grandChild.id
+                                                          })(),
                                                           'mt-1': index === 0,
                                                         }
                                                       )}
