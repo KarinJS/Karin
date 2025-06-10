@@ -34,11 +34,11 @@ const TextPressure: React.FC<TextPressureProps> = ({
 
   const chars = text.split('')
 
-  const dist = (a: { x: number; y: number }, b: { x: number; y: number }) => {
-    const dx = b.x - a.x
-    const dy = b.y - a.y
-    return Math.sqrt(dx * dx + dy * dy)
-  }
+  // const dist = (a: { x: number; y: number }, b: { x: number; y: number }) => {
+  //   const dx = b.x - a.x
+  //   const dy = b.y - a.y
+  //   return Math.sqrt(dx * dx + dy * dy)
+  // }
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -76,7 +76,8 @@ const TextPressure: React.FC<TextPressureProps> = ({
 
       if (titleRef.current) {
         const titleRect = titleRef.current.getBoundingClientRect()
-        const maxDist = titleRect.width / 2
+        const maxDistX = titleRect.width / 2  // 保持原有的x轴范围
+        const maxDistY = window.innerHeight   // y轴影响整个屏幕高度
 
         spansRef.current.forEach((span) => {
           if (!span) return
@@ -87,17 +88,26 @@ const TextPressure: React.FC<TextPressureProps> = ({
             y: rect.y + rect.height / 2,
           }
 
-          const d = dist(mouseRef.current, charCenter)
+          // 分别计算x和y方向的距离
+          const dx = Math.abs(mouseRef.current.x - charCenter.x)
+          const dy = Math.abs(mouseRef.current.y - charCenter.y)
 
-          const getAttr = (distance: number, minVal: number, maxVal: number) => {
-            const val = maxVal - Math.abs((maxVal * distance) / maxDist)
-            return Math.max(minVal, val + minVal)
+          // 使用不同的最大距离来计算影响
+          const distanceFactorX = Math.max(0, 1 - dx / maxDistX)
+          const distanceFactorY = Math.max(0, 1 - dy / maxDistY)
+
+          // 综合x和y方向的影响因子
+          const combinedFactor = Math.max(distanceFactorX, distanceFactorY)
+
+          const getAttr = (factor: number, minVal: number, maxVal: number) => {
+            const val = minVal + (maxVal - minVal) * factor
+            return Math.max(minVal, val)
           }
 
           const wdth = 100 // 固定宽度
-          const wght = weight ? Math.floor(getAttr(d, 100, 900)) : 400
-          const italVal = italic ? getAttr(d, 0, 1).toFixed(2) : '0'
-          const alphaVal = alpha ? getAttr(d, 0, 1).toFixed(2) : '1'
+          const wght = weight ? Math.floor(getAttr(combinedFactor, 100, 900)) : 400
+          const italVal = italic ? getAttr(combinedFactor, 0, 1).toFixed(2) : '0'
+          const alphaVal = alpha ? getAttr(combinedFactor, 0, 1).toFixed(2) : '1'
 
           span.style.opacity = alphaVal
           span.style.fontVariationSettings = `'wght' ${wght}, 'wdth' ${wdth}, 'ital' ${italVal}`
