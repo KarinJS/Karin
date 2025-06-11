@@ -131,13 +131,16 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) =>
         </Card>
 
         <div className='flex flex-col gap-2 justify-center'>
+          {/* 只在插件详情Modal关闭时显示顶部的ConfigDetailModal */}
           <div className='hidden md:block'>
-            <ConfigDetailModal
-              className='glass-effect'
-              showJsonModal={showJsonModal}
-              setShowJsonModal={setShowJsonModal}
-              handleFormResult={handleFormResult}
-            />
+            {!isPluginModalOpen && (
+              <ConfigDetailModal
+                className='glass-effect'
+                showJsonModal={showJsonModal}
+                setShowJsonModal={setShowJsonModal}
+                handleFormResult={handleFormResult}
+              />
+            )}
           </div>
           <Button
             type='submit'
