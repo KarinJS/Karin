@@ -172,11 +172,11 @@ export default function TestPage () {
     <Dropdown>
       <DropdownTrigger>
         <Button
-          variant='ghost'
+          variant='flat'
           color='primary'
           size='sm'
           startContent={<Settings2 size={18} />}
-          className={!showText ? 'min-w-0 p-2' : ''}
+          className={!showText ? 'min-w-0 p-2 glass-effect' : 'glass-effect'}
         >
           设置
         </Button>
@@ -196,7 +196,7 @@ export default function TestPage () {
       size='sm'
       variant='flat'
       startContent={<Save size={18} />}
-      className={!showText ? 'min-w-0 p-2' : ''}
+      className={!showText ? 'min-w-0 p-2 glass-effect' : 'glass-effect'}
       onPress={handleSaveClick}
     >
       保存
