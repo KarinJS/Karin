@@ -24,9 +24,9 @@ export const InternalAccordion: FC<{
         <div className='text-sm text-gray-500'>{description}</div>
         <Button
           size='sm'
-          variant='light'
+          variant='solid'
+          color='primary'
           onPress={add}
-          className='px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
         >
           添加
         </Button>
@@ -39,24 +39,15 @@ export const InternalAccordion: FC<{
             title={
               <div className='flex justify-between items-center w-full pr-4'>
                 <span>{`${title} ${index + 1}`}</span>
-                <div
-                  role='button'
-                  tabIndex={0}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    remove(index)
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      remove(index)
-                    }
-                  }}
-                  className='px-2 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors cursor-pointer'
+                <Button
+                  as='div'
+                  size='sm'
+                  color='danger'
+                  variant='solid'
+                  onPress={() => remove(index)}
                 >
                   删除
-                </div>
+                </Button>
               </div>
             }
             className='mb-2 mx-2'

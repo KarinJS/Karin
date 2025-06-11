@@ -142,24 +142,15 @@ const getGroupComponent = (
                           <span className='text-xs text-gray-500 mt-1'>这是默认配置，当其他配置不可用时将从这里读取</span>
                         )}
                       </span>
-                      <div
-                        role='button'
-                        tabIndex={0}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          remove(index)
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault()
-                            e.stopPropagation()
-                            remove(index)
-                          }
-                        }}
-                        className='px-2 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors cursor-pointer'
+                      <Button
+                        as='div'
+                        size='sm'
+                        color='danger'
+                        variant='solid'
+                        onPress={() => remove(index)}
                       >
                         删除
-                      </div>
+                      </Button>
                     </div>
                   }
                 >
