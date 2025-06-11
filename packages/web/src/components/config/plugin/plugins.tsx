@@ -15,6 +15,7 @@ import { DefaultValues, getComponentResult, getComponentValue } from './values'
 
 import type { GetConfigResponse } from 'node-karin'
 import { IoSave } from 'react-icons/io5'
+import clsx from 'clsx'
 
 /**
  * 动态渲染插件配置组件
@@ -87,9 +88,13 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) =>
             <div className='flex md:hidden items-center gap-2'>
               <Avatar
                 src={info?.author?.[0]?.avatar || `https://avatar.vercel.sh/${info?.name || 'ikenxuan'}`}
+                showFallback
+                name={info?.author?.[0]?.name || 'none'}
                 size='sm'
                 radius='full'
                 className='flex-shrink-0 w-8 h-8'
+                isBordered
+                color='danger'
               />
               <div className='flex-1 min-w-0 text-left'>
                 <div className='text-xs font-medium text-default-900 truncate'>
@@ -105,9 +110,13 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) =>
             <div className='hidden md:flex flex-row items-center gap-3'>
               <Avatar
                 src={info?.author?.[0]?.avatar || `https://avatar.vercel.sh/${info?.name || 'ikenxuan'}`}
+                showFallback
+                name={info?.author?.[0]?.name || 'none'}
                 size='md'
                 radius='full'
                 className='flex-shrink-0'
+                isBordered
+                color='danger'
               />
               <div className='flex flex-col ml-3 flex-grow min-w-0 text-left gap-1'>
                 <div className='text-lg font-medium text-default-900 truncate'>
@@ -162,8 +171,12 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) =>
                 <div className='flex items-center gap-3'>
                   <Avatar
                     src={info?.author?.[0]?.avatar || `https://avatar.vercel.sh/${info?.name || 'ikenxuan'}`}
+                    showFallback
+                    name={info?.author?.[0]?.name || 'none'}
                     size='md'
                     radius='full'
+                    isBordered
+                    color='danger'
                   />
                   <div>
                     <h3 className='text-lg font-semibold'>{info.name || '插件名称'}</h3>
@@ -209,36 +222,49 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) =>
                   {info.author && info.author.length > 0 && (
                     <div>
                       <h4 className='text-sm font-medium text-default-700 mb-2'>作者</h4>
-                      <Card
-                        className='space-y-2 w-full text-left'
-                        isPressable
-                        shadow='none'
-                      >
-                        {info.author.map((author, index) => (
-                          <div key={index} className='flex items-center gap-3 py-2 px-4 bg-default-100 rounded-lg'>
-                            <Avatar
-                              src={author.avatar}
-                              size='sm'
-                              radius='full'
-                            />
-                            <div className='flex-1'>
-                              <div className='text-sm font-medium text-default-900'>
-                                {author.name || '未知作者'}
+                      {info.author.map((author, index) => (
+                        <div
+                          key={index}
+                          className={clsx(
+                            index !== info.author!.length - 1 && 'pb-4'
+                          )}
+                        >
+                          <Card
+                            key={index}
+                            className='w-full text-left glass-effect bg-primary-100/10'
+                            isPressable
+                            shadow='sm'
+                          >
+                            <div className='flex items-center gap-3 py-3 px-4'>
+                              <Avatar
+                                src={author.avatar}
+                                showFallback
+                                name={author.name || 'none'}
+                                size='sm'
+                                radius='full'
+                                isBordered
+                                color='danger'
+                              />
+                              <div className='flex-1'>
+                                <div className='text-sm font-medium text-default-900'>
+                                  {author.name || '未知作者'}
+                                </div>
+                                {author.home && (
+                                  <Link
+                                    href={author.home}
+                                    size='sm'
+                                    isExternal
+                                    className='text-xs text-primary-600 hover:text-primary-700'
+                                  >
+                                    {author.home}
+                                  </Link>
+                                )}
                               </div>
-                              {author.home && (
-                                <Link
-                                  href={author.home}
-                                  size='sm'
-                                  isExternal
-                                  className='text-xs'
-                                >
-                                  {author.home}
-                                </Link>
-                              )}
                             </div>
-                          </div>
-                        ))}
-                      </Card>
+                          </Card>
+                        </div>
+
+                      ))}
                     </div>
                   )}
                 </div>

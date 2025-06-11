@@ -119,8 +119,6 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
           navigate('/login')
         } catch (e) {
           toast.error('退出登录失败！')
-        } finally {
-          navigate('/login')
         }
       },
     })
