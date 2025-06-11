@@ -29,7 +29,7 @@ export default function DashboardLayout () {
 
   // 检查当前是否为配置页面
   const isConfigPage = useMemo(() => {
-    return location.pathname.startsWith('/config')
+    return location.pathname.startsWith('/config') || location.pathname.startsWith('/plugins/config')
   }, [location.pathname])
 
   // const [touchStartY, setTouchStartY] = useState(0)
@@ -160,7 +160,8 @@ export default function DashboardLayout () {
         {/* 内容区域动画 - 根据是否显示导航栏调整类名 */}
         <motion.div
           className={clsx(
-            'container mx-auto px-3 flex-1 py-4'
+            'container mx-auto px-3 flex-1',
+            !location.pathname.startsWith('/plugins/config') && 'py-4'
           )}
           key={currentMainPath} // 动态 key，只在主路径变化时触发动画
           initial={{ opacity: 0, scale: 0.9 }}

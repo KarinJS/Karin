@@ -72,8 +72,6 @@ module.exports = {
         '.glass-effect': {
           width: '100%',
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
           backdropFilter: 'blur(16px)',
           backgroundImage: 'linear-gradient(to bottom right, rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.08))',
           borderTop: '1px solid rgba(255, 255, 255, 0.4)',
@@ -94,7 +92,6 @@ module.exports = {
           },
           '&:hover': {
             backgroundImage: 'linear-gradient(to bottom right, rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.12))',
-            transform: 'scale(1.02)',
           },
           '&:hover::before': {
             opacity: '1',
