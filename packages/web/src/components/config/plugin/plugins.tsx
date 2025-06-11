@@ -209,9 +209,13 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) =>
                   {info.author && info.author.length > 0 && (
                     <div>
                       <h4 className='text-sm font-medium text-default-700 mb-2'>作者</h4>
-                      <div className='space-y-2'>
+                      <Card
+                        className='space-y-2 w-full text-left'
+                        isPressable
+                        shadow='none'
+                      >
                         {info.author.map((author, index) => (
-                          <div key={index} className='flex items-center gap-3 p-2 bg-default-50 rounded-lg'>
+                          <div key={index} className='flex items-center gap-3 py-2 px-4 bg-default-100 rounded-lg'>
                             <Avatar
                               src={author.avatar}
                               size='sm'
@@ -234,7 +238,7 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) =>
                             </div>
                           </div>
                         ))}
-                      </div>
+                      </Card>
                     </div>
                   )}
                 </div>
