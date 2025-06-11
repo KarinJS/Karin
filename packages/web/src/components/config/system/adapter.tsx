@@ -30,27 +30,27 @@ const getAdapterComponent = (
       console: {
         isLocal: data.console.isLocal ?? false,
         token: data.console.token ?? '',
-        host: data.console.host.replace(/(http|https):\/\//, '') ?? ''
+        host: data.console.host.replace(/(http|https):\/\//, '') ?? '',
       },
       onebot: {
         ws_server: {
           enable: data.onebot.ws_server.enable ?? false,
-          timeout: data.onebot.ws_server.timeout ?? 120
+          timeout: data.onebot.ws_server.timeout ?? 120,
         },
         ws_client: data.onebot.ws_client ?? [],
-        http_server: data.onebot.http_server ?? []
-      }
-    }
+        http_server: data.onebot.http_server ?? [],
+      },
+    },
   })
 
   const wsClientFields = useFieldArray({
     control: methods.control,
-    name: 'onebot.ws_client'
+    name: 'onebot.ws_client',
   })
 
   const httpServerFields = useFieldArray({
     control: methods.control,
-    name: 'onebot.http_server'
+    name: 'onebot.http_server',
   })
 
   const isLocal = methods.watch('console.isLocal')
@@ -60,8 +60,8 @@ const getAdapterComponent = (
       ...formData,
       console: {
         ...formData.console,
-        host: formData.console.host ? `${protocol}://${formData.console.host}` : ''
-      }
+        host: formData.console.host ? `${protocol}://${formData.console.host}` : '',
+      },
     }
     saveConfig('adapter', finalData)
   }
@@ -70,7 +70,7 @@ const getAdapterComponent = (
     wsClientFields.append({
       enable: false,
       url: '',
-      token: ''
+      token: '',
     })
   }
 
@@ -81,7 +81,7 @@ const getAdapterComponent = (
       url: '',
       token: '',
       api_token: '',
-      post_token: ''
+      post_token: '',
     })
   }
 
@@ -177,7 +177,7 @@ const getAdapterComponent = (
                 placement='right'
                 showArrow
                 classNames={{
-                  content: 'p-0'
+                  content: 'p-0',
                 }}
                 delay={0}
                 closeDelay={0}

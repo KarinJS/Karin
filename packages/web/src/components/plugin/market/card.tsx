@@ -359,9 +359,13 @@ const PluginCard: FC<{
 }> = ({ plugin, isRefreshing, cardClassName }) => {
   return (
     <Card
-      className={`group w-full h-[140px] flex flex-col overflow-hidden cursor-pointer relative bg-default-50/10 dark:bg-default-100/0 hover:shadow-sm transition-all duration-300 rounded-xl border border-default-200/60 dark:border-default-100/20 ${cardClassName || ''}`}
+      className={`group w-full h-[140px] flex flex-col overflow-hidden cursor-pointer relative bg-default-50/10 rounded-xl border border-default-200 transition-all duration-700 hover:border-primary-500 hover:shadow-sm hover:shadow-primary-500/50 hover:scale-[1.02] ${cardClassName || ''}`}
       isPressable
       radius='sm'
+      style={{
+        '--tw-border-opacity': '0.6',
+        transition: 'border-color 0.7s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.1s ease-out',
+      } as React.CSSProperties}
     >
       <CardBody className='p-4 flex flex-col h-full relative'>
         <div className='flex items-start justify-between gap-3 mb-2'>

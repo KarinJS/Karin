@@ -18,6 +18,7 @@ interface ConfigDetailModalProps {
   showJsonModal: boolean
   setShowJsonModal: (show: boolean) => void
   handleFormResult: () => Record<string, any> | null
+  className?: string
 }
 
 /**
@@ -27,6 +28,7 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
   showJsonModal,
   setShowJsonModal,
   handleFormResult,
+  className,
 }) => {
   const handleCopyConfig = () => {
     const config = JSON.stringify(print, null, 2)
@@ -44,7 +46,7 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
   return (
     <>
       <Button
-        color='primary'
+        color='default'
         variant='flat'
         size='md'
         onPress={() => {
@@ -59,7 +61,7 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
             console.error('表单元素不存在')
           }
         }}
-        className={`${BUTTON_COMMON_STYLES}`}
+        className={`${BUTTON_COMMON_STYLES} ${className || ''}`}
         startContent={<VscJson className='text-lg' />}
       >
         配置详情
@@ -109,7 +111,7 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
                   console.log('配置详情:', print)
                   toast.success('打印成功 请查看控制台')
                 }}
-                className={`${BUTTON_COMMON_STYLES}`}
+                className={`${BUTTON_COMMON_STYLES} glass-effect`}
                 startContent={<VscOutput className='text-lg' />}
               >
                 正常打印
@@ -122,7 +124,7 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
                   console.log('配置详情:', JSON.stringify(print, null, 2))
                   toast.success('打印成功 请查看控制台')
                 }}
-                className={`${BUTTON_COMMON_STYLES}`}
+                className={`${BUTTON_COMMON_STYLES} glass-effect`}
                 startContent={<VscSymbolString className='text-lg' />}
               >
                 纯文本打印
@@ -132,7 +134,7 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
                 variant='ghost'
                 size='md'
                 onPress={handleCopyConfig}
-                className={`${BUTTON_COMMON_STYLES}`}
+                className={`${BUTTON_COMMON_STYLES} glass-effect`}
                 startContent={<VscCopy className='text-lg' />}
               >
                 复制
@@ -142,7 +144,7 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
                 variant='solid'
                 size='md'
                 onPress={() => setShowJsonModal(false)}
-                className={`${BUTTON_COMMON_STYLES}`}
+                className={`${BUTTON_COMMON_STYLES} glass-effect`}
               >
                 关闭
               </Button>

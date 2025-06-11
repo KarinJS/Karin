@@ -35,8 +35,8 @@ export interface DialogProviderProps {
 }
 
 export const DialogContext = React.createContext<DialogContextProps>({
-  alert: () => {},
-  confirm: () => {},
+  alert: () => { },
+  confirm: () => { },
 })
 
 const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
@@ -56,7 +56,7 @@ const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
           title,
           backdrop: 'blur',
           showCancel: false,
-          dismissible: dismissible,
+          dismissible,
           onConfirm: () => {
             onConfirm?.()
             setTimeout(() => {
@@ -83,7 +83,7 @@ const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
           title,
           backdrop: 'blur',
           showCancel: true,
-          dismissible: dismissible,
+          dismissible,
           onConfirm: () => {
             onConfirm?.()
             setTimeout(() => {

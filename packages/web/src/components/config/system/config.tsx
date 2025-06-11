@@ -20,7 +20,7 @@ const getConfigComponent = (
   formRef: React.RefObject<HTMLFormElement | null>
 ) => {
   const methods = useForm({
-    defaultValues: data
+    defaultValues: data,
   })
 
   const list = [
@@ -28,13 +28,13 @@ const getConfigComponent = (
       key: 'master',
       label: 'Bot主人列表',
       description: 'Bot主人列表 优先级最高 可以设置多个用户',
-      data: data.master || []
+      data: data.master || [],
     },
     {
       key: 'admin',
       label: 'Bot管理员列表',
       description: 'Bot管理员列表 优先级次之 可以设置多个用户',
-      data: data.admin || []
+      data: data.admin || [],
     },
   ]
 
@@ -43,14 +43,14 @@ const getConfigComponent = (
       key: 'user.enable_list',
       label: '用户白名单',
       description: '用户白名单 优先级最高 可以设置多个用户',
-      data: data.user.enable_list || []
+      data: data.user.enable_list || [],
     },
     {
       key: 'user.disable_list',
       label: '用户黑名单',
       description: '用户黑名单 优先级次之 可以设置多个用户',
-      data: data.user.disable_list || []
-    }
+      data: data.user.disable_list || [],
+    },
   ]
 
   const friendList = [
@@ -58,25 +58,25 @@ const getConfigComponent = (
       key: 'friend.enable_list',
       label: '好友白名单',
       description: '好友白名单 如果用户处于黑名单内无效',
-      data: data.friend.enable_list || []
+      data: data.friend.enable_list || [],
     },
     {
       key: 'friend.disable_list',
       label: '好友黑名单',
       description: '好友黑名单 如果用户处于白名单内无效',
-      data: data.friend.disable_list || []
+      data: data.friend.disable_list || [],
     },
     {
       key: 'friend.log_enable_list',
       label: '好友日志白名单',
       description: '设置后 如果对应的用户触发事件 将不会记录打印日志',
-      data: data.friend.log_enable_list || []
+      data: data.friend.log_enable_list || [],
     },
     {
       key: 'friend.log_disable_list',
       label: '好友日志黑名单',
       description: '设置后 如果对应的用户触发事件 将不会记录打印日志',
-      data: data.friend.log_disable_list || []
+      data: data.friend.log_disable_list || [],
     },
   ]
 
@@ -85,25 +85,25 @@ const getConfigComponent = (
       key: 'group.enable_list',
       label: '群白名单',
       description: '群白名单 如果用户处于黑名单内无效',
-      data: data.group.enable_list || []
+      data: data.group.enable_list || [],
     },
     {
       key: 'group.disable_list',
       label: '群黑名单',
       description: '群黑名单 如果用户处于白名单内无效',
-      data: data.group.disable_list || []
+      data: data.group.disable_list || [],
     },
     {
       key: 'group.log_enable_list',
       label: '群日志白名单',
       description: '设置后 如果对应的用户触发事件 将不会记录打印日志',
-      data: data.group.log_enable_list || []
+      data: data.group.log_enable_list || [],
     },
     {
       key: 'group.log_disable_list',
       label: '群日志黑名单',
       description: '设置后 如果对应的用户触发事件 将不会记录打印日志',
-      data: data.group.log_disable_list || []
+      data: data.group.log_disable_list || [],
     },
   ]
 
@@ -112,25 +112,25 @@ const getConfigComponent = (
       key: 'directs.enable_list',
       label: '私信白名单',
       description: '私信白名单 如果用户处于黑名单内无效',
-      data: data.directs.enable_list || []
+      data: data.directs.enable_list || [],
     },
     {
       key: 'directs.disable_list',
       label: '私信黑名单',
       description: '私信黑名单 如果用户处于白名单内无效',
-      data: data.directs.disable_list || []
+      data: data.directs.disable_list || [],
     },
     {
       key: 'directs.log_enable_list',
       label: '私信日志白名单',
       description: '设置后 如果对应的用户触发事件 将不会记录打印日志',
-      data: data.directs.log_enable_list || []
+      data: data.directs.log_enable_list || [],
     },
     {
       key: 'directs.log_disable_list',
       label: '私信日志黑名单',
       description: '设置后 如果对应的用户触发事件 将不会记录打印日志',
-      data: data.directs.log_disable_list || []
+      data: data.directs.log_disable_list || [],
     },
   ]
 
@@ -139,25 +139,25 @@ const getConfigComponent = (
       key: 'guilds.enable_list',
       label: '频道白名单',
       description: '频道白名单 如果用户处于黑名单内无效',
-      data: data.guilds.enable_list || []
+      data: data.guilds.enable_list || [],
     },
     {
       key: 'guilds.disable_list',
       label: '频道黑名单',
       description: '频道黑名单 如果用户处于白名单内无效',
-      data: data.guilds.disable_list || []
+      data: data.guilds.disable_list || [],
     },
     {
       key: 'guilds.log_enable_list',
       label: '频道日志白名单',
       description: '设置后 如果对应的用户触发事件 将不会记录打印日志',
-      data: data.guilds.log_enable_list || []
+      data: data.guilds.log_enable_list || [],
     },
     {
       key: 'guilds.log_disable_list',
       label: '频道日志黑名单',
       description: '设置后 如果对应的用户触发事件 将不会记录打印日志',
-      data: data.guilds.log_disable_list || []
+      data: data.guilds.log_disable_list || [],
     },
   ]
 
@@ -166,25 +166,25 @@ const getConfigComponent = (
       key: 'channels.enable_list',
       label: '子频道白名单',
       description: '子频道白名单 如果用户处于黑名单内无效',
-      data: data.channels.enable_list || []
+      data: data.channels.enable_list || [],
     },
     {
       key: 'channels.disable_list',
       label: '子频道黑名单',
       description: '子频道黑名单 如果用户处于白名单内无效',
-      data: data.channels.disable_list || []
+      data: data.channels.disable_list || [],
     },
     {
       key: 'channels.log_enable_list',
       label: '子频道日志白名单',
       description: '设置后 如果对应的用户触发事件 将不会记录打印日志',
-      data: data.channels.log_enable_list || []
+      data: data.channels.log_enable_list || [],
     },
     {
       key: 'channels.log_disable_list',
       label: '子频道日志黑名单',
       description: '设置后 如果对应的用户触发事件 将不会记录打印日志',
-      data: data.channels.log_disable_list || []
+      data: data.channels.log_disable_list || [],
     },
   ]
 
@@ -195,7 +195,7 @@ const getConfigComponent = (
       title: '用户管理',
       description: '用户黑白名单相关配置选项 点击展开',
       isSwitch: false,
-      data: userList
+      data: userList,
     },
     {
       key: 'friend',
@@ -203,7 +203,7 @@ const getConfigComponent = (
       title: '好友管理',
       description: '好友相关配置选项 点击展开',
       isSwitch: true,
-      data: friendList
+      data: friendList,
     },
     {
       key: 'group',
@@ -211,7 +211,7 @@ const getConfigComponent = (
       title: '群管理',
       description: '群相关配置选项 点击展开',
       isSwitch: true,
-      data: groupList
+      data: groupList,
     },
     {
       key: 'directs',
@@ -219,7 +219,7 @@ const getConfigComponent = (
       title: '私信管理',
       description: '私信相关配置选项 点击展开',
       isSwitch: true,
-      data: directsList
+      data: directsList,
     },
     {
       key: 'guilds',
@@ -227,7 +227,7 @@ const getConfigComponent = (
       title: '频道管理',
       description: '频道相关配置选项 点击展开',
       isSwitch: true,
-      data: guildsList
+      data: guildsList,
     },
     {
       key: 'channels',
@@ -235,8 +235,8 @@ const getConfigComponent = (
       title: '子频道管理',
       description: '子频道相关配置选项 点击展开',
       isSwitch: true,
-      data: channelsList
-    }
+      data: channelsList,
+    },
   ]
 
   const onSubmit = (formData: Config) => {
@@ -263,7 +263,7 @@ const getConfigComponent = (
                 item.data,
                 item.label,
                 item.description,
-                methods.control,
+                methods.control
               )))}
 
             <Divider className='w-full' />
@@ -302,7 +302,7 @@ const getConfigComponent = (
                         item.data,
                         item.label,
                         item.description,
-                        methods.control,
+                        methods.control
                       )
                     })}
                   </AccordionItem>

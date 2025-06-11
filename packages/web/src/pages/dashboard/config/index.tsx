@@ -380,7 +380,7 @@ export default function TestPage () {
 
   return (
     <div className='space-y-4'>
-      <Card className='p-4 lg:p-6 sticky top-0 md:top-[23px] lg:top-[23px] z-10 bg-opacity-50 backdrop-blur-md shadow-xl'>
+      <Card className='p-4 lg:p-6 sticky top-0 md:top-[23px] lg:top-[23px] z-10 bg-opacity-5 justify-center gap-2 backdrop-blur-xl bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-white/15 dark:via-white/8 dark:to-white/3 border-t border-lborder-r border-b border-white/10 dark:border-white/5 shadow-2xl transition-all duration-500 overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:via-transparent before:to-transparent before:opacity-0 before:transition-opacity before:duration-300'>
         <div className='flex flex-col gap-2'>
           {/* PC端标题 - 仅在PC端显示 */}
           <div className='hidden md:flex items-center gap-2'>

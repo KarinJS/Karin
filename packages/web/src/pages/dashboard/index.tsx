@@ -1,7 +1,7 @@
 import { Card, CardBody, CardHeader } from '@heroui/card'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
-import clsx from 'clsx'
+// import clsx from 'clsx'
 import { Button } from '@heroui/button'
 import { RiRestartLine, RiShutDownLine } from 'react-icons/ri'
 import { Tooltip } from '@heroui/tooltip'
@@ -12,7 +12,7 @@ import { VscBracketError } from 'react-icons/vsc'
 import { getSystemStatus } from '@/lib/status'
 import SystemStatusDisplay from '@/components/system_display_card'
 import Counter from '@/components/counter.tsx'
-import RotatingText from '@/components/RotatingText'
+// import RotatingText from '@/components/RotatingText'
 import SplitText from '@/components/SplitText'
 import type { AdapterType, LocalApiResponse } from 'node-karin'
 import type { NetworkStatus, SystemStatus } from '@/types/server'
@@ -79,36 +79,36 @@ function getWindowSizeCategory () {
   }
 }
 
-function OnlineStatus () {
-  const { data, error } = useRequest(() => getKarinStatusRequest(), {
-    pollingInterval: 1000,
-  })
-  const msg = []
-  data?.version && msg.push(data.version)
-  error ? msg.push('离线') : msg.push('在线')
+// function OnlineStatus () {
+//   const { data, error } = useRequest(() => getKarinStatusRequest(), {
+//     pollingInterval: 1000,
+//   })
+//   const msg = []
+//   data?.version && msg.push(data.version)
+//   error ? msg.push('离线') : msg.push('在线')
 
-  return (
-    <div className='ml-4 flex items-center gap-2'>
-      <div className={clsx(
-        'rounded-full w-3 h-3',
-        error ? 'bg-danger' : 'bg-success'
-      )}
-      />
-      <RotatingText
-        texts={msg}
-        ClassName='px-3 sm:px-1 md:px-2 bg-primary-400 text-default-50 font-bold rounded-lg'
-        staggerFrom='last'
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '-120%' }}
-        staggerDuration={0.025}
-        splitLevelClassName='overflow-hidden'
-        transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-        rotationInterval={4000}
-      />
-    </div>
-  )
-}
+//   return (
+//     <div className='ml-4 flex items-center gap-2'>
+//       <div className={clsx(
+//         'rounded-full w-3 h-3',
+//         error ? 'bg-danger' : 'bg-success'
+//       )}
+//       />
+//       <RotatingText
+//         texts={msg}
+//         ClassName='px-3 sm:px-1 md:px-2 bg-primary-400 text-default-50 font-bold rounded-lg'
+//         staggerFrom='last'
+//         initial={{ y: '100%' }}
+//         animate={{ y: 0 }}
+//         exit={{ y: '-120%' }}
+//         staggerDuration={0.025}
+//         splitLevelClassName='overflow-hidden'
+//         transition={{ type: 'spring', damping: 30, stiffness: 400 }}
+//         rotationInterval={4000}
+//       />
+//     </div>
+//   )
+// }
 
 export interface StatusItemProps {
   title: string
@@ -118,7 +118,7 @@ function StatusItem ({ title, value }: StatusItemProps) {
   const IconComponent = iconMap[title] || Tag
   return (
     <Card
-      className='transition-all duration-150 ease-in-out hover:bg-default-100 dark:hover:bg-default-100 hover:translate-y-[-4px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-default-200 dark:border-default-100 cursor-pointer'
+      className='ease-in-out hover:bg-default-100 dark:hover:bg-default-100 hover:translate-y-[-4px] border cursor-pointer glass-effect'
     >
       <CardHeader className='px-2.5 py-1.5 md:px-2.5 md:py-2 lg:px-4 lg:py-3  flex-col items-start'>
         <div className='flex items-center gap-2'>
@@ -577,7 +577,7 @@ function ControlButtons () {
     <div className='flex gap-2'>
       <Tooltip content='重启' showArrow>
         <Button
-          className='btn btn-primary text-lg'
+          className='btn btn-primary text-lg glass-effect'
           isIconOnly
           radius='full'
           color='primary'
@@ -590,7 +590,7 @@ function ControlButtons () {
       </Tooltip>
       <Tooltip content='关机' showArrow>
         <Button
-          className='btn btn-primary text-lg'
+          className='btn btn-primary text-lg glass-effect'
           isIconOnly
           radius='full'
           color='primary'
@@ -628,7 +628,7 @@ export default function IndexPage () {
               />
             </div>
             <div className='flex justify-end gap-4'>
-              <OnlineStatus />
+              {/* <OnlineStatus /> */}
               <ControlButtons />
             </div>
           </div>

@@ -63,5 +63,51 @@ module.exports = {
     },
   },
   darkMode: 'class',
-  plugins: [heroui(), require('tailwindcss-animate'), Typography()],
+  plugins: [
+    heroui(),
+    require('tailwindcss-animate'),
+    Typography(),
+    function ({ addComponents }) {
+      addComponents({
+        '.glass-effect': {
+          width: '100%',
+          display: 'flex',
+          backdropFilter: 'blur(16px)',
+          backgroundImage: 'linear-gradient(to bottom right, rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.08))',
+          borderTop: '1px solid rgba(255, 255, 255, 0.4)',
+          borderLeft: '1px solid rgba(255, 255, 255, 0.4)',
+          borderRight: '1px solid rgba(0, 0, 0, 0.06)',
+          borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
+          transition: 'all 0.3s ease',
+          transform: 'scale(1)',
+          position: 'relative',
+          overflow: 'hidden',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            inset: '0',
+            backgroundImage: 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.15), transparent)',
+            opacity: '0',
+            transition: 'opacity 0.3s ease',
+          },
+          '&:hover': {
+            backgroundImage: 'linear-gradient(to bottom right, rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.12))',
+          },
+          '&:hover::before': {
+            opacity: '1',
+          },
+          '.dark &': {
+            backgroundImage: 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06))',
+            borderTop: '1px solid rgba(255, 255, 255, 0.15)',
+            borderLeft: '1px solid rgba(255, 255, 255, 0.15)',
+            borderRight: '1px solid rgba(255, 255, 255, 0.05)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+          },
+          '.dark &:hover': {
+            backgroundImage: 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08))',
+          },
+        },
+      })
+    },
+  ],
 }
