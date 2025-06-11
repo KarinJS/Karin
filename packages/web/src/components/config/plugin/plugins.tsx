@@ -74,7 +74,7 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) =>
 
   return (
     <div className='space-y-4' key={info.id}>
-      <div className='flex py-4 gap-2 sticky top-0 z-50'>
+      <div className='flex pt-4 gap-2 sticky top-0 z-50'>
         <Card
           shadow='sm'
           className='bg-opacity-5 glass-effect'
