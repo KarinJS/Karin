@@ -16,8 +16,7 @@ const ScrollToTop = () => {
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth <= 768)
   const [scrollPercentage, setScrollPercentage] = useState(0)
   const [isScrolling, setIsScrolling] = useState(false)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [showArrow, setShowArrow] = useState(false)
+  const [, setShowArrow] = useState(false)
   const dragControls = useDragControls()
   const lastAltPressTime = useRef<number | null>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
