@@ -63,7 +63,7 @@ export const createInput = (
         {...options}
         {...registerOptions}
         description={
-          <p className='text-xs text-default-500 mb-1 break-words w-full max-w-[300px]'>
+          <p className='text-xs text-default-500 mb-1 break-words w-full max-w-[300px] break-all'>
             {options.description}
           </p>
         }
