@@ -233,7 +233,7 @@ const ScrollToTop = () => {
             strokeDasharray={strokeDasharray}
             strokeDashoffset={strokeDashoffset}
             style={{
-              transition: 'stroke-dashoffset 0.2s ease',
+              transition: 'stroke-dashoffset 0.1s ease',
             }}
           />
         </svg>
