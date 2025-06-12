@@ -104,8 +104,9 @@ export default function DashboardLayout () {
           WebkitOverflowScrolling: 'touch',
         }}
         className={clsx(
-          'overflow-y-auto flex flex-col touch-auto bg-neutral-50 dark:bg-neutral-900',
-          isNotSmallScreen ? 'flex-1' : 'w-full'
+          'flex flex-col touch-auto bg-neutral-50 dark:bg-neutral-900',
+          // 移动端隐藏滚动条但保持滚动功能
+          isNotSmallScreen ? 'flex-1 overflow-y-auto' : 'w-full overflow-y-auto scrollbar-hide'
         )}
         initial={false}
         animate={{
