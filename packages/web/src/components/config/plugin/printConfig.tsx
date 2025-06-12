@@ -4,6 +4,7 @@ import { VscJson, VscCopy, VscOutput, VscSymbolString } from 'react-icons/vsc'
 import { AiOutlineClose } from 'react-icons/ai'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
 import type { FC } from 'react'
+import { useLiquidGlassButton } from '@/hooks/useLiquidGlass'
 
 /**
  * 按钮通用样式
@@ -44,9 +45,16 @@ export const ConfigDetailModal: FC<ConfigDetailModalProps> = ({
     }
   }
 
+  const liquidGlassButtonRef = useLiquidGlassButton({
+    gaussianBlur: 0,
+    scale: 20,
+    transparency: 0.3,
+  })
+
   return (
     <>
       <Button
+        ref={liquidGlassButtonRef}
         color='default'
         variant='flat'
         size='md'

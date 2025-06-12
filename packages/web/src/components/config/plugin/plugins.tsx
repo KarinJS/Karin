@@ -16,6 +16,7 @@ import { DefaultValues, getComponentResult, getComponentValue } from './values'
 import type { GetConfigResponse } from 'node-karin'
 import { IoSave } from 'react-icons/io5'
 import clsx from 'clsx'
+import { useLiquidGlassCard, useLiquidGlassButton } from '@/hooks/useLiquidGlass'
 
 /**
  * 动态渲染插件配置组件
@@ -73,12 +74,25 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) =>
     return null
   }
 
+  const liquidGlassCardRef = useLiquidGlassCard({
+    gaussianBlur: 0,
+    scale: 20,
+    transparency: 0.3,
+  })
+
+  const liquidGlassButtonRef = useLiquidGlassButton({
+    gaussianBlur: 0,
+    scale: 20,
+    transparency: 0.3,
+  })
+
   return (
     <div className='space-y-4' key={info.id}>
       <div className='flex pt-4 gap-2 sticky top-0 z-50'>
         <Card
+          ref={window.innerWidth <= 768 ? liquidGlassCardRef : undefined}
           shadow='sm'
-          className='bg-opacity-5 glass-effect'
+          className='bg-opacity-5 w-full glass-effect'
           isPressable
           onPress={() => setIsPluginModalOpen(true)}
         >
@@ -131,18 +145,17 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) =>
         </Card>
 
         <div className='flex flex-col gap-2 justify-center'>
-          {/* 只在插件详情Modal关闭时显示顶部的ConfigDetailModal */}
-          <div className='hidden md:block'>
-            {!isPluginModalOpen && (
-              <ConfigDetailModal
-                className='glass-effect'
-                showJsonModal={showJsonModal}
-                setShowJsonModal={setShowJsonModal}
-                handleFormResult={handleFormResult}
-              />
-            )}
+          {/* 始终显示顶部的ConfigDetailModal */}
+          <div className='hidden sm:block'>
+            <ConfigDetailModal
+              className='glass-effect'
+              showJsonModal={showJsonModal}
+              setShowJsonModal={setShowJsonModal}
+              handleFormResult={handleFormResult}
+            />
           </div>
           <Button
+            ref={liquidGlassButtonRef}
             type='submit'
             color='primary'
             variant='flat'

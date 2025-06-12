@@ -516,7 +516,8 @@ export const PluginManagePage = (): ReactElement => {
             color='success'
             size='sm'
             variant='flat'
-            className='bg-success-100/60 text-success-700 dark:bg-success-900/30 dark:text-success-400'
+            className='glass-effect'
+            radius='full'
             startContent={<TbArrowsUp className='text-lg' />}
             isDisabled={(selectedType !== 'all' && getSelectedCount() === 0) || (!plugins || plugins.length === 0)}
             onPress={selectedType === 'all' && getSelectedCount() === 0 ? handleUpdateAll : handleUpdateSelected}
@@ -527,7 +528,8 @@ export const PluginManagePage = (): ReactElement => {
             color='danger'
             size='sm'
             variant='flat'
-            className='bg-danger-100/60 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400'
+            className='glass-effect'
+            radius='full'
             startContent={<TbTrash className='text-lg' />}
             isDisabled={getSelectedCount() === 0}
             onPress={handleUninstallSelected}
@@ -538,7 +540,8 @@ export const PluginManagePage = (): ReactElement => {
             color='primary'
             size='sm'
             variant='flat'
-            className='bg-primary-100/60 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
+            className='glass-effect'
+            radius='full'
             startContent={<TbRefresh className='text-lg' />}
             isLoading={loading}
             onPress={fetchPlugins}

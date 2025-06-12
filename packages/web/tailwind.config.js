@@ -70,7 +70,6 @@ module.exports = {
     function ({ addComponents }) {
       addComponents({
         '.glass-effect': {
-          width: '100%',
           display: 'flex',
           backdropFilter: 'blur(16px)',
           backgroundImage: 'linear-gradient(to bottom right, rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.08))',
