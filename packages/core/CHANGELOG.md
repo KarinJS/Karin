@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.10.5](https://github.com/KarinJS/Karin/compare/core-v1.10.4...core-v1.10.5) (2025-06-12)
+
+
+### 🐛 Bug Fixes
+
+* **webConfig:** 当pkg.version存在时使用其值作为默认版本号 ([0730f4e](https://github.com/KarinJS/Karin/commit/0730f4e7ff7e098da58988e84fe1c688ac8b04e3))
+
 ## [1.10.4](https://github.com/KarinJS/Karin/compare/core-v1.10.3...core-v1.10.4) (2025-06-08)
 
 

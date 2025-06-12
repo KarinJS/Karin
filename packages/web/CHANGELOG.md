@@ -1,5 +1,43 @@
 # Changelog
 
+## [1.9.0](https://github.com/KarinJS/Karin/compare/web-v1.8.11...web-v1.9.0) (2025-06-12)
+
+
+### ✨ Features
+
+* **dashboard:** 添加GSAP动画效果到标题组件 ([aa73c3c](https://github.com/KarinJS/Karin/commit/aa73c3c61a9fcf9a9ec2caa196cc3ec986db18ec))
+
+
+### 🐛 Bug Fixes
+
+* **sidebar:** 将插件相关功能整合到统一的"插件管理"菜单下 ([cd3885e](https://github.com/KarinJS/Karin/commit/cd3885e837d72568fbf4b7caf252fd7c3044077c))
+* 更新主题切换逻辑并优化页面标题显示 ([aa73c3c](https://github.com/KarinJS/Karin/commit/aa73c3c61a9fcf9a9ec2caa196cc3ec986db18ec))
+* 选项卡高亮 ([e19c50e](https://github.com/KarinJS/Karin/commit/e19c50e7e7f339a1012db5fa3b53e2d253ffc6a6))
+
+
+### 📝 Documentation
+
+* 添加依赖管理页面标题映射 ([aa73c3c](https://github.com/KarinJS/Karin/commit/aa73c3c61a9fcf9a9ec2caa196cc3ec986db18ec))
+
+
+### 💄 Styles
+
+* 优化令人抓狂的样式 ([#473](https://github.com/KarinJS/Karin/issues/473)) ([618f064](https://github.com/KarinJS/Karin/commit/618f06474cf3fe05826b691cb9ff1e893cebd935))
+* 侧边栏logo样式 ([a1f6091](https://github.com/KarinJS/Karin/commit/a1f6091774e73955de8dc0b09b411ee25b00cf04))
+* 更真实的玻璃质感、重构插件配置页布局 ([#472](https://github.com/KarinJS/Karin/issues/472)) ([1058319](https://github.com/KarinJS/Karin/commit/10583197143ac96ec45d4228ad107804b507888a))
+* 统一将"KarinJS"更名为"Karin" ([aa73c3c](https://github.com/KarinJS/Karin/commit/aa73c3c61a9fcf9a9ec2caa196cc3ec986db18ec))
+
+
+### 🎫 Chores
+
+* 添加GSAP依赖并更新package.json ([aa73c3c](https://github.com/KarinJS/Karin/commit/aa73c3c61a9fcf9a9ec2caa196cc3ec986db18ec))
+
+
+### ♻️ Code Refactoring
+
+* **theme-switch:** 重构主题切换组件并移除冗余代码 ([4734e8e](https://github.com/KarinJS/Karin/commit/4734e8e15a6a00a476d1c79ba14a4e5de48b82af))
+* **theme:** 重构主题切换为系统/反色模式 ([aa73c3c](https://github.com/KarinJS/Karin/commit/aa73c3c61a9fcf9a9ec2caa196cc3ec986db18ec))
+
 ## [1.8.11](https://github.com/KarinJS/Karin/compare/web-v1.8.10...web-v1.8.11) (2025-06-06)
 
 
