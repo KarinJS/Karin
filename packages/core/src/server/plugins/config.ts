@@ -219,7 +219,11 @@ export const getWebConfig = async (type: Apps, id: string, _?: () => void) => {
       if (!result.info.version) result.info.version = ''
       if (!result.info.description) result.info.description = ''
     } else {
-      if (!result.info.version) result.info.version = ''
+      if (!result.info.version && pkg.version !== undefined) {
+        result.info.version = pkg.version
+      } else {
+        result.info.version = ''
+      }
       if (!result.info.description) result.info.description = ''
     }
   }
