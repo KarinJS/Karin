@@ -48,7 +48,7 @@ const DependencyActionButtons = ({
         size='sm'
         radius='full'
         variant='flat'
-        className='font-normal'
+        className='glass-effect'
         isLoading={isOperating}
         isDisabled={(filterMode !== 'all' && selectedCount === 0) || isOperating || isLoading}
       >
@@ -62,7 +62,7 @@ const DependencyActionButtons = ({
         size='sm'
         radius='full'
         variant='flat'
-        className='font-normal'
+        className='glass-effect'
         isDisabled={selectedCount === 0 || isOperating || isLoading}
         isLoading={isOperating}
       >
@@ -77,7 +77,7 @@ const DependencyActionButtons = ({
             size='sm'
             radius='full'
             variant='flat'
-            className='font-normal'
+            className='glass-effect'
           >
             选项
           </Button>

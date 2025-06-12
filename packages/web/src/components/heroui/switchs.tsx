@@ -21,12 +21,15 @@ export const createSwitch = (
     className,
     componentClassName,
     defaultSelected,
+    isDisabled,
     ...options
   } = props
 
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false)
 
   const handleContainerClick = (e: React.MouseEvent) => {
+    // 如果组件被禁用，不触发开关切换
+    if (isDisabled) return
     // 如果点击的是描述区域，不触发开关切换
     if ((e.target as HTMLElement).closest('.description-area')) return
     const switchElement = document.querySelector(`[data-switch-key="${key}"]`) as HTMLElement
@@ -34,6 +37,7 @@ export const createSwitch = (
   }
 
   const handleDescriptionClick = (e: React.MouseEvent) => {
+    // 保留描述展开功能，即使在禁用状态下也允许查看
     e.stopPropagation()
     setIsDescriptionExpanded(!isDescriptionExpanded)
   }
@@ -41,13 +45,24 @@ export const createSwitch = (
   return (
     <div className={className || 'inline-flex p-1 w-full sm:w-auto'} key={key}>
       <div
-        className='w-full sm:w-[320px] min-h-[100px] relative border border-default-200 rounded-lg hover:bg-default-100 p-0 cursor-pointer'
+        className={cn(
+          'w-full sm:w-[320px] min-h-[100px] relative border border-default-200 rounded-lg p-0',
+          isDisabled
+            ? 'cursor-not-allowed opacity-60'
+            : 'hover:bg-default-100 cursor-pointer'
+        )}
         onClick={handleContainerClick}
       >
         {/* 标题和描述区域 */}
         <div className='w-full h-full flex flex-col justify-center p-3 sm:p-4 pr-14 sm:pr-16'>
           {props.label && (
-            <p className='mb-1 text-default-600 text-sm sm:text-base'>{props.label}</p>
+            <p className={cn(
+              'mb-1 text-sm sm:text-base',
+              isDisabled ? 'text-default-400' : 'text-default-900'
+            )}
+            >
+              {props.label}
+            </p>
           )}
           {props.description && (
             <div
@@ -56,7 +71,8 @@ export const createSwitch = (
             >
               <p
                 className={cn(
-                  'text-xs text-default-500 w-full cursor-pointer',
+                  'text-xs w-full cursor-pointer',
+                  isDisabled ? 'text-default-400' : 'text-default-600',
                   isDescriptionExpanded ? '' : 'truncate',
                   'transition-all duration-200 ease-in-out'
                 )}
@@ -65,7 +81,9 @@ export const createSwitch = (
               </p>
               <div className={cn(
                 'text-xs mt-0.5',
-                `text-${props.color || 'primary'}`
+                isDisabled
+                  ? `text-${props.color || 'primary'}-300`
+                  : `text-${props.color || 'primary'}`
               )}
               >
                 {isDescriptionExpanded ? '点击收起' : '点击展开'}
@@ -79,9 +97,10 @@ export const createSwitch = (
           <HeroSwitch
             key={key}
             {...options}
+            isDisabled={isDisabled}
             data-switch-key={key}
             className={cn(
-              'cursor-pointer',
+              isDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
               `data-[selected=true]:border-${options.color || 'primary'}`,
               componentClassName
             )}

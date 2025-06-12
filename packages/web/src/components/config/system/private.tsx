@@ -116,8 +116,8 @@ const getPrivateComponent = (
             <Button
               size='sm'
               variant='solid'
+              color='primary'
               onPress={() => setIsDialogOpen(true)}
-              className='px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
             >
               添加新配置
             </Button>
@@ -140,24 +140,15 @@ const getPrivateComponent = (
                           <span className='text-xs text-gray-500 mt-1'>这是默认配置，当其他配置不可用时将从这里读取</span>
                         )}
                       </span>
-                      <div
-                        role='button'
-                        tabIndex={0}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          remove(index)
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault()
-                            e.stopPropagation()
-                            remove(index)
-                          }
-                        }}
-                        className='px-2 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors cursor-pointer'
+                      <Button
+                        as='div'
+                        size='sm'
+                        variant='solid'
+                        color='danger'
+                        onPress={() => remove(index)}
                       >
                         删除
-                      </div>
+                      </Button>
                     </div>
                   }
                 >
