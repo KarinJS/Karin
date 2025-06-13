@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.10.7](https://github.com/KarinJS/Karin/compare/core-v1.10.6...core-v1.10.7) (2025-06-13)
+
+
+### 🐛 Bug Fixes
+
+* 优化重启功能逻辑和UI引导 ([7746c21](https://github.com/KarinJS/Karin/commit/7746c21834ea8f010dbb713e66a3ee0d87d1e206))
+
 ## [1.10.6](https://github.com/KarinJS/Karin/compare/core-v1.10.5...core-v1.10.6) (2025-06-13)
 
 
