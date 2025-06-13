@@ -46,6 +46,7 @@ import ConsoleMessage from '@/components/ConsoleMessage'
 import { getKarinStatusRequest } from '@/request/status'
 import key from '@/consts/key'
 import { restartRequest } from '@/request/restart'
+import ControlButtons from '@/components/common/ControlButtons'
 
 interface IconMap {
   [key: string]: LucideIcon
@@ -520,89 +521,6 @@ function SystemStatusCard () {
   }, [getStatus])
 
   return <SystemStatusDisplay data={systemStatus} />
-}
-
-function ControlButtons () {
-  const [running, setRunning] = useState(false)
-  const dialog = useDialog()
-  const onRestart = async () => {
-    dialog.confirm({
-      title: '重启',
-      content: '确认重启吗',
-      onConfirm: async () => {
-        try {
-          setRunning(true)
-          await restartRequest({ isPm2: false })
-          await new Promise(resolve => {
-            const interval = setInterval(async () => {
-              try {
-                await request.serverGet('/api/v1/ping')
-                clearInterval(interval)
-                resolve(null)
-              } catch (e) {
-                console.error(e)
-              }
-            }, 2000)
-          })
-          toast.success('重启成功')
-        } catch (e) {
-          toast.error('重启失败')
-        } finally {
-          setRunning(false)
-        }
-      },
-    })
-  }
-
-  const onShutDown = async () => {
-    dialog.confirm({
-      title: '关机',
-      content: '确认关机吗',
-      onConfirm: async () => {
-        try {
-          setRunning(true)
-          await request.serverPost('/api/v1/exit')
-          window.location.reload()
-          toast.success('关机成功')
-        } catch (e) {
-          toast.error('关机失败')
-        } finally {
-          setRunning(false)
-        }
-      },
-    })
-  }
-
-  return (
-    <div className='flex gap-2'>
-      <Tooltip content='重启' showArrow>
-        <Button
-          className='btn btn-primary text-lg glass-effect'
-          isIconOnly
-          radius='full'
-          color='primary'
-          variant='flat'
-          isDisabled={running}
-          onPress={onRestart}
-        >
-          <RiRestartLine />
-        </Button>
-      </Tooltip>
-      <Tooltip content='关机' showArrow>
-        <Button
-          className='btn btn-primary text-lg glass-effect'
-          isIconOnly
-          radius='full'
-          color='primary'
-          variant='shadow'
-          isDisabled={running}
-          onPress={onShutDown}
-        >
-          <RiShutDownLine />
-        </Button>
-      </Tooltip>
-    </div>
-  )
 }
 
 export default function IndexPage () {
