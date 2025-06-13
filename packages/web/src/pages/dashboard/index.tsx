@@ -6,7 +6,6 @@ import { Button } from '@heroui/button'
 import { Tooltip } from '@heroui/tooltip'
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import toast from 'react-hot-toast'
-import useDialog from '@/hooks/use-dialog'
 import { VscBracketError } from 'react-icons/vsc'
 import { getSystemStatus } from '@/lib/status'
 import SystemStatusDisplay from '@/components/system_display_card'
@@ -28,24 +27,17 @@ import {
   TriangleAlert,
 } from 'lucide-react'
 import { LuInfo, LuNetwork } from 'react-icons/lu'
-import axios from 'axios'
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal'
 import { testGithub } from '@/lib/test-url'
-import Markdown from '@/components/Markdown'
-import { GithubRelease } from '@/types/release'
-import { compareVersion, extractUpdateLogs } from '@/lib/version'
-import { Chip } from '@heroui/chip'
+import { compareVersion } from '@/lib/version'
 import { getPackageInfo } from '@/lib/utils'
-import { ScrollShadow } from '@heroui/scroll-shadow'
 import { Spinner } from '@heroui/spinner'
-import { FullScreenLoader } from '@/components/FullScreenLoader'
 import NetworkMonitor from '@/components/NetworkMonitor'
 import { Switch } from '@heroui/switch'
 import ConsoleMessage from '@/components/ConsoleMessage'
 import { getKarinStatusRequest } from '@/request/status'
 import key from '@/consts/key'
-import { restartRequest } from '@/request/restart'
 import ControlButtons from '@/components/common/ControlButtons'
+import UpdateLogModal from '@/components/UpdateLogModal'
 
 interface IconMap {
   [key: string]: LucideIcon
@@ -166,87 +158,21 @@ function UptimeStatusItem ({ uptime }: { uptime: number }) {
   )
 }
 
-function UpdateButtons ({ handleCloseModal }: { handleCloseModal: () => void }) {
-  const [running, setRunning] = useState(false)
-  const dialog = useDialog()
-  const onUpdate = async () => {
-    dialog.confirm({
-      title: '更新',
-      content: '确认更新吗',
-      onConfirm: async () => {
-        try {
-          try {
-            setRunning(true)
-            const { status } = await request.serverGet<{ status: 'ok' | 'failed' }>('/api/v1/system/update', { timeout: 30000 })
-            if (status === 'ok') {
-              toast.success('更新成功，正在重启......')
-              await restartRequest({ isPm2: true })
-              await new Promise(resolve => {
-                const interval = setInterval(async () => {
-                  try {
-                    await request.serverGet('/api/v1/ping')
-                    clearInterval(interval)
-                    resolve(null)
-                  } catch (e) {
-                    console.error(e)
-                  }
-                }, 2000)
-              })
-              toast.success('重启成功')
-              window.location.reload()
-            }
-          } catch (e: any) {
-            toast.error(e.message)
-          }
-        } catch (e) {
-          console.log(e)
-          toast.error('重启失败')
-        } finally {
-          setRunning(false)
-        }
-      },
-    })
-  }
-
-  return (
-    <div className='flex gap-2 ml-auto'>
-      {running && <FullScreenLoader />}
-      <Button
-        color='primary'
-        variant='shadow'
-        isDisabled={running}
-        onPress={onUpdate}
-      >
-        更新
-      </Button>
-      <Button
-        color='danger'
-        variant='shadow'
-        isDisabled={running}
-        onPress={handleCloseModal}
-      >
-        关闭
-      </Button>
-    </div>
-  )
-}
-
 function Status () {
   const [isChangelogOpen, setIsChangelogOpen] = useState(false)
   const [updateTip, setUpdateTip] = useState(false)
   const [proxyFn, setProxyFn] = useState(() => (url: string) => url)
   const [proxyFnInitialized, setProxyFnInitialized] = useState(false)
-  const [npmLatest, setNpmLatest] = useState(false)
+  const [npmLatest, setNpmLatest] = useState<string | false>(false)
   const [hasCheckedNpm, setHasCheckedNpm] = useState(false)
-  const [isLoadingRelease, setIsLoadingRelease] = useState(false)
 
   const { data, error } = useRequest(() => getKarinStatusRequest(), {
-    pollingInterval: 1000,
+    // pollingInterval: 1000,
   })
 
   const localPluginsList = useRequest(() => request.serverPost<LocalApiResponse[], {}>('/api/v1/plugin/local'))
   const botList = useRequest(() => request.serverGet<Array<AdapterType>>('/api/v1/system/get/bots'), {
-    pollingInterval: 5000,
+    // pollingInterval: 5000,
   })
 
   const handleTooltipClick = () => {
@@ -256,20 +182,15 @@ function Status () {
         if (typeof fn === 'function') {
           setProxyFn(fn)
         } else {
-          // 如果不是函数，保持默认的 url => url 函数
           console.warn('testGithub 返回的不是函数，使用默认代理函数')
         }
         setProxyFnInitialized(true)
       })
         .catch(err => {
           console.error('初始化代理函数失败:', err)
-          setProxyFnInitialized(true) // 即使失败也标记为已初始化
+          setProxyFnInitialized(true)
         })
     }
-    // 延迟执行 fetchRelease，确保 proxyFn 已经设置好
-    setTimeout(() => {
-      fetchRelease()
-    }, 100)
     setIsChangelogOpen(true)
   }
 
@@ -289,26 +210,6 @@ function Status () {
         })
     }
   }, [data, hasCheckedNpm])
-
-  const { data: releaseData, error: releaseError, run: fetchRelease } = useRequest(
-    async () => {
-      setIsLoadingRelease(true)
-      try {
-        const proxyFunction = typeof proxyFn === 'function' ? proxyFn : (url: string) => url
-        const url = proxyFunction('https://raw.githubusercontent.com/karinjs/repo-status/refs/heads/main/data/releases.json')
-        const response = await axios.get<GithubRelease[]>(url)
-        return response.data
-      } catch (error) {
-        console.error('获取更新日志失败:', error)
-        throw error
-      } finally {
-        setIsLoadingRelease(false)
-      }
-    },
-    { manual: true, onError: (error) => console.error('版本检测失败', error) }
-  )
-
-  const updateLogs = releaseData ? extractUpdateLogs(releaseData, data?.version!) : []
 
   const stableCards = useMemo(() => {
     if (!data) return <></>
@@ -359,25 +260,6 @@ function Status () {
     handleTooltipClick,
   ])
 
-  const middleVersions = useMemo(() => {
-    const versions: GithubRelease[] = []
-    if (updateLogs && data) {
-      for (let i = 0; i < updateLogs.length; i++) {
-        const versionInfo = updateLogs[i]
-        if (compareVersion(versionInfo.tag_name, data.version) > 0) {
-          versions.push(versionInfo)
-        } else {
-          break
-        }
-      }
-    }
-    return versions
-  }, [updateLogs, data])
-
-  const handleCloseModal = useCallback(() => {
-    setIsChangelogOpen(false)
-  }, [])
-
   if (error || !data) {
     return (
       <div className='flex flex-col justify-center items-center gap-2'>
@@ -390,114 +272,21 @@ function Status () {
   }
 
   return (
-    <div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-2 md:gap-x-6 md:gap-y-4 lg:gap-x-8 lg:gap-y-6'>
-      {stableCards}
+    <>
+      <div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-2 md:gap-x-6 md:gap-y-4 lg:gap-x-8 lg:gap-y-6'>
+        {stableCards}
+        <UptimeStatusItem uptime={data.uptime} />
+      </div>
 
-      <UptimeStatusItem uptime={data.uptime} />
-
-      <Modal
+      {/* 更新日志模态框 */}
+      <UpdateLogModal
+        currentVersion={data.version}
         isOpen={isChangelogOpen}
-        onOpenChange={(isOpen) => {
-          setIsChangelogOpen(isOpen)
-        }}
-        size='4xl'
-      >
-        <ModalContent>
-          <ModalHeader className='border-b'>
-            <div className='flex items-center gap-2'>
-              新版本
-              <span className='text-green-400'>{npmLatest || ''}</span>
-              可用
-              <span className='text-default-400 text-sm'>
-                (当前版本：{data.version})
-              </span>
-            </div>
-          </ModalHeader>
-
-          <ModalBody className='max-h-[60vh] overflow-y-auto'>
-            <ScrollShadow hideScrollBar>
-              {isLoadingRelease
-                ? (
-                  <div className='flex justify-center items-center h-60'>
-                    <Spinner size='lg' color='primary' label='处理中...' />
-                  </div>
-                )
-                : (
-                  <>
-                    {middleVersions.map((versionInfo) => (
-                      <div
-                        key={versionInfo.tag_name}
-                        className='p-5 bg-default-50 rounded-md shadow-md mb-5'
-                      >
-                        <div className='mb-2'>
-                          {(function () {
-                            let tagName = '本体'
-                            let color: 'primary' | 'default' | 'secondary' | 'success' | 'warning' | 'danger' = 'primary'
-                            switch (true) {
-                              case versionInfo.tag_name.includes('core'):
-                                tagName = '本体'
-                                break
-                              case versionInfo.tag_name.includes('web'):
-                                tagName = 'WEB 界面'
-                                color = 'warning'
-                                break
-                              case versionInfo.tag_name.includes('cli'):
-                                tagName = '命令行工具'
-                                color = 'secondary'
-                                break
-                              case versionInfo.tag_name.includes('create'):
-                                tagName = '脚手架'
-                                color = 'success'
-                            }
-                            return (
-                              <Chip color={color} variant='flat'>
-                                {tagName}
-                              </Chip>
-                            )
-                          })()}
-                        </div>
-
-                        <Markdown content={versionInfo.body} />
-                      </div>
-                    ))}
-                    {releaseError && (
-                      <div className='flex flex-col gap-2 p-4 bg-danger-50 rounded-lg border border-danger-200'>
-                        <div className='text-danger font-medium flex items-center gap-2'>
-                          <TriangleAlert className='w-5 h-5' />
-                          更新日志请求失败...
-                        </div>
-                        <div className='text-default-600 text-sm'>
-                          <div className='mb-2'>
-                            错误详情: {
-                              axios.isAxiosError(releaseError)
-                                ? `${releaseError.message} (状态码: ${releaseError.response?.status || '未知'})`
-                                : releaseError.message || '未知错误'
-                            }
-                          </div>
-                          您可以直接前往
-                          <a
-                            href='https://github.com/KarinJS/Karin/releases'
-                            target='_blank'
-                            rel='noopener noreferrer'
-                            className='text-primary underline ml-1'
-                          >
-                            GitHub Releases
-                          </a>
-                          页面查看最新更新内容。
-                        </div>
-                      </div>
-                    )}
-                  </>
-                )}
-            </ScrollShadow>
-          </ModalBody>
-
-          <ModalFooter>
-            <UpdateButtons handleCloseModal={handleCloseModal} />
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </div>
+        onOpenChange={setIsChangelogOpen}
+        npmLatest={npmLatest}
+        proxyFn={proxyFn}
+      />
+    </>
   )
 }
 
@@ -545,7 +334,6 @@ export default function IndexPage () {
               />
             </div>
             <div className='flex justify-end gap-4'>
-              {/* <OnlineStatus /> */}
               <ControlButtons />
             </div>
           </div>
