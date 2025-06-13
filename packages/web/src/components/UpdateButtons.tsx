@@ -57,13 +57,13 @@ export default function UpdateButtons ({ handleCloseModal }: UpdateButtonsProps)
   const liquidGlassButtonRef1 = useLiquidGlassButton({
     gaussianBlur: 0,
     scale: 20,
-    transparency: 0,
+    transparency: 0.3,
   })
 
   const liquidGlassButtonRef2 = useLiquidGlassButton({
     gaussianBlur: 0,
     scale: 20,
-    transparency: 0,
+    transparency: 0.3,
   })
 
   return (

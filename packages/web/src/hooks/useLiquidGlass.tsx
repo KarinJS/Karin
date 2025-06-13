@@ -37,7 +37,6 @@ function texture (x: number, y: number): { x: number; y: number } {
   return { x, y }
 }
 
-
 // 为不同元素类型创建专门的hooks
 export const useLiquidGlassButton = (options: LiquidGlassOptions = {}) => {
   return useLiquidGlassGeneric<HTMLButtonElement>(options)
@@ -342,8 +341,9 @@ function useLiquidGlassGeneric<T extends HTMLElement> (options: LiquidGlassOptio
     document.body.appendChild(svg)
 
     // 应用样式到元素
-    element.style.backdropFilter = `url(#${filterId}) contrast(1.1) brightness(2.5) saturate(1)`
-    element.style.background = `rgba(255, 255, 255, ${transparency})`
+    // contrast对比度 brightness亮度 saturate饱和度
+    element.style.backdropFilter = `url(#${filterId}) contrast(1.1) brightness(2.35) saturate(1.5)`
+    element.style.background = `rgba(255, 255, 255, ${transparency * 0.3})`
     element.style.position = 'relative'
     element.style.overflow = 'hidden'
 
