@@ -113,6 +113,7 @@
     "typescript": "5.7.3",
     "vite": "^6.2.7",
     "vite-plugin-compression": "^0.5.1",
+    "vite-plugin-qrcode": "^0.2.4",
     "vite-plugin-static-copy": "^2.3.0",
     "vite-tsconfig-paths": "^5.1.4"
   },

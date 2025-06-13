@@ -497,6 +497,9 @@ importers:
       vite-plugin-compression:
         specifier: ^0.5.1
         version: 0.5.1(vite@6.2.7(@types/node@22.10.7)(jiti@1.21.7)(sass@1.86.0)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
+      vite-plugin-qrcode:
+        specifier: ^0.2.4
+        version: 0.2.4(vite@6.2.7(@types/node@22.10.7)(jiti@1.21.7)(sass@1.86.0)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
       vite-plugin-static-copy:
         specifier: ^2.3.0
         version: 2.3.0(vite@6.2.7(@types/node@22.10.7)(jiti@1.21.7)(sass@1.86.0)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
@@ -5131,6 +5134,10 @@ packages:
   qface@1.4.1:
     resolution: {integrity: sha512-52qX9qdiDFd53xnYAFitkXVldcSddd4ZQiFTV2IluM+2HdDiJph3CKtmPi7CTCA9QF7K2d2WUAH3E2Y4P6fEjQ==}
 
+  qrcode-terminal@0.12.0:
+    resolution: {integrity: sha512-EXtzRZmC+YGmGlDFbXKxQiMZNwCLEO6BANKXG4iCtSIM0yqc/pappSx3RIKr4r0uh5JsBckOXeKrB3Iz7mdQpQ==}
+    hasBin: true
+
   quansync@0.2.10:
     resolution: {integrity: sha512-t41VRkMYbkHyCYmOvx/6URnN80H7k4X0lLdBMGsz+maAwrJQYB1djpV6vHrQIBE0WBSGqhtEHrK9U3DWWH8v7A==}
 
@@ -5913,6 +5920,12 @@ packages:
     peerDependenciesMeta:
       vite:
         optional: true
+
+  vite-plugin-qrcode@0.2.4:
+    resolution: {integrity: sha512-XFNNSCTXdxCZFJrVVJlwFD6yk3jhf14xDFImI9y34FpIcRPjGcdmXXZ6V8YO6LUisB+n5AMbYITe2J7rOxwhmA==}
+    engines: {node: ^14.13.1 || ^16.0.0 || >=18}
+    peerDependencies:
+      vite: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0
 
   vite-plugin-static-copy@2.3.0:
     resolution: {integrity: sha512-LLKwhhHetGaCnWz4mas4qqjjguDka6/6b4+SeIohRroj8aCE7QTfiZECfPecslFQkWZ3HdQuq5kOPmWZjNYlKA==}
@@ -11872,6 +11885,8 @@ snapshots:
 
   qface@1.4.1: {}
 
+  qrcode-terminal@0.12.0: {}
+
   quansync@0.2.10: {}
 
   queue-microtask@1.2.3: {}
@@ -12898,6 +12913,11 @@ snapshots:
       - '@types/node'
       - rollup
       - supports-color
+
+  vite-plugin-qrcode@0.2.4(vite@6.2.7(@types/node@22.10.7)(jiti@1.21.7)(sass@1.86.0)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)):
+    dependencies:
+      qrcode-terminal: 0.12.0
+      vite: 6.2.7(@types/node@22.10.7)(jiti@1.21.7)(sass@1.86.0)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
 
   vite-plugin-static-copy@2.3.0(vite@6.2.7(@types/node@22.10.7)(jiti@1.21.7)(sass@1.86.0)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)):
     dependencies:

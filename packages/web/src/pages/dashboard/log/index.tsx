@@ -19,32 +19,32 @@ import type { FilterLevel, LogItem, LogLevel } from '@/types/log'
 const color = {
   trac: {
     color: 'primary',
-    name: 'TRACE'
+    name: 'TRACE',
   },
   debu: {
     color: 'primary',
-    name: 'DEBUG'
+    name: 'DEBUG',
   },
   info: {
     color: 'success',
-    name: 'INFO'
+    name: 'INFO',
   },
   warn: {
     color: 'warning',
-    name: 'WARN'
+    name: 'WARN',
   },
   erro: {
     color: 'danger',
-    name: 'ERROR'
+    name: 'ERROR',
   },
   fata: {
     color: 'secondary',
-    name: 'FATAL'
+    name: 'FATAL',
   },
   mark: {
     color: 'default',
-    name: 'MARK'
-  }
+    name: 'MARK',
+  },
 } as const
 
 const LOG_LEVELS = Object.keys(color) as LogLevel[]
@@ -67,18 +67,19 @@ const createTerminal = (isMobile = false) => {
   const terminal = new Terminal({
     fontSize: isMobile ? 8 : 14,
     fontFamily: 'Consolas, "DejaVu Sans Mono", "Courier New", monospace',
+    lineHeight: 1.1,
     theme: {
       background: '#1a1a1a',
       foreground: '#f0f0f0',
       selectionBackground: '#3b3b3b',
-      cursor: '#f0f0f0'
+      cursor: '#f0f0f0',
     },
     convertEol: true,
     cursorBlink: false,
     disableStdin: false,
     scrollback: 3000,
     cols: 999, // 设置一个较大的列数，让终端充分利用可用宽度
-    letterSpacing: isMobile ? -1 : 0 // 移动端使用负字母间距
+    letterSpacing: 0,
   })
 
   return terminal
@@ -91,7 +92,7 @@ const createTerminal = (isMobile = false) => {
 const createEventSource = () => {
   return eventSourcePolyfill('/api/v1/log', {
     withCredentials: true,
-    heartbeatTimeout: 60000
+    heartbeatTimeout: 60000,
   })
 }
 
@@ -122,12 +123,49 @@ export default function LogPage () {
   const animationFrameRef = useRef<number | null>(null)
   /** 是否需要滚动到底部 */
   const shouldScrollRef = useRef(true)
+  /** 是否在底部 */
+  const [isAtBottom, setIsAtBottom] = useState(true)
+  /** 滚动自动触发的阈值（底部百分比） */
+  const AUTO_SCROLL_THRESHOLD = 0.1 // 10%
+
+  /**
+   * 检查是否在底部区域
+   * @param terminal 终端实例
+   * @returns 是否在底部区域
+   */
+  const isNearBottom = (terminal: Terminal) => {
+    const totalLines = terminal.buffer.active.length
+    const viewportY = terminal.buffer.active.viewportY
+    const visibleLines = terminal.rows
+
+    // 如果总行数不足以填满视口，则认为在底部
+    if (totalLines <= visibleLines) {
+      return true
+    }
+
+    // 计算当前滚动位置到底部的距离占整个内容的百分比
+    const distanceFromBottom = (totalLines - viewportY - visibleLines) / totalLines
+
+    // 如果在底部AUTO_SCROLL_THRESHOLD(10%)范围内，则认为在底部区域
+    return distanceFromBottom <= AUTO_SCROLL_THRESHOLD
+  }
 
   /**
    * 滚动到底部
    */
   const scrollToBottom = () => {
     if (terminalInstance.current && shouldScrollRef.current) {
+      terminalInstance.current.scrollToBottom()
+    }
+  }
+
+  /**
+   * 强制滚动到底部并重新启用自动滚动
+   */
+  const forceScrollToBottom = () => {
+    if (terminalInstance.current) {
+      shouldScrollRef.current = true
+      setIsAtBottom(true)
       terminalInstance.current.scrollToBottom()
     }
   }
@@ -147,12 +185,17 @@ export default function LogPage () {
 
     if (filteredLogs.length === 0) return
 
+    // 检查当前是否在底部区域
+    const wasNearBottom = isNearBottom(terminalInstance.current)
+
     // 使用writeSync批量写入，减少重绘
     const content = filteredLogs.map(log => log.message).join('\r\n') + '\r\n'
     terminalInstance.current.write(content)
 
-    // 滚动到底部
-    scrollToBottom()
+    // 只有当之前在底部区域时才滚动到底部
+    if (wasNearBottom) {
+      terminalInstance.current.scrollToBottom()
+    }
   }
 
   /**
@@ -242,13 +285,15 @@ export default function LogPage () {
 
     // 监听终端滚动
     terminal.onScroll(() => {
-      // 判断是否用户手动滚动
-      const isAtBottom =
-        terminal.buffer.active.viewportY + terminal.rows >=
-        terminal.buffer.active.length
+      // 使用新方法检查是否在底部区域
+      const currentIsAtBottom = isNearBottom(terminal)
 
-      // 只有当用户手动滚动时，才更新自动滚动标志
-      shouldScrollRef.current = isAtBottom
+      // 只有当状态发生变化时才更新
+      if (currentIsAtBottom !== isAtBottom) {
+        setIsAtBottom(currentIsAtBottom)
+        // 更新自动滚动标志
+        shouldScrollRef.current = currentIsAtBottom
+      }
     })
 
     // 优化移动端显示
@@ -258,7 +303,7 @@ export default function LogPage () {
       if (currentIsMobile) {
         // 移动端下调整字体大小使内容更紧凑
         terminal.options.fontSize = 8
-        terminal.options.letterSpacing = -1 // 负字母间距在移动端更紧凑
+        terminal.options.letterSpacing = 0
       } else {
         terminal.options.fontSize = 14
         terminal.options.letterSpacing = 0
@@ -313,7 +358,9 @@ export default function LogPage () {
       terminalInstance.current.write(content)
     }
 
-    // 滚动到底部
+    // 重置滚动状态并滚动到底部
+    shouldScrollRef.current = true
+    setIsAtBottom(true)
     setTimeout(scrollToBottom, 0)
   }, [selectedLevel])
 
@@ -519,7 +566,7 @@ export default function LogPage () {
                 className='min-w-[160px]'
                 classNames={{
                   tabList: 'gap-2',
-                  tab: 'px-3 h-8'
+                  tab: 'px-3 h-8',
                 }}
               >
                 <Tab key='realtime' title='实时日志' />
@@ -529,6 +576,17 @@ export default function LogPage () {
 
             <div className={`flex-shrink-0 ${selectedTab === 'realtime' ? 'md:ml-auto' : ''} flex items-center gap-2`}>
               <div className='flex w-full md:w-auto gap-2'>
+                {selectedTab === 'realtime' && (
+                  <Button
+                    size='sm'
+                    variant='flat'
+                    color='primary'
+                    onPress={forceScrollToBottom}
+                    disabled={isAtBottom}
+                  >
+                    滚动到最新
+                  </Button>
+                )}
                 {selectedTab === 'history' && logFiles.length > 0 && (
                   <Dropdown className='flex-1 md:flex-initial'>
                     <DropdownTrigger>

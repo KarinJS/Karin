@@ -6,6 +6,7 @@ import viteCompression from 'vite-plugin-compression'
 // import { viteStaticCopy } from 'vite-plugin-static-copy'
 // import path from 'node:path'
 import * as zlib from 'node:zlib'
+import { qrcode } from 'vite-plugin-qrcode'
 
 // const monacoEditorPath = normalizePath(
 //   path.resolve(__dirname, 'node_modules/monaco-editor/min/vs')
@@ -16,6 +17,7 @@ export default defineConfig({
   plugins: [
     react(),
     tsconfigPaths(),
+    qrcode(),
     viteCompression({
       deleteOriginFile: true,
       verbose: false,
