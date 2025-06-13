@@ -5,7 +5,7 @@ import { Checkbox } from '@heroui/checkbox'
 import { Tooltip } from '@heroui/tooltip'
 import { RiRestartLine, RiShutDownLine } from 'react-icons/ri'
 import { LuInfo } from 'react-icons/lu'
-import { FiInfo } from "react-icons/fi"
+import { FiInfo } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 import useDialog from '@/hooks/use-dialog'
 import { request } from '@/lib/request'
@@ -101,7 +101,7 @@ function ControlButtons () {
     try {
       setLoadingEnvConfig(true)
       const response = await request.serverPost<SystemEnvsField, { type: 'env' }>('/api/v1/config/new/get', {
-        type: 'env'
+        type: 'env',
       })
       setEnvConfig(response)
       // 只有在PM2环境下才默认勾选重载子进程选项
@@ -136,7 +136,7 @@ function ControlButtons () {
 
       await restartRequest({
         isPm2,
-        reloadDeps
+        reloadDeps,
       })
 
       await new Promise(resolve => {
@@ -236,18 +236,20 @@ function ControlButtons () {
       >
         <ModalContent>
           <ModalHeader className='flex flex-col gap-1'>
-            <div className="flex items-center gap-2">
-              {isNodeRuntime ? (
-                <>
-                  <LuInfo className="w-5 h-5 text-warning" />
-                  无法进行重启操作！！！
-                </>
-              ) : (
-                <>
-                  <RiRestartLine className="w-5 h-5" />
-                  重启配置
-                </>
-              )}
+            <div className='flex items-center gap-2'>
+              {isNodeRuntime
+                ? (
+                  <>
+                    <LuInfo className='w-5 h-5 text-warning' />
+                    无法进行重启操作！！！
+                  </>
+                )
+                : (
+                  <>
+                    <RiRestartLine className='w-5 h-5' />
+                    重启配置
+                  </>
+                )}
             </div>
           </ModalHeader>
           <ModalBody>
@@ -268,7 +270,7 @@ function ControlButtons () {
                     <span className='text-sm font-medium'>重载父进程</span>
                     <span className='text-xs text-default-500'>
                       适用于
-                      <span className="text-danger font-bold"> 更新 Karin 后 </span>
+                      <span className='text-danger font-bold'> 更新 Karin 后 </span>
                       的重启。通过 PM2 管理器重启应用，可保持进程管理
                     </span>
                   </div>
@@ -305,7 +307,7 @@ function ControlButtons () {
                     <span className='text-sm font-medium'>重载子进程</span>
                     <span className='text-xs text-default-500'>
                       适用于
-                      <span className="text-primary font-bold"> 更新插件后 </span>
+                      <span className='text-primary font-bold'> 更新插件后 </span>
                       的重启。Karin 通知子进程重载插件，而无需重启整个进程。
                     </span>
                   </div>
@@ -384,10 +386,10 @@ function ControlButtons () {
           <ModalBody>
             <div className='flex flex-col gap-4'>
               <p className='text-default-600'>
-                当前运行环境为 <Chip color="warning" variant="flat" radius='md' size='sm' className='glass-effect'>{envConfig?.RUNTIME.value}</Chip> 不是PM2环境。
+                当前运行环境为 <Chip color='warning' variant='flat' radius='md' size='sm' className='glass-effect'>{envConfig?.RUNTIME.value}</Chip> 不是PM2环境。
               </p>
               <p className='text-default-600'>
-                要使用PM2重启功能，需要将运行环境设置为 <Chip color="primary" variant="flat" radius='md' size='sm' className='glass-effect'>PM2</Chip>。
+                要使用PM2重启功能，需要将运行环境设置为 <Chip color='primary' variant='flat' radius='md' size='sm' className='glass-effect'>PM2</Chip>。
               </p>
               <Card className='bg-primary-50 border border-primary-200'>
                 <CardBody className='p-3'>
