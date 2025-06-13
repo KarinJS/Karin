@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.2](https://github.com/KarinJS/Karin/compare/web-v1.9.1...web-v1.9.2) (2025-06-13)
+
+
+### 🐛 Bug Fixes
+
+* 优化重启功能逻辑和UI引导 ([7746c21](https://github.com/KarinJS/Karin/commit/7746c21834ea8f010dbb713e66a3ee0d87d1e206))
+* 修复并重构更新日志展示功能，提取为独立组件 UpdateLogModal ([#479](https://github.com/KarinJS/Karin/issues/479)) ([180ef2d](https://github.com/KarinJS/Karin/commit/180ef2dffd2ba487f00b70a1a462609f31bbe082))
+
 ## [1.9.1](https://github.com/KarinJS/Karin/compare/web-v1.9.0...web-v1.9.1) (2025-06-13)
 
 
