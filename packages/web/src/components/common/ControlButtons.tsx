@@ -5,7 +5,6 @@ import { Checkbox } from '@heroui/checkbox'
 import { Tooltip } from '@heroui/tooltip'
 import { RiRestartLine, RiShutDownLine } from 'react-icons/ri'
 import { LuInfo } from 'react-icons/lu'
-import { FiInfo } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 import useDialog from '@/hooks/use-dialog'
 import { request } from '@/lib/request'
@@ -90,6 +89,8 @@ function ControlButtons () {
   const [isRestartModalOpen, setIsRestartModalOpen] = useState(false)
   const [isPm2, setIsPm2] = useState(false)
   const [reloadDeps, setReloadDeps] = useState(false)
+  const [useParentProcess, setUseParentProcess] = useState(false)
+  const [useChildProcess, setUseChildProcess] = useState(true) // 默认勾选快速重启
   const [envConfig, setEnvConfig] = useState<SystemEnvsField | null>(null)
   const [isEnvInfoModalOpen, setIsEnvInfoModalOpen] = useState(false)
   const [loadingEnvConfig, setLoadingEnvConfig] = useState(false)
@@ -104,9 +105,27 @@ function ControlButtons () {
         type: 'env',
       })
       setEnvConfig(response)
-      // 只有在PM2环境下才默认勾选重载子进程选项
+
+      // 根据环境设置默认选项
+      console.log(response.RUNTIME.value)
       if (response.RUNTIME.value === 'pm2') {
-        setReloadDeps(true)
+        // PM2环境：默认选择快速重启（什么都不传）
+        setIsPm2(false)
+        setUseParentProcess(false)
+        setUseChildProcess(true)
+        setReloadDeps(false)
+      } else if (response.RUNTIME.value === 'node') {
+        // Node环境：默认选择快速重启
+        setIsPm2(false)
+        setUseParentProcess(false)
+        setUseChildProcess(true)
+        setReloadDeps(false)
+      } else {
+        // 其他环境：默认选择PM2模式
+        setIsPm2(true)
+        setUseParentProcess(false)
+        setUseChildProcess(false)
+        setReloadDeps(false)
       }
     } catch (error) {
       console.error('获取环境配置失败:', error)
@@ -121,23 +140,31 @@ function ControlButtons () {
     setIsRestartModalOpen(true)
   }
 
-  const handlePm2CheckboxClick = () => {
-    if (envConfig?.RUNTIME.value !== 'pm2') {
-      setIsEnvInfoModalOpen(true)
-      return
-    }
-    setIsPm2(!isPm2)
-  }
-
   const handleRestartConfirm = async () => {
     try {
       setRunning(true)
       setIsRestartModalOpen(false)
 
-      await restartRequest({
-        isPm2,
-        reloadDeps,
-      })
+      // 如果选择退出程序，调用/exit接口
+      if (useParentProcess) {
+        await request.serverPost('/api/v1/exit')
+        toast.success('程序退出指令发送成功')
+        return
+      }
+
+      // 快速重启或完全重启
+      let restartOptions: { isPm2?: boolean; reloadDeps?: boolean } = {}
+
+      if (isPm2Runtime && reloadDeps) {
+        // PM2环境下勾选了完全重启：传递pm2:true
+        restartOptions = { isPm2: true }
+      } else if (isPm2 && !isPm2Runtime) {
+        // 非PM2环境下选择升级到PM2模式
+        restartOptions = { isPm2: true, reloadDeps: false }
+      }
+      // 其他情况（快速重启、PM2环境下未勾选完全重启）：什么都不传
+
+      await restartRequest(restartOptions)
 
       await new Promise(resolve => {
         const interval = setInterval(async () => {
@@ -189,6 +216,50 @@ function ControlButtons () {
       // 模态框关闭时重置Checkbox选择状态
       setIsPm2(false)
       setReloadDeps(false)
+      setUseParentProcess(false)
+      setUseChildProcess(true) // 默认勾选快速重启
+    }
+  }
+
+  // 处理退出程序选择
+  const handleParentProcessChange = (checked: boolean) => {
+    setUseParentProcess(checked)
+    if (checked) {
+      // 选择退出程序后自动取消其他选项
+      setUseChildProcess(false)
+      setIsPm2(false)
+      setReloadDeps(false)
+    }
+  }
+
+  // 处理快速重启选择
+  const handleChildProcessChange = (checked: boolean) => {
+    setUseChildProcess(checked)
+    if (checked) {
+      // 选择快速重启后自动取消其他选项
+      setUseParentProcess(false)
+      setIsPm2(false)
+      setReloadDeps(false)
+    }
+  }
+
+  // 处理PM2重启选择
+  const handlePm2Change = (checked: boolean) => {
+    setIsPm2(checked)
+    if (checked) {
+      // 选择PM2后自动取消其他选项
+      setUseParentProcess(false)
+      setUseChildProcess(false)
+      setReloadDeps(false)
+    }
+  }
+
+  // 处理完全重启选择（PM2环境）
+  const handleReloadDepsChange = (checked: boolean) => {
+    setReloadDeps(checked)
+    if (checked) {
+      // 选择完全重启后自动取消快速重启
+      setUseChildProcess(false)
     }
   }
 
@@ -237,111 +308,131 @@ function ControlButtons () {
         <ModalContent>
           <ModalHeader className='flex flex-col gap-1'>
             <div className='flex items-center gap-2'>
-              {isNodeRuntime
-                ? (
-                  <>
-                    <LuInfo className='w-5 h-5 text-warning' />
-                    无法进行重启操作！！！
-                  </>
-                )
-                : (
-                  <>
-                    <RiRestartLine className='w-5 h-5' />
-                    重启配置
-                  </>
-                )}
+              <RiRestartLine className='w-5 h-5' />
+              重启配置
             </div>
           </ModalHeader>
           <ModalBody>
+            {/* 重启配置模态框中的选项部分 */}
             <div className='flex flex-col gap-4'>
               <p className='text-default-600 text-sm'>
                 请选择重启选项：
               </p>
 
-              <div className='flex items-center gap-3'>
-                <Checkbox
-                  isSelected={isPm2}
-                  onValueChange={isPm2Runtime ? setIsPm2 : undefined}
-                  color='danger'
-                  isDisabled={!isPm2Runtime || loadingEnvConfig}
-                  className={!isPm2Runtime ? 'opacity-50' : ''}
-                >
-                  <div className='flex flex-col'>
-                    <span className='text-sm font-medium'>重载父进程</span>
-                    <span className='text-xs text-default-500'>
-                      适用于
-                      <span className='text-danger font-bold'> 更新 Karin 后 </span>
-                      的重启。通过 PM2 管理器重启应用，可保持进程管理
-                    </span>
-                  </div>
-                </Checkbox>
-                {!isPm2Runtime && (
-                  <Tooltip
-                    content='为何不可用？'
-                    closeDelay={0}
-                  >
-                    <Button
-                      isIconOnly
-                      size='sm'
-                      radius='full'
-                      variant='flat'
-                      color='danger'
-                      onPress={handlePm2CheckboxClick}
-                      className='glass-effect'
-                    >
-                      <FiInfo className='w-5 h-5' />
-                    </Button>
-                  </Tooltip>
+              {/* 重启方式选择 */}
+              <div className='flex flex-col gap-3'>
+                <div className='text-sm font-medium text-default-700'>重启方式：</div>
+
+                {/* PM2环境下的选项 */}
+                {isPm2Runtime && (
+                  <>
+                    {/* 快速重启（默认选项） */}
+                    <div className='flex items-center gap-3'>
+                      <Checkbox
+                        isSelected={useChildProcess}
+                        onValueChange={handleChildProcessChange}
+                        color='primary'
+                        isDisabled={loadingEnvConfig}
+                      >
+                        <div className='flex flex-col'>
+                          <span className='text-sm font-medium'>快速重启（推荐）</span>
+                          <span className='text-xs text-default-500'>
+                            只重启应用本身，速度快，适合更新插件后的日常重启
+                          </span>
+                        </div>
+                      </Checkbox>
+                    </div>
+
+                    {/* 完全重启 */}
+                    <div className='flex items-center gap-3'>
+                      <Checkbox
+                        isSelected={reloadDeps}
+                        onValueChange={handleReloadDepsChange}
+                        color='warning'
+                        isDisabled={loadingEnvConfig}
+                      >
+                        <div className='flex flex-col'>
+                          <span className='text-sm font-medium'>完全重启</span>
+                          <span className='text-xs text-default-500'>
+                            重启整个程序和依赖，速度较慢，适用于 Karin 更新后使用
+                          </span>
+                        </div>
+                      </Checkbox>
+                    </div>
+                  </>
+                )}
+
+                {/* Node环境下的三个选项 */}
+                {isNodeRuntime && (
+                  <>
+                    {/* 退出程序 */}
+                    <div className='flex items-center gap-3'>
+                      <Checkbox
+                        isSelected={useParentProcess}
+                        onValueChange={handleParentProcessChange}
+                        color='danger'
+                        isDisabled={loadingEnvConfig}
+                      >
+                        <div className='flex flex-col'>
+                          <span className='text-sm font-medium'>退出程序</span>
+                          <span className='text-xs text-default-500'>
+                            完全退出程序，需要手动重新启动，适合有进程守护的高玩
+                          </span>
+                        </div>
+                      </Checkbox>
+                    </div>
+
+                    {/* 快速重启 */}
+                    <div className='flex items-center gap-3'>
+                      <Checkbox
+                        isSelected={useChildProcess}
+                        onValueChange={handleChildProcessChange}
+                        color='primary'
+                        isDisabled={loadingEnvConfig}
+                      >
+                        <div className='flex flex-col'>
+                          <span className='text-sm font-medium'>快速重启（推荐）</span>
+                          <span className='text-xs text-default-500'>
+                            只重启应用本身，速度快，适合更新插件后的日常重启
+                          </span>
+                        </div>
+                      </Checkbox>
+                    </div>
+
+                    {/* 升级到PM2模式 */}
+                    <div className='flex items-center gap-3'>
+                      <Checkbox
+                        isSelected={isPm2}
+                        onValueChange={handlePm2Change}
+                        color='success'
+                        isDisabled={loadingEnvConfig}
+                      >
+                        <div className='flex flex-col'>
+                          <span className='text-sm font-medium'>升级到PM2模式</span>
+                          <span className='text-xs text-default-500'>
+                            切换到更稳定的PM2管理模式
+                          </span>
+                        </div>
+                      </Checkbox>
+                    </div>
+                  </>
                 )}
               </div>
 
-              <div className='flex items-center gap-3'>
-                <Checkbox
-                  isSelected={reloadDeps}
-                  onValueChange={isPm2Runtime ? setReloadDeps : undefined}
-                  color='primary'
-                  isDisabled={!isPm2Runtime || loadingEnvConfig}
-                  className={!isPm2Runtime ? 'opacity-50' : ''}
-                >
-                  <div className='flex flex-col'>
-                    <span className='text-sm font-medium'>重载子进程</span>
-                    <span className='text-xs text-default-500'>
-                      适用于
-                      <span className='text-primary font-bold'> 更新插件后 </span>
-                      的重启。Karin 通知子进程重载插件，而无需重启整个进程。
-                    </span>
-                  </div>
-                </Checkbox>
-                {!isPm2Runtime && (
-                  <Tooltip
-                    content='为何不可用？'
-                    closeDelay={0}
-                  >
-                    <Button
-                      isIconOnly
-                      size='sm'
-                      radius='full'
-                      variant='flat'
-                      color='primary'
-                      onPress={handlePm2CheckboxClick}
-                      className='glass-effect'
-                    >
-                      <FiInfo className='w-5 h-5' />
-                    </Button>
-                  </Tooltip>
-                )}
-              </div>
-
-              {loadingEnvConfig && (
-                <div className='text-xs text-default-400 flex items-center gap-2'>
-                  <div className='w-3 h-3 border border-primary border-t-transparent rounded-full animate-spin' />
-                  正在获取环境配置...
-                </div>
-              )}
-
+              {/* 环境信息显示 */}
               {envConfig && (
-                <div className='text-xs text-default-500 bg-default-50 p-2 rounded'>
-                  当前运行环境: <span className='font-mono font-medium'>{envConfig.RUNTIME.value}</span>
+                <div className='text-xs text-default-500 bg-default-50 p-3 rounded'>
+                  <div>当前运行环境: <span className='font-mono font-medium'>{envConfig.RUNTIME.value}</span></div>
+                  {envConfig.RUNTIME.value === 'node' && (
+                    <div className='text-info-600 mt-1'>
+                      💡 普通模式：推荐使用"快速重启"，如需完全退出可选择"退出程序"
+                    </div>
+                  )}
+                  {envConfig.RUNTIME.value === 'pm2' && (
+                    <div className='text-success-600 mt-1'>
+                      ✅ PM2模式：推荐使用"快速重启"，更新后可选择"完全重启"
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -360,7 +451,7 @@ function ControlButtons () {
               color='primary'
               variant='flat'
               onPress={handleRestartConfirm}
-              isDisabled={running || loadingEnvConfig || isNodeRuntime}
+              isDisabled={running || loadingEnvConfig}
               isLoading={running}
               className='glass-effect'
             >
@@ -396,7 +487,6 @@ function ControlButtons () {
                   <p className='text-sm text-primary-800 font-medium mb-1'>建议操作：</p>
                   <p className='text-sm text-primary-700'>
                     前往环境配置页面修改 <span className='font-bold text-danger'> 运行时配置 </span> ，然后重启应用使配置生效。
-
                   </p>
                 </CardBody>
               </Card>

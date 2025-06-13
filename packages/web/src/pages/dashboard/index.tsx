@@ -167,12 +167,12 @@ function Status () {
   const [hasCheckedNpm, setHasCheckedNpm] = useState(false)
 
   const { data, error } = useRequest(() => getKarinStatusRequest(), {
-    // pollingInterval: 1000,
+    pollingInterval: 1000,
   })
 
   const localPluginsList = useRequest(() => request.serverPost<LocalApiResponse[], {}>('/api/v1/plugin/local'))
   const botList = useRequest(() => request.serverGet<Array<AdapterType>>('/api/v1/system/get/bots'), {
-    // pollingInterval: 5000,
+    pollingInterval: 5000,
   })
 
   const handleTooltipClick = () => {
