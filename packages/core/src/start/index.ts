@@ -43,8 +43,6 @@ enum LogLevel {
 class ProcessManager {
   /** 是否已经启动 */
   private isStarted = false
-  /** 是否正在重启 */
-  private isRestarting = false
   /** 子进程实例 */
   private childProcess: ChildProcess | null = null
   /** 重启延迟时间 */
@@ -75,6 +73,9 @@ class ProcessManager {
     gray: '\x1b[90m',
     reset: '\x1b[0m',
   }
+
+  /** exit 事件监听器引用 */
+  private exitListenerRef: ((code: number | null, signal: string | null) => void) | null = null
 
   constructor () {
     process.on('exit', this.stop.bind(this))
@@ -113,7 +114,6 @@ class ProcessManager {
     }
 
     const oldPid = this.childProcess.pid
-    this.isRestarting = true
     this.processStats.restartCount++
     this.processStats.lastRestartTime = Date.now()
 
@@ -136,8 +136,6 @@ class ProcessManager {
 
       this.logError(`重启失败 | 错误: ${error.message} | 代码: ${error.code || '未知'}`)
       return null
-    } finally {
-      this.isRestarting = false
     }
   }
 
@@ -153,7 +151,6 @@ class ProcessManager {
       this.terminateChildProcess()
       this.childProcess = null
       this.isStarted = false
-      this.isRestarting = false
     }
 
     const totalUptime = this.getTotalUptime()
@@ -175,7 +172,13 @@ class ProcessManager {
     if (!this.childProcess) return
 
     this.childProcess.on('message', this.handleChildMessage.bind(this))
-    this.childProcess.once('exit', this.handleChildExit.bind(this))
+    // 先移除旧的 exit 监听器（如果有）
+    if (this.exitListenerRef) {
+      this.childProcess.off('exit', this.exitListenerRef)
+    }
+    // 绑定新的 exit 监听器并保存引用
+    this.exitListenerRef = this.handleChildExit.bind(this)
+    this.childProcess.once('exit', this.exitListenerRef)
   }
 
   /**
@@ -187,7 +190,7 @@ class ProcessManager {
     try {
       const { type, reloadDeps } = JSON.parse(message) as ProcessMessage
 
-      if (type === 'restart') {
+      if (type === 'restart' || type === 'rs') {
         this.log(`收到消息 | 类型: restart | 重载依赖: ${reloadDeps ? '是' : '否'}`)
         const child = await this.restart(reloadDeps)
 
@@ -220,9 +223,7 @@ class ProcessManager {
 
     this.log(`子进程退出 | ${exitType} | 运行时间: ${uptime}`)
 
-    if (!this.isRestarting) {
-      this.stop()
-    }
+    this.stop()
   }
 
   /**
@@ -332,6 +333,12 @@ class ProcessManager {
    */
   private async terminateChildProcess (): Promise<void> {
     if (!this.childProcess) return
+
+    // 兼容性处理：重启前移除 exit 监听器，避免触发 stop
+    if (this.exitListenerRef) {
+      this.childProcess.off('exit', this.exitListenerRef)
+      this.exitListenerRef = null
+    }
 
     try {
       const pid = this.childProcess.pid
