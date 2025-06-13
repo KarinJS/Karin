@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.1](https://github.com/KarinJS/Karin/compare/web-v1.9.0...web-v1.9.1) (2025-06-13)
+
+
+### 🐛 Bug Fixes
+
+* 修正系统日志滚动时将不再自动跳转 修正多行日志间隙 ([90ca9eb](https://github.com/KarinJS/Karin/commit/90ca9eb18ebd3c254d310df978274e51ffe0d42b))
+* 重启选项 close [#475](https://github.com/KarinJS/Karin/issues/475) [#476](https://github.com/KarinJS/Karin/issues/476) ([4549e65](https://github.com/KarinJS/Karin/commit/4549e654becb902a1bf93a51928bd23b32001ff0))
+
 ## [1.9.0](https://github.com/KarinJS/Karin/compare/web-v1.8.11...web-v1.9.0) (2025-06-12)
 
 

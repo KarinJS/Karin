@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.10.6](https://github.com/KarinJS/Karin/compare/core-v1.10.5...core-v1.10.6) (2025-06-13)
+
+
+### 🐛 Bug Fixes
+
+* close [#477](https://github.com/KarinJS/Karin/issues/477) [#460](https://github.com/KarinJS/Karin/issues/460) ([74d2e08](https://github.com/KarinJS/Karin/commit/74d2e08e5cde67b9a17acb857c2691cce33a6d9c))
+
 ## [1.10.5](https://github.com/KarinJS/Karin/compare/core-v1.10.4...core-v1.10.5) (2025-06-12)
 
 
