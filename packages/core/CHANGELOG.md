@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.10.8](https://github.com/KarinJS/Karin/compare/core-v1.10.7...core-v1.10.8) (2025-06-14)
+
+
+### 🐛 Bug Fixes
+
+* 回滚部分重启逻辑，更新重启交互引导 ([b5363eb](https://github.com/KarinJS/Karin/commit/b5363ebcd66a7e7812073125ac09b227fa437f71))
+
 ## [1.10.7](https://github.com/KarinJS/Karin/compare/core-v1.10.6...core-v1.10.7) (2025-06-13)
 
 

@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.9.3](https://github.com/KarinJS/Karin/compare/web-v1.9.2...web-v1.9.3) (2025-06-14)
+
+
+### 🐛 Bug Fixes
+
+* **ControlButtons:** 重构控制按钮组件并增强重启和关机功能 ([e26016b](https://github.com/KarinJS/Karin/commit/e26016b8690cf1c1979277f1434ee2cd06d782ba))
+* **仪表盘:** 当版本号过长时自动进行滚动以显示完整的版本号 ([d03a931](https://github.com/KarinJS/Karin/commit/d03a931f16b94d54a85b852a5dd4776140df829a))
+* 回滚部分重启逻辑，更新重启交互引导 ([b5363eb](https://github.com/KarinJS/Karin/commit/b5363ebcd66a7e7812073125ac09b227fa437f71))
+
+
+### 💄 Styles
+
+* **dashboard:** 更新版本提示样式为更醒目的动画徽章 ([1894cbf](https://github.com/KarinJS/Karin/commit/1894cbfce2395975109f2a8373c23f8983414712))
+* **更新流程:** 优化系统更新流程并添加全屏加载器 ([d86659e](https://github.com/KarinJS/Karin/commit/d86659ea91bf14bfffc8e5c16baa5c9d24d15643))
+* **更新流程:** 在仪表板页面添加全局更新状态管理 ([d86659e](https://github.com/KarinJS/Karin/commit/d86659ea91bf14bfffc8e5c16baa5c9d24d15643))
+* **更新流程:** 增强全屏加载器组件，支持进度显示和状态提示 ([d86659e](https://github.com/KarinJS/Karin/commit/d86659ea91bf14bfffc8e5c16baa5c9d24d15643))
+* **更新流程:** 提升Toast组件的z-index确保在加载器上方显示 ([d86659e](https://github.com/KarinJS/Karin/commit/d86659ea91bf14bfffc8e5c16baa5c9d24d15643))
+* **更新流程:** 改进更新确认对话框的用户体验 ([d86659e](https://github.com/KarinJS/Karin/commit/d86659ea91bf14bfffc8e5c16baa5c9d24d15643))
+* **更新流程:** 重构更新按钮组件，添加更新开始/结束回调 ([d86659e](https://github.com/KarinJS/Karin/commit/d86659ea91bf14bfffc8e5c16baa5c9d24d15643))
+
 ## [1.9.2](https://github.com/KarinJS/Karin/compare/web-v1.9.1...web-v1.9.2) (2025-06-13)
 
 
