@@ -4,6 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes marqueeInContainer {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
 /* 隐藏 Chrome, Safari 和 Opera 的滚动条 */
 .no-scrollbar::-webkit-scrollbar {
   display: none;

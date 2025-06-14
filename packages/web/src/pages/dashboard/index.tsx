@@ -123,6 +123,11 @@ function Status ({ statusData, statusError }: StatusProps) {
   const [npmLatest, setNpmLatest] = useState<string | false>(false)
   const [hasCheckedNpm, setHasCheckedNpm] = useState(false)
 
+  const containerRef = useRef<HTMLDivElement>(null)
+  const textRef = useRef<HTMLDivElement>(null)
+  const [animationDuration, setAnimationDuration] = useState('8s')
+  const [shouldAnimate, setShouldAnimate] = useState(false)
+
   // 使用传入的数据，而不是重新请求
   const data = statusData
   const error = statusError
@@ -150,6 +155,23 @@ function Status ({ statusData, statusError }: StatusProps) {
     }
     setIsChangelogOpen(true)
   }, [proxyFnInitialized])
+
+  // 动态调整动画时长的 useEffect
+  useEffect(() => {
+    if (containerRef.current && textRef.current && data?.version) {
+      const containerWidth = containerRef.current.clientWidth
+      const textWidth = textRef.current.scrollWidth
+
+      if (textWidth > containerWidth) {
+      // 根据文本长度动态调整动画时长
+        const duration = Math.max(4, (textWidth / containerWidth) * 3)
+        setAnimationDuration(`${duration}s`)
+        setShouldAnimate(true)
+      } else {
+        setShouldAnimate(false)
+      }
+    }
+  }, [data?.version])
 
   useEffect(() => {
     if (data?.version && !hasCheckedNpm) {
@@ -182,39 +204,54 @@ function Status ({ statusData, statusError }: StatusProps) {
         <MemoizedStatusItem
           title='版本'
           value={
-            <div className='flex items-center gap-2'>
-              <span>{data.version}</span>
-              {updateTip && (
-                <Tooltip
-                  delay={0}
-                  closeDelay={0}
-                  placement='bottom-start'
-                  content={
-                    <div className='px-1 py-2'>
-                      新版本
-                      <Code className='text-green-400 font-bold'>{npmLatest}</Code>
-                      已就绪，点击查看更新日志
-                    </div>
-                  }
+            <div className='flex items-center gap-2 w-full'>
+              <div
+                ref={containerRef}
+                className='flex-1 overflow-hidden relative min-w-0'
+              >
+                <div
+                  ref={textRef}
+                  className='whitespace-nowrap inline-block'
+                  style={{
+                    animation: shouldAnimate ? `marqueeInContainer ${animationDuration} linear infinite` : 'none',
+                  }}
                 >
-                  <Chip
-                    size='sm'
-                    radius='sm'
-                    classNames={{
-                      base: 'bg-gradient-to-br from-red-400 to-rose-500 border-small border-white/50 shadow-rose-500/30 select-none animate-shimmer relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent',
-                      content: 'drop-shadow shadow-black text-white',
-                    }}
-                    startContent={
-                      <GrUpgrade
-                        className='text-white mt-[3px] w-3 h-3 animate-bounce'
-                      />
+                  {data.version}
+                </div>
+              </div>
+              {updateTip && (
+                <div className='flex-shrink-0 p-1'>
+                  <Tooltip
+                    delay={0}
+                    closeDelay={0}
+                    placement='bottom-start'
+                    content={
+                      <div className='px-1 py-2'>
+                        新版本
+                        <Code className='text-green-400 font-bold'>{npmLatest}</Code>
+                        已就绪，点击查看更新日志
+                      </div>
                     }
-                    variant='shadow'
-                    onClick={handleTooltipClick}
                   >
-                    新
-                  </Chip>
-                </Tooltip>
+                    <Chip
+                      size='sm'
+                      radius='sm'
+                      classNames={{
+                        base: 'bg-gradient-to-br from-red-400 to-rose-500 border-small border-white/50 shadow-rose-500/30 select-none animate-shimmer relative overflow-visible before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent',
+                        content: 'drop-shadow shadow-black text-white',
+                      }}
+                      startContent={
+                        <GrUpgrade
+                          className='text-white mt-[3px] w-3 h-3 animate-bounce'
+                        />
+                      }
+                      variant='shadow'
+                      onClick={handleTooltipClick}
+                    >
+                      新
+                    </Chip>
+                  </Tooltip>
+                </div>
               )}
             </div>
           }
@@ -229,6 +266,7 @@ function Status ({ statusData, statusError }: StatusProps) {
     updateTip,
     npmLatest,
     handleTooltipClick,
+    animationDuration,
   ])
 
   if (error || !data) {
@@ -530,14 +568,14 @@ function StatusItem ({ title, value }: StatusItemProps) {
   const IconComponent = iconMap[title] || Tag
   return (
     <Card
-      className='ease-in-out border cursor-pointer glass-effect active:scale-95 transition-transform'
+      className='ease-in-out border cursor-pointer glass-effect active:scale-95 transition-transform relative'
     >
-      <CardHeader className='px-2.5 py-1.5 md:px-2.5 md:py-2 lg:px-4 lg:py-3  flex-col items-start'>
+      <CardHeader className='px-2.5 py-1.5 md:px-2.5 md:py-2 lg:px-4 lg:py-3 flex-col items-start'>
         <div className='flex items-center gap-2'>
           <IconComponent className='w-4 h-4 lg:w-5 lg:h-5 text-primary' />
           <p className='text-sm text-primary select-none'>{title}</p>
         </div>
-        <div className='mt-1 md:mt-2 lg:mt-3 text-lg md:text-xl lg:text-2xl text-default-800 font-mono font-bold'>{value || '--'}</div>
+        <div className='mt-1 md:mt-2 lg:mt-3 text-lg md:text-xl lg:text-2xl text-default-800 font-mono font-bold w-full'>{value || '--'}</div>
       </CardHeader>
     </Card>
   )
