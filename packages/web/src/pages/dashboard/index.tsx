@@ -1,7 +1,6 @@
 import { Card, CardBody, CardHeader } from '@heroui/card'
 import { useRequest } from 'ahooks'
 import { request } from '@/lib/request'
-// import clsx from 'clsx'
 import { Button } from '@heroui/button'
 import { Tooltip } from '@heroui/tooltip'
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
@@ -10,7 +9,6 @@ import { VscBracketError } from 'react-icons/vsc'
 import { getSystemStatus } from '@/lib/status'
 import SystemStatusDisplay from '@/components/system_display_card'
 import Counter from '@/components/counter.tsx'
-// import RotatingText from '@/components/RotatingText'
 import SplitText from '@/components/SplitText'
 import type { AdapterType, LocalApiResponse } from 'node-karin'
 import type { NetworkStatus, SystemStatus } from '@/types/server'
@@ -59,128 +57,84 @@ const generatePlaces = (value: number): number[] => {
   return Array.from({ length: digits }, (_, i) => 10 ** (digits - 1 - i))
 }
 
-function getWindowSizeCategory () {
+// 将函数移到组件外部，避免重复创建
+const getWindowSizeCategory = () => {
   const width = window.innerWidth
+  if (width < 768) return 'sm'
+  if (width >= 768 && width < 1024) return 'md'
+  return 'lg'
+}
 
-  if (width < 768) {
-    return 'sm'
-  } else if (width >= 768 && width < 1024) {
-    return 'md'
-  } else {
-    return 'lg'
+const getFontSize = (size: string) => {
+  switch (size) {
+    case 'sm': return 18
+    case 'md': return 20
+    case 'lg': return 24
+    default: return 24
   }
 }
 
-// function OnlineStatus () {
-//   const { data, error } = useRequest(() => getKarinStatusRequest(), {
-//     pollingInterval: 1000,
-//   })
-//   const msg = []
-//   data?.version && msg.push(data.version)
-//   error ? msg.push('离线') : msg.push('在线')
-
-//   return (
-//     <div className='ml-4 flex items-center gap-2'>
-//       <div className={clsx(
-//         'rounded-full w-3 h-3',
-//         error ? 'bg-danger' : 'bg-success'
-//       )}
-//       />
-//       <RotatingText
-//         texts={msg}
-//         ClassName='px-3 sm:px-1 md:px-2 bg-primary-400 text-default-50 font-bold rounded-lg'
-//         staggerFrom='last'
-//         initial={{ y: '100%' }}
-//         animate={{ y: 0 }}
-//         exit={{ y: '-120%' }}
-//         staggerDuration={0.025}
-//         splitLevelClassName='overflow-hidden'
-//         transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-//         rotationInterval={4000}
-//       />
-//     </div>
-//   )
-// }
-
-export interface StatusItemProps {
-  title: string
-  value: React.ReactNode
-}
-function StatusItem ({ title, value }: StatusItemProps) {
-  const IconComponent = iconMap[title] || Tag
-  return (
-    <Card
-      className='ease-in-out hover:bg-default-100 dark:hover:bg-default-100 hover:translate-y-[-4px] border cursor-pointer glass-effect'
-    >
-      <CardHeader className='px-2.5 py-1.5 md:px-2.5 md:py-2 lg:px-4 lg:py-3  flex-col items-start'>
-        <div className='flex items-center gap-2'>
-          <IconComponent className='w-4 h-4 lg:w-5 lg:h-5 text-primary' />
-          <p className='text-sm text-primary select-none'>{title}</p>
-        </div>
-        <div className='mt-1 md:mt-2 lg:mt-3 text-lg md:text-xl lg:text-2xl text-default-800 font-mono font-bold'>{value || '--'}</div>
-      </CardHeader>
-    </Card>
-  )
-}
-
-// 使用 React.memo 包装 StatusItem 组件，只在 props 变化时重新渲染
-const MemoizedStatusItem = React.memo(StatusItem)
-
 // 单独抽离运行时间组件，因为它需要频繁更新
 function UptimeStatusItem ({ uptime }: { uptime: number }) {
+  // 使用useMemo缓存计算结果
+  const fontSize = useMemo(() => {
+    const size = getWindowSizeCategory()
+    return getFontSize(size)
+  }, []) // 空依赖数组，只计算一次
+
+  const places = useMemo(() => {
+    return generatePlaces(Math.floor(uptime))
+  }, [Math.floor(uptime)]) // 只在uptime整数部分变化时重新计算
+
+  const counterValue = useMemo(() => (
+    <div className='flex items-center gap-2'>
+      <Counter
+        className='flex items-center gap-0'
+        value={Math.floor(uptime)}
+        fontSize={fontSize}
+        places={places}
+      />
+      <span>秒</span>
+    </div>
+  ), [uptime, fontSize, places])
+
   return (
     <MemoizedStatusItem
       title='运行时间'
-      value={
-        <div className='flex items-center gap-2'>
-          <Counter
-            className='flex items-center gap-0'
-            value={Math.floor(uptime)}
-            fontSize={(() => {
-              const size = getWindowSizeCategory()
-              switch (size) {
-                case 'sm':
-                  return 18
-                case 'md':
-                  return 20
-                case 'lg':
-                  return 24
-                default:
-                  return 24
-              }
-            })()}
-            places={generatePlaces(Math.floor(uptime))}
-          />
-          <span>秒</span>
-        </div>
-      }
+      value={counterValue}
     />
   )
 }
 
-function Status () {
+interface StatusProps {
+  statusData: any
+  statusError: any
+}
+
+function Status ({ statusData, statusError }: StatusProps) {
   const [isChangelogOpen, setIsChangelogOpen] = useState(false)
   const [updateTip, setUpdateTip] = useState(false)
-  const [proxyFn, setProxyFn] = useState(() => (url: string) => url)
+  // 修复：使用useRef存储函数，避免每次创建新函数
+  const proxyFnRef = useRef<(url: string) => string>((url: string) => url)
   const [proxyFnInitialized, setProxyFnInitialized] = useState(false)
   const [npmLatest, setNpmLatest] = useState<string | false>(false)
   const [hasCheckedNpm, setHasCheckedNpm] = useState(false)
 
-  const { data, error } = useRequest(() => getKarinStatusRequest(), {
-    pollingInterval: 1000,
-  })
+  // 使用传入的数据，而不是重新请求
+  const data = statusData
+  const error = statusError
 
   const localPluginsList = useRequest(() => request.serverPost<LocalApiResponse[], {}>('/api/v1/plugin/local'))
   const botList = useRequest(() => request.serverGet<Array<AdapterType>>('/api/v1/system/get/bots'), {
     pollingInterval: 5000,
   })
 
-  const handleTooltipClick = () => {
-    // 只在第一次点击时初始化 proxyFn
+  // 使用useCallback缓存函数
+  const handleTooltipClick = useCallback(() => {
     if (!proxyFnInitialized) {
       testGithub().then(fn => {
         if (typeof fn === 'function') {
-          setProxyFn(fn)
+          proxyFnRef.current = fn
         } else {
           console.warn('testGithub 返回的不是函数，使用默认代理函数')
         }
@@ -192,7 +146,7 @@ function Status () {
         })
     }
     setIsChangelogOpen(true)
-  }
+  }, [proxyFnInitialized])
 
   useEffect(() => {
     if (data?.version && !hasCheckedNpm) {
@@ -211,6 +165,7 @@ function Status () {
     }
   }, [data, hasCheckedNpm])
 
+  // 使用useMemo缓存稳定的卡片
   const stableCards = useMemo(() => {
     if (!data) return <></>
 
@@ -284,7 +239,7 @@ function Status () {
         isOpen={isChangelogOpen}
         onOpenChange={setIsChangelogOpen}
         npmLatest={npmLatest}
-        proxyFn={proxyFn}
+        proxyFn={proxyFnRef.current}
       />
     </>
   )
@@ -312,43 +267,60 @@ function SystemStatusCard () {
 }
 
 export default function IndexPage () {
-  ConsoleMessage()
+  const { data, error } = useRequest(() => getKarinStatusRequest(), {
+    pollingInterval: 1000,
+  })
+
+  // 使用useMemo缓存不变的部分
+  // 静态标题内容，只渲染一次
+  const staticHeaderContent = useMemo(() => (
+    <div>
+      <SplitText
+        text='Hello, Karin !'
+        className='text-4xl font-semibold text-center tracking-wider'
+        delay={100}
+        duration={0.6}
+        ease='power3.out'
+        splitType='chars'
+        from={{ opacity: 0, y: 40 }}
+        to={{ opacity: 1, y: 0 }}
+        threshold={0.1}
+        rootMargin='-100px'
+        textAlign='center'
+      />
+    </div>
+  ), [])
+
+  // 动态控制按钮，根据数据更新
+  const dynamicControlButtons = useMemo(() => (
+    <div className='flex justify-end gap-4'>
+      <ControlButtons runtime={data?.karin_runtime} />
+    </div>
+  ), [data?.karin_runtime])
+
   return (
-    <section className='flex flex-col gap-4'>
-      <Card shadow='sm'>
-        <CardHeader className='px-6 pt-6 pb-0'>
-          <div className='flex flex-col flex-grow gap-4'>
-            <div>
-              <SplitText
-                text='Hello, Karin !'
-                className='text-4xl font-semibold text-center tracking-wider'
-                delay={100}
-                duration={0.6}
-                ease='power3.out'
-                splitType='chars'
-                from={{ opacity: 0, y: 40 }}
-                to={{ opacity: 1, y: 0 }}
-                threshold={0.1}
-                rootMargin='-100px'
-                textAlign='center'
-              />
+    <>
+      <ConsoleMessage />
+      <section className='flex flex-col gap-4'>
+        <Card shadow='sm'>
+          <CardHeader className='px-6 pt-6 pb-0'>
+            <div className='flex flex-col flex-grow gap-4'>
+              {staticHeaderContent}
+              {dynamicControlButtons}
             </div>
-            <div className='flex justify-end gap-4'>
-              <ControlButtons />
-            </div>
-          </div>
-        </CardHeader>
-        <CardBody className='px-6 py-6'>
-          <Status />
-        </CardBody>
-      </Card>
-      <NetworkMonitorCard />
-      <Card shadow='sm'>
-        <CardBody>
-          <SystemStatusCard />
-        </CardBody>
-      </Card>
-    </section>
+          </CardHeader>
+          <CardBody className='px-6 py-6'>
+            <Status statusData={data} statusError={error} />
+          </CardBody>
+        </Card>
+        <NetworkMonitorCard />
+        <Card shadow='sm'>
+          <CardBody>
+            <SystemStatusCard />
+          </CardBody>
+        </Card>
+      </section>
+    </>
   )
 }
 
@@ -532,3 +504,28 @@ function NetworkMonitorCard () {
     </Card>
   )
 }
+
+export interface StatusItemProps {
+  title: string
+  value: React.ReactNode
+}
+
+function StatusItem ({ title, value }: StatusItemProps) {
+  const IconComponent = iconMap[title] || Tag
+  return (
+    <Card
+      className='ease-in-out hover:bg-default-100 dark:hover:bg-default-100 hover:translate-y-[-4px] border cursor-pointer glass-effect'
+    >
+      <CardHeader className='px-2.5 py-1.5 md:px-2.5 md:py-2 lg:px-4 lg:py-3  flex-col items-start'>
+        <div className='flex items-center gap-2'>
+          <IconComponent className='w-4 h-4 lg:w-5 lg:h-5 text-primary' />
+          <p className='text-sm text-primary select-none'>{title}</p>
+        </div>
+        <div className='mt-1 md:mt-2 lg:mt-3 text-lg md:text-xl lg:text-2xl text-default-800 font-mono font-bold'>{value || '--'}</div>
+      </CardHeader>
+    </Card>
+  )
+}
+
+// 使用 React.memo 包装 StatusItem 组件，只在 props 变化时重新渲染
+const MemoizedStatusItem = React.memo(StatusItem)

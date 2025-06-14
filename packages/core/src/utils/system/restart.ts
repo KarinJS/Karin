@@ -1,6 +1,5 @@
 import { Contact } from '@/types/event'
 import { exec } from '@/utils/system/exec'
-import { env, writeEnv } from '../config'
 
 /**
  * 重启Bot
@@ -60,20 +59,6 @@ export const restartDirect = async (options?: {
 }) => {
   const { isPm2 = false, reloadDeps = false } = options || {}
   logger.mark('收到重启请求，正在重启...')
-
-  const envCfg = env()
-  if (isPm2 && envCfg.RUNTIME === 'node') {
-    const envCfg = env()
-    if (envCfg.RUNTIME === 'node') {
-      envCfg.RUNTIME = 'pm2'
-      const envData = Object.entries(envCfg).map(([key, value]) => ({
-        key,
-        value,
-        comment: value.comment,
-      }))
-      writeEnv(envData, undefined, true)
-    }
-  }
 
   if (!isPm2 && process?.send) {
     process.send(JSON.stringify({ type: 'restart', reloadDeps }))

@@ -13,130 +13,42 @@ import { useNavigate } from 'react-router-dom'
 import { Card, CardBody } from '@heroui/card'
 import { Chip } from '@heroui/chip'
 
-interface SystemEnvsField {
-  HTTP_PORT: {
-    value: number
-    comment: string
-  }
-  HTTP_HOST: {
-    value: string
-    comment: string
-  }
-  HTTP_AUTH_KEY: {
-    value: string
-    comment: string
-  }
-  WS_SERVER_AUTH_KEY: {
-    value: string
-    comment: string
-  }
-  REDIS_ENABLE: {
-    value: boolean
-    comment: string
-  }
-  PM2_RESTART: {
-    value: boolean
-    comment: string
-  }
-  TSX_WATCH: {
-    value: boolean
-    comment: string
-  }
-  LOG_LEVEL: {
-    value: 'all' | 'trace' | 'debug' | 'mark' | 'info' | 'warn' | 'error' | 'fatal' | 'off'
-    comment: string
-  }
-  LOG_DAYS_TO_KEEP: {
-    value: number
-    comment: string
-  }
-  LOG_MAX_LOG_SIZE: {
-    value: number
-    comment: string
-  }
-  LOG_FNC_COLOR: {
-    value: string
-    comment: string
-  }
-  LOG_MAX_CONNECTIONS: {
-    value: number
-    comment: string
-  }
-  FFMPEG_PATH: {
-    value: string
-    comment: string
-  }
-  FFPROBE_PATH: {
-    value: string
-    comment: string
-  }
-  FFPLAY_PATH: {
-    value: string
-    comment: string
-  }
-  RUNTIME: {
-    value: 'node' | 'tsx' | 'pm2'
-    comment: string
-  }
-  NODE_ENV: {
-    value: 'development' | 'production' | 'test'
-    comment: string
-  }
+interface ControlButtonsProps {
+  runtime?: string
 }
 
-function ControlButtons () {
+function ControlButtons ({ runtime }: ControlButtonsProps) {
   const [running, setRunning] = useState(false)
   const [isRestartModalOpen, setIsRestartModalOpen] = useState(false)
   const [isPm2, setIsPm2] = useState(false)
   const [reloadDeps, setReloadDeps] = useState(false)
   const [useParentProcess, setUseParentProcess] = useState(false)
-  const [useChildProcess, setUseChildProcess] = useState(true) // 默认勾选快速重启
-  const [envConfig, setEnvConfig] = useState<SystemEnvsField | null>(null)
+  const [useChildProcess, setUseChildProcess] = useState(true)
   const [isEnvInfoModalOpen, setIsEnvInfoModalOpen] = useState(false)
-  const [loadingEnvConfig, setLoadingEnvConfig] = useState(false)
   const dialog = useDialog()
   const navigate = useNavigate()
 
-  // 获取环境配置
-  const fetchEnvConfig = async () => {
-    try {
-      setLoadingEnvConfig(true)
-      const response = await request.serverPost<SystemEnvsField, { type: 'env' }>('/api/v1/config/new/get', {
-        type: 'env',
-      })
-      setEnvConfig(response)
-
-      // 根据环境设置默认选项
-      console.log(response.RUNTIME.value)
-      if (response.RUNTIME.value === 'pm2') {
-        // PM2环境：默认选择快速重启（什么都不传）
-        setIsPm2(false)
-        setUseParentProcess(false)
-        setUseChildProcess(true)
-        setReloadDeps(false)
-      } else if (response.RUNTIME.value === 'node') {
-        // Node环境：默认选择快速重启
-        setIsPm2(false)
-        setUseParentProcess(false)
-        setUseChildProcess(true)
-        setReloadDeps(false)
-      } else {
-        // 其他环境：默认选择PM2模式
-        setIsPm2(true)
-        setUseParentProcess(false)
-        setUseChildProcess(false)
-        setReloadDeps(false)
-      }
-    } catch (error) {
-      console.error('获取环境配置失败:', error)
-      toast.error('获取环境配置失败')
-    } finally {
-      setLoadingEnvConfig(false)
-    }
-  }
-
   const handleRestartClick = async () => {
-    await fetchEnvConfig()
+    // 根据传入的runtime设置默认选项
+    if (runtime === 'pm2') {
+      // PM2环境：默认选择快速重启
+      setIsPm2(false)
+      setUseParentProcess(false)
+      setUseChildProcess(true)
+      setReloadDeps(false)
+    } else if (runtime === 'node') {
+      // Node环境：默认选择快速重启
+      setIsPm2(false)
+      setUseParentProcess(false)
+      setUseChildProcess(true)
+      setReloadDeps(false)
+    } else {
+      // 其他环境：默认选择PM2模式
+      setIsPm2(true)
+      setUseParentProcess(false)
+      setUseChildProcess(false)
+      setReloadDeps(false)
+    }
     setIsRestartModalOpen(true)
   }
 
@@ -179,6 +91,10 @@ function ControlButtons () {
       })
 
       toast.success('重启成功')
+      // 重启成功后刷新页面
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000) // 延迟1秒刷新，让用户看到成功提示
     } catch (e) {
       toast.error('重启失败')
     } finally {
@@ -264,9 +180,12 @@ function ControlButtons () {
   }
 
   /** 是否为pm2运行 */
-  const isPm2Runtime = envConfig?.RUNTIME.value === 'pm2'
+  const isPm2Runtime = runtime === 'pm2'
   /** 是否为node运行 */
-  const isNodeRuntime = envConfig?.RUNTIME.value === 'node'
+  const isNodeRuntime = runtime === 'node'
+
+  // 检查是否有任何选项被选中
+  const hasSelectedOption = useParentProcess || useChildProcess || isPm2 || reloadDeps
 
   return (
     <>
@@ -327,15 +246,27 @@ function ControlButtons () {
                 {isPm2Runtime && (
                   <>
                     {/* 快速重启（默认选项） */}
-                    <div className='flex items-center gap-3'>
+                    <div className='w-full'>
                       <Checkbox
                         isSelected={useChildProcess}
                         onValueChange={handleChildProcessChange}
                         color='primary'
-                        isDisabled={loadingEnvConfig}
+                        classNames={{
+                          base: 'inline-flex w-full max-w-full bg-content1 m-0 hover:bg-content2 active:scale-[0.98] transition-all duration-150 items-center justify-start cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent data-[selected=true]:border-primary hover:shadow-md active:shadow-sm',
+                          label: 'w-full',
+                        }}
                       >
-                        <div className='flex flex-col'>
-                          <span className='text-sm font-medium'>快速重启（推荐）</span>
+                        <div className='flex flex-col w-full'>
+                          <div className='flex items-center gap-2 mb-1'>
+                            <span className='text-sm font-medium'>快速重启</span>
+                            <Chip
+                              size='sm'
+                              color='primary'
+                              variant='flat'
+                            >
+                              推荐
+                            </Chip>
+                          </div>
                           <span className='text-xs text-default-500'>
                             只重启应用本身，速度快，适合更新插件后的日常重启
                           </span>
@@ -344,15 +275,27 @@ function ControlButtons () {
                     </div>
 
                     {/* 完全重启 */}
-                    <div className='flex items-center gap-3'>
+                    <div className='w-full'>
                       <Checkbox
                         isSelected={reloadDeps}
                         onValueChange={handleReloadDepsChange}
                         color='warning'
-                        isDisabled={loadingEnvConfig}
+                        classNames={{
+                          base: 'inline-flex w-full max-w-full bg-content1 m-0 hover:bg-content2 active:scale-[0.98] transition-all duration-150 items-center justify-start cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent data-[selected=true]:border-warning hover:shadow-md active:shadow-sm',
+                          label: 'w-full',
+                        }}
                       >
-                        <div className='flex flex-col'>
-                          <span className='text-sm font-medium'>完全重启</span>
+                        <div className='flex flex-col w-full'>
+                          <div className='flex items-center gap-2 mb-1'>
+                            <span className='text-sm font-medium'>完全重启</span>
+                            <Chip
+                              size='sm'
+                              color='warning'
+                              variant='flat'
+                            >
+                              慢速
+                            </Chip>
+                          </div>
                           <span className='text-xs text-default-500'>
                             重启整个程序和依赖，速度较慢，适用于 Karin 更新后使用
                           </span>
@@ -366,15 +309,27 @@ function ControlButtons () {
                 {isNodeRuntime && (
                   <>
                     {/* 退出程序 */}
-                    <div className='flex items-center gap-3'>
+                    <div className='w-full'>
                       <Checkbox
                         isSelected={useParentProcess}
                         onValueChange={handleParentProcessChange}
                         color='danger'
-                        isDisabled={loadingEnvConfig}
+                        classNames={{
+                          base: 'inline-flex w-full max-w-full bg-content1 m-0 hover:bg-content2 active:scale-[0.98] transition-all duration-150 items-center justify-start cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent data-[selected=true]:border-danger hover:shadow-md active:shadow-sm',
+                          label: 'w-full',
+                        }}
                       >
-                        <div className='flex flex-col'>
-                          <span className='text-sm font-medium'>退出程序</span>
+                        <div className='flex flex-col w-full'>
+                          <div className='flex items-center gap-2 mb-1'>
+                            <span className='text-sm font-medium'>退出程序</span>
+                            <Chip
+                              size='sm'
+                              color='danger'
+                              variant='flat'
+                            >
+                              高级
+                            </Chip>
+                          </div>
                           <span className='text-xs text-default-500'>
                             完全退出程序，需要手动重新启动，适合有进程守护的高玩
                           </span>
@@ -383,15 +338,27 @@ function ControlButtons () {
                     </div>
 
                     {/* 快速重启 */}
-                    <div className='flex items-center gap-3'>
+                    <div className='w-full'>
                       <Checkbox
                         isSelected={useChildProcess}
                         onValueChange={handleChildProcessChange}
                         color='primary'
-                        isDisabled={loadingEnvConfig}
+                        classNames={{
+                          base: 'inline-flex w-full max-w-full bg-content1 m-0 hover:bg-content2 active:scale-[0.98] transition-all duration-150 items-center justify-start cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent data-[selected=true]:border-primary hover:shadow-md active:shadow-sm',
+                          label: 'w-full',
+                        }}
                       >
-                        <div className='flex flex-col'>
-                          <span className='text-sm font-medium'>快速重启（推荐）</span>
+                        <div className='flex flex-col w-full'>
+                          <div className='flex items-center gap-2 mb-1'>
+                            <span className='text-sm font-medium'>快速重启</span>
+                            <Chip
+                              size='sm'
+                              color='primary'
+                              variant='flat'
+                            >
+                              推荐
+                            </Chip>
+                          </div>
                           <span className='text-xs text-default-500'>
                             只重启应用本身，速度快，适合更新插件后的日常重启
                           </span>
@@ -400,17 +367,29 @@ function ControlButtons () {
                     </div>
 
                     {/* 升级到PM2模式 */}
-                    <div className='flex items-center gap-3'>
+                    <div className='w-full'>
                       <Checkbox
-                        isSelected={isPm2}
+                        isDisabled
                         onValueChange={handlePm2Change}
                         color='success'
-                        isDisabled={loadingEnvConfig}
+                        classNames={{
+                          base: 'inline-flex w-full max-w-full bg-content1 m-0 hover:bg-content2 active:scale-[0.98] transition-all duration-150 items-center justify-start cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent data-[selected=true]:border-success data-[disabled=true]:opacity-50 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:active:scale-100',
+                          label: 'w-full',
+                        }}
                       >
-                        <div className='flex flex-col'>
-                          <span className='text-sm font-medium'>升级到PM2模式</span>
+                        <div className='flex flex-col w-full'>
+                          <div className='flex items-center gap-2 mb-1'>
+                            <span className='text-sm font-medium'>前台转后台</span>
+                            <Chip
+                              size='sm'
+                              color='warning'
+                              variant='flat'
+                            >
+                              待实现
+                            </Chip>
+                          </div>
                           <span className='text-xs text-default-500'>
-                            切换到更稳定的PM2管理模式
+                            切换到PM2模式重启
                           </span>
                         </div>
                       </Checkbox>
@@ -418,23 +397,6 @@ function ControlButtons () {
                   </>
                 )}
               </div>
-
-              {/* 环境信息显示 */}
-              {envConfig && (
-                <div className='text-xs text-default-500 bg-default-50 p-3 rounded'>
-                  <div>当前运行环境: <span className='font-mono font-medium'>{envConfig.RUNTIME.value}</span></div>
-                  {envConfig.RUNTIME.value === 'node' && (
-                    <div className='text-info-600 mt-1'>
-                      💡 普通模式：推荐使用"快速重启"，如需完全退出可选择"退出程序"
-                    </div>
-                  )}
-                  {envConfig.RUNTIME.value === 'pm2' && (
-                    <div className='text-success-600 mt-1'>
-                      ✅ PM2模式：推荐使用"快速重启"，更新后可选择"完全重启"
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           </ModalBody>
           <ModalFooter>
@@ -451,7 +413,7 @@ function ControlButtons () {
               color='primary'
               variant='flat'
               onPress={handleRestartConfirm}
-              isDisabled={running || loadingEnvConfig}
+              isDisabled={running || !hasSelectedOption}
               isLoading={running}
               className='glass-effect'
             >
@@ -477,7 +439,7 @@ function ControlButtons () {
           <ModalBody>
             <div className='flex flex-col gap-4'>
               <p className='text-default-600'>
-                当前运行环境为 <Chip color='warning' variant='flat' radius='md' size='sm' className='glass-effect'>{envConfig?.RUNTIME.value}</Chip> 不是PM2环境。
+                当前运行环境为 <Chip color='warning' variant='flat' radius='md' size='sm' className='glass-effect'>{runtime}</Chip> 不是PM2环境。
               </p>
               <p className='text-default-600'>
                 要使用PM2重启功能，需要将运行环境设置为 <Chip color='primary' variant='flat' radius='md' size='sm' className='glass-effect'>PM2</Chip>。
