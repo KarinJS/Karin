@@ -39,6 +39,7 @@ import ControlButtons from '@/components/common/ControlButtons'
 import UpdateLogModal from '@/components/UpdateLogModal'
 import { Chip } from '@heroui/chip'
 import { Code } from '@heroui/code'
+import { FullScreenLoader } from '@/components/FullScreenLoader'
 
 interface IconMap {
   [key: string]: LucideIcon
@@ -112,9 +113,11 @@ function UptimeStatusItem ({ uptime }: { uptime: number }) {
 interface StatusProps {
   statusData: any
   statusError: any
+  onGlobalUpdateStart: () => void
+  onGlobalUpdateEnd: () => void
 }
 
-function Status ({ statusData, statusError }: StatusProps) {
+function Status ({ statusData, statusError, onGlobalUpdateStart, onGlobalUpdateEnd }: StatusProps) {
   const [isChangelogOpen, setIsChangelogOpen] = useState(false)
   const [updateTip, setUpdateTip] = useState(false)
   // 修复：使用useRef存储函数，避免每次创建新函数
@@ -292,13 +295,15 @@ function Status ({ statusData, statusError }: StatusProps) {
         <UptimeStatusItem uptime={data.uptime} />
       </div>
 
-      {/* 更新日志模态框 */}
+      {/** 更新日志模态框 */}
       <UpdateLogModal
         currentVersion={data.version}
         isOpen={isChangelogOpen}
         onOpenChange={setIsChangelogOpen}
         npmLatest={npmLatest}
         proxyFn={proxyFnRef.current}
+        onUpdateStart={onGlobalUpdateStart} /** 使用全局回调 */
+        onUpdateEnd={onGlobalUpdateEnd} /** 使用全局回调 */
       />
     </>
   )
@@ -329,6 +334,8 @@ export default function IndexPage () {
   const { data, error } = useRequest(() => getKarinStatusRequest(), {
     pollingInterval: 1000,
   })
+  /** 全局更新状态，不会因为子组件卸载而丢失 */
+  const [isGlobalUpdating, setIsGlobalUpdating] = useState(false)
 
   // 使用useMemo缓存不变的部分
   // 静态标题内容，只渲染一次
@@ -360,6 +367,10 @@ export default function IndexPage () {
   return (
     <>
       <ConsoleMessage />
+
+      {/** 全屏加载器放在最顶层 */}
+      {isGlobalUpdating && <FullScreenLoader />}
+
       <section className='flex flex-col gap-4'>
         <Card shadow='sm'>
           <CardHeader className='px-6 pt-6 pb-0'>
@@ -369,7 +380,12 @@ export default function IndexPage () {
             </div>
           </CardHeader>
           <CardBody className='px-6 py-6'>
-            <Status statusData={data} statusError={error} />
+            <Status
+              statusData={data}
+              statusError={error}
+              onGlobalUpdateStart={() => setIsGlobalUpdating(true)}
+              onGlobalUpdateEnd={() => setIsGlobalUpdating(false)}
+            />
           </CardBody>
         </Card>
         <NetworkMonitorCard />

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRequest } from 'ahooks'
 import { Modal, ModalContent, ModalHeader, ModalBody } from '@heroui/modal'
 import { Chip } from '@heroui/chip'
@@ -17,6 +17,8 @@ interface UpdateLogModalProps {
   onOpenChange: (isOpen: boolean) => void
   npmLatest: string | false
   proxyFn: (url: string) => string
+  onUpdateStart: () => void
+  onUpdateEnd: () => void
 }
 
 export default function UpdateLogModal ({
@@ -25,6 +27,8 @@ export default function UpdateLogModal ({
   onOpenChange,
   npmLatest,
   proxyFn,
+  onUpdateStart,
+  onUpdateEnd,
 }: UpdateLogModalProps) {
   const [isLoadingRelease, setIsLoadingRelease] = useState(false)
 
@@ -58,10 +62,6 @@ export default function UpdateLogModal ({
   const middleVersions = useMemo(() => {
     return updateLogs || []
   }, [updateLogs])
-
-  const handleCloseModal = useCallback(() => {
-    onOpenChange(false)
-  }, [onOpenChange])
 
   return (
     <Modal
@@ -256,7 +256,11 @@ export default function UpdateLogModal ({
           </ScrollShadow>
 
           <div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t p-4 flex justify-end'>
-            <UpdateButtons handleCloseModal={handleCloseModal} />
+            <UpdateButtons
+              handleCloseModal={() => onOpenChange(false)}
+              onUpdateStart={onUpdateStart}
+              onUpdateEnd={onUpdateEnd}
+            />
           </div>
         </ModalBody>
       </ModalContent>

@@ -1,5 +1,4 @@
 import { Toaster as HotToaster } from 'react-hot-toast'
-
 import { useTheme } from '@/hooks/use-theme'
 
 export const Toaster = () => {
@@ -12,7 +11,11 @@ export const Toaster = () => {
           borderRadius: '20px',
           background: isDark ? '#333' : '#fff',
           color: isDark ? '#fff' : '#333',
+          zIndex: 10000,
         },
+      }}
+      containerStyle={{
+        zIndex: 10000,
       }}
     />
   )
