@@ -24,7 +24,8 @@ import {
   LucideIcon,
   TriangleAlert,
 } from 'lucide-react'
-import { LuInfo, LuNetwork } from 'react-icons/lu'
+import { LuNetwork } from 'react-icons/lu'
+import { GrUpgrade } from 'react-icons/gr'
 import { testGithub } from '@/lib/test-url'
 import { compareVersion } from '@/lib/version'
 import { getPackageInfo } from '@/lib/utils'
@@ -36,6 +37,8 @@ import { getKarinStatusRequest } from '@/request/status'
 import key from '@/consts/key'
 import ControlButtons from '@/components/common/ControlButtons'
 import UpdateLogModal from '@/components/UpdateLogModal'
+import { Chip } from '@heroui/chip'
+import { Code } from '@heroui/code'
 
 interface IconMap {
   [key: string]: LucideIcon
@@ -189,15 +192,28 @@ function Status ({ statusData, statusError }: StatusProps) {
                   content={
                     <div className='px-1 py-2'>
                       新版本
-                      <span className='text-green-400 font-bold'>{npmLatest}</span>
-                      可用，点击查看更新日志
+                      <Code className='text-green-400 font-bold'>{npmLatest}</Code>
+                      已就绪，点击查看更新日志
                     </div>
                   }
                 >
-                  <LuInfo
-                    className='text-danger animate-pulse cursor-help'
+                  <Chip
+                    size='sm'
+                    radius='sm'
+                    classNames={{
+                      base: 'bg-gradient-to-br from-red-400 to-rose-500 border-small border-white/50 shadow-rose-500/30 select-none animate-shimmer relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent',
+                      content: 'drop-shadow shadow-black text-white',
+                    }}
+                    startContent={
+                      <GrUpgrade
+                        className='text-white mt-[3px] w-3 h-3 animate-bounce'
+                      />
+                    }
+                    variant='shadow'
                     onClick={handleTooltipClick}
-                  />
+                  >
+                    新
+                  </Chip>
                 </Tooltip>
               )}
             </div>
@@ -514,7 +530,7 @@ function StatusItem ({ title, value }: StatusItemProps) {
   const IconComponent = iconMap[title] || Tag
   return (
     <Card
-      className='ease-in-out hover:bg-default-100 dark:hover:bg-default-100 hover:translate-y-[-4px] border cursor-pointer glass-effect'
+      className='ease-in-out border cursor-pointer glass-effect active:scale-95 transition-transform'
     >
       <CardHeader className='px-2.5 py-1.5 md:px-2.5 md:py-2 lg:px-4 lg:py-3  flex-col items-start'>
         <div className='flex items-center gap-2'>
