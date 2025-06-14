@@ -158,20 +158,25 @@ function Status ({ statusData, statusError }: StatusProps) {
 
   // 动态调整动画时长的 useEffect
   useEffect(() => {
-    if (containerRef.current && textRef.current && data?.version) {
-      const containerWidth = containerRef.current.clientWidth
-      const textWidth = textRef.current.scrollWidth
+  // 使用 setTimeout 确保 DOM 更新完成后再计算
+    const timer = setTimeout(() => {
+      if (containerRef.current && textRef.current && data?.version) {
+        const containerWidth = containerRef.current.clientWidth
+        const textWidth = textRef.current.scrollWidth
 
-      if (textWidth > containerWidth) {
-      // 根据文本长度动态调整动画时长
-        const duration = Math.max(4, (textWidth / containerWidth) * 3)
-        setAnimationDuration(`${duration}s`)
-        setShouldAnimate(true)
-      } else {
-        setShouldAnimate(false)
+        if (textWidth > containerWidth) {
+        // 根据文本长度动态调整动画时长
+          const duration = Math.max(4, (textWidth / containerWidth) * 3)
+          setAnimationDuration(`${duration}s`)
+          setShouldAnimate(true)
+        } else {
+          setShouldAnimate(false)
+        }
       }
-    }
-  }, [data?.version])
+    }, 0)
+
+    return () => clearTimeout(timer)
+  }, [data?.version, updateTip])
 
   useEffect(() => {
     if (data?.version && !hasCheckedNpm) {
@@ -575,7 +580,7 @@ function StatusItem ({ title, value }: StatusItemProps) {
           <IconComponent className='w-4 h-4 lg:w-5 lg:h-5 text-primary' />
           <p className='text-sm text-primary select-none'>{title}</p>
         </div>
-        <div className='mt-1 md:mt-2 lg:mt-3 text-lg md:text-xl lg:text-2xl text-default-800 font-mono font-bold w-full'>{value || '--'}</div>
+        <div className='mt-1 md:mt-2 lg:mt-3 text-lg md:text-xl lg:text-2xl text-default-800 font-medium w-full'>{value || '--'}</div>
       </CardHeader>
     </Card>
   )
