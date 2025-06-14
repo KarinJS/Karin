@@ -19,6 +19,7 @@ export interface ModalProps {
   backdrop?: 'opaque' | 'blur' | 'transparent'
   showCancel?: boolean
   dismissible?: boolean
+  confirmDisabled?: boolean
 }
 
 const Modal: React.FC<ModalProps> = React.memo(props => {
@@ -29,6 +30,7 @@ const Modal: React.FC<ModalProps> = React.memo(props => {
     size = 'md',
     showCancel = true,
     dismissible,
+    confirmDisabled = false,
     onClose,
     onConfirm,
     onCancel,
@@ -71,6 +73,7 @@ const Modal: React.FC<ModalProps> = React.memo(props => {
               )}
               <Button
                 color='primary'
+                isDisabled={confirmDisabled}
                 onPress={() => {
                   onConfirm?.()
                   nativeClose()

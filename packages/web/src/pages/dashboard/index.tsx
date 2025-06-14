@@ -225,7 +225,7 @@ function Status ({ statusData, statusError }: StatusProps) {
                 </div>
               </div>
               {updateTip && (
-                <div className='flex-shrink-0 p-1'>
+                <div className='flex-shrink-0'>
                   <Tooltip
                     delay={0}
                     closeDelay={0}

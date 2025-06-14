@@ -17,6 +17,7 @@ export interface ConfirmProps {
   content: React.ReactNode
   size?: ModalProps['size']
   dismissible?: boolean
+  confirmDisabled?: boolean
   onConfirm?: () => void
   onCancel?: () => void
 }
@@ -27,20 +28,19 @@ export interface ModalItem extends ModalProps {
 
 export interface DialogContextProps {
   alert: (config: AlertProps) => void
-  confirm: (config: ConfirmProps) => void
-}
-
-export interface DialogProviderProps {
-  children: React.ReactNode
+  confirm: (config: ConfirmProps) => number
+  updateDialog: (id: number, updates: Partial<ModalItem>) => void
 }
 
 export const DialogContext = React.createContext<DialogContextProps>({
   alert: () => { },
-  confirm: () => { },
+  confirm: () => 0,
+  updateDialog: () => { },
 })
 
-const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
+const DialogProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [dialogs, setDialogs] = React.useState<ModalItem[]>([])
+
   const alert = (config: AlertProps) => {
     const { title, content, dismissible, onConfirm, size = 'md' } = config
 
@@ -68,37 +68,50 @@ const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
     })
   }
 
-  const confirm = (config: ConfirmProps) => {
-    const { title, content, dismissible, onConfirm, onCancel, size = 'md' } = config
+  /** 更新指定dialog的属性 */
+  const updateDialog = (id: number, updates: Partial<ModalItem>) => {
+    setDialogs(prevDialogs =>
+      prevDialogs.map(dialog =>
+        dialog.id === id ? { ...dialog, ...updates } : dialog
+      )
+    )
+  }
 
-    setDialogs(before => {
-      const id = before[before.length - 1]?.id + 1 || 0
+  const confirm = (config: ConfirmProps): number => {
+    const { title, content, dismissible, confirmDisabled, onConfirm, onCancel, size = 'md' } = config
+    let newId: number
+
+    setDialogs(prevDialogs => {
+      newId = prevDialogs[prevDialogs.length - 1]?.id + 1 || 0
 
       return [
-        ...before,
+        ...prevDialogs,
         {
-          id,
+          id: newId,
           content,
           size,
           title,
           backdrop: 'blur',
           showCancel: true,
           dismissible,
+          confirmDisabled,
           onConfirm: () => {
             onConfirm?.()
             setTimeout(() => {
-              setDialogs(before => before.filter(item => item.id !== id))
+              setDialogs(prevDialogs => prevDialogs.filter(item => item.id !== newId))
             }, 300)
           },
           onCancel: () => {
             onCancel?.()
             setTimeout(() => {
-              setDialogs(before => before.filter(item => item.id !== id))
+              setDialogs(prevDialogs => prevDialogs.filter(item => item.id !== newId))
             }, 300)
           },
         },
       ]
     })
+
+    return newId!
   }
 
   return (
@@ -106,6 +119,7 @@ const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
       value={{
         alert,
         confirm,
+        updateDialog,
       }}
     >
       {children}
