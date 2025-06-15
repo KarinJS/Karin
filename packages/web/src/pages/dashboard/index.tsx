@@ -175,7 +175,7 @@ function UptimeStatusItem ({ uptime }: { uptime: number }) {
     )
 
     return (
-      <div className='flex items-center gap-2 flex-wrap overflow-hidden h-[1.75rem] md:h-[2rem] lg:h-[2.5rem]'>
+      <div className='flex items-center gap-1 flex-wrap overflow-hidden h-[1.75rem] md:h-[2rem] lg:h-[2.5rem]'>
         {components}
       </div>
     )
