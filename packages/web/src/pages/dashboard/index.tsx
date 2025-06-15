@@ -56,11 +56,6 @@ const iconMap: IconMap = {
   版本: GitBranch,
 }
 
-const generatePlaces = (value: number): number[] => {
-  const digits = Math.floor(value).toString().length
-  return Array.from({ length: digits }, (_, i) => 10 ** (digits - 1 - i))
-}
-
 // 将函数移到组件外部，避免重复创建
 const getWindowSizeCategory = () => {
   const width = window.innerWidth
@@ -78,7 +73,24 @@ const getFontSize = (size: string) => {
   }
 }
 
-// 单独抽离运行时间组件，因为它需要频繁更新
+/** 时间格式化函数 */
+const formatUptime = (totalSeconds: number) => {
+  const days = Math.floor(totalSeconds / 86400)
+  const hours = Math.floor((totalSeconds % 86400) / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = Math.floor(totalSeconds % 60)
+
+  return { days, hours, minutes, seconds }
+}
+
+/** 生成数字位数的places数组 */
+const generatePlacesForNumber = (value: number): number[] => {
+  if (value === 0) return [1]
+  const digits = Math.floor(value).toString().length
+  return Array.from({ length: digits }, (_, i) => 10 ** (digits - 1 - i))
+}
+
+/** 单独抽离运行时间组件，因为它需要频繁更新 */
 function UptimeStatusItem ({ uptime }: { uptime: number }) {
   // 使用useMemo缓存计算结果
   const fontSize = useMemo(() => {
@@ -86,21 +98,88 @@ function UptimeStatusItem ({ uptime }: { uptime: number }) {
     return getFontSize(size)
   }, []) // 空依赖数组，只计算一次
 
-  const places = useMemo(() => {
-    return generatePlaces(Math.floor(uptime))
-  }, [Math.floor(uptime)]) // 只在uptime整数部分变化时重新计算
+  // 格式化时间
+  const timeData = useMemo(() => {
+    return formatUptime(uptime)
+  }, [Math.floor(uptime)])
 
-  const counterValue = useMemo(() => (
-    <div className='flex items-center gap-2'>
-      <Counter
-        className='flex items-center gap-0'
-        value={Math.floor(uptime)}
-        fontSize={fontSize}
-        places={places}
-      />
-      <span>秒</span>
-    </div>
-  ), [uptime, fontSize, places])
+  // 为每个时间单位生成places
+  const placesData = useMemo(() => {
+    return {
+      days: generatePlacesForNumber(timeData.days),
+      hours: generatePlacesForNumber(timeData.hours),
+      minutes: generatePlacesForNumber(timeData.minutes),
+      seconds: generatePlacesForNumber(timeData.seconds),
+    }
+  }, [timeData.days, timeData.hours, timeData.minutes, timeData.seconds])
+
+  const counterValue = useMemo(() => {
+    const components = []
+
+    // 只有当天数大于0时才显示天数
+    if (timeData.days > 0) {
+      components.push(
+        <div key='days' className='flex items-center gap-1'>
+          <Counter
+            className='flex items-center gap-0'
+            value={timeData.days}
+            fontSize={fontSize}
+            places={placesData.days}
+          />
+          <span className='text-lg'>天</span>
+        </div>
+      )
+    }
+
+    // 只有当小时大于0或已经有天数时才显示小时
+    if (timeData.hours > 0 || timeData.days > 0) {
+      components.push(
+        <div key='hours' className='flex items-center gap-1'>
+          <Counter
+            className='flex items-center gap-0'
+            value={timeData.hours}
+            fontSize={fontSize}
+            places={placesData.hours}
+          />
+          <span className='text-lg'>时</span>
+        </div>
+      )
+    }
+
+    // 只有当分钟大于0或已经有小时/天数时才显示分钟
+    if (timeData.minutes > 0 || timeData.hours > 0 || timeData.days > 0) {
+      components.push(
+        <div key='minutes' className='flex items-center gap-1'>
+          <Counter
+            className='flex items-center gap-0'
+            value={timeData.minutes}
+            fontSize={fontSize}
+            places={placesData.minutes}
+          />
+          <span className='text-lg'>分</span>
+        </div>
+      )
+    }
+
+    // 秒数始终显示
+    components.push(
+      <div key='seconds' className='flex items-center gap-1'>
+        <Counter
+          className='flex items-center gap-0'
+          value={timeData.seconds}
+          fontSize={fontSize}
+          places={placesData.seconds}
+        />
+        <span className='text-lg'>秒</span>
+      </div>
+    )
+
+    return (
+      <div className='flex items-center gap-2 flex-wrap overflow-hidden h-[1.75rem] md:h-[2rem] lg:h-[2.5rem]'>
+        {components}
+      </div>
+    )
+  }, [timeData, fontSize, placesData])
 
   return (
     <MemoizedStatusItem
@@ -196,9 +275,66 @@ function Status ({ statusData, statusError, onGlobalUpdateStart, onGlobalUpdateE
           console.error('npm 注册表版本检测失败', err)
         })
     }
-  }, [data, hasCheckedNpm])
+  }, [data?.version, hasCheckedNpm])
 
-  // 使用useMemo缓存稳定的卡片
+  // 将版本相关的状态提取出来，避免不必要的重新渲染
+  const versionCardValue = useMemo(() => {
+    if (!data?.version) return '--'
+
+    return (
+      <div className='flex items-center gap-2 w-full'>
+        <div
+          ref={containerRef}
+          className='flex-1 overflow-hidden relative min-w-0'
+        >
+          <div
+            ref={textRef}
+            className='whitespace-nowrap inline-block'
+            style={{
+              animation: shouldAnimate ? `marqueeInContainer ${animationDuration} linear infinite` : 'none',
+            }}
+          >
+            {data.version}
+          </div>
+        </div>
+        {updateTip && (
+          <div className='flex-shrink-0'>
+            <Tooltip
+              delay={0}
+              closeDelay={0}
+              placement='bottom-start'
+              content={
+                <div className='px-1 py-2'>
+                  新版本
+                  <Code className='text-green-400 font-bold'>{npmLatest}</Code>
+                  已就绪，点击查看更新日志
+                </div>
+      }
+            >
+              <Chip
+                size='sm'
+                radius='sm'
+                classNames={{
+                  base: 'bg-gradient-to-br from-red-400 to-rose-500 border-small border-white/50 shadow-rose-500/30 select-none animate-shimmer relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent flex-shrink-0',
+                  content: 'drop-shadow shadow-black text-white',
+                }}
+                startContent={
+                  <GrUpgrade
+                    className='text-white mt-[3px] w-3 h-3 animate-bounce'
+                  />
+        }
+                variant='shadow'
+                onClick={handleTooltipClick}
+              >
+                新
+              </Chip>
+            </Tooltip>
+          </div>
+        )}
+      </div>
+    )
+  }, [data?.version, updateTip, npmLatest, shouldAnimate, animationDuration, handleTooltipClick])
+
   const stableCards = useMemo(() => {
     if (!data) return <></>
 
@@ -211,71 +347,20 @@ function Status ({ statusData, statusError, onGlobalUpdateStart, onGlobalUpdateE
         <MemoizedStatusItem title='适配器数量' value={botList.data?.length} />
         <MemoizedStatusItem
           title='版本'
-          value={
-            <div className='flex items-center gap-2 w-full'>
-              <div
-                ref={containerRef}
-                className='flex-1 overflow-hidden relative min-w-0'
-              >
-                <div
-                  ref={textRef}
-                  className='whitespace-nowrap inline-block'
-                  style={{
-                    animation: shouldAnimate ? `marqueeInContainer ${animationDuration} linear infinite` : 'none',
-                  }}
-                >
-                  {data.version}
-                </div>
-              </div>
-              {updateTip && (
-                <div className='flex-shrink-0'>
-                  <Tooltip
-                    delay={0}
-                    closeDelay={0}
-                    placement='bottom-start'
-                    content={
-                      <div className='px-1 py-2'>
-                        新版本
-                        <Code className='text-green-400 font-bold'>{npmLatest}</Code>
-                        已就绪，点击查看更新日志
-                      </div>
-                    }
-                  >
-                    <Chip
-                      size='sm'
-                      radius='sm'
-                      classNames={{
-                        base: 'bg-gradient-to-br from-red-400 to-rose-500 border-small border-white/50 shadow-rose-500/30 select-none animate-shimmer relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent flex-shrink-0',
-                        content: 'drop-shadow shadow-black text-white',
-                      }}
-                      startContent={
-                        <GrUpgrade
-                          className='text-white mt-[3px] w-3 h-3 animate-bounce'
-                        />
-                      }
-                      variant='shadow'
-                      onClick={handleTooltipClick}
-                    >
-                      新
-                    </Chip>
-                  </Tooltip>
-                </div>
-              )}
-            </div>
-          }
+          value={versionCardValue}
         />
         <MemoizedStatusItem title='运行环境' value={data.karin_runtime} />
       </>
     )
   }, [
-    data,
+    data?.name,
+    data?.pid,
+    data?.pm2_id,
+    data?.karin_runtime,
     localPluginsList.data?.length,
     botList.data?.length,
-    updateTip,
-    npmLatest,
-    handleTooltipClick,
-    animationDuration,
-  ])
+    versionCardValue,
+  ]) // 更精确的依赖
 
   if (error || !data) {
     return (

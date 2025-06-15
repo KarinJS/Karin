@@ -15,6 +15,52 @@ import UsagePie from './usage_pie'
 
 import type { SystemStatus } from '@/types/server'
 
+/**
+ * 缓存的图标组件集合
+ * 使用useMemo缓存所有图标实例，避免重复渲染
+ */
+const CachedIcons = {
+  // 系统相关图标
+  server: <HiServer className='w-4 h-4' />,
+  serverLg: <HiServer className='text-lg' />,
+
+  // CPU相关图标
+  cpu: <GiCpu className='w-4 h-4' />,
+  cpuLg: <GiCpu className='text-lg' />,
+  cpuTb: <TbCpu className='w-4 h-4' />,
+
+  // 内存相关图标
+  memory: <MdMemory className='w-4 h-4' />,
+  memoryCard: <BiSolidMemoryCard className='w-4 h-4' />,
+  memoryCardPrimary: <BiSolidMemoryCard className='w-4 h-4 text-primary' />,
+
+  // 操作系统图标
+  windows: <BsWindows className='w-4 h-4' />,
+  apple: <BsApple className='w-4 h-4' />,
+  linux: <FaLinux className='w-4 h-4' />,
+  computer: <RiComputerLine className='w-4 h-4' />,
+
+  // Node.js相关图标
+  nodejs: <SiNodedotjs className='w-4 h-4' />,
+  nodejsLg: <SiNodedotjs className='text-lg' />,
+
+  // 通用图标
+  clock: <FiClock className='w-4 h-4' />,
+  user: <FiUser className='w-4 h-4' />,
+  hardDrive: <FiHardDrive className='w-4 h-4' />,
+  hardDrivePrimary: <FiHardDrive className='w-4 h-4 text-primary' />,
+  home: <FiHome className='w-4 h-4' />,
+  chevronDown: <FiChevronDown className='w-4 h-4 transition-transform duration-300 ease-in-out' />,
+
+  // 网络和性能图标
+  network: <MdNetworkCheck className='w-4 h-4' />,
+  networkPrimary: <MdNetworkCheck className='w-4 h-4 text-primary' />,
+  speed: <MdSpeed className='w-4 h-4' />,
+  architecture: <MdArchitecture className='w-4 h-4' />,
+  percentage: <FaPercentage className='w-4 h-4' />,
+  hashtag: <FaHashtag className='w-4 h-4' />,
+}
+
 export interface SystemStatusItemProps {
   title: string
   value?: string | number
@@ -90,15 +136,25 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
   const osIcon = useMemo(() => {
     switch (data?.system?.platform?.toLowerCase()) {
       case 'win32':
-        return <BsWindows className='w-4 h-4' />
+        return CachedIcons.windows
       case 'darwin':
-        return <BsApple className='w-4 h-4' />
+        return CachedIcons.apple
       case 'linux':
-        return <FaLinux className='w-4 h-4' />
+        return CachedIcons.linux
       default:
-        return <RiComputerLine className='w-4 h-4' />
+        return CachedIcons.computer
     }
   }, [data?.system?.platform])
+
+  // 缓存展开按钮图标的旋转状态
+  const chevronIcon = useMemo(() => (
+    <FiChevronDown
+      className={clsx(
+        'w-4 h-4 transition-transform duration-300 ease-in-out',
+        isExpanded ? 'rotate-180' : 'rotate-0'
+      )}
+    />
+  ), [isExpanded])
 
   return (
     <Card className='col-span-1 lg:col-span-2 shadow-lg border border-gray-200/50 dark:border-gray-700/50'>
@@ -137,14 +193,14 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
           {/* 核心系统信息 - 小屏幕优先显示 */}
           <section>
             <h2 className='text-lg font-bold flex items-center gap-2 text-primary mb-4'>
-              <HiServer className='text-lg' />
+              {CachedIcons.serverLg}
               <span>系统信息</span>
             </h2>
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
               <SystemStatusItem
                 title='主机名'
                 value={data?.system?.hostname}
-                icon={<HiServer className='w-4 h-4' />}
+                icon={CachedIcons.server}
                 size='lg'
               />
               <SystemStatusItem
@@ -155,12 +211,12 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
               <SystemStatusItem
                 title='架构'
                 value={data?.system?.arch}
-                icon={<MdArchitecture className='w-4 h-4' />}
+                icon={CachedIcons.architecture}
               />
               <SystemStatusItem
                 title='运行时间'
                 value={data?.system?.uptime ? formatUptime(data.system.uptime) : '-'}
-                icon={<FiClock className='w-4 h-4' />}
+                icon={CachedIcons.clock}
               />
             </div>
           </section>
@@ -168,7 +224,7 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
           {/* CPU 和内存信息 - 合并显示 */}
           <section>
             <h2 className='text-lg font-bold flex items-center gap-2 text-primary mb-4'>
-              <GiCpu className='text-lg' />
+              {CachedIcons.cpuLg}
               <span>硬件资源</span>
             </h2>
 
@@ -179,25 +235,25 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
                 <SystemStatusItem
                   title='型号'
                   value={data?.cpu.model}
-                  icon={<GiCpu className='w-4 h-4' />}
+                  icon={CachedIcons.cpu}
                   size='lg'
                 />
                 <SystemStatusItem
                   title='内核数'
                   value={data?.cpu.core}
-                  icon={<TbCpu className='w-4 h-4' />}
+                  icon={CachedIcons.cpuTb}
                 />
                 <SystemStatusItem
                   title='主频'
                   value={data?.cpu.speed}
                   unit='GHz'
-                  icon={<MdSpeed className='w-4 h-4' />}
+                  icon={CachedIcons.speed}
                 />
                 <SystemStatusItem
                   title='系统占用'
                   value={data?.cpu.usage.system}
                   unit='%'
-                  icon={<FaPercentage className='w-4 h-4' />}
+                  icon={CachedIcons.percentage}
                 />
               </div>
             </div>
@@ -210,25 +266,25 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
                   title='总容量'
                   value={data?.memory.total}
                   unit='MB'
-                  icon={<BiSolidMemoryCard className='w-4 h-4' />}
+                  icon={CachedIcons.memoryCard}
                 />
                 <SystemStatusItem
                   title='系统使用'
                   value={data?.memory.usage.system}
                   unit='MB'
-                  icon={<MdMemory className='w-4 h-4' />}
+                  icon={CachedIcons.memory}
                 />
                 <SystemStatusItem
                   title='Karin使用'
                   value={data?.memory.usage.karin}
                   unit='MB'
-                  icon={<MdMemory className='w-4 h-4' />}
+                  icon={CachedIcons.memory}
                 />
                 <SystemStatusItem
                   title='使用率'
                   value={Math.round(memoryUsage.system + memoryUsage.karin)}
                   unit='%'
-                  icon={<FaPercentage className='w-4 h-4' />}
+                  icon={CachedIcons.percentage}
                 />
               </div>
             </div>
@@ -237,29 +293,29 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
           {/* Node.js 进程信息 - 简化显示 */}
           <section>
             <h2 className='text-lg font-bold flex items-center gap-2 text-primary mb-4'>
-              <SiNodedotjs className='text-lg' />
+              {CachedIcons.nodejsLg}
               <span>进程信息</span>
             </h2>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3'>
               <SystemStatusItem
                 title='Node.js版本'
                 value={data?.process?.nodeVersion}
-                icon={<SiNodedotjs className='w-4 h-4' />}
+                icon={CachedIcons.nodejs}
               />
               <SystemStatusItem
                 title='进程ID'
                 value={data?.process?.pid}
-                icon={<FaHashtag className='w-4 h-4' />}
+                icon={CachedIcons.hashtag}
               />
               <SystemStatusItem
                 title='运行时间'
                 value={data?.process?.uptime ? formatUptime(data.process.uptime) : '-'}
-                icon={<FiClock className='w-4 h-4' />}
+                icon={CachedIcons.clock}
               />
               <SystemStatusItem
                 title='用户'
                 value={data?.process?.user?.username}
-                icon={<FiUser className='w-4 h-4' />}
+                icon={CachedIcons.user}
               />
             </div>
           </section>
@@ -270,12 +326,7 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
               onClick={() => setIsExpanded(!isExpanded)}
               className='flex items-center gap-2 text-sm font-medium text-primary hover:text-primary-600 transition-colors duration-200'
             >
-              <FiChevronDown
-                className={clsx(
-                  'w-4 h-4 transition-transform duration-300 ease-in-out',
-                  isExpanded ? 'rotate-180' : 'rotate-0'
-                )}
-              />
+              {chevronIcon}
               <span>{isExpanded ? '收起详细信息' : '显示详细信息'}</span>
             </button>
 
@@ -289,7 +340,7 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
                 {/* 详细内存信息 */}
                 <div className='transform transition-all duration-300 ease-in-out' style={{ transitionDelay: isExpanded ? '100ms' : '0ms' }}>
                   <h3 className='text-sm font-semibold text-default-700 mb-3 flex items-center gap-2'>
-                    <BiSolidMemoryCard className='w-4 h-4 text-primary' />
+                    {CachedIcons.memoryCardPrimary}
                     内存详情
                   </h3>
                   <div className='grid grid-cols-2 sm:grid-cols-4 gap-3'>
@@ -297,25 +348,25 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
                       title='RSS'
                       value={data?.memory.details?.rss}
                       unit='MB'
-                      icon={<MdMemory className='w-4 h-4' />}
+                      icon={CachedIcons.memory}
                     />
                     <SystemStatusItem
                       title='堆总量'
                       value={data?.memory.details?.heapTotal}
                       unit='MB'
-                      icon={<MdMemory className='w-4 h-4' />}
+                      icon={CachedIcons.memory}
                     />
                     <SystemStatusItem
                       title='堆使用'
                       value={data?.memory.details?.heapUsed}
                       unit='MB'
-                      icon={<MdMemory className='w-4 h-4' />}
+                      icon={CachedIcons.memory}
                     />
                     <SystemStatusItem
                       title='外部内存'
                       value={data?.memory.details?.external}
                       unit='MB'
-                      icon={<MdMemory className='w-4 h-4' />}
+                      icon={CachedIcons.memory}
                     />
                   </div>
                 </div>
@@ -323,20 +374,20 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
                 {/* 系统路径信息 */}
                 <div className='transform transition-all duration-300 ease-in-out' style={{ transitionDelay: isExpanded ? '200ms' : '0ms' }}>
                   <h3 className='text-sm font-semibold text-default-700 mb-3 flex items-center gap-2'>
-                    <FiHardDrive className='w-4 h-4 text-primary' />
+                    {CachedIcons.hardDrivePrimary}
                     系统路径
                   </h3>
                   <div className='grid grid-cols-1 gap-3'>
                     <SystemStatusItem
                       title='临时目录'
                       value={data?.system?.tmpdir}
-                      icon={<FiHardDrive className='w-4 h-4' />}
+                      icon={CachedIcons.hardDrive}
                       size='lg'
                     />
                     <SystemStatusItem
                       title='用户主目录'
                       value={data?.system?.homedir}
-                      icon={<FiHome className='w-4 h-4' />}
+                      icon={CachedIcons.home}
                       size='lg'
                     />
                   </div>
@@ -346,7 +397,7 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
                 {data?.network?.interfaces && Object.keys(data.network.interfaces).length > 0 && (
                   <div className='transform transition-all duration-300 ease-in-out' style={{ transitionDelay: isExpanded ? '300ms' : '0ms' }}>
                     <h3 className='text-sm font-semibold text-default-700 mb-3 flex items-center gap-2'>
-                      <MdNetworkCheck className='w-4 h-4 text-primary' />
+                      {CachedIcons.networkPrimary}
                       网络接口
                     </h3>
                     <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
@@ -357,7 +408,7 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
                           value={Array.isArray(interfaces) && interfaces.length > 0
                             ? interfaces.find(iface => iface.family === 'IPv4')?.address || '无IPv4地址'
                             : '无地址'}
-                          icon={<MdNetworkCheck className='w-4 h-4' />}
+                          icon={CachedIcons.network}
                           size='lg'
                         />
                       ))}
