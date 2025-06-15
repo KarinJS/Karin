@@ -10,8 +10,9 @@ import { BsWindows, BsApple } from 'react-icons/bs'
 import { FaLinux, FaPercentage, FaHashtag } from 'react-icons/fa'
 import { TbCpu } from 'react-icons/tb'
 import { RiComputerLine } from 'react-icons/ri'
-import { useState } from 'react'
+import { useState, useMemo, useCallback, memo } from 'react'
 import UsagePie from './usage_pie'
+
 import type { SystemStatus } from '@/types/server'
 
 export interface SystemStatusItemProps {
@@ -22,33 +23,39 @@ export interface SystemStatusItemProps {
   icon?: React.ReactNode
 }
 
-const SystemStatusItem: React.FC<SystemStatusItemProps> = ({ title, value = '-', size = 'md', unit, icon }) => {
+const SystemStatusItem: React.FC<SystemStatusItemProps> = memo(({ title, value = '-', size = 'md', unit, icon }) => {
+  // 缓存CSS类名
+  const containerClasses = useMemo(() => clsx(
+    'bg-white/50 dark:bg-gray-800/30 rounded-lg p-3 shadow-sm border border-gray-100/50 dark:border-gray-700/30',
+    'hover:shadow-md hover:bg-white/70 dark:hover:bg-gray-800/50 transition-all duration-200',
+    size === 'lg' ? 'col-span-full' : 'col-span-1'
+  ), [size])
+
+  const contentClasses = useMemo(() => clsx(
+    'flex items-center',
+    size === 'lg' ? 'justify-between' : 'flex-col gap-1.5'
+  ), [size])
+
+  const valueClasses = useMemo(() => clsx(
+    'text-sm font-semibold text-foreground min-w-0',
+    size === 'lg' ? 'text-right' : 'text-center w-full'
+  ), [size])
+
   return (
-    <div
-      className={clsx(
-        'bg-white/50 dark:bg-gray-800/30 rounded-lg p-3 shadow-sm border border-gray-100/50 dark:border-gray-700/30',
-        'hover:shadow-md hover:bg-white/70 dark:hover:bg-gray-800/50 transition-all duration-200',
-        size === 'lg' ? 'col-span-full' : 'col-span-1'
-      )}
-    >
-      <div className={clsx('flex items-center', size === 'lg' ? 'justify-between' : 'flex-col gap-1.5')}>
+    <div className={containerClasses}>
+      <div className={contentClasses}>
         <div className='flex items-center gap-2 text-xs text-default-600 min-w-0 flex-shrink-0'>
           {icon && <span className='text-primary flex-shrink-0'>{icon}</span>}
           <span className='font-medium whitespace-nowrap'>{title}</span>
         </div>
-        <div
-          className={clsx(
-            'text-sm font-semibold text-foreground min-w-0',
-            size === 'lg' ? 'text-right' : 'text-center w-full'
-          )}
-        >
+        <div className={valueClasses}>
           <span className='truncate block'>{value}</span>
           {unit && <span className='text-xs text-default-400 ml-1 font-normal'>{unit}</span>}
         </div>
       </div>
     </div>
   )
-}
+})
 
 export interface SystemStatusDisplayProps {
   data?: SystemStatus
@@ -57,29 +64,31 @@ export interface SystemStatusDisplayProps {
 const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const memoryUsage = {
-    system: 0,
-    karin: 0,
-  }
-  if (data) {
+  // 缓存内存使用率计算
+  const memoryUsage = useMemo(() => {
+    if (!data) return { system: 0, karin: 0 }
+
     const system = Number(data.memory.total) || 1
     const systemUsage = Number(data.memory.usage.system)
     const karinUsage = Number(data.memory.usage.karin)
-    memoryUsage.system = (systemUsage / system) * 100
-    memoryUsage.karin = (karinUsage / system) * 100
-  }
 
-  /** 格式化运行时间 */
-  const formatUptime = (seconds: number) => {
+    return {
+      system: (systemUsage / system) * 100,
+      karin: (karinUsage / system) * 100,
+    }
+  }, [data?.memory])
+
+  // 缓存格式化函数
+  const formatUptime = useCallback((seconds: number) => {
     const days = Math.floor(seconds / 86400)
     const hours = Math.floor((seconds % 86400) / 3600)
     const minutes = Math.floor((seconds % 3600) / 60)
     return `${days}天 ${hours}小时 ${minutes}分钟`
-  }
+  }, [])
 
-  /** 获取操作系统图标 */
-  const getOSIcon = (platform?: string) => {
-    switch (platform?.toLowerCase()) {
+  // 缓存操作系统图标
+  const osIcon = useMemo(() => {
+    switch (data?.system?.platform?.toLowerCase()) {
       case 'win32':
         return <BsWindows className='w-4 h-4' />
       case 'darwin':
@@ -89,7 +98,7 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
       default:
         return <RiComputerLine className='w-4 h-4' />
     }
-  }
+  }, [data?.system?.platform])
 
   return (
     <Card className='col-span-1 lg:col-span-2 shadow-lg border border-gray-200/50 dark:border-gray-700/50'>
@@ -141,7 +150,7 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
               <SystemStatusItem
                 title='操作系统'
                 value={data?.system?.osName}
-                icon={getOSIcon(data?.system?.platform)}
+                icon={osIcon}
               />
               <SystemStatusItem
                 title='架构'
