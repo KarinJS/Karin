@@ -70,16 +70,18 @@ export interface SystemStatusItemProps {
 }
 
 const SystemStatusItem: React.FC<SystemStatusItemProps> = memo(({ title, value = '-', size = 'md', unit, icon }) => {
-  // 缓存CSS类名
+  // 缓存CSS类名 - 优化移动端间距
   const containerClasses = useMemo(() => clsx(
-    'bg-white/50 dark:bg-gray-800/30 rounded-lg p-3 shadow-sm border border-gray-100/50 dark:border-gray-700/30',
-    'hover:shadow-md hover:bg-white/70 dark:hover:bg-gray-800/50 transition-all duration-200',
+    'bg-default/10 rounded-lg shadow-md',
+    'hover:shadow-md hover:bg-default/30 transition-all duration-200',
+    // 移动端使用更小的内边距
+    'p-2 sm:p-3',
     size === 'lg' ? 'col-span-full' : 'col-span-1'
   ), [size])
 
   const contentClasses = useMemo(() => clsx(
     'flex items-center',
-    size === 'lg' ? 'justify-between' : 'flex-col gap-1.5'
+    size === 'lg' ? 'justify-between' : 'flex-col gap-1'
   ), [size])
 
   const valueClasses = useMemo(() => clsx(
@@ -157,20 +159,20 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
   ), [isExpanded])
 
   return (
-    <Card className='col-span-1 lg:col-span-2 shadow-lg border border-gray-200/50 dark:border-gray-700/50'>
-      <CardBody className='p-4 sm:p-6'>
-        {/* 顶部标题区域 - 使用主题色 */}
-        <div className='mb-6'>
-          <h1 className='text-xl sm:text-2xl font-bold text-primary mb-2'>系统状态监控</h1>
-          <p className='text-sm text-default-500'>实时系统资源使用情况</p>
+    <Card className='col-span-1 lg:col-span-2 shadow-lg border border-default-50'>
+      <CardBody className='p-3 sm:p-4 lg:p-6'>
+        {/* 顶部标题区域 - 压缩移动端间距 */}
+        <div className='mb-3 sm:mb-4 lg:mb-6'>
+          <h1 className='text-lg sm:text-xl lg:text-2xl font-bold text-primary mb-1 sm:mb-2'>系统状态监控</h1>
+          <p className='text-xs sm:text-sm text-default-500'>实时系统资源使用情况</p>
         </div>
 
-        {/* 图表区域 - 保持不变 */}
-        <div className='mb-6'>
-          <div className='flex flex-row gap-4 sm:gap-6 justify-center items-center min-h-[120px] sm:min-h-[140px]'>
+        {/* 图表区域 - 优化移动端高度 */}
+        <div className='mb-3 sm:mb-4 lg:mb-6'>
+          <div className='flex flex-row gap-3 sm:gap-4 lg:gap-6 justify-center items-center min-h-[100px] sm:min-h-[120px] lg:min-h-[140px]'>
             {/* CPU 图表 */}
-            <div className='flex flex-col items-center flex-1 max-w-[120px] sm:max-w-[140px]'>
-              <div className='w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32'>
+            <div className='flex flex-col items-center flex-1 max-w-[100px] sm:max-w-[120px] lg:max-w-[140px]'>
+              <div className='w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32'>
                 <UsagePie
                   systemUsage={Number(data?.cpu.usage.system) || 0}
                   processUsage={Number(data?.cpu.usage.karin) || 0}
@@ -180,23 +182,23 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
             </div>
 
             {/* 内存图表 */}
-            <div className='flex flex-col items-center flex-1 max-w-[120px] sm:max-w-[140px]'>
-              <div className='w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32'>
+            <div className='flex flex-col items-center flex-1 max-w-[100px] sm:max-w-[120px] lg:max-w-[140px]'>
+              <div className='w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32'>
                 <UsagePie systemUsage={memoryUsage.system} processUsage={memoryUsage.karin} title='内存' />
               </div>
             </div>
           </div>
         </div>
 
-        {/* 信息网格 - 优化小屏幕布局 */}
-        <div className='space-y-6'>
-          {/* 核心系统信息 - 小屏幕优先显示 */}
+        {/* 信息网格 - 压缩移动端间距 */}
+        <div className='space-y-3 sm:space-y-4 lg:space-y-6'>
+          {/* 核心系统信息 */}
           <section>
-            <h2 className='text-lg font-bold flex items-center gap-2 text-primary mb-4'>
+            <h2 className='text-base sm:text-lg font-bold flex items-center gap-2 text-primary mb-2 sm:mb-3 lg:mb-4'>
               {CachedIcons.serverLg}
               <span>系统信息</span>
             </h2>
-            <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3'>
               <SystemStatusItem
                 title='主机名'
                 value={data?.system?.hostname}
@@ -221,17 +223,17 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
             </div>
           </section>
 
-          {/* CPU 和内存信息 - 合并显示 */}
+          {/* CPU 和内存信息 */}
           <section>
-            <h2 className='text-lg font-bold flex items-center gap-2 text-primary mb-4'>
+            <h2 className='text-base sm:text-lg font-bold flex items-center gap-2 text-primary mb-2 sm:mb-3 lg:mb-4'>
               {CachedIcons.cpuLg}
               <span>硬件资源</span>
             </h2>
 
             {/* CPU 基本信息 */}
-            <div className='mb-4'>
-              <h3 className='text-sm font-semibold text-default-700 mb-3'>处理器</h3>
-              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3'>
+            <div className='mb-3 sm:mb-4'>
+              <h3 className='text-xs sm:text-sm font-semibold text-default-700 mb-2 sm:mb-3'>处理器</h3>
+              <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3'>
                 <SystemStatusItem
                   title='型号'
                   value={data?.cpu.model}
@@ -260,8 +262,8 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
 
             {/* 内存基本信息 */}
             <div>
-              <h3 className='text-sm font-semibold text-default-700 mb-3'>内存</h3>
-              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3'>
+              <h3 className='text-xs sm:text-sm font-semibold text-default-700 mb-2 sm:mb-3'>内存</h3>
+              <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3'>
                 <SystemStatusItem
                   title='总容量'
                   value={data?.memory.total}
@@ -290,13 +292,13 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
             </div>
           </section>
 
-          {/* Node.js 进程信息 - 简化显示 */}
+          {/* Node.js 进程信息 */}
           <section>
-            <h2 className='text-lg font-bold flex items-center gap-2 text-primary mb-4'>
+            <h2 className='text-base sm:text-lg font-bold flex items-center gap-2 text-primary mb-2 sm:mb-3 lg:mb-4'>
               {CachedIcons.nodejsLg}
               <span>进程信息</span>
             </h2>
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3'>
+            <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3'>
               <SystemStatusItem
                 title='Node.js版本'
                 value={data?.process?.nodeVersion}
@@ -321,7 +323,7 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
           </section>
 
           {/* 详细信息 - 简洁的展开按钮 */}
-          <div className='border-t border-divider pt-4'>
+          <div className='border-t border-divider pt-3 sm:pt-4'>
             <button
               onClick={() => setIsExpanded(!isExpanded)}
               className='flex items-center gap-2 text-sm font-medium text-primary hover:text-primary-600 transition-colors duration-200'
@@ -333,17 +335,17 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
             <div
               className={clsx(
                 'overflow-hidden transition-all duration-500 ease-in-out',
-                isExpanded ? 'max-h-[2000px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'
+                isExpanded ? 'max-h-[2000px] opacity-100 mt-3 sm:mt-4' : 'max-h-0 opacity-0 mt-0'
               )}
             >
-              <div className='space-y-6'>
+              <div className='space-y-3 sm:space-y-4 lg:space-y-6'>
                 {/* 详细内存信息 */}
                 <div className='transform transition-all duration-300 ease-in-out' style={{ transitionDelay: isExpanded ? '100ms' : '0ms' }}>
-                  <h3 className='text-sm font-semibold text-default-700 mb-3 flex items-center gap-2'>
+                  <h3 className='text-xs sm:text-sm font-semibold text-default-700 mb-2 sm:mb-3 flex items-center gap-2'>
                     {CachedIcons.memoryCardPrimary}
                     内存详情
                   </h3>
-                  <div className='grid grid-cols-2 sm:grid-cols-4 gap-3'>
+                  <div className='grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3'>
                     <SystemStatusItem
                       title='RSS'
                       value={data?.memory.details?.rss}
@@ -373,11 +375,11 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
 
                 {/* 系统路径信息 */}
                 <div className='transform transition-all duration-300 ease-in-out' style={{ transitionDelay: isExpanded ? '200ms' : '0ms' }}>
-                  <h3 className='text-sm font-semibold text-default-700 mb-3 flex items-center gap-2'>
+                  <h3 className='text-xs sm:text-sm font-semibold text-default-700 mb-2 sm:mb-3 flex items-center gap-2'>
                     {CachedIcons.hardDrivePrimary}
                     系统路径
                   </h3>
-                  <div className='grid grid-cols-1 gap-3'>
+                  <div className='grid grid-cols-1 gap-2 sm:gap-3'>
                     <SystemStatusItem
                       title='临时目录'
                       value={data?.system?.tmpdir}
@@ -396,11 +398,11 @@ const SystemStatusDisplay: React.FC<SystemStatusDisplayProps> = ({ data }) => {
                 {/* 网络信息 */}
                 {data?.network?.interfaces && Object.keys(data.network.interfaces).length > 0 && (
                   <div className='transform transition-all duration-300 ease-in-out' style={{ transitionDelay: isExpanded ? '300ms' : '0ms' }}>
-                    <h3 className='text-sm font-semibold text-default-700 mb-3 flex items-center gap-2'>
+                    <h3 className='text-xs sm:text-sm font-semibold text-default-700 mb-2 sm:mb-3 flex items-center gap-2'>
                       {CachedIcons.networkPrimary}
                       网络接口
                     </h3>
-                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3'>
                       {Object.entries(data.network.interfaces).slice(0, 2).map(([name, interfaces]) => (
                         <SystemStatusItem
                           key={name}
