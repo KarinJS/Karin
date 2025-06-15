@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.10.9](https://github.com/KarinJS/Karin/compare/core-v1.10.8...core-v1.10.9) (2025-06-15)
+
+
+### ⚡️ Performance
+
+* **系统监控:** 增强系统状态监控功能并优化UI展示、格式化主页状态的运行时间 ([#482](https://github.com/KarinJS/Karin/issues/482)) ([e7a0649](https://github.com/KarinJS/Karin/commit/e7a064978eace9d75762301c2baac930a447c11f))
+
 ## [1.10.8](https://github.com/KarinJS/Karin/compare/core-v1.10.7...core-v1.10.8) (2025-06-14)
 
 
