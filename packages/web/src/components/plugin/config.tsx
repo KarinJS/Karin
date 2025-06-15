@@ -30,7 +30,7 @@ interface PluginConfigProps {
 const MODAL_CLASS_NAMES = {
   base: 'bg-white dark:bg-gray-900',
   header: 'border-b border-gray-100 dark:border-gray-800',
-  footer: 'border-t border-gray-100 dark:border-gray-800'
+  footer: 'border-t border-gray-100 dark:border-gray-800',
 }
 
 const BUTTON_COMMON_STYLES = 'px-5 h-10 min-w-[88px] font-medium'
@@ -273,7 +273,7 @@ export const PluginConfig = memo(({ open, name, type, onClose }: PluginConfigPro
                 variant='bordered'
                 size='md'
                 onPress={handleCopyConfig}
-                className={`${BUTTON_COMMON_STYLES} border-default-200 hover:bg-gray-50 border-default-200 dark:hover:bg-gray-800`}
+                className={`${BUTTON_COMMON_STYLES} border-default-200 hover:bg-gray-50 dark:hover:bg-gray-800`}
                 startContent={<VscCopy className='text-lg' />}
               >
                 复制

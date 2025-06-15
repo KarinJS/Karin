@@ -1,5 +1,8 @@
+'use client'
+
 import * as echarts from 'echarts'
-import React, { useEffect, useRef } from 'react'
+import type React from 'react'
+import { useEffect, useRef } from 'react'
 
 import { useTheme } from '@/hooks/use-theme'
 
@@ -26,7 +29,7 @@ const defaultOption: echarts.EChartsOption = {
         show: true,
         position: 'center',
         formatter: '系统占用',
-        fontSize: 14,
+        fontSize: 12,
       },
       itemStyle: {
         borderWidth: 1,
@@ -45,11 +48,7 @@ const defaultOption: echarts.EChartsOption = {
   ],
 }
 
-const UsagePie: React.FC<UsagePieProps> = ({
-  systemUsage,
-  processUsage,
-  title,
-}) => {
+const UsagePie: React.FC<UsagePieProps> = ({ systemUsage, processUsage, title }) => {
   const chartRef = useRef<HTMLDivElement>(null)
   const chartInstance = useRef<echarts.ECharts | null>(null)
   const { theme, isDark } = useTheme()
@@ -77,6 +76,7 @@ const UsagePie: React.FC<UsagePieProps> = ({
           {
             label: {
               formatter: title,
+              fontSize: 12,
             },
           },
         ],
@@ -91,18 +91,12 @@ const UsagePie: React.FC<UsagePieProps> = ({
       chartInstance.current.setOption({
         darkMode: currentIsDark,
         tooltip: {
-          backgroundColor:
-            currentIsDark
-              ? 'rgba(0, 0, 0, 0.8)'
-              : 'rgba(255, 255, 255, 0.8)',
+          backgroundColor: currentIsDark ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)',
           textStyle: {
             color: currentIsDark ? '#fff' : '#333',
           },
         },
-        color:
-          currentIsDark
-            ? ['#3f42f0', '#64c5ef', '#516ee2']
-            : ['#3f42f0', '#7d93ea', '#07bdff'],
+        color: currentIsDark ? ['#3f42f0', '#64c5ef', '#516ee2'] : ['#3f42f0', '#7d93ea', '#07bdff'],
         series: [
           {
             itemStyle: {
@@ -122,7 +116,7 @@ const UsagePie: React.FC<UsagePieProps> = ({
             data: [
               {
                 value: processUsage,
-                name: 'QQ占用',
+                name: 'Karin占用',
               },
               {
                 value: systemUsage - processUsage,
@@ -139,7 +133,7 @@ const UsagePie: React.FC<UsagePieProps> = ({
     }
   }, [systemUsage, processUsage])
 
-  return <div ref={chartRef} className='w-36 h-36 flex-shrink-0' />
+  return <div ref={chartRef} className='w-full h-full flex-shrink-0' />
 }
 
 export default UsagePie

@@ -1,10 +1,5 @@
-/**
- * 液态玻璃效果
- * 基于 Shu Ding (https://github.com/shuding/liquid-glass) 的原始实现
- * 由 ikenxuan 进行修改和优化
- */
-
 import { useRef, useEffect } from 'react'
+import { useTheme } from './use-theme'
 
 interface LiquidGlassOptions {
   /** 背景模糊强度 */
@@ -54,6 +49,7 @@ export const useLiquidGlassCard = (options: LiquidGlassOptions = {}) => {
 function useLiquidGlassGeneric<T extends HTMLElement> (options: LiquidGlassOptions = {}) {
   const elementRef = useRef<T>(null)
   const filterIdRef = useRef<string>('')
+  const { isDark } = useTheme()
 
   const { gaussianBlur: blurRadius = 2, scale = 20, transparency = 0.1, dispersion = 1 } = options
 
@@ -342,7 +338,7 @@ function useLiquidGlassGeneric<T extends HTMLElement> (options: LiquidGlassOptio
 
     // 应用样式到元素
     // contrast对比度 brightness亮度 saturate饱和度
-    element.style.backdropFilter = `url(#${filterId}) contrast(1.1) brightness(2.35) saturate(1.5)`
+    element.style.backdropFilter = isDark ? `url(#${filterId}) contrast(1.1) brightness(2.35) saturate(1.5)` : `url(#${filterId}) contrast(1.1) brightness(2) saturate(1)`
     element.style.background = `rgba(255, 255, 255, ${transparency * 0.3})`
     element.style.position = 'relative'
     element.style.overflow = 'hidden'
@@ -356,10 +352,10 @@ function useLiquidGlassGeneric<T extends HTMLElement> (options: LiquidGlassOptio
       svg.remove()
       canvas.remove()
     }
-  }, [blurRadius, scale, transparency, dispersion])
+  }, [blurRadius, scale, transparency, dispersion, isDark])
 
   return elementRef
 }
 
-// 保持向后兼容
+/** 基于 Shu Ding (https://github.com/shuding/liquid-glass) 的原始实现 */
 export const useLiquidGlass = useLiquidGlassButton

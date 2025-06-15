@@ -63,9 +63,30 @@ export class StatusHelper {
     }
   }
 
+  /**
+   * 获取系统状态信息
+   */
   systemStatus (): SystemStatus {
     const karinUsage = this.karinUsage()
     const sysCpuInfo = this.sysCpuInfo()
+    const memUsage = process.memoryUsage()
+
+    // 安全获取用户信息
+    let userInfo
+    try {
+      userInfo = os.userInfo()
+    } catch (e) {
+      userInfo = undefined
+    }
+
+    // 安全获取负载信息（仅Unix系统）
+    let loadavg
+    try {
+      loadavg = os.loadavg()
+    } catch (e) {
+      loadavg = undefined
+    }
+
     return {
       cpu: {
         core: sysCpuInfo.core,
@@ -82,8 +103,46 @@ export class StatusHelper {
           system: this.sysMemoryUsage(),
           karin: karinUsage.memory,
         },
+        details: {
+          rss: (memUsage.rss / 1024 / 1024).toFixed(2),
+          heapTotal: (memUsage.heapTotal / 1024 / 1024).toFixed(2),
+          heapUsed: (memUsage.heapUsed / 1024 / 1024).toFixed(2),
+          external: (memUsage.external / 1024 / 1024).toFixed(2),
+          arrayBuffers: (memUsage.arrayBuffers / 1024 / 1024).toFixed(2),
+        },
       },
-      arch: `${os.platform()} ${os.arch()} ${os.release()}`,
+      system: {
+        arch: `${os.platform()} ${os.arch()}`,
+        hostname: os.hostname(),
+        osName: os.type(),
+        osVersion: os.release(),
+        platform: os.platform(),
+        uptime: os.uptime(),
+        loadavg,
+        tmpdir: os.tmpdir(),
+        homedir: os.homedir(),
+      },
+      process: {
+        nodeVersion: process.version,
+        pid: process.pid,
+        uptime: process.uptime(),
+        execPath: process.execPath,
+        argv: process.argv,
+        env: {
+          nodeEnv: process.env.NODE_ENV,
+          timezone: process.env.TZ,
+        },
+        user: userInfo
+          ? {
+            username: userInfo.username,
+            homedir: userInfo.homedir,
+            shell: userInfo.shell,
+          }
+          : undefined,
+      },
+      network: {
+        interfaces: os.networkInterfaces(),
+      },
     }
   }
 }
