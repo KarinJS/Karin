@@ -53,7 +53,6 @@ const LocalPluginList = () => {
     }
   )
 
-  console.log('接口返回:', plugins)
   const pageSize = 16
 
   /** 计算总页数 */
@@ -81,7 +80,15 @@ const LocalPluginList = () => {
   const currentPagePlugins = useMemo(
     () => {
       const startIndex = (page - 1) * pageSize
-      return plugins.slice(startIndex, startIndex + pageSize)
+
+      /** 根据 hasConfig 排序后的插件列表 */
+      const sortedPlugins = plugins.sort((a, b) => {
+        if (a.hasConfig && !b.hasConfig) return -1
+        if (!a.hasConfig && b.hasConfig) return 1
+        return 0
+      })
+
+      return sortedPlugins.slice(startIndex, startIndex + pageSize)
     },
     [plugins, page, pageSize]
   )
