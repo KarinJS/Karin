@@ -91,8 +91,54 @@ export interface PluginAdminListResponse {
   type: KarinPluginAppsType
   /** 插件版本 App类型为空 */
   version: string
-  /** 插件最新版本短哈希 App类型为空 */
-  latestHash: string
+  /**
+   * 插件最新版本
+   * - npm: 最新版本号
+   * - git: 最新提交哈希
+   * - app: 最新版本号
+   */
+  latestVersion: string
+  webConfig: {
+    /** 是否存在`web.config`文件 */
+    exists: boolean
+    /** wen.config 文件绝对路径 */
+    path: string
+    /** 是否存在自定义组件配置函数 */
+    customComponent: boolean
+    /** 是否存在默认组件配置函数 一般用于插件的配置文件管理 */
+    defaultComponent: boolean
+  }
+}
+
+/**
+ * 前端已安装插件简约列表 用于在插件管理索引页面显示
+ */
+export interface FrontendInstalledPluginListResponse {
+  /** 插件ID `package.json中的名称` */
+  id: string
+  /** 插件名称 */
+  name: string
+  /** 插件类型 */
+  type: KarinPluginAppsType
+  /** 插件是否存在插件市场中 */
+  isMarketPlugin: boolean
+  /** 插件描述 */
+  description: string
+  /** 插件作者信息 */
+  author: {
+    /** 名字 */
+    name: string
+    /** 主页 */
+    home: string
+    /** 头像 */
+    avatar: string
+  }
+  /** 插件仓库主页 */
+  repoUrl: string
+  /** 插件是否可配置 */
+  hasConfig: boolean
+  /** 插件是否存在自定义组件 */
+  hasCustomComponent: boolean
 }
 
 /**

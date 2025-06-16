@@ -4,13 +4,9 @@ import { BsInfoCircleFill } from 'react-icons/bs'
 import {
   MdSpaceDashboard,
   MdExtension,
-  MdStore,
   MdOutlineArticle, // 系统日志
   MdOutlineTerminal, // 仿真终端
-  MdSystemUpdate, // 插件/卸载
-  MdWeb, // 插件管理
 } from 'react-icons/md'
-import { TbPackages } from 'react-icons/tb' // 依赖管理图标
 
 import type { LocalApiResponse } from 'node-karin'
 
@@ -58,42 +54,9 @@ export const defaultSiteConfig: SiteConfigType = {
       href: '/config',
     },
     {
-      Icon: MdExtension, // 改为插件图标
+      Icon: MdExtension,
       label: '插件管理',
-      href: '/plugins-management',
-      children: [
-        {
-          id: 'plugin-config',
-          href: '/plugins',
-          label: '配置',
-          Icon: RiSettings2Fill, // 保持设置图标
-          children: [],
-        },
-        {
-          id: 'plugin-market',
-          href: '/plugins/list',
-          label: '市场',
-          Icon: MdStore, // 保持商店图标
-        },
-        {
-          id: 'plugin-manage',
-          href: '/plugins/manage',
-          label: '更新/卸载',
-          Icon: MdSystemUpdate, // 改为系统更新图标
-        },
-        {
-          id: 'dependencies',
-          href: '/dependencies',
-          label: '依赖管理',
-          Icon: TbPackages, // 保持包管理图标
-        },
-        {
-          id: 'webui-plugins',
-          href: '/plugins/webui',
-          label: 'WebUI',
-          Icon: MdWeb, // 改为网页图标
-        },
-      ],
+      href: '/plugins-dashboard',
     },
     {
       Icon: MdOutlineTerminal,
@@ -130,16 +93,9 @@ const getInstalledPlugins = async () => {
 }
 
 /**
- * 初始化插件配置的三级菜单
+ * 初始化插件配置
  */
 export const initSiteConfig = async () => {
-  const plugins = await getInstalledPlugins()
-  const pluginManagementIndex = siteConfig.navItems.findIndex(item => item.href === '/plugins-management')
-  if (pluginManagementIndex !== -1) {
-    const pluginConfigIndex = siteConfig.navItems[pluginManagementIndex].children?.findIndex(item => item.id === 'plugin-config')
-    if (pluginConfigIndex !== undefined && pluginConfigIndex !== -1 && siteConfig.navItems[pluginManagementIndex].children) {
-      // 将插件列表添加到"配置"的子菜单中
-      siteConfig.navItems[pluginManagementIndex].children[pluginConfigIndex].children = plugins
-    }
-  }
+  // 插件列表现在将直接在插件概览页面中使用，不再添加到侧边栏
+  await getInstalledPlugins()
 }

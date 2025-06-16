@@ -1,1 +1,5 @@
 export { default as StatCard } from './StatCard'
+export { default as BasicCard } from './BasicCard'
+export * from './types'
+export type { StatCardProps } from './StatCard'
+export type { BasicCardProps } from './BasicCard'

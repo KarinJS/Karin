@@ -1,4 +1,3 @@
-import axios from 'axios'
 import lodash from 'lodash'
 import { exec } from '@/utils/system/exec'
 import { getPlugins } from '@/plugin/system/list'
@@ -8,6 +7,7 @@ import { REDIS_DEPENDENCIES_LIST_CACHE_KEY, REDIS_DEPENDENCIES_LIST_CACHE_EXPIRE
 
 import type { RequestHandler, Request, Response } from 'express'
 import type { Dependency, PnpmDependencies, PnpmDependency } from '@/types/server'
+import { getNpmRegistry } from '@/utils/npm/registry'
 
 /**
  * 获取项目依赖列表
@@ -109,12 +109,8 @@ const getDependenciesInfo = async (
   }
 
   try {
-    /** 获取npm源 */
-    const registry = await getRegistry()
-    /** 请求npm源 */
-    const response = await axios.get(`${registry}/${value.from}`)
     /** 获取版本列表 */
-    const versions = Object.keys(response.data.versions || {})
+    const versions = await getNpmRegistry(value.from)
 
     /** 获取最新的15个版本 数组最后就是最新的版本 不足15个就返回全部 */
     const latest = versions.slice(-15).filter(Boolean)
@@ -147,19 +143,6 @@ const getDependenciesInfo = async (
   } catch (error) {
     logger.debug(`[getDependenciesInfo] 获取${key}的版本信息失败`, error)
   }
-}
-
-/**
- * 获取registry
- */
-const getRegistry = async () => {
-  if (process.env.npm_config_registry) {
-    return process.env.npm_config_registry
-  }
-
-  const registry = await exec('npm config get registry')
-  process.env.npm_config_registry = registry.stdout
-  return registry.stdout
 }
 
 /**
@@ -199,6 +182,3 @@ const setCache = async (data: Dependency[]) => {
     { EX: REDIS_DEPENDENCIES_LIST_CACHE_EXPIRE }
   )
 }
-
-/** 初始化一下防止并发获取 */
-getRegistry()

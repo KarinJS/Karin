@@ -1,19 +1,20 @@
 import type { BaseCardProps } from './types'
+import { Tooltip } from '@heroui/tooltip'
 
 /**
- * 统计卡片组件属性接口
+ * 基础卡片组件属性接口
  */
-export interface StatCardProps extends BaseCardProps {
-  /** 显示的数字 */
-  count: number
+export interface BasicCardProps extends BaseCardProps {
+  /** 卡片标题 */
+  title: string
 }
 
 /**
- * 通用统计卡片组件
- * 用于显示带有图标和数字的统计信息
+ * 通用基础卡片组件
+ * 用于显示带有图标和标题的信息
  */
-const StatCard = ({
-  count,
+const BasicCard = ({
+  title,
   description,
   icon,
   iconDot,
@@ -24,8 +25,9 @@ const StatCard = ({
   ringColor,
   isActive,
   onClick,
-}: StatCardProps) => {
-  return (
+  tooltip,
+}: BasicCardProps) => {
+  const cardContent = (
     <div
       onClick={onClick}
       className={`
@@ -44,12 +46,22 @@ const StatCard = ({
           </div>
         </div>
         <div>
-          <div className='text-xl md:text-2xl font-light'>{count}</div>
+          <div className='text-lg md:text-x2 font-medium'>{title}</div>
           <div className='text-xs md:text-sm text-default-500'>{description}</div>
         </div>
       </div>
     </div>
   )
+
+  if (tooltip) {
+    return (
+      <Tooltip content={tooltip} placement='top' showArrow>
+        {cardContent}
+      </Tooltip>
+    )
+  }
+
+  return cardContent
 }
 
-export default StatCard
+export default BasicCard

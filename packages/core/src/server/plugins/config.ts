@@ -268,6 +268,10 @@ export const pluginGetConfig: RequestHandler = async (req, res) => {
     return createServerErrorResponse(res, '参数错误')
   }
 
+  if (typeof config.components !== 'function') {
+    return createServerErrorResponse(res, '该插件未提供默认组件配置函数')
+  }
+
   const list: Record<string, any>[] = []
   let result = config.components()
   result = util.types.isPromise(result) ? await result : result
@@ -303,6 +307,9 @@ export const pluginSaveConfig: RequestHandler = async (req, res) => {
   if (!configPath) return createServerErrorResponse(res, '参数错误')
 
   const { save } = await loadConfig(configPath)
+  if (typeof save !== 'function') {
+    return createServerErrorResponse(res, '该插件未提供默认组件保存完成')
+  }
   const result = save(options.config)
   const response = util.types.isPromise(result) ? await result : result
   createSuccessResponse(res, response || { success: true, message: '没有返回值哦 φ(>ω<*) ' })
