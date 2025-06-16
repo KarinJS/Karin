@@ -11,7 +11,6 @@ import type { GetConfigResponse } from 'node-karin'
 
 interface GetConfigRequest {
   name: string
-  type: 'git' | 'npm' | 'app'
 }
 
 // http://localhost:5173/web/plugins/config?name=karin-plugin-demo&type=git
@@ -19,7 +18,6 @@ interface GetConfigRequest {
 export default function PluginConfigPage () {
   const [searchParams] = useSearchParams()
   const name = searchParams.get('name')
-  const type = searchParams.get('type') as GetConfigRequest['type'] | null
   const [config, setConfig] = useState<GetConfigResponse>({
     options: [],
     info: {
@@ -33,7 +31,7 @@ export default function PluginConfigPage () {
   const requestSentRef = useRef(false)
 
   const fetchConfig = useCallback(async () => {
-    if (!name || !type) return
+    if (!name) return
     // 如果已经发送过请求，则不再重复发送
     if (requestSentRef.current) return
 
@@ -45,7 +43,6 @@ export default function PluginConfigPage () {
         '/api/v1/plugin/config/get',
         {
           name,
-          type,
         }
       )
       setConfig(result)
@@ -55,19 +52,19 @@ export default function PluginConfigPage () {
     } finally {
       setLoading(false)
     }
-  }, [name, type])
+  }, [name])
 
   useEffect(() => {
-    if (!name || !type) return
+    if (!name) return
     fetchConfig()
 
     // 组件卸载时重置标记，以便在组件重新挂载时可以再次发送请求
     return () => {
       requestSentRef.current = false
     }
-  }, [name, type, fetchConfig])
+  }, [name, fetchConfig])
 
-  if (!name || !type) {
+  if (!name) {
     return (
       <Card className='max-w-lg mx-auto mt-8'>
         <CardBody>
@@ -117,5 +114,5 @@ export default function PluginConfigPage () {
     )
   }
 
-  return <DashboardPage options={config.options} info={{ ...config.info, type, id: config.info.id || name }} key={config.info.id || name} />
+  return <DashboardPage options={config.options} info={{ ...config.info, id: config.info.id || name }} key={config.info.id || name} />
 }

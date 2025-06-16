@@ -218,8 +218,13 @@ export const getFastRegistry = async (): Promise<string> => {
     'https://mirrors.cloud.tencent.com/npm',
   ]
 
-  const result = await raceRequest(urls)
-  return result?.config.url || urls[0]
+  try {
+    const result = await raceRequest(urls)
+    return result?.config.url || urls[0]
+  } catch (error) {
+    console.error('获取最快的npm registry失败:', error)
+    return urls[0]
+  }
 }
 
 /**

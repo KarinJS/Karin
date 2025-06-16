@@ -1,5 +1,6 @@
 import { api, request } from '@/request/base'
 import type {
+  FrontendInstalledPluginListResponse,
   LoadedPluginCacheList,
   PluginAdminListResponse,
   PluginAdminParams,
@@ -26,11 +27,19 @@ export const pluginAdminRequest = async (
 
 /**
  * 获取已安装插件名称列表
+ * @param isRefresh 是否强制刷新
  * @returns 已安装插件名称列表
  */
-export const getLocalPluginNameListRequest = async (): Promise<PluginAdminListResponse[]> => {
-  const response = await request.serverPost<PluginAdminListResponse[], null>(
-    api.getPluginListPluginAdmin
+export const getLocalPluginNameListRequest = async (
+  isRefresh: boolean = false
+): Promise<PluginAdminListResponse[]> => {
+  const response = await request.serverPost<PluginAdminListResponse[], {
+    isRefresh: boolean
+  }>(
+    api.getPluginListPluginAdmin,
+    {
+      isRefresh,
+    }
   )
   return response
 }
@@ -112,4 +121,19 @@ export interface CreateTaskResult {
   success: boolean
   /** 操作消息 */
   message?: string
+}
+
+/**
+ * 获取插件索引的简约插件列表
+ */
+export const getFrontendInstalledPluginListRequest = async (
+  isRefresh = false
+): Promise<FrontendInstalledPluginListResponse[]> => {
+  const response = await request.serverPost<FrontendInstalledPluginListResponse[], {
+    isRefresh: boolean
+  }>(
+    api.getFrontendInstalledPluginList,
+    { isRefresh }
+  )
+  return response
 }

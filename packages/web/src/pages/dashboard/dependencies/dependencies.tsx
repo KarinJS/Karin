@@ -229,7 +229,6 @@ export default function DependenciesPage () {
     <>
       {/* 总依赖数卡片 */}
       <StatCard
-        title='总依赖'
         count={stats.total}
         description={isRealTimeData ? '总依赖数 (实时数据)' : '总依赖数 (当前页面的依赖均为缓存)'}
         icon={renderIcon(16, 20, LuPackage)}
@@ -244,7 +243,6 @@ export default function DependenciesPage () {
 
       {/* Karin插件卡片 */}
       <StatCard
-        title='Karin插件'
         count={stats.plugins}
         description='Karin 插件'
         icon={renderIcon(16, 20, LuPackage)}
@@ -260,7 +258,6 @@ export default function DependenciesPage () {
 
       {/* 可更新卡片 */}
       <StatCard
-        title='可更新'
         count={stats.updatable}
         description='可更新'
         icon={renderIcon(16, 20, LuDownload)}

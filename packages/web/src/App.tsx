@@ -8,6 +8,7 @@ const LoadingPage = lazy(() => import('@/pages/loading'))
 const DashboardLayout = lazy(() => import('@/pages/dashboard/layout'))
 const IndexPage = lazy(() => import('@/pages/dashboard'))
 const ConfigPage = lazy(() => import('@/pages/dashboard/config/index'))
+const PluginsDashboardPage = lazy(() => import('@/pages/dashboard/plugins-dashboard'))
 const PluginMarketPage = lazy(() => import('@/pages/dashboard/plugins'))
 const PluginConfigPage = lazy(() => import('@/pages/dashboard/plugins/config'))
 const PluginManagePage = lazy(() => import('@/pages/dashboard/plugins/manage'))
@@ -41,6 +42,7 @@ function App () {
         >
           <Route element={<IndexPage />} path='' />
           <Route element={<TerminalPage />} path='/terminal' />
+          <Route element={<PluginsDashboardPage />} path='/plugins-dashboard' />
           <Route element={<WebUIPluginPage />} path='/plugins/webui' />
           <Route element={<DependenciesPage />} path='/dependencies' />
           <Route element={<ConfigPage />} path='/config/*'>

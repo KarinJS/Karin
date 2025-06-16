@@ -50,6 +50,7 @@ import {
   GET_PLUGIN_LIST_PLUGIN_ADMIN_ROUTER,
   GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER,
   GET_PLUGIN_MARKET_LIST_ROUTER,
+  GET_LOCAL_PLUGIN_FRONTEND_LIST_ROUTER,
 } from './router'
 import { logMiddleware } from '../log'
 import { authMiddleware } from '../auth/middleware'
@@ -103,7 +104,7 @@ import { getDependenciesListRouter } from '../dependencies/list'
 import { manageDependenciesRouter } from '../dependencies/manage'
 import { taskListRouter, taskRunRouter, taskLogsRouter, taskDeleteRouter } from '../task/list'
 import { getNpmBaseConfigRouter, getNpmrcContentRouter, getNpmrcListRouter, saveNpmrcRouter } from '../dependencies/config'
-import { getLoadedCommandPluginCacheList, getPluginListPluginAdmin } from '../plugins/detail'
+import { getFrontendInstalledPluginList, getLoadedCommandPluginCacheList, getPluginListPluginAdmin } from '../plugins/detail'
 import { getPluginMarketList } from '../plugins/market'
 
 /**
@@ -230,3 +231,5 @@ router.post(TASK_DELETE_ROUTER, taskDeleteRouter)
 router.post(GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER, getLoadedCommandPluginCacheList)
 /** @version 1.8.0 获取插件市场列表 */
 router.post(GET_PLUGIN_MARKET_LIST_ROUTER, getPluginMarketList)
+/** @version 1.8.0 获取本地插件列表 用于插件索引页面渲染简约列表 */
+router.post(GET_LOCAL_PLUGIN_FRONTEND_LIST_ROUTER, getFrontendInstalledPluginList)

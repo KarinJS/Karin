@@ -121,3 +121,6 @@ export const SAVE_NPMRC_ROUTER = '/dependencies/npmrc/save'
 export const GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER = '/plugin/loaded/command'
 /** @version 1.8.0 获取插件市场列表 */
 export const GET_PLUGIN_MARKET_LIST_ROUTER = '/plugin/market'
+
+/** @version 1.8.0 获取本地插件列表 用于插件索引页面渲染简约列表 */
+export const GET_LOCAL_PLUGIN_FRONTEND_LIST_ROUTER = '/plugin/local/frontend'

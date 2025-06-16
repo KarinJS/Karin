@@ -35,7 +35,6 @@ const FilterCards: FC<FilterCardsProps> = ({ counts, selectedType, onTypeChange 
   return (
     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8'>
       <StatCard
-        title='全部'
         count={counts.all}
         description='全部插件'
         icon={renderIcon(24, IoSettingsOutline)}
@@ -49,7 +48,6 @@ const FilterCards: FC<FilterCardsProps> = ({ counts, selectedType, onTypeChange 
       />
 
       <StatCard
-        title='NPM插件'
         count={counts.npm}
         description='Npm包插件'
         icon={renderIcon(24, FaNpm)}
@@ -63,7 +61,6 @@ const FilterCards: FC<FilterCardsProps> = ({ counts, selectedType, onTypeChange 
       />
 
       <StatCard
-        title='Git插件'
         count={counts.git}
         description='Git 插件'
         icon={renderIcon(24, TbBrandGit)}
@@ -77,7 +74,6 @@ const FilterCards: FC<FilterCardsProps> = ({ counts, selectedType, onTypeChange 
       />
 
       <StatCard
-        title='App插件'
         count={counts.app}
         description={window.innerWidth <= 640 ? 'App插件 (插件名称省略了前缀)' : 'App插件'}
         icon={renderIcon(24, TbApps)}

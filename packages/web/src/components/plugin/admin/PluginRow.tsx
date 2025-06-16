@@ -41,7 +41,7 @@ const PluginRow = memo(({
   onUninstall,
 }: PluginRowProps) => {
   /** 插件更新状态 */
-  const statusConfig = getUpdateStatusConfig(plugin.type, plugin.version, plugin.latestHash)
+  const statusConfig = getUpdateStatusConfig(plugin.type, plugin.version, plugin.latestVersion)
   /** 插件类型配置 */
   const typeConfig = getTypeConfig(plugin.type)
 
@@ -149,10 +149,10 @@ const PluginRow = memo(({
             <span className='text-xs text-default-500'>-</span>
           )
           : (
-            plugin.latestHash !== plugin.version
+            plugin.latestVersion !== plugin.version && plugin.latestVersion !== '0.0.0'
               ? (
                 <Chip size='sm' variant='flat' color='warning' className='bg-warning-100/50'>
-                  {plugin.latestHash}
+                  {plugin.latestVersion}
                 </Chip>
               )
               : (
@@ -254,21 +254,27 @@ const PluginRow = memo(({
                 <IoSettingsOutline className='text-lg' />
               </Button>
             </DropdownTrigger>
-            <DropdownMenu aria-label='插件操作' onAction={handleDropdownAction}>
+            <DropdownMenu
+              aria-label='插件操作'
+              onAction={handleDropdownAction}
+              classNames={{
+                base: 'text-default-600',
+              }}
+            >
               {/* 配置选项 - 只有git类型才显示 */}
-              {/* {plugin.type === 'git'
+              {plugin.webConfig.defaultComponent
                 ? (
-                  <DropdownItem key='settings' description='调整插件配置'>
+                  <DropdownItem key='settings' description='调整插件配置' className='text-default-600'>
                     <div className='flex items-center gap-2'>
                       <IoSettingsOutline />
                       <span>插件配置</span>
                     </div>
                   </DropdownItem>
                 )
-                : null} */}
+                : null}
 
               {/* 更新按钮 - 对app类型不显示且必须是可更新状态 */}
-              {plugin.type !== 'app' && plugin.version !== plugin.latestHash
+              {plugin.type !== 'app' && plugin.version !== plugin.latestVersion && plugin.latestVersion !== '0.0.0'
                 ? (
                   <DropdownItem key='update' description='更新到最新版本' className='text-success'>
                     <div className='flex items-center gap-2'>
@@ -282,7 +288,7 @@ const PluginRow = memo(({
               {/* Git类型特有的强制更新按钮 */}
               {plugin.type === 'git'
                 ? (
-                  <DropdownItem key='forceUpdate' description='强制拉取最新代码' className='text-warning'>
+                  <DropdownItem key='forceUpdate' description='强制拉取最新代码' className='text-primary'>
                     <div className='flex items-center gap-2'>
                       <TbArrowsUp />
                       <span>强制更新</span>
@@ -292,8 +298,8 @@ const PluginRow = memo(({
                 : null}
 
               {/* 卸载按钮 - 所有类型都显示 */}
-              <DropdownItem key='uninstall' description='从系统移除此插件' className='text-danger'>
-                <div className='flex items-center gap-2'>
+              <DropdownItem key='uninstall' description='从系统移除此插件' className='text-default-600'>
+                <div className='flex items-center gap-2 text-danger-400'>
                   <TbTrash />
                   <span>卸载插件</span>
                 </div>

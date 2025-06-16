@@ -80,7 +80,7 @@ export interface SaveConfigResponse {
 export interface DefineConfig<T = any> {
   /** 插件信息 */
   info: {
-    /** 插件id */
+    /** 插件id 也就是插件的包名 */
     id: string
     /** 插件名称 前端优先展示 */
     name?: string
@@ -93,12 +93,17 @@ export interface DefineConfig<T = any> {
     /** 插件描述 可不填 会自动读取package.json中的version */
     description?: string
   },
-  /** 组件配置参数 */
-  components: () => ComponentConfig[] | Promise<ComponentConfig[]>
+  /** 默认组件配置参数 */
+  components?: () => ComponentConfig[] | Promise<ComponentConfig[]>
   /**
    * 保存配置
    * @param config 配置
    * @returns 保存结果
    */
-  save: (config: T) => SaveConfigResponse | Promise<SaveConfigResponse>
+  save?: (config: T) => SaveConfigResponse | Promise<SaveConfigResponse>
+  /**
+   * 自定义组件配置
+   * @description 未完成
+   */
+  customComponent?: () => unknown
 }

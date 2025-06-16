@@ -37,11 +37,11 @@ export const isTsx = () => process.env.RUNTIME === 'tsx'
  */
 export const isPm2 = () => process.env.RUNTIME === 'pm2'
 /**
- * @description 是否为Js
+ * @description 是否只允许运行js
  */
 export const isJs = () => !isTsx()
 /**
- * @description 是否为Ts
+ * @description 是否允许直接运行Ts
  */
 export const isTs = () => isTsx()
 /**

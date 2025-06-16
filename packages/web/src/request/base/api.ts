@@ -41,4 +41,6 @@ export const api = {
 
   /** 重启karin */
   restartKarin: `${BASE_ROUTER}/restart`,
+  /** @version 1.10.0+ 获取前端已安装插件简约列表 */
+  getFrontendInstalledPluginList: `${BASE_ROUTER}/plugin/local/frontend`,
 }
