@@ -10,6 +10,7 @@ import type { Apps } from '@/types/plugin'
 import type { RequestHandler } from 'express'
 import type { PkgData } from '@/utils/fs/pkg'
 import type { DefineConfig, GetConfigResponse } from '@/types/server/local'
+import { getPlugins } from '@/plugin/system/list'
 
 interface BaseConfig {
   /** 插件类型 */
@@ -254,10 +255,27 @@ export const normalizeAuthor = (author: DefineConfig['info']['author']) => {
  */
 export const pluginGetConfig: RequestHandler = async (req, res) => {
   const options = req.body as BaseConfig
-  if (!options.type || !options.name) {
+  if (!options.name) {
     createServerErrorResponse(res, '参数错误')
     return
   }
+
+  const type = await (async () => {
+    const list = await getPlugins('all', false)
+    const npmName = `npm:${options.name}`
+    const gitName = `git:${options.name}`
+    const rootName = `root:${options.name}`
+
+    for (const item of list) {
+      if (item === npmName) return 'npm'
+      if (item === gitName) return 'git'
+      if (item === rootName) return 'npm'
+    }
+
+    return 'git'
+  })()
+
+  options.type = type
 
   const config = await getWebConfig(options.type, options.name, () => {
     logger.error(`[plugin] 插件${options.name}的web配置文件名称不正确: 需要以 web.config 命名`)

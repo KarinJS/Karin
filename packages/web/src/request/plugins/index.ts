@@ -127,13 +127,13 @@ export interface CreateTaskResult {
  * 获取插件索引的简约插件列表
  */
 export const getFrontendInstalledPluginListRequest = async (
-  forceRefresh = false
+  isRefresh = false
 ): Promise<FrontendInstalledPluginListResponse[]> => {
   const response = await request.serverPost<FrontendInstalledPluginListResponse[], {
-    forceRefresh: boolean
+    isRefresh: boolean
   }>(
     api.getFrontendInstalledPluginList,
-    { forceRefresh }
+    { isRefresh }
   )
   return response
 }

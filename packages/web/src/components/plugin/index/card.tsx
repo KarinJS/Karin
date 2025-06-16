@@ -5,6 +5,8 @@ import { FaUser } from 'react-icons/fa6'
 import { Tooltip } from '@heroui/tooltip'
 import { BadgeCheck } from 'lucide-react'
 import { Card, CardBody } from '@heroui/card'
+import { Button } from '@heroui/button'
+import { IoSettingsOutline } from 'react-icons/io5'
 
 import type { FC } from 'react'
 import type { FrontendInstalledPluginListResponse } from 'node-karin'
@@ -197,6 +199,11 @@ const PluginCard: FC<{
   plugin: FrontendInstalledPluginListResponse,
   cardClassName?: string
 }> = ({ plugin, cardClassName }) => {
+  /** 处理配置按钮点击 */
+  const handleConfigClick = () => {
+    console.log('配置插件:', plugin.id)
+  }
+
   return (
     <Card
       className={`group w-full h-[140px] flex flex-col overflow-hidden cursor-pointer relative bg-default-50/10 rounded-xl border border-default-200 transition-all duration-700 hover:border-primary-500 hover:shadow-sm hover:shadow-primary-500/50 hover:scale-[1.02] ${cardClassName || ''}`}
@@ -224,25 +231,42 @@ const PluginCard: FC<{
 
         <div className='flex items-center justify-between mt-auto'>
           <div className='flex items-center gap-2'>
-            <Chip
-              variant='flat'
-              size='sm'
-              className='h-5 px-2 bg-default-100/80 border-small border-default-200/50'
-            >
-              {/* {plugin.version
-                ? (
-                  <span className='text-xs font-mono'>
-                    {`v${plugin.version}`}
-                  </span>
-                )
-                : (
+            {plugin.hasConfig
+              ? (
+                <Chip
+                  variant='flat'
+                  size='sm'
+                  className='h-5 px-2 bg-blue-100/80 border-small border-blue-200/50 text-blue-700'
+                >
+                  <span className='text-xs'>可配置</span>
+                </Chip>
+              )
+              : (
+                <Chip
+                  variant='flat'
+                  size='sm'
+                  className='h-5 px-2 bg-default-100/80 border-small border-default-200/50'
+                >
                   <span className='text-xs font-mono'>
                     ⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄
                   </span>
-                )} */}
-            </Chip>
-            {/* {plugin.type === 'npm' && <NpmInfo name={plugin.id} isRefreshing={isRefreshing} />} */}
+                </Chip>
+              )}
           </div>
+
+          {plugin.hasConfig && (
+            <Button
+              isIconOnly
+              size='sm'
+              variant='light'
+              color='primary'
+              aria-label='配置插件'
+              className='p-1'
+              onPress={handleConfigClick}
+            >
+              <IoSettingsOutline className='text-lg' />
+            </Button>
+          )}
         </div>
       </CardBody>
     </Card>

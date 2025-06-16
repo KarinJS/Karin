@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react'
 import { useRequest } from 'ahooks'
+import toast from 'react-hot-toast'
 import { getFrontendInstalledPluginListRequest } from '@/request/plugins'
 import { Pagination } from '@heroui/pagination'
 import { Button } from '@heroui/button'
@@ -17,7 +18,7 @@ import type { FrontendInstalledPluginListResponse } from 'node-karin'
  * @returns 插件市场主页面组件
  */
 const LocalPluginList = () => {
-  // 从URL获取初始页码
+  /** 从URL获取初始页码 */
   const getInitialPage = (): number => {
     const searchParams = new URLSearchParams(location.search)
     const pageParam = searchParams.get('page')
@@ -25,8 +26,10 @@ const LocalPluginList = () => {
   }
 
   const [page, setPage] = useState(getInitialPage())
+  const [isManualRefresh, setIsManualRefresh] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const refreshStartTimeRef = useRef<number>(0)
 
   const {
     data: plugins = [],
@@ -34,27 +37,49 @@ const LocalPluginList = () => {
     loading: onlineLoading,
     refresh: refreshPlugins,
   } = useRequest<FrontendInstalledPluginListResponse[], [boolean]>(
-    () => getFrontendInstalledPluginListRequest(isRefreshing),
+    () => getFrontendInstalledPluginListRequest(isManualRefresh),
     {
-      refreshDeps: [isRefreshing],
-      onFinally: () => setIsRefreshing(false),
+      refreshDeps: [isManualRefresh],
+      onFinally: () => {
+        if (isManualRefresh) {
+          const duration = ((Date.now() - refreshStartTimeRef.current) / 1000).toFixed(1)
+          if (!onlineError) {
+            toast.success(`刷新成功，耗时 ${duration} 秒`)
+          } else {
+            toast.error(`刷新失败，耗时 ${duration} 秒`)
+          }
+        }
+        setIsRefreshing(false)
+        setIsManualRefresh(false)
+      },
     }
   )
 
   console.log('接口返回:', plugins)
   const pageSize = 16
 
-  // 计算总页数
+  /** 计算总页数 */
   const totalPages = useMemo(() => Math.ceil(plugins.length / pageSize), [plugins.length, pageSize])
 
-  // 确保页码不超出范围
+  /** 确保页码不超出范围 */
   useEffect(() => {
     if (totalPages > 0 && page > totalPages) {
       setPage(totalPages)
     }
   }, [totalPages, page])
 
-  // 当前页插件数据
+  /** 更新URL中的页码参数 */
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    if (page === 1) {
+      url.searchParams.delete('page')
+    } else {
+      url.searchParams.set('page', page.toString())
+    }
+    window.history.replaceState({}, '', url.toString())
+  }, [page])
+
+  /** 当前页插件数据 */
   const currentPagePlugins = useMemo(
     () => {
       const startIndex = (page - 1) * pageSize
@@ -63,7 +88,7 @@ const LocalPluginList = () => {
     [plugins, page, pageSize]
   )
 
-  // 监听外部事件更新列表
+  /** 监听外部事件更新列表 */
   useEffect(() => {
     const handlePluginUpdate = () => {
       refreshPlugins()
@@ -75,16 +100,22 @@ const LocalPluginList = () => {
     }
   }, [refreshPlugins])
 
-  // 刷新函数
+  /** 刷新函数 */
   const handleRefresh = useCallback(() => {
     if (onlineLoading || isRefreshing) return
 
     if (refreshTimeoutRef.current) {
       clearTimeout(refreshTimeoutRef.current)
     }
+
+    toast.loading('正在刷新插件列表...', { id: 'refresh-plugins' })
     setIsRefreshing(true)
+    setIsManualRefresh(true)
+    refreshStartTimeRef.current = Date.now()
+
     refreshTimeoutRef.current = setTimeout(() => {
       refreshPlugins()
+      toast.dismiss('refresh-plugins')
     }, 100)
   }, [onlineLoading, isRefreshing, refreshPlugins])
 
@@ -114,6 +145,18 @@ const LocalPluginList = () => {
     <>
       <div className='flex-1 flex flex-col items-center justify-start w-full relative z-10'>
         <div className='w-full max-w-[1600px] mx-auto flex-1 flex flex-col py-4 px-4'>
+          <div className='w-full flex justify-end mb-2'>
+            <Button
+              isIconOnly
+              variant='flat'
+              color='primary'
+              aria-label='刷新插件列表'
+              isLoading={isRefreshing || onlineLoading}
+              onPress={handleRefresh}
+            >
+              <IoRefreshOutline className='text-xl' />
+            </Button>
+          </div>
           <ScrollShadow className='w-full h-full flex-1' hideScrollBar>
             {onlineLoading && plugins.length === 0 && (
               <div className='h-full flex items-center justify-center'>
