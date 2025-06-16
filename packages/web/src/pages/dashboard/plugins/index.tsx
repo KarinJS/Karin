@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react'
 import { useRequest } from 'ahooks'
+import toast from 'react-hot-toast'
 import { getPluginMarketListRequest } from '@/request/plugins'
 import { Pagination } from '@heroui/pagination'
 import { Button } from '@heroui/button'
@@ -76,6 +77,7 @@ const MarketPage = () => {
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [isRefreshing, setIsRefreshing] = useState(false)
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const refreshStartTimeRef = useRef<number>(0)
 
   // 更新URL中的页码
   useEffect(() => {
@@ -189,11 +191,32 @@ const MarketPage = () => {
     if (refreshTimeoutRef.current) {
       clearTimeout(refreshTimeoutRef.current)
     }
+
+    toast.loading('正在刷新插件列表...', { id: 'refresh-plugins' })
     setIsRefreshing(true)
+    refreshStartTimeRef.current = Date.now()
+
     refreshTimeoutRef.current = setTimeout(() => {
       refreshPlugins()
     }, 100)
   }, [onlineLoading, isRefreshing, refreshPlugins])
+
+  // 处理刷新完成后的操作
+  useEffect(() => {
+    if (isRefreshing) {
+      // 如果已经刷新完成（非加载状态），显示提示
+      if (!onlineLoading) {
+        const duration = ((Date.now() - refreshStartTimeRef.current) / 1000).toFixed(1)
+
+        if (onlineError) {
+          toast.error(`刷新失败: ${onlineError.message}`, { id: 'refresh-plugins' })
+        } else {
+          toast.success(`刷新成功，耗时 ${duration} 秒`, { id: 'refresh-plugins' })
+        }
+        setIsRefreshing(false)
+      }
+    }
+  }, [onlineLoading, isRefreshing, onlineError])
 
   if (onlineError) {
     return (
@@ -208,8 +231,9 @@ const MarketPage = () => {
               onPress={handleRefresh}
               startContent={<IoRefreshOutline />}
               disabled={isRefreshing}
+              isLoading={isRefreshing}
             >
-              重试
+              {isRefreshing ? '刷新中...' : '重试'}
             </Button>
           </CardBody>
         </Card>

@@ -42,9 +42,9 @@ const LocalPluginList = () => {
         if (isManualRefresh) {
           const duration = ((Date.now() - refreshStartTimeRef.current) / 1000).toFixed(1)
           if (!onlineError) {
-            toast.success(`刷新成功，耗时 ${duration} 秒`)
+            toast.success(`刷新成功，耗时 ${duration} 秒`, { id: 'refresh-plugins' })
           } else {
-            toast.error(`刷新失败，耗时 ${duration} 秒`)
+            toast.error(`刷新失败: ${onlineError.message}`, { id: 'refresh-plugins' })
           }
         }
         setIsRefreshing(false)
@@ -120,7 +120,6 @@ const LocalPluginList = () => {
 
     refreshTimeoutRef.current = setTimeout(() => {
       refreshPlugins()
-      toast.dismiss('refresh-plugins')
     }, 100)
   }, [onlineLoading, isRefreshing, refreshPlugins])
 
@@ -137,8 +136,9 @@ const LocalPluginList = () => {
               onPress={handleRefresh}
               startContent={<IoRefreshOutline />}
               disabled={isRefreshing}
+              isLoading={isRefreshing}
             >
-              重试
+              {isRefreshing ? '刷新中...' : '重试'}
             </Button>
           </CardBody>
         </Card>
