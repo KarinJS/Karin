@@ -8,9 +8,7 @@ import { Spinner } from '@heroui/spinner'
 import { Card, CardBody } from '@heroui/card'
 import { ScrollShadow } from '@heroui/scroll-shadow'
 import PluginCard from './card'
-import {
-  IoRefreshOutline,
-} from 'react-icons/io5'
+import { IoRefreshOutline } from 'react-icons/io5'
 import type { FrontendInstalledPluginListResponse } from 'node-karin'
 
 /**

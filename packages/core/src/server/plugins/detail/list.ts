@@ -217,7 +217,10 @@ export const getFrontendInstalledPluginList: RequestHandler = async (req, res) =
             author: {
               name: market?.author[0].name || '',
               home: market?.author[0].home || '',
-              avatar: market?.author[0].avatar || '',
+              avatar: market?.author[0].avatar ||
+                market?.author[0].home
+                ? `${market?.author[0].home}.png`
+                : '',
             },
             repoUrl: market?.repo[0].url || '',
             hasConfig: webConfig.defaultComponent,

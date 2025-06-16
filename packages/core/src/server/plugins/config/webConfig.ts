@@ -67,12 +67,12 @@ const getWebConfigPath = (plugin: PkgInfo) => {
  */
 const getWebConfigMore = async (filepath: string) => {
   try {
-    const web = await imports(`file://${filepath}`, { isImportDefault: true, isRefresh: isDev() })
+    const web = await imports(filepath, { isImportDefault: true, isRefresh: isDev() })
     return defaultWebConfig(
       true,
       filepath,
       typeof web?.customComponent === 'function',
-      typeof web?.defaultComponent === 'function'
+      typeof web?.components === 'function'
     )
   } catch (error) {
     logger.error(new Error('获取插件web.config文件失败', { cause: error }))

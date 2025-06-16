@@ -110,7 +110,8 @@ const getDependenciesInfo = async (
 
   try {
     /** 获取版本列表 */
-    const versions = await getNpmRegistry(value.from)
+    const registry = await getNpmRegistry(value.from)
+    const versions = Object.keys(registry.versions)
 
     /** 获取最新的15个版本 数组最后就是最新的版本 不足15个就返回全部 */
     const latest = versions.slice(-15).filter(Boolean)

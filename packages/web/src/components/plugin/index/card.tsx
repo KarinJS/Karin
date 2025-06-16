@@ -7,6 +7,7 @@ import { BadgeCheck } from 'lucide-react'
 import { Card, CardBody } from '@heroui/card'
 import { Button } from '@heroui/button'
 import { IoSettingsOutline } from 'react-icons/io5'
+import { useNavigate } from 'react-router-dom'
 
 import type { FC } from 'react'
 import type { FrontendInstalledPluginListResponse } from 'node-karin'
@@ -199,9 +200,14 @@ const PluginCard: FC<{
   plugin: FrontendInstalledPluginListResponse,
   cardClassName?: string
 }> = ({ plugin, cardClassName }) => {
+  const navigate = useNavigate()
+
   /** 处理配置按钮点击 */
   const handleConfigClick = () => {
-    console.log('配置插件:', plugin.id)
+    /** 增加小延迟提供更好的视觉反馈 */
+    setTimeout(() => {
+      navigate(`/plugins/config?name=${plugin.id}`)
+    }, 150)
   }
 
   return (
