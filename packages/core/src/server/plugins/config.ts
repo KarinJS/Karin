@@ -12,13 +12,6 @@ import type { PkgData } from '@/utils/fs/pkg'
 import type { DefineConfig, GetConfigResponse } from '@/types/server/local'
 import { getPlugins } from '@/plugin/system/list'
 
-interface BaseConfig {
-  /** 插件类型 */
-  type: Apps,
-  /** 插件名称 */
-  name: string,
-}
-
 /**
  * 检查文件是否存在
  * @param filepath 文件路径
@@ -140,16 +133,17 @@ const getLocalPluginConfigPath = (name: string): string | null => {
 
 /**
  * 获取插件配置路径
- * @param options 插件配置
+ * @param type 插件类型
+ * @param name 插件名称
  * @returns 配置路径
  */
-const getConfigPath = (options: BaseConfig): string | null => {
+const getConfigPath = (type: 'npm' | 'git' | string, name: string): string | null => {
   try {
-    switch (options.type) {
+    switch (type) {
       case 'npm':
-        return getNpmPluginConfigPath(options.name)
+        return getNpmPluginConfigPath(name)
       case 'git':
-        return getLocalPluginConfigPath(options.name)
+        return getLocalPluginConfigPath(name)
       default:
         return null
     }
@@ -190,7 +184,7 @@ export const getWebConfig = async (type: Apps, id: string, _?: () => void) => {
     return null
   }
 
-  const webConfig = getConfigPath({ type, name: id })
+  const webConfig = getConfigPath(type, id)
 
   if (!webConfig) {
     return null
@@ -254,30 +248,16 @@ export const normalizeAuthor = (author: DefineConfig['info']['author']) => {
  * @param res 响应
  */
 export const pluginGetConfig: RequestHandler = async (req, res) => {
-  const options = req.body as BaseConfig
+  const options = req.body
   if (!options.name) {
     createServerErrorResponse(res, '参数错误')
     return
   }
 
-  const type = await (async () => {
-    const list = await getPlugins('all', false)
-    const npmName = `npm:${options.name}`
-    const gitName = `git:${options.name}`
-    const rootName = `root:${options.name}`
+  const type = await getPluginType(options.name)
+  if (!type) return createServerErrorResponse(res, '参数错误')
 
-    for (const item of list) {
-      if (item === npmName) return 'npm'
-      if (item === gitName) return 'git'
-      if (item === rootName) return 'npm'
-    }
-
-    return 'git'
-  })()
-
-  options.type = type
-
-  const config = await getWebConfig(options.type, options.name, () => {
+  const config = await getWebConfig(type, options.name, () => {
     logger.error(`[plugin] 插件${options.name}的web配置文件名称不正确: 需要以 web.config 命名`)
     createSuccessResponse(res, null)
   })
@@ -320,15 +300,18 @@ export const pluginGetConfig: RequestHandler = async (req, res) => {
  * 保存插件配置
  */
 export const pluginSaveConfig: RequestHandler = async (req, res) => {
-  const options = req.body as BaseConfig & { config: Record<string, any> }
-  const configPath = getConfigPath(options)
+  const { name, config } = req.body
+  const type = await getPluginType(name)
+  if (!type) return createServerErrorResponse(res, '参数错误')
+
+  const configPath = getConfigPath(type, name)
   if (!configPath) return createServerErrorResponse(res, '参数错误')
 
   const { save } = await loadConfig(configPath)
   if (typeof save !== 'function') {
     return createServerErrorResponse(res, '该插件未提供默认组件保存完成')
   }
-  const result = save(options.config)
+  const result = save(config)
   const response = util.types.isPromise(result) ? await result : result
   createSuccessResponse(res, response || { success: true, message: '没有返回值哦 φ(>ω<*) ' })
 }
@@ -337,7 +320,32 @@ export const pluginSaveConfig: RequestHandler = async (req, res) => {
  * 判断插件是否存在配置
  */
 export const pluginIsConfigExist: RequestHandler = async (req, res) => {
-  const options = req.body as BaseConfig
-  const configPath = getConfigPath(options)
+  const name = req.body.name
+  const type = await getPluginType(name)
+
+  if (!name || !type) {
+    return createServerErrorResponse(res, '参数错误')
+  }
+
+  const configPath = getConfigPath(type, name)
   createSuccessResponse(res, typeof configPath === 'string')
+}
+
+/**
+ * 获取插件的类型
+ * @param name 插件名称
+ */
+export const getPluginType = async (name: string) => {
+  const list = await getPlugins('all', false)
+  const npmName = `npm:${name}`
+  const gitName = `git:${name}`
+  const rootName = `root:${name}`
+
+  for (const item of list) {
+    if (item === npmName) return 'npm'
+    if (item === gitName) return 'git'
+    if (item === rootName) return 'npm'
+  }
+
+  return null
 }
