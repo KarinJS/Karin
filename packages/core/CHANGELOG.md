@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.10.10](https://github.com/KarinJS/Karin/compare/core-v1.10.9...core-v1.10.10) (2025-06-17)
+
+
+### 🐛 Bug Fixes
+
+* 修正前端配置保存判断失败 ([f419144](https://github.com/KarinJS/Karin/commit/f41914408f7871695adbf2f9956265e45ad8bead))
+
 ## [1.10.9](https://github.com/KarinJS/Karin/compare/core-v1.10.8...core-v1.10.9) (2025-06-16)
 
 
