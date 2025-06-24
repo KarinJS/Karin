@@ -51,6 +51,8 @@ export const createOneBotClient = async (url: string, token?: string) => {
     autoReconnect: true,
   })
 
+  // TODO: 需要重新编写生命周期事件
+
   onebot.on(EventKeys.open, async () => {
     logger.info(`[OneBot] 客户端连接成功: ${url}`)
     const adapter = new AdapterOneBot(onebot)
