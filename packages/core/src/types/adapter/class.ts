@@ -19,7 +19,6 @@ import type {
   SendMsgResults,
   UserInfo,
 } from './apiResponse'
-import type { OB11ApiParams, OB11ApiRequest } from '@/adapter/onebot'
 
 /** 适配器类型 */
 export interface AdapterType<T = any> {
@@ -33,7 +32,8 @@ export interface AdapterType<T = any> {
    * @param params 请求的参数
    * @param time 超时时间 默认为120s
    */
-  sendApi?: <T extends keyof OB11ApiParams>(action: `${T}`, params: OB11ApiParams[T], time?: number) => Promise<OB11ApiRequest[T]>
+  sendApi?: (...args: any[]) => Promise<any>
+
   /** 适配器信息 */
   adapter: AdapterInfo
 
@@ -105,6 +105,14 @@ export interface AdapterType<T = any> {
    * @returns 头像的url地址
    */
   getGroupAvatarUrl (groupId: string, size?: 0 | 40 | 100 | 140, history?: number): Promise<string>
+
+  /**
+   * 获取消息
+   * @param contact 目标信息
+   * @param messageId 消息ID
+   * @returns MessageResponse对象
+   */
+  getMsg (messageId: string): Promise<MessageResponse>
 
   /**
    * 获取消息

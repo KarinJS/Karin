@@ -1,86 +1,120 @@
 import { AdapterBase } from '@/adapter/base'
-import { OB11ApiAction } from '@/adapter/onebot/types/api'
-import { OB11Event } from '@/adapter/onebot/types/event'
 import { createMessage } from '@/adapter/onebot/create/message'
 import { createNotice } from '@/adapter/onebot/create/notice'
 import { createRequest } from '@/adapter/onebot/create/request'
 import { senderGroup } from '@/event'
-import {
-  AdapterConvertKarin,
-  KarinConvertAdapter,
-} from '@/adapter/onebot/core/convert'
+import { EventKeys, OneBotSegmentType } from '@karinjs/onebot'
+import { registerBot, unregisterBot } from '@/service'
+import { AdapterConvertKarin, KarinConvertAdapter } from '@/adapter/onebot/core/convert'
 
-import type {
-  CustomNodeSegments,
-  OB11NodeSegment,
-  OB11Segment,
-  OB11ApiParams,
-  OB11ApiRequest,
-  OB11AllEvent,
-} from '@/adapter/onebot/types'
-import type { Contact, GroupSender } from '@/types/event'
-import type { Elements, ForwardOptions, NodeElement, SendElement } from '@/types/segment'
+import type { Contact, GroupSender, Role } from '@/types/event'
+import type { ForwardOptions, NodeElement, SendElement } from '@/types/segment'
 import type { GetGroupHighlightsResponse, QQGroupHonorInfo, SendMsgResults } from '@/types/adapter'
+import type { OneBotApi, OneBotHttp, OneBotMessage, OneBotWs, OneBotCore, NodeCustomSegment, NodeSegment } from '@karinjs/onebot'
 
-export abstract class AdapterOneBot extends AdapterBase {
-  protected constructor () {
+export class AdapterOneBot extends AdapterBase {
+  _onebot: OneBotWs | OneBotHttp
+
+  constructor (_onebot: OneBotWs | OneBotHttp) {
     super()
     this.adapter.platform = 'qq'
     this.adapter.standard = 'onebot11'
+    this._onebot = _onebot
+  }
+
+  async init () {
+    await this._onebot.init()
+    this.setAdapterInfo()
+    this.setBotInfo()
+    this.registerBot()
+
+    this._onebot.on(EventKeys.event, (data) => {
+      if (this._onebot.isEcho(data)) return
+
+      if (data.post_type === 'message') return createMessage(data, this)
+      if (data.post_type === 'notice') return createNotice(data, this)
+      if (data.post_type === 'request') return createRequest(data, this)
+
+      if (data.post_type === 'meta_event') {
+        if (data.meta_event_type === 'lifecycle') {
+          if (data.sub_type === 'enable') {
+            return logger.bot('mark', this.selfId, 'OneBot启用')
+          }
+
+          if (data.sub_type === 'disable') {
+            return logger.bot('mark', this.selfId, 'OneBot停用')
+          }
+
+          if (data.sub_type === 'connect') {
+            return logger.bot('mark', this.selfId, 'WebSocket连接成功')
+          }
+        }
+
+        if (data.meta_event_type === 'heartbeat') {
+          return logger.bot('trace', this.selfId, '心跳:\n' + JSON.stringify(data, null, 2))
+        }
+      }
+
+      logger.bot('warn', this.selfId, `收到未知事件: ${JSON.stringify(data, null, 2)}`)
+    })
+
+    this._onebot.on(EventKeys.close, () => {
+      this.unregisterBot()
+    })
   }
 
   /**
-   * 事件处理
-   * @param data 事件数据对象
-   * @param str 事件字符串
+   * 注册机器人
    */
-  eventHandlers (data: OB11AllEvent, str: string) {
-    if (data.post_type === OB11Event.Message || data.post_type === OB11Event.MessageSent) {
-      createMessage(data, this)
-      return
+  registerBot () {
+    logger.bot('info', this.selfId, `[onebot11][${this.adapter.communication}] 连接成功: ${this.adapter.address}`)
+    this.adapter.index = registerBot(this.adapter.communication, this)
+  }
+
+  /**
+   * 卸载注册的机器人
+   */
+  unregisterBot () {
+    unregisterBot('index', this.adapter.index)
+    logger.bot('info', this.selfId, `连接关闭: ${this.adapter.address}`)
+  }
+
+  /** 设置登录号信息 */
+  setAdapterInfo () {
+    this.adapter.platform = 'qq'
+    this.adapter.name = this._onebot.protocol.name
+    this.adapter.version = this._onebot.protocol.version
+
+    if (/gocq/i.test(this.adapter.name)) {
+      this.adapter.protocol = 'gocq-http'
+    } else if (/napcat/i.test(this.adapter.name)) {
+      this.adapter.protocol = 'napcat'
+    } else if (/llonebot/i.test(this.adapter.name)) {
+      this.adapter.protocol = 'llonebot'
+    } else if (/lagrange/i.test(this.adapter.name)) {
+      this.adapter.protocol = 'lagrange'
+    } else if (/conwechat/i.test(this.adapter.name)) {
+      this.adapter.protocol = 'conwechat'
+    } else {
+      this.adapter.protocol = 'other'
     }
+  }
 
-    if (data.post_type === OB11Event.Notice) {
-      createNotice(data, this)
-      return
-    }
+  /**
+   * 设置登录号详细信息
+   */
+  async setBotInfo () {
+    this.account.name = this._onebot.self.nickname
+    this.account.avatar = this._onebot.self.avatar
+    this.account.selfId = this._onebot.self_id + ''
+  }
 
-    if (data.post_type === OB11Event.Request) {
-      createRequest(data, this)
-      return
-    }
-
-    if (data.post_type === OB11Event.MetaEvent) {
-      if (data.meta_event_type === 'lifecycle') {
-        if (data.sub_type === 'enable') {
-          logger.bot('debug', this.selfId, 'OneBot启用')
-        }
-
-        if (data.sub_type === 'disable') {
-          logger.bot('debug', this.selfId, 'OneBot停用')
-        }
-
-        if (data.sub_type === 'connect') {
-          logger.bot('debug', this.selfId, 'WebSocket连接成功')
-        }
-        return
-      }
-
-      logger.bot('warn', this.selfId, `收到未知元事件: ${str}`)
-      return
-    }
-
-    if ((data as any).retcode) {
-      const { retcode } = data as any
-      if (retcode === 1401 || retcode === 1403) {
-        logger.error(`[oneBot11][鉴权失败] address: ${this.adapter.address} event: ${str}`)
-        return
-      }
-
-      logger.bot('error', this.selfId, `发生未知错误: ${str}`)
-    }
-
-    logger.bot('warn', this.selfId, `收到未知事件: ${str}`)
+  async sendApi<T extends keyof OneBotApi> (
+    action: T,
+    params: OneBotApi[T]['params'],
+    timeout?: number
+  ): Promise<OneBotApi[T]['response']> {
+    return this._onebot.sendApi(action, params, timeout)
   }
 
   /**
@@ -89,8 +123,8 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param contact 联系人信息 如果需要转换napcat的文件消息则需要传入
    * @return karin格式消息
    */
-  AdapterConvertKarin (data: Array<OB11Segment>, contact?: Contact) {
-    return AdapterConvertKarin(data, this, contact)
+  AdapterConvertKarin (data: Array<OneBotMessage>) {
+    return AdapterConvertKarin(data, this)
   }
 
   /**
@@ -134,26 +168,14 @@ export abstract class AdapterOneBot extends AdapterBase {
     contact: Contact, elements: Array<SendElement>, retryCount?: number
   ): Promise<SendMsgResults> {
     try {
-      const { scene, peer } = contact
+      const message = this.KarinConvertAdapter(elements)
       let res
-      if (scene === 'group') {
-        res = await this.sendApi(OB11ApiAction.sendMsg, {
-          message_type: 'group',
-          group_id: Number(peer),
-          message: this.KarinConvertAdapter(elements),
-        })
-      } else if (scene === 'groupTemp') {
-        res = await this.sendApi(OB11ApiAction.sendPrivateMsg, {
-          user_id: Number(contact.subPeer),
-          group_id: Number(peer),
-          message: this.KarinConvertAdapter(elements),
-        })
+      if (contact.scene === 'group') {
+        res = await this._onebot.sendGroupMsg(Number(contact.peer), message)
+      } else if (contact.scene === 'groupTemp') {
+        res = await this._onebot.sendPrivateMsg(Number(contact.subPeer), message)
       } else {
-        res = await this.sendApi(OB11ApiAction.sendMsg, {
-          message_type: 'private',
-          user_id: Number(peer),
-          message: this.KarinConvertAdapter(elements),
-        })
+        res = await this._onebot.sendPrivateMsg(Number(contact.peer), message)
       }
 
       const messageId = String(res.message_id)
@@ -167,14 +189,6 @@ export abstract class AdapterOneBot extends AdapterBase {
       }
       throw error
     }
-  }
-
-  /**
-   * 发送消息
-   * @deprecated 已废弃，请使用`sendMsg`
-   */
-  async SendMessage (contact: Contact, elements: Array<Elements>, retryCount?: number) {
-    return this.sendMsg(contact, elements, retryCount)
   }
 
   // /**
@@ -216,20 +230,20 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param resId 资源ID
    */
   async sendLongMsg (contact: Contact, resId: string) {
-    let result
-    const { scene, peer } = contact
+    const result = await (async () => {
+      if (contact.scene === 'group') {
+        return await this._onebot.sendGroupMsg(
+          Number(contact.peer),
+          [{ type: OneBotSegmentType.Forward, data: { id: resId } }]
+        )
+      }
 
-    if (scene === 'group') {
-      result = await this.sendApi(OB11ApiAction.sendGroupMsg, {
-        group_id: Number(peer),
-        message: [{ type: 'forward', data: { id: resId } }],
-      })
-    } else {
-      result = await this.sendApi(OB11ApiAction.sendPrivateMsg, {
-        user_id: Number(peer),
-        message: [{ type: 'forward', data: { id: resId } }],
-      })
-    }
+      const id = contact.scene === 'friend' ? Number(contact.peer) : Number(contact.subPeer)
+      return await this._onebot.sendPrivateMsg(
+        id,
+        [{ type: OneBotSegmentType.Forward, data: { id: resId } }]
+      )
+    })()
 
     const messageId = String(result.message_id)
     const messageTime = Date.now()
@@ -245,20 +259,13 @@ export abstract class AdapterOneBot extends AdapterBase {
   }
 
   /**
-   * @deprecated 已废弃，请使用`sendLongMsg`
-   */
-  async SendMessageByResId (contact: Contact, id: string) {
-    return this.sendLongMsg(contact, id)
-  }
-
-  /**
    * 撤回消息
    * @param contact ob11无需提供contact参数
    * @param messageId 消息ID
    */
   async recallMsg (_: Contact, messageId: string) {
     try {
-      await this.sendApi(OB11ApiAction.deleteMsg, { message_id: Number(messageId) })
+      await this._onebot.deleteMsg(Number(messageId))
       return true
     } catch {
       return false
@@ -266,22 +273,62 @@ export abstract class AdapterOneBot extends AdapterBase {
   }
 
   /**
-   * @deprecated 已废弃，请使用`recallMsg`
-   */
-  async RecallMessage (_contact: Contact, messageId: string) {
-    return this.recallMsg(_contact, messageId)
-  }
-
-  /**
    * 获取消息
    * @param contact 联系人信息
    * @param messageId 消息ID
    */
-  async getMsg (contact: Contact, messageId: string) {
-    const result = await this.sendApi(OB11ApiAction.getMsg, { message_id: Number(messageId) || messageId as unknown as number })
+  async getMsg (_contact: Contact | string, messageId?: string) {
+    /** 目标id */
+    const targetId = typeof _contact === 'string' ? _contact : messageId
+    const result = await this._onebot.getMsg(Number(targetId))
     const userId = result.sender.user_id + ''
-    const messageSeq = result.message_seq || result.message_id
+
+    const messageSeq: number = (result as any).message_seq || result.message_id
     const messageID = result.message_id + ''
+
+    const contact = ((): Contact => {
+      if (result.message_type === 'group') {
+        return {
+          scene: 'group',
+          peer: result.group_id + '',
+          name: result.sender.nickname,
+        }
+      }
+
+      return {
+        scene: 'friend',
+        peer: result.sender.user_id + '',
+        name: result.sender.nickname,
+      }
+    })()
+
+    const sender = (() => {
+      if (result.message_type === 'group') {
+        return {
+          userId,
+          uid: userId,
+          uin: result.sender.user_id,
+          nick: result.sender.nickname,
+          name: result.sender.nickname,
+          sex: result.sender.sex || 'unknown',
+          role: (result.sender?.role || 'unknown') as Role,
+          card: result.sender?.card || '',
+          title: result.sender?.title || '',
+          level: Number(result.sender?.level) || 0,
+          area: result.sender?.area || '',
+        }
+      }
+
+      return {
+        userId,
+        uid: userId,
+        sex: result.sender.sex || 'unknown',
+        role: 'unknown' as Role,
+        uin: result.sender.user_id,
+        nick: result.sender.nickname,
+        name: result.sender.nickname,
+      }
+    })()
 
     return {
       time: result.time,
@@ -289,29 +336,10 @@ export abstract class AdapterOneBot extends AdapterBase {
       message_id: messageID,
       message_seq: messageSeq,
       messageSeq,
-      contact: {
-        scene: result.message_type === 'group' ? 'group' as const : 'friend' as const,
-        peer: contact.peer, // 这里可能不准确 传入是什么就返回什么
-        sub_peer: null,
-        name: '',
-      },
-      sender: {
-        userId,
-        uid: userId,
-        uin: result.sender.user_id,
-        nick: result.sender.nickname,
-        role: 'unknown' as const,
-        name: result.sender.nickname,
-      },
-      elements: await this.AdapterConvertKarin(result.message, contact),
+      contact,
+      sender,
+      elements: await this.AdapterConvertKarin(result.message),
     }
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`getMsg`
-   */
-  async GetMessage (contact: Contact, messageId: string) {
-    return this.getMsg(contact, messageId)
   }
 
   /**
@@ -322,81 +350,33 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @returns 包含历史消息的数组
    */
   async getHistoryMsg (contact: Contact, startMsgId: string | number, count: number) {
-    /**
-     * 通过message_seq获取历史消息
-     * @param startMsgId 起始消息ID
-     * @param count 获取消息数量 默认为1
-     * @returns 包含历史消息的数组
-     */
-    const getHistoryMsgSeq = async (startMsgId: number, count: number) => {
-      if (contact.scene === 'group') {
-        return this.sendApi(OB11ApiAction.getGroupMsgHistory, { message_seq: startMsgId, count, group_id: Number(contact.peer) })
-      }
-
-      return this.sendApi(OB11ApiAction.getFriendMsgHistory, { message_seq: startMsgId, count, user_id: Number(contact.peer) })
-    }
-
-    /**
-     * 通过get_msg获取seq
-     * @param msgId 消息ID
-     * @returns seq
-     */
-    const getSeq = async (msgId: string) => {
-      const result = await this.getMsg(contact, msgId)
-      return result.message_seq
-    }
-
-    /**
-     * Lagrange.OneBot专属接口
-     * 通过message_id获取历史消息
-     * @param startMsgId 起始消息ID
-     * @param count 获取消息数量 默认为1
-     * @returns 包含历史消息的数组
-     */
-    const getLglHistoryMsg = async (startMsgId: string, count: number) => {
-      const options: any = { message_id: Number(startMsgId), count }
-      if (contact.scene === 'group') {
-        options.group_id = Number(contact.peer)
-        return this.sendApi(OB11ApiAction.getGroupMsgHistory, options)
-      }
-
-      options.user_id = Number(contact.peer)
-      return this.sendApi(OB11ApiAction.getFriendMsgHistory, options)
-    }
-
-    /**
-     * 最终获取历史消息的函数
-     */
-    const getHistory = async () => {
-      /** seq */
+    const result = await (async (): Promise<ReturnType<OneBotCore['getGroupMsgHistory']>> => {
+      /** 通过message_seq获取历史消息 */
       if (typeof startMsgId === 'number') {
         if (this.adapter.name === 'Lagrange.OneBot') {
           throw new Error('Lagrange.OneBot不支持通过seq获取历史消息')
         }
 
-        return getHistoryMsgSeq(startMsgId, count)
+        return this._onebot.getGroupMsgHistory(Number(contact.peer), startMsgId, count)
       }
 
-      /** msgId */
-      if (typeof startMsgId === 'string') {
-        if (this.adapter.name === 'Lagrange.OneBot') {
-          return getLglHistoryMsg(startMsgId, count)
-        }
-
-        const seq = await getSeq(startMsgId)
-        return getHistoryMsgSeq(seq, count)
+      /** 通过message_id获取历史消息 */
+      if (typeof startMsgId !== 'string') {
+        throw new Error('startMsgId类型错误')
       }
 
-      throw new Error('startMsgId类型错误')
-    }
+      if (this.adapter.name === 'Lagrange.OneBot') {
+        return this._onebot.lgl_getGroupMsgHistory(Number(contact.peer), Number(startMsgId), count)
+      }
 
-    const all = []
-    const res = await getHistory()
+      const seq = await this.getMsg(contact, startMsgId)
+      return this._onebot.getGroupMsgHistory(Number(contact.peer), seq.message_seq, count)
+    })()
 
-    for (const v of res.messages) {
+    return await Promise.all(result.messages.map(async (v) => {
       const userId = v.sender.user_id + '' || ''
       const messageId = String(v.message_id) || ''
-      const messageSeq = v.message_seq || 0
+      const messageSeq = (v as any).message_seq || v.message_id
 
       const data = {
         time: Date.now(),
@@ -405,30 +385,22 @@ export abstract class AdapterOneBot extends AdapterBase {
         message_id: messageId,
         message_seq: messageSeq,
         contact,
-        sender: {
+        sender: senderGroup({
           userId,
-          uid: userId,
-          uin: v.sender.user_id,
           nick: v?.sender?.nickname || '',
           name: v?.sender?.nickname || '',
           role: v?.sender?.role || 'unknown',
-          card: contact.scene === 'group' ? v?.sender?.card || '' : '',
-        },
-        elements: await this.AdapterConvertKarin(v.message, contact),
+          sex: v?.sender?.sex || 'unknown',
+          age: v?.sender?.age || 0,
+          card: v?.sender?.card || '',
+          area: v?.sender?.area || '',
+          level: Number(v?.sender?.level) || 0,
+          title: v?.sender?.title || '',
+        }),
+        elements: await this.AdapterConvertKarin(v.message),
       }
-
-      all.push(data)
-    }
-
-    return all
-  }
-
-  /**
-   * 获取msg_id获取历史消息
-   * @deprecated 已废弃，请使用`getHistoryMsg`
-   */
-  async GetHistoryMessage (contact: Contact, startMessageId: string, count: number = 1) {
-    return this.getHistoryMsg(contact, startMessageId, count)
+      return data
+    }))
   }
 
   /**
@@ -439,18 +411,11 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async sendLike (targetId: string, count: number) {
     try {
-      await this.sendApi(OB11ApiAction.sendLike, { user_id: Number(targetId), times: count })
+      await this._onebot.sendLike(Number(targetId), count)
       return true
     } catch {
       return false
     }
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`sendLike`
-   */
-  async VoteUser (targetId: string, voteCount: number = 10) {
-    return this.sendLike(targetId, voteCount)
   }
 
   /**
@@ -463,22 +428,11 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async groupKickMember (groupId: string, targetId: string, rejectAddRequest?: boolean, _?: string) {
     try {
-      await this.sendApi(OB11ApiAction.setGroupKick, {
-        group_id: Number(groupId),
-        user_id: Number(targetId),
-        reject_add_request: rejectAddRequest,
-      })
+      await this._onebot.setGroupKick(Number(groupId), Number(targetId), rejectAddRequest)
       return true
     } catch {
       return false
     }
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`groupKickMember`
-   */
-  async KickMember (groupId: string, targetId: string, rejectAddRequest: boolean = false, kickReason: string = '') {
-    return this.groupKickMember(groupId, targetId, rejectAddRequest, kickReason)
   }
 
   /**
@@ -490,18 +444,11 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGroupMute (groupId: string, targetId: string, duration: number) {
     try {
-      await this.sendApi(OB11ApiAction.setGroupBan, { group_id: Number(groupId), user_id: Number(targetId), duration })
+      await this._onebot.setGroupBan(Number(groupId), Number(targetId), duration)
       return true
     } catch {
       return false
     }
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`setGroupMute`
-   */
-  async BanMember (groupId: string, targetId: string, duration: number) {
-    return this.setGroupMute(groupId, targetId, duration)
   }
 
   /**
@@ -512,18 +459,11 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGroupAllMute (groupId: string, isBan: boolean) {
     try {
-      await this.sendApi(OB11ApiAction.setGroupWholeBan, { group_id: Number(groupId), enable: isBan })
+      await this._onebot.setGroupWholeBan(Number(groupId), isBan)
       return true
     } catch {
       return false
     }
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`setGroupAllMute`
-   */
-  async SetGroupWholeBan (groupId: string, isBan = true) {
-    return this.setGroupAllMute(groupId, isBan)
   }
 
   /**
@@ -535,18 +475,11 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGroupAdmin (groupId: string, targetId: string, isAdmin: boolean) {
     try {
-      await this.sendApi(OB11ApiAction.setGroupAdmin, { group_id: Number(groupId), user_id: Number(targetId), enable: isAdmin })
+      await this._onebot.setGroupAdmin(Number(groupId), Number(targetId), isAdmin)
       return true
     } catch {
       return false
     }
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`setGroupAdmin`
-   */
-  async SetGroupAdmin (groupId: string, targetId: string, isAdmin: boolean) {
-    return this.setGroupAdmin(groupId, targetId, isAdmin)
   }
 
   /**
@@ -558,18 +491,11 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGroupMemberCard (groupId: string, targetId: string, card: string) {
     try {
-      await this.sendApi(OB11ApiAction.setGroupCard, { group_id: Number(groupId), user_id: Number(targetId), card })
+      await this._onebot.setGroupCard(Number(groupId), Number(targetId), card)
       return true
     } catch {
       return false
     }
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`setGroupMemberCard`
-   */
-  async ModifyMemberCard (groupId: string, targetId: string, card: string) {
-    return this.setGroupMemberCard(groupId, targetId, card)
   }
 
   /**
@@ -580,18 +506,11 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGroupName (groupId: string, groupName: string) {
     try {
-      await this.sendApi(OB11ApiAction.setGroupName, { group_id: Number(groupId), group_name: groupName })
+      await this._onebot.setGroupName(Number(groupId), groupName)
       return true
     } catch {
       return false
     }
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`setGroupName`
-   */
-  async ModifyGroupName (groupId: string, groupName: string) {
-    return this.setGroupName(groupId, groupName)
   }
 
   /**
@@ -602,18 +521,11 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGroupQuit (groupId: string, isDismiss: boolean) {
     try {
-      await this.sendApi(OB11ApiAction.setGroupLeave, { group_id: Number(groupId), is_dismiss: isDismiss })
+      await this._onebot.setGroupLeave(Number(groupId), isDismiss)
       return true
     } catch {
       return false
     }
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`setGroupQuit`
-   */
-  async LeaveGroup (groupId: string, isDismiss = false) {
-    return this.setGroupQuit(groupId, isDismiss)
   }
 
   /**
@@ -625,34 +537,10 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGroupMemberTitle (groupId: string, targetId: string, title: string) {
     try {
-      await this.sendApi(OB11ApiAction.setGroupSpecialTitle, { group_id: Number(groupId), user_id: Number(targetId), special_title: title })
+      await this._onebot.setGroupSpecialTitle(Number(groupId), Number(targetId), title)
       return true
     } catch {
       return false
-    }
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`setGroupMemberTitle`
-   */
-  async SetGroupUniqueTitle (groupId: string, targetId: string, uniqueTitle: string) {
-    return this.setGroupMemberTitle(groupId, targetId, uniqueTitle)
-  }
-
-  /**
-   * 获取登录号信息
-   * @deprecated 已废弃，请直接使用`this.account`
-   */
-  async GetCurrentAccount (): Promise<{
-    account_uid: string
-    account_uin: string
-    account_name: string
-  }> {
-    const res = await this.sendApi(OB11ApiAction.getLoginInfo, {})
-    return {
-      account_uid: res.user_id + '',
-      account_uin: res.user_id + '',
-      account_name: res.nickname,
     }
   }
 
@@ -662,7 +550,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @returns 陌生人信息数组
    */
   async getStrangerInfo (targetId: string) {
-    const result = await this.sendApi(OB11ApiAction.getStrangerInfo, { user_id: Number(targetId[0]), no_cache: true })
+    const result = await this._onebot.getStrangerInfo(Number(targetId[0]), true)
     return {
       ...result,
       userId: targetId,
@@ -716,7 +604,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @returns 好友列表数组
    */
   async getFriendList (_?: boolean) {
-    const friendList = await this.sendApi(OB11ApiAction.getFriendList, {})
+    const friendList = await this._onebot.getFriendList()
     return friendList.map(v => {
       const userId = v.user_id + ''
       return {
@@ -724,15 +612,15 @@ export abstract class AdapterOneBot extends AdapterBase {
         userId,
         user_id: userId,
         /** 用户UID */
-        uid: v.uid || '',
+        uid: '',
         /** 用户UIN */
         uin: userId,
         /** qid */
         qid: v.qid || '',
-        /** 名称 */
+        /** 昵称 */
         nick: v.nickname,
-        /** 备注 */
-        remark: '',
+        /** 昵称 */
+        name: v.nickname,
         /** 用户等级 */
         level: 0,
         /** 生日 */
@@ -767,13 +655,6 @@ export abstract class AdapterOneBot extends AdapterBase {
     })
   }
 
-  /**
-   * @deprecated 已废弃，请使用`getStrangerInfo`
-   */
-  async GetStrangerProfileCard (targetId: Array<string>) {
-    return this.getStrangerInfo(targetId[0])
-  }
-
   /** 获取好友列表 */
   async GetFriendList () {
     return this.getFriendList()
@@ -786,9 +667,8 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @returns 群信息
    */
   async getGroupInfo (groupId: string, noCache?: boolean) {
-    const info = await this.sendApi(OB11ApiAction.getGroupInfo, { group_id: Number(groupId), no_cache: noCache })
+    const info = await this._onebot.getGroupInfo(Number(groupId), noCache)
     const groupName = info.group_name
-    // todo 可以走群成员列表获取群主
     return {
       groupId,
       groupName,
@@ -801,16 +681,13 @@ export abstract class AdapterOneBot extends AdapterBase {
       max_member_count: info.max_member_count,
       member_count: info.member_count,
       group_uin: groupId,
-      admins: [],
-      owner: '',
+      admins: (info.admin_list || []).map(v => ({
+        userId: v.user_id + '',
+        name: v.nickname,
+        role: v.role as Role,
+      })),
+      owner: info.owner_id + '',
     }
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`getGroupInfo`
-   */
-  async GetGroupInfo (_groupId: string, noCache = false) {
-    return this.getGroupInfo(_groupId, noCache)
   }
 
   /**
@@ -818,8 +695,9 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param refresh 是否刷新好友列表
    * @returns 群列表数组
    */
-  async getGroupList (refresh?: boolean) {
-    const groupList = await this.sendApi(OB11ApiAction.getGroupList, { no_cache: refresh })
+  async getGroupList (_refresh?: boolean) {
+    // TODO: 可以走群成员列表获取群主、管理员列表
+    const groupList = await this._onebot.getGroupList()
     return groupList.map(info => {
       const groupId = info.group_id + ''
       const groupName = info.group_name
@@ -842,14 +720,6 @@ export abstract class AdapterOneBot extends AdapterBase {
   }
 
   /**
-   * 获取群列表
-   * @deprecated 已废弃，请使用`getGroupList`
-   */
-  async GetGroupList () {
-    return this.getGroupList()
-  }
-
-  /**
    * 获取群成员信息
    * 此接口在非QQ平台上很难获取到标准信息，因此返回的数据可能会有所不同
    * @param groupId 群ID
@@ -859,14 +729,14 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async getGroupMemberInfo (groupId: string, targetId: string, refresh?: boolean) {
     const userId = Number(targetId)
-    const info = await this.sendApi(OB11ApiAction.getGroupMemberInfo, { group_id: Number(groupId), user_id: userId, no_cache: refresh })
+    const info = await this._onebot.getGroupMemberInfo(Number(groupId), userId, refresh)
     return {
       ...info,
       userId: targetId,
       uid: targetId,
       uin: targetId,
       nick: info.nickname,
-      role: info.role,
+      role: info.role as Role,
       age: info.age,
       uniqueTitle: info.title,
       card: info.card,
@@ -879,26 +749,20 @@ export abstract class AdapterOneBot extends AdapterBase {
       unfriendly: info.unfriendly,
       sex: info.sex,
       get sender (): GroupSender {
-        return senderGroup(
-          this.userId,
-          this.role,
-          this.nick,
-          this.sex,
-          this.age,
-          this.card,
-          this.area,
-          this.level,
-          this.title
-        )
+        return senderGroup({
+          userId: targetId,
+          nick: info.nickname,
+          name: info.nickname,
+          role: info.role as Role,
+          sex: info.sex,
+          age: info.age,
+          card: info.card,
+          area: info.area,
+          level: Number(info.level) || 0,
+          title: info.title,
+        })
       },
     }
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`getGroupMemberInfo`
-   */
-  async GetGroupMemberInfo (groupId: string, targetId: string, refresh = false) {
-    return this.getGroupMemberInfo(groupId, targetId, refresh)
   }
 
   /**
@@ -908,7 +772,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @returns 群成员列表数组
    */
   async getGroupMemberList (groupId: string, refresh?: boolean) {
-    const list = await this.sendApi(OB11ApiAction.getGroupMemberList, { group_id: Number(groupId), no_cache: refresh })
+    const list = await this._onebot.getGroupMemberList(Number(groupId), refresh)
     return list.map(v => {
       const targetId = v.user_id + ''
       return {
@@ -917,7 +781,7 @@ export abstract class AdapterOneBot extends AdapterBase {
         uid: targetId,
         uin: targetId,
         nick: v.nickname,
-        role: v.role,
+        role: v.role as Role,
         age: v.age,
         uniqueTitle: v.title,
         card: v.card,
@@ -930,27 +794,21 @@ export abstract class AdapterOneBot extends AdapterBase {
         unfriendly: v.unfriendly,
         sex: v.sex,
         get sender (): GroupSender {
-          return senderGroup(
-            targetId,
-            v.role,
-            v.nickname,
-            v.sex,
-            v.age,
-            v.card,
-            v.area,
-            Number(v.level),
-            v.title
-          )
+          return senderGroup({
+            userId: targetId,
+            nick: v.nickname,
+            name: v.nickname,
+            role: v.role as Role,
+            sex: v.sex,
+            age: v.age,
+            card: v.card,
+            area: v.area,
+            level: Number(v.level),
+            title: v.title,
+          })
         },
       }
     })
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`getGroupMemberList`
-   */
-  async GetGroupMemberList (groupId: string, refresh = false) {
-    return this.getGroupMemberList(groupId, refresh)
   }
 
   /**
@@ -960,10 +818,10 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @returns 群荣誉信息数组
    */
   async getGroupHonor (groupId: string) {
-    const groupHonor = await this.sendApi(OB11ApiAction.getGroupHonorInfo, { group_id: Number(groupId), type: 'all' })
+    const groupHonor = await this._onebot.getGroupHonorInfo(Number(groupId), 'all')
 
     const result: QQGroupHonorInfo[] = []
-    groupHonor.talkative_list.forEach(honor => {
+    groupHonor.talkative_list && groupHonor.talkative_list.forEach(honor => {
       const userId = honor.user_id + ''
       result.push({
         userId,
@@ -974,7 +832,8 @@ export abstract class AdapterOneBot extends AdapterBase {
         description: honor.description,
       })
     })
-    groupHonor.performer_list.forEach(honor => {
+
+    groupHonor.performer_list && groupHonor.performer_list.forEach(honor => {
       const userId = honor.user_id + ''
       result.push({
         userId,
@@ -985,7 +844,8 @@ export abstract class AdapterOneBot extends AdapterBase {
         description: honor.description,
       })
     })
-    groupHonor.legend_list.forEach(honor => {
+
+    groupHonor.legend_list && groupHonor.legend_list.forEach(honor => {
       const userId = honor.user_id + ''
       result.push({
         userId,
@@ -996,7 +856,8 @@ export abstract class AdapterOneBot extends AdapterBase {
         description: honor.description,
       })
     })
-    groupHonor.strong_newbie_list.forEach(honor => {
+
+    groupHonor.strong_newbie_list && groupHonor.strong_newbie_list.forEach(honor => {
       const userId = honor.user_id + ''
       result.push({
         userId,
@@ -1007,7 +868,8 @@ export abstract class AdapterOneBot extends AdapterBase {
         description: honor.description,
       })
     })
-    groupHonor.emotion_list.forEach(honor => {
+
+    groupHonor.emotion_list && groupHonor.emotion_list.forEach(honor => {
       const userId = honor.user_id + ''
       result.push({
         userId,
@@ -1022,41 +884,35 @@ export abstract class AdapterOneBot extends AdapterBase {
   }
 
   /**
-   * @deprecated 已废弃，请使用`getGroupHonor`
-   */
-  async GetGroupHonor (groupId: string, _ = false) {
-    return this.getGroupHonor(groupId)
-  }
-
-  /**
    * 设置消息表情回应
    * @param contact 目标信息
    * @param messageId 消息ID
    * @param faceId 表情ID
    * @returns 此接口的返回值不值得信任
    */
-  async setMsgReaction (_: Contact, messageId: string, faceId: number, isSet: boolean) {
+  async setMsgReaction (contact: Contact, messageId: string, faceId: number, isSet: boolean) {
     try {
-      await this.sendApi(OB11ApiAction.setMsgEmojiLike, { message_id: messageId, emoji_id: faceId, is_set: isSet })
-      return true
+      if (this.adapter.name === 'Lagrange.OneBot') {
+        await this._onebot.lgl_setGroupReaction(+contact.peer, +messageId, faceId + '', isSet)
+        return true
+      }
+
+      if (this.adapter.name === 'NapCat.OneBot') {
+        await this._onebot.nc_setMsgEmojiLike(+messageId, faceId + '', isSet)
+        return true
+      }
+
+      throw new Error(`${this.adapter.name} 不支持设置消息表情回应`)
     } catch {
       return false
     }
   }
 
   /**
-   * @deprecated 已废弃，请使用`setMsgReaction`
-   */
-  async ReactMessageWithEmoji (contact: Contact, messageId: string, faceId: number, isSet = true) {
-    return this.setMsgReaction(contact, messageId, faceId, isSet)
-  }
-
-  /**
    * 获取版本信息
-   * @deprecated 已废弃，请使用`setMsgReaction`
    */
-  async GetVersion () {
-    const res = await this.sendApi(OB11ApiAction.getVersionInfo, {})
+  async getVersion () {
+    const res = await this._onebot.getVersionInfo()
     return {
       name: res.app_name,
       app_name: res.app_name,
@@ -1091,7 +947,7 @@ export abstract class AdapterOneBot extends AdapterBase {
       message_seq: number
       json_elements: string
     }> = []
-    const res = await this.sendApi(OB11ApiAction.getEssenceMsgList, { group_id: Number(groupId) })
+    const res = await this._onebot.getEssenceMsgList(Number(groupId))
     for (const v of res) {
       const { message_seq: messageSeq, elements } = await this.getMsg({
         scene: 'group',
@@ -1144,14 +1000,6 @@ export abstract class AdapterOneBot extends AdapterBase {
   }
 
   /**
-   * 精华消息
-   * @deprecated 已废弃，请使用`getGroupHighlights`
-   */
-  async GetEssenceMessageList (groupId: string, page: number, pageSize: number) {
-    return this.getGroupHighlights(groupId, page, pageSize)
-  }
-
-  /**
    * 上传群文件、私聊文件
    * @param contact 目标信息
    * @param file 本地文件绝对路径
@@ -1162,28 +1010,14 @@ export abstract class AdapterOneBot extends AdapterBase {
   async uploadFile (contact: Contact, file: string, name: string, folder?: string) {
     try {
       if (contact.scene === 'group') {
-        await this.sendApi(OB11ApiAction.uploadGroupFile, { group_id: Number(contact.peer), file, name, folder })
+        await this._onebot.uploadGroupFile(+contact.peer, file, name, folder)
       } else {
-        await this.sendApi(OB11ApiAction.uploadPrivateFile, { user_id: Number(contact.peer), file, name })
+        await this._onebot.uploadPrivateFile(+contact.peer, file, name)
       }
       return true
     } catch {
       return false
     }
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`uploadFile`
-   */
-  async UploadGroupFile (groupId: string, file: string, name: string, folder?: string) {
-    return this.uploadFile({ scene: 'group', peer: groupId, name: '' }, file, name, folder)
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`uploadFile`
-   */
-  async UploadPrivateFile (userId: string, file: string, name: string) {
-    return this.uploadFile({ scene: 'friend', peer: userId, name: '' }, file, name)
   }
 
   /**
@@ -1194,25 +1028,15 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGgroupHighlights (_: string, messageId: string, create: boolean) {
     try {
-      await this.sendApi(create ? OB11ApiAction.setEssenceMsg : OB11ApiAction.deleteEssenceMsg, { message_id: Number(messageId) })
+      if (create) {
+        await this._onebot.setEssenceMsg(+messageId)
+      } else {
+        await this._onebot.deleteEssenceMsg(+messageId)
+      }
       return true
     } catch {
       return false
     }
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`setGgroupHighlights`
-   */
-  async SetEssenceMessage (_groupId: string, messageId: string) {
-    return this.setGgroupHighlights(_groupId, messageId, true)
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`setGgroupHighlights`
-   */
-  async DeleteEssenceMessage (_groupId: string, messageId: string) {
-    return this.setGgroupHighlights(_groupId, messageId, false)
   }
 
   async PokeMember (_: string, __: string) {
@@ -1229,18 +1053,11 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setFriendApplyResult (requestId: string, isApprove: boolean, remark?: string) {
     try {
-      await this.sendApi(OB11ApiAction.setFriendAddRequest, { flag: requestId, approve: isApprove, remark })
+      await this._onebot.setFriendAddRequest(requestId, isApprove, remark)
       return true
     } catch {
       return false
     }
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`setFriendApplyResult`
-   */
-  async SetFriendApplyResult (requestId: string, isApprove: boolean, remark?: string) {
-    return this.setFriendApplyResult(requestId, isApprove, remark)
   }
 
   /**
@@ -1252,19 +1069,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setGroupApplyResult (requestId: string, isApprove: boolean, denyReason?: string) {
     try {
-      await this.sendApi(OB11ApiAction.setGroupAddRequest, { flag: requestId, approve: isApprove, sub_type: 'add', reason: denyReason })
-      return true
-    } catch {
-      return false
-    }
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`setGroupApplyResult`
-   */
-  async SetGroupApplyResult (requestId: string, isApprove: boolean, denyReason?: string) {
-    try {
-      await this.sendApi(OB11ApiAction.setGroupAddRequest, { flag: requestId, approve: isApprove, sub_type: 'add', reason: denyReason })
+      await this._onebot.setGroupAddRequest(requestId, 'add', isApprove, denyReason)
       return true
     } catch {
       return false
@@ -1279,7 +1084,7 @@ export abstract class AdapterOneBot extends AdapterBase {
    */
   async setInvitedJoinGroupResult (requestId: string, isApprove: boolean) {
     try {
-      await this.sendApi(OB11ApiAction.setGroupAddRequest, { flag: requestId, approve: isApprove, sub_type: 'invite' })
+      await this._onebot.setGroupAddRequest(requestId, 'invite', isApprove)
       return true
     } catch {
       return false
@@ -1287,25 +1092,19 @@ export abstract class AdapterOneBot extends AdapterBase {
   }
 
   /**
-   * @deprecated 已废弃，请使用`setInvitedJoinGroupResult`
-   */
-  async SetInvitedJoinGroupResult (requestId: string, isApprove: boolean, _?: string) {
-    return this.setInvitedJoinGroupResult(requestId, isApprove)
-  }
-
-  /**
    * 合并转发 karin -> adapter
    * @param elements 消息元素
+   * @param options 首层小卡片外显参数
    * @returns 适配器消息元素
    */
-  forwardKarinConvertAdapter (elements: Array<NodeElement>): Array<OB11NodeSegment> {
-    const messages: OB11NodeSegment[] = []
+  forwardKarinConvertAdapter (elements: Array<NodeElement>, options?: ForwardOptions): Array<NodeSegment> {
+    const messages: NodeSegment[] = []
     for (const elem of elements) {
       if (elem.subType === 'messageID') {
-        messages.push({ type: 'node', data: { id: elem.messageId } })
+        messages.push({ type: OneBotSegmentType.Node, data: { id: elem.messageId } })
       } else {
-        const node: CustomNodeSegments = {
-          type: 'node',
+        const node: NodeCustomSegment = {
+          type: OneBotSegmentType.Node,
           data: {
             user_id: elem.userId,
             nickname: elem.nickname,
@@ -1317,6 +1116,12 @@ export abstract class AdapterOneBot extends AdapterBase {
           if (elem.options.prompt) node.data.prompt = elem.options.prompt
           if (elem.options.summary) node.data.summary = elem.options.summary
           if (elem.options.source) node.data.source = elem.options.source
+        }
+
+        if (options && messages.length === 0) {
+          node.data.prompt = options.prompt
+          node.data.summary = options.summary
+          node.data.source = options.source
         }
 
         messages.push(node)
@@ -1333,85 +1138,54 @@ export abstract class AdapterOneBot extends AdapterBase {
    * @param options 首层小卡片外显参数
    */
   async sendForwardMsg (contact: Contact, elements: NodeElement[], options?: ForwardOptions) {
-    if (contact.scene === 'group') {
-      const result = await this.sendApi(OB11ApiAction.sendGroupForwardMsg, {
-        group_id: Number(contact.peer),
-        messages: this.forwardKarinConvertAdapter(elements),
-        ...options,
-      })
-      const messageId = String(result.message_id)
-      return { messageId, forwardId: result.forward_id, message_id: messageId }
+    const result = await (() => {
+      if (contact.scene === 'group') {
+        return this._onebot.sendGroupForwardMsg(
+          Number(contact.peer),
+          this.forwardKarinConvertAdapter(elements, options)
+        )
+      }
+
+      if (contact.scene === 'friend') {
+        return this._onebot.sendPrivateForwardMsg(
+          Number(contact.peer),
+          this.forwardKarinConvertAdapter(elements, options)
+        )
+      }
+
+      throw TypeError(`不支持的场景类型: ${contact.scene}`)
+    })()
+
+    return {
+      ...result,
+      messageId: String(result.message_id),
+      forwardId: String(result.res_id || result.forward_id),
     }
-
-    if (contact.scene === 'friend') {
-      const result = await this.sendApi(OB11ApiAction.sendPrivateForwardMsg, {
-        user_id: Number(contact.peer),
-        messages: this.forwardKarinConvertAdapter(elements),
-        ...options,
-      })
-
-      const messageId = String(result.message_id)
-      return { messageId, forwardId: result.forward_id, message_id: messageId }
-    }
-
-    throw TypeError(`不支持的场景类型: ${contact.scene}`)
-  }
-
-  /**
-   * @deprecated 已废弃，请使用`sendForwardMsg`
-   */
-  async sendForwardMessage (contact: Contact, elements: NodeElement[]) {
-    return this.sendForwardMsg(contact, elements)
   }
 
   /**
    * 获取文件url
+   * @description napcat支持仅提供fid获取url`(但是你要伪造一个假的contact...)`
    * @param contact 目标信息
    * @param fid 文件id
    * @returns 文件url
    */
   async getFileUrl (contact: Contact, fid: string) {
+    if (this.adapter.name === 'NapCat.OneBot') {
+      const { url } = await this._onebot.nc_getFile(fid)
+      return url
+    }
+
     if (contact.scene === 'group') {
-      const { url } = await this.sendApi(
-        OB11ApiAction.getGroupFileUrl,
-        { group_id: Number(contact.peer), file_id: fid }
-      )
+      const { url } = await this._onebot.getGroupFileUrl(+contact.peer, fid)
       return url
     }
 
     if (contact.scene === 'friend') {
-      const { url } = await this.sendApi(
-        OB11ApiAction.getPrivateFileUrl,
-        { user_id: Number(contact.peer), file_id: fid }
-      )
+      const { url } = await this._onebot.getPrivateFileUrl(+contact.peer, fid)
       return url
     }
 
     throw TypeError(`不支持的场景类型: ${contact.scene}`)
-  }
-
-  /**
-   * 发送API请求
-   * @param action API端点
-   * @param params API参数
-   */
-  async sendApi<T extends keyof OB11ApiParams> (
-    _: T | `${T}`,
-    __: OB11ApiParams[T],
-    ___ = 120
-  ): Promise<OB11ApiRequest[T]> {
-    throw new Error('tips: 请在子类中实现此方法')
-  }
-
-  /**
-   * 发送API请求
-   * @deprecated 已废弃，请使用`sendApi`
-   */
-  async SendApi<T extends keyof OB11ApiParams> (
-    action: T,
-    params: OB11ApiParams[T],
-    time = 0
-  ): Promise<OB11ApiRequest[T]> {
-    return this.sendApi(action, params, time)
   }
 }

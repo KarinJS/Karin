@@ -1,16 +1,16 @@
 import './api/api'
 import { listeners } from '@/core/internal'
-import { registerHttpBot } from './post/register'
+// import { registerHttpBot } from './post/register'
 import { WS_CONNECTION_ONEBOT } from '@/utils/fs/key'
 import { adapter } from '@/utils/config/file/adapter'
-import { AdapterServerOneBot11 } from './connect'
-import { createOneBot11Client } from '@/adapter/onebot/connect/client'
+import { createOneBotWsServer } from './connect'
+import { createOneBotClient } from '@/adapter/onebot/connect'
 
 import type { WebSocket } from 'ws'
 import type { IncomingMessage } from 'node:http'
 
 export * from '@/adapter/onebot/types'
-export type { AdapterOneBot } from '@/adapter/onebot/core/base'
+export type { AdapterOneBot } from '@/adapter/onebot/core/core'
 
 const createServer = async () => {
   listeners.on(WS_CONNECTION_ONEBOT, (
@@ -19,7 +19,7 @@ const createServer = async () => {
     call: () => void
   ) => {
     call()
-    new AdapterServerOneBot11(socket, request).init()
+    createOneBotWsServer(socket, request)
   })
 
   listeners.once('online', () => {
@@ -38,7 +38,7 @@ export const createClient = async () => {
 
   for (const item of cfg.onebot.ws_client) {
     if (!item?.enable || !item?.url) continue
-    createOneBot11Client(item.url, item.token)
+    createOneBotClient(item.url, item.token)
   }
 }
 
@@ -54,7 +54,7 @@ export const createHttp = async () => {
         continue
       }
 
-      registerHttpBot(data.self_id, data.url, data.api_token, data.post_token)
+      // registerHttpBot(data.self_id, data.url, data.api_token, data.post_token)
     } catch (error) {
       logger.error(error)
     }

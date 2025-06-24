@@ -7,7 +7,7 @@ import { requireFileSync } from '../../fs/require'
 import { FILE_CHANGE } from '@/utils/fs'
 import { listeners } from '@/core/internal/listeners'
 import type { Env } from '@/types/config/env'
-import { disconnectAll } from '@/adapter/onebot/connect'
+import { disconnectAllOneBotServer } from '@/adapter/onebot/connect'
 import { updateJwt } from '@/server/auth/jwt'
 import { LogMethodNames } from '@/types'
 
@@ -91,7 +91,7 @@ const initEnv = () => {
 
     if (old?.WS_SERVER_AUTH_KEY?.value !== data?.WS_SERVER_AUTH_KEY?.value) {
       logger.warn('[hmr] WebSocket服务器鉴权秘钥已更新')
-      disconnectAll()
+      disconnectAllOneBotServer()
     }
 
     if (old?.HTTP_AUTH_KEY?.value !== data?.HTTP_AUTH_KEY?.value) {

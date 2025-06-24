@@ -140,7 +140,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _messageId 消息ID
    * @returns MessageResponse对象
    */
-  getMsg (_contact: Contact, _messageId: string): Promise<MessageResponse> {
+  getMsg (_contact: Contact | string, _messageId?: string): Promise<MessageResponse> {
     throw new Error(this.#errMsg)
   }
 

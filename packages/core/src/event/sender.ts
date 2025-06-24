@@ -21,11 +21,11 @@ export const senderFriend = (
   return {
     userId,
     nick: name,
-    name,
-    sex,
-    age,
-    uid,
-    uin,
+    name: name || '',
+    sex: sex || 'unknown',
+    age: age || 0,
+    uid: uid || '',
+    uin: uin || 0,
   }
 }
 
@@ -51,15 +51,15 @@ export const senderGroup: SenderGroup = (
       userId: userId.userId,
       nick: name,
       name,
-      role: userId.role,
-      card: userId.card,
-      area: userId.area,
-      level: userId.level,
-      title: userId.title,
-      sex: userId.sex,
-      age: userId.age,
-      uid: userId.uid,
-      uin: userId.uin,
+      role: userId.role || 'unknown',
+      card: userId.card || '',
+      area: userId.area || '',
+      level: userId.level || 0,
+      title: userId.title || '',
+      sex: userId.sex || 'unknown',
+      age: userId.age || 0,
+      uid: userId.uid || '',
+      uin: userId.uin || 0,
     }
   }
 
@@ -69,14 +69,14 @@ export const senderGroup: SenderGroup = (
       nick: name || '',
       name: name || '',
       role: role || 'unknown',
-      card,
-      area,
-      level,
-      title,
-      sex,
-      age,
-      uid,
-      uin,
+      card: card || '',
+      area: area || '',
+      level: level || 0,
+      title: title || '',
+      sex: sex || 'unknown',
+      age: age || 0,
+      uid: uid || '',
+      uin: uin || 0,
     }
   }
 
@@ -102,10 +102,10 @@ export const senderGuild = (
   return {
     userId,
     nick: name,
-    name,
-    role,
-    sex,
-    age,
+    name: name || '',
+    role: role || 'unknown',
+    sex: sex || 'unknown',
+    age: age || 0,
   }
 }
 

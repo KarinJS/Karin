@@ -1,0 +1,331 @@
+/**
+ * OneBot消息段类型
+ * - text: 纯文本
+ * - face: QQ表情
+ * - image: 图片
+ * - record: 语音
+ * - video: 视频
+ * - at: `@某人`
+ * - rps: 猜拳魔法表情
+ * - dice: 掷骰子魔法表情
+ * - shake: 窗口抖动（戳一戳）
+ * - poke: 戳一戳
+ * - anonymous: 匿名发消息
+ * - share: 链接分享
+ * - contact: 推荐好友/群
+ * - location: 位置
+ * - music: 音乐分享
+ * - reply: 回复
+ * - forward: 合并转发`(适用于forward_id)`
+ * - node: 合并转发
+ * - xml: XML消息段
+ * - json: JSON消息段
+ * - file: 文件消息段
+ *
+ * GoCQ拓展:
+ * - redbag: 红包`(收)`
+ * - gift: 礼物`(发 仅群聊)`
+ *
+ * 社区拓展:
+ * - markdown: markdown消息段
+ */
+export enum OneBotSegmentType {
+  /** 纯文本 */
+  Text = 'text',
+  /** QQ表情 */
+  Face = 'face',
+  /** 图片 */
+  Image = 'image',
+  /** 语音 */
+  Record = 'record',
+  /** 视频 */
+  Video = 'video',
+  /** @某人 */
+  At = 'at',
+  /** 猜拳魔法表情 */
+  Rps = 'rps',
+  /** 掷骰子魔法表情 */
+  Dice = 'dice',
+  /** 窗口抖动（戳一戳） */
+  Shake = 'shake',
+  /** 戳一戳 */
+  Poke = 'poke',
+  /** 匿名发消息 */
+  Anonymous = 'anonymous',
+  /** 链接分享 */
+  Share = 'share',
+  /** 推荐好友/群 */
+  Contact = 'contact',
+  /** 位置 */
+  Location = 'location',
+  /** 音乐分享 */
+  Music = 'music',
+  /** 回复 */
+  Reply = 'reply',
+  /** 合并转发 */
+  Forward = 'forward',
+  /** 合并转发节点 */
+  Node = 'node',
+  /** XML消息段 */
+  Xml = 'xml',
+  /** JSON消息段 */
+  Json = 'json',
+  /** 文件消息段 */
+  File = 'file',
+  /** GoCQ拓展: 红包`(收)` */
+  Redbag = 'redbag',
+  /**
+   * GoCQ拓展: 礼物`(发)`
+   * - 范围: 仅群聊
+   * - 参考: {@link https://docs.go-cqhttp.org/cqcode/#礼物}
+   */
+  Gift = 'gift',
+  /** 社区拓展: markdown消息段 */
+  Markdown = 'markdown',
+}
+
+export interface SegmentBase {
+  type: OneBotSegmentType
+}
+
+/** 纯文本 */
+export interface TextSegment extends SegmentBase {
+  type: OneBotSegmentType.Text
+  data: {
+    text: string
+  }
+}
+
+/** QQ表情 */
+export interface FaceSegment extends SegmentBase {
+  type: OneBotSegmentType.Face
+  data: {
+    id: string
+  }
+}
+
+/** 图片消息段 */
+export interface ImageSegment extends SegmentBase {
+  type: OneBotSegmentType.Image
+  data: {
+    file: string
+    /** 图片类型 `flash` 表示闪照, `show` 表示秀图 默认普通图片 */
+    type?: 'flash' | 'show'
+    url?: string
+    cache?: 0 | 1
+    proxy?: 0 | 1
+    timeout?: number
+    /** 拓展: 图片摘要 */
+    summary?: string
+    /** 拓展: 图片宽度 */
+    width?: number
+    /** 拓展: 图片高度 */
+    height?: number
+  }
+}
+
+/** 语音消息段 */
+export interface RecordSegment extends SegmentBase {
+  type: OneBotSegmentType.Record
+  data: {
+    file: string
+    magic?: 0 | 1
+    url?: string
+    cache?: 0 | 1
+    proxy?: 0 | 1
+    timeout?: number
+  }
+}
+
+/** 短视频消息段 */
+export interface VideoSegment extends SegmentBase {
+  type: OneBotSegmentType.Video
+  data: {
+    file: string
+    url?: string
+    cache?: 0 | 1
+    proxy?: 0 | 1
+    timeout?: number
+  }
+}
+
+/** @某人消息段 */
+export interface AtSegment extends SegmentBase {
+  type: OneBotSegmentType.At
+  data: {
+    qq: string | 'all',
+    name?: string
+  }
+}
+
+/** 猜拳魔法表情消息段 */
+export interface RpsSegment extends SegmentBase {
+  type: OneBotSegmentType.Rps
+  data: {}
+}
+
+/** 掷骰子魔法表情消息段 */
+export interface DiceSegment extends SegmentBase {
+  type: OneBotSegmentType.Dice
+  data: {}
+}
+
+/** 窗口抖动（戳一戳）消息段 */
+export interface ShakeSegment extends SegmentBase {
+  type: OneBotSegmentType.Shake
+  data: {}
+}
+
+/** 戳一戳消息段 */
+export interface PokeSegment extends SegmentBase {
+  type: OneBotSegmentType.Poke
+  data: {
+    type: string
+    id: string
+    name?: string
+  }
+}
+
+/** 匿名发消息消息段 */
+export interface AnonymousSegment extends SegmentBase {
+  type: OneBotSegmentType.Anonymous
+  data: {
+    ignore?: 0 | 1
+  }
+}
+
+/** 链接分享消息段 */
+export interface ShareSegment extends SegmentBase {
+  type: OneBotSegmentType.Share
+  data: {
+    url: string
+    title: string
+    content?: string
+    image?: string
+  }
+}
+
+/** 推荐好友/群消息段 */
+export interface ContactSegment extends SegmentBase {
+  type: OneBotSegmentType.Contact
+  data: {
+    type: 'qq' | 'group'
+    id: string
+  }
+}
+
+/** 位置消息段 */
+export interface LocationSegment extends SegmentBase {
+  type: OneBotSegmentType.Location
+  data: {
+    lat: string
+    lon: string
+    title?: string
+    content?: string
+  }
+}
+
+/** 音乐分享消息段 */
+export interface MusicSegment extends SegmentBase {
+  type: OneBotSegmentType.Music
+  data: {
+    type: 'qq' | '163' | 'xm'
+    id: string
+  } | {
+    type: 'custom',
+    url: string,
+    audio: string,
+    title: string,
+    content?: string,
+    image?: string
+  }
+}
+
+/** 回复消息段 */
+export interface ReplySegment extends SegmentBase {
+  type: OneBotSegmentType.Reply
+  data: {
+    id: string
+  }
+}
+
+/** 合并转发消息段 */
+export interface ForwardSegment extends SegmentBase {
+  type: OneBotSegmentType.Forward
+  data: {
+    id: string
+  }
+}
+
+/** XML消息段 */
+export interface XmlSegment extends SegmentBase {
+  type: OneBotSegmentType.Xml
+  data: {
+    data: string
+  }
+}
+
+/** JSON消息段 */
+export interface JsonSegment extends SegmentBase {
+  type: OneBotSegmentType.Json
+  data: {
+    data: string
+  }
+}
+
+/** 合并转发节点: `发` */
+export interface NodeIDSegment extends SegmentBase {
+  type: OneBotSegmentType.Node
+  data: {
+    id: string
+  }
+}
+
+/** 合并转发自定义节点 */
+export interface NodeCustomSegment extends SegmentBase {
+  type: OneBotSegmentType.Node
+  data: {
+    user_id: string,
+    nickname: string,
+    content: OneBotMessage[]
+    /** napcat拓展: 消息列表的外显 */
+    prompt?: string
+    /** napcat拓展: 小卡片底下文本: 查看1条转发消息 */
+    summary?: string
+    /** napcat拓展: 小卡片标题 */
+    source?: string
+  }
+}
+
+/** 合并转发消息段 */
+export type NodeSegment = NodeIDSegment | NodeCustomSegment
+
+/** 文件消息段 `收` */
+export interface FileSegment<T = any> extends SegmentBase {
+  type: OneBotSegmentType.File
+  data: T
+}
+
+/** OneBot11消息段 */
+export type OneBotMessage =
+  | TextSegment
+  | FaceSegment
+  | ImageSegment
+  | RecordSegment
+  | VideoSegment
+  | AtSegment
+  | RpsSegment
+  | DiceSegment
+  | ShakeSegment
+  | PokeSegment
+  | AnonymousSegment
+  | ShareSegment
+  | ContactSegment
+  | LocationSegment
+  | MusicSegment
+  | ReplySegment
+  | ForwardSegment
+  | XmlSegment
+  | JsonSegment
+  | FileSegment
+  | NodeSegment
