@@ -3,19 +3,20 @@ import { createMessage } from '@/adapter/onebot/create/message'
 import { createNotice } from '@/adapter/onebot/create/notice'
 import { createRequest } from '@/adapter/onebot/create/request'
 import { senderGroup } from '@/event'
-import { EventKeys, OneBotSegmentType } from '@karinjs/onebot'
+import { OneBotEventKey, OneBotMessageType } from '@karinjs/onebot'
 import { registerBot, unregisterBot } from '@/service'
 import { AdapterConvertKarin, KarinConvertAdapter } from '@/adapter/onebot/core/convert'
 
 import type { Contact, GroupSender, Role } from '@/types/event'
 import type { ForwardOptions, NodeElement, SendElement } from '@/types/segment'
 import type { GetGroupHighlightsResponse, QQGroupHonorInfo, SendMsgResults } from '@/types/adapter'
-import type { OneBotApi, OneBotHttp, OneBotMessage, OneBotWs, OneBotCore, NodeCustomSegment, NodeSegment } from '@karinjs/onebot'
+import type { OneBotApi, OneBotHttp, OneBotMessage, OneBotWsClient, OneBotWsServer, OneBotCore, NodeCustomMessage, NodeMessage } from '@karinjs/onebot'
 
 export class AdapterOneBot extends AdapterBase {
-  _onebot: OneBotWs | OneBotHttp
+  #isInit = false
+  _onebot: OneBotWsClient | OneBotWsServer | OneBotHttp
 
-  constructor (_onebot: OneBotWs | OneBotHttp) {
+  constructor (_onebot: OneBotWsClient | OneBotWsServer | OneBotHttp) {
     super()
     this.adapter.platform = 'qq'
     this.adapter.standard = 'onebot11'
@@ -23,12 +24,13 @@ export class AdapterOneBot extends AdapterBase {
   }
 
   async init () {
+    if (this.#isInit) return
+    this.#isInit = true
     await this._onebot.init()
     this.setAdapterInfo()
     this.setBotInfo()
-    this.registerBot()
 
-    this._onebot.on(EventKeys.event, (data) => {
+    this._onebot.on(OneBotEventKey.EVENT, (data) => {
       if (this._onebot.isEcho(data)) return
 
       if (data.post_type === 'message') return createMessage(data, this)
@@ -58,7 +60,7 @@ export class AdapterOneBot extends AdapterBase {
       logger.bot('warn', this.selfId, `收到未知事件: ${JSON.stringify(data, null, 2)}`)
     })
 
-    this._onebot.on(EventKeys.close, () => {
+    this._onebot.on(OneBotEventKey.CLOSE, () => {
       this.unregisterBot()
     })
   }
@@ -234,14 +236,14 @@ export class AdapterOneBot extends AdapterBase {
       if (contact.scene === 'group') {
         return await this._onebot.sendGroupMsg(
           Number(contact.peer),
-          [{ type: OneBotSegmentType.Forward, data: { id: resId } }]
+          [{ type: OneBotMessageType.Forward, data: { id: resId } }]
         )
       }
 
       const id = contact.scene === 'friend' ? Number(contact.peer) : Number(contact.subPeer)
       return await this._onebot.sendPrivateMsg(
         id,
-        [{ type: OneBotSegmentType.Forward, data: { id: resId } }]
+        [{ type: OneBotMessageType.Forward, data: { id: resId } }]
       )
     })()
 
@@ -1097,14 +1099,14 @@ export class AdapterOneBot extends AdapterBase {
    * @param options 首层小卡片外显参数
    * @returns 适配器消息元素
    */
-  forwardKarinConvertAdapter (elements: Array<NodeElement>, options?: ForwardOptions): Array<NodeSegment> {
-    const messages: NodeSegment[] = []
+  forwardKarinConvertAdapter (elements: Array<NodeElement>, options?: ForwardOptions): Array<NodeMessage> {
+    const messages: NodeMessage[] = []
     for (const elem of elements) {
       if (elem.subType === 'messageID') {
-        messages.push({ type: OneBotSegmentType.Node, data: { id: elem.messageId } })
+        messages.push({ type: OneBotMessageType.Node, data: { id: elem.messageId } })
       } else {
-        const node: NodeCustomSegment = {
-          type: OneBotSegmentType.Node,
+        const node: NodeCustomMessage = {
+          type: OneBotMessageType.Node,
           data: {
             user_id: elem.userId,
             nickname: elem.nickname,

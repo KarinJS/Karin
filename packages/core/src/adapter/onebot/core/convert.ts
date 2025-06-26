@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import { segment } from '@/utils/message'
 import type { AdapterOneBot } from './core'
 import type { Elements, FileElement, SendElement } from '@/types/segment'
-import { OneBotMessage, OneBotSegmentType } from '@karinjs/onebot'
+import { OneBotMessage, OneBotMessageType } from '@karinjs/onebot'
 
 /**
  * 处理日志中可能存在的base64字符串
@@ -85,7 +85,7 @@ export const AdapterConvertKarin = async (
           elements.push(segment.xml(i.data.data))
           break
         case 'file':
-          elements.push(await getFileSegment(i.data, onebot))
+          elements.push(await getFileMessage(i.data, onebot))
           break
         default: {
           elements.push(segment.text(JSON.stringify(i)))
@@ -107,7 +107,7 @@ export const AdapterConvertKarin = async (
  * @param contact 联系人信息
  * @returns 文件消息段
  */
-export const getFileSegment = async (
+export const getFileMessage = async (
   file: any,
   adapter: AdapterOneBot
 ): Promise<FileElement> => {
@@ -122,10 +122,10 @@ export const getFileSegment = async (
 
   // napcat 需要手动获取url
   if (Object.keys(file).length === 3 && 'file_size' in file && 'file_id' in file) {
-    const { url, file_size } = await adapter._onebot.nc_getFile(file.file_id)
+    const { url, file_size: fileSize } = await adapter._onebot.nc_getFile(file.file_id)
     return segment.file(url, {
       name: file.file,
-      size: Number(file_size),
+      size: Number(fileSize),
       fid: file.file_id,
       hash: file.file_hash,
     })
@@ -155,36 +155,36 @@ export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOne
   for (const i of data) {
     switch (i.type) {
       case 'text':
-        elements.push({ type: OneBotSegmentType.Text, data: { text: i.text } })
+        elements.push({ type: OneBotMessageType.Text, data: { text: i.text } })
         break
       case 'face':
-        elements.push({ type: OneBotSegmentType.Face, data: { id: i.id + '' } })
+        elements.push({ type: OneBotMessageType.Face, data: { id: i.id + '' } })
         break
       case 'at':
-        elements.push({ type: OneBotSegmentType.At, data: { qq: String(i.targetId), name: i.name } })
+        elements.push({ type: OneBotMessageType.At, data: { qq: String(i.targetId), name: i.name } })
         break
       case 'reply':
-        elements.push({ type: OneBotSegmentType.Reply, data: { id: i.messageId } })
+        elements.push({ type: OneBotMessageType.Reply, data: { id: i.messageId } })
         break
       case 'image': {
-        elements.push({ type: OneBotSegmentType.Image, data: { file: fileToBase64(i.file, onebot.adapter.address) } })
+        elements.push({ type: OneBotMessageType.Image, data: { file: fileToBase64(i.file, onebot.adapter.address) } })
         break
       }
       case 'video': {
-        elements.push({ type: OneBotSegmentType.Video, data: { file: i.file } })
+        elements.push({ type: OneBotMessageType.Video, data: { file: i.file } })
         break
       }
       case 'json': {
-        elements.push({ type: OneBotSegmentType.Json, data: { data: i.data } })
+        elements.push({ type: OneBotMessageType.Json, data: { data: i.data } })
         break
       }
       case 'xml': {
-        elements.push({ type: OneBotSegmentType.Xml, data: { data: i.data } })
+        elements.push({ type: OneBotMessageType.Xml, data: { data: i.data } })
         break
       }
       case 'record': {
         elements.push({
-          type: OneBotSegmentType.Record,
+          type: OneBotMessageType.Record,
           data: {
             file: fileToBase64(i.file, onebot.adapter.address),
             magic: (i.magic ?? false) ? 1 : 0,
@@ -196,7 +196,7 @@ export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOne
         if (i.platform === 'custom') {
           const { url, audio, title, author, pic } = i
           elements.push({
-            type: OneBotSegmentType.Music,
+            type: OneBotMessageType.Music,
             data: {
               type: 'custom',
               url,
@@ -208,7 +208,7 @@ export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOne
           })
         } else {
           elements.push({
-            type: OneBotSegmentType.Music,
+            type: OneBotMessageType.Music,
             data: {
               type: i.platform as 'qq' | '163' | 'xm',
               id: i.id,
@@ -217,11 +217,11 @@ export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOne
         }
         break
       }
-      // case OB11SegmentType.Contact: {
+      // case OB11MessageType.Contact: {
       //   elements.push({ type, data: { type: i.scene, id: i.peer } })
       //   break
       // }
-      // case OB11SegmentType.Location: {
+      // case OB11MessageType.Location: {
       //   elements.push({ type, data: { lat: i.lat, lon: i.lon, title: i.title, content: i.address } })
       //   break
       // }
@@ -240,15 +240,15 @@ export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOne
       //   break
       // }
       case 'dice': {
-        elements.push({ type: OneBotSegmentType.Dice, data: { id: i.id } })
+        elements.push({ type: OneBotMessageType.Dice, data: { id: i.id } })
         break
       }
       case 'rps': {
-        elements.push({ type: OneBotSegmentType.Rps, data: {} })
+        elements.push({ type: OneBotMessageType.Rps, data: {} })
         break
       }
       case 'share': {
-        elements.push({ type: OneBotSegmentType.Share, data: { url: i.url, title: i.title, content: i.content, image: i.image } })
+        elements.push({ type: OneBotMessageType.Share, data: { url: i.url, title: i.title, content: i.content, image: i.image } })
         break
       }
       case 'raw':
@@ -256,10 +256,10 @@ export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOne
         break
       case 'node': {
         if (i.subType === 'messageID') {
-          elements.push({ type: OneBotSegmentType.Forward, data: { id: i.messageId } })
+          elements.push({ type: OneBotMessageType.Forward, data: { id: i.messageId } })
         } else {
           elements.push({
-            type: OneBotSegmentType.Node,
+            type: OneBotMessageType.Node,
             data: {
               user_id: i.userId || onebot.selfId,
               nickname: i.nickname || onebot.selfName,

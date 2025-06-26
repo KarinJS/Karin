@@ -1,7 +1,7 @@
 import type { SenderPrivate, SenderGroup } from '../event/sender'
 import type {
   OneBotMessage,
-  NodeSegment,
+  NodeMessage,
 } from '../message'
 
 export enum OneBotMessageApiAction {
@@ -120,7 +120,7 @@ export interface OneBotMessageApi {
       id: string
     },
     response: {
-      message: NodeSegment[]
+      message: NodeMessage[]
     }
   }
 
@@ -246,7 +246,7 @@ export interface OneBotMessageApi {
   [OneBotMessageApiAction.sendForwardMsg]: {
     action: 'send_forward_msg',
     params: {
-      messages: NodeSegment[]
+      messages: NodeMessage[]
     },
     response: {
       message_id: string
@@ -261,7 +261,7 @@ export interface OneBotMessageApi {
     action: 'send_group_forward_msg',
     params: {
       group_id: number,
-      messages: NodeSegment[]
+      messages: NodeMessage[]
     },
     response: {
       message_id: string
@@ -276,7 +276,7 @@ export interface OneBotMessageApi {
     action: 'send_private_forward_msg',
     params: {
       user_id: number,
-      messages: NodeSegment[]
+      messages: NodeMessage[]
     },
     response: {
       message_id: string

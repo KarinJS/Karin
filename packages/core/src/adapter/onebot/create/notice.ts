@@ -17,7 +17,7 @@ import {
   createPrivatePokeNotice,
   createPrivateRecallNotice,
 } from '@/event/create'
-import { getFileSegment } from '../core/convert'
+import { getFileMessage } from '../core/convert'
 import { NoticeType } from '@karinjs/onebot'
 import type { OneBotNoticeEvent } from '@karinjs/onebot'
 
@@ -245,7 +245,7 @@ export const createNotice = (event: OneBotNoticeEvent, bot: AdapterOneBot) => {
         size: event.file.size,
         subId: event.file.busid,
         url: async () => {
-          const { file } = await getFileSegment(event.file, bot)
+          const { file } = await getFileMessage(event.file, bot)
           return file
         },
       },
@@ -408,7 +408,7 @@ export const createNotice = (event: OneBotNoticeEvent, bot: AdapterOneBot) => {
         size: event.file.size,
         expireTime: 0,
         url: async () => {
-          const { file } = await getFileSegment(event.file, bot)
+          const { file } = await getFileMessage(event.file, bot)
           return file
         },
       },

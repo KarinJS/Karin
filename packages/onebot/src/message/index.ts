@@ -29,7 +29,7 @@
  * 社区拓展:
  * - markdown: markdown消息段
  */
-export enum OneBotSegmentType {
+export enum OneBotMessageType {
   /** 纯文本 */
   Text = 'text',
   /** QQ表情 */
@@ -84,29 +84,29 @@ export enum OneBotSegmentType {
   Markdown = 'markdown',
 }
 
-export interface SegmentBase {
-  type: OneBotSegmentType
+export interface MessageBase {
+  type: OneBotMessageType
 }
 
 /** 纯文本 */
-export interface TextSegment extends SegmentBase {
-  type: OneBotSegmentType.Text
+export interface TextMessage extends MessageBase {
+  type: OneBotMessageType.Text
   data: {
     text: string
   }
 }
 
 /** QQ表情 */
-export interface FaceSegment extends SegmentBase {
-  type: OneBotSegmentType.Face
+export interface FaceMessage extends MessageBase {
+  type: OneBotMessageType.Face
   data: {
     id: string
   }
 }
 
 /** 图片消息段 */
-export interface ImageSegment extends SegmentBase {
-  type: OneBotSegmentType.Image
+export interface ImageMessage extends MessageBase {
+  type: OneBotMessageType.Image
   data: {
     file: string
     /** 图片类型 `flash` 表示闪照, `show` 表示秀图 默认普通图片 */
@@ -125,8 +125,8 @@ export interface ImageSegment extends SegmentBase {
 }
 
 /** 语音消息段 */
-export interface RecordSegment extends SegmentBase {
-  type: OneBotSegmentType.Record
+export interface RecordMessage extends MessageBase {
+  type: OneBotMessageType.Record
   data: {
     file: string
     magic?: 0 | 1
@@ -138,8 +138,8 @@ export interface RecordSegment extends SegmentBase {
 }
 
 /** 短视频消息段 */
-export interface VideoSegment extends SegmentBase {
-  type: OneBotSegmentType.Video
+export interface VideoMessage extends MessageBase {
+  type: OneBotMessageType.Video
   data: {
     file: string
     url?: string
@@ -150,8 +150,8 @@ export interface VideoSegment extends SegmentBase {
 }
 
 /** @某人消息段 */
-export interface AtSegment extends SegmentBase {
-  type: OneBotSegmentType.At
+export interface AtMessage extends MessageBase {
+  type: OneBotMessageType.At
   data: {
     qq: string | 'all',
     name?: string
@@ -159,26 +159,26 @@ export interface AtSegment extends SegmentBase {
 }
 
 /** 猜拳魔法表情消息段 */
-export interface RpsSegment extends SegmentBase {
-  type: OneBotSegmentType.Rps
+export interface RpsMessage extends MessageBase {
+  type: OneBotMessageType.Rps
   data: {}
 }
 
 /** 掷骰子魔法表情消息段 */
-export interface DiceSegment extends SegmentBase {
-  type: OneBotSegmentType.Dice
+export interface DiceMessage extends MessageBase {
+  type: OneBotMessageType.Dice
   data: {}
 }
 
 /** 窗口抖动（戳一戳）消息段 */
-export interface ShakeSegment extends SegmentBase {
-  type: OneBotSegmentType.Shake
+export interface ShakeMessage extends MessageBase {
+  type: OneBotMessageType.Shake
   data: {}
 }
 
 /** 戳一戳消息段 */
-export interface PokeSegment extends SegmentBase {
-  type: OneBotSegmentType.Poke
+export interface PokeMessage extends MessageBase {
+  type: OneBotMessageType.Poke
   data: {
     type: string
     id: string
@@ -187,16 +187,16 @@ export interface PokeSegment extends SegmentBase {
 }
 
 /** 匿名发消息消息段 */
-export interface AnonymousSegment extends SegmentBase {
-  type: OneBotSegmentType.Anonymous
+export interface AnonymousMessage extends MessageBase {
+  type: OneBotMessageType.Anonymous
   data: {
     ignore?: 0 | 1
   }
 }
 
 /** 链接分享消息段 */
-export interface ShareSegment extends SegmentBase {
-  type: OneBotSegmentType.Share
+export interface ShareMessage extends MessageBase {
+  type: OneBotMessageType.Share
   data: {
     url: string
     title: string
@@ -206,8 +206,8 @@ export interface ShareSegment extends SegmentBase {
 }
 
 /** 推荐好友/群消息段 */
-export interface ContactSegment extends SegmentBase {
-  type: OneBotSegmentType.Contact
+export interface ContactMessage extends MessageBase {
+  type: OneBotMessageType.Contact
   data: {
     type: 'qq' | 'group'
     id: string
@@ -215,8 +215,8 @@ export interface ContactSegment extends SegmentBase {
 }
 
 /** 位置消息段 */
-export interface LocationSegment extends SegmentBase {
-  type: OneBotSegmentType.Location
+export interface LocationMessage extends MessageBase {
+  type: OneBotMessageType.Location
   data: {
     lat: string
     lon: string
@@ -226,8 +226,8 @@ export interface LocationSegment extends SegmentBase {
 }
 
 /** 音乐分享消息段 */
-export interface MusicSegment extends SegmentBase {
-  type: OneBotSegmentType.Music
+export interface MusicMessage extends MessageBase {
+  type: OneBotMessageType.Music
   data: {
     type: 'qq' | '163' | 'xm'
     id: string
@@ -242,48 +242,48 @@ export interface MusicSegment extends SegmentBase {
 }
 
 /** 回复消息段 */
-export interface ReplySegment extends SegmentBase {
-  type: OneBotSegmentType.Reply
+export interface ReplyMessage extends MessageBase {
+  type: OneBotMessageType.Reply
   data: {
     id: string
   }
 }
 
 /** 合并转发消息段 */
-export interface ForwardSegment extends SegmentBase {
-  type: OneBotSegmentType.Forward
+export interface ForwardMessage extends MessageBase {
+  type: OneBotMessageType.Forward
   data: {
     id: string
   }
 }
 
 /** XML消息段 */
-export interface XmlSegment extends SegmentBase {
-  type: OneBotSegmentType.Xml
+export interface XmlMessage extends MessageBase {
+  type: OneBotMessageType.Xml
   data: {
     data: string
   }
 }
 
 /** JSON消息段 */
-export interface JsonSegment extends SegmentBase {
-  type: OneBotSegmentType.Json
+export interface JsonMessage extends MessageBase {
+  type: OneBotMessageType.Json
   data: {
     data: string
   }
 }
 
 /** 合并转发节点: `发` */
-export interface NodeIDSegment extends SegmentBase {
-  type: OneBotSegmentType.Node
+export interface NodeIDMessage extends MessageBase {
+  type: OneBotMessageType.Node
   data: {
     id: string
   }
 }
 
 /** 合并转发自定义节点 */
-export interface NodeCustomSegment extends SegmentBase {
-  type: OneBotSegmentType.Node
+export interface NodeCustomMessage extends MessageBase {
+  type: OneBotMessageType.Node
   data: {
     user_id: string,
     nickname: string,
@@ -298,34 +298,34 @@ export interface NodeCustomSegment extends SegmentBase {
 }
 
 /** 合并转发消息段 */
-export type NodeSegment = NodeIDSegment | NodeCustomSegment
+export type NodeMessage = NodeIDMessage | NodeCustomMessage
 
 /** 文件消息段 `收` */
-export interface FileSegment<T = any> extends SegmentBase {
-  type: OneBotSegmentType.File
+export interface FileMessage<T = any> extends MessageBase {
+  type: OneBotMessageType.File
   data: T
 }
 
 /** OneBot11消息段 */
 export type OneBotMessage =
-  | TextSegment
-  | FaceSegment
-  | ImageSegment
-  | RecordSegment
-  | VideoSegment
-  | AtSegment
-  | RpsSegment
-  | DiceSegment
-  | ShakeSegment
-  | PokeSegment
-  | AnonymousSegment
-  | ShareSegment
-  | ContactSegment
-  | LocationSegment
-  | MusicSegment
-  | ReplySegment
-  | ForwardSegment
-  | XmlSegment
-  | JsonSegment
-  | FileSegment
-  | NodeSegment
+  | TextMessage
+  | FaceMessage
+  | ImageMessage
+  | RecordMessage
+  | VideoMessage
+  | AtMessage
+  | RpsMessage
+  | DiceMessage
+  | ShakeMessage
+  | PokeMessage
+  | AnonymousMessage
+  | ShareMessage
+  | ContactMessage
+  | LocationMessage
+  | MusicMessage
+  | ReplyMessage
+  | ForwardMessage
+  | XmlMessage
+  | JsonMessage
+  | FileMessage
+  | NodeMessage

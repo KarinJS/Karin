@@ -3,9 +3,10 @@ import { FILE_CHANGE } from '@/utils/fs'
 import { diffArray } from '@/utils/common/number'
 import { requireFileSync } from '../../fs/require'
 import { listeners } from '@/core/internal/listeners'
-import { createOneBotClient, createOneBotHttp, oneBotHttpManager, oneBotManager } from '@/adapter/onebot/connect'
+import { createOneBotClient, createOneBotHttp } from '@/adapter/onebot/connect'
 
 import type { Adapters } from '@/types/config'
+import { oneBotHttpManager, oneBotWsClientManager } from '@karinjs/onebot'
 
 /** adapter.json 缓存 */
 let cache: Adapters
@@ -79,7 +80,7 @@ const hmrOneBot = (old: Adapters, data: Adapters) => {
   )
 
   client.removed.forEach(v => {
-    const bot = oneBotManager.getClient(v.url)
+    const bot = oneBotWsClientManager.getClient(v.url)
     if (bot) bot.close()
   })
 
@@ -90,7 +91,7 @@ const hmrOneBot = (old: Adapters, data: Adapters) => {
     Array.isArray(data?.onebot?.http_server) ? data?.onebot?.http_server : []
   )
 
-  http.removed.forEach(v => oneBotHttpManager.deleteClient(v.self_id, true))
+  http.removed.forEach(v => oneBotHttpManager.deleteClient(v.self_id))
   http.added.forEach(v => v.enable && createOneBotHttp(v))
 }
 

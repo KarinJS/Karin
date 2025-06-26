@@ -6,105 +6,19 @@ import { OneBotFileApiAction } from '../api/file'
 import { OneBotBotApiAction } from '../api/bot'
 import { OneBotOtherApiAction } from '../api/other'
 import { EventPostType } from '../event'
+import { OneBotEventKey, OneBotOnEvent } from '../ws/events'
+
 import type { OneBotApi } from '../api'
-import type { OneBotMessage, NodeSegment } from '../message'
-import type {
-  OneBotWsEvent,
-  OneBotMessageEvent,
-  OneBotNoticeEvent,
-  OneBotRequestEvent,
-  OneBotMetaEvent,
-  OneBotMessageSentEvent,
-  OneBotEvent,
-  Echo,
-} from '../event'
-
-/** 事件总线枚举 */
-export enum EventKeys {
-  /** 发送请求 */
-  sendApi = 'sendApi',
-  /** 请求响应 */
-  response = 'response',
-  /** 重连 */
-  reconnect = 'reconnect',
-  /** 连接关闭 */
-  close = 'close',
-  /** 连接主动关闭 */
-  manualClose = 'manualClose',
-  /** 连接错误 */
-  error = 'error',
-  /** 连接成功 */
-  open = 'open',
-
-  /** 收到事件上报 */
-  event = 'event',
-  /** 收到消息事件上报 */
-  message = 'message',
-  /** 收到通知事件上报 */
-  notice = 'notice',
-  /** 收到请求事件上报 */
-  request = 'request',
-  /** 收到元事件上报 */
-  metaEvent = 'meta_event',
-  /** 收到Bot自身消息上报 */
-  messageSent = 'message_sent',
-}
+import type { OneBotMessage, NodeMessage } from '../message'
+import type { OneBotWsEvent, OneBotEvent, Echo } from '../event'
 
 /**
- * 事件总线类型
+ * OneBot核心类
+ * @extends EventEmitter
  */
-export interface Events {
-  /** 发送请求 */
-  [EventKeys.sendApi]: {
-    /** 请求ID */
-    echo?: string
-    /** API动作 */
-    action: string
-    /** API参数 */
-    params: object
-    /** 格式化之后的params */
-    request: string
-  }
-  [EventKeys.response]: {
-    /** 请求ID */
-    echo: string
-    /** API动作 */
-    action: string
-    /** API参数 */
-    params: object
-    /** 格式化之后的params */
-    request: string
-    /** API返回 */
-    data: object
-  }
-  [EventKeys.reconnect]: {
-    /** 是否已连接 */
-    isConnected: boolean
-    /** 初始化错误 */
-    initError: Error
-  }
-  [EventKeys.close]: {
-    /** 是否已连接 */
-    isConnected: boolean
-    /** 初始化错误 */
-    initError: Error
-  }
-  [EventKeys.manualClose]: {}
-  [EventKeys.error]: Error
-  [EventKeys.open]: {
-    /** 是否已连接 */
-    isConnected: boolean
-  }
-  [EventKeys.event]: OneBotWsEvent
-  [EventKeys.message]: OneBotMessageEvent
-  [EventKeys.messageSent]: OneBotMessageSentEvent
-  [EventKeys.notice]: OneBotNoticeEvent
-  [EventKeys.request]: OneBotRequestEvent
-  [EventKeys.metaEvent]: OneBotMetaEvent
-  [key: `echo:${string}`]: any
-}
-
 export abstract class OneBotCore extends EventEmitter {
+  /** 是否手动关闭 */
+  _manualClosed: boolean = false
   /** 协议信息 */
   protocol: {
     /** 协议名称 例如`NapCat` */
@@ -216,9 +130,6 @@ export abstract class OneBotCore extends EventEmitter {
     for (let i = 0; i < maxRetries; i++) {
       try {
         await fetchBotInfo()
-        /** 冻结属性 防止被修改 */
-        Object.freeze(this.self)
-        Object.freeze(this.protocol)
         return true
       } catch (error) {
         if (i === maxRetries - 1) {
@@ -232,73 +143,73 @@ export abstract class OneBotCore extends EventEmitter {
   }
 
   /**
-   * 添加事件监听
-   * @param event - 事件名称 请导入`EventKeys`枚举使用
-   * @param listener - 事件监听器
-   */
-  on<K extends keyof Events> (event: K, listener: (arg: Events[K]) => void) {
+ * 添加事件监听
+ * @param event - 事件名称 请导入`OneBotEventKey`枚举使用
+ * @param listener - 事件监听器
+ */
+  on<K extends keyof OneBotOnEvent> (event: K, listener: (arg: OneBotOnEvent[K]) => void) {
     return super.on(event, listener)
   }
 
   /**
    * 添加一次性事件监听
-   * @param event - 事件名称 请导入`EventKeys`枚举使用
+   * @param event - 事件名称 请导入`OneBotEventKey`枚举使用
    * @param listener - 事件监听器
    */
-  once<K extends keyof Events> (event: K, listener: (arg: Events[K]) => void) {
+  once<K extends keyof OneBotOnEvent> (event: K, listener: (arg: OneBotOnEvent[K]) => void) {
     return super.once(event, listener)
   }
 
   /**
    * 触发事件
-   * @param event - 事件名称 请导入`EventKeys`枚举使用
+   * @param event - 事件名称 请导入`OneBotEventKey`枚举使用
    * @param arg - 事件参数
    */
-  emit<K extends keyof Events> (event: K, arg: Events[K] = {}) {
+  emit<K extends keyof OneBotOnEvent> (event: K, arg: OneBotOnEvent[K] = {} as OneBotOnEvent[K]) {
     return super.emit(event, arg)
   }
 
   /**
    * 移除事件监听
-   * @param event - 事件名称 请导入`EventKeys`枚举使用
+   * @param event - 事件名称 请导入`OneBotEventKey`枚举使用
    * @param listener - 事件监听器
    */
-  off<K extends keyof Events> (event: K, listener: (arg: Events[K]) => void) {
+  off<K extends keyof OneBotOnEvent> (event: K, listener: (arg: OneBotOnEvent[K]) => void) {
     return super.off(event, listener)
   }
 
   /**
    * 移除事件监听
-   * @param event - 事件名称 请导入`EventKeys`枚举使用
+   * @param event - 事件名称 请导入`OneBotEventKey`枚举使用
    * @param listener - 事件监听器
    */
-  removeListener<K extends keyof Events> (event: K, listener: (arg: Events[K]) => void) {
+  removeListener<K extends keyof OneBotOnEvent> (event: K, listener: (arg: OneBotOnEvent[K]) => void) {
     return super.removeListener(event, listener)
   }
 
   /**
    * 移除所有事件监听
-   * @param event - 事件名称 请导入`EventKeys`枚举使用
+   * @param event - 事件名称 请导入`OneBotEventKey`枚举使用
    */
-  removeAllListeners<K extends keyof Events> (event?: K) {
+  removeAllListeners<K extends keyof OneBotOnEvent> (event?: K) {
     return super.removeAllListeners(event)
   }
 
   /**
    * 获取事件监听器
-   * @param event - 事件名称 请导入`EventKeys`枚举使用
+   * @param event - 事件名称 请导入`OneBotEventKey`枚举使用
    * @returns 事件监听器
    */
-  listeners<K extends keyof Events> (event: K) {
+  listeners<K extends keyof OneBotOnEvent> (event: K) {
     return super.listeners(event)
   }
 
   /**
    * 获取事件监听器数量
-   * @param event - 事件名称 请导入`EventKeys`枚举使用
+   * @param event - 事件名称 请导入`OneBotEventKey`枚举使用
    * @returns 事件监听器数量
    */
-  listenerCount<K extends keyof Events> (event: K) {
+  listenerCount<K extends keyof OneBotOnEvent> (event: K) {
     return super.listenerCount(event)
   }
 
@@ -319,30 +230,30 @@ export abstract class OneBotCore extends EventEmitter {
    * @param data - 事件数据
    */
   _dispatch (data: OneBotEvent) {
-    this.emit(EventKeys.event, data)
+    this.emit(OneBotEventKey.EVENT, data)
 
     if (data.post_type === EventPostType.Message) {
-      this.emit(EventKeys.message, data)
+      // this.emit(OneBotEventKey.MESSAGE, data)
       return
     }
 
     if (data.post_type === EventPostType.MessageSent) {
-      this.emit(EventKeys.messageSent, data)
+      this.emit(OneBotEventKey.MESSAGE_SENT, data)
       return
     }
 
     if (data.post_type === EventPostType.Notice) {
-      this.emit(EventKeys.notice, data)
+      this.emit(OneBotEventKey.NOTICE, data)
       return
     }
 
     if (data.post_type === EventPostType.Request) {
-      this.emit(EventKeys.request, data)
+      this.emit(OneBotEventKey.REQUEST, data)
       return
     }
 
     if (data.post_type === EventPostType.MetaEvent) {
-      this.emit(EventKeys.metaEvent, data)
+      this.emit(OneBotEventKey.META_EVENT, data)
       return
     }
 
@@ -636,7 +547,7 @@ export abstract class OneBotCore extends EventEmitter {
    * @returns 消息ID
    */
   async sendForwardMsg (
-    messages: NodeSegment[]
+    messages: NodeMessage[]
   ) {
     return this.sendApi(OneBotMessageApiAction.sendForwardMsg, {
       messages,
@@ -651,7 +562,7 @@ export abstract class OneBotCore extends EventEmitter {
    */
   async sendGroupForwardMsg (
     group_id: number,
-    messages: NodeSegment[]
+    messages: NodeMessage[]
   ) {
     return this.sendApi(OneBotMessageApiAction.sendGroupForwardMsg, {
       group_id,
@@ -667,7 +578,7 @@ export abstract class OneBotCore extends EventEmitter {
    */
   async sendPrivateForwardMsg (
     user_id: number,
-    messages: NodeSegment[]
+    messages: NodeMessage[]
   ) {
     return this.sendApi(OneBotMessageApiAction.sendPrivateForwardMsg, {
       user_id,

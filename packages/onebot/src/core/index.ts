@@ -1,3 +1,2 @@
 export * from './core'
-export * from './http'
-export * from './ws'
+export * from '../http/http'

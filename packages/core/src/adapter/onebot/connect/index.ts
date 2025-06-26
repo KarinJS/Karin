@@ -1,16 +1,13 @@
 import { AdapterOneBot } from '../core/core'
-import { EventKeys, OneBotHttpManager, OneBotWsManager } from '@karinjs/onebot'
 import { adapter as adapterConfig } from '@/utils/config'
+import { oneBotHttpManager, oneBotWsServerManager, oneBotWsClientManager, OneBotEventKey, OneBotCloseType, OneBotErrorType } from '@karinjs/onebot'
 
 import type { WebSocket } from 'ws'
 import type { IncomingMessage } from 'node:http'
 import type { Adapters } from '@/types'
 
-/** onebot管理器 */
-export const oneBotManager = new OneBotWsManager()
-
-/** onebot http管理器 */
-export const oneBotHttpManager = new OneBotHttpManager()
+/** 日志前缀 */
+const loggerPrefix = '[OneBot]'
 
 /**
  * 创建OneBot WebSocket服务器
@@ -23,11 +20,11 @@ export const createOneBotWsServer = async (
   request: IncomingMessage
 ) => {
   if (!adapterConfig().onebot.ws_server.enable) {
-    logger.warn('[OneBot] 未启用WebSocketServer服务')
+    logger.warn(`${loggerPrefix} 未启用WebSocketServer服务`)
     return
   }
 
-  const onebot = oneBotManager.createServer(socket, request, {
+  const onebot = oneBotWsServerManager.createServer(socket, request, {
     accessToken: process.env.WS_SERVER_AUTH_KEY,
     timeout: adapterConfig().onebot.ws_server.timeout,
   })
@@ -45,20 +42,53 @@ export const createOneBotWsServer = async (
  * @param token 鉴权token
  */
 export const createOneBotClient = async (url: string, token?: string) => {
-  const onebot = await oneBotManager.createClient(url, {
+  const onebot = await oneBotWsClientManager.createClient(url, {
     timeout: adapterConfig().onebot.ws_server.timeout,
     accessToken: token,
     autoReconnect: true,
   })
 
-  // TODO: 需要重新编写生命周期事件
+  const adapter = new AdapterOneBot(onebot)
+  adapter.adapter.address = url
+  adapter.adapter.communication = 'webSocketClient'
 
-  onebot.on(EventKeys.open, async () => {
+  onebot.on(OneBotEventKey.OPEN, async () => {
     logger.info(`[OneBot] 客户端连接成功: ${url}`)
-    const adapter = new AdapterOneBot(onebot)
-    adapter.adapter.address = url
-    adapter.adapter.communication = 'webSocketClient'
     await adapter.init()
+    adapter.registerBot()
+  })
+
+  onebot.on(OneBotEventKey.CLOSE, async (type) => {
+    if (type === OneBotCloseType.ERROR) {
+      return logger.error(`${loggerPrefix} 客户端连接关闭: ${url}`)
+    }
+
+    if (type === OneBotCloseType.MANUAL_CLOSE) {
+      return logger.info(`${loggerPrefix} 主动关闭: ${url}`)
+    }
+
+    if (type === OneBotCloseType.MAX_RETRIES) {
+      return logger.error(`${loggerPrefix} 重连次数过多: ${url}`)
+    }
+
+    if (type === OneBotCloseType.SERVER_CLOSE) {
+      return logger.error(`${loggerPrefix} 服务端异常关闭: ${url}`)
+    }
+
+    logger.info(`${loggerPrefix} 客户端连接关闭: ${url}`)
+  })
+
+  onebot.on(OneBotEventKey.ERROR, async (args) => {
+    if (args.type === OneBotErrorType.CONNECTION_FAILED) {
+      logger.error(`${loggerPrefix} 连接建立失败，${args.reconnectInterval / 1000}秒后重试(${args.reconnectAttempt}/${args.maxReconnectAttempt})`)
+      return logger.error(args.error)
+    }
+
+    if (args.type === OneBotErrorType.RECONNECT_FAILED) {
+      return logger.error(`${loggerPrefix} 重连达到上限: ${args.totalReconnectAttempt}次`)
+    }
+
+    return logger.error(new Error(`${loggerPrefix} 发生错误:`, { cause: args.error }))
   })
 }
 
@@ -67,7 +97,7 @@ export const createOneBotClient = async (url: string, token?: string) => {
  * @param options 适配器配置
  */
 export const createOneBotHttp = async (options: Adapters['onebot']['http_server'][number]) => {
-  const onebot = await oneBotHttpManager.createClient({
+  const onebot = oneBotHttpManager.createClient({
     httpHost: options.url,
     self_id: +options.self_id,
     timeout: adapterConfig().onebot.ws_server.timeout,
@@ -87,6 +117,6 @@ export const createOneBotHttp = async (options: Adapters['onebot']['http_server'
  * 断开全部OneBot服务端
  */
 export const disconnectAllOneBotServer = () => {
-  const list = oneBotManager.getServers()
+  const list = oneBotWsServerManager.getServers()
   list.forEach(server => server.close())
 }
