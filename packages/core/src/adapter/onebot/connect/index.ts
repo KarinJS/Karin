@@ -80,8 +80,7 @@ export const createOneBotClient = async (url: string, token?: string) => {
 
   onebot.on(OneBotEventKey.ERROR, async (args) => {
     if (args.type === OneBotErrorType.CONNECTION_FAILED) {
-      logger.error(`${loggerPrefix} 连接建立失败，${args.reconnectInterval / 1000}秒后重试(${args.reconnectAttempt}/${args.maxReconnectAttempt})`)
-      return logger.error(args.error)
+      return logger.error(`${loggerPrefix} 连接建立失败，${args.reconnectInterval / 1000}秒后重试(${args.reconnectAttempt}/${args.maxReconnectAttempt}): ${args.error.message}`)
     }
 
     if (args.type === OneBotErrorType.RECONNECT_FAILED) {
