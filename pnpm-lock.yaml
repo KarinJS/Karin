@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@karinjs/onebot':
-        specifier: workspace:*
-        version: link:packages/onebot
       node-karin:
         specifier: workspace:*
         version: link:packages/core
@@ -118,6 +115,9 @@ importers:
       '@karinjs/node-pty':
         specifier: ^1.1.0
         version: 1.1.0
+      '@karinjs/onebot':
+        specifier: workspace:*
+        version: link:../onebot
       '@karinjs/plugin-webui-network-monitor':
         specifier: ^1.0.3
         version: 1.0.3
@@ -9741,10 +9741,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/eslint-plugin@8.28.0(@typescript-eslint/parser@8.28.0(eslint@9.21.0(jiti@1.21.7))(typescript@5.8.2))(eslint@9.29.0(jiti@1.21.7))(typescript@5.8.2)':
+  '@typescript-eslint/eslint-plugin@8.28.0(@typescript-eslint/parser@8.28.0(eslint@9.29.0(jiti@1.21.7))(typescript@5.8.2))(eslint@9.29.0(jiti@1.21.7))(typescript@5.8.2)':
     dependencies:
       '@eslint-community/regexpp': 4.12.1
-      '@typescript-eslint/parser': 8.28.0(eslint@9.21.0(jiti@1.21.7))(typescript@5.8.2)
+      '@typescript-eslint/parser': 8.28.0(eslint@9.29.0(jiti@1.21.7))(typescript@5.8.2)
       '@typescript-eslint/scope-manager': 8.28.0
       '@typescript-eslint/type-utils': 8.28.0(eslint@9.29.0(jiti@1.21.7))(typescript@5.8.2)
       '@typescript-eslint/utils': 8.28.0(eslint@9.29.0(jiti@1.21.7))(typescript@5.8.2)
@@ -10722,7 +10722,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.10.0(eslint-plugin-import-x@4.9.3(eslint@9.21.0(jiti@1.21.7))(typescript@5.8.2))(eslint@9.29.0(jiti@1.21.7)):
+  eslint-import-resolver-typescript@3.10.0(eslint-plugin-import-x@4.9.3(eslint@9.29.0(jiti@1.21.7))(typescript@5.8.2))(eslint@9.29.0(jiti@1.21.7)):
     dependencies:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.0
@@ -10733,7 +10733,7 @@ snapshots:
       tinyglobby: 0.2.12
       unrs-resolver: 1.3.2
     optionalDependencies:
-      eslint-plugin-import-x: 4.9.3(eslint@9.21.0(jiti@1.21.7))(typescript@5.8.2)
+      eslint-plugin-import-x: 4.9.3(eslint@9.29.0(jiti@1.21.7))(typescript@5.8.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -12087,7 +12087,7 @@ snapshots:
       '@humanwhocodes/gitignore-to-minimatch': 1.0.2
       '@stylistic/eslint-plugin': 2.11.0(eslint@9.29.0(jiti@1.21.7))(typescript@5.8.2)
       eslint: 9.29.0(jiti@1.21.7)
-      eslint-import-resolver-typescript: 3.10.0(eslint-plugin-import-x@4.9.3(eslint@9.21.0(jiti@1.21.7))(typescript@5.8.2))(eslint@9.29.0(jiti@1.21.7))
+      eslint-import-resolver-typescript: 3.10.0(eslint-plugin-import-x@4.9.3(eslint@9.29.0(jiti@1.21.7))(typescript@5.8.2))(eslint@9.29.0(jiti@1.21.7))
       eslint-plugin-import-x: 4.9.3(eslint@9.29.0(jiti@1.21.7))(typescript@5.8.2)
       eslint-plugin-n: 17.17.0(eslint@9.29.0(jiti@1.21.7))
       eslint-plugin-promise: 7.2.1(eslint@9.29.0(jiti@1.21.7))
@@ -13222,7 +13222,7 @@ snapshots:
 
   typescript-eslint@8.28.0(eslint@9.29.0(jiti@1.21.7))(typescript@5.8.2):
     dependencies:
-      '@typescript-eslint/eslint-plugin': 8.28.0(@typescript-eslint/parser@8.28.0(eslint@9.21.0(jiti@1.21.7))(typescript@5.8.2))(eslint@9.29.0(jiti@1.21.7))(typescript@5.8.2)
+      '@typescript-eslint/eslint-plugin': 8.28.0(@typescript-eslint/parser@8.28.0(eslint@9.29.0(jiti@1.21.7))(typescript@5.8.2))(eslint@9.29.0(jiti@1.21.7))(typescript@5.8.2)
       '@typescript-eslint/parser': 8.28.0(eslint@9.29.0(jiti@1.21.7))(typescript@5.8.2)
       '@typescript-eslint/utils': 8.28.0(eslint@9.29.0(jiti@1.21.7))(typescript@5.8.2)
       eslint: 9.29.0(jiti@1.21.7)

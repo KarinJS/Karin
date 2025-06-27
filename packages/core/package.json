@@ -175,6 +175,7 @@
   },
   "devDependencies": {
     "@karinjs/node-pty": "^1.1.0",
+    "@karinjs/onebot": "workspace:*",
     "@karinjs/plugin-webui-network-monitor": "^1.0.3",
     "@karinjs/plugins-list": "^1.7.0",
     "@types/express": "^5.0.1",
