@@ -13,11 +13,11 @@ export enum OneBotErrorType {
   /** 常规错误 */
   ERROR = 1001,
 
-  /** ws客户端独有: 初始化失败，正在尝试重连 */
+  /** ws、http客户端独有: 初始化失败，正在尝试重连`(http是心跳)` */
   CONNECTION_FAILED = 2002,
   /** ws客户端独有: 初始化失败，重连关闭 */
   RECONNECTING = 2003,
-  /** ws客户端独有: 初始化失败，重连达到上限 */
+  /** ws、http客户端独有: 初始化失败，重连达到上限`(http是心跳)` */
   RECONNECT_FAILED = 2004,
 
   /** ws服务端独有: 鉴权失败 */
@@ -37,8 +37,10 @@ export enum OneBotCloseType {
   MAX_RETRIES = 2001,
   /** ws客户端独有: 服务端关闭 */
   SERVER_CLOSE = 2002,
+  /** ws客户端独有: 连接已经建立后异常关闭 */
+  CONNECTION_FAILED = 2003,
 
-  /** http客户端独有: 心跳失败 */
+  /** http客户端独有: 首次心跳失败 */
   HEARTBEAT_FAILED = 3001,
   /** http客户端独有: 心跳失败次数超过最大重试次数 */
   HEARTBEAT_FAILED_MAX_RETRIES = 3002,

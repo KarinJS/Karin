@@ -1,13 +1,14 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import express from 'express'
-import { createServer } from 'node:http'
-import { createBrotliDecompress } from 'node:zlib'
-import getMimeType from '../utils/getMimeType'
-import { rootRouter } from '../system/root'
-import { listeners } from '@/core/internal/listeners'
+import { ONLINE } from '@/env'
 import { router } from '../router'
+import { createServer } from 'node:http'
+import { rootRouter } from '../system/root'
+import getMimeType from '../utils/getMimeType'
 import { BASE_ROUTER } from '../router/router'
+import { createBrotliDecompress } from 'node:zlib'
+import { listeners } from '@/core/internal/listeners'
 
 import type root from '@/root'
 import type { Express } from 'express'
@@ -30,14 +31,18 @@ export const server = createServer(app)
  */
 const listen = (port: number, host: string) => {
   server.listen(port, host, () => {
-    logger.info(`[server] express 已启动 正在监听: http://${host}:${port}`)
+    logger.info(`[server] express 正在监听: http://${host}:${port}`)
   })
 
-  listeners.once('online', () => {
-    logger.info(`[server] webui 已启动 访问地址: ${logger.green(`http://127.0.0.1:${port}/web/login?token=${process.env.HTTP_AUTH_KEY}`)}`)
-    logger.info(`[server] http鉴权token: ${logger.green(process.env.HTTP_AUTH_KEY)}`)
-    logger.info(`[server] ws鉴权token: ${logger.green(process.env.WS_SERVER_AUTH_KEY)}`)
-    logger.info(`[server] OneBot11: ${logger.green(`ws://127.0.0.1:${port}`)}`)
+  listeners.once(ONLINE, () => {
+    logger.info('\n--------------------^_^--------------------')
+    logger.info(`[server] ${logger.yellow('WebUI 访问地址:')} ${logger.green(`http://127.0.0.1:${port}/web/login?token=${process.env.HTTP_AUTH_KEY}`)}`)
+    logger.info(`[server] HTTP  鉴权秘钥: ${logger.green(process.env.HTTP_AUTH_KEY)}`)
+    logger.info(`[server] WS    鉴权秘钥: ${logger.green(process.env.WS_SERVER_AUTH_KEY) || logger.yellow('没有设置鉴权秘钥')}`)
+    logger.info('-------------------------------------------')
+    logger.info(`[OneBot] ${logger.yellow('协议端连接地址:')} ${logger.green(`ws://127.0.0.1:${process.env.HTTP_PORT}`)}`)
+    logger.info(`[puppet] 渲染器连接地址: ${logger.green(`ws://127.0.0.1:${process.env.HTTP_PORT}/puppeteer`)}`)
+    logger.info('\n-------------------------------------------')
   })
 }
 
@@ -61,7 +66,7 @@ const web = (dir: typeof root) => {
     })
   })
 
-  listeners.once('online', () => {
+  listeners.once(ONLINE, () => {
     setTimeout(() => {
       /**
        * 5秒后将所有根路径请求重定向到 /web

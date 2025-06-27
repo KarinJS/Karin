@@ -1,10 +1,18 @@
 import { AdapterOneBot } from '../core/core'
 import { adapter as adapterConfig } from '@/utils/config'
-import { oneBotHttpManager, oneBotWsServerManager, oneBotWsClientManager, OneBotEventKey, OneBotCloseType, OneBotErrorType } from '@karinjs/onebot'
+import {
+  oneBotHttpManager,
+  oneBotWsServerManager,
+  oneBotWsClientManager,
+  OneBotEventKey,
+  OneBotCloseType,
+  OneBotErrorType,
+} from '@karinjs/onebot'
 
 import type { WebSocket } from 'ws'
 import type { IncomingMessage } from 'node:http'
 import type { Adapters } from '@/types'
+import { cacheMap } from '../core/cache'
 
 /** 日志前缀 */
 const loggerPrefix = '[OneBot]'
@@ -33,7 +41,17 @@ export const createOneBotWsServer = async (
   adapter.adapter.address = url
   adapter.adapter.communication = 'webSocketServer'
   adapter.account.selfId = String(request.headers['x-self-id'])
+
+  onebot.on(OneBotEventKey.CLOSE, async (type) => {
+    adapter.unregisterBot()
+    if (type === OneBotCloseType.MANUAL_CLOSE) {
+      logger.info(`${loggerPrefix} 主动关闭: ${url}`)
+    }
+
+    return logger.error(`${loggerPrefix} 连接断开: ${url}`)
+  })
   await adapter.init()
+  cacheMap.wsServer.set(url, adapter)
 }
 
 /**
@@ -59,6 +77,11 @@ export const createOneBotClient = async (url: string, token?: string) => {
   })
 
   onebot.on(OneBotEventKey.CLOSE, async (type) => {
+    adapter.unregisterBot()
+    if (type === OneBotCloseType.CONNECTION_FAILED) {
+      return logger.error(`${loggerPrefix} 连接异常断开 即将重连: ${url}`)
+    }
+
     if (type === OneBotCloseType.ERROR) {
       return logger.error(`${loggerPrefix} 客户端连接关闭: ${url}`)
     }
@@ -89,6 +112,8 @@ export const createOneBotClient = async (url: string, token?: string) => {
 
     return logger.error(new Error(`${loggerPrefix} 发生错误:`, { cause: args.error }))
   })
+
+  cacheMap.wsClient.set(url, adapter)
 }
 
 /**
@@ -96,10 +121,15 @@ export const createOneBotClient = async (url: string, token?: string) => {
  * @param options 适配器配置
  */
 export const createOneBotHttp = async (options: Adapters['onebot']['http_server'][number]) => {
+  if (!options.enable) {
+    logger.debug(`${loggerPrefix} 未启用Http适配器: ${options.url}`)
+    return
+  }
+
   const onebot = oneBotHttpManager.createClient({
     httpHost: options.url,
     self_id: +options.self_id,
-    timeout: adapterConfig().onebot.ws_server.timeout,
+    timeout: adapterConfig().onebot.ws_server.timeout * 1000,
     accessToken: options.post_token,
     OneBotAccessToken: options.token || options.api_token,
   })
@@ -108,7 +138,43 @@ export const createOneBotHttp = async (options: Adapters['onebot']['http_server'
   adapter.adapter.address = options.url
   adapter.account.selfId = options.self_id
   adapter.adapter.communication = 'http'
-  await adapter.init()
+
+  onebot.on(OneBotEventKey.OPEN, async () => {
+    logger.info(`[OneBot] 心跳成功: ${options.url}`)
+    await adapter.init()
+    adapter.registerBot()
+  })
+
+  onebot.on(OneBotEventKey.CLOSE, async (type) => {
+    adapter.unregisterBot()
+    if (type === OneBotCloseType.MANUAL_CLOSE) {
+      return logger.info(`${loggerPrefix} 主动关闭: ${options.url}`)
+    }
+
+    if (type === OneBotCloseType.HEARTBEAT_FAILED_MAX_RETRIES) {
+      return logger.error(`${loggerPrefix} 心跳失败次数达到上限: ${options.url}`)
+    }
+
+    if (type === OneBotCloseType.HEARTBEAT_FAILED) {
+      return logger.error(`${loggerPrefix} 首次心跳失败: ${options.url}`)
+    }
+
+    return logger.error(`${loggerPrefix} 心跳失败: ${options.url}`)
+  })
+
+  onebot.on(OneBotEventKey.ERROR, (args) => {
+    if (args.type === OneBotErrorType.CONNECTION_FAILED) {
+      return logger.error(`${loggerPrefix} 心跳失败，${args.reconnectInterval / 1000}秒后重试(${args.reconnectAttempt}/${args.maxReconnectAttempt}): ${args.error.message}`)
+    }
+
+    if (args.type === OneBotErrorType.RECONNECT_FAILED) {
+      return logger.error(`${loggerPrefix} 重连达到上限: ${args.totalReconnectAttempt}次`)
+    }
+
+    return logger.error(new Error(`${loggerPrefix} 发生错误:`, { cause: args.error }))
+  })
+
+  cacheMap.http.set(options.self_id, adapter)
   return adapter
 }
 
@@ -116,6 +182,5 @@ export const createOneBotHttp = async (options: Adapters['onebot']['http_server'
  * 断开全部OneBot服务端
  */
 export const disconnectAllOneBotServer = () => {
-  const list = oneBotWsServerManager.getServers()
-  list.forEach(server => server.close())
+  cacheMap.wsServer.forEach(adapter => adapter._onebot.close())
 }

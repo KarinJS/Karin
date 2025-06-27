@@ -270,7 +270,7 @@ const getAdapterComponent = (
               list={httpServerFields.fields}
               add={addHttpServer}
               remove={httpServerFields.remove}
-              description='管理OneBot11协议的HTTP POST服务端'
+              description='管理OneBot11协议的HTTP POST服务端， 上报事件url: http://127.0.0.1:7777/onebot'
               title='HTTP 服务端'
               render={(index: number) => (
                 <div className='flex flex-col gap-2 p-2'>
@@ -292,7 +292,7 @@ const getAdapterComponent = (
                   <Input
                     label='发送Api请求的URL地址'
                     {...methods.register(`onebot.http_server.${index}.url`)}
-                    description='上报事件的URL地址 也就是协议端的http地址 例如napcat的: http://127.0.0.1:6099'
+                    description='协议端的http api地址 例如napcat的: http://127.0.0.1:6099'
                     placeholder='发送Api请求的URL地址'
                     className='p-2 rounded-lg w-full'
                     color='primary'

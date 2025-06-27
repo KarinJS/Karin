@@ -7,7 +7,7 @@ import { requireFileSync } from '../../fs/require'
 import { FILE_CHANGE } from '@/utils/fs'
 import { listeners } from '@/core/internal/listeners'
 import type { Env } from '@/types/config/env'
-import { disconnectAllOneBotServer } from '@/adapter/onebot/connect'
+import { disconnectAllOneBotServer } from '@/adapter/onebot/create/create'
 import { updateJwt } from '@/server/auth/jwt'
 import { LogMethodNames } from '@/types'
 

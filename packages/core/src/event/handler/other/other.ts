@@ -127,7 +127,7 @@ export const initPrint = (
 
   const nick = ctx.sender.nick || ''
   ctx.logText = `[${type}:${idPath}(${nick})]`
-  logger.bot(level, ctx.selfId, `${prefix}: ${ctx.logText} ${ctx.tips}`)
+  logger.bot(level, ctx.selfId, `${prefix}: [${idPath}(${nick})] ${ctx.tips}`)
 }
 
 /**

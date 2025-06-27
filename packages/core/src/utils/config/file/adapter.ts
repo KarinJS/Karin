@@ -3,10 +3,10 @@ import { FILE_CHANGE } from '@/utils/fs'
 import { diffArray } from '@/utils/common/number'
 import { requireFileSync } from '../../fs/require'
 import { listeners } from '@/core/internal/listeners'
-import { createOneBotClient, createOneBotHttp } from '@/adapter/onebot/connect'
+import { cacheMap } from '@/adapter/onebot/core/cache'
+import { createOneBotClient, createOneBotHttp } from '@/adapter/onebot/create/create'
 
 import type { Adapters } from '@/types/config'
-import { oneBotHttpManager, oneBotWsClientManager } from '@karinjs/onebot'
 
 /** adapter.json 缓存 */
 let cache: Adapters
@@ -80,8 +80,10 @@ const hmrOneBot = (old: Adapters, data: Adapters) => {
   )
 
   client.removed.forEach(v => {
-    const bot = oneBotWsClientManager.getClient(v.url)
-    if (bot) bot.close()
+    const bot = cacheMap.wsClient.get(v.url)
+    if (!bot) return
+    bot._onebot.close()
+    cacheMap.wsClient.delete(v.url)
   })
 
   client.added.forEach(v => v.enable && createOneBotClient(v.url, v.token))
@@ -91,7 +93,12 @@ const hmrOneBot = (old: Adapters, data: Adapters) => {
     Array.isArray(data?.onebot?.http_server) ? data?.onebot?.http_server : []
   )
 
-  http.removed.forEach(v => oneBotHttpManager.deleteClient(v.self_id))
+  http.removed.forEach(v => {
+    const bot = cacheMap.http.get(v.url)
+    if (!bot) return
+    bot._onebot.close()
+    cacheMap.http.delete(v.url)
+  })
   http.added.forEach(v => v.enable && createOneBotHttp(v))
 }
 

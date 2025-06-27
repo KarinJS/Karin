@@ -11,14 +11,14 @@ import {
   createGroupInviteRequest,
   createPrivateApplyRequest,
 } from '@/event/create'
-import type { OneBotRequestEvent } from '@karinjs/onebot'
+import type { OneBotRequestEvent, OneBotType } from '@karinjs/onebot'
 
 /**
  * 创建请求事件
  * @param event onebot11请求事件
  * @param bot 标准api实例
  */
-export const createRequest = (event: OneBotRequestEvent, bot: AdapterOneBot) => {
+export const createRequest = (event: OneBotRequestEvent, bot: AdapterOneBot<OneBotType>) => {
   const time = event.time
   const userId = event.user_id + ''
 

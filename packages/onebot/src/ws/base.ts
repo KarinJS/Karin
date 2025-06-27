@@ -74,17 +74,19 @@ export abstract class OneBotWsBase extends OneBotCore {
     }
   }
 
-  _close () {
-    this.emit(OneBotEventKey.CLOSE, OneBotCloseType.ERROR)
-    this._socket.removeAllListeners()
-    setTimeout(() => this.removeAllListeners(), 200)
-  }
-
   /**
    * 更新socket
+   * @param socket - 新的socket
+   * @return 返回一个状态函数 请在处理设置socket相关后调用 否则close事件无法触发
    */
-  setSocket (socket: WebSocket): void {
+  setSocket (socket: WebSocket): () => void {
+    this._setSocket = true
+    this._socket.close()
+    this._socket.removeAllListeners()
     this._socket = socket
+    return () => {
+      this._setSocket = false
+    }
   }
 
   /**

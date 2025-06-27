@@ -2,7 +2,7 @@ import { AdapterConvertKarin } from '@/adapter/onebot/core/convert'
 import { createFriendMessage, createGroupMessage, createGroupTempMessage } from '@/event/create'
 import { contactFriend, contactGroup, contactGroupTemp, senderFriend, senderGroup } from '@/event'
 import type { AdapterOneBot } from '@/adapter/onebot/core/core'
-import type { OneBotMessageEvent } from '@karinjs/onebot'
+import type { OneBotMessageEvent, OneBotType } from '@karinjs/onebot'
 import type { Role } from '@/types'
 
 /**
@@ -10,7 +10,7 @@ import type { Role } from '@/types'
  * @param event onebot11消息事件
  * @param bot 标准api实例
  */
-export const createMessage = async (event: OneBotMessageEvent, bot: AdapterOneBot) => {
+export const createMessage = async (event: OneBotMessageEvent, bot: AdapterOneBot<OneBotType>) => {
   const time = event.time
   if (event.message_type === 'private') {
     if (event.sub_type === 'friend' || event.sub_type === 'other') {

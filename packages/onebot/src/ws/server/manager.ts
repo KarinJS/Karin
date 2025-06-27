@@ -9,9 +9,6 @@ import type { OneBotWsServerOptions } from '../types'
  * OneBot WebSocket 服务端管理器
  */
 class OneBotWsServerManager {
-  /** 已连接的服务端实例 */
-  private _servers: OneBotWsServer[] = []
-
   /**
    * 创建WebSocket服务端
    * @param socket - WebSocket实例
@@ -46,24 +43,7 @@ class OneBotWsServerManager {
     }
 
     const server = new OneBotWsServer(socket, request, options)
-    this._servers.push(server)
     return server
-  }
-
-  /**
-   * 获取所有已连接的服务端
-   * @returns 服务端Map
-   */
-  getServers (): OneBotWsServer[] {
-    return this._servers
-  }
-
-  /**
-   * 删除服务端
-   * @param server - 服务端实例
-   */
-  deleteServer (server: OneBotWsServer): void {
-    this._servers = this._servers.filter(s => s !== server)
   }
 }
 

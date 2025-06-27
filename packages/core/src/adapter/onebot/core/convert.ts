@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import { segment } from '@/utils/message'
 import type { AdapterOneBot } from './core'
 import type { Elements, FileElement, SendElement } from '@/types/segment'
-import { OneBotMessage, OneBotMessageType } from '@karinjs/onebot'
+import { OneBotMessage, OneBotMessageType, OneBotType } from '@karinjs/onebot'
 
 /**
  * 处理日志中可能存在的base64字符串
@@ -38,7 +38,7 @@ export const buildError = (selfId: string, action: string, request: string, erro
    */
 export const AdapterConvertKarin = async (
   data: OneBotMessage[],
-  onebot: AdapterOneBot
+  onebot: AdapterOneBot<OneBotType>
 ): Promise<Array<Elements>> => {
   if (!Array.isArray(data)) return []
 
@@ -109,7 +109,7 @@ export const AdapterConvertKarin = async (
  */
 export const getFileMessage = async (
   file: any,
-  adapter: AdapterOneBot
+  adapter: AdapterOneBot<OneBotType>
 ): Promise<FileElement> => {
   // lgl
   if ('file_name' in file && 'file_hash' in file) {
@@ -149,7 +149,7 @@ export const fileToBase64 = (file: string, url: string): string => {
    * karin转onebot11
    * @param data karin格式消息
    */
-export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOneBot) => {
+export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOneBot<OneBotType>) => {
   const elements: OneBotMessage[] = []
 
   for (const i of data) {

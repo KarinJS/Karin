@@ -161,15 +161,15 @@ const request = async <T = any> (config: RequestConfig): Promise<HttpResponse<T>
     // 处理请求体
     if (typeof data === 'object') {
       requestInit.body = JSON.stringify(data)
-      // 设置默认Content-Type
-      if (!headers['Content-Type'] && !headers['content-type']) {
-        requestInit.headers = {
-          ...requestInit.headers,
-          'Content-Type': 'application/json;charset=UTF-8',
-        }
-      }
     } else {
       requestInit.body = data
+    }
+  }
+
+  if (!headers['Content-Type'] && !headers['content-type']) {
+    requestInit.headers = {
+      ...requestInit.headers,
+      'Content-Type': 'application/json;charset=UTF-8',
     }
   }
 

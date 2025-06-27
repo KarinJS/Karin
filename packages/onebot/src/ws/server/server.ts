@@ -1,12 +1,11 @@
 import { OneBotWsBase } from '../base'
 import { DEFAULT_WS_OPTIONS } from '../types'
 import { OneBotCloseType, OneBotErrorType, OneBotEventKey } from '../events'
-import { oneBotWsServerManager } from './manager'
+import { OneBotWsEvent } from '../../event'
 
 import type { WebSocket } from 'ws'
 import type { IncomingMessage } from 'node:http'
 import type { OneBotWsServerOptions as OneBotWsServerOptionsType } from '../types'
-import { OneBotWsEvent } from '@/event'
 
 /**
  * OneBot WebSocket 服务端内部选项
@@ -29,17 +28,21 @@ export class OneBotWsServer extends OneBotWsBase {
   }
 
   /**
+   * 关闭之前的一些操作
+   * @param type - 关闭事件类型
+   */
+  #close (type: OneBotCloseType) {
+    this.emit(OneBotEventKey.CLOSE, type)
+    this.removeAllListeners()
+  }
+
+  /**
    * 更新socket
    */
-  setSocket (socket: WebSocket): void {
-    this._setSocket = true
-    try {
-      this._socket.close()
-      this._socket = socket
-      this._setupEventListeners()
-    } finally {
-      this._setSocket = false
-    }
+  setSocket (socket: WebSocket) {
+    const status = super.setSocket(socket)
+    this._setupEventListeners()
+    return status
   }
 
   /**
@@ -71,11 +74,6 @@ export class OneBotWsServer extends OneBotWsBase {
     return this._request
   }
 
-  close () {
-    super.close()
-    oneBotWsServerManager.deleteServer(this)
-  }
-
   /**
    * 设置事件监听器
    * @private
@@ -83,14 +81,16 @@ export class OneBotWsServer extends OneBotWsBase {
   private _setupEventListeners (): void {
     this?._socket?.removeAllListeners()
     this._socket.on('close', () => {
+      /** 在更新socket时，会触发一个close事件，此时需要忽略 */
       if (this._setSocket) return
-
+      /** 主动关闭 */
       if (this._manualClosed) {
-        this.emit(OneBotEventKey.CLOSE, OneBotCloseType.MANUAL_CLOSE)
+        this.#close(OneBotCloseType.MANUAL_CLOSE)
         return
       }
 
-      this._close()
+      /** 异常关闭 销毁主实例的事件监听 */
+      this.#close(OneBotCloseType.ERROR)
     })
 
     this._socket.on('error', (error) => {

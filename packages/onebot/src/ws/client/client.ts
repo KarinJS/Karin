@@ -1,11 +1,11 @@
 import { OneBotWsBase } from '../base'
+import { OneBotWsEvent } from '../../event'
 import { DEFAULT_WS_OPTIONS } from '../types'
 import { oneBotWsClientManager } from './manager'
 import { OneBotEventKey, OneBotErrorType, OneBotCloseType } from '../events'
 
 import type { WebSocket } from 'ws'
 import type { OneBotWsClientOptions as OneBotWsClientOptionsType } from '../types'
-import { OneBotWsEvent } from '@/event'
 
 /**
  * OneBot WebSocket 客户端内部选项
@@ -31,22 +31,23 @@ export class OneBotWsClient extends OneBotWsBase {
   }
 
   /**
-   * 更新socket
+   * 关闭之前的一些操作
+   * @param type - 关闭事件类型
    */
-  setSocket (socket: WebSocket): void {
-    this._setSocket = true
-    try {
-      this._socket.close()
-      this._socket = socket
-      this._setupEventListeners()
-    } finally {
-      this._setSocket = false
-    }
+  #close (type: OneBotCloseType) {
+    this.emit(OneBotEventKey.CLOSE, type)
+    this.removeAllListeners()
   }
 
-  close () {
-    super.close()
-    oneBotWsClientManager.deleteClient(this._url)
+  /**
+   * 更新socket
+   * @param socket - 新的socket
+   * @returns 返回一个状态函数 请在处理设置socket相关后调用 否则close事件无法触发
+   */
+  setSocket (socket: WebSocket) {
+    const status = super.setSocket(socket)
+    this._setupEventListeners()
+    return status
   }
 
   /**
@@ -125,13 +126,13 @@ export class OneBotWsClient extends OneBotWsBase {
   /**
    * 重连
    * @param url - 连接URL
-   * @param options - 连接配置
+   * @param options - 连接配置 默认使用当前配置
    * @returns 是否重连成功
    */
-  async reconnect (url: string, options: OneBotWsClientOptionsType): Promise<boolean> {
+  async reconnect (url: string, options: OneBotWsClientOptionsType = this._options): Promise<boolean> {
     this._options = this.getOptions(options)
-    const _socket = oneBotWsClientManager.createWebSocketClient(url, options)
-    this.setSocket(_socket)
+    const _socket = oneBotWsClientManager.createWebSocket(url, options)
+    this.setSocket(_socket)()
     return true
   }
 
@@ -151,37 +152,47 @@ export class OneBotWsClient extends OneBotWsBase {
     })
 
     this._socket.on('close', () => {
+      /** 在更新socket时，会触发一个close事件，此时需要忽略 */
       if (this._setSocket) return
+      /** 主动关闭 */
       if (this._manualClosed) {
-        this.emit(OneBotEventKey.CLOSE, OneBotCloseType.MANUAL_CLOSE)
+        this.#close(OneBotCloseType.MANUAL_CLOSE)
         return
       }
 
-      if (this._options.autoReconnect && this._options.maxReconnectAttempts < 0) {
-        this.emit(OneBotEventKey.ERROR, {
-          error: new Error(`[OneBot] 重连次数达到上限: ${this._url}`),
-          type: OneBotErrorType.RECONNECT_FAILED,
-          totalReconnectAttempt: this._reconnectAttempts,
-          maxReconnectAttempt: this._options.maxReconnectAttempts,
-        })
-        this.emit(OneBotEventKey.CLOSE, OneBotCloseType.MAX_RETRIES)
+      /** 自动重连 */
+      if (this._options.autoReconnect) {
+        /** 连接成功后断开 */
+        if (isConnected) {
+          this.#close(OneBotCloseType.CONNECTION_FAILED)
+        }
+
+        /** 重连次数达到上限 */
+        if (this._options.maxReconnectAttempts < 0) {
+          this.emit(OneBotEventKey.ERROR, {
+            error: new Error(`[OneBot] 重连次数达到上限: ${this._url}`),
+            type: OneBotErrorType.RECONNECT_FAILED,
+            totalReconnectAttempt: this._reconnectAttempts,
+            maxReconnectAttempt: this._options.maxReconnectAttempts,
+          })
+          this.#close(OneBotCloseType.MAX_RETRIES)
+          return
+        }
+
+        this._reconnectAttempts++
+
+        setTimeout(() => {
+          this.reconnect(this._url, {
+            ...this._options,
+            maxReconnectAttempts: this._options.maxReconnectAttempts - 1,
+          })
+        }, this._options.reconnectInterval)
         return
       }
 
-      if (this._reconnectAttempts >= this._options.maxReconnectAttempts) {
-        this.emit(OneBotEventKey.CLOSE, OneBotCloseType.MAX_RETRIES)
-        return
-      }
-
-      // this._close()
-      this._reconnectAttempts++
-
-      setTimeout(() => {
-        this.reconnect(this._url, {
-          ...this._options,
-          maxReconnectAttempts: this._options.maxReconnectAttempts - 1,
-        })
-      }, this._options.reconnectInterval)
+      /** 异常关闭 销毁主实例的事件监听 */
+      this.emit(OneBotEventKey.CLOSE, OneBotCloseType.ERROR)
+      this.removeAllListeners()
     })
 
     this._socket.on('error', (error) => {

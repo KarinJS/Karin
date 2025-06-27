@@ -17,7 +17,7 @@ import type { OneBotWsEvent, OneBotEvent, Echo } from '../event'
  * @extends EventEmitter
  */
 export abstract class OneBotCore extends EventEmitter {
-  /** 是否手动关闭 */
+  /** 是否主动关闭 */
   _manualClosed: boolean = false
   /** 协议信息 */
   protocol: {
@@ -233,7 +233,7 @@ export abstract class OneBotCore extends EventEmitter {
     this.emit(OneBotEventKey.EVENT, data)
 
     if (data.post_type === EventPostType.Message) {
-      // this.emit(OneBotEventKey.MESSAGE, data)
+      this.emit(OneBotEventKey.MESSAGE, data)
       return
     }
 

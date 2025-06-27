@@ -19,14 +19,14 @@ import {
 } from '@/event/create'
 import { getFileMessage } from '../core/convert'
 import { NoticeType } from '@karinjs/onebot'
-import type { OneBotNoticeEvent } from '@karinjs/onebot'
+import type { OneBotNoticeEvent, OneBotType } from '@karinjs/onebot'
 
 /**
  * 创建通知事件
  * @param event onebot11通知事件
  * @param bot 标准api实例
  */
-export const createNotice = (event: OneBotNoticeEvent, bot: AdapterOneBot) => {
+export const createNotice = (event: OneBotNoticeEvent, bot: AdapterOneBot<OneBotType>) => {
   const time = event.time
   // 私聊撤回
   if (event.notice_type === NoticeType.FriendRecall) {

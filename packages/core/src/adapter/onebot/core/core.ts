@@ -10,13 +10,13 @@ import { AdapterConvertKarin, KarinConvertAdapter } from '@/adapter/onebot/core/
 import type { Contact, GroupSender, Role } from '@/types/event'
 import type { ForwardOptions, NodeElement, SendElement } from '@/types/segment'
 import type { GetGroupHighlightsResponse, QQGroupHonorInfo, SendMsgResults } from '@/types/adapter'
-import type { OneBotApi, OneBotHttp, OneBotMessage, OneBotWsClient, OneBotWsServer, OneBotCore, NodeCustomMessage, NodeMessage } from '@karinjs/onebot'
+import type { OneBotApi, OneBotMessage, OneBotCore, NodeCustomMessage, NodeMessage, OneBotType } from '@karinjs/onebot'
 
-export class AdapterOneBot extends AdapterBase {
+export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
   #isInit = false
-  _onebot: OneBotWsClient | OneBotWsServer | OneBotHttp
+  _onebot: T
 
-  constructor (_onebot: OneBotWsClient | OneBotWsServer | OneBotHttp) {
+  constructor (_onebot: T) {
     super()
     this.adapter.platform = 'qq'
     this.adapter.standard = 'onebot11'
@@ -58,10 +58,6 @@ export class AdapterOneBot extends AdapterBase {
       }
 
       logger.bot('warn', this.selfId, `收到未知事件: ${JSON.stringify(data, null, 2)}`)
-    })
-
-    this._onebot.on(OneBotEventKey.CLOSE, () => {
-      this.unregisterBot()
     })
   }
 
