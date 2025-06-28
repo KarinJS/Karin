@@ -122,7 +122,11 @@ export interface GroupInfo {
   /** 群备注 */
   groupRemark?: string
   /** 群管理员ID列表 */
-  admins?: Array<string>
+  admins: {
+    userId: string
+    name: string
+    role: Role
+  }[]
   /** 最大成员数 */
   maxMemberCount?: number
   /** 当前成员数 */

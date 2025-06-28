@@ -1,5 +1,5 @@
-import type { AdapterOneBot } from '@/adapter/onebot/core/base'
-import { OB11RequestType, type OB11Request } from '@/adapter/onebot/types/event'
+import type { AdapterOneBot } from '@/adapter/onebot/core/core'
+import { RequestType } from '@karinjs/onebot'
 import {
   contactFriend,
   contactGroup,
@@ -11,18 +11,19 @@ import {
   createGroupInviteRequest,
   createPrivateApplyRequest,
 } from '@/event/create'
+import type { OneBotRequestEvent, OneBotType } from '@karinjs/onebot'
 
 /**
  * 创建请求事件
  * @param event onebot11请求事件
  * @param bot 标准api实例
  */
-export const createRequest = (event: OB11Request, bot: AdapterOneBot) => {
+export const createRequest = (event: OneBotRequestEvent, bot: AdapterOneBot<OneBotType>) => {
   const time = event.time
   const userId = event.user_id + ''
 
   // 新好友申请
-  if (event.request_type === OB11RequestType.Friend) {
+  if (event.request_type === RequestType.Friend) {
     const contact = contactFriend(userId)
     createPrivateApplyRequest({
       bot,
@@ -43,7 +44,7 @@ export const createRequest = (event: OB11Request, bot: AdapterOneBot) => {
   }
 
   // 新成员加群申请
-  if (event.request_type === OB11RequestType.Group && event.sub_type === 'add') {
+  if (event.request_type === RequestType.Group && event.sub_type === 'add') {
     const groupId = event.group_id + ''
     const contact = contactGroup(groupId)
 
@@ -68,7 +69,7 @@ export const createRequest = (event: OB11Request, bot: AdapterOneBot) => {
   }
 
   // 邀请Bot加入群聊
-  if (event.request_type === OB11RequestType.Group && event.sub_type === 'invite') {
+  if (event.request_type === RequestType.Group && event.sub_type === 'invite') {
     const groupId = event.group_id + ''
     const contact = contactGroup(groupId)
 

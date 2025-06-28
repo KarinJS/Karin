@@ -52,7 +52,7 @@ export const unregisterRender = (index: number) => {
  * @returns 渲染器实例
  */
 export const getRender = (id?: string | number) => {
-  if (cache.length === 0) throw new Error('[调用渲染器失败] 渲染器列表为空')
+  if (cache.length === 0) throw new Error('渲染器列表为空: 请前往插件市场安装【@karinjs/puppeteer】插件')
   if (!id) {
     const app = cache[Math.floor(Math.random() * cache.length)]
     return app
@@ -61,13 +61,13 @@ export const getRender = (id?: string | number) => {
   if (typeof id === 'number') {
     /** 筛选出index一致的渲染器 */
     const app = cache.find(app => app.index === id)
-    if (!app) throw new Error(`[调用渲染器失败] 未找到渲染器：${id}`)
+    if (!app) throw new Error(`未找到渲染器：${id}`)
     return app
   }
 
   /** 筛选出id一致的渲染器 */
   const app = cache.find(app => app.id === id)
-  if (!app) throw new Error(`[调用渲染器失败] 未找到渲染器：${id}`)
+  if (!app) throw new Error(`未找到渲染器：${id}`)
   return app
 }
 

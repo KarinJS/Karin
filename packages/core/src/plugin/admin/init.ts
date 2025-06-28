@@ -1,9 +1,8 @@
-import { ONLINE } from '@/env'
 import { cache } from '../system/cache'
 import { getPlugins } from '../system/list'
 import { initPluginHmr } from './hmr'
 import { pkgLoads, pkgSort } from './load'
-import { errorHandler, listeners } from '@/core/internal'
+import { errorHandler } from '@/core/internal'
 
 /**
  * 初始化插件
@@ -40,7 +39,6 @@ export const initPlugins = async () => {
   })
 
   logger.info(logger.green('-----------'))
-  listeners.emit(ONLINE, {})
 
   setTimeout(() => {
     initPluginHmr()

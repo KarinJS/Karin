@@ -1,9 +1,8 @@
 import fs from 'node:fs'
 import { segment } from '@/utils/message'
-import type { OB11Segment } from '../types'
-import type { AdapterOneBot } from './base'
-import type { Contact } from '@/types'
+import type { AdapterOneBot } from './core'
 import type { Elements, FileElement, SendElement } from '@/types/segment'
+import { OneBotMessage, OneBotMessageType, OneBotType } from '@karinjs/onebot'
 
 /**
  * 处理日志中可能存在的base64字符串
@@ -32,87 +31,83 @@ export const buildError = (selfId: string, action: string, request: string, erro
 }
 
 /**
+ * 转换单个onebot消息为karin格式
+ * @param message onebot消息
+ * @param onebot 机器人实例
+ * @returns karin格式的消息元素
+ */
+export const convertOneBotMessageToKarin = async (
+  message: OneBotMessage,
+  onebot: AdapterOneBot<OneBotType>
+): Promise<Elements> => {
+  const handlers: Record<string, () => Elements | Promise<Elements>> = {
+    text: () => segment.text(message.data.text),
+    face: () => segment.face(Number(message.data.id)),
+    image: () => segment.image(message.data.url || message.data.file, {
+      ...message.data,
+      fileType: message.data.type,
+      fid: message.data.fid,
+      md5: message.data.md5,
+      size: message.data.size,
+      summary: message.data.summary,
+      width: message.data.width,
+      height: message.data.height,
+    }),
+    record: () => segment.record(message.data.url || message.data.file, message.data.magic === 1),
+    video: () => segment.video(message.data.url || message.data.file),
+    at: () => segment.at(message.data.qq, message.data.name),
+    contact: () => segment.contact(message.data.type === 'qq' ? 'friend' : 'group', message.data.id),
+    location: () => segment.location(
+      Number(message.data.lat),
+      Number(message.data.lon),
+      message.data.title || '',
+      message.data.content || ''
+    ),
+    reply: () => segment.reply(message.data.id),
+    json: () => segment.json(message.data.data),
+    xml: () => segment.xml(message.data.data),
+    file: async () => await getFileMessage(message.data, onebot),
+  }
+
+  const handler = handlers[message.type]
+  return handler ? await handler() : segment.text(JSON.stringify(message))
+}
+
+/**
    * onebot11转karin
    * @param data onebot11格式消息
    * @param onebot 机器人实例
    * @return karin格式消息
    */
 export const AdapterConvertKarin = async (
-  data: Array<OB11Segment>,
-  onebot: AdapterOneBot,
-  contact?: Contact
+  data: OneBotMessage[],
+  onebot: AdapterOneBot<OneBotType>
 ): Promise<Array<Elements>> => {
   if (!Array.isArray(data)) return []
 
   const elements = []
   try {
     for (const i of data) {
-      switch (i.type) {
-        case 'text':
-          elements.push(segment.text(i.data.text))
-          break
-        case 'face':
-          elements.push(segment.face(Number(i.data.id)))
-          break
-        case 'image':
-          elements.push(segment.image(i.data.url || i.data.file, { fileType: i.data.type }))
-          break
-        case 'record':
-          elements.push(segment.record(i.data.url || i.data.file, i.data.magic === 1))
-          break
-        case 'video':
-          elements.push(segment.video(i.data.url || i.data.file))
-          break
-        case 'at':
-          elements.push(segment.at(i.data.qq, i.data.name))
-          break
-        case 'contact':
-          elements.push(segment.contact(i.data.type === 'qq' ? 'friend' : 'group', i.data.id))
-          break
-        case 'location':
-          elements.push(segment.location(
-            Number(i.data.lat),
-            Number(i.data.lon),
-            i.data.title || '',
-            i.data.content || ''
-          ))
-          break
-        case 'reply':
-          elements.push(segment.reply(i.data.id))
-          break
-        case 'json':
-          elements.push(segment.json(i.data.data))
-          break
-        case 'xml':
-          elements.push(segment.xml(i.data.data))
-          break
-        case 'file':
-          elements.push(await getFileSegment(i.data, onebot, contact!))
-          break
-        default: {
-          elements.push(segment.text(JSON.stringify(i)))
-        }
-      }
+      const element = await convertOneBotMessageToKarin(i, onebot)
+      elements.push(element)
     }
+    return elements
   } catch (error) {
-    logger.error('[AdapterConvertKarin] 转换错误')
-    logger.error(error)
+    logger.error(new Error('[OneBot] 消息段转换错误:', { cause: error }))
     return elements
   }
-  return elements
 }
 
 /**
  * 获取文件消息段
  * @param file 文件信息
- * @param onebot 机器人实例
+ * @param adapter 机器人实例
  * @param contact 联系人信息
  * @returns 文件消息段
  */
-export const getFileSegment = async (
+export const getFileMessage = async (
   file: any,
-  onebot: AdapterOneBot,
-  contact: Contact
+  adapter: AdapterOneBot<OneBotType>
 ): Promise<FileElement> => {
   // lgl
   if ('file_name' in file && 'file_hash' in file) {
@@ -125,11 +120,12 @@ export const getFileSegment = async (
 
   // napcat 需要手动获取url
   if (Object.keys(file).length === 3 && 'file_size' in file && 'file_id' in file) {
-    const url = await onebot.getFileUrl(contact!, file.file_id)
+    const { url, file_size: fileSize } = await adapter._onebot.nc_getFile(file.file_id)
     return segment.file(url, {
       name: file.file,
-      size: file.file_size,
+      size: Number(fileSize),
       fid: file.file_id,
+      hash: file.file_hash,
     })
   }
 
@@ -141,49 +137,69 @@ export const getFileSegment = async (
  * @param file 文件路径
  */
 export const fileToBase64 = (file: string, url: string): string => {
+  if (typeof file !== 'string') {
+    throw new TypeError('文件仅支持 file:// http(s):// base64:// 协议')
+  }
+
   if (!url || !file.startsWith('file://')) return file
   const list = ['127.0.0.1', 'localhost']
   const link = new URL(url)
-  return list.includes(link.hostname) ? file : `base64://${fs.readFileSync(file.replace('file://', '')).toString('base64')}`
+  return list.includes(link.hostname)
+    ? file
+    : `base64://${fs.readFileSync(file.replace('file://', '')).toString('base64')}`
 }
 
 /**
    * karin转onebot11
    * @param data karin格式消息
    */
-export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOneBot): Array<OB11Segment> => {
-  const elements: OB11Segment[] = []
+export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOneBot<OneBotType>) => {
+  const elements: OneBotMessage[] = []
 
   for (const i of data) {
     switch (i.type) {
       case 'text':
-        elements.push({ type: 'text', data: { text: i.text } })
+        elements.push({ type: OneBotMessageType.Text, data: { text: i.text } })
         break
       case 'face':
-        elements.push({ type: 'face', data: { id: i.id + '' } })
+        elements.push({ type: OneBotMessageType.Face, data: { id: i.id + '' } })
         break
       case 'at':
-        elements.push({ type: 'at', data: { qq: String(i.targetId), name: i.name } })
+        elements.push({ type: OneBotMessageType.At, data: { qq: String(i.targetId), name: i.name } })
         break
       case 'reply':
-        elements.push({ type: 'reply', data: { id: i.messageId } })
+        elements.push({ type: OneBotMessageType.Reply, data: { id: i.messageId } })
         break
       case 'image': {
-        elements.push({ type: 'image', data: { file: fileToBase64(i.file, onebot.adapter.address) } })
+        elements.push({
+          type: OneBotMessageType.Image,
+          data: {
+            file: fileToBase64(i.file, onebot.adapter.address),
+            md5: i.md5,
+            size: i.size,
+            width: i.width,
+            height: i.height,
+            fid: i.fid,
+            summary: i.summary,
+          },
+        })
         break
       }
       case 'video': {
-        elements.push({ type: 'video', data: { file: i.file } })
+        elements.push({ type: OneBotMessageType.Video, data: { file: i.file } })
         break
       }
-      case 'json':
+      case 'json': {
+        elements.push({ type: OneBotMessageType.Json, data: { data: i.data } })
+        break
+      }
       case 'xml': {
-        elements.push({ type: 'json', data: { data: i.data } })
+        elements.push({ type: OneBotMessageType.Xml, data: { data: i.data } })
         break
       }
       case 'record': {
         elements.push({
-          type: 'record',
+          type: OneBotMessageType.Record,
           data: {
             file: fileToBase64(i.file, onebot.adapter.address),
             magic: (i.magic ?? false) ? 1 : 0,
@@ -195,7 +211,7 @@ export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOne
         if (i.platform === 'custom') {
           const { url, audio, title, author, pic } = i
           elements.push({
-            type: 'music',
+            type: OneBotMessageType.Music,
             data: {
               type: 'custom',
               url,
@@ -207,7 +223,7 @@ export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOne
           })
         } else {
           elements.push({
-            type: 'music',
+            type: OneBotMessageType.Music,
             data: {
               type: i.platform as 'qq' | '163' | 'xm',
               id: i.id,
@@ -216,11 +232,11 @@ export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOne
         }
         break
       }
-      // case OB11SegmentType.Contact: {
+      // case OB11MessageType.Contact: {
       //   elements.push({ type, data: { type: i.scene, id: i.peer } })
       //   break
       // }
-      // case OB11SegmentType.Location: {
+      // case OB11MessageType.Location: {
       //   elements.push({ type, data: { lat: i.lat, lon: i.lon, title: i.title, content: i.address } })
       //   break
       // }
@@ -238,13 +254,16 @@ export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOne
       //   elements.push({ type: 'weather', data: { city: i.city, type: i.type } })
       //   break
       // }
-      case 'dice':
+      case 'dice': {
+        elements.push({ type: OneBotMessageType.Dice, data: { id: i.id } })
+        break
+      }
       case 'rps': {
-        elements.push({ type: i.type, data: {} })
+        elements.push({ type: OneBotMessageType.Rps, data: {} })
         break
       }
       case 'share': {
-        elements.push({ type: 'share', data: { url: i.url, title: i.title, content: i.content, image: i.image } })
+        elements.push({ type: OneBotMessageType.Share, data: { url: i.url, title: i.title, content: i.content, image: i.image } })
         break
       }
       case 'raw':
@@ -252,17 +271,17 @@ export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOne
         break
       case 'node': {
         if (i.subType === 'messageID') {
-          elements.push({ type: 'forward', data: { id: i.messageId } })
+          elements.push({ type: OneBotMessageType.Forward, data: { id: i.messageId } })
         } else {
           elements.push({
-            type: 'node',
+            type: OneBotMessageType.Node,
             data: {
               user_id: i.userId || onebot.selfId,
               nickname: i.nickname || onebot.selfName,
               content: KarinConvertAdapter(i.message, onebot),
-              prompt: i?.options?.prompt,
-              summary: i?.options?.summary,
-              source: i?.options?.source,
+              // prompt: i?.options?.prompt,
+              // summary: i?.options?.summary,
+              // source: i?.options?.source,
             },
           })
         }
@@ -277,5 +296,5 @@ export const KarinConvertAdapter = (data: Array<SendElement>, onebot: AdapterOne
       }
     }
   }
-  return elements as Array<OB11Segment>
+  return elements
 }

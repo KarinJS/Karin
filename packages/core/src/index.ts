@@ -2,15 +2,16 @@ import path from 'node:path'
 import '@/service/debug'
 import dotenv from 'dotenv'
 import root from '@/root'
-// import { createInnerLogger } from '@/utils/logger'
+import { ONLINE } from './env'
 import { initConfig } from '@/utils/config/init'
 import { initProcess } from './service/process'
 import { initPlugin } from './plugin'
 import { printStartLog } from './service/start'
 import { createDB, createRedis } from '@/core/db'
 import { initRender } from '@/adapter/render'
-import { initOneBot } from '@/adapter/onebot'
+import { initOneBotAdapter } from '@/adapter/onebot'
 import { initTaskSystem } from '@/service/task'
+import { listeners } from './core/internal/listeners'
 
 export * from '@/service/debug'
 export * from '@/root'
@@ -112,7 +113,7 @@ export const start = async () => {
    * 9. 加载适配器
    */
   await import('@/adapter')
-  await initOneBot()
+  await initOneBotAdapter()
   await initRender()
 
   /**
@@ -132,6 +133,7 @@ export const start = async () => {
   initWebSocketPuppeteerServer()
   initSnapkaClient()
   initSnapkaHttp()
+  listeners.emit(ONLINE, {})
 
   logger.mark(`karin 启动完成: 耗时 ${logger.green(process.uptime().toFixed(2))} 秒...`)
 }

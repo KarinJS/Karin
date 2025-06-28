@@ -3,8 +3,8 @@ import { FILE_CHANGE } from '@/utils/fs'
 import { diffArray } from '@/utils/common/number'
 import { requireFileSync } from '../../fs/require'
 import { listeners } from '@/core/internal/listeners'
-import { registerHttpBot, unregisterHttpBot } from '@/adapter/onebot/post/register'
-import { createOneBot11Client, disconnectOneBot11Client } from '@/adapter/onebot/connect'
+import { cacheMap } from '@/adapter/onebot/core/cache'
+import { createOneBotClient, createOneBotHttp } from '@/adapter/onebot/create/create'
 
 import type { Adapters } from '@/types/config'
 
@@ -79,16 +79,27 @@ const hmrOneBot = (old: Adapters, data: Adapters) => {
     Array.isArray(data?.onebot?.ws_client) ? data?.onebot?.ws_client : []
   )
 
-  client.removed.forEach(v => disconnectOneBot11Client(v.url))
-  client.added.forEach(v => v.enable && createOneBot11Client(v.url, v.token))
+  client.removed.forEach(v => {
+    const bot = cacheMap.wsClient.get(v.url)
+    if (!bot) return
+    bot._onebot.close()
+    cacheMap.wsClient.delete(v.url)
+  })
+
+  client.added.forEach(v => v.enable && createOneBotClient(v.url, v.token))
 
   const http = diffArray(
     Array.isArray(old?.onebot?.http_server) ? old?.onebot?.http_server : [],
     Array.isArray(data?.onebot?.http_server) ? data?.onebot?.http_server : []
   )
 
-  http.removed.forEach(v => unregisterHttpBot(v.self_id))
-  http.added.forEach(v => v.enable && registerHttpBot(v.self_id, v.url, v.api_token, v.post_token))
+  http.removed.forEach(v => {
+    const bot = cacheMap.http.get(v.url)
+    if (!bot) return
+    bot._onebot.close()
+    cacheMap.http.delete(v.url)
+  })
+  http.added.forEach(v => v.enable && createOneBotHttp(v))
 }
 
 /**

@@ -11,7 +11,7 @@ import type { Logger, LoggerLevel } from '@/types/system/logger'
 const initLogger = () => {
   const level = process.env.LOG_LEVEL as LoggerLevel || 'info'
   const daysToKeep = Number(process.env.LOG_DAYS_TO_KEEP) || 30
-  const maxFileSize = Number(process.env.LOG_MAX_LOG_SIZE) || 0
+  // const maxFileSize = Number(process.env.LOG_MAX_LOG_SIZE) || 0
 
   const config: Configuration = {
     appenders: {
@@ -24,7 +24,7 @@ const initLogger = () => {
       },
       overall: {
         /** 输出到文件 */
-        type: 'file',
+        type: 'dateFile',
         /** 日志文件名 */
         filename: '@karinjs/logs/logger',
         /** 日期后缀 */
@@ -34,7 +34,11 @@ const initLogger = () => {
         /** 日志文件名中包含日期模式 */
         alwaysIncludePattern: true,
         /** 日志文件保留天数 */
-        daysToKeep: daysToKeep || 14,
+        numBackups: daysToKeep || 14,
+        /** 日期后缀分隔符 */
+        fileNameSep: '.',
+        /** 压缩 */
+        // compress: true,
         /** 日志输出格式 */
         layout: {
           type: 'pattern',
@@ -43,17 +47,21 @@ const initLogger = () => {
       },
       errorFile: {
         /** 输出到文件 */
-        type: 'file',
+        type: 'dateFile',
         /** 日志文件名 */
-        filename: '@karinjs/logs/logger',
+        filename: '@karinjs/logs/error/logger',
         /** 日期后缀 */
-        pattern: 'error.yyyy-MM-dd.log',
+        pattern: 'yyyy-MM-dd.log',
         /** 日期后缀 */
-        keepFileExt: true,
-        /** 日志文件名中包含日期模式 */
         alwaysIncludePattern: true,
         /** 日志文件保留天数 */
-        daysToKeep: daysToKeep || 30,
+        numBackups: daysToKeep || 14,
+        /** 压缩 */
+        // compress: true,
+        /** 保留文件扩展名 */
+        keepFileExt: true,
+        /** 日期后缀分隔符 */
+        fileNameSep: '.',
         /** 日志输出格式 */
         layout: {
           type: 'pattern',
@@ -71,7 +79,7 @@ const initLogger = () => {
     },
     categories: {
       default: {
-        appenders: ['overall', 'console', 'errors'],
+        appenders: ['console', 'overall', 'errors'],
         level,
         enableCallStack: process.env.RUNTIME === 'tsx',
       },
@@ -82,25 +90,25 @@ const initLogger = () => {
   }
 
   /** 碎片化: 将日志分片，达到指定大小后自动切割 日志较多的情况下不建议与整体化同时开启 */
-  if (maxFileSize > 0) {
-    config.categories.default.appenders.unshift('fragments')
-    config.appenders.fragments = {
-      type: 'file',
-      filename: '@karinjs/logs/app.log',
-      pattern: 'MM-dd.log',
-      keepFileExt: true,
-      alwaysIncludePattern: true,
-      daysToKeep: daysToKeep || 14,
-      maxLogSize: (maxFileSize || 30) * 1024 * 1024,
-      /** 最大文件数 */
-      numBackups: 9999999,
-      /** 日志输出格式 */
-      layout: {
-        type: 'pattern',
-        pattern: '[%d{hh:mm:ss.SSS}][%4.4p] %m',
-      },
-    }
-  }
+  // if (maxFileSize > 0) {
+  //   config.categories.default.appenders.unshift('fragments')
+  //   config.appenders.fragments = {
+  //     type: 'file',
+  //     filename: '@karinjs/logs/app.log',
+  //     pattern: 'MM-dd.log',
+  //     keepFileExt: true,
+  //     alwaysIncludePattern: true,
+  //     daysToKeep: daysToKeep || 14,
+  //     maxLogSize: (maxFileSize || 30) * 1024 * 1024,
+  //     /** 最大文件数 */
+  //     numBackups: 9999999,
+  //     /** 日志输出格式 */
+  //     layout: {
+  //       type: 'pattern',
+  //       pattern: '[%d{hh:mm:ss.SSS}][%4.4p] %m',
+  //     },
+  //   }
+  // }
   return log4js.configure(config)
 }
 

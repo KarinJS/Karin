@@ -10,7 +10,7 @@ import { getSystemStatus } from '@/lib/status'
 import SystemStatusDisplay from '@/components/system_display_card'
 import Counter from '@/components/counter.tsx'
 import SplitText from '@/components/SplitText'
-import type { AdapterType, LocalApiResponse } from 'node-karin'
+import type { LocalApiResponse } from 'node-karin'
 import type { NetworkStatus, SystemStatus } from '@/types/server'
 import {
   Tag,
@@ -215,7 +215,7 @@ function Status ({ statusData, statusError, onGlobalUpdateStart, onGlobalUpdateE
   const error = statusError
 
   const localPluginsList = useRequest(() => request.serverPost<LocalApiResponse[], {}>('/api/v1/plugin/local'))
-  const botList = useRequest(() => request.serverGet<Array<AdapterType>>('/api/v1/system/get/bots'), {
+  const botList = useRequest(() => request.serverGet<number>('/api/v1/system/get/bots'), {
     pollingInterval: 5000,
   })
 
@@ -240,14 +240,14 @@ function Status ({ statusData, statusError, onGlobalUpdateStart, onGlobalUpdateE
 
   // 动态调整动画时长的 useEffect
   useEffect(() => {
-  // 使用 setTimeout 确保 DOM 更新完成后再计算
+    // 使用 setTimeout 确保 DOM 更新完成后再计算
     const timer = setTimeout(() => {
       if (containerRef.current && textRef.current && data?.version) {
         const containerWidth = containerRef.current.clientWidth
         const textWidth = textRef.current.scrollWidth
 
         if (textWidth > containerWidth) {
-        // 根据文本长度动态调整动画时长
+          // 根据文本长度动态调整动画时长
           const duration = Math.max(4, (textWidth / containerWidth) * 3)
           setAnimationDuration(`${duration}s`)
           setShouldAnimate(true)
@@ -309,7 +309,7 @@ function Status ({ statusData, statusError, onGlobalUpdateStart, onGlobalUpdateE
                   <Code className='text-green-400 font-bold'>{npmLatest}</Code>
                   已就绪，点击查看更新日志
                 </div>
-      }
+              }
             >
               <Chip
                 size='sm'
@@ -322,7 +322,7 @@ function Status ({ statusData, statusError, onGlobalUpdateStart, onGlobalUpdateE
                   <GrUpgrade
                     className='text-white mt-[3px] w-3 h-3 animate-bounce'
                   />
-        }
+                }
                 variant='shadow'
                 onClick={handleTooltipClick}
               >
@@ -344,7 +344,7 @@ function Status ({ statusData, statusError, onGlobalUpdateStart, onGlobalUpdateE
         <MemoizedStatusItem title='PID' value={data.pid} />
         <MemoizedStatusItem title='PM2 ID' value={data.pm2_id} />
         <MemoizedStatusItem title='插件数量' value={localPluginsList.data?.length || '--'} />
-        <MemoizedStatusItem title='适配器数量' value={botList.data?.length} />
+        <MemoizedStatusItem title='适配器数量' value={botList.data} />
         <MemoizedStatusItem
           title='版本'
           value={versionCardValue}
@@ -358,7 +358,7 @@ function Status ({ statusData, statusError, onGlobalUpdateStart, onGlobalUpdateE
     data?.pm2_id,
     data?.karin_runtime,
     localPluginsList.data?.length,
-    botList.data?.length,
+    botList.data,
     versionCardValue,
   ]) // 更精确的依赖
 

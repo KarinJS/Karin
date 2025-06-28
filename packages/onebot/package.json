@@ -1,0 +1,34 @@
+{
+  "name": "@karinjs/onebot",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.mjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && tsup"
+  },
+  "keywords": [],
+  "author": "shijin",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^24.0.3",
+    "@types/ws": "^8.18.1",
+    "eslint": "^9.29.0",
+    "neostandard": "^0.12.1",
+    "tsup": "^8.5.0",
+    "ws": "^8.18.2"
+  },
+  "peerDependencies": {
+    "@types/ws": "^8.18.1",
+    "ws": "^8.18.2"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "development": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    }
+  }
+}
