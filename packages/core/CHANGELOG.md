@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.10.11](https://github.com/KarinJS/Karin/compare/core-v1.10.10...core-v1.10.11) (2025-06-28)
+
+
+### ♻️ Code Refactoring
+
+* onebot ([#486](https://github.com/KarinJS/Karin/issues/486)) ([d6aa616](https://github.com/KarinJS/Karin/commit/d6aa6163f655dc270cf6927a660701a2bb9e7c3c))
+
 ## [1.10.10](https://github.com/KarinJS/Karin/compare/core-v1.10.9...core-v1.10.10) (2025-06-17)
 
 

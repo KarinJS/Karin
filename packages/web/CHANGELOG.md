@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.5](https://github.com/KarinJS/Karin/compare/web-v1.9.4...web-v1.9.5) (2025-06-28)
+
+
+### ♻️ Code Refactoring
+
+* onebot ([#486](https://github.com/KarinJS/Karin/issues/486)) ([d6aa616](https://github.com/KarinJS/Karin/commit/d6aa6163f655dc270cf6927a660701a2bb9e7c3c))
+
 ## [1.9.4](https://github.com/KarinJS/Karin/compare/web-v1.9.3...web-v1.9.4) (2025-06-16)
 
 
