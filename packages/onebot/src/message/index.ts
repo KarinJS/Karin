@@ -121,6 +121,12 @@ export interface ImageMessage extends MessageBase {
     width?: number
     /** 拓展: 图片高度 */
     height?: number
+    /** 拓展: 图片ID */
+    fid?: string
+    /** 拓展: md5 */
+    md5?: string
+    /** 拓展: 图片大小 */
+    size?: number
   }
 }
 

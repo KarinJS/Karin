@@ -116,6 +116,8 @@ export interface ImageElement extends Element {
   height?: number
   /** 图片子类型 */
   subType?: string
+  /** 图片大小 */
+  size?: number
   /**
    * show: 展示图片
    * flash: 闪照

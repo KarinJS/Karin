@@ -75,8 +75,12 @@ export const reply = (messageId: string): ReplyElement => {
  */
 export const image = (file: string, options: Partial<ImageElement> = {}): ImageElement => {
   return {
+    ...options,
     type: 'image',
     file,
+    fid: options?.fid,
+    size: options?.size,
+    summary: options?.summary,
     fileType: options.fileType,
     height: options?.height,
     width: options?.width,
