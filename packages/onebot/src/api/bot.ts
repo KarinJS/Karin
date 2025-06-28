@@ -272,9 +272,7 @@ export interface OneBotBotApi {
     params: {
       file: string
     },
-    response: {
-      success: boolean
-    }
+    response: void
   }
 
   /** 社区扩展: 获取rkey */
@@ -282,7 +280,12 @@ export interface OneBotBotApi {
     action: 'get_rkey',
     params: Record<string, never>,
     response: {
-      rkey: string
+      rkeys: Array<{
+        type: 'private' | 'group',
+        rkey: string,
+        created_at: number,
+        ttl: number
+      }>
     }
   }
 
@@ -291,7 +294,10 @@ export interface OneBotBotApi {
     action: 'nc_get_rkey',
     params: Record<string, never>,
     response: {
-      rkey: string
+      rkey: string,
+      ttl: number,
+      time: number,
+      type: number
     }
   }
 

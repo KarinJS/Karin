@@ -1186,4 +1186,127 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
 
     throw TypeError(`不支持的场景类型: ${contact.scene}`)
   }
+
+  /**
+   * 获取群文件系统信息
+   * @param groupId 群ID
+   * @returns 群文件系统信息
+   */
+  async getGroupFileSystemInfo (groupId: string) {
+    const result = await this._onebot.getGroupFileSystemInfo(+groupId)
+    return {
+      ...result,
+      fileCount: result.file_count,
+      limitCount: result.limit_count,
+      usedSpace: result.used_space,
+      totalSpace: result.total_space,
+    }
+  }
+
+  /**
+   * 获取群文件列表
+   * @param groupId 群ID
+   * @param folderId 文件夹ID
+   * @returns 群文件列表
+   */
+  async getGroupFileList (groupId: string, folderId?: string) {
+    const result = typeof folderId !== 'string'
+      ? await this._onebot.getGroupRootFiles(+groupId)
+      : await this._onebot.getGroupFilesByFolder(+groupId, folderId)
+
+    return {
+      files: result.files.map(v => ({
+        fid: v.file_id,
+        name: v.file_name,
+        size: v.file_size,
+        uploadTime: v.upload_time,
+        expireTime: v.dead_time,
+        modifyTime: v.modify_time,
+        downloadCount: v.download_times,
+        uploadId: v.uploader + '',
+        uploadName: v.uploader_name,
+        sha1: '',
+        sha3: '',
+        md5: '',
+      })),
+      folders: result.folders.map(v => ({
+        id: v.folder_id,
+        name: v.folder_name,
+        fileCount: v.total_file_count,
+        createTime: v.create_time,
+        creatorId: v.creator + '',
+        creatorName: v.creator_name,
+      })),
+
+    }
+  }
+
+  /**
+   * 获取 Cookies
+   * @param domain The domain to get cookies from
+   */
+  async getCookies (domain: string) {
+    const result = await this._onebot.getCookies(domain)
+    return { ...result, cookie: result.cookies }
+  }
+
+  /**
+   * 获取 QQ 相关接口凭证
+   * @param domain The domain to get credentials from
+   */
+  async getCredentials (domain: string) {
+    const result = await this._onebot.getCredentials(domain)
+    return { ...result, cookies: result.cookies }
+  }
+
+  /**
+   * 获取 CSRF Token
+   */
+  async getCSRFToken () {
+    const result = await this._onebot.getCsrfToken()
+    return { ...result, token: result.token }
+  }
+
+  /**
+   * 设置头像
+   * @param file base64:// file:// http(s)://
+   * @returns 是否设置成功
+   */
+  async setAvatar (file: string) {
+    try {
+      await this._onebot.setQqAvatar(file)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  /**
+   * 获取群 Ai 语音可用声色列表
+   * @returns 声色列表
+   */
+  async getAiCharacters () {
+    const result = await this._onebot.getAiCharacters()
+    return result
+  }
+
+  /**
+   * 设置群 Ai 语音声色
+   * @param groupId 群号
+   * @param character 声色ID
+   * @param text 转换的文本
+   */
+  async sendAiCharacter (groupId: string, character: string, text: string) {
+    const result = await this._onebot.sendGroupAiRecord(+groupId, character, text)
+    return { messageId: result.message_id + '' }
+  }
+
+  /**
+   * 获取 rkey
+   * @returns rkey
+   */
+  async getRkey () {
+    const result = await this._onebot.getRkey()
+    return result.rkeys
+  }
 }

@@ -9,11 +9,13 @@ import {
   CreateGroupFolderResponse,
   DownloadFileOptions,
   DownloadFileResponse,
+  GetAiCharactersResponse,
   GetAtAllCountResponse,
   GetGroupFileListResponse,
   GetGroupFileSystemInfoResponse,
   GetGroupHighlightsResponse,
   GetGroupMuteListResponse,
+  GetRkeyResponse,
   GroupInfo,
   GroupMemberInfo,
   MessageResponse,
@@ -589,19 +591,44 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
 
   /**
    * 获取 CSRF Token
-   * @param _domain The domain to get the CSRF token from
    */
-  getCSRFToken (_domain: string): Promise<{ token: number }> {
+  getCSRFToken (): Promise<{ token: number }> {
     throw new Error(this.#errMsg)
   }
 
   /**
-   * 获取 HTTP Cookies
-   * @param _appid The appid
-   * @param _daid The daid
-   * @param _jumpUrl The jump url
+   * 设置头像
+   * @param file base64:// file:// http(s)://
+   * @returns 是否设置成功
    */
-  getHttpCookies (_appid: string, _daid: string, _jumpUrl: string): Promise<{ cookie: string }> {
+  setAvatar (_file: string): Promise<boolean> {
+    throw new Error(this.#errMsg)
+  }
+
+  /**
+   * 获取 rkey
+   * @returns rkey
+   */
+  getRkey (): Promise<Array<GetRkeyResponse>> {
+    throw new Error(this.#errMsg)
+  }
+
+  /**
+   * 获取群 Ai 语音可用声色列表
+   * @returns 声色列表
+   */
+  getAiCharacters (): Promise<Array<GetAiCharactersResponse>> {
+    throw new Error(this.#errMsg)
+  }
+
+  /**
+   * 设置群 Ai 语音声色
+   * @param _groupId 群号
+   * @param _characterId 声色ID
+   * @param _text 文本
+   * @returns 是否设置成功
+   */
+  sendAiCharacter (_groupId: string, _characterId: string, _text: string): Promise<{ messageId: string }> {
     throw new Error(this.#errMsg)
   }
 }

@@ -7,11 +7,13 @@ import type {
   CreateGroupFolderResponse,
   DownloadFileOptions,
   DownloadFileResponse,
+  GetAiCharactersResponse,
   GetAtAllCountResponse,
   GetGroupFileListResponse,
   GetGroupFileSystemInfoResponse,
   GetGroupHighlightsResponse,
   GetGroupMuteListResponse,
+  GetRkeyResponse,
   GroupInfo,
   GroupMemberInfo,
   MessageResponse,
@@ -416,7 +418,7 @@ export interface AdapterType<T = any> {
   getGroupFileSystemInfo (groupId: string): Promise<GetGroupFileSystemInfoResponse>
 
   /**
-   * 获取群文件夹下文件列表
+   * 获取群文件夹下的文件列表
    * @param groupId 群号
    * @param folderId 文件夹id，空则为根目录
    * @returns 返回文件和文件夹的列表
@@ -473,17 +475,36 @@ export interface AdapterType<T = any> {
 
   /**
    * 获取 CSRF Token
-   * @param domain The domain to get the CSRF token from
    */
-  getCSRFToken (domain: string): Promise<{ token: number }>
+  getCSRFToken (): Promise<{ token: number }>
 
   /**
-   * 获取 HTTP Cookies
-   * @param appid The appid
-   * @param daid The daid
-   * @param jumpUrl The jump url
+   * 设置头像
+   * @param file base64:// file:// http(s)://
+   * @returns 是否设置成功
    */
-  getHttpCookies (appid: string, daid: string, jumpUrl: string): Promise<{ cookie: string }>
+  setAvatar (file: string): Promise<boolean>
+
+  /**
+   * 获取群 Ai 语音可用声色列表
+   * @returns 声色列表
+   */
+  getAiCharacters (): Promise<Array<GetAiCharactersResponse>>
+
+  /**
+   * 发送群 Ai 语音声色
+   * @param group_id 群号
+   * @param character_id 声色ID
+   * @param text 转换的文本
+   * @returns 是否设置成功
+   */
+  sendAiCharacter (group_id: string, character: string, text: string): Promise<{ messageId: string }>
+
+  /**
+   * 获取 rkey
+   * @returns rkey
+   */
+  getRkey (): Promise<Array<GetRkeyResponse>>
 }
 
 /** 适配器类型 */

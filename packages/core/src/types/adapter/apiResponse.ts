@@ -197,7 +197,7 @@ export interface QQGroupHonorInfo {
  */
 export interface QQGroupFileInfo {
   /** 文件ID */
-  id: string
+  fid: string
   /** 文件名 */
   name: string
   /** 文件大小 */
@@ -235,7 +235,7 @@ export interface QQGroupFolderInfo {
   fileCount: number
   /** 创建时间 */
   createTime: number
-  /** 创建者UID */
+  /** 创建者ID */
   creatorId: string
   /** 创建者昵称 */
   creatorName: string
@@ -271,11 +271,11 @@ export interface GetGroupFileListResponse {
 export interface GetGroupFileSystemInfoResponse {
   /** 文件数量 */
   fileCount: number
-  /** 文件夹数量 */
-  totalCount: number
+  /** 文件上限 */
+  limitCount: number
   /** 已使用空间 */
   usedSpace: number
-  /** 总空间 */
+  /** 空间上限 */
   totalSpace: number
 }
 
@@ -322,4 +322,26 @@ export type DownloadFileOptions = DownloadFileOptionsWithUrl | DownloadFileOptio
 export interface DownloadFileResponse {
   /** 下载后文件的绝对路径 */
   filePath: string
+}
+
+/** 获取 rkey 返回值结构 */
+export interface GetRkeyResponse {
+  /** 可使用的场景 */
+  type: 'private' | 'group'
+  /** rkey */
+  rkey: string
+  /** 创建时间 */
+  created_at: number
+  /** 过期时间 */
+  ttl: number
+}
+
+/** 获取群 Ai 语音可用声色列表返回值结构 */
+export interface GetAiCharactersResponse {
+  /** 声色ID */
+  character_id: string
+  /** 声色名称 */
+  character_name: string
+  /** 声色预览URL */
+  preview_url: string
 }

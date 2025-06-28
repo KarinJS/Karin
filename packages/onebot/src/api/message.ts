@@ -395,12 +395,11 @@ export interface OneBotMessageApi {
   [OneBotMessageApiAction.getAiCharacters]: {
     action: 'get_ai_characters',
     params: Record<string, never>,
-    response: {
-      characters: Array<{
-        id: string,
-        name: string
-      }>
-    }
+    response: Array<{
+      character_id: string,
+      character_name: string,
+      preview_url: string
+    }>
   }
 
   /** 社区扩展: 发送群 Ai 语音 */
