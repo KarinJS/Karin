@@ -23,8 +23,6 @@ export type OneBotHttpClientOptions = {
   headers?: Record<string, string>
   /** 最大重连次数 默认100次 */
   maxReconnectAttempts?: number
-  /** 发送第一次心跳时间`(触发OPEN事件)` 默认200ms */
-  firstHeartbeatTimeout?: number
 } & OneBotCore['_options']
 
 /** http客户端内部配置 */
@@ -67,9 +65,6 @@ export class OneBotHttp extends OneBotCore {
     super(options)
     this._options = this.getOptions(options)
     this.self.id = options.self_id
-
-    const firstHeartbeatTimeout = options.firstHeartbeatTimeout || 200
-    setTimeout(() => this._sendFirstHeartbeat(), firstHeartbeatTimeout)
   }
 
   /**
@@ -83,9 +78,6 @@ export class OneBotHttp extends OneBotCore {
         error: new Error(`发送第一次心跳失败: 请检查目标地址是否可访问: ${this._options.httpHost}`, { cause: error }),
       })
     }
-
-    this._initialized = true
-    this.emit(OneBotEventKey.OPEN)
   }
 
   /**
@@ -220,15 +212,17 @@ export class OneBotHttp extends OneBotCore {
    */
   async init () {
     /** 防止重复初始化 */
-    if (this._initialized) {
-      return
-    }
+    if (this._initialized) return
 
-    /** 设置心跳 */
-    this._startHeartbeat()
+    /** 发送第一次心跳 */
+    await this._sendFirstHeartbeat()
     /** 初始化Bot基本信息 */
     await this._initBotInfo()
+    /** 防止重复初始化 */
     this._initialized = true
+    /** 设置心跳 */
+    this._startHeartbeat()
+    /** 发送OPEN事件 */
     this.emit(OneBotEventKey.OPEN)
   }
 
@@ -314,8 +308,6 @@ export class OneBotHttp extends OneBotCore {
    */
   async reconnect () {
     this._initialized = false
-    /** 发第一次心跳 */
-    await this._sendFirstHeartbeat()
     /** 初始化 */
     await this.init()
   }

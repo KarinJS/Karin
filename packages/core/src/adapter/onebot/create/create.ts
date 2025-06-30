@@ -140,8 +140,6 @@ export const createOneBotHttp = async (options: Adapters['onebot']['http_server'
   adapter.adapter.communication = 'http'
 
   onebot.on(OneBotEventKey.OPEN, async () => {
-    logger.info(`[OneBot] 心跳成功: ${options.url}`)
-    await adapter.init()
     adapter.registerBot()
   })
 
@@ -175,6 +173,7 @@ export const createOneBotHttp = async (options: Adapters['onebot']['http_server'
   })
 
   cacheMap.http.set(options.self_id, adapter)
+  await adapter.init()
   return adapter
 }
 

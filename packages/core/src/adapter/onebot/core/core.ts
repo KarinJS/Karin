@@ -65,7 +65,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * 注册机器人
    */
   registerBot () {
-    logger.bot('info', this.selfId, `[onebot11][${this.adapter.communication}] 连接成功: ${this.adapter.address}`)
+    logger.bot('info', this.selfId, `[OneBot][${this.adapter.communication}] 连接成功: ${this.adapter.address}`)
     this.adapter.index = registerBot(this.adapter.communication, this)
   }
 
@@ -262,12 +262,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @param messageId 消息ID
    */
   async recallMsg (_: Contact, messageId: string) {
-    try {
-      await this._onebot.deleteMsg(Number(messageId))
-      return true
-    } catch {
-      return false
-    }
+    await this._onebot.deleteMsg(Number(messageId))
   }
 
   /**
@@ -408,12 +403,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @returns 此接口的返回值不值得信任
    */
   async sendLike (targetId: string, count: number) {
-    try {
-      await this._onebot.sendLike(Number(targetId), count)
-      return true
-    } catch {
-      return false
-    }
+    await this._onebot.sendLike(Number(targetId), count)
   }
 
   /**
@@ -425,12 +415,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @returns 此接口的返回值不值得信任
    */
   async groupKickMember (groupId: string, targetId: string, rejectAddRequest?: boolean, _?: string) {
-    try {
-      await this._onebot.setGroupKick(Number(groupId), Number(targetId), rejectAddRequest)
-      return true
-    } catch {
-      return false
-    }
+    await this._onebot.setGroupKick(Number(groupId), Number(targetId), rejectAddRequest)
   }
 
   /**
@@ -441,12 +426,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @returns 此接口的返回值不值得信任
    */
   async setGroupMute (groupId: string, targetId: string, duration: number) {
-    try {
-      await this._onebot.setGroupBan(Number(groupId), Number(targetId), duration)
-      return true
-    } catch {
-      return false
-    }
+    await this._onebot.setGroupBan(Number(groupId), Number(targetId), duration)
   }
 
   /**
@@ -456,12 +436,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @returns 此接口的返回值不值得信任
    */
   async setGroupAllMute (groupId: string, isBan: boolean) {
-    try {
-      await this._onebot.setGroupWholeBan(Number(groupId), isBan)
-      return true
-    } catch {
-      return false
-    }
+    await this._onebot.setGroupWholeBan(Number(groupId), isBan)
   }
 
   /**
@@ -472,12 +447,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @returns 此接口的返回值不值得信任
    */
   async setGroupAdmin (groupId: string, targetId: string, isAdmin: boolean) {
-    try {
-      await this._onebot.setGroupAdmin(Number(groupId), Number(targetId), isAdmin)
-      return true
-    } catch {
-      return false
-    }
+    await this._onebot.setGroupAdmin(Number(groupId), Number(targetId), isAdmin)
   }
 
   /**
@@ -488,12 +458,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @returns 此接口的返回值不值得信任
    */
   async setGroupMemberCard (groupId: string, targetId: string, card: string) {
-    try {
-      await this._onebot.setGroupCard(Number(groupId), Number(targetId), card)
-      return true
-    } catch {
-      return false
-    }
+    await this._onebot.setGroupCard(Number(groupId), Number(targetId), card)
   }
 
   /**
@@ -503,12 +468,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @returns 此接口的返回值不值得信任
    */
   async setGroupName (groupId: string, groupName: string) {
-    try {
-      await this._onebot.setGroupName(Number(groupId), groupName)
-      return true
-    } catch {
-      return false
-    }
+    await this._onebot.setGroupName(Number(groupId), groupName)
   }
 
   /**
@@ -518,12 +478,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @returns 此接口的返回值不值得信任
    */
   async setGroupQuit (groupId: string, isDismiss: boolean) {
-    try {
-      await this._onebot.setGroupLeave(Number(groupId), isDismiss)
-      return true
-    } catch {
-      return false
-    }
+    await this._onebot.setGroupLeave(Number(groupId), isDismiss)
   }
 
   /**
@@ -534,12 +489,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @returns 此接口的返回值不值得信任
    */
   async setGroupMemberTitle (groupId: string, targetId: string, title: string) {
-    try {
-      await this._onebot.setGroupSpecialTitle(Number(groupId), Number(targetId), title)
-      return true
-    } catch {
-      return false
-    }
+    await this._onebot.setGroupSpecialTitle(Number(groupId), Number(targetId), title)
   }
 
   /**
@@ -889,21 +839,17 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @returns 此接口的返回值不值得信任
    */
   async setMsgReaction (contact: Contact, messageId: string, faceId: number, isSet: boolean) {
-    try {
-      if (this.adapter.name === 'Lagrange.OneBot') {
-        await this._onebot.lgl_setGroupReaction(+contact.peer, +messageId, faceId + '', isSet)
-        return true
-      }
-
-      if (this.adapter.name === 'NapCat.OneBot') {
-        await this._onebot.nc_setMsgEmojiLike(+messageId, faceId + '', isSet)
-        return true
-      }
-
-      throw new Error(`${this.adapter.name} 不支持设置消息表情回应`)
-    } catch {
-      return false
+    if (this.adapter.name === 'Lagrange.OneBot') {
+      await this._onebot.lgl_setGroupReaction(+contact.peer, +messageId, faceId + '', isSet)
+      return
     }
+
+    if (this.adapter.name === 'NapCat.OneBot') {
+      await this._onebot.nc_setMsgEmojiLike(+messageId, faceId + '', isSet)
+      return
+    }
+
+    throw new Error(`${this.adapter.name} 不支持设置消息表情回应`)
   }
 
   /**
@@ -1006,16 +952,12 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @returns 此接口的返回值不值得信任
    */
   async uploadFile (contact: Contact, file: string, name: string, folder?: string) {
-    try {
-      if (contact.scene === 'group') {
-        await this._onebot.uploadGroupFile(+contact.peer, file, name, folder)
-      } else {
-        await this._onebot.uploadPrivateFile(+contact.peer, file, name)
-      }
-      return true
-    } catch {
-      return false
+    if (contact.scene === 'group') {
+      await this._onebot.uploadGroupFile(+contact.peer, file, name, folder)
+      return
     }
+
+    await this._onebot.uploadPrivateFile(+contact.peer, file, name)
   }
 
   /**
@@ -1025,15 +967,10 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @param create true为添加精华消息，false为删除精华消息 默认为true
    */
   async setGgroupHighlights (_: string, messageId: string, create: boolean) {
-    try {
-      if (create) {
-        await this._onebot.setEssenceMsg(+messageId)
-      } else {
-        await this._onebot.deleteEssenceMsg(+messageId)
-      }
-      return true
-    } catch {
-      return false
+    if (create) {
+      await this._onebot.setEssenceMsg(+messageId)
+    } else {
+      await this._onebot.deleteEssenceMsg(+messageId)
     }
   }
 
@@ -1050,12 +987,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @returns 设置结果
    */
   async setFriendApplyResult (requestId: string, isApprove: boolean, remark?: string) {
-    try {
-      await this._onebot.setFriendAddRequest(requestId, isApprove, remark)
-      return true
-    } catch {
-      return false
-    }
+    await this._onebot.setFriendAddRequest(requestId, isApprove, remark)
   }
 
   /**
@@ -1066,12 +998,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @returns 此接口的返回值不值得信任
    */
   async setGroupApplyResult (requestId: string, isApprove: boolean, denyReason?: string) {
-    try {
-      await this._onebot.setGroupAddRequest(requestId, 'add', isApprove, denyReason)
-      return true
-    } catch {
-      return false
-    }
+    await this._onebot.setGroupAddRequest(requestId, 'add', isApprove, denyReason)
   }
 
   /**
@@ -1081,12 +1008,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @returns 此接口的返回值不值得信任
    */
   async setInvitedJoinGroupResult (requestId: string, isApprove: boolean) {
-    try {
-      await this._onebot.setGroupAddRequest(requestId, 'invite', isApprove)
-      return true
-    } catch {
-      return false
-    }
+    await this._onebot.setGroupAddRequest(requestId, 'invite', isApprove)
   }
 
   /**
@@ -1273,12 +1195,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @returns 是否设置成功
    */
   async setAvatar (file: string) {
-    try {
-      await this._onebot.setQqAvatar(file)
-      return true
-    } catch {
-      return false
-    }
+    await this._onebot.setQqAvatar(file)
   }
 
   /**

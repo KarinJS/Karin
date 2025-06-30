@@ -87,9 +87,8 @@ export interface AdapterType<T = any> {
    * 撤回消息
    * @param contact 目标信息
    * @param messageId 消息ID
-   * @returns 此接口的返回值不值得信任
    */
-  recallMsg (contact: Contact, messageId: string): Promise<boolean>
+  recallMsg (contact: Contact, messageId: string): Promise<void>
 
   /**
    * 获取头像url
@@ -173,15 +172,14 @@ export interface AdapterType<T = any> {
    * @param messageId 群消息ID
    * @param create true为添加精华消息，false为删除精华消息 默认为true
    */
-  setGgroupHighlights (groupId: string, messageId: string, create: boolean): Promise<boolean>
+  setGroupHighlights (groupId: string, messageId: string, create: boolean): Promise<void>
 
   /**
    * 发送好友赞
    * @param targetId 目标ID
    * @param count 赞的次数，默认为10
-   * @returns 此接口的返回值不值得信任
    */
-  sendLike (targetId: string, count: number): Promise<boolean>
+  sendLike (targetId: string, count: number): Promise<void>
 
   /**
    * 群踢人
@@ -189,68 +187,60 @@ export interface AdapterType<T = any> {
    * @param targetId 被踢出目标的ID 任选其一
    * @param rejectAddRequest 是否拒绝再次申请，默认为false
    * @param kickReason 踢出原因，可选
-   * @returns 此接口的返回值不值得信任
    */
-  groupKickMember (groupId: string, targetId: string, rejectAddRequest?: boolean, kickReason?: string): Promise<boolean>
+  groupKickMember (groupId: string, targetId: string, rejectAddRequest?: boolean, kickReason?: string): Promise<void>
 
   /**
    * 禁言群成员
    * @param groupId 群ID
    * @param targetId 被禁言目标的ID 任选其一
    * @param duration 禁言时长 单位:秒
-   * @returns 此接口的返回值不值得信任
    */
-  setGroupMute (groupId: string, targetId: string, duration: number): Promise<boolean>
+  setGroupMute (groupId: string, targetId: string, duration: number): Promise<void>
   /**
    * 群全员禁言
    * @param groupId 群ID
    * @param isBan 是否开启全员禁言
-   * @returns 此接口的返回值不值得信任
    */
-  setGroupAllMute (groupId: string, isBan: boolean): Promise<boolean>
+  setGroupAllMute (groupId: string, isBan: boolean): Promise<void>
 
   /**
    * 设置群管理员
    * @param groupId 群ID
    * @param targetId 目标用户的ID
    * @param isAdmin 是否设置为管理员
-   * @returns 此接口的返回值不值得信任
    */
-  setGroupAdmin (groupId: string, targetId: string, isAdmin: boolean): Promise<boolean>
+  setGroupAdmin (groupId: string, targetId: string, isAdmin: boolean): Promise<void>
 
   /**
    * 设置群名片
    * @param groupId 群ID
    * @param targetId 目标用户的ID
    * @param card 新的群名片
-   * @returns 此接口的返回值不值得信任
    */
-  setGroupMemberCard (groupId: string, targetId: string, card: string): Promise<boolean>
+  setGroupMemberCard (groupId: string, targetId: string, card: string): Promise<void>
 
   /**
    * 设置群名
    * @param groupId 群ID
    * @param groupName 新的群名
-   * @returns 此接口的返回值不值得信任
    */
-  setGroupName (groupId: string, groupName: string): Promise<boolean>
+  setGroupName (groupId: string, groupName: string): Promise<void>
 
   /**
    * 退出群组
    * @param groupId 群ID
    * @param isDismiss 如果Bot是群主，是否解散群
-   * @returns 此接口的返回值不值得信任
    */
-  setGroupQuit (groupId: string, isDismiss: boolean): Promise<boolean>
+  setGroupQuit (groupId: string, isDismiss: boolean): Promise<void>
 
   /**
    * 设置群专属头衔 仅群主可用
    * @param groupId 群ID
    * @param targetId 目标用户的ID
    * @param title 新的专属头衔
-   * @returns 此接口的返回值不值得信任
    */
-  setGroupMemberTitle (groupId: string, targetId: string, title: string): Promise<boolean>
+  setGroupMemberTitle (groupId: string, targetId: string, title: string): Promise<void>
 
   /**
    * 获取陌生人信息
@@ -313,33 +303,30 @@ export interface AdapterType<T = any> {
    * @param remark 好友备注 同意时有效
    * @returns 设置结果
    */
-  setFriendApplyResult (requestId: string, isApprove: boolean, remark?: string): Promise<boolean>
+  setFriendApplyResult (requestId: string, isApprove: boolean, remark?: string): Promise<void>
 
   /**
    * 设置申请加入群请求结果
    * @param requestId 请求事件ID
    * @param isApprove 是否同意
    * @param denyReason 拒绝理由 拒绝时有效
-   * @returns 此接口的返回值不值得信任
    */
-  setGroupApplyResult (requestId: string, isApprove: boolean, denyReason?: string): Promise<boolean>
+  setGroupApplyResult (requestId: string, isApprove: boolean, denyReason?: string): Promise<void>
 
   /**
    * 设置邀请加入群请求结果
    * @param requestId 请求事件ID
    * @param isApprove 是否同意
-   * @returns 此接口的返回值不值得信任
    */
-  setInvitedJoinGroupResult (requestId: string, isApprove: boolean): Promise<boolean>
+  setInvitedJoinGroupResult (requestId: string, isApprove: boolean): Promise<void>
 
   /**
    * 设置消息表情回应
    * @param contact 目标信息
    * @param messageId 消息ID
    * @param faceId 表情ID
-   * @returns 此接口的返回值不值得信任
    */
-  setMsgReaction (contact: Contact, messageId: string, faceId: number, isSet: boolean): Promise<boolean>
+  setMsgReaction (contact: Contact, messageId: string, faceId: number, isSet: boolean): Promise<void>
 
   /**
    * 上传群文件、私聊文件
@@ -347,9 +334,8 @@ export interface AdapterType<T = any> {
    * @param file 本地文件绝对路径
    * @param name 文件名称 必须提供
    * @param folder 父目录ID 不提供则上传到根目录 仅在群聊时有效
-   * @returns 此接口的返回值不值得信任
    */
-  uploadFile (contact: Contact, file: string, name: string, folder?: string): Promise<boolean>
+  uploadFile (contact: Contact, file: string, name: string, folder?: string): Promise<void>
 
   /**
    * 让协议端下载文件到协议端本地
@@ -429,7 +415,6 @@ export interface AdapterType<T = any> {
    * 设置群备注
    * @param groupId 群号
    * @param remark 新的备注
-   * @returns 此接口的返回值不值得信任
    */
   setGroupRemark (groupId: string, remark: string): Promise<boolean>
 
@@ -457,7 +442,6 @@ export interface AdapterType<T = any> {
    * 戳一戳用户 支持群聊和私聊
    * @param contact 目标信息
    * @param count 戳一戳次数 默认为1
-   * @returns 此接口的返回值不值得信任
    */
   pokeUser (contact: Contact, count?: number): Promise<boolean>
 
@@ -483,7 +467,7 @@ export interface AdapterType<T = any> {
    * @param file base64:// file:// http(s)://
    * @returns 是否设置成功
    */
-  setAvatar (file: string): Promise<boolean>
+  setAvatar (file: string): Promise<void>
 
   /**
    * 获取群 Ai 语音可用声色列表

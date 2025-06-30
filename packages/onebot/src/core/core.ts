@@ -103,8 +103,8 @@ export abstract class OneBotCore extends EventEmitter {
       `[${this.self_id}][sendApi] 请求错误:`,
       `  action: ${action}`,
       `  params: ${this._formatBase64(params)}`,
-      `  error: ${error}`,
-    ].join('\n'))
+    ].join('\n'), { cause: error }
+    )
   }
 
   /**
@@ -733,21 +733,21 @@ export abstract class OneBotCore extends EventEmitter {
    * Lagrange扩展: 给消息添加表情回应
    * @param group_id - 群ID
    * @param message_id - 消息ID
-   * @param emoji_id - 表情ID
-   * @param set - 设置或取消
+   * @param code - 表情ID
+   * @param is_add - 是否为添加
    * @returns
    */
   async lgl_setGroupReaction (
     group_id: number,
     message_id: number,
-    emoji_id: string,
-    set: boolean
+    code: string,
+    is_add: boolean
   ) {
     return this.sendApi(OneBotMessageApiAction.lgl_setGroupReaction, {
       group_id,
       message_id,
-      emoji_id,
-      set,
+      code,
+      is_add,
     })
   }
 

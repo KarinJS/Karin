@@ -430,8 +430,8 @@ export interface OneBotMessageApi {
     params: {
       group_id: number,
       message_id: number,
-      emoji_id: string,
-      set: boolean
+      code: string,
+      is_add: boolean
     },
     response: null
   }

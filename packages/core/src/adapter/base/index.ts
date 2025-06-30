@@ -109,9 +109,8 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * 撤回消息
    * @param _contact 目标信息
    * @param _messageId 消息ID
-   * @returns 此接口的返回值不值得信任
    */
-  recallMsg (_contact: Contact, _messageId: string): Promise<boolean> {
+  recallMsg (_contact: Contact, _messageId: string): Promise<void> {
     throw new Error(this.#errMsg)
   }
 
@@ -211,7 +210,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _messageId 群消息ID
    * @param _create true为添加精华消息，false为删除精华消息 默认为true
    */
-  setGgroupHighlights (_groupId: string, _messageId: string, _create: boolean): Promise<boolean> {
+  setGroupHighlights (_groupId: string, _messageId: string, _create: boolean): Promise<void> {
     throw new Error(this.#errMsg)
   }
 
@@ -219,9 +218,8 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * 发送好友赞
    * @param _targetId 目标ID
    * @param _count 赞的次数
-   * @returns 此接口的返回值不值得信任
    */
-  sendLike (_targetId: string, _count: number): Promise<boolean> {
+  sendLike (_targetId: string, _count: number): Promise<void> {
     throw new Error(this.#errMsg)
   }
 
@@ -231,9 +229,8 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _targetId 被踢出目标的ID 任选其一
    * @param _rejectAddRequest 是否拒绝再次申请，默认为false
    * @param _kickReason 踢出原因，可选
-   * @returns 此接口的返回值不值得信任
    */
-  groupKickMember (_groupId: string, _targetId: string, _rejectAddRequest?: boolean, _kickReason?: string): Promise<boolean> {
+  groupKickMember (_groupId: string, _targetId: string, _rejectAddRequest?: boolean, _kickReason?: string): Promise<void> {
     throw new Error(this.#errMsg)
   }
 
@@ -242,9 +239,8 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _groupId 群ID
    * @param _targetId 被禁言目标的ID 任选其一
    * @param _duration 禁言时长 单位:秒
-   * @returns 此接口的返回值不值得信任
    */
-  setGroupMute (_groupId: string, _targetId: string, _duration: number): Promise<boolean> {
+  setGroupMute (_groupId: string, _targetId: string, _duration: number): Promise<void> {
     throw new Error(this.#errMsg)
   }
 
@@ -252,9 +248,8 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * 群全员禁言
    * @param _groupId 群ID
    * @param _isBan 是否开启全员禁言
-   * @returns 此接口的返回值不值得信任
    */
-  setGroupAllMute (_groupId: string, _isBan: boolean): Promise<boolean> {
+  setGroupAllMute (_groupId: string, _isBan: boolean): Promise<void> {
     throw new Error(this.#errMsg)
   }
 
@@ -263,9 +258,8 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _groupId 群ID
    * @param _targetId 目标用户的ID
    * @param _isAdmin 是否设置为管理员
-   * @returns 此接口的返回值不值得信任
    */
-  setGroupAdmin (_groupId: string, _targetId: string, _isAdmin: boolean): Promise<boolean> {
+  setGroupAdmin (_groupId: string, _targetId: string, _isAdmin: boolean): Promise<void> {
     throw new Error(this.#errMsg)
   }
 
@@ -274,9 +268,8 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _groupId 群ID
    * @param _targetId 目标用户的ID
    * @param _card 新的群名片
-   * @returns 此接口的返回值不值得信任
    */
-  setGroupMemberCard (_groupId: string, _targetId: string, _card: string): Promise<boolean> {
+  setGroupMemberCard (_groupId: string, _targetId: string, _card: string): Promise<void> {
     throw new Error(this.#errMsg)
   }
 
@@ -284,9 +277,8 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * 设置群名
    * @param _groupId 群ID
    * @param _groupName 新的群名
-   * @returns 此接口的返回值不值得信任
    */
-  setGroupName (_groupId: string, _groupName: string): Promise<boolean> {
+  setGroupName (_groupId: string, _groupName: string): Promise<void> {
     throw new Error(this.#errMsg)
   }
 
@@ -294,9 +286,8 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * 退出群组
    * @param _groupId 群ID
    * @param _isDismiss 如果Bot是群主，是否解散群
-   * @returns 此接口的返回值不值得信任
    */
-  setGroupQuit (_groupId: string, _isDismiss: boolean): Promise<boolean> {
+  setGroupQuit (_groupId: string, _isDismiss: boolean): Promise<void> {
     throw new Error(this.#errMsg)
   }
 
@@ -305,9 +296,8 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _groupId 群ID
    * @param _targetId 目标用户的ID
    * @param _title 新的专属头衔
-   * @returns 此接口的返回值不值得信任
    */
-  setGroupMemberTitle (_groupId: string, _targetId: string, _title: string): Promise<boolean> {
+  setGroupMemberTitle (_groupId: string, _targetId: string, _title: string): Promise<void> {
     throw new Error(this.#errMsg)
   }
 
@@ -385,9 +375,8 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _requestId 请求事件ID
    * @param _isApprove 是否同意
    * @param _remark 好友备注 同意时有效
-   * @returns 设置结果
    */
-  setFriendApplyResult (_requestId: string, _isApprove: boolean, _remark?: string): Promise<boolean> {
+  setFriendApplyResult (_requestId: string, _isApprove: boolean, _remark?: string): Promise<void> {
     throw new Error(this.#errMsg)
   }
 
@@ -396,9 +385,8 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _requestId 请求事件ID
    * @param _isApprove 是否同意
    * @param _denyReason 拒绝理由 拒绝时有效
-   * @returns 此接口的返回值不值得信任
    */
-  setGroupApplyResult (_requestId: string, _isApprove: boolean, _denyReason?: string): Promise<boolean> {
+  setGroupApplyResult (_requestId: string, _isApprove: boolean, _denyReason?: string): Promise<void> {
     throw new Error(this.#errMsg)
   }
 
@@ -406,9 +394,8 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * 设置邀请加入群请求结果
    * @param _requestId 请求事件ID
    * @param _isApprove 是否同意
-   * @returns 此接口的返回值不值得信任
    */
-  setInvitedJoinGroupResult (_requestId: string, _isApprove: boolean): Promise<boolean> {
+  setInvitedJoinGroupResult (_requestId: string, _isApprove: boolean): Promise<void> {
     throw new Error(this.#errMsg)
   }
 
@@ -417,9 +404,8 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _contact 目标信息
    * @param _messageId 消息ID
    * @param _faceId 表情ID
-   * @returns 此接口的返回值不值得信任
    */
-  setMsgReaction (_contact: Contact, _messageId: string, _faceId: number, _isSet: boolean): Promise<boolean> {
+  setMsgReaction (_contact: Contact, _messageId: string, _faceId: number, _isSet: boolean): Promise<void> {
     throw new Error(this.#errMsg)
   }
 
@@ -429,9 +415,8 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _file 本地文件绝对路径
    * @param _name 文件名称 必须提供
    * @param _folder 父目录ID 不提供则上传到根目录 仅在群聊时有效
-   * @returns 此接口的返回值不值得信任
    */
-  uploadFile (_contact: Contact, _file: string, _name: string, _folder?: string): Promise<boolean> {
+  uploadFile (_contact: Contact, _file: string, _name: string, _folder?: string): Promise<void> {
     throw new Error(this.#errMsg)
   }
 
@@ -531,7 +516,6 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * 设置群备注
    * @param _groupId 群号
    * @param _remark 新的备注
-   * @returns 此接口的返回值不值得信任
    */
   setGroupRemark (_groupId: string, _remark: string): Promise<boolean> {
     throw new Error(this.#errMsg)
@@ -567,7 +551,6 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * 戳一戳用户 支持群聊和私聊
    * @param _contact 目标信息
    * @param _count 戳一戳次数 默认为1
-   * @returns 此接口的返回值不值得信任
    */
   pokeUser (_contact: Contact, _count?: number): Promise<boolean> {
     throw new Error(this.#errMsg)
@@ -599,9 +582,8 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
   /**
    * 设置头像
    * @param file base64:// file:// http(s)://
-   * @returns 是否设置成功
    */
-  setAvatar (_file: string): Promise<boolean> {
+  setAvatar (_file: string): Promise<void> {
     throw new Error(this.#errMsg)
   }
 
