@@ -290,6 +290,14 @@ export class DirectMessage extends MessageBase {
     return this.#srcGuildId
   }
 
+  get guildId () {
+    return this.#contact.peer
+  }
+
+  get channelId () {
+    return this.#contact.subPeer
+  }
+
   get contact () {
     return this.#contact
   }
