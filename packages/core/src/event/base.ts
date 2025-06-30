@@ -10,6 +10,7 @@ import type {
   EventToSubEvent,
   Permission,
   Reply,
+  Role,
   Sender,
   SrcReply,
 } from '@/types/event'
@@ -238,65 +239,46 @@ export abstract class BaseEvent<T extends EventParent> {
 
   /**
    * 传入目标权限，返回当前事件触发者是否拥有该权限
-   * @param permission - 目标权限
+   * @param role - 目标权限
    * @param isUpper - 是否向上检查 例如`group:admin`向上检查到`master` 默认`true`
    * @returns 是否拥有该权限
    */
-  public hasPermission (permission: Permission, isUpper = true): boolean {
-    if (permission === 'all') {
-      return true
+  public hasPermission (role: Permission, isUpper = true): boolean {
+    if (role === 'all') return true
+
+    const levels: Record<string, number> = {
+      master: 100,
+      admin: 80,
+      'group.owner': 60,
+      'guild.owner': 60,
+      'group.admin': 40,
+      'guild.admin': 40,
+      member: 20,
+      all: 0,
     }
 
-    if (permission === 'master') {
-      return this.isMaster
+    const userLevel = () => {
+      if (this.isMaster) return levels.master
+      if (this.isAdmin) return levels.admin
+
+      if (this.isGroup || this.isGuild) {
+        const senderRole = (this.sender as { role?: Role }).role || 'member'
+        if (senderRole === 'owner') {
+          return this.isGroup ? levels['group.owner'] : levels['guild.owner']
+        }
+
+        if (senderRole === 'admin') {
+          return this.isGroup ? levels['group.admin'] : levels['guild.admin']
+        }
+      }
+
+      return levels.member
     }
 
-    if (permission === 'admin') {
-      if (isUpper) return this.isMaster || this.isAdmin
+    const requiredLevel = levels[role] || Number.MAX_SAFE_INTEGER
 
-      return this.isAdmin
-    }
-
-    const permissionConfig: Record<string, {
-      sceneCheck: () => boolean,
-      roleValue: string,
-      includeAdmin?: boolean
-    }> = {
-      'group.owner': {
-        sceneCheck: () => this.isGroup,
-        roleValue: 'owner',
-        includeAdmin: true,
-      },
-      'group.admin': {
-        sceneCheck: () => this.isGroup,
-        roleValue: 'admin',
-        includeAdmin: true,
-      },
-      'guild.owner': {
-        sceneCheck: () => this.isGuild,
-        roleValue: 'owner',
-        includeAdmin: true,
-      },
-      'guild.admin': {
-        sceneCheck: () => this.isGuild,
-        roleValue: 'admin',
-      },
-    }
-
-    const config = permissionConfig[permission]
-    if (!config) {
-      throw new Error(`不支持的权限: ${permission}`)
-    }
-
-    if (!config.sceneCheck()) return false
-
-    // @ts-ignore
-    const role = this.sender?.role || 'unknown'
-
-    if (isUpper && config.includeAdmin) {
-      return this.isMaster || this.isAdmin || role === config.roleValue
-    }
-
-    return role === config.roleValue
+    return isUpper
+      ? userLevel() >= requiredLevel
+      : userLevel() === requiredLevel
   }
 }
