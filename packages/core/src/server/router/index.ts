@@ -51,6 +51,9 @@ import {
   GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER,
   GET_PLUGIN_MARKET_LIST_ROUTER,
   GET_LOCAL_PLUGIN_FRONTEND_LIST_ROUTER,
+  GET_SQLITE_TABLES_ROUTER,
+  GET_SQLITE_TABLE_DATA_ROUTER,
+  EXECUTE_SQLITE_QUERY_ROUTER,
 } from './router'
 import { logMiddleware } from '../log'
 import { authMiddleware } from '../auth/middleware'
@@ -106,6 +109,11 @@ import { taskListRouter, taskRunRouter, taskLogsRouter, taskDeleteRouter } from 
 import { getNpmBaseConfigRouter, getNpmrcContentRouter, getNpmrcListRouter, saveNpmrcRouter } from '../dependencies/config'
 import { getFrontendInstalledPluginList, getLoadedCommandPluginCacheList, getPluginListPluginAdmin } from '../plugins/detail'
 import { getPluginMarketList } from '../plugins/market'
+import {
+  getSqliteTablesRouter,
+  getSqliteTableDataRouter,
+  executeSqliteQueryRouter,
+} from '../database/sqlite'
 
 /**
  * karin内部路由
@@ -233,3 +241,11 @@ router.post(GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER, getLoadedCommandPluginC
 router.post(GET_PLUGIN_MARKET_LIST_ROUTER, getPluginMarketList)
 /** @version 1.8.0 获取本地插件列表 用于插件索引页面渲染简约列表 */
 router.post(GET_LOCAL_PLUGIN_FRONTEND_LIST_ROUTER, getFrontendInstalledPluginList)
+
+/** SQLite数据库操作 */
+/** 获取数据库表结构 */
+router.post(GET_SQLITE_TABLES_ROUTER, getSqliteTablesRouter)
+/** 获取数据库表数据 */
+router.post(GET_SQLITE_TABLE_DATA_ROUTER, getSqliteTableDataRouter)
+/** 执行SQL语句 */
+router.post(EXECUTE_SQLITE_QUERY_ROUTER, executeSqliteQueryRouter)

@@ -7,6 +7,7 @@ import {
   MdOutlineArticle, // 系统日志
   MdOutlineTerminal, // 仿真终端
 } from 'react-icons/md'
+import { TbDatabase } from 'react-icons/tb'
 
 import type { LocalApiResponse } from 'node-karin'
 
@@ -62,6 +63,11 @@ export const defaultSiteConfig: SiteConfigType = {
       Icon: MdOutlineTerminal,
       label: '仿真终端',
       href: '/terminal',
+    },
+    {
+      Icon: TbDatabase,
+      label: 'SQLite管理',
+      href: '/sqlite',
     },
     {
       Icon: MdOutlineArticle,

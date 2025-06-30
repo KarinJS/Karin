@@ -43,4 +43,12 @@ export const api = {
   restartKarin: `${BASE_ROUTER}/restart`,
   /** @version 1.10.0+ 获取前端已安装插件简约列表 */
   getFrontendInstalledPluginList: `${BASE_ROUTER}/plugin/local/frontend`,
+
+  /** @version 1.9.0+ SQLite数据库操作 */
+  /** 获取数据库表结构 POST */
+  getSqliteTables: `${BASE_ROUTER}/database/sqlite/tables`,
+  /** 获取数据库表数据 POST */
+  getSqliteTableData: `${BASE_ROUTER}/database/sqlite/table/data`,
+  /** 执行SQL语句 POST */
+  executeSqliteQuery: `${BASE_ROUTER}/database/sqlite/execute`,
 }

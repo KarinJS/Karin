@@ -124,3 +124,11 @@ export const GET_PLUGIN_MARKET_LIST_ROUTER = '/plugin/market'
 
 /** @version 1.8.0 获取本地插件列表 用于插件索引页面渲染简约列表 */
 export const GET_LOCAL_PLUGIN_FRONTEND_LIST_ROUTER = '/plugin/local/frontend'
+
+/** @version 1.9.0 SQLite数据库操作 */
+/** 获取数据库表结构 */
+export const GET_SQLITE_TABLES_ROUTER = '/database/sqlite/tables'
+/** 获取数据库表数据 */
+export const GET_SQLITE_TABLE_DATA_ROUTER = '/database/sqlite/table/data'
+/** 执行SQL语句 */
+export const EXECUTE_SQLITE_QUERY_ROUTER = '/database/sqlite/execute'
