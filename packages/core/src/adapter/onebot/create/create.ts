@@ -42,6 +42,11 @@ export const createOneBotWsServer = async (
   adapter.adapter.communication = 'webSocketServer'
   adapter.account.selfId = String(request.headers['x-self-id'])
 
+  onebot.on(OneBotEventKey.OPEN, async () => {
+    logger.debug(`[OneBot] 服务端连接成功: ${url}`)
+    adapter.registerBot()
+  })
+
   onebot.on(OneBotEventKey.CLOSE, async (type) => {
     adapter.unregisterBot()
     if (type === OneBotCloseType.MANUAL_CLOSE) {
@@ -50,6 +55,19 @@ export const createOneBotWsServer = async (
 
     return logger.error(`${loggerPrefix} 连接断开: ${url}`)
   })
+
+  onebot.on(OneBotEventKey.ERROR, async (args) => {
+    if (args.type === OneBotErrorType.AUTH_FAILED) {
+      return logger.error(`${loggerPrefix} 鉴权失败: ${args.error.message}`)
+    }
+
+    if (args.type === OneBotErrorType.AUTH_INVALID_FORMAT) {
+      return logger.error(`${loggerPrefix} 鉴权头格式错误: ${args.error.message}`)
+    }
+
+    return logger.error(new Error(`${loggerPrefix} 发生错误:`, { cause: args.error }))
+  })
+
   await adapter.init()
   cacheMap.wsServer.set(url, adapter)
 }

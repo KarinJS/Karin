@@ -130,6 +130,7 @@ export class OneBotWsClient extends OneBotWsBase {
    * @returns 是否重连成功
    */
   async reconnect (url: string, options: OneBotWsClientOptionsType = this._options): Promise<boolean> {
+    this._manualClosed = false
     this._options = this.getOptions(options)
     const _socket = oneBotWsClientManager.createWebSocket(url, options)
     this.setSocket(_socket)()
@@ -155,10 +156,7 @@ export class OneBotWsClient extends OneBotWsBase {
       /** 在更新socket时，会触发一个close事件，此时需要忽略 */
       if (this._setSocket) return
       /** 主动关闭 */
-      if (this._manualClosed) {
-        this.#close(OneBotCloseType.MANUAL_CLOSE)
-        return
-      }
+      if (this._manualClosed) return
 
       /** 自动重连 */
       if (this._options.autoReconnect) {

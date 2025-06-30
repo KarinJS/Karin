@@ -64,14 +64,10 @@ export abstract class OneBotWsBase extends OneBotCore {
    * 关闭连接
    */
   close (): void {
-    try {
-      this._manualClosed = true
-      this._socket.close()
-      this.emit(OneBotEventKey.CLOSE, OneBotCloseType.MANUAL_CLOSE)
-      setTimeout(() => this.removeAllListeners(), 200)
-    } finally {
-      this._manualClosed = false
-    }
+    this._manualClosed = true
+    this._socket.close()
+    this.emit(OneBotEventKey.CLOSE, OneBotCloseType.MANUAL_CLOSE)
+    this.removeAllListeners()
   }
 
   /**

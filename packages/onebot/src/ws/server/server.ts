@@ -23,8 +23,11 @@ export class OneBotWsServer extends OneBotWsBase {
     super(socket, options)
     this._options = this.getOptions(options)
     this._request = request
+  }
 
+  async init () {
     this._setupEventListeners()
+    await super.init()
   }
 
   /**
@@ -80,14 +83,12 @@ export class OneBotWsServer extends OneBotWsBase {
    */
   private _setupEventListeners (): void {
     this?._socket?.removeAllListeners()
+    this.emit(OneBotEventKey.OPEN)
     this._socket.on('close', () => {
       /** 在更新socket时，会触发一个close事件，此时需要忽略 */
       if (this._setSocket) return
       /** 主动关闭 */
-      if (this._manualClosed) {
-        this.#close(OneBotCloseType.MANUAL_CLOSE)
-        return
-      }
+      if (this._manualClosed) return
 
       /** 异常关闭 销毁主实例的事件监听 */
       this.#close(OneBotCloseType.ERROR)
