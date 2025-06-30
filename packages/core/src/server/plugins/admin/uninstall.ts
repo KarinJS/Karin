@@ -79,7 +79,26 @@ export const uninstall = async (
       notExist.push(v.name)
     })
 
-    await spawnProcess('pnpm', ['remove', ...npm, '--save'], { timeout: 60 * 1000 }, emitLog)
+    await spawnProcess('pnpm', ['remove', ...npm], { timeout: 60 * 1000 }, emitLog)
+
+    /** 执行完成之后 检查package.json是否还存在这些依赖 */
+    const pkg = path.join(process.cwd(), 'package.json')
+    if (fs.existsSync(pkg)) {
+      const content = fs.readFileSync(pkg, 'utf-8')
+      const data = JSON.parse(content)
+      const delDep = (obj: Record<string, string>) => {
+        Object.keys(obj).forEach(key => {
+          if (npm.includes(key)) {
+            delete obj[key]
+          }
+        })
+      }
+
+      delDep(data.dependencies)
+      delDep(data.devDependencies)
+      delDep(data.peerDependencies)
+      fs.writeFileSync(pkg, JSON.stringify(data, null, 2), 'utf-8')
+    }
 
     /** tips: 不要使用异步 */
     for (const v of git) {
