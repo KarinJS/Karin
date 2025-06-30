@@ -844,7 +844,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
       return
     }
 
-    if (this.adapter.name === 'NapCat.OneBot') {
+    if (this.adapter.name === 'NapCat.Onebot') {
       await this._onebot.nc_setMsgEmojiLike(+messageId, faceId + '', isSet)
       return
     }
@@ -1091,7 +1091,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @returns 文件url
    */
   async getFileUrl (contact: Contact, fid: string) {
-    if (this.adapter.name === 'NapCat.OneBot') {
+    if (this.adapter.name === 'NapCat.Onebot') {
       const { url } = await this._onebot.nc_getFile(fid)
       return url
     }
