@@ -184,52 +184,42 @@ class AdapterConsole extends AdapterBase implements AdapterType {
 
   async recallMsg (_: Contact, messageId: string) {
     logger.info(`[recallMsg] ${messageId}`)
-    return true
   }
 
   async sendLike (targetId: string, count: number) {
     logger.info(`[sendLike] ${targetId} ${count}`)
-    return true
   }
 
   async groupKickMember (groupId: string, targetId: string, rejectAddRequest?: boolean, kickReason?: string) {
     logger.info(`[groupKickMember] ${groupId} ${targetId} ${rejectAddRequest} ${kickReason}`)
-    return true
   }
 
   async setGroupMute (groupId: string, targetId: string, duration: number) {
     logger.info(`[setGroupMute] ${groupId} ${targetId} ${duration}`)
-    return true
   }
 
   async setGroupAllMute (groupId: string, isBan: boolean) {
     logger.info(`[setGroupAllMute] ${groupId} ${isBan}`)
-    return true
   }
 
   async setGroupAdmin (groupId: string, targetId: string, isAdmin: boolean) {
     logger.info(`[setGroupAdmin] ${groupId} ${targetId} ${isAdmin}`)
-    return true
   }
 
   async setGroupMemberCard (groupId: string, targetId: string, card: string) {
     logger.info(`[setGroupMemberCard] ${groupId} ${targetId} ${card}`)
-    return true
   }
 
   async setGroupName (groupId: string, groupName: string) {
     logger.info(`[setGroupName] ${groupId} ${groupName}`)
-    return true
   }
 
   async setGroupQuit (groupId: string, isDismiss: boolean) {
     logger.info(`[setGroupQuit] ${groupId} ${isDismiss}`)
-    return true
   }
 
   async setGroupMemberTitle (groupId: string, targetId: string, title: string) {
     logger.info(`[setGroupMemberTitle] ${groupId} ${targetId} ${title}`)
-    return true
   }
 
   async getFriendList (refresh?: boolean) {
@@ -254,27 +244,22 @@ class AdapterConsole extends AdapterBase implements AdapterType {
 
   async setFriendApplyResult (requestId: string, isApprove: boolean, remark?: string) {
     logger.info(`[setFriendApplyResult] ${requestId} ${isApprove} ${remark}`)
-    return true
   }
 
   async setGroupApplyResult (requestId: string, isApprove: boolean, denyReason?: string) {
     logger.info(`[setGroupApplyResult] ${requestId} ${isApprove} ${denyReason}`)
-    return true
   }
 
   async setInvitedJoinGroupResult (requestId: string, isApprove: boolean) {
     logger.info(`[setInvitedJoinGroupResult] ${requestId} ${isApprove}`)
-    return true
   }
 
   async setMsgReaction (contact: Contact, messageId: string, faceId: number, isSet: boolean) {
     logger.info(`[setMsgReaction] ${contact} ${messageId} ${faceId} ${isSet}`)
-    return true
   }
 
   async uploadFile (contact: Contact, file: string, name: string, folder?: string) {
     logger.info(`[uploadFile] ${contact} ${file} ${name} ${folder}`)
-    return true
   }
 }
 
