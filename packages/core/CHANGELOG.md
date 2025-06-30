@@ -1,5 +1,14 @@
 # 更新日志
 
+## [1.10.16](https://github.com/KarinJS/Karin/compare/core-v1.10.15...core-v1.10.16) (2025-06-30)
+
+
+### 🐛 Bug Fixes
+
+* hasPermission ([eff1274](https://github.com/KarinJS/Karin/commit/eff1274f9b85dd9e495655b9434e5ee2a5694442))
+* napcat name ([5bbe6b1](https://github.com/KarinJS/Karin/commit/5bbe6b1f9018eb29f808a62af9995e04a41ff3e2))
+* webui ([baf7666](https://github.com/KarinJS/Karin/commit/baf7666cbc019674d0189b418cf448d1feafb5d6))
+
 ## [1.10.15](https://github.com/KarinJS/Karin/compare/core-v1.10.14...core-v1.10.15) (2025-06-30)
 
 
