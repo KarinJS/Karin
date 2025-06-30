@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.10.14](https://github.com/KarinJS/Karin/compare/core-v1.10.13...core-v1.10.14) (2025-06-30)
+
+
+### 🐛 Bug Fixes
+
+* onebot 声明周期事件错误 ([7bf0152](https://github.com/KarinJS/Karin/commit/7bf0152fc1d807ea46a1f0998da78403c0883acf))
+
 ## [1.10.13](https://github.com/KarinJS/Karin/compare/core-v1.10.12...core-v1.10.13) (2025-06-30)
 
 
