@@ -257,12 +257,12 @@ const processPlugin = async (dir: string, pluginsPath: string, allItems: UpdateI
   const packageJsonPath = join(pluginPath, 'package.json')
 
   /** 检查是否是目录且以karin-plugin-开头 */
-  if (!dir.startsWith('karin-plugin-') || !(await fs.promises.stat(pluginPath)).isDirectory()) {
-    return
-  }
+  if (!fs.existsSync(pluginPath)) return
+  if (!dir.startsWith('karin-plugin-')) return
+  if (!fs.existsSync(pluginPath)) return
 
   /** 检查.git目录是否存在 */
-  if (!fs.existsSync(gitPath)) {
+  if (!fs.existsSync(gitPath) || !fs.existsSync(packageJsonPath)) {
     allItems.push({
       name: dir,
       type: 'git',
@@ -272,56 +272,57 @@ const processPlugin = async (dir: string, pluginsPath: string, allItems: UpdateI
       needUpdate: false,
       isPlugin: false,
     })
+    return
+  }
 
-    /** 检查package.json是否存在karin字段 */
-    try {
-      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
-      if (!packageJson.karin) {
-        allItems.push({
-          name: dir,
-          type: 'git',
-          currentVersion: '-',
-          latestVersion: '-',
-          status: '非Karin插件，已跳过',
-          needUpdate: false,
-          isPlugin: false,
-        })
-        return
-      }
-
-      const { status, hash, data } = await gitPull(pluginPath, { customCmd: 'git pull', force })
-      if (!status) {
-        allItems.push({
-          name: dir,
-          type: 'git',
-          currentVersion: '-',
-          latestVersion: '-',
-          status: `更新失败: ${data}`,
-          needUpdate: false,
-          isPlugin: true,
-        })
-      } else {
-        allItems.push({
-          name: dir,
-          type: 'git',
-          currentVersion: hash.before,
-          latestVersion: hash.after,
-          status: '更新成功',
-          needUpdate: true,
-          isPlugin: true,
-        })
-      }
-    } catch (error) {
+  /** 检查package.json是否存在karin字段 */
+  try {
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
+    if (!packageJson.karin) {
       allItems.push({
         name: dir,
         type: 'git',
         currentVersion: '-',
         latestVersion: '-',
-        status: `处理失败: ${error}`,
+        status: '非Karin插件，已跳过',
         needUpdate: false,
         isPlugin: false,
       })
+      return
     }
+
+    const { status, hash, data } = await gitPull(pluginPath, { customCmd: 'git pull', force })
+    if (!status) {
+      allItems.push({
+        name: dir,
+        type: 'git',
+        currentVersion: '-',
+        latestVersion: '-',
+        status: `更新失败: ${data}`,
+        needUpdate: false,
+        isPlugin: true,
+      })
+    } else {
+      allItems.push({
+        name: dir,
+        type: 'git',
+        currentVersion: hash.before,
+        latestVersion: hash.after,
+        status: '更新成功',
+        needUpdate: true,
+        isPlugin: true,
+      })
+    }
+  } catch (error) {
+    allItems.push({
+      name: dir,
+      type: 'git',
+      currentVersion: '-',
+      latestVersion: '-',
+      status: `处理失败: ${error}`,
+      needUpdate: false,
+      isPlugin: false,
+    })
   }
 }
 
