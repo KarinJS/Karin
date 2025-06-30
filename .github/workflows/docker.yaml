@@ -10,7 +10,7 @@ permissions:
 env:
   DOCKERHUB_REPO: karinjs/karin
   GHCR_REPO: ghcr.io/karinjs/karin
-  ALIYUN_REPO: registry.cn-hangzhou.aliyuncs.com/karinjs/karin
+  # ALIYUN_REPO: registry.cn-hangzhou.aliyuncs.com/karinjs/karin
 
 jobs:
   build-amd64:
@@ -29,7 +29,6 @@ jobs:
           images: |
             ${{ env.DOCKERHUB_REPO }}
             ${{ env.GHCR_REPO }}
-            ${{ env.ALIYUN_REPO }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -64,7 +63,6 @@ jobs:
           tags: |
             ${{ env.DOCKERHUB_REPO }}:${{ steps.meta.outputs.version }}-amd64
             ${{ env.GHCR_REPO }}:${{ steps.meta.outputs.version }}-amd64
-            ${{ env.ALIYUN_REPO }}:${{ steps.meta.outputs.version }}-amd64
           push: true
 
   build-arm64:
@@ -83,7 +81,6 @@ jobs:
           images: |
             ${{ env.DOCKERHUB_REPO }}
             ${{ env.GHCR_REPO }}
-            ${{ env.ALIYUN_REPO }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -118,7 +115,6 @@ jobs:
           tags: |
             ${{ env.DOCKERHUB_REPO }}:${{ steps.meta.outputs.version }}-arm64
             ${{ env.GHCR_REPO }}:${{ steps.meta.outputs.version }}-arm64
-            ${{ env.ALIYUN_REPO }}:${{ steps.meta.outputs.version }}-arm64
           push: true
 
   create-manifest:
@@ -157,7 +153,6 @@ jobs:
           images: |
             ${{ env.DOCKERHUB_REPO }}
             ${{ env.GHCR_REPO }}
-            ${{ env.ALIYUN_REPO }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -177,14 +172,7 @@ jobs:
             ${{ env.GHCR_REPO }}:${{ steps.meta.outputs.version }}-amd64 \
             ${{ env.GHCR_REPO }}:${{ steps.meta.outputs.version }}-arm64
 
-          # 为阿里云创建清单
-          docker buildx imagetools create \
-            -t ${{ env.ALIYUN_REPO }}:${{ steps.meta.outputs.version }} \
-            ${{ env.ALIYUN_REPO }}:${{ steps.meta.outputs.version }}-amd64 \
-            ${{ env.ALIYUN_REPO }}:${{ steps.meta.outputs.version }}-arm64
-
       - name: 检查镜像
         run: |
           docker buildx imagetools inspect ${{ env.DOCKERHUB_REPO }}:${{ steps.meta.outputs.version }}
           docker buildx imagetools inspect ${{ env.GHCR_REPO }}:${{ steps.meta.outputs.version }}
-          docker buildx imagetools inspect ${{ env.ALIYUN_REPO }}:${{ steps.meta.outputs.version }}
