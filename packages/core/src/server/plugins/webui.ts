@@ -113,33 +113,16 @@ export const uninstallWebui: RequestHandler = async (req, res) => {
  */
 export const getWebuiPluginList: RequestHandler = async (_, res) => {
   try {
-    /**
-     * 检查每个插件是否已安装，并获取版本号
-     */
-    const updatedPlugins = await Promise.all(plugins.map(async plugin => {
-      const modulePath = path.join(process.cwd(), 'node_modules', plugin.name)
-      const isInstalled = fs.existsSync(modulePath)
-
-      let version
-      if (isInstalled) {
-        try {
-          const pkgPath = path.join(modulePath, 'package.json')
-          if (fs.existsSync(pkgPath)) {
-            const pkgContent = fs.readFileSync(pkgPath, 'utf-8')
-            const pkg = JSON.parse(pkgContent)
-            version = pkg.version
-          }
-        } catch (error) {
-          logger.error(`[webui] 读取插件版本失败: ${plugin.name}`)
-        }
-      }
-
+    const pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8'))
+    const updatedPlugins = plugins.map(plugin => {
+      const isInstalled = pkg.dependencies?.[plugin.name] || pkg.devDependencies?.[plugin.name] || pkg.peerDependencies?.[plugin.name]
+      const version = isInstalled || null
       return {
         ...plugin,
-        installed: isInstalled,
+        installed: typeof version === 'string',
         version,
       }
-    }))
+    })
 
     return createSuccessResponse(res, updatedPlugins)
   } catch (error) {
