@@ -51,6 +51,7 @@ export const createRawMessage = (data: Elements[]) => {
       case 'longMsg': return `[longmsg:${v.id}]`
       case 'pasmsg': return `[pasmsg:${v.id}]`
       case 'markdownTpl': return `[markdowntpl:${JSON.stringify({ templateId: v.templateId, ...v.params })}]`
+      case 'raw': return `[raw:${JSON.stringify(v.data)}]`
       default: return `[未知:${lodash.truncate(JSON.stringify(v), { length: 200 })}]`
     }
   }).join('')
