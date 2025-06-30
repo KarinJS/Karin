@@ -1,5 +1,16 @@
 # 更新日志
 
+## [1.10.15](https://github.com/KarinJS/Karin/compare/core-v1.10.14...core-v1.10.15) (2025-06-30)
+
+
+### 🐛 Bug Fixes
+
+* `raw`原始文本 ([21cd207](https://github.com/KarinJS/Karin/commit/21cd2074ba7da1650c2ccad6d62f117a8907321f))
+* close [#474](https://github.com/KarinJS/Karin/issues/474) ([a985f0a](https://github.com/KarinJS/Karin/commit/a985f0a214ecc8fb7edefe4a00f9afe24e443e4a))
+* webui卸载插件 ([2b08c90](https://github.com/KarinJS/Karin/commit/2b08c900c9b199439e418d4f1ec76e3303704408))
+* 孤儿进程 ([f459e14](https://github.com/KarinJS/Karin/commit/f459e145480dcb8ebeddf694ca947998350183e9))
+* 更新`hooks.sendMsg.message`描述 ([9efe1d4](https://github.com/KarinJS/Karin/commit/9efe1d4378cf5df00ab6c621ead976447f906eba))
+
 ## [1.10.14](https://github.com/KarinJS/Karin/compare/core-v1.10.13...core-v1.10.14) (2025-06-30)
 
 
