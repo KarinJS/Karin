@@ -29,7 +29,7 @@ const addHook = <T extends NormalMessageCallback | ForwardMessageCallback | Afte
 /** 发送消息钩子 */
 export const sendMsg = {
   /**
-   * 添加普通消息钩子
+   * 添加普通消息钩子 `也就是调用 bot.sendMsg 时触发 此时会先进入这个 hook 才会到 bot.sendMsg`
    * @param callback 消息处理回调函数
    * @param options 钩子配置项
    * @returns 钩子ID
@@ -41,7 +41,7 @@ export const sendMsg = {
     return id
   },
   /**
-   * 添加转发消息钩子
+   * 添加转发消息钩子 `也就是调用 bot.sendForwardMsg 时触发 此时会先进入这个 hook 才会到 bot.sendForwardMsg`
    * @param callback 消息处理回调函数
    * @param options 钩子配置项
    * @returns 钩子ID
@@ -53,7 +53,7 @@ export const sendMsg = {
     return id
   },
   /**
-   * 添加普通消息发送后钩子
+   * 添加普通消息发送后钩子 `也就是调用 bot.sendMsg 处理完成返回结果前触发 此时会先进入这个 hook 才会正常返回结果`
    * @param callback 消息处理回调函数
    * @param options 钩子配置项
    * @returns 钩子ID
@@ -65,7 +65,7 @@ export const sendMsg = {
     return id
   },
   /**
-   * 添加转发消息发送后钩子
+   * 添加转发消息发送后钩子 `也就是调用 bot.sendForwardMsg 处理完成返回结果前触发 此时会先进入这个 hook 才会正常返回结果`
    * @param callback 消息处理回调函数
    * @param options 钩子配置项
    * @returns 钩子ID
