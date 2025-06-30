@@ -37,4 +37,11 @@ export const processHandler = () => {
 
   /** 如果是pm2环境 设置运行器为pm2 */
   if (process.env.pm_id) process.env.RUNTIME = 'pm2'
+
+  if (typeof process.send === 'function') {
+    process.on('disconnect', () => {
+      logger.fatal('IPC通道已断开，父进程可能已退出，Karin将结束运行')
+      process.exit(1)
+    })
+  }
 }
