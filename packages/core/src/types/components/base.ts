@@ -23,6 +23,7 @@ export type ComponentType =
   | 'radio'
   | 'radio-group'
   | 'select'
+  | 'select-item'
   | 'input-group'
   | 'cron'
 

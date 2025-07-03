@@ -1,4 +1,13 @@
-import type { SelectProps } from '@/types/components'
+import type { SelectItemProps, SelectProps } from '@/types/components'
+
+const createItem = (
+  key: string,
+  config: Partial<Omit<SelectItemProps, 'key' | 'componentType'>> = {}
+): SelectItemProps => ({
+  ...config,
+  key,
+  componentType: 'select-item',
+})
 
 const createSelect = (
   key: string,
@@ -7,13 +16,42 @@ const createSelect = (
   ...config,
   key,
   componentType: 'select',
-  options: config.options || []
+  items: config.items || [],
 })
 
 export const select = {
-  create: (key: string, options: Omit<SelectProps, 'key' | 'componentType'>) => createSelect(key, options),
-  default: (key: string, config: Partial<Omit<SelectProps, 'key' | 'componentType'>> = {}) => createSelect(key, {
-    options: [],
-    ...config,
-  })
+  item: (
+    key: string,
+    options: Omit<SelectItemProps, 'key' | 'componentType'>
+  ) => createItem(key, options),
+
+  create: (
+    key: string,
+    options: Omit<SelectProps, 'key' | 'componentType'>
+  ) => createSelect(key, options),
+
+  default: (
+    key: string,
+    config: Partial<Omit<SelectProps, 'key' | 'componentType'>> = {}
+  ) => createSelect(key, { items: [], ...config }),
+
+  required: (
+    key: string,
+    config: Partial<Omit<SelectItemProps, 'key' | 'componentType'>> = {}
+  ) => createItem(key, { ...config, isRequired: true }),
+
+  disabled: (
+    key: string,
+    config: Partial<Omit<SelectItemProps, 'key' | 'componentType'>> = {}
+  ) => createItem(key, { ...config, isDisabled: true }),
+
+  readonly: (
+    key: string,
+    config: Partial<Omit<SelectItemProps, 'key' | 'componentType'>> = {}
+  ) => createItem(key, { ...config, isReadOnly: true }),
+
+  invalid: (
+    key: string,
+    config: Partial<Omit<SelectItemProps, 'key' | 'componentType'>> = {}
+  ) => createItem(key, { ...config, isInvalid: true }),
 }

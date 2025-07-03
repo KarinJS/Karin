@@ -1,9 +1,10 @@
 import { ComponentProps } from './base'
 
-export interface SelectOption {
+export interface SelectItemProps extends ComponentProps {
+  componentType: 'select-item'
   label: string
   value: string | number
-  disabled?: boolean
+  isDisabled?: boolean
 }
 
 export interface SelectProps extends ComponentProps {
@@ -15,7 +16,7 @@ export interface SelectProps extends ComponentProps {
   radius?: 'none' | 'sm' | 'md' | 'lg' | 'full'
   name?: string
   multiple?: boolean
-  options: SelectOption[]
+  items: SelectItemProps[]
   value?: string | string[]
   defaultValue?: string | string[]
   isInvalid?: boolean

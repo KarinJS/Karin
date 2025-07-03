@@ -12,7 +12,7 @@ export const createSelect = (
   const {
     componentType: _,
     key,
-    options,
+    items,
     className,
     componentClassName,
     multiple,
@@ -33,7 +33,7 @@ export const createSelect = (
           <HeroSelect
             {...rest}
             className={className}
-            items={options}
+            items={items}
             multiple={multiple}
             selectedKeys={Array.isArray(value) ? value : value ? [value] : []}
             onSelectionChange={(keys) => {
