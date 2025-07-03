@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.10.17](https://github.com/KarinJS/Karin/compare/core-v1.10.16...core-v1.10.17) (2025-07-03)
+
+
+### 🐛 Bug Fixes
+
+* 补充频道事件缺少的字段 ([1fd85f4](https://github.com/KarinJS/Karin/commit/1fd85f4af45e535b53818f8cc28661c90cef1315))
+
 ## [1.10.16](https://github.com/KarinJS/Karin/compare/core-v1.10.15...core-v1.10.16) (2025-06-30)
 
 
