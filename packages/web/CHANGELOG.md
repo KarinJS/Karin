@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.6](https://github.com/KarinJS/Karin/compare/web-v1.9.5...web-v1.9.6) (2025-07-03)
+
+
+### 🐛 Bug Fixes
+
+* close [#500](https://github.com/KarinJS/Karin/issues/500) ([#502](https://github.com/KarinJS/Karin/issues/502)) ([798eca3](https://github.com/KarinJS/Karin/commit/798eca3e0bde5733c52bc4fc57b6e8a9ad5441f3))
+
 ## [1.9.5](https://github.com/KarinJS/Karin/compare/web-v1.9.4...web-v1.9.5) (2025-06-28)
 
 
