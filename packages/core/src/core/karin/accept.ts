@@ -1,8 +1,8 @@
 import { createFile, createLogger, createPkg } from '@/plugin/tools'
-import type { Options } from './base'
+import type { OptionsBase } from './options'
 import type { Accept, NoticeAndRequest } from '@/types/plugin'
 
-export interface AcceptOptions extends Options {
+export interface AcceptOptions extends OptionsBase {
 }
 
 /**

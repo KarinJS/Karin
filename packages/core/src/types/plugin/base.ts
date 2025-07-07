@@ -15,9 +15,8 @@ export type GetPluginType = 'app' | 'git' | 'npm' | 'all'
  * - `task` 定时任务
  * - `button` 按钮
  * - `handler` 处理器
- * - `use` 中间件
  */
-export type PluginFncTypes = 'command' | 'accept' | 'task' | 'button' | 'handler' | 'use'
+export type PluginFncTypes = 'command' | 'accept' | 'task' | 'button' | 'handler'
 
 /** 插件包基本属性 */
 export interface PkgInfo {

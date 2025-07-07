@@ -13,9 +13,10 @@ export const createAddEnv = (
 
   return (name: string, data: PkgEnv[]) => {
     if (!Array.isArray(data)) {
-      logger.error(`[addEnv] 插件${name}的env字段不符合规范 已跳过加载`)
+      logger.error(`[addEnv] 插件${name}的env字段不符合规范 已跳过写入`)
       return
     }
+
     data.forEach(val => {
       const { key, value, comment = '' } = val
       if (!key || !value || typeof key !== 'string' || typeof value !== 'string') {

@@ -72,9 +72,7 @@ export const isPnpm10 = () => {
  */
 export const isWorkspace = () => {
   const workspace = fs.existsSync(`${process.cwd()}/pnpm-workspace.yaml`)
-  if (!workspace) return false
-  const data = yaml.parse(fs.readFileSync(`${process.cwd()}/pnpm-workspace.yaml`, 'utf-8'))
-  return Array.isArray(data.packages) && data.packages.length > 0
+  return !!workspace
 }
 
 /**
@@ -107,8 +105,8 @@ export const setRuntime = (runtime: 'node' | 'pm2' | 'tsx') => setProcessEnv('RU
  */
 export const getModuleType = () => {
   if (isTs()) {
-    return ['.ts', '.js', '.cts', '.mts', '.mjs', '.cjs']
+    return ['.ts', '.js', '.mts', '.mjs']
   }
 
-  return ['.js', '.cjs', '.mjs']
+  return ['.js', '.mjs']
 }
