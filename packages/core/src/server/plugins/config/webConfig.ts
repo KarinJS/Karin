@@ -3,7 +3,7 @@ import path from 'path'
 import { isDev } from '@/env'
 import { imports } from '@/utils'
 import { getPlugins } from '@/plugin/system/list'
-import type { PkgInfo, PluginAdminListResponse } from '@/types'
+import type { Icon, PkgInfo, PluginAdminListResponse } from '@/types'
 
 /**
  * 传入插件名称 获取插件的web配置
@@ -30,13 +30,19 @@ export const defaultWebConfig = (
   exists?: boolean,
   path?: string,
   customComponent?: boolean,
-  defaultComponent?: boolean
+  defaultComponent?: boolean,
+  icon?: Icon
 ): PluginAdminListResponse['webConfig'] => {
   return {
     exists: exists ?? false,
     path: path || '',
     customComponent: customComponent ?? false,
     defaultComponent: defaultComponent ?? false,
+    icon: icon || {
+      color: '',
+      name: 'star',
+      size: 16,
+    },
   }
 }
 
@@ -72,7 +78,8 @@ const getWebConfigMore = async (filepath: string) => {
       true,
       filepath,
       typeof web?.customComponent === 'function',
-      typeof web?.components === 'function'
+      typeof web?.components === 'function',
+      web?.icon
     )
   } catch (error) {
     logger.error(new Error('获取插件web.config文件失败', { cause: error }))

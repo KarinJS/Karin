@@ -1,15 +1,15 @@
-/* https://fonts.googleapis.com/icon?family=Material+Icons */
+/* https: //fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200 */
 
 /* fallback */
 @font-face {
-  font-family: 'Material Icons';
+  font-family: 'Material Symbols Outlined';
   font-style: normal;
-  font-weight: 400;
-  src: url(./flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+  font-weight: 100 700;
+  src: url(./googleapis.woff2) format('woff2');
 }
 
-.material-icons {
-  font-family: 'Material Icons';
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
   font-weight: normal;
   font-style: normal;
   font-size: 24px;

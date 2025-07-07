@@ -1,5 +1,6 @@
 import type { KarinPluginAppsType } from '../plugin'
 import type { KarinPluginType } from '@/types/plugin/market'
+import { Icon } from './local'
 
 /**
  * 基类
@@ -107,6 +108,8 @@ export interface PluginAdminListResponse {
     customComponent: boolean
     /** 是否存在默认组件配置函数 一般用于插件的配置文件管理 */
     defaultComponent: boolean
+    /** 插件图标 */
+    icon: Icon
   }
 }
 
@@ -133,6 +136,8 @@ export interface FrontendInstalledPluginListResponse {
     /** 头像 */
     avatar: string
   }
+  /** 插件图标 */
+  icon: Icon
   /** 插件仓库主页 */
   repoUrl: string
   /** 插件是否可配置 */

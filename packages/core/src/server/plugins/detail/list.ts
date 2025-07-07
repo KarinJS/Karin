@@ -225,6 +225,7 @@ export const getFrontendInstalledPluginList: RequestHandler = async (req, res) =
             repoUrl: market?.repo[0].url || '',
             hasConfig: webConfig.defaultComponent,
             hasCustomComponent: false,
+            icon: webConfig?.icon,
           }
         }))
 
