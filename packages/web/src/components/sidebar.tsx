@@ -11,9 +11,9 @@ import { useMediaQuery } from 'react-responsive'
 import { Moon, Sun } from 'lucide-react'
 import { RiMenuUnfold2Line, RiRefreshLine } from 'react-icons/ri'
 import { ScrollShadow } from '@heroui/scroll-shadow'
-import { Fragment, useState, useEffect } from 'react'
+import { Fragment, useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { siteConfig, initSiteConfig } from '@/config/site'
+import { initSiteConfig, SiteConfigType, defaultSiteConfig } from '@/config/site'
 import { useLocation, useNavigate } from 'react-router-dom'
 import TextPressure from './TextPressure'
 import useDialog from '@/hooks/use-dialog'
@@ -69,20 +69,18 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null)
   const [pluginsLoading, setPluginsLoading] = useState(true)
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [siteConfigState, setSiteConfigState] = useState<SiteConfigType>({ ...defaultSiteConfig })
   const location = useLocation()
   const navigate = useNavigate()
   const { toggleTheme, isDark } = useTheme()
   const dialog = useDialog()
 
-  useEffect(() => {
-    loadPlugins()
-  }, [])
-
   /** 加载插件列表 */
-  const loadPlugins = async (isRefresh = false) => {
+  const loadPlugins = useCallback(async (isRefresh = false) => {
     setPluginsLoading(true)
     try {
-      await initSiteConfig(isRefresh)
+      const updatedConfig = await initSiteConfig(isRefresh)
+      setSiteConfigState(updatedConfig)
       if (isRefresh) {
         toast.success('插件列表刷新成功')
       }
@@ -92,10 +90,14 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
     } finally {
       setPluginsLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
-    siteConfig.navItems.forEach((item) => {
+    loadPlugins()
+  }, [loadPlugins])
+
+  useEffect(() => {
+    siteConfigState.navItems.forEach((item) => {
       // 检查一级菜单
       if (location.pathname === item.href) {
         setExpandedMenu(item.href)
@@ -107,7 +109,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
         setExpandedMenu(item.href)
       }
     })
-  }, [location.pathname])
+  }, [location.pathname, siteConfigState])
 
   /** 退出登录 */
   const signOut = async () => {
@@ -176,7 +178,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
           >
             <ScrollShadow hideScrollBar>
               <AnimatePresence>
-                {siteConfig.navItems.map((item, index) => (
+                {siteConfigState.navItems.map((item, index) => (
                   <motion.div
                     key={item.href}
                     variants={menuItemVariants}
