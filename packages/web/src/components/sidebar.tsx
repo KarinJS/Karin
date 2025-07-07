@@ -9,7 +9,7 @@ import { useTheme } from '@/hooks/use-theme'
 import { FaChevronRight } from 'react-icons/fa6'
 import { useMediaQuery } from 'react-responsive'
 import { Moon, Sun } from 'lucide-react'
-import { RiMenuUnfold2Line } from 'react-icons/ri'
+import { RiMenuUnfold2Line, RiRefreshLine } from 'react-icons/ri'
 import { ScrollShadow } from '@heroui/scroll-shadow'
 import { Fragment, useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -67,7 +67,6 @@ interface SidebarProps {
 export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
   const isNotSmallScreen = useMediaQuery({ minWidth: 768 })
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null)
-  const [expandedSubMenu, setExpandedSubMenu] = useState<string | null>(null)
   const [pluginsLoading, setPluginsLoading] = useState(true)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const location = useLocation()
@@ -76,10 +75,24 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
   const dialog = useDialog()
 
   useEffect(() => {
-    initSiteConfig().then(() => {
-      setPluginsLoading(false)
-    })
+    loadPlugins()
   }, [])
+
+  /** 加载插件列表 */
+  const loadPlugins = async (isRefresh = false) => {
+    setPluginsLoading(true)
+    try {
+      await initSiteConfig(isRefresh)
+      if (isRefresh) {
+        toast.success('插件列表刷新成功')
+      }
+    } catch (error) {
+      toast.error('加载插件列表失败')
+      console.error(error)
+    } finally {
+      setPluginsLoading(false)
+    }
+  }
 
   useEffect(() => {
     siteConfig.navItems.forEach((item) => {
@@ -90,18 +103,9 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
       }
 
       // 检查二级菜单
-      if (item.children?.some(child => location.pathname === child.href)) {
+      if (item.children?.some(child => location.pathname === child.href || location.pathname.includes(child.id))) {
         setExpandedMenu(item.href)
-        return
       }
-
-      // 检查三级菜单
-      item.children?.forEach(child => {
-        if (child.children?.some(grandChild => location.pathname.includes(grandChild.id))) {
-          setExpandedMenu(item.href)
-          setExpandedSubMenu(child.href)
-        }
-      })
     })
   }, [location.pathname])
 
@@ -149,7 +153,6 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
           )}
           onTouchStart={(e) => e.stopPropagation()} // 阻止事件冒泡
         >
-
           {/* Logo 相关代码 */}
           {!isCollapsed && (
             <div style={{ position: 'relative' }}>
@@ -190,19 +193,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                           '!text-primary font-medium': (() => {
                             // 检查一级菜单直接匹配
                             if (location.pathname === item.href) return true
-
-                            // 检查二级菜单匹配
-                            if (item.children?.some(child => location.pathname === child.href)) return true
-
-                            // 检查三级菜单匹配
-                            const urlParams = new URLSearchParams(location.search)
-                            const currentPluginName = urlParams.get('name')
-                            if (location.pathname === '/plugins/config' && currentPluginName) {
-                              return item.children?.some(child =>
-                                child.children?.some(grandChild => grandChild.id === currentPluginName)
-                              )
-                            }
-
+                            if (item.children?.some(child => location.pathname === child.href || location.pathname.includes(child.id))) return true
                             return false
                           })(),
                         }
@@ -211,7 +202,7 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                       <motion.div
                         className={clsx(
                           'flex items-center overflow-hidden relative',
-                          isCollapsed ? 'justify-center py-1.5' : 'gap-6 py-2.5' // 缩小上下间距，但保持不太接近
+                          isCollapsed ? 'justify-center py-1.5' : 'justify-between py-2.5' // 改为justify-between
                         )}
                         initial={{
                           paddingLeft: isCollapsed ? 0 : 16,
@@ -223,89 +214,62 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                         }}
                         whileHover={{ x: isCollapsed ? 0 : 4 }}
                         onClick={() => {
-                          if (item.children && !isCollapsed) {
-                            if (expandedMenu === item.href) {
-                              setExpandedMenu(null)
-                              setExpandedSubMenu(null)
-                            } else {
-                              setExpandedMenu(item.href)
-                              // 如果是插件管理，默认展开配置选项卡
-                              if (item.href === '/plugins-management') {
-                                setExpandedSubMenu('/plugins')
-                              }
-                            }
-                          } else {
-                            navigate(item.href)
-                          }
+                          navigate(item.href)
                         }}
                       >
-                        <motion.div
-                          className='relative z-10'
-                          // 添加图标大小动画过渡
-                          initial={{
-                            fontSize: isCollapsed ? '1.875rem' : '1.625rem',
-                            width: isCollapsed ? '2.5rem' : 'auto',
-                            height: isCollapsed ? '2.5rem' : 'auto',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: isCollapsed ? 'center' : 'flex-start',
-                          }}
-                          animate={{
-                            fontSize: isCollapsed ? '1.875rem' : '1.625rem', // 从1.25rem修改为1.625rem
-                            width: isCollapsed ? '2.5rem' : 'auto',
-                            height: isCollapsed ? '2.5rem' : 'auto',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: isCollapsed ? 'center' : 'flex-start',
-                          }}
-                          transition={{
-                            type: 'spring',
-                            stiffness: 300,
-                            damping: 25,
-                            duration: 0.3,
-                          }}
-                          whileHover={{ scale: 1.1 }}
-                        >
-                          <item.Icon />
-                        </motion.div>
+                        {/* 左侧图标和标题区域 */}
+                        <div className='flex items-center gap-4'>
+                          <motion.div
+                            className='relative z-10'
+                            initial={{
+                              fontSize: isCollapsed ? '1.875rem' : '1.625rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                            animate={{
+                              fontSize: isCollapsed ? '1.875rem' : '1.625rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                            transition={{
+                              type: 'spring',
+                              stiffness: 300,
+                              damping: 25,
+                              duration: 0.3,
+                            }}
+                            whileHover={{ scale: 1.1 }}
+                          >
+                            <item.Icon />
+                          </motion.div>
 
-                        {!isCollapsed && (
-                          <>
+                          {!isCollapsed && (
                             <motion.div
-                              className='whitespace-nowrap overflow-hidden text-base relative z-10 flex-1 flex items-center gap-2'
-                              initial={{
-                                width: 'auto',
-                              }}
-                              animate={{
-                                width: 'auto',
-                              }}
+                              className='whitespace-nowrap overflow-hidden text-base relative z-10 flex items-center gap-2'
                             >
                               <span className='select-none '>{item.label}</span>
-                              {item.href === '/plugins-management' && (
-                                <>
-                                  {pluginsLoading
-                                    ? (
-                                      <Spinner className='w-10 h-4 text-primary' variant='wave' size='md' />
-                                    )
-                                    : (
-                                      <svg className='w-4 h-4 text-green-500' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                                        <path d='M5 13L9 17L19 7' stroke='currentColor' strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round' />
-                                      </svg>
-                                    )}
-                                </>
+                              {item.href === '/plugins-dashboard' && pluginsLoading && (
+                                <Spinner className='w-10 h-4 text-primary' variant='wave' size='md' />
                               )}
                             </motion.div>
+                          )}
+                        </div>
 
-                            {item.children && (
-                              <motion.div
-                                initial={{ rotate: 0 }}
-                                animate={{ rotate: expandedMenu === item.href ? 90 : 0 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                <FaChevronRight className='w-3 h-3' />
-                              </motion.div>
-                            )}
-                          </>
+                        {/* 右侧箭头区域 */}
+                        {!isCollapsed && item.href === '/plugins-dashboard' && item.children && (
+                          <motion.div
+                            initial={{ rotate: 0 }}
+                            animate={{ rotate: expandedMenu === item.href ? 90 : 0 }}
+                            transition={{ duration: 0.2 }}
+                            onClick={(e) => {
+                              e.stopPropagation() // 阻止冒泡，避免触发父元素的点击
+                              setExpandedMenu(expandedMenu === item.href ? null : item.href)
+                            }}
+                            className='cursor-pointer p-1'
+                          >
+                            <FaChevronRight className='w-2.5 h-2.5' />
+                          </motion.div>
                         )}
                       </motion.div>
 
@@ -320,110 +284,67 @@ export default function Sidebar ({ isOpen, onToggle }: SidebarProps) {
                               exit='hidden'
                               className='overflow-hidden mx-2'
                             >
-                              {item.children.map((child) => (
-                                <Fragment key={child.id}>
-                                  <Button
-                                    variant='light'
-                                    fullWidth
-                                    className={clsx(
-                                      'flex items-center justify-between gap-3 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary',
-                                      'transition-transform hover:-translate-y-[2px]',
-                                      {
-                                        '!text-primary glass-effect': (() => {
-                                          // 检查二级菜单直接匹配
-                                          if (location.pathname === child.href) return true
-
-                                          // 检查三级菜单匹配
-                                          const urlParams = new URLSearchParams(location.search)
-                                          const currentPluginName = urlParams.get('name')
-                                          if (location.pathname === '/plugins/config' && currentPluginName) {
-                                            return child.children?.some(grandChild => grandChild.id === currentPluginName)
-                                          }
-
-                                          return false
-                                        })(),
-                                      }
-                                    )}
-                                    onPress={() => {
-                                      if (child.children) {
-                                        // 如果有三级菜单，展开/折叠三级菜单
-                                        setExpandedSubMenu(expandedSubMenu === child.href ? null : child.href)
-                                      } else {
-                                        // 直接导航
-                                        navigate(child.href)
-                                      }
-                                    }}
-                                  >
-                                    <div className='flex items-center gap-3'>
-                                      {child.Icon && <child.Icon className='w-5 h-5' />}
-                                      <span>{child.label}</span>
-                                      {/* 为配置选项卡添加加载状态图标 */}
-                                      {child.id === 'plugin-config' && pluginsLoading && (
-                                        <Spinner className='w-3 h-3 text-primary' variant='dots' size='sm' />
+                              {/* 刷新按钮 - 仅在插件管理中显示 */}
+                              {item.href === '/plugins-dashboard' && (
+                                <Button
+                                  variant='light'
+                                  size='sm'
+                                  fullWidth
+                                  className='flex items-center justify-start gap-3 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary transition-transform hover:-translate-y-[2px]'
+                                  isDisabled={pluginsLoading}
+                                  onPress={() => loadPlugins(true)}
+                                >
+                                  <div className='flex items-center gap-3'>
+                                    <RiRefreshLine
+                                      className={clsx('w-4 h-4 flex-shrink-0',
+                                        pluginsLoading ? 'animate-spin text-primary' : ''
                                       )}
-                                    </div>
-                                    {child.children && (
-                                      <motion.div
-                                        initial={{ rotate: 0 }}
-                                        animate={{ rotate: expandedSubMenu === child.href ? 90 : 0 }}
-                                        transition={{ duration: 0.2 }}
-                                      >
-                                        <FaChevronRight className='w-3 h-3' />
-                                      </motion.div>
-                                    )}
-                                  </Button>
+                                    />
+                                    <span>刷新插件列表</span>
+                                  </div>
+                                </Button>
+                              )}
 
-                                  {/* 三级菜单 */}
-                                  {child.children && (
-                                    <AnimatePresence>
-                                      {expandedSubMenu === child.href && (
-                                        <motion.div
-                                          variants={subMenuVariants}
-                                          initial='hidden'
-                                          animate='visible'
-                                          exit='hidden'
-                                          className='overflow-hidden ml-4'
+                              {pluginsLoading && item.href === '/plugins-dashboard'
+                                ? (
+                                  <div className='flex items-center justify-center py-4'>
+                                    <Spinner className='w-2 h-4 text-primary' variant='dots' size='lg' />
+                                  </div>
+                                )
+                                : (
+                                  item.children
+                                    .sort((a, b) => (a.label || a.id).localeCompare(b.label || b.id))
+                                    .map((child) => (
+                                      <Fragment key={child.id}>
+                                        <Button
+                                          variant='light'
+                                          fullWidth
+                                          className={clsx(
+                                            'flex items-center justify-start gap-3 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary',
+                                            'transition-transform hover:-translate-y-[2px]',
+                                            {
+                                              '!text-primary glass-effect': location.pathname === child.href || location.pathname.includes(child.id),
+                                            }
+                                          )}
+                                          onPress={() => {
+                                            if (child.hasConfig) {
+                                              /** 增加小延迟提供更好的视觉反馈 */
+                                              setTimeout(() => {
+                                                navigate(`/plugins/config?name=${child.id}`)
+                                              }, 150)
+                                            } else {
+                                              toast.error(`插件 "${child.label || child.id}" 暂未提供可配置选项`)
+                                            }
+                                          }}
                                         >
-                                          {pluginsLoading && child.id === 'plugin-config'
-                                            ? (
-                                              <div className='flex items-center justify-center py-4'>
-                                                <Spinner className='w-2 h-4 text-primary' variant='dots' size='lg' />
-                                              </div>
-                                            )
-                                            : (
-                                              child.children
-                                                .sort((a, b) => a.id.localeCompare(b.id))
-                                                .map((grandChild, index) => (
-                                                  <Fragment key={grandChild.id}>
-                                                    <Button
-                                                      variant='light' fullWidth
-                                                      className={clsx(
-                                                        'flex items-start justify-start gap-2 py-2 px-3 mb-2 text-sm text-default-600 hover:text-primary',
-                                                        'transition-transform hover:-translate-y-[2px]',
-                                                        {
-                                                          '!text-primary glass-effect': (() => {
-                                                            const urlParams = new URLSearchParams(location.search)
-                                                            return location.pathname === '/plugins/config' && urlParams.get('name') === grandChild.id
-                                                          })(),
-                                                          'mt-1': index === 0,
-                                                        }
-                                                      )}
-                                                      onPress={() => {
-                                                        navigate(`/plugins/config?name=${grandChild.id}&type=${grandChild.type || ''}`)
-                                                      }}
-                                                    >
-                                                      {grandChild.icon && <Icon name={grandChild.icon?.name || ''} size={grandChild.icon?.size} color={grandChild.icon?.color} />}
-                                                      {grandChild.label || grandChild.id}
-                                                    </Button>
-                                                  </Fragment>
-                                                ))
-                                            )}
-                                        </motion.div>
-                                      )}
-                                    </AnimatePresence>
-                                  )}
-                                </Fragment>
-                              ))}
+                                          <div className='flex items-center gap-3'>
+                                            {child.icon && <Icon name={child.icon.name || ''} size={child.icon.size || 20} color={child.icon.color || 'currentColor'} className='flex-shrink-0' />}
+                                            <span>{child.label || child.id}</span>
+                                          </div>
+                                        </Button>
+                                      </Fragment>
+                                    ))
+                                )}
                             </motion.div>
                           )}
                         </AnimatePresence>
