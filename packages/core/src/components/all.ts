@@ -5,6 +5,7 @@ import { checkbox } from './checkbox'
 import { switchComponent } from './switch'
 import { accordion, accordionPro, accordionItem } from './accordion'
 import { cron } from './cron'
+import { select } from './select'
 
 export type Components = {
   /** 分隔线 */
@@ -23,6 +24,8 @@ export type Components = {
   radio: typeof radio
   /** 多选框 */
   checkbox: typeof checkbox
+  /** 下拉框 */
+  select: typeof select
   /** cron */
   cron: typeof cron
 }
@@ -45,6 +48,8 @@ export const components: Components = {
   radio,
   /** 多选框 */
   checkbox,
+  /** 下拉框 */
+  select,
   /** cron */
   cron,
 }
