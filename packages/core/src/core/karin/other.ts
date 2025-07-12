@@ -8,7 +8,7 @@ import type { WebSocket } from 'ws'
 import type { IncomingMessage } from 'http'
 import type { Contact, FriendSender, GroupSender, Scene } from '@/types/event'
 
-class Other extends EventEmitter {
+export class Emitter extends EventEmitter {
   /** 框架名称 */
   public name: 'karin' = 'karin'
 
@@ -229,24 +229,22 @@ class Other extends EventEmitter {
 
 /**
  * 将部分事件暴露到外部
+ * @param emitter - 事件发射器
  */
-const events = () => {
+export const events = (emitter: Emitter) => {
   /** ws建立新链接 */
   listeners.on(WS_CONNECTION, (
     socket: WebSocket,
     request: IncomingMessage,
     call: () => void
   ) => {
-    other.emit(WS_CONNECTION, socket, request, call)
+    emitter.emit(WS_CONNECTION, socket, request, call)
     const url = new URL(request.url || '', 'ws://localhost')
-    other.emit(`${WS_CONNECTION}:${url.pathname}`, socket, request, call)
+    emitter.emit(`${WS_CONNECTION}:${url.pathname}`, socket, request, call)
   })
 
   /** 文件发送变动 */
   listeners.on('file:change', (type: unknown, old: unknown, data: unknown) => {
-    other.emit('file:change', type, old, data)
+    emitter.emit('file:change', type, old, data)
   })
 }
-
-export const other = new Other()
-events()

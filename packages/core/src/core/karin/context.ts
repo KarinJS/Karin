@@ -1,6 +1,26 @@
-import type { Event, Message } from '@/types/event'
 import { listeners } from '../internal'
-import { ctx as context } from '@/event/handler/other/context'
+import type { Event } from '@/types/event'
+
+/** 上下文缓存 */
+const ctxCache = new Map<string, Event>()
+
+/**
+ * 处理事件上下文
+ * @param event 事件对象
+ */
+export const handleContext = (event: Event) => {
+  const key = event.contact.subPeer
+    ? `${event.contact.peer}:${event.contact.subPeer}:${event.userId}`
+    : `${event.contact.peer}:${event.userId}`
+
+  if (!ctxCache.has(key)) {
+    return false
+  }
+
+  listeners.emit(`ctx:${key}`, event)
+  ctxCache.delete(key)
+  return true
+}
 
 /**
  * 上下文
@@ -8,7 +28,7 @@ import { ctx as context } from '@/event/handler/other/context'
  * @param options - 上下文选项
  * @returns 返回下文消息事件 如果超时则返回null
  */
-export const ctx = async <T = Message> (e: Event, options?: {
+export const context = async <T = Event> (e: Event, options?: {
   /** 指定用户id触发下文 不指定则使用默认e.user_id */
   userId?: string
   /** 超时时间 默认120秒 */
@@ -21,13 +41,13 @@ export const ctx = async <T = Message> (e: Event, options?: {
   const time = options?.time || 120
   const userId = options?.userId || e.userId || e.user_id
   const key = e.contact.subPeer ? `${e.contact.peer}:${e.contact.subPeer}:${userId}` : `${e.contact.peer}:${userId}`
-  context.set(key, e)
+  ctxCache.set(key, e)
 
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
-      const data = context.get(key)
+      const data = ctxCache.get(key)
       if (data?.eventId === e.eventId) {
-        context.delete(key)
+        ctxCache.delete(key)
         if (options?.reply) e.reply(options.replyMsg || '操作超时已取消')
         /** 移除监听器 */
         listeners.removeAllListeners(`ctx:${key}`)
@@ -36,9 +56,9 @@ export const ctx = async <T = Message> (e: Event, options?: {
       }
     }, time * 1000)
 
-    listeners.once(`ctx:${key}`, (e: Message) => {
+    listeners.once(`ctx:${key}`, (event: Event) => {
       clearTimeout(timeout)
-      resolve(e as T)
+      resolve(event as T)
     })
   })
 }

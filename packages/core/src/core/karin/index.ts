@@ -1,9 +1,10 @@
-import * as fnc from './export'
-import { other } from './other'
+import * as fn from './export'
+import { Emitter } from './other'
 
-debug('debug: init karin')
-
-export const karin = Object.assign(other, fnc)
+/**
+ * @core
+ */
+export const karin = Object.assign(new Emitter(), fn)
 
 /**
  * @deprecated 已废弃，请使用`karin`

@@ -1,7 +1,5 @@
 import lodash from 'lodash'
 import { groupsCD } from '../other/cd'
-import { cache } from '@/plugin/system/cache'
-import { context as CTX } from '../other/context'
 import { listeners } from '@/core/internal'
 import { Permission } from '../other/permission'
 import { hooksMessageEmit } from '@/hooks/messaeg'
@@ -24,6 +22,9 @@ import {
 
 import type { Message } from '@/types/event'
 import type { GroupMessage, GroupTempMessage, GuildMessage } from '../../message'
+import { plguinManager } from '@/core/karin/load'
+import type { CommandCache } from '@/core/karin/command'
+import { handleContext } from '@/core/karin/context'
 
 /**
  * @description 群聊消息处理器
@@ -55,22 +56,23 @@ export const groupHandler = async (ctx: GroupMessage) => {
     return
   }
 
-  const context = CTX(ctx)
+  const context = handleContext(ctx)
   if (context) return ctx
 
   const cd = groupsCD(group, ctx.groupId, ctx.userId)
   const filter = groupFilterEvent(ctx, config, group, cd)
 
   if (filter) {
-    groupsDeal(ctx, group, isPrint, (plugin: typeof cache.command[number]) => {
-      if (plugin.event !== 'message' && plugin.event !== 'message.group') return false
+    groupsDeal(ctx, group, isPrint, (plugin: CommandCache) => {
+      const { event, permission } = plugin.register.options
+      if (event !== 'message' && event !== 'message.group') return false
       if (![
         'all',
         'master',
         'admin',
         'group.owner',
         'group.admin',
-      ].includes(plugin.permission)) return false
+      ].includes(permission)) return false
       return true
     })
   }
@@ -106,16 +108,17 @@ export const groupTempHandler = async (ctx: GroupTempMessage) => {
     return
   }
 
-  const context = CTX(ctx)
+  const context = handleContext(ctx)
   if (context) return ctx
 
   const cd = groupsCD(group, ctx.groupId, ctx.userId)
   const filter = groupFilterEvent(ctx, config, group, cd)
 
   if (filter) {
-    groupsDeal(ctx, group, isPrint, (plugin: typeof cache.command[number]) => {
-      if (plugin.event !== 'message' && plugin.event !== 'message.groupTemp') return false
-      if (!['all', 'master', 'admin'].includes(plugin.permission)) return false
+    groupsDeal(ctx, group, isPrint, (plugin: CommandCache) => {
+      const { event, permission } = plugin.register.options
+      if (event !== 'message' && event !== 'message.groupTemp') return false
+      if (!['all', 'master', 'admin'].includes(permission)) return false
       return true
     })
   }
@@ -139,7 +142,7 @@ export const guildHandler = async (ctx: GuildMessage) => {
   initEmit(ctx)
   initPrint(ctx)
 
-  const context = CTX(ctx)
+  const context = handleContext(ctx)
   if (context) return ctx
 
   /** 消息钩子 */
@@ -150,15 +153,16 @@ export const guildHandler = async (ctx: GuildMessage) => {
   const filter = groupFilterEvent(ctx, config, group, cd)
 
   if (filter) {
-    groupsDeal(ctx, group, isPrint, (plugin: typeof cache.command[number]) => {
-      if (plugin.event !== 'message' && plugin.event !== 'message.guild') return false
+    groupsDeal(ctx, group, isPrint, (plugin: CommandCache) => {
+      const { event, permission } = plugin.register.options
+      if (event !== 'message' && event !== 'message.guild') return false
       if (![
         'all',
         'master',
         'admin',
         'guild.owner',
         'guild.admin',
-      ].includes(plugin.permission)) return false
+      ].includes(permission)) return false
       return true
     })
   }
@@ -208,9 +212,9 @@ const groupsDeal = async (
   ctx: GroupMessage | GuildMessage | GroupTempMessage,
   config: ReturnType<typeof getGroupCfg>,
   isPrint: boolean,
-  filter: (plugin: typeof cache.command[number]) => boolean
+  filter: (plugin: CommandCache) => boolean
 ) => {
-  for (const plugin of cache.command) {
+  for (const plugin of plguinManager.command) {
     if (!filter(plugin)) continue
     const result = await groupsCmd(ctx, plugin, config, isPrint)
     if (!result) return
@@ -232,19 +236,19 @@ const groupsDeal = async (
  */
 const groupsCmd = async (
   ctx: GroupMessage | GuildMessage | GroupTempMessage,
-  plugin: typeof cache.command[number],
+  plugin: CommandCache,
   config: ReturnType<typeof getGroupCfg>,
   isPrint: boolean
 ): Promise<boolean> => {
-  const reg = plugin.reg
+  const reg = plugin.register.reg
   if (reg && !reg.test(ctx.msg)) return true
   if (!disableViaAdapter(plugin, ctx.bot.adapter.protocol)) return true
   if (!disableViaPluginWhitelist(plugin, config)) return true
   if (!disableViaPluginBlacklist(plugin, config)) return true
 
-  ctx.logFnc = `[${plugin.pkg.name}][${plugin.file.name}]`
+  ctx.logFnc = `[${plugin.pkg.name}][${plugin.app.name}]`
   const logFnc = logger.fnc(ctx.logFnc)
-  isPrint && plugin.log(ctx.selfId, `${logFnc}${ctx.logText} ${lodash.truncate(ctx.msg, { length: 100 })}`)
+  isPrint && plugin.app.log(ctx.selfId, `${logFnc}${ctx.logText} ${lodash.truncate(ctx.msg, { length: 100 })}`)
 
   /** 计算插件处理时间 */
   const start = Date.now()
@@ -268,20 +272,20 @@ const groupsCmd = async (
     /** 是否继续匹配下一个插件 */
     let next = false
 
-    if (plugin.type === 'fnc') {
-      const result = await plugin.fnc(ctx, () => { next = true })
-      if (next === false && result === false) next = true
+    if (plugin.app.type === 'command') {
+      const result = await plugin.register.fnc(ctx, () => { next = true })
+      if (next === false && typeof result === 'boolean' && result === false) next = true
     } else {
-      const App = new plugin.Cls()
-      if (typeof App?.[plugin.file.method as keyof typeof App] !== 'function') {
-        return true
-      }
+      // const App = new plugin.Cls()
+      // if (typeof App?.[plugin.file.method as keyof typeof App] !== 'function') {
+      //   return true
+      // }
 
-      App.e = ctx
-      App.next = () => { next = true }
-      App.reply = App.e.reply.bind(App.e)
-      const result = await (App as any)[plugin.file.method](App.e)
-      if (next === false && result === false) next = true
+      // App.e = ctx
+      // App.next = () => { next = true }
+      // App.reply = App.e.reply.bind(App.e)
+      // const result = await (App as any)[plugin.file.method](App.e)
+      // if (next === false && result === false) next = true
     }
 
     /** 贪婪匹配下一个 */
@@ -296,6 +300,6 @@ const groupsCmd = async (
   } finally {
     const time = logger.green(Date.now() - start + 'ms')
     const msg = lodash.truncate(ctx.msg, { length: 100 })
-    isPrint && plugin.log(ctx.selfId, `${logFnc} ${msg} 处理完成 ${time}`)
+    isPrint && plugin.app.log(ctx.selfId, `${logFnc} ${msg} 处理完成 ${time}`)
   }
 }

@@ -1,5 +1,4 @@
 import type { Message } from '@/types/event'
-import type { cache } from '@/plugin/system/cache'
 import type {
   DirectMessage,
   FriendMessage,
@@ -7,6 +6,7 @@ import type {
   GroupTempMessage,
   GuildMessage,
 } from '../../message'
+import type { CommandCache } from '@/core/karin/command'
 
 /**
  * 处理插件权限
@@ -25,7 +25,7 @@ export class Permission {
    */
   static handleNoPermission (
     ctx: Message,
-    authFailMsg: typeof cache.command[number]['authFailMsg'],
+    authFailMsg: CommandCache['register']['options']['authFailMsg'],
     defaultMsg: string
   ) {
     if (authFailMsg === false) {
@@ -44,20 +44,21 @@ export class Permission {
    */
   static private (
     ctx: FriendMessage | DirectMessage,
-    plugin: typeof cache.command[number]
+    plugin: CommandCache
   ) {
-    if (!plugin.permission || plugin.permission === 'all') {
+    const { permission, authFailMsg } = plugin.register.options
+    if (!permission || permission === 'all') {
       return true
     }
 
-    if (plugin.permission === 'master') {
+    if (permission === 'master') {
       if (ctx.isMaster) return true
-      return this.handleNoPermission(ctx, plugin.authFailMsg, this.master)
+      return this.handleNoPermission(ctx, authFailMsg, this.master)
     }
 
-    if (plugin.permission === 'admin') {
+    if (permission === 'admin') {
       if (ctx.isMaster || ctx.isAdmin) return true
-      return this.handleNoPermission(ctx, plugin.authFailMsg, this.admin)
+      return this.handleNoPermission(ctx, authFailMsg, this.admin)
     }
 
     return true
@@ -70,51 +71,52 @@ export class Permission {
    */
   static groups (
     ctx: GroupMessage | GuildMessage | GroupTempMessage,
-    plugin: typeof cache.command[number]
+    plugin: CommandCache
   ) {
-    if (!plugin.permission || plugin.permission === 'all') {
+    const { permission, authFailMsg } = plugin.register.options
+    if (!permission || permission === 'all') {
       return true
     }
 
-    if (plugin.permission === 'master') {
+    if (permission === 'master') {
       if (ctx.isMaster) return true
-      return this.handleNoPermission(ctx, plugin.authFailMsg, this.master)
+      return this.handleNoPermission(ctx, authFailMsg, this.master)
     }
 
-    if (plugin.permission === 'admin') {
+    if (permission === 'admin') {
       if (ctx.isMaster || ctx.isAdmin) return true
-      return this.handleNoPermission(ctx, plugin.authFailMsg, this.admin)
+      return this.handleNoPermission(ctx, authFailMsg, this.admin)
     }
 
     if (ctx.isGroup) {
-      if (plugin.permission === 'group.owner') {
+      if (permission === 'group.owner') {
         if (ctx.isMaster || ctx.isAdmin || ctx.sender?.role === 'owner') return true
-        return this.handleNoPermission(ctx, plugin.authFailMsg, this.owner)
+        return this.handleNoPermission(ctx, authFailMsg, this.owner)
       }
 
-      if (plugin.permission === 'group.admin') {
+      if (permission === 'group.admin') {
         if (
           ctx.isMaster ||
           ctx.isAdmin ||
           ctx.sender?.role === 'owner' ||
           ctx.sender?.role === 'admin'
         ) return true
-        return this.handleNoPermission(ctx, plugin.authFailMsg, this.groupAdmin)
+        return this.handleNoPermission(ctx, authFailMsg, this.groupAdmin)
       }
     } else if (ctx.isGuild) {
-      if (plugin.permission === 'guild.owner') {
+      if (permission === 'guild.owner') {
         if (ctx.isMaster || ctx.isAdmin || ctx.sender?.role === 'owner') return true
-        return this.handleNoPermission(ctx, plugin.authFailMsg, this.owner)
+        return this.handleNoPermission(ctx, authFailMsg, this.owner)
       }
 
-      if (plugin.permission === 'guild.admin') {
+      if (permission === 'guild.admin') {
         if (
           ctx.isMaster ||
           ctx.isAdmin ||
           ctx.sender?.role === 'owner' ||
           ctx.sender?.role === 'admin'
         ) return true
-        return this.handleNoPermission(ctx, plugin.authFailMsg, this.groupAdmin)
+        return this.handleNoPermission(ctx, authFailMsg, this.groupAdmin)
       }
     }
 

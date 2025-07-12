@@ -224,7 +224,7 @@ export const registerBot = (_: AdapterCommunication, bot: AdapterBase) => {
 
 type Message = string | Elements | Array<Elements>
 
-interface SendMsgOptions {
+export interface SendMsgOptions {
   /** 发送成功后撤回消息时间 */
   recallMsg?: number
   /** @deprecated 已废弃 请使用 `retryCount` */

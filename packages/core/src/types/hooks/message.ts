@@ -9,6 +9,7 @@ import type { Contact } from '@/types/event'
 import type { cache as pluginCache } from '@/plugin/system/cache'
 import type { Message, Notice, Request } from '@/types/event/event'
 import type { Elements, ForwardOptions, NodeElement } from '@/types/segment'
+import { CommandCache } from '@/core/karin/command'
 
 export type UnionMessage = Message | FriendMessage | GroupMessage | GuildMessage | DirectMessage | GroupTempMessage
 
@@ -152,17 +153,17 @@ export interface HookCache {
   /** 事件调用插件钩子 */
   eventCall: {
     /** 通用消息事件 */
-    message: EventCallHookItem<Message, typeof pluginCache.command[number]>[]
+    message: EventCallHookItem<Message, CommandCache>[]
     /** 群聊事件 */
-    group: EventCallHookItem<GroupMessage, typeof pluginCache.command[number]>[]
+    group: EventCallHookItem<GroupMessage, CommandCache>[]
     /** 频道事件 */
-    guild: EventCallHookItem<GuildMessage, typeof pluginCache.command[number]>[]
+    guild: EventCallHookItem<GuildMessage, CommandCache>[]
     /** 群临时事件 */
-    groupTemp: EventCallHookItem<GroupTempMessage, typeof pluginCache.command[number]>[]
+    groupTemp: EventCallHookItem<GroupTempMessage, CommandCache>[]
     /** 好友事件 */
-    friend: EventCallHookItem<FriendMessage, typeof pluginCache.command[number]>[]
+    friend: EventCallHookItem<FriendMessage, CommandCache>[]
     /** 私聊事件 */
-    direct: EventCallHookItem<DirectMessage, typeof pluginCache.command[number]>[]
+    direct: EventCallHookItem<DirectMessage, CommandCache>[]
     /** 通知事件 */
     notice: EventCallHookItem<Notice, typeof pluginCache.accept[number]>[]
     /** 请求事件 */

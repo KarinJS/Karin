@@ -12,8 +12,7 @@ import type {
   DirectMessage,
 } from '@/event'
 import type { HookOptions, EventCallHookItem, EventCallCallback } from '@/types/hooks/message'
-
-type Plugin = typeof pluginCache.command[number]
+import type { CommandCache } from '@/core/karin/command'
 
 /**
  * 添加钩子并排序
@@ -42,7 +41,7 @@ export const eventCall = Object.assign(
    * @param options 钩子配置项
    * @returns 钩子ID
    */
-  (callback: EventCallCallback<Message, Plugin>, options: HookOptions = {}) => {
+  (callback: EventCallCallback<Message, CommandCache>, options: HookOptions = {}) => {
     const { id, list } = addHook(cache.eventCall.message, callback, options)
     logger.mark(`[hooks] 添加通用事件调用钩子: ${id}`)
     cache.eventCall.message = list
@@ -55,7 +54,7 @@ export const eventCall = Object.assign(
      * @param options 钩子配置项
      * @returns 钩子ID
      */
-    group (callback: EventCallCallback<GroupMessage, Plugin>, options: HookOptions = {}) {
+    group (callback: EventCallCallback<GroupMessage, CommandCache>, options: HookOptions = {}) {
       const { id, list } = addHook(cache.eventCall.group, callback, options)
       logger.mark(`[hooks] 添加群聊事件调用钩子: ${id}`)
       cache.eventCall.group = list
@@ -67,7 +66,7 @@ export const eventCall = Object.assign(
      * @param options 钩子配置项
      * @returns 钩子ID
      */
-    guild (callback: EventCallCallback<GuildMessage, Plugin>, options: HookOptions = {}) {
+    guild (callback: EventCallCallback<GuildMessage, CommandCache>, options: HookOptions = {}) {
       const { id, list } = addHook(cache.eventCall.guild, callback, options)
       logger.mark(`[hooks] 添加频道事件调用钩子: ${id}`)
       cache.eventCall.guild = list
@@ -79,7 +78,7 @@ export const eventCall = Object.assign(
      * @param options 钩子配置项
      * @returns 钩子ID
      */
-    groupTemp (callback: EventCallCallback<GroupTempMessage, Plugin>, options: HookOptions = {}) {
+    groupTemp (callback: EventCallCallback<GroupTempMessage, CommandCache>, options: HookOptions = {}) {
       const { id, list } = addHook(cache.eventCall.groupTemp, callback, options)
       logger.mark(`[hooks] 添加群临时事件调用钩子: ${id}`)
       cache.eventCall.groupTemp = list
@@ -91,7 +90,7 @@ export const eventCall = Object.assign(
      * @param options 钩子配置项
      * @returns 钩子ID
      */
-    friend (callback: EventCallCallback<FriendMessage, Plugin>, options: HookOptions = {}) {
+    friend (callback: EventCallCallback<FriendMessage, CommandCache>, options: HookOptions = {}) {
       const { id, list } = addHook(cache.eventCall.friend, callback, options)
       logger.mark(`[hooks] 添加好友事件调用钩子: ${id}`)
       cache.eventCall.friend = list
@@ -103,7 +102,7 @@ export const eventCall = Object.assign(
      * @param options 钩子配置项
      * @returns 钩子ID
      */
-    direct (callback: EventCallCallback<DirectMessage, Plugin>, options: HookOptions = {}) {
+    direct (callback: EventCallCallback<DirectMessage, CommandCache>, options: HookOptions = {}) {
       const { id, list } = addHook(cache.eventCall.direct, callback, options)
       logger.mark(`[hooks] 添加私聊事件调用钩子: ${id}`)
       cache.eventCall.direct = list
@@ -185,7 +184,7 @@ export const eventCallEmit = {
    * @param plugin 插件对象
    * @returns 是否继续正常流程
    */
-  message: (event: Message, plugin: typeof pluginCache.command[number]) =>
+  message: (event: Message, plugin: CommandCache) =>
     emitHooks(event, plugin, cache.eventCall.message),
 
   /**
@@ -194,7 +193,7 @@ export const eventCallEmit = {
    * @param plugin 插件对象
    * @returns 是否继续正常流程
    */
-  group: (event: GroupMessage, plugin: typeof pluginCache.command[number]) =>
+  group: (event: GroupMessage, plugin: CommandCache) =>
     emitHooks(event, plugin, cache.eventCall.group),
 
   /**
@@ -203,7 +202,7 @@ export const eventCallEmit = {
    * @param plugin 插件对象
    * @returns 是否继续正常流程
    */
-  guild: (event: GuildMessage, plugin: typeof pluginCache.command[number]) =>
+  guild: (event: GuildMessage, plugin: CommandCache) =>
     emitHooks(event, plugin, cache.eventCall.guild),
 
   /**
@@ -212,7 +211,7 @@ export const eventCallEmit = {
    * @param plugin 插件对象
    * @returns 是否继续正常流程
    */
-  groupTemp: (event: GroupTempMessage, plugin: typeof pluginCache.command[number]) =>
+  groupTemp: (event: GroupTempMessage, plugin: CommandCache) =>
     emitHooks(event, plugin, cache.eventCall.groupTemp),
 
   /**
@@ -221,7 +220,7 @@ export const eventCallEmit = {
    * @param plugin 插件对象
    * @returns 是否继续正常流程
    */
-  friend: (event: FriendMessage, plugin: typeof pluginCache.command[number]) =>
+  friend: (event: FriendMessage, plugin: CommandCache) =>
     emitHooks(event, plugin, cache.eventCall.friend),
 
   /**
@@ -230,7 +229,7 @@ export const eventCallEmit = {
    * @param plugin 插件对象
    * @returns 是否继续正常流程
    */
-  direct: (event: DirectMessage, plugin: typeof pluginCache.command[number]) =>
+  direct: (event: DirectMessage, plugin: CommandCache) =>
     emitHooks(event, plugin, cache.eventCall.direct),
 
   /**

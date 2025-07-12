@@ -5,7 +5,7 @@ import type { PkgData } from '@/types'
 /** 插件包类型 */
 export type PluginPackageType = 'apps' | 'git' | 'npm' | 'root'
 /** 插件 app 方法类型 */
-export type pluginTypes = 'command' | 'accept' | 'task' | 'button' | 'handler' | 'classCommand'
+export type pluginTypes = 'command' | 'accept' | 'task' | 'button' | 'handler' | 'class'
 
 /** 插件缓存 app 属性类型 */
 export interface PluginCacheKeyApp {
@@ -22,7 +22,7 @@ export interface PluginCacheKeyApp {
    * import karin from 'node-karin'
    *
    * export const fnc = karin.command('你好', 'hello', { name: 'demo插件' })
-   * // 此时`name`为`demo插件` 如果没有，则是`this.method`
+   * // 此时`name`为`demo插件` 如果没有，则是`this.type`
    * ```
    */
   name: string

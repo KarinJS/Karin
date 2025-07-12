@@ -4,13 +4,13 @@
  * @param defaultValue 默认值 可选
  * @returns 返回布尔值
  */
-export const bool = <T> (
+export const bool = <T extends unknown = boolean> (
   val: unknown,
-  defaultValue?: T
-): T extends unknown ? T : boolean | null => {
-  if (typeof val === 'boolean') return val as any
-  if (defaultValue !== undefined) return defaultValue as any
-  return null as any
+  defaultValue?: unknown
+): T => {
+  if (typeof val === 'boolean') return val as T
+  if (defaultValue !== undefined) return defaultValue as T
+  return Boolean(val) as T
 }
 
 /**
@@ -19,13 +19,14 @@ export const bool = <T> (
  * @param defaultValue 默认值 可选
  * @returns 返回数字值
  */
-export const number = <T> (
+export const number = <T extends unknown = number> (
   val: unknown,
-  defaultValue?: T
-): T extends unknown ? T : number | null => {
-  if (typeof val === 'number' && !isNaN(val)) return val as any
-  if (defaultValue !== undefined) return defaultValue as any
-  return null as any
+  defaultValue?: unknown
+): T => {
+  if (typeof val === 'number' && !isNaN(val)) return val as T
+  if (defaultValue !== undefined) return defaultValue as T
+  const num = Number(val)
+  return (isNaN(num) ? 0 : num) as T
 }
 
 /**
@@ -34,13 +35,13 @@ export const number = <T> (
  * @param defaultValue 默认值 可选
  * @returns 返回字符串值
  */
-export const string = <T> (
+export const string = <T extends unknown = string> (
   val: unknown,
-  defaultValue?: T
-): T extends unknown ? T : string | null => {
-  if (typeof val === 'string') return val as any
-  if (defaultValue !== undefined) return defaultValue as any
-  return null as any
+  defaultValue?: unknown
+): T => {
+  if (typeof val === 'string') return val as T
+  if (defaultValue !== undefined) return defaultValue as T
+  return (String(val) || '') as T
 }
 
 /**
@@ -49,11 +50,11 @@ export const string = <T> (
  * @param defaultValue 默认值 可选
  * @returns 返回数组值
  */
-export const array = <T> (
+export const array = <T extends unknown[] = any[]> (
   val: unknown,
-  defaultValue?: T
-): T extends unknown[] ? T : unknown[] | null => {
-  if (Array.isArray(val)) return val as any
-  if (defaultValue !== undefined) return defaultValue as any
-  return null as any
+  defaultValue?: unknown[]
+): T => {
+  if (Array.isArray(val)) return val as T
+  if (defaultValue !== undefined) return defaultValue as T
+  return [] as unknown[] as T
 }

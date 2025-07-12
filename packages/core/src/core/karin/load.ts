@@ -9,6 +9,11 @@ import type { CommandCache } from './command'
 import type { PluginCacheKeyFile, PluginCacheKeyPkg, PluginPackageType } from './base'
 import { errorHandler } from '../internal'
 import { createAddEnv } from '@/plugin/system/env'
+import type { ClassCache } from './class'
+import type { AcceptCache } from './accept'
+import type { HandlerCache } from './handler'
+import type { ButtonCache } from './button'
+import type { TaskCache } from './task'
 
 /** 插件管理父类 */
 export abstract class PluginPackageManager {
@@ -22,6 +27,16 @@ export abstract class PluginPackageManager {
     pluginsDetails: Map<string, PluginCacheKeyPkg>
     /** command */
     command: CommandCache[]
+    /** class */
+    class: ClassCache[]
+    /** accept */
+    accept: AcceptCache[]
+    /** handler */
+    handler: HandlerCache[]
+    /** button */
+    button: ButtonCache[]
+    /** task */
+    task: TaskCache[]
     /** 静态资源目录 */
     static: string[]
   }
@@ -32,8 +47,25 @@ export abstract class PluginPackageManager {
       plugins: [],
       pluginsDetails: new Map(),
       command: [],
+      class: [],
+      accept: [],
+      handler: [],
+      button: [],
+      task: [],
       static: [],
     }
+  }
+
+  get command () {
+    return this.cache.command
+  }
+
+  get class () {
+    return this.cache.class
+  }
+
+  get accept () {
+    return this.cache.accept
   }
 
   /**
@@ -150,7 +182,10 @@ export abstract class PluginPackageManager {
       },
       get appsDirs () {
         const pkg = this.data
-        if (!pkg) return []
+        if (!pkg) {
+          return this.type === 'apps' ? [this.dir] : []
+        }
+
         return PluginPackageManager.getAppsDir(pkg, this.dir)
       },
       get path () {
@@ -397,6 +432,111 @@ export class PluginPackageManagerRegister extends PluginPackageManager {
 
     this.cache.command.splice(index, 1)
   }
+
+  /**
+   * 注册类插件
+   * @param class 类
+   */
+  registerClass (cls: ClassCache) {
+    this.cache.class.push(cls)
+  }
+
+  /**
+   * 卸载类插件
+   * @param class 类
+   */
+  unregisterClass (id: string) {
+    const index = this.cache.class.findIndex(v => v.app.id === id)
+    if (index === -1) {
+      logger.error(`[unregisterClass] ${id} 未找到`)
+    }
+
+    this.cache.class.splice(index, 1)
+  }
+
+  /**
+   * 注册accept插件
+   * @param accept 插件
+   */
+  registerAccept (accept: AcceptCache) {
+    this.cache.accept.push(accept)
+  }
+
+  /**
+   * 卸载accept插件
+   * @param accept 插件
+   */
+  unregisterAccept (id: string) {
+    const index = this.cache.accept.findIndex(v => v.app.id === id)
+    if (index === -1) {
+      logger.error(`[unregisterAccept] ${id} 未找到`)
+    }
+
+    this.cache.accept.splice(index, 1)
+  }
+
+  /**
+   * 注册handler插件
+   * @param handler 插件
+   */
+  registerHandler (handler: HandlerCache) {
+    this.cache.handler.push(handler)
+  }
+
+  /**
+   * 卸载handler插件
+   * @param id handler的id
+   */
+  unregisterHandler (id: string) {
+    const index = this.cache.handler.findIndex(v => v.app.id === id)
+    if (index === -1) {
+      logger.error(`[unregisterHandler] ${id} 未找到`)
+    }
+
+    this.cache.handler.splice(index, 1)
+  }
+
+  /**
+   * 注册button插件
+   * @param button 插件
+   */
+  registerButton (button: ButtonCache) {
+    this.cache.button.push(button)
+  }
+
+  /**
+   * 卸载button插件
+   * @param id button的id
+   */
+  unregisterButton (id: string) {
+    const index = this.cache.button.findIndex(v => v.app.id === id)
+    if (index === -1) {
+      logger.error(`[unregisterButton] ${id} 未找到`)
+    }
+
+    this.cache.button.splice(index, 1)
+  }
+
+  /**
+   * 注册task插件
+   * @param task 插件
+   */
+  registerTask (task: TaskCache) {
+    this.cache.task.push(task)
+  }
+
+  /**
+   * 卸载task插件
+   * @param id task的id
+   */
+  unregisterTask (id: string) {
+    const index = this.cache.task.findIndex(v => v.app.id === id)
+    if (index === -1) {
+      logger.error(`[unregisterTask] ${id} 未找到`)
+    }
+
+    this.cache.task.splice(index, 1)
+  }
 }
 
 /** 插件管理加载类 */
@@ -452,6 +592,19 @@ export class PluginPackageManagerLoad extends PluginPackageManagerRegister {
 
     /** 获取静态资源目录 */
     this.getStaticDir(pkg)
+
+    /** 当this.cache.command的lengt在200ms没变化 则认为加载完成 */
+    await new Promise((resolve) => {
+      let lastLength = this.cache.command.length
+      const timer = setInterval(() => {
+        if (this.cache.command.length === lastLength) {
+          clearInterval(timer)
+          resolve(true)
+        }
+
+        lastLength = this.cache.command.length
+      }, 200)
+    })
   }
 
   sort () {

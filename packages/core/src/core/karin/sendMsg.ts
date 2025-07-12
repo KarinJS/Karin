@@ -5,7 +5,7 @@ import type { Contact } from '@/types/event'
 
 type Message = string | Elements | Array<Elements>
 
-interface SendMsgOptions {
+export interface SendMsgOptions {
   /** 发送成功后撤回消息时间 */
   recallMsg?: number
   /** @deprecated 已废弃 请使用 `retryCount` */
@@ -14,12 +14,12 @@ interface SendMsgOptions {
   retryCount?: number
 }
 
-interface SendMasterOptions extends SendMsgOptions {
+export interface SendMasterOptions extends SendMsgOptions {
   /** 是否必须为Bot对应的主人/管理员 默认false */
   mustMaster?: boolean
 }
 
-interface SendAdminOptions extends SendMsgOptions {
+export interface SendAdminOptions extends SendMsgOptions {
   /** 是否必须为Bot对应的主人/管理员 默认false */
   mustAdmin?: boolean
 }

@@ -28,7 +28,7 @@ export const initPlugins = async () => {
   // /** 排序 */
   // pkgSort()
   // /** 打印加载错误的插件 */
-  // errorHandler.printMissing()
+  errorHandler.printMissing()
   // logger.info('插件加载完成')
 
   // logger.info(`${logger.chalk.magentaBright('plugin')}: ${Object.keys(cache.index).length}`)
