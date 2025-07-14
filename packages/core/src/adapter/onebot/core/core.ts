@@ -370,7 +370,13 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
 
 
       const seq = await this.getMsg(contact, startMsgId)
+      if (contact.scene === 'group') {
       return this._onebot.getGroupMsgHistory(Number(contact.peer), seq.message_seq, count)
+        } else if (contact.scene === 'friend') {
+      return this._onebot.getFriendMsgHistory(Number(contact.peer), seq.message_seq, count)
+        } else {
+      throw new Error(`不支持的消息环境:${contact.scene}`)
+      }
     })()
 
     return await Promise.all(result.messages.map(async (v) => {
