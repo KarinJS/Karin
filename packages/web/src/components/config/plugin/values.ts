@@ -8,6 +8,7 @@ interface BaseValue {
   | 'switch'
   | 'radio-group'
   | 'checkbox-group'
+  | 'select'
   | 'accordion'
   | 'accordion-pro'
   | 'cron'
@@ -54,6 +55,14 @@ export interface CheckboxGroupValue extends BaseValue {
 }
 
 /**
+ * 下拉选择初始值类型
+ */
+export interface SelectValue extends BaseValue {
+  key: 'select'
+  value: string | string[]
+}
+
+/**
  * 手风琴初始值类型
  */
 export interface AccordionValue extends BaseValue {
@@ -83,7 +92,7 @@ export interface CronValue extends BaseValue {
 /**
  * 联合初始值类型
  */
-export type Value = InputValue | InputGroupValue | SwitchValue | RadioGroupValue | CheckboxGroupValue | AccordionValue | AccordionProValue | CronValue
+export type Value = InputValue | InputGroupValue | SwitchValue | RadioGroupValue | CheckboxGroupValue | SelectValue | AccordionValue | AccordionProValue | CronValue
 
 /**
  * initDefaultValues函数返回值类型
@@ -142,6 +151,15 @@ const initValue = (
     defaultValues[option.key] = {
       key: 'checkbox-group',
       value: data ?? selectedValues,
+    }
+    return
+  }
+
+  if (option.componentType === 'select') {
+    const def = option.multiple ? (option.defaultValue || []) : (option.defaultValue || '')
+    defaultValues[option.key] = {
+      key: 'select',
+      value: data ?? def,
     }
     return
   }
@@ -232,6 +250,7 @@ const resultValue = (
     option.key === 'switch' ||
     option.key === 'radio-group' ||
     option.key === 'checkbox-group' ||
+    option.key === 'select' ||
     option.key === 'input-group' ||
     option.key === 'cron'
   ) {

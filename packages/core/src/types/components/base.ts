@@ -22,6 +22,8 @@ export type ComponentType =
   | 'checkbox-group'
   | 'radio'
   | 'radio-group'
+  | 'select'
+  | 'select-item'
   | 'input-group'
   | 'cron'
 
