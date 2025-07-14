@@ -1,3 +1,4 @@
+import { MessageResponse } from '@/types'
 import { BaseEvent } from './base'
 
 import type {
@@ -143,6 +144,42 @@ export abstract class MessageBase extends BaseEvent<'message'> {
    */
   get reply_id () {
     return this.replyId
+  }
+
+  /**
+   * @description 获取当前事件中 `reply消息段` 的数据
+   */
+  async getReplyRaw (): Promise<{
+    /** 是否成功 */
+    status: false
+    /** 错误信息 */
+    data: unknown
+  } | {
+    /** 是否成功 */
+    status: true
+    /** 消息段数据 */
+    data: MessageResponse
+  }> {
+    const id = this.replyId
+    if (!id) {
+      return {
+        status: false,
+        data: new Error('当前上下文不存在 reply 消息段'),
+      }
+    }
+
+    try {
+      const data = await this.bot.getMsg(this.contact, id)
+      return {
+        status: true,
+        data,
+      }
+    } catch (error) {
+      return {
+        status: false,
+        data: error,
+      }
+    }
   }
 }
 

@@ -13,7 +13,7 @@ import {
   DirectMessage,
   GuildMessage,
   GroupTempMessage,
-} from '../message'
+} from '../types/message'
 import {
   ReceiveLikeNotice,
   FriendDecreaseNotice,
@@ -36,12 +36,12 @@ import {
   GroupMessageReactionNotice,
   GroupLuckKingNotice,
   GroupHonorChangedNotice,
-} from '../notice'
+} from '../types/notice'
 import {
   GroupApplyRequest,
   GroupInviteRequest,
   PrivateApplyRequest,
-} from '../request'
+} from '../types/request'
 import type {
   FriendMessageOptions,
   GroupMessageOptions,

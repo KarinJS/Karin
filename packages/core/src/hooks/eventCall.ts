@@ -2,17 +2,11 @@ import lodash from 'lodash'
 import { isPromise } from 'util/types'
 import { cache, createHookId } from './cache'
 
-import type { cache as pluginCache } from '@/plugin/system/cache'
 import type { Message, Notice, Request } from '@/types/event/event'
-import type {
-  FriendMessage,
-  GroupMessage,
-  GuildMessage,
-  GroupTempMessage,
-  DirectMessage,
-} from '@/event'
-import type { HookOptions, EventCallHookItem, EventCallCallback } from '@/types/hooks/message'
+import type { AcceptCache } from '@/core/karin/accept'
 import type { CommandCache } from '@/core/karin/command'
+import type { HookOptions, EventCallHookItem, EventCallCallback } from '@/types/hooks/message'
+import type { FriendMessage, GroupMessage, GuildMessage, GroupTempMessage, DirectMessage } from '@/event'
 
 /**
  * 添加钩子并排序
@@ -114,7 +108,7 @@ export const eventCall = Object.assign(
      * @param options 钩子配置项
      * @returns 钩子ID
      */
-    notice (callback: EventCallCallback<Notice, typeof pluginCache.accept[number]>, options: HookOptions = {}) {
+    notice (callback: EventCallCallback<Notice, AcceptCache>, options: HookOptions = {}) {
       const { id, list } = addHook(cache.eventCall.notice, callback, options)
       logger.mark(`[hooks] 添加通知事件调用钩子: ${id}`)
       cache.eventCall.notice = list
@@ -126,7 +120,7 @@ export const eventCall = Object.assign(
      * @param options 钩子配置项
      * @returns 钩子ID
      */
-    request (callback: EventCallCallback<Request, typeof pluginCache.accept[number]>, options: HookOptions = {}) {
+    request (callback: EventCallCallback<Request, AcceptCache>, options: HookOptions = {}) {
       const { id, list } = addHook(cache.eventCall.request, callback, options)
       logger.mark(`[hooks] 添加请求事件调用钩子: ${id}`)
       cache.eventCall.request = list
@@ -238,7 +232,7 @@ export const eventCallEmit = {
    * @param plugin 插件对象
    * @returns 是否继续正常流程
    */
-  notice: (event: Notice, plugin: typeof pluginCache.accept[number]) =>
+  notice: (event: Notice, plugin: AcceptCache) =>
     emitHooks(event, plugin, cache.eventCall.notice),
 
   /**
@@ -247,6 +241,6 @@ export const eventCallEmit = {
    * @param plugin 插件对象
    * @returns 是否继续正常流程
    */
-  request: (event: Request, plugin: typeof pluginCache.accept[number]) =>
+  request: (event: Request, plugin: AcceptCache) =>
     emitHooks(event, plugin, cache.eventCall.request),
 }

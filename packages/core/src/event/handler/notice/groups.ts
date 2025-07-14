@@ -1,12 +1,5 @@
-import { noticeRequestCD } from '../other/cd'
+import utils from '../../utils'
 import { config as cfg, getGroupCfg } from '@/utils/config'
-import { deal, initPrint, initTips } from '../other/other'
-
-import {
-  initEmit,
-  initRole,
-  groupFilterEvent,
-} from '../other/handler'
 
 import type { GroupNoticeEventMap } from '@/types/event'
 
@@ -22,13 +15,15 @@ export const groupNoticeHandler = async (
   /** 群配置 */
   const group = getGroupCfg(ctx.groupId, ctx.selfId)
 
-  initRole(ctx, config)
-  initEmit(ctx)
-  initTips(ctx)
-  initPrint(ctx, 'group', '群通知')
+  utils.init.role(ctx, config)
+  utils.init.emitEvent(ctx)
+  utils.init.notice(ctx)
+  utils.logger.notice(ctx)
 
-  const cd = noticeRequestCD(ctx, group, ctx.groupId)
-  const filter = groupFilterEvent(ctx, config, group, cd)
+  const cd = utils.cd.notice(ctx, group, ctx.groupId)
+  const filter = utils.filter.groupEvent(ctx, config, group, cd)
 
-  if (filter) deal(ctx, group)
+  if (!filter) return
+
+  utils.dispatch.notice(ctx, group)
 }

@@ -1,5 +1,5 @@
 import { system, types } from '@/utils'
-import { plguinManager } from './load'
+import { plguinManager } from '../load'
 import { createID, createLogger } from './util'
 import { PluginCache, PluginCacheKeyApp } from './base'
 import type { FNC } from './util'

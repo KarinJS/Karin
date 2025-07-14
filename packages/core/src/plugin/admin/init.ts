@@ -1,4 +1,4 @@
-import { plguinManager } from '@/core/karin/load'
+import { plguinManager } from '@/core/load'
 import { cache } from '../system/cache'
 import { getPlugins } from '../system/list'
 import { initPluginHmr } from './hmr'

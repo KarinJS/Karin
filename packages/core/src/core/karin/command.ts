@@ -1,10 +1,11 @@
 import { system, types } from '@/utils'
-import { plguinManager } from './load'
+import { plguinManager } from '../load'
 import { formatReg, createID, createLogger } from './util'
 
 import type { OptionsBase } from './options'
 import type { Elements, MessageEventMap } from '@/types'
 import type { PluginCache, PluginCacheKeyApp } from './base'
+import type { AddRuleItemType, FormatOptions as ClassFormatOptions, Plugin, RuleItemBase } from './class'
 
 /**
  * 命令选项
@@ -72,13 +73,17 @@ type FormatOptions<T extends keyof MessageEventMap> = Required<Omit<
   'notAdapter' | 'perm' | 'rank'
 >>
 
-interface KeyApp extends PluginCacheKeyApp {
+interface KeyCommandApp extends PluginCacheKeyApp {
   get type (): 'command'
 }
 
+interface KeyClassApp extends PluginCacheKeyApp {
+  get type (): 'class'
+}
+
 /** command 插件缓存对象 */
-export interface CommandCache extends PluginCache {
-  app: KeyApp
+export interface CommandPluginCache extends PluginCache {
+  app: KeyCommandApp
   /** 注册的信息 */
   register: {
     /** 插件注册的正则 */
@@ -100,6 +105,42 @@ export interface CommandCache extends PluginCache {
     remove: () => void
   }
 }
+
+/** class 插件缓存对象 */
+export interface ClassPluginCache extends PluginCache {
+  app: KeyClassApp
+  /** 注册的信息 */
+  register: {
+    /** 插件注册的正则 */
+    reg: RegExp
+    /** 回调函数 */
+    fnc: MessageCallback<keyof MessageEventMap>
+    /** 创建类选项 */
+    options: ClassFormatOptions
+    /** 当前rule规则 */
+    ruleOptions: ClassFormatOptions['rule'][number]
+    /** new之后的class */
+    instance: Plugin
+  }
+  /** 插件控制接口 */
+  control: {
+    /** 更新当前reg */
+    setReg: (reg: RegExp) => void
+    /** 更新当前fnc */
+    setFnc: (fnc: MessageCallback<keyof MessageEventMap>) => void
+    /** 更新当前rule参数 */
+    setRule: (options: RuleItemBase) => void
+    /** 卸载当前rule对应的单个插件 */
+    remove: () => void
+    /** 在当前rule组新增一个rule */
+    addRule: <T extends keyof MessageEventMap> (options: AddRuleItemType<T> & { event?: T }) => void
+    /** 卸载当前rule组 */
+    removeRule: () => void
+  }
+}
+
+/** 命令缓存对象 */
+export type CommandCache = CommandPluginCache | ClassPluginCache
 
 /**
  * 格式化命令选项

@@ -1,12 +1,5 @@
-import { noticeRequestCD } from '../other/cd'
-import { initPrint, initTips, deal } from '../other/other'
+import utils from '../../utils'
 import { config as cfg, getFriendCfg } from '@/utils/config'
-
-import {
-  privateFilterEvent,
-  initEmit,
-  initRole,
-} from '../other/handler'
 
 import type { FriendRequestEventMap } from '@/types/event'
 
@@ -22,14 +15,16 @@ export const friendRequestHandler = async (
   /** 好友配置 */
   const friend = getFriendCfg(ctx.userId, ctx.selfId)
 
-  initRole(ctx, config)
-  initEmit(ctx)
-  initTips(ctx)
-  initPrint(ctx, 'friend', '好友请求')
+  utils.init.role(ctx, config)
+  utils.init.emitEvent(ctx)
+  utils.init.request(ctx)
+  utils.logger.request(ctx)
 
-  const cd = noticeRequestCD(ctx, friend, ctx.userId)
-  const filter = privateFilterEvent(ctx, config, friend, cd)
+  const cd = utils.cd.request(ctx, friend, ctx.userId)
+  const filter = utils.filter.privateEvent(ctx, config, friend, cd)
   // TODO: 中间件实现
 
-  if (filter) deal(ctx, friend)
+  if (!filter) return
+
+  utils.dispatch.request(ctx, friend)
 }

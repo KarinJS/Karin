@@ -4,7 +4,7 @@ import type {
   DirectMessage,
   GuildMessage,
   GroupTempMessage,
-} from '@/event/message'
+} from '@/event/types/message'
 import type {
   ReceiveLikeNotice,
   FriendDecreaseNotice,
@@ -27,8 +27,8 @@ import type {
   GroupMessageReactionNotice,
   GroupLuckKingNotice,
   GroupHonorChangedNotice,
-} from '@/event/notice'
-import { GroupApplyRequest, GroupInviteRequest, PrivateApplyRequest } from '@/event/request'
+} from '@/event/types/notice'
+import { GroupApplyRequest, GroupInviteRequest, PrivateApplyRequest } from '@/event/types/request'
 
 /** 消息事件对应的对象类型 */
 export interface MessageEventMap {

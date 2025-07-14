@@ -230,10 +230,12 @@ export interface GroupHonorChangedType {
 export interface PrivateApplyType {
   /** 申请者id */
   applierId: string
-  /** 验证信息 */
+  /** @deprecated 验证信息 */
   message: string
   /** 请求 flag，在调用处理请求的 API 时需要传入 */
   flag: string
+  /** 验证信息 */
+  comment: string
 }
 
 /** 请求事件: 新成员申请加入群聊申请 */
@@ -248,6 +250,8 @@ export interface GroupApply {
   flag: string
   /** 群id */
   groupId: string
+  /** 验证信息 */
+  comment: string
 }
 
 /** 请求事件: 邀请Bot加入群聊 */
@@ -256,4 +260,8 @@ export interface GroupInvite {
   inviterId: string
   /** 请求 flag，在调用处理请求的 API 时需要传入 */
   flag: string
+  /** 群id */
+  groupId: string
+  /** 验证信息 */
+  comment: string
 }

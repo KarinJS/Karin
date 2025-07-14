@@ -1,5 +1,5 @@
 import { empty } from './empty'
-import { message } from './messaeg'
+import { message } from './message'
 import { sendMsg } from './sendMsg'
 import { eventCall } from './eventCall'
 

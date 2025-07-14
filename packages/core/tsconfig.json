@@ -20,14 +20,14 @@
     "types": [
       "./src/global.d.ts",
       "node"
-    ],
+    ]
   },
   "exclude": [
     "./plugins",
     "./exports",
     "sandbox",
     "tsup.config.*.ts",
-    "dist",
+    "dist"
   ],
   "include": [
     "src"

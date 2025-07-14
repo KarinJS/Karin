@@ -1,5 +1,4 @@
 import fs from 'node:fs'
-import yaml from 'yaml'
 import { execSync } from 'node:child_process'
 
 let IS_PNPM10: boolean | null = null

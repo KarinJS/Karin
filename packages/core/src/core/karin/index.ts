@@ -1,5 +1,5 @@
 import * as fn from './export'
-import { Emitter } from './other'
+import { Emitter } from './emitter'
 
 /**
  * @core

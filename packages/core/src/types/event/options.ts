@@ -472,10 +472,7 @@ export type GroupHonorChangedOptions = Omit<NoticeOptions, 'subEvent'> & {
 }
 
 /** 创建请求事件类所需参数类型 */
-export type RequestOptions = Omit<BaseEventOptions<'request'>, 'event'> & {
-  /** 请求内容 */
-  content: any
-}
+export type RequestOptions = Omit<BaseEventOptions<'request'>, 'event'>
 
 /** 创建好友申请请求事件 */
 export type PrivateApplyRequestOptions = RequestOptions & {

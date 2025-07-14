@@ -1,83 +1,46 @@
-import lodash from 'lodash'
-import { privateCD } from '../other/cd'
-import { listeners } from '@/core/internal'
-import { handleContext } from '@/core/karin/context'
+import utils from '../../utils'
+import { hooksMessageEmit } from '@/hooks/message'
 import { config as cfg, getFriendCfg } from '@/utils/config'
-import { Permission } from '../other/permission'
-import { hooksMessageEmit } from '@/hooks/messaeg'
-import { eventCallEmit } from '@/hooks/eventCall'
-import { emptyEmit } from '@/hooks/empty'
-import {
-  log,
-  initAlias,
-  initEmit,
-  initMsg,
-  initRole,
-  disableViaAdapter,
-  privateFilterEvent,
-  disableViaPluginWhitelist,
-  disableViaPluginBlacklist,
-} from '../other/handler'
+import { FilterCallback, handleMessageCommon } from '@/event/handler/message/common'
 
-import type { Plugin } from '@/plugin/class'
-import type { Message, MessageEventMap } from '@/types/event'
-import type { DirectMessage, FriendMessage } from '../../message'
-import { CommandCache } from '@/core/karin/command'
-import { plguinManager } from '@/core/karin/load'
-import { ClassCache } from '@/core/karin/class'
-
-/**
- * @description 类型守卫函数：检查对象是否包含指定的方法
- */
-const hasMethod = (
-  obj: Plugin<keyof MessageEventMap>,
-  methodName: string
-): obj is Plugin<keyof MessageEventMap> & Record<string, Function> => {
-  return typeof obj[methodName as keyof Plugin<keyof MessageEventMap>] === 'function'
-}
+import type { CommandCache } from '@/core/karin/command'
+import type { DirectMessage, FriendMessage } from '../../types/message'
 
 /**
  * @description 好友消息处理器
  * @param ctx 好友消息事件
  */
 export const friendHandler = async (ctx: FriendMessage) => {
-  /** 基本配置 */
-  const config = cfg()
-  /** 好友配置 */
-  const friend = getFriendCfg(ctx.userId, ctx.selfId)
+  const systemConfig = cfg()
+  /** 获取配置 */
+  const eventConfig = getFriendCfg(ctx.userId, ctx.selfId)
 
-  initMsg(ctx)
-  initRole(ctx, config)
-  initAlias(ctx, friend.alias)
-  initEmit(ctx)
-  initPrint(ctx, 'friend', '好友消息')
+  /** 定义好友消息特定钩子函数 */
+  const hook = async (ctx: FriendMessage) => await hooksMessageEmit.friend(ctx)
 
-  /** 消息钩子 */
-  const hook = await hooksMessageEmit.friend(ctx)
-  if (!hook) {
-    logger.debug(`[${ctx.logFnc}] 好友消息钩子返回false 跳过当前事件: ${ctx.eventId}`)
-    return
-  }
-  const hook2 = await hooksMessageEmit.message(ctx)
-  if (!hook2) {
-    logger.debug(`[${ctx.logFnc}] 消息钩子返回false 跳过当前事件: ${ctx.eventId}`)
-    return
+  /** 定义过滤回调 */
+  const filterCallback: FilterCallback = (plugin) => {
+    const { event, permission } = plugin.register.options
+    if (event !== 'message' && event !== 'message.friend') return false
+    /** 好友场景只有这三种权限 非这三种一律跳过 */
+    if (!['all', 'master', 'admin'].includes(permission)) return false
+    return true
   }
 
-  const context = handleContext(ctx)
-  if (context) return ctx
-
-  const filter = privateFilterEvent(ctx, config, friend, privateCD(friend, ctx.userId))
-
-  if (filter) {
-    privateDeal(ctx, friend, (plugin: CommandCache) => {
-      const { event, permission } = plugin.register.options
-      if (event !== 'message' && event !== 'message.friend') return false
-      /** 好友场景只有这三种权限 非这三种一律跳过 */
-      if (!['all', 'master', 'admin'].includes(permission)) return false
-      return true
-    })
-  }
+  await handleMessageCommon({
+    ctx,
+    systemConfig,
+    eventConfig,
+    isPrint: true,
+    hookName: 'friend',
+    hook,
+    dispatch: () => _dispatch({
+      ctx,
+      eventConfig,
+      systemConfig,
+      filterCallback,
+    }),
+  })
 }
 
 /**
@@ -85,142 +48,53 @@ export const friendHandler = async (ctx: FriendMessage) => {
  * @param ctx 频道私信消息事件
  */
 export const directHandler = async (ctx: DirectMessage) => {
-  /** 基本配置 */
-  const config = cfg()
-  /** 好友配置 */
-  const friend = getFriendCfg(ctx.userId, ctx.selfId)
+  const systemConfig = cfg()
+  /** 获取配置 */
+  const eventConfig = getFriendCfg(ctx.userId, ctx.selfId)
 
-  initMsg(ctx)
-  initRole(ctx, config)
-  initAlias(ctx, friend.alias)
-  initEmit(ctx)
-  initPrint(ctx, 'direct', '频道私信')
+  /** 定义频道私信特定钩子函数 */
+  const hook = async (ctx: DirectMessage) => await hooksMessageEmit.direct(ctx)
 
-  /** 消息钩子 */
-  const hook = await hooksMessageEmit.direct(ctx)
-  if (!hook) {
-    logger.debug(`[${ctx.logFnc}] 频道私信消息钩子返回false 跳过当前事件: ${ctx.eventId}`)
-    return
-  }
-  const hook2 = await hooksMessageEmit.message(ctx)
-  if (!hook2) {
-    logger.debug(`[${ctx.logFnc}] 消息钩子返回false 跳过当前事件: ${ctx.eventId}`)
-    return
+  /** 定义过滤回调 */
+  const filterCallback: FilterCallback = (plugin) => {
+    const { event, permission } = plugin.register.options
+    if (event !== 'message' && event !== 'message.direct') return false
+    /** 频道私信场景只有这三种权限 非这三种一律跳过 */
+    if (!['all', 'master', 'admin'].includes(permission)) return false
+    return true
   }
 
-  const context = handleContext(ctx)
-  if (context) return ctx
-
-  const cd = privateCD(friend, ctx.userId)
-  const filter = privateFilterEvent(ctx, config, friend, cd)
-
-  if (filter) {
-    privateDeal(ctx, friend, (plugin: CommandCache) => {
-      const { event, permission } = plugin.register.options
-      if (event !== 'message' && event !== 'message.direct') return false
-      /** 频道私信场景只有这三种权限 非这三种一律跳过 */
-      if (!['all', 'master', 'admin'].includes(permission)) return false
-      return true
-    })
-  }
+  await handleMessageCommon({
+    ctx,
+    systemConfig,
+    eventConfig,
+    isPrint: true,
+    hookName: 'direct',
+    hook,
+    dispatch: () => _dispatch({
+      ctx,
+      eventConfig,
+      systemConfig,
+      filterCallback,
+    }),
+  })
 }
 
-/**
- * @description 打印控制台日志
- * @param ctx 消息事件对象
- * @param type 事件类型
- * @param prefix 日志前缀
- * @param level 日志等级
- */
-const initPrint = (
-  ctx: Message,
-  type: string,
-  prefix: string,
-  level: 'info' | 'debug' = 'info'
-) => {
-  ctx.logText = `[${type}:${ctx.userId}(${ctx.sender.nick || ''})]`
-  logger.bot(level, ctx.selfId, `${prefix}: [${ctx.userId}(${ctx.sender.nick || ''})] ${ctx.rawMessage}`)
-}
+const _dispatch = ({
+  ctx,
+  eventConfig,
+  systemConfig,
+  filterCallback,
+}: {
+  ctx: DirectMessage | FriendMessage,
+  eventConfig: ReturnType<typeof getFriendCfg>,
+  systemConfig: ReturnType<typeof cfg>,
+  filterCallback: FilterCallback
+}) => {
+  const cd = utils.cd.private(eventConfig, ctx.userId)
+  const filter = utils.filter.privateEvent(ctx, systemConfig, eventConfig, cd)
 
-/**
- * @description 分发事件给插件处理
- * @param ctx 好友消息事件
- * @param config 好友配置
- * @param filter 场景过滤器
- */
-const privateDeal = async (
-  ctx: FriendMessage | DirectMessage,
-  config: ReturnType<typeof getFriendCfg>,
-  filter: (plugin: CommandCache) => boolean
-) => {
-  for (const plugin of plguinManager.command) {
-    if (!filter(plugin)) continue
-    const result = await privateCmd(ctx, plugin, config)
-    if (!result) return
-  }
+  if (!filter) return
 
-  /** 未找到匹配插件 */
-  log(ctx.userId, `未找到匹配到相应插件: ${ctx.messageId}`)
-
-  /** 触发未找到匹配插件消息钩子 */
-  emptyEmit.message(ctx)
-}
-
-/**
- * @description 调用私聊场景消息插件
- * @param ctx 好友消息事件
- * @param plugin 插件缓存对象
- * @param config 好友配置
- */
-const privateCmd = async (
-  ctx: FriendMessage | DirectMessage,
-  plugin: CommandCache,
-  config: ReturnType<typeof getFriendCfg>
-): Promise<boolean> => {
-  const reg = plugin.register.reg
-  if (reg && !reg.test(ctx.msg)) return true
-  if (!disableViaAdapter(plugin, ctx.bot.adapter.protocol)) return true
-  if (!disableViaPluginWhitelist(plugin, config)) return true
-  if (!disableViaPluginBlacklist(plugin, config)) return true
-
-  ctx.logFnc = `[${plugin.pkg.name}][${plugin.app.name}]`
-  const logFnc = logger.fnc(ctx.logFnc)
-  plugin.app.log(ctx.selfId, `${logFnc}${ctx.logText} ${lodash.truncate(ctx.msg, { length: 100 })}`)
-
-  /** 计算插件处理时间 */
-  const start = Date.now()
-  if (ctx.isFriend) {
-    const result = await eventCallEmit.friend(ctx, plugin)
-    if (!result) return false
-  } else if (ctx.isDirect) {
-    const result = await eventCallEmit.direct(ctx, plugin)
-    if (!result) return false
-  }
-
-  const hookResult = await eventCallEmit.message(ctx, plugin)
-  if (!hookResult) return false
-
-  try {
-    if (!Permission.private(ctx, plugin)) return false
-
-    /** 是否继续匹配下一个插件 */
-    let next = false
-
-    const result = await plugin.register.fnc(ctx, () => { next = true })
-    if (next === false && typeof result === 'boolean' && result === false) next = true
-
-    /** 贪婪匹配下一个 */
-    if (next === true) {
-      logger.debug(`${ctx.logFnc} 继续匹配下一个插件`)
-      return true
-    }
-    return false
-  } catch (cause) {
-    listeners.emit('error', new Error(ctx.logFnc, { cause }))
-    return false
-  } finally {
-    const time = logger.green(Date.now() - start + 'ms')
-    const msg = lodash.truncate(ctx.msg, { length: 100 })
-    plugin.app.log(ctx.selfId, `${logFnc} ${msg} 处理完成 ${time}`)
-  }
+  utils.dispatch.message.private(ctx, eventConfig, filterCallback)
 }

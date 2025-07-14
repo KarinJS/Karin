@@ -35,6 +35,7 @@ export const createRequest = (event: OneBotRequestEvent, bot: AdapterOneBot<OneB
       sender: senderFriend(userId, ''),
       srcReply: (elements) => bot.sendMsg(contact, elements),
       content: {
+        comment: event.comment,
         applierId: userId,
         message: event.comment,
         flag: event.flag,
@@ -63,6 +64,7 @@ export const createRequest = (event: OneBotRequestEvent, bot: AdapterOneBot<OneB
         reason: event.comment,
         flag: event.flag,
         groupId,
+        comment: event.comment,
       },
     })
     return
@@ -85,6 +87,8 @@ export const createRequest = (event: OneBotRequestEvent, bot: AdapterOneBot<OneB
       content: {
         inviterId: userId,
         flag: event.flag,
+        comment: event.comment,
+        groupId,
       },
     })
     return

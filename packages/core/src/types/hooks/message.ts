@@ -1,15 +1,9 @@
-import type {
-  FriendMessage,
-  GroupMessage,
-  GuildMessage,
-  DirectMessage,
-  GroupTempMessage,
-} from '@/event'
 import type { Contact } from '@/types/event'
-import type { cache as pluginCache } from '@/plugin/system/cache'
+import type { AcceptCache } from '@/core/karin/accept'
+import type { CommandCache } from '@/core/karin/command'
 import type { Message, Notice, Request } from '@/types/event/event'
 import type { Elements, ForwardOptions, NodeElement } from '@/types/segment'
-import { CommandCache } from '@/core/karin/command'
+import type { FriendMessage, GroupMessage, GuildMessage, DirectMessage, GroupTempMessage } from '@/event'
 
 export type UnionMessage = Message | FriendMessage | GroupMessage | GuildMessage | DirectMessage | GroupTempMessage
 
@@ -165,9 +159,9 @@ export interface HookCache {
     /** 私聊事件 */
     direct: EventCallHookItem<DirectMessage, CommandCache>[]
     /** 通知事件 */
-    notice: EventCallHookItem<Notice, typeof pluginCache.accept[number]>[]
+    notice: EventCallHookItem<Notice, AcceptCache>[]
     /** 请求事件 */
-    request: EventCallHookItem<Request, typeof pluginCache.accept[number]>[]
+    request: EventCallHookItem<Request, AcceptCache>[]
   }
 }
 
