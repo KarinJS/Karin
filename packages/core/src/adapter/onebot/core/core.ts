@@ -359,8 +359,15 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
       }
 
       if (this.adapter.name === 'Lagrange.OneBot') {
-        return this._onebot.lgl_getGroupMsgHistory(Number(contact.peer), Number(startMsgId), count)
+        if (contact.scene === 'group') {
+          return this._onebot.lgl_getGroupMsgHistory(Number(contact.peer), Number(startMsgId), count)
+      } else if (contact.scene === 'friend') {
+          return this._onebot.lgl_getFriendMsgHistory(Number(contact.peer), Number(startMsgId), count)
+      } else {
+          throw new Error(`不支持的消息环境:${contact.scene}`)
       }
+  }
+
 
       const seq = await this.getMsg(contact, startMsgId)
       return this._onebot.getGroupMsgHistory(Number(contact.peer), seq.message_seq, count)
