@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.10.19](https://github.com/KarinJS/Karin/compare/core-v1.10.18...core-v1.10.19) (2025-07-14)
+
+
+### 🐛 Bug Fixes
+
+* 修复lagrange环境下 调用getHistoryMsg只使用getGroupMsgHistory的问题 ([#509](https://github.com/KarinJS/Karin/issues/509)) ([225cc58](https://github.com/KarinJS/Karin/commit/225cc58afd09bef0880a9874c220db5be5077369))
+
 ## [1.10.18](https://github.com/KarinJS/Karin/compare/core-v1.10.17...core-v1.10.18) (2025-07-07)
 
 
