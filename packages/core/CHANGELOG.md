@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.10.20](https://github.com/KarinJS/Karin/compare/core-v1.10.19...core-v1.10.20) (2025-07-16)
+
+
+### 🐛 Bug Fixes
+
+* 修复pr导致的编译错误 ([20daaf1](https://github.com/KarinJS/Karin/commit/20daaf1bd3713d3f4b7938f831897c7450c10bc8))
+
 ## [1.10.19](https://github.com/KarinJS/Karin/compare/core-v1.10.18...core-v1.10.19) (2025-07-14)
 
 
