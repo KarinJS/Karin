@@ -1,0 +1,37 @@
+{
+  "name": "@karinjs/glob",
+  "version": "0.0.1",
+  "description": "glob",
+  "main": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "homepage": "https://github.com/KarinJS/glob",
+  "bugs": {
+    "url": "https://github.com/KarinJS/glob/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarinJS/glob.git"
+  },
+  "scripts": {
+    "build": "tsup",
+    "pub": "npm publish --access public",
+    "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/@karinjs/glob/syncs\""
+  },
+  "keywords": [
+    "glob",
+    "karin"
+  ],
+  "author": "shijin",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
+}
