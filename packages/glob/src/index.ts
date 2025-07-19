@@ -67,12 +67,14 @@ export type GlobResultEager<T> = [
  * @returns
  */
 const createImportResult = (options: GlobOptions) => {
+  const { cwd } = options
+
   return typeof options.import === 'string'
     ? (file: string) => {
-      return () => import(file).then((m: Record<string, any>) => m[options.import!])
+      return () => import(`file://${path.resolve(cwd!, file)}`).then((m: Record<string, any>) => m[options.import!])
     }
     : (file: string) => {
-      return () => import(file)
+      return () => import(`file://${path.resolve(cwd!, file)}`)
     }
 }
 
@@ -122,13 +124,13 @@ const createFormatPath = (options: GlobOptions) => {
  * @param options 选项
  * @returns 导入结果
  */
-export const importGlob = async <T = unknown>(
+export const importGlob = async <T = unknown> (
   target: string | string[],
   options: GlobOptions = {}
 ): Promise<GlobResult<T>> => {
   const result: Record<string, () => Promise<T>> = {}
   const raw: Record<string, () => string> = {}
-  const absPath: string[] = []
+  const paths: string[] = []
 
   if (typeof options.cwd !== 'string') options.cwd = process.cwd()
   const importFnc = createImportResult(options)
@@ -140,21 +142,21 @@ export const importGlob = async <T = unknown>(
   for (let file of files) {
     file = formatPath(file)
     writeFnc(file)
-    absPath.push(file)
+    paths.push(file)
   }
 
   const getPaths = (isAbsPath = false) => {
     if (options.absPath) {
-      if (isAbsPath) return absPath
+      if (isAbsPath) return paths
       /** 转相对路径 */
-      return absPath.map(p => path.relative(options.cwd!, p).replace(/\\/g, '/'))
+      return paths.map(p => path.relative(options.cwd!, p).replace(/\\/g, '/'))
     }
 
     if (isAbsPath) {
-      return absPath.map(p => path.resolve(options.cwd!, p).replace(/\\/g, '/'))
+      return paths.map(p => path.resolve(options.cwd!, p).replace(/\\/g, '/'))
     }
 
-    return absPath
+    return paths
   }
 
   return [result, raw, getPaths]
@@ -166,7 +168,7 @@ export const importGlob = async <T = unknown>(
  * @param options 选项
  * @returns 导入结果
  */
-export const importGlobEager = async <T = unknown>(
+export const importGlobEager = async <T = unknown> (
   target: string | string[],
   options: Omit<GlobOptions, 'raw'> = {}
 ): Promise<GlobResultEager<T>> => {
