@@ -1,12 +1,13 @@
 import { defineConfig } from 'vite'
 // import { defineConfig, normalizePath } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+// import react from '@vitejs/plugin-react-swc'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import viteCompression from 'vite-plugin-compression'
 // import { viteStaticCopy } from 'vite-plugin-static-copy'
 // import path from 'node:path'
 import * as zlib from 'node:zlib'
 import { qrcode } from 'vite-plugin-qrcode'
+import react from '@vitejs/plugin-react-oxc'
 
 // const monacoEditorPath = normalizePath(
 //   path.resolve(__dirname, 'node_modules/monaco-editor/min/vs')
@@ -29,7 +30,7 @@ export default defineConfig({
           [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
         },
       },
-      threshold: 1024, // 只有大于1kb的文件才会被压缩
+      threshold: 10240, // 只有大于1kb的文件才会被压缩
     }),
     // viteStaticCopy({
     //   targets: [
@@ -47,98 +48,38 @@ export default defineConfig({
     rollupOptions: {
       output: {
         /**
-         * 自定义拆包策略，根据依赖类型和关联性进行分组
-         * @param id - 模块ID
-         * @returns chunk名称
+         * 使用advancedChunks替代manualChunks进行拆包策略
          */
-        manualChunks: (id) => {
-          // 处理node_modules中的依赖
-          if (id.includes('node_modules')) {
-            // Monaco Editor相关库单独处理
-            if (id.includes('monaco-editor')) {
-              // 基础编辑器功能
-              if (id.includes('/editor/')) {
-                return 'monaco-editor-core'
-              }
-              // 语言相关功能（分开打包避免文件过大）
-              if (id.includes('/language/')) {
-                const lang = id.match(/\/language\/([^/]+)/)?.[1]
-                if (lang) {
-                  return `monaco-language-${lang}`
-                }
-                return 'monaco-languages'
-              }
-              // 其他Monaco功能
-              return 'monaco-editor-features'
-            }
-
-            // @monaco-editor/react单独打包
-            if (id.includes('@monaco-editor/react')) {
-              return 'monaco-react'
-            }
-
-            // HeroUI组件库合并
-            if (id.includes('@heroui/')) {
-              return 'vendor-heroui'
-            }
-
+        advancedChunks: {
+          groups: [
             // React相关库合并
-            if (id.includes('react') ||
-              id.includes('redux') ||
-              id.includes('scheduler') ||
-              id.includes('@react-') ||
-              id.includes('@reduxjs/')) {
-              return 'vendor-react'
-            }
-
-            // 编辑器相关库合并（除Monaco外）
-            if (id.includes('quill') ||
-              id.includes('@xterm/')) {
-              return 'vendor-editor'
-            }
-
-            // 可视化/图表相关库
-            if (id.includes('echarts') ||
-              id.includes('three') ||
-              id.includes('ogl')) {
-              return 'vendor-visual'
-            }
-
-            // UI工具库
-            if (id.includes('tailwind') ||
-              id.includes('framer-motion') ||
-              id.includes('lucide-react') ||
-              id.includes('dnd-kit') ||
-              id.includes('class-variance-authority') ||
-              id.includes('clsx')) {
-              return 'vendor-ui-utils'
-            }
-
-            // 其他工具库
-            return 'vendor-others'
-          }
-
-          // 应用内部模块分组
-          if (id.includes('/components/')) {
-            return 'components'
-          }
-
-          if (id.includes('/hooks/')) {
-            return 'hooks'
-          }
-
-          if (id.includes('/utils/')) {
-            return 'utils'
-          }
-
-          // 创建较大的页面分块
-          if (id.includes('/pages/')) {
-            const segments = id.split('/')
-            const pageName = segments[segments.findIndex(s => s === 'pages') + 1]
-            if (pageName) {
-              return `page-${pageName}`
-            }
-          }
+            // { name: 'vendor-react', test: /[\\/]node_modules[\\/](react|redux|scheduler|@react-|@reduxjs)/ },
+            // // Monaco Editor相关库
+            // { name: 'monaco-editor-core', test: /[\\/]node_modules[\\/]monaco-editor[\\/]editor/ },
+            // { name: 'monaco-languages', test: /[\\/]node_modules[\\/]monaco-editor[\\/]language/ },
+            // { name: 'monaco-editor-features', test: /[\\/]node_modules[\\/]monaco-editor/ },
+            // { name: 'monaco-react', test: /[\\/]node_modules[\\/]@monaco-editor[\\/]react/ },
+            // // HeroUI组件库
+            { name: 'vendor-heroui', test: /[\\/]node_modules[\\/]@heroui/ },
+            // // 编辑器相关库
+            // { name: 'vendor-editor', test: /[\\/]node_modules[\\/](quill|@xterm)/ },
+            // // 可视化/图表相关库
+            { name: 'vendor-visual', test: /[\\/]node_modules[\\/](echarts|three|ogl)/ },
+            // // UI工具库
+            // { name: 'vendor-ui-utils', test: /[\\/]node_modules[\\/](tailwind|framer-motion|lucide-react|dnd-kit|class-variance-authority|clsx)/ },
+            // // 应用内部模块分组
+            // { name: 'components', test: /[\\/]components[\\/]/ },
+            // { name: 'hooks', test: /[\\/]hooks[\\/]/ },
+            // { name: 'utils', test: /[\\/]utils[\\/]/ },
+            // 页面分块 - 使用name函数代替nameTransformer
+            // {
+            //   name: (moduleId: string) => {
+            //     const match = moduleId.match(/[\\/]pages[\\/]([^/]+)/)
+            //     return match ? `page-${match[1]}` : 'other'
+            //   },
+            //   test: /[\\/]pages[\\/]([^/]+)/,
+            // },
+          ],
         },
         // 控制chunk的大小和命名
         chunkFileNames: 'assets/js/[name]-[hash].js',
@@ -146,7 +87,7 @@ export default defineConfig({
         entryFileNames: 'assets/js/entry-[hash].js',
         // 静态资源命名
         assetFileNames: (assetInfo) => {
-          const info = assetInfo.name || ''
+          const info = assetInfo.names[0] || ''
           const extType = info.split('.').at(-1) || 'misc'
           if (/\.(png|jpe?g|gif|svg|webp|avif)$/i.test(info)) {
             return 'assets/images/[name]-[hash][extname]'
@@ -162,10 +103,8 @@ export default defineConfig({
     cssCodeSplit: true,
     // 启用源码映射（生产环境可设为false提高性能）
     sourcemap: false,
-    // 最小化混淆
-    minify: 'esbuild',
     // 设置chunk大小警告阈值
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 999,
   },
   server: {
     host: true,
