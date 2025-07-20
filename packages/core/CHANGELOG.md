@@ -1,5 +1,26 @@
 # 更新日志
 
+## [1.10.20](https://github.com/KarinJS/Karin/compare/core-v1.10.19...core-v1.10.20) (2025-07-16)
+
+
+### 🐛 Bug Fixes
+
+* 修复pr导致的编译错误 ([20daaf1](https://github.com/KarinJS/Karin/commit/20daaf1bd3713d3f4b7938f831897c7450c10bc8))
+
+## [1.10.19](https://github.com/KarinJS/Karin/compare/core-v1.10.18...core-v1.10.19) (2025-07-14)
+
+
+### 🐛 Bug Fixes
+
+* 修复lagrange环境下 调用getHistoryMsg只使用getGroupMsgHistory的问题 ([#509](https://github.com/KarinJS/Karin/issues/509)) ([225cc58](https://github.com/KarinJS/Karin/commit/225cc58afd09bef0880a9874c220db5be5077369))
+
+## [1.10.18](https://github.com/KarinJS/Karin/compare/core-v1.10.17...core-v1.10.18) (2025-07-07)
+
+
+### 🐛 Bug Fixes
+
+* site ([#504](https://github.com/KarinJS/Karin/issues/504)) ([b55de78](https://github.com/KarinJS/Karin/commit/b55de78c082c3c7ead8605c5baf573107b545be9))
+
 ## [1.10.17](https://github.com/KarinJS/Karin/compare/core-v1.10.16...core-v1.10.17) (2025-07-03)
 
 

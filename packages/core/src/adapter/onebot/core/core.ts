@@ -343,14 +343,16 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @returns 包含历史消息的数组
    */
   async getHistoryMsg (contact: Contact, startMsgId: string | number, count: number) {
-    const result = await (async (): Promise<ReturnType<OneBotCore['getGroupMsgHistory']>> => {
+    const result = await (async (): Promise<ReturnType<OneBotCore['getGroupMsgHistory']> | ReturnType<OneBotCore['nc_getFriendMsgHistory']>> => {
+      const targetId = Number(contact.peer)
+
       /** 通过message_seq获取历史消息 */
       if (typeof startMsgId === 'number') {
         if (this.adapter.name === 'Lagrange.OneBot') {
           throw new Error('Lagrange.OneBot不支持通过seq获取历史消息')
         }
 
-        return this._onebot.getGroupMsgHistory(Number(contact.peer), startMsgId, count)
+        return this._onebot.getGroupMsgHistory(targetId, startMsgId, count)
       }
 
       /** 通过message_id获取历史消息 */
@@ -359,11 +361,23 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
       }
 
       if (this.adapter.name === 'Lagrange.OneBot') {
-        return this._onebot.lgl_getGroupMsgHistory(Number(contact.peer), Number(startMsgId), count)
+        if (contact.scene === 'group') {
+          return this._onebot.lgl_getGroupMsgHistory(targetId, Number(startMsgId), count)
+        } else if (contact.scene === 'friend') {
+          return this._onebot.lgl_getFriendMsgHistory(targetId, Number(startMsgId), count)
+        } else {
+          throw new Error(`不支持的消息环境:${contact.scene}`)
+        }
       }
 
       const seq = await this.getMsg(contact, startMsgId)
-      return this._onebot.getGroupMsgHistory(Number(contact.peer), seq.message_seq, count)
+      if (contact.scene === 'group') {
+        return this._onebot.getGroupMsgHistory(targetId, seq.message_seq, count)
+      } else if (contact.scene === 'friend') {
+        return this._onebot.nc_getFriendMsgHistory(targetId, seq.message_seq, count)
+      } else {
+        throw new Error(`不支持的消息环境:${contact.scene}`)
+      }
     })()
 
     return await Promise.all(result.messages.map(async (v) => {
@@ -382,12 +396,17 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
           userId,
           nick: v?.sender?.nickname || '',
           name: v?.sender?.nickname || '',
-          role: v?.sender?.role || 'unknown',
           sex: v?.sender?.sex || 'unknown',
           age: v?.sender?.age || 0,
+          // @ts-ignore
+          role: v?.sender?.role || 'unknown',
+          // @ts-ignore
           card: v?.sender?.card || '',
+          // @ts-ignore
           area: v?.sender?.area || '',
+          // @ts-ignore
           level: Number(v?.sender?.level) || 0,
+          // @ts-ignore
           title: v?.sender?.title || '',
         }),
         elements: await this.AdapterConvertKarin(v.message),

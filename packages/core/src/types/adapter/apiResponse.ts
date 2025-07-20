@@ -26,7 +26,7 @@ export interface MessageResponse {
   messageSeq: number
   /** 消息来源目标信息 */
   contact: Contact
-  /** 消息发送者 */
+  /** 消息发送者 请注意role仅在群聊场景下有效 */
   sender: GroupSender
   /** 消息元素 */
   elements: Array<Elements>
