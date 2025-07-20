@@ -1,10 +1,11 @@
 import { ReactElement } from 'react'
 import { TbCircleCheck, TbCircleDashed, TbArrowUp } from 'react-icons/tb'
+import type { PluginPackageType } from 'node-karin'
 
 /**
  * 插件类型定义
  */
-export type PluginType = 'all' | 'git' | 'app' | 'npm'
+export type PluginType = Omit<PluginPackageType, 'apps'> | 'app'
 
 /**
  * 获取更新状态配置
@@ -14,7 +15,7 @@ export type PluginType = 'all' | 'git' | 'app' | 'npm'
  * @returns 状态配置
  */
 export const getUpdateStatusConfig = (type: PluginType, version: string, latesHash: string) => {
-  if (type === 'app') {
+  if (type === 'apps') {
     return {
       text: '-',
       color: 'default' as const,
@@ -57,10 +58,10 @@ export const getTypeConfig = (type: PluginType) => {
         color: 'warning',
         text: 'Git插件',
       }
-    case 'app':
+    case 'apps':
       return {
         color: 'primary',
-        text: 'App插件',
+        text: 'Apps插件',
       }
     case 'npm':
       return {

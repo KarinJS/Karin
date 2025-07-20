@@ -35,7 +35,7 @@ export const installMarket = async (
     )
   }
 
-  if (data.pluginType === 'app' && plugin.type === 'apps') {
+  if (data.pluginType === 'apps' && plugin.type === 'apps') {
     return installApp(res, plugin, data, ip)
   }
 

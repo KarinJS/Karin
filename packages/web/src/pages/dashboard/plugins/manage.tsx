@@ -246,7 +246,7 @@ export const LocalPlugin = (): ReactElement => {
       type: 'uninstall',
       name: '卸载选中插件',
       target: selectedPlugins.map(plugin => ({
-        type: plugin.type,
+        type: plugin.type as 'npm' | 'git' | 'app',
         name: plugin.name,
       })),
     }
@@ -310,7 +310,7 @@ export const LocalPlugin = (): ReactElement => {
       type: 'uninstall',
       name: `卸载插件 ${plugin.name}`,
       target: [{
-        type: plugin.type,
+        type: plugin.type as 'npm' | 'git' | 'app',
         name: plugin.name,
       }],
     }

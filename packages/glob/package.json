@@ -2,7 +2,7 @@
   "name": "@karinjs/glob",
   "version": "0.0.1",
   "description": "glob",
-  "main": "dist/index.mjs",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "homepage": "https://github.com/KarinJS/glob",
@@ -14,7 +14,7 @@
     "url": "git+https://github.com/KarinJS/glob.git"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsc && tsdown",
     "pub": "npm publish --access public",
     "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/@karinjs/glob/syncs\""
   },
@@ -38,7 +38,7 @@
     ".": {
       "types": "./dist/index.d.ts",
       "development": "./src/index.ts",
-      "default": "./dist/index.mjs"
+      "default": "./dist/index.js"
     }
   }
 }

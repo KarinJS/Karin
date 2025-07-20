@@ -3,7 +3,7 @@ import { defineConfig } from 'tsdown/config'
 export default defineConfig({
   entry: 'src/index.ts',
   dts: {
-    resolve: ['glob'],
+    resolve: true,
   },
   format: ['esm'],
   target: 'node18',
@@ -11,4 +11,5 @@ export default defineConfig({
   sourcemap: false,
   clean: true,
   treeshake: true,
+  outDir: process.argv[3] === 'development' ? 'dist' : '../core/dist/cli',
 })

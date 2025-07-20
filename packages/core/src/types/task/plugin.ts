@@ -147,7 +147,7 @@ interface PluginAdminMarketInstallBaase extends PluginAdminInstallBase {
  * app类型插件市场安装任务参数
  */
 export interface PluginAdminMarketInstallApp extends PluginAdminMarketInstallBaase {
-  pluginType: 'app'
+  pluginType: 'apps'
   /** 需要安装的url列表 */
   urls: string[]
 }

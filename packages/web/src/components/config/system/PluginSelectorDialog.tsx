@@ -1,4 +1,3 @@
-/* eslint-disable @stylistic/indent */
 import toast from 'react-hot-toast'
 import { Input } from '@heroui/input'
 import { Button } from '@heroui/button'

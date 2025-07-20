@@ -59,7 +59,7 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
   }[] = []
   if (
     plugin.type === 'market' &&
-    plugin.market.type === 'app' &&
+    plugin.market.type === 'apps' &&
     Array.isArray(plugin.market.files)
   ) {
     files = plugin.market.files
@@ -75,7 +75,7 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
    * 初始值设置逻辑：如果是app类型且有文件但未选择时，应禁用
    */
   const [isInstallButtonEnabled, setIsInstallButtonEnabled] = useState(() => {
-    const shouldBeDisabled = plugin.local.type === 'app' && files.length > 0 && selectedFiles.length === 0
+    const shouldBeDisabled = plugin.local.type === 'apps' && files.length > 0 && selectedFiles.length === 0
     return !shouldBeDisabled
   })
 
@@ -83,7 +83,7 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
    * 监听文件选择状态和插件类型变化
    */
   useEffect(() => {
-    const isEnabled = !(plugin.local.type === 'app' && files.length > 0 && selectedFiles.length === 0)
+    const isEnabled = !(plugin.local.type === 'apps' && files.length > 0 && selectedFiles.length === 0)
     setIsInstallButtonEnabled(isEnabled)
   }, [plugin.local.type, files.length, selectedFiles.length])
 
@@ -111,7 +111,7 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
       /**
        * 构造安装参数
        */
-      const params: PluginAdminMarketInstall = plugin.local.type === 'app'
+      const params: PluginAdminMarketInstall = plugin.local.type === 'apps'
         ? {
           name: `插件市场: 安装${plugin.local.name}`,
           type: 'install',
@@ -124,7 +124,7 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
           name: `插件市场: 安装${plugin.local.name}`,
           type: 'install',
           source: 'market',
-          pluginType: plugin.local.type,
+          pluginType: plugin.local.type as 'npm' | 'git',
           target: plugin.local.name,
         }
 
@@ -269,7 +269,7 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
                         <div className='text-sm text-success-700 flex items-center gap-1.5'>
                           <span className='capitalize'>{plugin.local.type}</span>
                           <span className='opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100'>
-                            {plugin.local.type === 'npm' ? '📦' : plugin.local.type === 'app' ? '🚀' : '🔌'}
+                            {plugin.local.type === 'npm' ? '📦' : plugin.local.type === 'apps' ? '🚀' : '🔌'}
                           </span>
                         </div>
                       </div>
@@ -313,8 +313,8 @@ export const MarketPluginInstallButton: FC<{ plugin: PluginMarketResponse }> = (
                       )}
                   </div>
 
-                  {/* app类型插件文件选择区（列表风格） */}
-                  {plugin.local.type === 'app' && files.length > 0 && (
+                  {/* apps类型插件文件选择区（列表风格） */}
+                  {plugin.local.type === 'apps' && files.length > 0 && (
                     <>
                       <div style={{ height: 16 }} />
                       <div className='mb-6'>

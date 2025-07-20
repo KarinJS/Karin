@@ -3,5 +3,6 @@
   "packages/cli": "1.1.5",
   "packages/create-karin": "1.2.1",
   "packages/web": "1.9.6",
-  "packages/glob": "0.0.1"
+  "packages/glob": "0.0.1",
+  "packages/onebot": "0.0.1"
 }
