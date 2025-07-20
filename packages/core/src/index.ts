@@ -33,7 +33,7 @@ export { karin as default } from '@/core/karin'
 export { db } from '@/core/db/kv'
 export { redis } from '@/core/db/redis/redis'
 export { logger } from '@/utils/logger'
-export { LoadedPluginCacheList } from '@/server/plugins/detail/list'
+export type { LoadedPluginCacheList } from '@/server/plugins/detail/list'
 
 export type * from '@/types'
 

@@ -30,7 +30,7 @@ export const getPlugins = async <T extends boolean = false> (
   isInfo?: T,
   isForce: boolean = false
 ): Promise<GetPluginReturn<T>> => {
-  if (isInfo) {
+  if (!isInfo) {
     const result = await getPluginsList(isForce)
     if (type === 'all') return result as GetPluginReturn<T>
     return result.filter(v => {
