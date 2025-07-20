@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { karinPathPlugins } from '@/root'
 import { getModuleType, isTs, NPM_EXCLUDE_LIST } from '@/env'
-import { filesByExt, formatPath, isPathEqual, isSubPath, PkgData, requireFileSync } from '@/utils'
+import { filesByExt, formatPath, getDirs, getNodeModules, isPathEqual, isSubPath, PkgData, requireFileSync } from '@/utils'
 
 import type { CommandCache } from '../core/karin/command'
 import type { PluginCacheKeyFile, PluginCacheKeyPkg, PluginPackageType } from '../core/karin/base'
@@ -99,17 +99,26 @@ export const getPlugins = async (isRefresh = false) => {
   }
 
   const list: string[] = []
-  const files = await Promise.all([
-    fs.promises.readdir(path.join(process.cwd(), 'node_modules')),
-    fs.promises.readdir(path.resolve(dir)),
-  ]).then(results => results.flat())
+  const [dirs, nodeModules] = await Promise.all([
+    getDirs(dir),
+    getNodeModules(),
+  ])
 
-  files.forEach((v) => {
+  dirs.forEach((v) => {
     if (NPM_EXCLUDE_LIST.includes(v)) return
-    const { status, type } = isPluginPackage(v)
+    const _path = path.join(dir, v)
+    const { status, type } = isPluginPackage(_path)
     if (!status) return
 
     list.push(`${type}:${v}`)
+  })
+
+  nodeModules.forEach((v) => {
+    if (NPM_EXCLUDE_LIST.includes(v)) return
+    const _path = path.join(process.cwd(), 'node_modules', v, 'package.json')
+    if (!isPackageJsonToKarin(_path)) return
+
+    list.push(`npm:${v}`)
   })
 
   cache.plugins = list
@@ -122,20 +131,33 @@ export const getPlugins = async (isRefresh = false) => {
  * @param pluginName 插件名称
  * @returns 插件类型和名称
  */
-const _formatPluginName = (pluginName: string): { type: PluginPackageType, name: string } => {
+const _formatPluginName = (pluginName: string): { type: PluginPackageType, name: string, dir: string } | null => {
   if (pluginName.includes(':')) {
-    const [type, name] = pluginName.split(':') as [PluginPackageType, string]
-    if (['npm', 'root', 'git', 'apps'].includes(type)) return { type, name }
-
-    throw new TypeError(`${pluginName}: ${type} 不符合插件包类型规范`)
+    pluginName = pluginName.split(':')[1]
   }
 
-  const { status, type } = isPluginPackage(pluginName)
-  if (!status) {
-    throw new TypeError(`${pluginName} 不符合插件包规范`)
+  let _dir = `${process.cwd()}/node_modules/${pluginName}`
+
+  if (fs.existsSync(`${_dir}/package.json`)) {
+    return { type: 'npm', name: pluginName, dir: _dir }
   }
 
-  return { type, name: pluginName }
+  _dir = path.join(dir, pluginName)
+  if (fs.existsSync(`${_dir}/package.json`)) {
+    return { type: 'git', name: pluginName, dir: _dir }
+  }
+
+  if (fs.existsSync(_dir)) {
+    return { type: 'apps', name: pluginName, dir: _dir }
+  }
+
+  _dir = process.cwd()
+  const pkg = requireFileSync(path.join(_dir, 'package.json'), { ex: 0 })
+  if (pkg.name === pluginName) {
+    return { type: 'root', name: pluginName, dir: _dir }
+  }
+
+  return null
 }
 
 /**
@@ -150,16 +172,11 @@ const _pluginInfo = (value: string, isRefresh = false): PluginCacheKeyPkg => {
     return cache.pluginsDetails.get(value)!
   }
 
-  const { type, name } = _formatPluginName(value)
-  const _dir = (() => {
-    if (type === 'npm') return path.join(process.cwd(), 'node_modules', name)
-    if (type === 'root') return process.cwd()
-    return path.join(dir, name)
-  })()
-
-  if (!fs.existsSync(_dir)) {
+  const result = _formatPluginName(value)
+  if (!result) {
     throw new Error(`插件包不存在，请检查插件名称 ${value} 是否正确`)
   }
+  const { type, name, dir: _dir } = result
 
   return {
     name,
@@ -207,8 +224,10 @@ export const getPluginDetails = async (isRefresh = false): Promise<Map<string, P
   const list = await getPlugins(isRefresh)
 
   await Promise.all(list.map(async (v) => {
-    const info = _pluginInfo(v, isRefresh)
-    map.set(info.name, info)
+    try {
+      const info = _pluginInfo(v, isRefresh)
+      map.set(info.name, info)
+    } catch { }
   }))
 
   return map
@@ -221,13 +240,18 @@ export const getPluginDetails = async (isRefresh = false): Promise<Map<string, P
  * @param isRefresh 是否强制刷新不使用缓存
  * @returns 插件包详细信息
  */
-export const getPluginPackageDetail = (pkgName: string, isRefresh = false): PluginCacheKeyPkg => {
+export const getPluginPackageDetail = (pkgName: string, isRefresh = false): PluginCacheKeyPkg | null => {
   const _cache = cache.pluginsDetails.get(pkgName)
   if (_cache && !isRefresh) return _cache
 
-  const info = _pluginInfo(pkgName, isRefresh)
-  cache.pluginsDetails.set(info.name, info)
-  return info
+  try {
+    const info = _pluginInfo(pkgName, isRefresh)
+    cache.pluginsDetails.set(info.name, info)
+    return info
+  } catch (error) {
+    logger.debug(error)
+    return null
+  }
 }
 
 /**
@@ -253,16 +277,16 @@ export const isPluginPackage = (dir: string): { status: boolean, type: PluginPac
     return { status, type: 'npm' }
   }
 
-  /** root */
-  if (isPathEqual(dir, process.cwd())) {
-    const status = isPackageJsonToKarin(pkgPath)
-    return { status, type: 'root' }
-  }
-
   /** git */
   if (path.dirname(pkgPath).includes('karin-plugin-')) {
     const status = isPackageJsonToKarin(pkgPath)
     return { status, type: 'git' }
+  }
+
+  /** root */
+  if (isPathEqual(dir, process.cwd())) {
+    const status = isPackageJsonToKarin(pkgPath)
+    return { status, type: 'root' }
   }
 
   return { status: false, type: 'apps' }
@@ -385,7 +409,19 @@ export const getPackageName = (appPath: string): string | null => {
   appPath = formatPath(appPath)
   /** npm */
   if (appPath.includes('node_modules')) {
-    return appPath.split('node_modules/')[1].split('/')[1]
+    // /root/node_modules/.pnpm/@karinjs+plugin-basic@1.1.0/node_modules/@karinjs/plugin-basic/dist/apps/exit.js
+    const idx = appPath.lastIndexOf('node_modules/')
+    if (idx === -1) return null
+
+    const suffix = appPath.slice(idx + 13)
+    const parts = suffix.split('/').filter(Boolean)
+    if (parts.length === 0) return null
+
+    if (parts[0].startsWith('@')) {
+      return `${parts[0]}/${parts[1]}`
+    } else {
+      return parts[0]
+    }
   }
 
   /** git、apps */

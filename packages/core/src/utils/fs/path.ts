@@ -3,6 +3,7 @@ import lodash from 'lodash'
 import path from 'node:path'
 import { sep } from './file'
 import { fileURLToPath } from 'node:url'
+import { requireFileSync } from '@/utils/fs/require'
 
 /**
  * @description 根据文件后缀名从指定路径下读取符合要求的文件
@@ -158,4 +159,43 @@ export const isPathEqual = (path1: string, path2: string) => {
   }
 
   return false
+}
+
+/**
+ * 获取目录下的所有文件夹
+ * @param dir 目录
+ * @returns 文件夹列表
+ */
+export const getDirs = async (dir: string, options: {
+  /** 返回绝对路径 默认返回文件夹名称 */
+  isAbs?: boolean
+} = {}) => {
+  const list: string[] = []
+  const dirs = await fs.promises.readdir(dir)
+  await Promise.all(dirs.map(async (v) => {
+    const stat = await fs.promises.stat(path.join(dir, v))
+    if (!stat.isDirectory()) return
+
+    list.push(options.isAbs ? path.join(dir, v) : v)
+  }))
+
+  return list
+}
+
+/**
+ * 获取node_modules下的插件
+ */
+export const getNodeModules = async () => {
+  const pkg = requireFileSync(path.join(process.cwd(), 'package.json'), { ex: 0 })
+
+  let list: string[] = [
+    ...Object.keys(pkg.dependencies || {}),
+    ...Object.keys(pkg.devDependencies || {}),
+    ...Object.keys(pkg.peerDependencies || {}),
+  ]
+
+  /** 过滤node-karin */
+  list = list.filter(v => !v.includes('node-karin'))
+
+  return list
 }

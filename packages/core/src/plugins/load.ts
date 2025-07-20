@@ -49,24 +49,24 @@ export const init = async () => {
  */
 export const load = async (pluginName: string) => {
   const pkg = manager.getPluginPackageDetail(pluginName)
-  const files = getFiles(pkg.data)
+  const files = getFiles(pkg?.data || null)
 
   /** 检查版本号是否符合加载要求 */
-  if (!checkVersion(pkg.data)) return
+  if (!checkVersion(pkg?.data || null)) return
   /** 写入环境变量 */
-  collectEnv(pkg.data)
+  collectEnv(pkg?.data || null)
 
   /** 创建插件基本文件夹 - 这个需要立即执行 */
-  await createPluginDir(pkg.name, files)
+  await createPluginDir(pkg?.name || '', files)
 
   /** 加载入口文件 */
-  if (pkg.data) {
+  if (pkg?.data) {
     const main = manager.getMain(pkg.data, pkg.dir)
     if (main) await loadMain(pluginName, main)
   }
 
   /** 加载全部app */
-  await Promise.all(pkg.apps.map(async (file) => {
+  pkg && await Promise.all(pkg.apps.map(async (file) => {
     const { status, data } = await importModule(file)
     if (status) {
       /** 加载class插件 */

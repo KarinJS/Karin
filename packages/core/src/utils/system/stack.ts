@@ -24,7 +24,7 @@ export const getCaller = (url: string, customError?: Error): string => {
    * MacOS: `file://`
    */
 
-  const paths: string[] = []
+  let paths: string[] = []
 
   /**
    * 提取所有paths
@@ -54,18 +54,16 @@ export const getCaller = (url: string, customError?: Error): string => {
 
   const basePath = fileURLToPath(url).replace(/\\/g, '/')
   /**
-   * 找到basePath在paths中的索引，value可能存在多个，需要找到最后一个
+   * 过滤basePath在paths中的所有值
    */
-  const index = paths.map((p, i) => ({ p, i }))
-    .filter(item => item.p === basePath)
-    .pop()?.i ?? -1
+  paths = paths.filter(v => v !== basePath)
 
-  if (index === -1) {
+  if (paths.length === 0) {
     throw new Error('解析调用栈失败')
   }
 
-  /** 索引+1就是调用者 */
-  const caller = paths[index + 1]
+  /** 0调用者 */
+  const caller = paths[0]
   if (!caller) {
     throw new Error('当前文件是入口文件，并非被动调用')
   }

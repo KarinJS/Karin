@@ -76,6 +76,7 @@ export const absPath = (file: string, absPath = true, prefix = false): string =>
  * @param files 需要创建的文件夹列表
  */
 export const createPluginDir = async (name: string, files?: string[]): Promise<void> => {
+  if (!name) return
   if (!Array.isArray(files)) files = ['config', 'data', 'resources']
   if (files.length === 0) return
 
