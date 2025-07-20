@@ -26,8 +26,8 @@
     "app": "node dist/index.mjs",
     "cp": "node index.mjs",
     "dev": "tsx src/index.ts",
-    "build": "pnpm cp && tsc && tsdown && node build.mjs",
-    "build:dev": "pnpm cp && tsc && tsdown --mode development && node build.mjs --mode development"
+    "build": "pnpm cp && tsc && tsdown",
+    "build:dev": "pnpm cp && tsc && tsdown --mode development"
   },
   "devDependencies": {
     "commander": "^13.1.0"

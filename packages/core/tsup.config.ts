@@ -13,7 +13,7 @@ const entry = [
 
 export default defineConfig({
   ...options,
-  clean: true,
+  clean: false,
   splitting: true,
   entry,
   treeshake: 'recommended',
