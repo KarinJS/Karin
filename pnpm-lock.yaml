@@ -68,6 +68,9 @@ importers:
       express:
         specifier: npm:@karinjs/express@1.0.3
         version: '@karinjs/express@1.0.3'
+      log4js:
+        specifier: ^6.9.1
+        version: 6.9.1
       moment:
         specifier: npm:@karinjs/moment@1.1.5
         version: '@karinjs/moment@1.1.5'
@@ -123,9 +126,6 @@ importers:
       lodash:
         specifier: npm:@karinjs/lodash@1.1.1
         version: '@karinjs/lodash@1.1.1'
-      log4js:
-        specifier: ^6.9.1
-        version: 6.9.1
       node-schedule:
         specifier: npm:@karinjs/node-schedule@1.0.0
         version: '@karinjs/node-schedule@1.0.0'
