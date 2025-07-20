@@ -110,4 +110,5 @@ export const reloadApp = async (file: string) => {
  */
 export const reloadPackage = async (pkgName: string) => {
   await load(pkgName)
+  sort()
 }
