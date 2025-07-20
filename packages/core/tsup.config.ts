@@ -17,6 +17,9 @@ export default defineConfig({
   splitting: true,
   entry,
   treeshake: 'recommended',
+  noExternal: [
+    'yaml',
+  ],
   dts: {
     resolve: true,
     entry: [

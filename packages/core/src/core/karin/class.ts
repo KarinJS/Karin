@@ -187,13 +187,9 @@ export abstract class Plugin<T extends keyof MessageEventMap = keyof MessageEven
    * 快速回复合并转发
    * @param element 合并转发消息元素节点
    */
-  async replyForward (element: Parameters<AdapterType['sendForwardMsg']>[1]) {
+  async replyForward (element: Parameters<AdapterType['sendForwardMsg']>[1]): Promise<ReturnType<AdapterType['sendForwardMsg']>> {
     const result = await this.e.bot.sendForwardMsg(this.e.contact, element)
-    return {
-      ...result,
-      /** @deprecated 已废弃 请请使用 messageId */
-      message_id: result.messageId,
-    }
+    return result
   }
 }
 
@@ -207,7 +203,7 @@ export const loadClass = (
   pkgName: string,
   file: string,
   Cls: unknown
-) => {
+): void => {
   if (!isClass<Plugin>(Cls)) return
   const plugin = new Cls()
 

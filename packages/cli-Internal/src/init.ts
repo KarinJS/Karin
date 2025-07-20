@@ -9,7 +9,7 @@
  * 7. 创建基本配置文件
  */
 
-import yaml from 'yaml'
+import yaml from 'node-karin/yaml'
 import fs from 'node:fs'
 import path from 'node:path'
 import { URL, fileURLToPath } from 'node:url'
