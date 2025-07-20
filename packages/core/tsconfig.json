@@ -19,8 +19,7 @@
     "types": [
       "./src/global.d.ts",
       "node"
-    ],
-    "moduleResolution": "bundler",
+    ]
   },
   "exclude": [
     "./plugins",

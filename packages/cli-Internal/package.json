@@ -40,7 +40,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "time": "2025-04-10T19:55:45.123Z",
-  "peerDependencies": {
-    "node-karin": "workspace:*"
+  "dependencies": {
+    "yaml": "2.7.0"
   }
 }

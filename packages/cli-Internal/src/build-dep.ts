@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import yaml from 'node-karin/yaml'
+import yaml from 'yaml'
 
 /**
  * 获取当前工作目录的 pnpm-workspace.yaml 文件路径

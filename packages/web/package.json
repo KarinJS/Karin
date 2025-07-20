@@ -118,6 +118,8 @@
     "vite-tsconfig-paths": "^5.1.4"
   },
   "peerDependencies": {
-    "node-karin": "workspace:*"
+    "node-karin": "workspace:*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   }
 }

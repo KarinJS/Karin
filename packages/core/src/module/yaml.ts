@@ -1,2 +1,2 @@
 export * from 'yaml'
-export * as default from 'yaml'
+export { default } from 'yaml'
