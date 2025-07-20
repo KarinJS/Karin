@@ -3,8 +3,9 @@ import * as manager from '../../plugins/manager'
 import * as register from '../../plugins/register'
 import { createID, createLogger } from './util'
 
+import type { Event } from '@/types/event'
 import type { PluginCache } from './base'
-import type { Button } from '@/types/plugin'
+import type { ButtonType } from '@/plugins/types'
 import type { OptionsBase } from './options'
 
 export interface ButtonOptions extends OptionsBase {
@@ -24,7 +25,12 @@ export interface ButtonCache extends PluginCache {
     /** 正则表达式 */
     reg: RegExp
     /** 实现函数 */
-    fnc: Button['fnc']
+    fnc: (
+      /** 是否继续匹配下一个按钮 默认否 调用后则继续 */
+      next: () => void,
+      /** 自定义参数 如果传e需要符合标准 */
+      args?: { e?: Event, [key: string]: any }
+    ) => Promise<ButtonType> | ButtonType
     /** 插件选项 */
     options: ButtonOptionsFormat
   }
@@ -33,7 +39,7 @@ export interface ButtonCache extends PluginCache {
     /** 更新reg */
     setReg: (reg: string | RegExp) => void
     /** 更新fnc */
-    setFnc: (fnc: Button['fnc']) => void
+    setFnc: (fnc: ButtonCache['register']['fnc']) => void
     /** 更新options */
     setOptions: (options: ButtonOptions) => void
     /** 卸载当前插件 */
@@ -73,7 +79,7 @@ const formatReg = (reg: string | RegExp): RegExp => {
  */
 export const button = (
   reg: RegExp | string,
-  fnc: Button['fnc'],
+  fnc: ButtonCache['register']['fnc'],
   options: ButtonOptions = {}
 ): ButtonCache => {
   if (!reg) throw new Error('[button]: 缺少参数[reg]')
@@ -136,7 +142,7 @@ export const button = (
         setReg: (reg: string | RegExp) => {
           regCache = formatReg(reg)
         },
-        setFnc: (fnc: Button['fnc']) => {
+        setFnc: (fnc: ButtonCache['register']['fnc']) => {
           fncCache = fnc
         },
         setOptions: (options: ButtonOptions) => {

@@ -1,19 +1,18 @@
 import axios from 'axios'
 import { URL } from 'node:url'
 import { getPlugins } from '@/plugins/list'
-import { getPluginMarket } from '@/plugins/market'
+import { getPluginMarket, KarinPluginType } from '@/plugins/market'
 import { getFastRegistry, getPackageJson } from '@/utils/request'
 import { createSuccessResponse, createServerErrorResponse } from '@/server/utils/response'
 import { REDIS_PLUGIN_MARKET_LIST_CACHE_KEY, REDIS_PLUGIN_MARKET_LIST_CACHE_EXPIRE } from '@/env/key/redis'
 
 import type { RequestHandler } from 'express'
-import type { KarinPluginType } from '@/types/plugin/market'
 import type {
   PluginMarketAuthor,
   PluginMarketRequest,
   PluginMarketResponse,
 } from '@/types'
-import { PluginCacheKeyPkg } from '@/core/karin/base'
+import type { PluginCacheKeyPkg } from '@/core/karin/base'
 
 /**
  * @webui 插件市场 获取插件列表

@@ -2,6 +2,8 @@ import * as load from './load'
 import * as manager from './manager'
 import * as register from './register'
 export * from './list'
+export * from './market'
+export * from './types'
 
 /** 插件管理类实例 */
 export const plguinManager: {

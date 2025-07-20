@@ -9,7 +9,7 @@ import { downloadFile } from '@/utils/fs/file'
 import { taskSystem as task } from '@/service/task'
 
 import type { Response } from 'express'
-import type { KarinPluginType } from '@/types/plugin/market'
+import type { KarinPluginType } from '@/plugins/market'
 import type { PluginAdminMarketInstall, PluginAdminMarketInstallApp, TaskEntity } from '@/types/task'
 import { getPluginMarket } from '@/plugins/market'
 import { reloadPackage } from '@/plugins/hmr'

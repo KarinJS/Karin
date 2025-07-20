@@ -10,6 +10,7 @@ import type { RequestHandler } from 'express'
 import type { PkgData } from '@/utils/fs/pkg'
 import type { DefineConfig, GetConfigResponse } from '@/types/server/local'
 import { getPlugins } from '@/plugins/list'
+import { PluginPackageType } from '@/types'
 
 /**
  * 检查文件是否存在
@@ -177,7 +178,7 @@ const loadConfig = async (configPath: string) => {
  * @param fnc 配置文件不符合要求时回调
  * @returns web.config配置
  */
-export const getWebConfig = async (type: Apps, id: string, _?: () => void) => {
+export const getWebConfig = async (type: PluginPackageType, id: string, _?: () => void) => {
   /** 只支持git npm */
   if (!['git', 'npm'].includes(type)) {
     return null

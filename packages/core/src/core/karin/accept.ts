@@ -6,7 +6,7 @@ import { createID, createLogger } from './util'
 import type { FNC } from './util'
 import type { PluginCache } from './base'
 import type { OptionsBase } from './options'
-import type { NoticeAndRequest } from '@/types/plugin'
+import type { NoticeAndRequest } from '@/plugins/types'
 
 export interface AcceptOptions<T extends keyof NoticeAndRequest = keyof NoticeAndRequest> extends Omit<OptionsBase, 'perm' | 'permission'> {
   /** 事件类型 */

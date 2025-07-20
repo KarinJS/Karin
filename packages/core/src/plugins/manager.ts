@@ -52,7 +52,7 @@ export interface PluginCache {
  * @public
  * @description git插件包目录
  */
-export const dir = process.env.KARIN_PLUGINS_DIR || karinPathPlugins
+export const dir = (process.env.KARIN_PLUGINS_DIR || karinPathPlugins).replace(/\\/g, '/')
 /**
  * @private
  * @description 插件加载缓存

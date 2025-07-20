@@ -5,7 +5,7 @@ import root from '@/root'
 import { ONLINE } from './env'
 import { initConfig } from '@/utils/config/init'
 import { initProcess } from './service/process'
-import { initPlugin } from './plugin'
+import { initPlugins } from '@/plugins/init'
 import { printStartLog } from './service/start'
 import { createDB, createRedis } from '@/core/db'
 import { initRender } from '@/adapter/render'
@@ -28,7 +28,7 @@ export * from '@/hooks'
 export { renderTpl } from '@/adapter/render/admin/template'
 export { AdapterBase } from '@/adapter/base/index'
 export { getPlugins } from '@/plugins/list'
-// export { Plugin } from '@/plugin/class'
+export { Plugin } from '@/core/karin/class'
 export { karin as default } from '@/core/karin'
 export { db } from '@/core/db/kv'
 export { redis } from '@/core/db/redis/redis'
@@ -107,7 +107,7 @@ export const start = async () => {
   /**
    * 8. 初始化插件
    */
-  await initPlugin()
+  await initPlugins()
 
   /**
    * 9. 加载适配器

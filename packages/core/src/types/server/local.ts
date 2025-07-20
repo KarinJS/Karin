@@ -1,4 +1,4 @@
-import type { PluginPackageType } from '@/types/plugin'
+import type { PluginPackageType } from '@/plugins/types'
 import type { ComponentConfig } from '../components'
 
 /**

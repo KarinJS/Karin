@@ -3,7 +3,6 @@ import * as manager from '../../plugins/manager'
 import * as register from '../../plugins/register'
 import { createID, createLogger } from './util'
 import type { PluginCache } from './base'
-import type { Handler } from '@/types/plugin'
 import type { OptionsBase } from './options'
 
 export interface HandlerOptions extends OptionsBase {
@@ -22,7 +21,12 @@ export interface HandlerCache extends PluginCache {
     /** 事件key */
     key: string
     /** 实现函数 */
-    fnc: Handler['fnc']
+    fnc: (
+      /** 自定义参数 由调用方传递 */
+      args: { [key: string]: any },
+      /** 调用后将继续执行下一个handler */
+      next: (msg?: string) => void,
+    ) => Promise<unknown> | unknown
     /** 插件选项 */
     options: HandlerOptionsFormat
   }
@@ -31,7 +35,7 @@ export interface HandlerCache extends PluginCache {
     /** 更新key */
     setKey: (key: string) => void
     /** 更新fnc */
-    setFnc: (fnc: Handler['fnc']) => void
+    setFnc: (fnc: HandlerCache['register']['fnc']) => void
     /** 更新options */
     setOptions: (options: HandlerOptions) => void
     /** 卸载当前插件 */
@@ -60,7 +64,7 @@ const formatOptions = (options: HandlerOptions): HandlerOptionsFormat => {
  * @param fnc - 函数实现
  * @param options - 选项
  */
-export const handler = (key: string, fnc: Handler['fnc'], options: HandlerOptions = {}): HandlerCache => {
+export const handler = (key: string, fnc: HandlerCache['register']['fnc'], options: HandlerOptions = {}): HandlerCache => {
   if (!key) throw new Error('[handler]: 缺少参数[key]')
   if (!fnc) throw new Error('[handler]: 缺少参数[fnc]')
 
@@ -121,7 +125,7 @@ export const handler = (key: string, fnc: Handler['fnc'], options: HandlerOption
         setKey: (key: string) => {
           keyCache = key
         },
-        setFnc: (fnc: Handler['fnc']) => {
+        setFnc: (fnc: HandlerCache['register']['fnc']) => {
           fncCache = fnc
         },
         setOptions: (options: HandlerOptions) => {

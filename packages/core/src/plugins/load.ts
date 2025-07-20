@@ -6,6 +6,7 @@ import { loadClass } from '@/core/karin/class'
 import { sort } from '@/plugins/register'
 import { initPluginHmr } from '@/plugins/hmr'
 import { createPluginDir, importModule, PkgData, satisfies } from '@/utils'
+import { PluginCacheKeyPkg } from '@/core/karin/base'
 
 /** 是否初始化 */
 let isInit = false
@@ -77,7 +78,7 @@ export const load = async (pluginName: string) => {
   }))
 
   /** 获取静态资源目录 */
-  getStaticDir(pkg.data)
+  getStaticDir(pkg)
   manager.cache.count.pkg++
 }
 
@@ -102,21 +103,21 @@ export const getFiles = (pkg: PkgData | null) => {
  * @param pkg 插件包
  * @returns 静态资源目录
  */
-const getStaticDir = (pkg: PkgData | null) => {
-  if (!pkg) return
-  if (!pkg.karin) {
+const getStaticDir = (pkg: PluginCacheKeyPkg | null) => {
+  if (!pkg || !pkg.data || !pkg.data.karin) return
+  if (!pkg.data.karin?.static) {
     manager.cache.static.push(path.resolve(pkg.dir, 'resource'))
     manager.cache.static.push(path.resolve(pkg.dir, 'resources'))
     return
   }
 
   /** 静态资源目录处理 */
-  if (typeof pkg.karin?.static === 'string') {
-    return manager.cache.static.push(path.resolve(pkg.dir, pkg.karin.static))
+  if (typeof pkg.data.karin?.static === 'string') {
+    return manager.cache.static.push(path.resolve(pkg.dir, pkg.data.karin.static))
   }
 
-  if (Array.isArray(pkg.karin?.static)) {
-    return manager.cache.static.push(...pkg.karin.static?.map(file => path.resolve(pkg.dir, file)))
+  if (Array.isArray(pkg.data.karin?.static)) {
+    return manager.cache.static.push(...pkg.data.karin.static?.map(file => path.resolve(pkg.dir, file)))
   }
 }
 

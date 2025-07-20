@@ -1,9 +1,9 @@
 import path from 'node:path'
-import { getPluginMarket } from '@/plugins/market'
-import { getPlugins } from '@/plugins/list'
 import { redis } from '@/core/db'
+import { cache } from '@/plugins/manager'
+import { getPlugins } from '@/plugins/list'
 import { getNpmLatestVersion } from '@/utils/npm'
-import { KarinPluginType } from '@/types/plugin/market'
+import { getPluginMarket, KarinPluginType } from '@/plugins/market'
 import { getWebConfig, defaultWebConfig } from '../config/webConfig'
 import { getLocalCommitHash, getRemoteCommitHash } from '@/utils/git'
 import { createSuccessResponse, createServerErrorResponse } from '@/server/utils/response'
@@ -15,9 +15,28 @@ import {
 } from '@/env'
 
 import type { RequestHandler } from 'express'
-import type { LoadedPluginCacheList, PluginAdminListResponse, FrontendInstalledPluginListResponse } from '@/types'
-import { PluginCacheKeyPkg } from '@/core/karin/base'
-import { cache } from '@/plugins/manager'
+import type { PluginAdminListResponse, FrontendInstalledPluginListResponse } from '@/types'
+import type { PluginCacheKeyPkg } from '@/core/karin/base'
+
+/**
+ * 已加载插件缓存信息列表
+ */
+export interface LoadedPluginCacheList {
+  /** 插件名称 */
+  name: string
+  /** 插件文件列表 */
+  files: {
+    /** 文件名称 */
+    fileName: string
+    /** 该文件下所有的command函数名称 */
+    command: {
+      /** 此函数的插件名称 */
+      pluginName: string
+      /** 此函数的导出名称 */
+      method: string
+    }[]
+  }[]
+}
 
 const git = async (plugin: PluginCacheKeyPkg): Promise<PluginAdminListResponse> => {
   try {
