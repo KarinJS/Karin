@@ -401,8 +401,8 @@ export const getFileCache = (dir: string): PluginCacheKeyFile => {
 
 /**
  * @public
- * 传入一个app文件路径 返回包名
- * @param appPath app文件路径
+ * 传入一个pnpm包路径 返回包名
+ * @param appPath pnpm包路径
  * @returns 包名
  */
 export const getPackageName = (appPath: string): string | null => {
