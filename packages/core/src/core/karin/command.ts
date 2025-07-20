@@ -1,10 +1,11 @@
 import { system, types } from '@/utils'
-import { plguinManager } from '../load'
+import * as manager from '../../plugins/manager'
+import * as register from '../../plugins/register'
 import { formatReg, createID, createLogger } from './util'
 
+import type { PluginCache } from './base'
 import type { OptionsBase } from './options'
 import type { Elements, MessageEventMap } from '@/types'
-import type { PluginCache, PluginCacheKeyApp } from './base'
 import type { AddRuleItemType, FormatOptions as ClassFormatOptions, Plugin, RuleItemBase } from './class'
 
 /**
@@ -73,17 +74,9 @@ type FormatOptions<T extends keyof MessageEventMap> = Required<Omit<
   'notAdapter' | 'perm' | 'rank'
 >>
 
-interface KeyCommandApp extends PluginCacheKeyApp {
-  get type (): 'command'
-}
-
-interface KeyClassApp extends PluginCacheKeyApp {
-  get type (): 'class'
-}
-
 /** command 插件缓存对象 */
 export interface CommandPluginCache extends PluginCache {
-  app: KeyCommandApp
+  type: 'command'
   /** 注册的信息 */
   register: {
     /** 插件注册的正则 */
@@ -108,19 +101,21 @@ export interface CommandPluginCache extends PluginCache {
 
 /** class 插件缓存对象 */
 export interface ClassPluginCache extends PluginCache {
-  app: KeyClassApp
+  type: 'class'
   /** 注册的信息 */
   register: {
     /** 插件注册的正则 */
     reg: RegExp
     /** 回调函数 */
     fnc: MessageCallback<keyof MessageEventMap>
-    /** 创建类选项 */
-    options: ClassFormatOptions
+    /** 整个类选项 */
+    get _options (): ClassFormatOptions
     /** 当前rule规则 */
-    ruleOptions: ClassFormatOptions['rule'][number]
+    get options (): ClassFormatOptions['rule'][number]
     /** new之后的class */
-    instance: Plugin
+    get instance (): Plugin
+    /** 注册的插件ID组 */
+    get ids (): string[]
   }
   /** 插件控制接口 */
   control: {
@@ -204,7 +199,7 @@ export const command: Callbacks = <T extends keyof MessageEventMap = keyof Messa
   options: Options<T> | StringOptions<T> = {}
 ): CommandCache => {
   const caller = system.getCaller(import.meta.url)
-  const pkgName = plguinManager.getPackageName(caller)
+  const pkgName = manager.getPackageName(caller)
 
   const id = createID()
   const type = 'command'
@@ -214,22 +209,22 @@ export const command: Callbacks = <T extends keyof MessageEventMap = keyof Messa
   let fncCache = Object.freeze(formatFnc<T>(second, options) as MessageCallback<keyof MessageEventMap>)
 
   const result: CommandCache = {
+    get type (): typeof type {
+      return type
+    },
     get pkg () {
       if (!pkgName) {
         throw new Error(`请在符合标准规范的文件中使用此方法: ${caller}`)
       }
-      return plguinManager.getPluginPackageDetail(pkgName)!
+      return manager.getPluginPackageDetail(pkgName)!
     },
     get file () {
-      return plguinManager.getFileCache(caller)
+      return manager.getFileCache(caller)
     },
     get app () {
       return {
         get id () {
           return id
-        },
-        get type (): 'command' {
-          return type
         },
         get log () {
           return logCache
@@ -268,7 +263,7 @@ export const command: Callbacks = <T extends keyof MessageEventMap = keyof Messa
           fncCache = Object.freeze(formatFnc<T>(second, options as Options<T>) as MessageCallback<keyof MessageEventMap>)
         },
         remove: () => {
-          plguinManager.unregisterCommand(result.app.id)
+          register.unregisterCommand(result.app.id)
         },
       }
     },
@@ -276,8 +271,7 @@ export const command: Callbacks = <T extends keyof MessageEventMap = keyof Messa
 
   /** 对部分属性进行冻结 */
   Object.freeze(result.app.id)
-  Object.freeze(result.app.type)
-  plguinManager.registerCommand(result)
+  register.registerCommand(result)
 
   return result
 }

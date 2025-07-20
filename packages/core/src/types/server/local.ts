@@ -1,3 +1,4 @@
+import type { PluginPackageType } from '@/types/plugin'
 import type { ComponentConfig } from '../components'
 
 /**
@@ -37,7 +38,7 @@ export interface LocalApiResponse {
   /** 是否存在配置文件 无需配置 */
   hasConfig?: boolean
   /** 插件类型 无需配置 */
-  type?: 'git' | 'npm' | 'app'
+  type?: PluginPackageType
   /** 插件名称 前端优先展示 */
   name?: string
   /** 插件版本 可不填 会自动读取package.json中的version */
@@ -55,7 +56,7 @@ export interface GetConfigRequest {
   /** 插件名称 */
   name: string
   /** 插件类型 */
-  type: 'git' | 'npm' | 'app'
+  type: PluginPackageType
 }
 
 /** 获取配置响应 */

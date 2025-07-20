@@ -3,9 +3,11 @@ import utils from '../../utils'
 import { emptyEmit } from '@/hooks/empty'
 import { listeners } from '@/core/internal'
 import { eventCallEmit } from '@/hooks/eventCall'
-import { plguinManager } from '@/core/load'
+import * as manager from '@/plugins/manager'
 import type { getFriendCfg, getGroupCfg } from '@/utils/config'
 import type { DirectMessage, FriendMessage, GroupMessage, GroupTempMessage, GuildMessage } from '@/event/types'
+import type { FilterCallback } from '@/event/handler/message/common'
+import { CommandCache } from '@/core/karin/command'
 
 /**
  * @description 单人场景消息事件分发
@@ -16,7 +18,7 @@ import type { DirectMessage, FriendMessage, GroupMessage, GroupTempMessage, Guil
 export const dispatchPrivateMessageEvent = async (
   ctx: FriendMessage | DirectMessage,
   config: ReturnType<typeof getFriendCfg>,
-  filter: (plugin: typeof plguinManager.command[number]) => boolean
+  filter: FilterCallback
 ) => {
   await handleMessage(
     ctx,
@@ -37,7 +39,7 @@ export const dispatchGroupMessageEvent = async (
   ctx: GroupMessage | GuildMessage | GroupTempMessage,
   config: ReturnType<typeof getGroupCfg>,
   isPrint: boolean,
-  filter: (plugin: typeof plguinManager.command[number]) => boolean
+  filter: FilterCallback
 ) => {
   await handleMessage(
     ctx,
@@ -57,10 +59,10 @@ export const dispatchGroupMessageEvent = async (
 const handleMessage = async <T extends FriendMessage | DirectMessage | GroupMessage | GuildMessage | GroupTempMessage> (
   ctx: T,
   config: ReturnType<typeof getFriendCfg> | ReturnType<typeof getGroupCfg>,
-  filter: (plugin: typeof plguinManager.command[number]) => boolean,
-  createPrint: (plugin: typeof plguinManager.command[number]) => (text: string) => void
+  filter: FilterCallback,
+  createPrint: (plugin: CommandCache) => (text: string) => void
 ) => {
-  for (const plugin of plguinManager.command) {
+  for (const plugin of manager.cache.command) {
     if (!filter(plugin)) continue
     const print = createPrint(plugin)
     const result = await callback(ctx, plugin, config, print)
@@ -83,7 +85,7 @@ const handleMessage = async <T extends FriendMessage | DirectMessage | GroupMess
  */
 const callback = async (
   ctx: FriendMessage | DirectMessage | GroupMessage | GuildMessage | GroupTempMessage,
-  plugin: typeof plguinManager.command[number],
+  plugin: CommandCache,
   config: ReturnType<typeof getFriendCfg> | ReturnType<typeof getGroupCfg>,
   print: (text: string) => void
 ) => {

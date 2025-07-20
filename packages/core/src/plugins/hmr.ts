@@ -1,10 +1,12 @@
 import path from 'node:path'
 import chokidar from 'chokidar'
-import { cache } from '../system/cache'
-import { pkgRemoveModule } from './uninstall'
+import { importModule } from '@/utils'
+import { load } from '@/plugins/load'
 import { getModuleType, isDev } from '@/env'
 import { formatPath } from '@/utils/fs/path'
-import { pkgCache, findPkgByFile, pkgLoadModule, pkgSort } from './load'
+import { loadClass } from '@/core/karin/class'
+import { cache, getPackageName } from '@/plugins/manager'
+import { sort, unregisterApp } from '@/plugins/register'
 
 import type { FSWatcher } from 'chokidar'
 
@@ -16,17 +18,16 @@ export let watcher: FSWatcher
 /**
  * 初始化插件热重载
  */
-export const initPluginHmr = async (
-) => {
+export const initPluginHmr = async () => {
   /**
    * 监听的目录
    * @description 这里的目录全部都是apps目录
    */
   const watchDirs = new Set<string>()
 
-  Object.values(cache.index).forEach((pkg) => {
-    if (!isDev() && pkg.type !== 'app') return
-    pkg.allApps.forEach(dir => watchDirs.add(dir))
+  Array.from(cache.pluginsDetails.values()).forEach((pkg) => {
+    if (!isDev() && pkg.type !== 'apps') return
+    pkg.appsDirs.forEach(dir => watchDirs.add(dir))
   })
 
   watcher = chokidar.watch(Array.from(watchDirs), {
@@ -60,34 +61,53 @@ const handleFileChange = async (file: string, action: 'add' | 'change' | 'unlink
   const ext = path.extname(file)
   const exts = getModuleType()
   if (!exts.includes(ext)) return
-
-  const absPath = formatPath(file)
-  const pkg = findPkgByFile(absPath)
-  if (!pkg) return
+  file = formatPath(file)
+  const pkgName = getPackageName(file)
+  /** 前缀 */
+  const prefix = `[hmr][${pkgName}]`
 
   /** 相对路径 */
   const relativePath = path.relative(process.cwd(), file).replace(/\\/g, '/')
-  logger.debug(`[hmr][${pkg.name}] 文件${action}: ${relativePath}`)
+  logger.debug(`${prefix} 文件${action}: ${relativePath}`)
 
   if (action === 'unlink') {
-    pkgRemoveModule(absPath)
-    logger.info(`[hmr][${pkg.name}] 已卸载: ${path.basename(file)}`)
+    unregisterApp(file)
+    logger.info(`${prefix} 卸载成功: ${path.basename(file)}`)
     return
   }
 
   if (action === 'change') {
-    pkgRemoveModule(absPath)
+    unregisterApp(file)
   }
 
   try {
-    const result = await pkgLoadModule(pkg.name, absPath, true)
-    pkgCache(result, pkg, absPath)
-    pkgSort()
-
+    await reloadApp(file)
     const actionText = action === 'add' ? '新增插件' : '重载完成'
-    logger.info(`[hmr][${pkg.name}] ${actionText}: ${path.basename(file)}`)
+    logger.info(`${prefix} ${actionText}: ${path.basename(file)}`)
   } catch (error) {
-    logger.error(`[hmr][${pkg.name}] 加载失败:`)
+    logger.error(`${prefix} 加载失败:`)
     logger.error(error)
   }
+}
+
+/**
+ * 热加载一个App文件
+ * @param file 文件路径
+ */
+export const reloadApp = async (file: string) => {
+  const { status, data } = await importModule(file)
+  if (status) {
+    const pkgName = getPackageName(file) || 'null'
+    loadClass(pkgName, file, data)
+  }
+
+  sort()
+}
+
+/**
+ * 热加载一个插件包
+ * @param pkgName 插件包名称
+ */
+export const reloadPackage = async (pkgName: string) => {
+  await load(pkgName)
 }

@@ -1,7 +1,9 @@
 import { system, types } from '@/utils'
-import { plguinManager } from '../load'
+import * as manager from '../../plugins/manager'
+import * as register from '../../plugins/register'
 import { createID, createLogger } from './util'
-import { PluginCache, PluginCacheKeyApp } from './base'
+
+import type { PluginCache } from './base'
 import type { Button } from '@/types/plugin'
 import type { OptionsBase } from './options'
 
@@ -14,13 +16,9 @@ export interface ButtonOptions extends OptionsBase {
  */
 type ButtonOptionsFormat = Required<Omit<ButtonOptions, 'rank' | 'notAdapter' | 'perm' | 'permission'>>
 
-interface KeyApp extends PluginCacheKeyApp {
-  get type (): 'button'
-}
-
 /** button 插件缓存对象 */
 export interface ButtonCache extends PluginCache {
-  app: KeyApp
+  type: 'button'
   /** 注册的信息 */
   register: {
     /** 正则表达式 */
@@ -82,7 +80,7 @@ export const button = (
   if (!fnc) throw new Error('[button]: 缺少参数[fnc]')
 
   const caller = system.getCaller(import.meta.url)
-  const pkgName = plguinManager.getPackageName(caller)
+  const pkgName = manager.getPackageName(caller)
 
   const id = createID()
   const type = 'button'
@@ -92,14 +90,17 @@ export const button = (
   const logCache = Object.freeze(createLogger(options.log, true))
 
   const cache: ButtonCache = {
+    get type (): typeof type {
+      return type
+    },
     get pkg () {
       if (!pkgName) {
         throw new Error(`请在符合标准规范的文件中使用此方法: ${caller}`)
       }
-      return plguinManager.getPluginPackageDetail(pkgName)!
+      return manager.getPluginPackageDetail(pkgName)!
     },
     get file () {
-      return plguinManager.getFileCache(caller)
+      return manager.getFileCache(caller)
     },
     get app () {
       return {
@@ -142,12 +143,12 @@ export const button = (
           optCache = formatOptions(options)
         },
         remove: () => {
-          plguinManager.unregisterButton(id)
+          register.unregisterButton(id)
         },
       }
     },
   }
 
-  plguinManager.registerButton(cache)
+  register.registerButton(cache)
   return cache
 }

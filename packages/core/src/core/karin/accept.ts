@@ -1,8 +1,10 @@
 import { system, types } from '@/utils'
-import { plguinManager } from '../load'
+import * as manager from '../../plugins/manager'
+import * as register from '../../plugins/register'
 import { createID, createLogger } from './util'
-import { PluginCache, PluginCacheKeyApp } from './base'
+
 import type { FNC } from './util'
+import type { PluginCache } from './base'
 import type { OptionsBase } from './options'
 import type { NoticeAndRequest } from '@/types/plugin'
 
@@ -19,13 +21,9 @@ type AcceptOptionsFormat = Required<Omit<OptionsBase, 'perm' | 'permission' | 'n
   event: keyof NoticeAndRequest
 }
 
-interface KeyApp extends PluginCacheKeyApp {
-  get type (): 'accept'
-}
-
 /** accept 插件缓存对象 */
 export interface AcceptCache extends PluginCache {
-  app: KeyApp
+  type: 'accept'
   /** 注册的信息 */
   register: {
     /** 事件类型 */
@@ -75,7 +73,7 @@ export const accept = <T extends keyof NoticeAndRequest> (
   options: AcceptOptions<T> = {}
 ): AcceptCache => {
   const caller = system.getCaller(import.meta.url)
-  const pkgName = plguinManager.getPackageName(caller)
+  const pkgName = manager.getPackageName(caller)
 
   const id = createID()
   const type = 'accept'
@@ -85,14 +83,17 @@ export const accept = <T extends keyof NoticeAndRequest> (
   const logCache = Object.freeze(createLogger(options.log, true))
 
   const cache: AcceptCache = {
+    get type (): typeof type {
+      return type
+    },
     get pkg () {
       if (!pkgName) {
         throw new Error(`请在符合标准规范的文件中使用此方法: ${caller}`)
       }
-      return plguinManager.getPluginPackageDetail(pkgName)!
+      return manager.getPluginPackageDetail(pkgName)!
     },
     get file () {
-      return plguinManager.getFileCache(caller)
+      return manager.getFileCache(caller)
     },
     get app () {
       return {
@@ -135,12 +136,12 @@ export const accept = <T extends keyof NoticeAndRequest> (
           optCache = formatOptions(options)
         },
         remove: () => {
-          plguinManager.unregisterAccept(id)
+          register.unregisterAccept(id)
         },
       }
     },
   }
 
-  plguinManager.registerAccept(cache)
+  register.registerAccept(cache)
   return cache
 }

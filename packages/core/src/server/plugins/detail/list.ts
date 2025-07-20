@@ -1,6 +1,6 @@
 import path from 'node:path'
-import { cache, getPluginMarket } from '@/plugin/system'
-import { getPlugins } from '@/plugin/system/list'
+import { getPluginMarket } from '@/plugins/market'
+import { getPlugins } from '@/plugins/list'
 import { redis } from '@/core/db'
 import { getNpmLatestVersion } from '@/utils/npm'
 import { KarinPluginType } from '@/types/plugin/market'
@@ -15,9 +15,11 @@ import {
 } from '@/env'
 
 import type { RequestHandler } from 'express'
-import type { LoadedPluginCacheList, PluginAdminListResponse, PkgInfo, FrontendInstalledPluginListResponse } from '@/types'
+import type { LoadedPluginCacheList, PluginAdminListResponse, FrontendInstalledPluginListResponse } from '@/types'
+import { PluginCacheKeyPkg } from '@/core/karin/base'
+import { cache } from '@/plugins/manager'
 
-const git = async (plugin: PkgInfo): Promise<PluginAdminListResponse> => {
+const git = async (plugin: PluginCacheKeyPkg): Promise<PluginAdminListResponse> => {
   try {
     /** 本地最新提交哈希 */
     const version = await getLocalCommitHash(plugin.dir, { short: true })
@@ -25,7 +27,7 @@ const git = async (plugin: PkgInfo): Promise<PluginAdminListResponse> => {
     const latestHash = await getRemoteCommitHash(plugin.dir, { short: true })
     return {
       type: 'git',
-      id: plugin.pkgData.name,
+      id: plugin.name,
       name: plugin.name,
       version,
       latestVersion: latestHash,
@@ -35,7 +37,7 @@ const git = async (plugin: PkgInfo): Promise<PluginAdminListResponse> => {
     logger.debug(`获取插件${plugin.name}提交哈希失败`, { cache: error })
     return {
       type: 'git',
-      id: plugin.pkgData.name,
+      id: plugin.name,
       name: plugin.name,
       version: '0.0.0',
       latestVersion: '0.0.0',
@@ -44,18 +46,18 @@ const git = async (plugin: PkgInfo): Promise<PluginAdminListResponse> => {
   }
 }
 
-const npm = async (plugin: PkgInfo): Promise<PluginAdminListResponse> => {
+const npm = async (plugin: PluginCacheKeyPkg): Promise<PluginAdminListResponse> => {
   return {
     type: 'npm',
-    id: plugin.pkgData.name,
+    id: plugin.name,
     name: plugin.name,
-    version: plugin.pkgData.version,
-    latestVersion: await getNpmLatestVersion(plugin.pkgData.name) || '0.0.0',
+    version: plugin.data?.version || '0.0.0',
+    latestVersion: await getNpmLatestVersion(plugin.name) || '0.0.0',
     webConfig: defaultWebConfig(),
   }
 }
 
-const app = async (plugin: PkgInfo): Promise<PluginAdminListResponse[]> => {
+const app = async (plugin: PluginCacheKeyPkg): Promise<PluginAdminListResponse[]> => {
   return plugin.apps.map(v => {
     return {
       type: 'app',
@@ -91,7 +93,7 @@ const getPluginLocalList = async (isRefresh = false): Promise<PluginAdminListRes
     if (plugin.type === 'npm') {
       return list.push(await npm(plugin))
     }
-    if (plugin.type === 'app') {
+    if (plugin.type === 'apps') {
       const result = await app(plugin)
       return list.push(...result)
     }
@@ -148,8 +150,8 @@ export const getLoadedCommandPluginCacheList: RequestHandler = async (_, res) =>
       }
 
       map[key][plugin.file.basename].push({
-        pluginName: plugin.file.name,
-        method: plugin.file.method,
+        pluginName: plugin.file.basename,
+        method: plugin.app.name,
       })
     })
 

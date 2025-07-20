@@ -3,6 +3,8 @@
  */
 // import type { KarinPluginType } from '@karinjs/plugins-list'
 
+import type { PluginPackageType } from '@/core/karin/base'
+
 /**
  * 插件基础类型
  */
@@ -15,7 +17,7 @@ export interface KarinPluginBase {
    * - git: git 插件
    * - app: 单应用插件
    */
-  type: 'npm' | 'git' | 'app'
+  type: PluginPackageType
   /** 插件描述 限制 50 长度 */
   description: string
   /** 插件提交到仓库时间 */
@@ -69,7 +71,7 @@ export interface KarinGitPlugin extends KarinPluginBase {
  * 单应用插件类型
  */
 export interface KarinAppPlugin extends KarinPluginBase {
-  type: 'app'
+  type: 'apps'
   /** app文件直链 */
   files: {
     /** app插件名称 */

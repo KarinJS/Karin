@@ -2,10 +2,11 @@ import utils from '..'
 import { emptyEmit } from '@/hooks/empty'
 import { listeners } from '@/core/internal'
 import { eventCallEmit } from '@/hooks/eventCall'
-import { plguinManager } from '@/core/load'
+import * as manager from '@/plugins/manager'
 import { getFriendCfg, getGroupCfg } from '@/utils/config'
 
 import type { Notice, Request } from '@/types/event'
+import type { AcceptCache } from '@/core/karin/accept'
 
 /**
  * @description 通知、请求事件分发
@@ -16,7 +17,7 @@ const _dispatchNoticeEvent = async (
   ctx: Notice | Request,
   config: ReturnType<typeof getFriendCfg> | ReturnType<typeof getGroupCfg>
 ) => {
-  for (const plugin of plguinManager.accept) {
+  for (const plugin of manager.cache.accept) {
     if (
       plugin.register.event !== ctx.event &&
       plugin.register.event !== `${ctx.event}.${ctx.subEvent}`
@@ -56,7 +57,7 @@ const _dispatchNoticeEvent = async (
  */
 const _callback = async (
   ctx: Notice | Request,
-  plugin: typeof plguinManager.accept[number],
+  plugin: AcceptCache,
   config: ReturnType<typeof getFriendCfg> | ReturnType<typeof getGroupCfg>
 ) => {
   const { adapter, dsbAdapter } = plugin.register.options

@@ -4,10 +4,9 @@ import { hooksMessageEmit } from '@/hooks/message'
 import { config as cfg, getGroupCfg, getGuildCfg, getDirectCfg, getFriendCfg } from '@/utils/config'
 
 import type { GroupMessage, GroupTempMessage, GuildMessage, DirectMessage, FriendMessage } from '../../types/message'
-import type { CommandCache } from '@/core/karin/command'
-import type { ClassCache } from '@/core/karin/class'
+import type { ClassPluginCache, CommandPluginCache } from '@/core/karin/command'
 
-export type FilterCallback = (plugin: CommandCache | ClassCache) => boolean
+export type FilterCallback = (plugin: CommandPluginCache | ClassPluginCache) => boolean
 
 /**
  * @description 通用消息处理辅助函数参数类型

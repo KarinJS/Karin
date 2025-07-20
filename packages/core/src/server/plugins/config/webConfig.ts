@@ -2,8 +2,9 @@ import fs from 'fs'
 import path from 'path'
 import { isDev } from '@/env'
 import { imports } from '@/utils'
-import { getPlugins } from '@/plugin/system/list'
-import type { PkgInfo, PluginAdminListResponse } from '@/types'
+import { getPlugins } from '@/plugins/list'
+import type { PluginAdminListResponse } from '@/types'
+import { PluginCacheKeyPkg } from '@/core/karin/base'
 
 /**
  * 传入插件名称 获取插件的web配置
@@ -43,11 +44,11 @@ export const defaultWebConfig = (
 /**
  * 获取web.config文件绝对路径
  */
-const getWebConfigPath = (plugin: PkgInfo) => {
+const getWebConfigPath = (plugin: PluginCacheKeyPkg) => {
   const dev = isDev()
-  const pkg = plugin.pkgData
+  const pkg = plugin.data
 
-  if (!pkg.karin?.web) return null
+  if (!pkg?.karin?.web) return null
 
   if (dev) {
     if (!pkg.karin['ts-web']) return null

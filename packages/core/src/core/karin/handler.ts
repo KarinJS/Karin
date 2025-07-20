@@ -1,7 +1,8 @@
 import { system, types } from '@/utils'
-import { plguinManager } from '../load'
+import * as manager from '../../plugins/manager'
+import * as register from '../../plugins/register'
 import { createID, createLogger } from './util'
-import { PluginCache, PluginCacheKeyApp } from './base'
+import type { PluginCache } from './base'
 import type { Handler } from '@/types/plugin'
 import type { OptionsBase } from './options'
 
@@ -14,13 +15,8 @@ export interface HandlerOptions extends OptionsBase {
  */
 type HandlerOptionsFormat = Required<Omit<HandlerOptions, 'rank' | 'notAdapter' | 'perm' | 'permission'>>
 
-interface KeyApp extends PluginCacheKeyApp {
-  get type (): 'handler'
-}
-
 /** handler 插件缓存对象 */
 export interface HandlerCache extends PluginCache {
-  app: KeyApp
   /** 注册的信息 */
   register: {
     /** 事件key */
@@ -69,7 +65,7 @@ export const handler = (key: string, fnc: Handler['fnc'], options: HandlerOption
   if (!fnc) throw new Error('[handler]: 缺少参数[fnc]')
 
   const caller = system.getCaller(import.meta.url)
-  const pkgName = plguinManager.getPackageName(caller)
+  const pkgName = manager.getPackageName(caller)
 
   const id = createID()
   const type = 'handler'
@@ -79,14 +75,17 @@ export const handler = (key: string, fnc: Handler['fnc'], options: HandlerOption
   const logCache = Object.freeze(createLogger(options.log, true))
 
   const cache: HandlerCache = {
+    get type (): typeof type {
+      return type
+    },
     get pkg () {
       if (!pkgName) {
         throw new Error(`请在符合标准规范的文件中使用此方法: ${caller}`)
       }
-      return plguinManager.getPluginPackageDetail(pkgName)!
+      return manager.getPluginPackageDetail(pkgName)!
     },
     get file () {
-      return plguinManager.getFileCache(caller)
+      return manager.getFileCache(caller)
     },
     get app () {
       return {
@@ -129,12 +128,12 @@ export const handler = (key: string, fnc: Handler['fnc'], options: HandlerOption
           optCache = formatOptions(options)
         },
         remove: () => {
-          plguinManager.unregisterHandler(id)
+          register.unregisterHandler(id)
         },
       }
     },
   }
 
-  plguinManager.registerHandler(cache)
+  register.registerHandler(cache)
   return cache
 }

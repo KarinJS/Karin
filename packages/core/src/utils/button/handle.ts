@@ -1,4 +1,4 @@
-import { cache } from '@/plugin/system/cache'
+import { cache } from '@/plugins/manager'
 import type { Event } from '@/types/event'
 import type { ButtonElement, KeyboardElement } from '@/types/segment'
 
@@ -12,13 +12,13 @@ import type { ButtonElement, KeyboardElement } from '@/types/segment'
 export const buttonHandle = async (reg: string, args?: { e?: Event, [key: string]: any }) => {
   const button: Array<ButtonElement | KeyboardElement> = []
   for (const info of cache.button) {
-    const regExp = info.reg
+    const regExp = info.register.reg
     if (regExp.test(reg)) {
       try {
         let isnext = false
         /** 如果调用则继续执行 循环下一个按钮插件处理 */
         const next = () => { isnext = true }
-        const list = await info.fnc(next, args)
+        const list = await info.register.fnc(next, args)
 
         if (list) {
           if (Array.isArray(list)) {

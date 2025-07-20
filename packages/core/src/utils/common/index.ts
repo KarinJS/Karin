@@ -3,7 +3,7 @@ import path from 'node:path'
 import { tempPath } from '@/root'
 import { YamlEditor } from '@/utils/fs/yaml'
 import { ffprobe, ffmpeg } from '@/utils/system/ffmpeg'
-import { getPlugins as GetPlugin } from '@/plugin/system/list'
+import { getPlugins as GetPlugin } from '@/plugins/list'
 import { formatTime as FormatTime } from '@/utils/system/time'
 import Axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
 

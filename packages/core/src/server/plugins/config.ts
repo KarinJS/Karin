@@ -6,11 +6,10 @@ import { pathToFileURL } from 'node:url'
 import { requireFileSync } from '@/utils/fs/require'
 import { createServerErrorResponse, createSuccessResponse } from '@/server/utils/response'
 
-import type { Apps } from '@/types/plugin'
 import type { RequestHandler } from 'express'
 import type { PkgData } from '@/utils/fs/pkg'
 import type { DefineConfig, GetConfigResponse } from '@/types/server/local'
-import { getPlugins } from '@/plugin/system/list'
+import { getPlugins } from '@/plugins/list'
 
 /**
  * 检查文件是否存在

@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { getPlugins } from '@/plugin/system/list'
+import { getPlugins } from '@/plugins/list'
 import { karinPathPlugins } from '@/root'
 import { taskSystem as task } from '@/service/task'
 import { handleReturn, spawnProcess } from './tool'

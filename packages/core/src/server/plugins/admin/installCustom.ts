@@ -6,10 +6,10 @@ import { karinPathPlugins } from '@/root'
 import { mkdirSync } from '@/utils/fs/fsSync'
 import { downloadFile } from '@/utils/fs/file'
 import { taskSystem as task } from '@/service/task'
-import { pkgHotReload } from '@/plugin/admin/load'
 
 import type { Response } from 'express'
 import type { PluginAdminCustomInstall, TaskEntity } from '@/types/task'
+import { reloadPackage } from '@/plugins/hmr'
 
 /**
  * 自定义安装
@@ -89,7 +89,7 @@ const installNpm = async (
         emitLog('安装完成，尝试加载插件')
       }
 
-      await pkgHotReload('npm', data.target)
+      await reloadPackage(data.target)
       return true
     }
   )
@@ -133,7 +133,7 @@ const installGit = async (
         `./plugins/${pkgName}`,
       ]
       await spawnProcess('git', args, {}, emitLog)
-      await pkgHotReload('git', pkgName)
+      await reloadPackage(pkgName)
       return true
     }
   )

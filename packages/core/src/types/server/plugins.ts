@@ -1,4 +1,4 @@
-import type { KarinPluginAppsType } from '../plugin'
+import type { PluginPackageType } from '@/core/karin/base'
 import type { KarinPluginType } from '@/types/plugin/market'
 
 /**
@@ -88,7 +88,7 @@ export interface PluginAdminListResponse {
   /** 插件名称 `文件夹根目录名称` */
   name: string
   /** 插件类型 */
-  type: KarinPluginAppsType
+  type: Omit<PluginPackageType, 'apps'> | 'app'
   /** 插件版本 App类型为空 */
   version: string
   /**
@@ -119,7 +119,7 @@ export interface FrontendInstalledPluginListResponse {
   /** 插件名称 */
   name: string
   /** 插件类型 */
-  type: KarinPluginAppsType
+  type: PluginPackageType
   /** 插件是否存在插件市场中 */
   isMarketPlugin: boolean
   /** 插件描述 */
@@ -170,7 +170,7 @@ export interface PluginMarketLocalBase {
    * 在本地的插件类型
    * @description 此项一般用于追踪插件配置 比如`npm`插件，在开发环境是`git`类型
    */
-  type: KarinPluginAppsType
+  type: PluginPackageType
   /**
    * 插件当前版本
    * @description 如果是`app`类型 则返回空字符串

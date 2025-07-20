@@ -1,12 +1,10 @@
 import { PkgData } from '@/utils/fs/pkg'
 import type { AdapterProtocol } from '../adapter'
+import type { PluginPackageType } from '@/core/karin/base'
 
-/** 插件类型 */
-export type Apps = 'app' | 'git' | 'npm'
-/** karin插件类型 */
-export type KarinPluginAppsType = Apps
+export { PluginPackageType }
 /** 获取插件的方式 */
-export type GetPluginType = 'app' | 'git' | 'npm' | 'all'
+export type GetPluginType = PluginPackageType | 'all'
 
 /**
  * 插件方法类型
@@ -17,68 +15,6 @@ export type GetPluginType = 'app' | 'git' | 'npm' | 'all'
  * - `handler` 处理器
  */
 export type PluginFncTypes = 'command' | 'accept' | 'task' | 'button' | 'handler'
-
-/** 插件包基本属性 */
-export interface PkgInfo {
-  /**
-   * 插件包唯一标识
-   */
-  id: number
-  /**
-   * 插件包类型
-   * - `app`: 单app
-   * - `git`: git仓库
-   * - `npm`: npm包
-   */
-  type: Apps
-  /**
-   * 插件包名称
-   * - `app`: `karin-plugin-example`
-   * - `git`: `karin-plugin-memes`
-   * - `npm`: `@karinjs/adapter-qqbot`
-   */
-  name: string
-  /**
-   * 插件根目录
-   * - `app`: `/root/karin/plugins/karin-plugin-example`
-   * - `git`: `/root/karin/plugins/karin-plugin-memes`
-   * - `npm`: `/root/karin/node_modules/@karinjs/adapter-qqbot`
-   */
-  dir: string
-  /**
-   * apps绝对路径列表
-   */
-  apps: string[]
-  /**
-   * 所有可能包含apps的目录列表
-   */
-  allApps: string[]
-  /**
-  * 获取`package.json`绝对路径
-  */
-  get pkgPath (): string
-  /**
-   * 读取`package.json`文件
-   */
-  get pkgData (): PkgData
-}
-
-/** 获取本地插件Api请求参数 */
-export type GetPluginLocalOptions<T extends boolean, R extends boolean> = {
-  /** 是否获取详细信息 */
-  info?: T,
-  /** 是否强制获取 忽略缓存 */
-  force?: boolean,
-  /** 在获取全部插件时多返回一个类型 */
-  returnType?: R
-}
-
-/** 获取插件Apii返回 */
-export type GetPluginReturn<T extends boolean> = T extends true ? PkgInfo[] : string[]
-/** 获取本地插件Api返回 */
-export type GetPluginLocalReturn<T extends boolean, R extends boolean> = T extends true
-  ? PkgInfo[]
-  : R extends true ? { name: string, type: Apps }[] : string[]
 
 /** 单个方法基本属性 */
 export interface PluginFile<T extends PluginFncTypes> {

@@ -1,7 +1,8 @@
 import { system, types } from '@/utils'
-import { plguinManager } from '../load'
+import * as manager from '../../plugins/manager'
+import * as register from '../../plugins/register'
 import { createID, createLogger } from './util'
-import { PluginCache, PluginCacheKeyApp } from './base'
+import type { PluginCache } from './base'
 import type { OptionsBase } from './options'
 
 export interface TaskOptions extends OptionsBase {
@@ -13,13 +14,8 @@ export interface TaskOptions extends OptionsBase {
  */
 type TaskOptionsFormat = Required<Omit<TaskOptions, 'rank' | 'notAdapter' | 'perm' | 'permission'>>
 
-interface KeyApp extends PluginCacheKeyApp {
-  get type (): 'task'
-}
-
 /** task 插件缓存对象 */
 export interface TaskCache extends PluginCache {
-  app: KeyApp
   /** 注册的信息 */
   register: {
     /** 任务名称 */
@@ -81,7 +77,7 @@ export const task = (
   if (!fnc || typeof fnc !== 'function') throw new Error('[task]: 缺少参数或类型错误[fnc]')
 
   const caller = system.getCaller(import.meta.url)
-  const pkgName = plguinManager.getPackageName(caller)
+  const pkgName = manager.getPackageName(caller)
 
   const id = createID()
   const type = 'task'
@@ -93,22 +89,22 @@ export const task = (
   let scheduleCache: any
 
   const cache: TaskCache = {
+    get type (): typeof type {
+      return type
+    },
     get pkg () {
       if (!pkgName) {
         throw new Error(`请在符合标准规范的文件中使用此方法: ${caller}`)
       }
-      return plguinManager.getPluginPackageDetail(pkgName)!
+      return manager.getPluginPackageDetail(pkgName)!
     },
     get file () {
-      return plguinManager.getFileCache(caller)
+      return manager.getFileCache(caller)
     },
     get app () {
       return {
         get id () {
           return id
-        },
-        get type (): 'task' {
-          return type
         },
         get log () {
           return logCache
@@ -155,12 +151,12 @@ export const task = (
           optCache = formatOptions(options)
         },
         remove: () => {
-          plguinManager.unregisterTask(id)
+          register.unregisterTask(id)
         },
       }
     },
   }
 
-  plguinManager.registerTask(cache)
+  register.registerTask(cache)
   return cache
 }

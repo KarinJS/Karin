@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { isWorkspace } from '@/env'
-import { getPlugins } from '@/plugin/system/list'
+import { getPlugins } from '@/plugins/list'
 import { karinPathPlugins } from '@/root'
 import { taskSystem as task } from '@/service/task'
 import { gitPull } from '@/utils/git/pull'

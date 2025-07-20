@@ -122,7 +122,7 @@ export const updateNpmPackages = async (
 
   const cmd = packages.length
     ? `pnpm install ${packages.join('@latest ')}${registry} --save`
-    : `pnpm up${registry} --save`
+    : `pnpm update${registry} --save`
 
   const result = await exec(cmd, options)
   return result

@@ -1,9 +1,7 @@
 import path from 'node:path'
 import { existsSync } from 'node:fs'
-import { cache } from '@/plugin/system/cache'
+import { cache } from '@/plugins/manager'
 import { createRequire } from 'module'
-import { requireFileSync } from './require'
-import type { PkgData } from '@/types'
 export type { PkgEnv, PkgData } from '@/types'
 
 /**
@@ -56,14 +54,13 @@ export const pkgRoot = (name: string, rootPath?: string) => {
  * @param name - 插件名称
  */
 export const getPluginInfo = (name: string) => {
-  const list = Object.values(cache.index)
-  const plugin = list.find(item => item.name === name)
+  const list = cache.pluginsDetails
+  const plugin = list.get(name)
   if (!plugin) return null
 
   const info = {
     get pkg () {
-      if (!plugin.pkgPath) return null
-      return requireFileSync(plugin.pkgPath) as PkgData
+      return plugin.data
     },
   }
 

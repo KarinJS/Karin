@@ -1,10 +1,12 @@
-import { system, types } from '@/utils'
-import { plguinManager } from '../load'
-import { formatReg, createID, createLogger } from './util'
-import type { FNC } from './util'
-import type { PluginCacheKeyApp, PluginCache } from './base'
-import type { Message, MessageEventMap, Permission, AdapterProtocol } from '@/types'
+import { types, isClass } from '@/utils'
+import * as manager from '../../plugins/manager'
+import * as register from '../../plugins/register'
+import { createID } from '@/core/karin/util'
+import { formatReg, createLogger } from './util'
 import { CommandCache } from '@/core/karin/command'
+
+import type { FNC } from './util'
+import type { Message, MessageEventMap, Permission, AdapterProtocol } from '@/types'
 
 export interface RuleItemBase {
   /** 命令正则 */
@@ -343,4 +345,145 @@ export abstract class Plugin<T extends keyof MessageEventMap = keyof MessageEven
       message_id: result.messageId,
     }
   }
+}
+
+/**
+ * 加载 class 插件
+ * @param pkgName 插件包名称
+ * @param file 文件路径
+ * @param Cls 类
+ */
+export const loadClass = (
+  pkgName: string,
+  file: string,
+  Cls: unknown
+) => {
+  if (!isClass<Plugin>(Cls)) return
+  const plugin = new Cls()
+
+  if (!plugin._options || typeof plugin._options !== 'object') {
+    logger.debug(`[loadClass] ${file} 非class插件 跳过注册`)
+    return
+  }
+
+  const ids: string[] = []
+  const exportName = plugin.constructor.name
+  const options = formatOptions(plugin._options)
+  options.exportName = exportName
+
+  const createCommand = (v: FormatOptions['rule'][number]) => {
+    if (typeof v.fnc === 'string') {
+      // @ts-ignore
+      if (!plugin?.[v.fnc]) {
+        logger.warn(`[loadClass][${pkgName}] 插件 ${file} 的 ${v.fnc} 方法不存在，跳过注册当前rule`)
+        return
+      }
+    }
+
+    const id = createID()
+    const type = 'class'
+    let regCache = formatReg(v.reg)
+    let fncCache = formatFnc(v.fnc, plugin)
+    let ruleOptions = v
+    ids.push(id)
+
+    const result: CommandCache = {
+      type,
+      get pkg () {
+        if (!pkgName) {
+          throw new Error(`请在符合标准规范的文件中使用此方法: ${file}`)
+        }
+        return manager.getPluginPackageDetail(pkgName)!
+      },
+      get file () {
+        return manager.getFileCache(file)
+      },
+      get app () {
+        return {
+          get id () {
+            return id
+          },
+          get type (): 'class' {
+            return type
+          },
+          get log () {
+            return v.log
+          },
+          get name () {
+            return v.name
+          },
+        }
+      },
+      get register () {
+        return {
+          get reg () {
+            /** 这里重新赋值是防止lastIndex错误 */
+            const r = regCache
+            return r
+          },
+          get fnc () {
+            return fncCache
+          },
+          get _options () {
+            return options
+          },
+          get options () {
+            return ruleOptions
+          },
+          get instance () {
+            return plugin
+          },
+          get ids () {
+            return ids
+          },
+        }
+      },
+      get control () {
+        return {
+          setReg: (reg: string | RegExp) => {
+            regCache = formatReg(reg)
+          },
+          setFnc: (fnc: FNC<any>) => {
+            if (typeof fnc !== 'function') {
+              throw new TypeError('setFnc 参数必须是一个函数')
+            }
+            fncCache = Object.freeze(fnc)
+          },
+          setRule: (rule: RuleItemBase) => {
+            const opt = { ...options, rule: [rule] }
+            const formatOpt = formatOptions(opt as unknown as PluginOptions)
+            ruleOptions = formatOpt.rule[0]
+            regCache = formatReg(formatOpt.rule[0].reg)
+          },
+          remove: () => {
+            register.unregisterCommand(result.app.id)
+          },
+          addRule: <T extends keyof MessageEventMap> (rule: AddRuleItemType<T> & { event?: T }) => {
+            const opt = { ...options, rule: [rule] }
+            const formatOpt = formatOptions(opt as unknown as PluginOptions)
+            options.rule.push(formatOpt.rule[0])
+            const command = createCommand(formatOpt.rule[0])
+            if (!command) return
+
+            register.registerCommand(command)
+          },
+          removeRule: () => {
+            ids.forEach(id => register.unregisterCommand(id))
+            ids.length = 0
+          },
+        }
+      },
+    }
+
+    /** 对部分属性进行冻结 */
+    Object.freeze(result.app.id)
+    return result
+  }
+
+  options.rule.forEach(v => {
+    const command = createCommand(v)
+    if (!command) return
+
+    register.registerCommand(command)
+  })
 }

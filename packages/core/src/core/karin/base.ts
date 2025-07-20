@@ -11,8 +11,6 @@ export type pluginTypes = 'command' | 'accept' | 'task' | 'button' | 'handler' |
 export interface PluginCacheKeyApp {
   /** 当前 app 的唯一索引 */
   id: string
-  /** app类型 */
-  type: pluginTypes
   /** app 被触发的日志处理 */
   log: (...args: any[]) => void
   /**
@@ -58,6 +56,8 @@ export interface PluginCacheKeyPkg {
 
 /** 插件缓存对象基类 */
 export interface PluginCache {
+  /** app类型 必须要在顶部，否则自动推导是联合类型 */
+  type: pluginTypes
   /** 当前 app 基本属性 */
   app: PluginCacheKeyApp
   /** 当前文件信息 */

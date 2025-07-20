@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { glob } from 'glob'
+import util from 'node:util'
 import type { GlobOptions as GlobOptionsType } from 'glob'
 
 export interface GlobOptions extends GlobOptionsType {
@@ -39,7 +40,14 @@ export interface GlobOptions extends GlobOptionsType {
    * // => { '/Users/karin/Desktop/karin/packages/core/src/index.ts': () => import('./index.ts') }
    * ```
    */
-  absPath?: boolean
+  absPath?: boolean,
+  /**
+   * 文件匹配钩子
+   * @param file 匹配到的文件路径
+   * @returns 如果返回 false，则忽略该文件；返回字符串则替换原路径；返回 true 或 undefined 则保持原路径
+   * 支持异步操作，可以返回 Promise
+   */
+  matchHook?: (file: string) => unknown | Promise<unknown>
 }
 
 /**
@@ -139,11 +147,55 @@ export const importGlob = async <T = unknown> (
 
   const files = await glob(target, { ...options, withFileTypes: false })
 
-  for (let file of files) {
+  /**
+   * 参数归一化，确保有一个 matchHook 函数
+   */
+  const matchHook = ((): (file: string) => Promise<unknown> => {
+    if (!options.matchHook || typeof options.matchHook !== 'function') return () => Promise.resolve()
+    if (util.types.isAsyncFunction(options.matchHook)) return options.matchHook as (file: string) => Promise<unknown>
+    return (file: string) => Promise.resolve(options.matchHook!(file))
+  })()
+
+  /**
+   * 处理单个文件
+   */
+  const processFile = async (file: string): Promise<string | null> => {
     file = formatPath(file)
-    writeFnc(file)
-    paths.push(file)
+    const finalResult = await matchHook(file)
+
+    /**
+     * 如果返回 false，跳过此文件
+     */
+    if (finalResult === false) return null
+
+    /**
+     * 如果返回字符串，替换路径
+     */
+    if (typeof finalResult === 'string') {
+      return finalResult
+    }
+
+    return file
   }
+
+  /**
+   * 并发处理所有文件
+   */
+  const processedFiles = await Promise.all(
+    files.map(processFile)
+  )
+
+  /**
+   * 并发添加到结果中
+   */
+  await Promise.all(
+    processedFiles
+      .filter(file => file !== null)
+      .map(async (file) => {
+        writeFnc(file!)
+        paths.push(file!)
+      })
+  )
 
   const getPaths = (isAbsPath = false) => {
     if (options.absPath) {

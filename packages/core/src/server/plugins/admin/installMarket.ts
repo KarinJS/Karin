@@ -7,12 +7,12 @@ import { getFastGithub, raceRequest } from '@/utils/request'
 import { mkdirSync } from '@/utils/fs/fsSync'
 import { downloadFile } from '@/utils/fs/file'
 import { taskSystem as task } from '@/service/task'
-import { getPluginMarket } from '@/plugin/system'
-import { pkgHotReload } from '@/plugin/admin/load'
 
 import type { Response } from 'express'
 import type { KarinPluginType } from '@/types/plugin/market'
 import type { PluginAdminMarketInstall, PluginAdminMarketInstallApp, TaskEntity } from '@/types/task'
+import { getPluginMarket } from '@/plugins/market'
+import { reloadPackage } from '@/plugins/hmr'
 
 /**
  * 插件市场安装
@@ -35,7 +35,7 @@ export const installMarket = async (
     )
   }
 
-  if (data.pluginType === 'app' && plugin.type === 'app') {
+  if (data.pluginType === 'app' && plugin.type === 'apps') {
     return installApp(res, plugin, data, ip)
   }
 
@@ -101,7 +101,7 @@ const installNpm = async (
         emitLog('安装完成，尝试加载插件')
       }
 
-      await pkgHotReload('npm', data.target)
+      await reloadPackage(data.target)
       return true
     })
 
@@ -154,10 +154,8 @@ const installGit = async (
     },
     async (_: TaskEntity, emitLog: (message: string) => void) => {
       const args = ['clone', '--depth=1', repo.config.url!, `./plugins/${plugin.name}`]
-      await spawnProcess(
-        'git', args, {}, emitLog
-      )
-      await pkgHotReload('git', plugin.name)
+      await spawnProcess('git', args, {}, emitLog)
+      await reloadPackage(plugin.name)
       return true
     }
   )
@@ -177,7 +175,7 @@ const installGit = async (
  */
 const installApp = async (
   res: Response,
-  plugin: KarinPluginType & { type: 'app' },
+  plugin: KarinPluginType & { type: 'apps' },
   data: PluginAdminMarketInstallApp,
   ip: string
 ) => {

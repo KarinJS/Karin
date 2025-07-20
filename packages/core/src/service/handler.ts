@@ -1,5 +1,5 @@
 import util from 'node:util'
-import { cache } from '@/plugin/system/cache'
+import { cache } from '@/plugins/manager'
 
 import type { Event } from '@/types/event'
 
@@ -38,14 +38,14 @@ const call = async <T = any> (key: string, args: { [key: string]: any, e?: Event
        * @param msg 错误信息
        */
       const next = () => { done = false }
-      const res = info.fnc(args, next)
+      const res = info.register.fnc(args, next)
       result = util.types.isPromise(res) ? await res : res
       if (done) {
-        logger.mark(`[Handler][Done]: [${info.pkg.name}][${info.file.method}][${key}]`)
+        logger.mark(`[Handler][Done]: [${info.pkg.name}][${info.app.name}][${key}]`)
         return result as T
       }
     } catch (error) {
-      logger.error(`[Handler][Error]: [${info.pkg.name}][${info.file.method}][${key}]`)
+      logger.error(`[Handler][Error]: [${info.pkg.name}][${info.app.name}][${key}]`)
       logger.error(error)
     }
   }

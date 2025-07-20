@@ -1,8 +1,4 @@
-import { plguinManager } from '@/core/load'
-import { cache } from '../system/cache'
-import { getPlugins } from '../system/list'
-import { initPluginHmr } from './hmr'
-import { pkgLoads, pkgSort } from './load'
+import { init } from '@/plugins/load'
 import { errorHandler } from '@/core/internal'
 
 /**
@@ -12,7 +8,7 @@ export const initPlugins = async () => {
   logger.info(logger.green('-----------'))
   logger.info('加载插件中...')
 
-  await plguinManager.init()
+  await init()
   logger.info('插件加载完成')
   // /** 收集所有插件加载的Promise */
   // const allPromises: Promise<void>[] = []

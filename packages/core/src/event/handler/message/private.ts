@@ -3,7 +3,6 @@ import { hooksMessageEmit } from '@/hooks/message'
 import { config as cfg, getFriendCfg } from '@/utils/config'
 import { FilterCallback, handleMessageCommon } from '@/event/handler/message/common'
 
-import type { CommandCache } from '@/core/karin/command'
 import type { DirectMessage, FriendMessage } from '../../types/message'
 
 /**
@@ -21,6 +20,7 @@ export const friendHandler = async (ctx: FriendMessage) => {
   /** 定义过滤回调 */
   const filterCallback: FilterCallback = (plugin) => {
     const { event, permission } = plugin.register.options
+
     if (event !== 'message' && event !== 'message.friend') return false
     /** 好友场景只有这三种权限 非这三种一律跳过 */
     if (!['all', 'master', 'admin'].includes(permission)) return false

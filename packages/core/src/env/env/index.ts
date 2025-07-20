@@ -3,6 +3,8 @@ import { execSync } from 'node:child_process'
 
 let IS_PNPM10: boolean | null = null
 
+export * from './npm'
+
 /**
  * @description 是否为Windows
  */

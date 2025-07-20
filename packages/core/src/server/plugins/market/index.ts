@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { URL } from 'node:url'
-import { getPlugins } from '@/plugin/system/list'
-import { getPluginMarket } from '@/plugin/system'
+import { getPlugins } from '@/plugins/list'
+import { getPluginMarket } from '@/plugins/market'
 import { getFastRegistry, getPackageJson } from '@/utils/request'
 import { createSuccessResponse, createServerErrorResponse } from '@/server/utils/response'
 import { REDIS_PLUGIN_MARKET_LIST_CACHE_KEY, REDIS_PLUGIN_MARKET_LIST_CACHE_EXPIRE } from '@/env/key/redis'
@@ -9,11 +9,11 @@ import { REDIS_PLUGIN_MARKET_LIST_CACHE_KEY, REDIS_PLUGIN_MARKET_LIST_CACHE_EXPI
 import type { RequestHandler } from 'express'
 import type { KarinPluginType } from '@/types/plugin/market'
 import type {
-  PkgInfo,
   PluginMarketAuthor,
   PluginMarketRequest,
   PluginMarketResponse,
 } from '@/types'
+import { PluginCacheKeyPkg } from '@/core/karin/base'
 
 /**
  * @webui 插件市场 获取插件列表
@@ -76,7 +76,7 @@ const setCache = async (data: PluginMarketResponse[]) => {
  */
 const handleLocalPlugins = (
   list: PluginMarketResponse[],
-  local: PkgInfo[],
+  local: PluginCacheKeyPkg[],
   market: KarinPluginType[]
 ) => {
   const localPlugins = local.filter(plugin => !market.some(m => m.name === plugin.name))
@@ -92,16 +92,16 @@ const handleLocalPlugins = (
       home: '',
     }
 
-    if (plugin.type !== 'app') {
-      const pkg = plugin.pkgData
-      local.version = pkg.version
-      local.description = pkg.description
-      local.home = pkg.homepage || pkg?.repository?.url
+    if (plugin.type !== 'apps') {
+      const pkg = plugin.data
+      local.version = pkg?.version
+      local.description = pkg?.description
+      local.home = pkg?.homepage || pkg?.repository?.url
 
       if (local.home) {
         const url = new URL(local.home)
         const [owner] = url.pathname.split('/').filter(Boolean)
-        author.name = pkg.author || owner
+        author.name = pkg?.author || owner
         author.home = `${url.origin}/${owner}`
         if (url.hostname.includes('github') || url.hostname.includes('gitee')) {
           author.avatar = `${url.origin}/${owner}.png`
@@ -122,7 +122,7 @@ const handleLocalPlugins = (
  */
 const handleMarketPlugins = async (
   list: PluginMarketResponse[],
-  local: PkgInfo[],
+  local: PluginCacheKeyPkg[],
   market: KarinPluginType[],
   registry: string
 ) => {
@@ -141,7 +141,7 @@ const handleMarketPlugins = async (
     if (pkg) {
       data.installed = true
       data.type = pkg.type
-      data.version = pkg.pkgData.version
+      data.version = pkg?.data?.version
     } else {
       data.version = await handlePluginVersion(plugin, registry)
     }

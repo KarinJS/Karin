@@ -28,21 +28,5 @@
   "javascript.preferences.importModuleSpecifier": "non-relative",
   "javascript.preferences.importModuleSpecifierEnding": "minimal",
   "typescript.disableAutomaticTypeAcquisition": true,
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "search.exclude": {
-    "**/node_modules": true,
-    "**/dist": true
-  },
-  "files.exclude": {
-    "**/dist": true
-  },
-  "auto-import.filesToScan": "**/*.{ts,tsx}",
-  "auto-import.exclude": [
-    "**/dist/**",
-    "**/node_modules/**"
-  ],
-  "auto-import.showNotifications": false,
-  "auto-import.spaceBetweenBraces": true,
-  "auto-import.doubleQuotes": false,
-  "auto-import.useSemiColon": false
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
