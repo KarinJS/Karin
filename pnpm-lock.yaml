@@ -62,45 +62,12 @@ importers:
 
   packages/core:
     dependencies:
-      art-template:
-        specifier: npm:@karinjs/art-template@1.1.0
-        version: '@karinjs/art-template@1.1.0'
-      axios:
-        specifier: npm:@karinjs/axios@1.2.0
-        version: '@karinjs/axios@1.2.0'
-      chalk:
-        specifier: 5.4.1
-        version: 5.4.1
-      chokidar:
-        specifier: 4.0.3
-        version: 4.0.3
       express:
         specifier: npm:@karinjs/express@1.0.3
         version: '@karinjs/express@1.0.3'
-      lodash:
-        specifier: npm:@karinjs/lodash@1.1.1
-        version: '@karinjs/lodash@1.1.1'
-      log4js:
-        specifier: ^6.9.1
-        version: 6.9.1
-      moment:
-        specifier: npm:@karinjs/moment@1.1.5
-        version: '@karinjs/moment@1.1.5'
-      node-schedule:
-        specifier: npm:@karinjs/node-schedule@1.0.0
-        version: '@karinjs/node-schedule@1.0.0'
-      redis:
-        specifier: npm:@karinjs/redis@1.1.3
-        version: '@karinjs/redis@1.1.3'
       sqlite3:
         specifier: npm:@karinjs/sqlite3-cjs@0.1.0
         version: '@karinjs/sqlite3-cjs@0.1.0'
-      ws:
-        specifier: npm:@karinjs/ws@1.0.4
-        version: '@karinjs/ws@1.0.4'
-      yaml:
-        specifier: 2.7.0
-        version: 2.7.0
     devDependencies:
       '@karinjs/node-pty':
         specifier: ^1.1.0
@@ -120,6 +87,18 @@ importers:
       '@types/lodash':
         specifier: ^4.17.16
         version: 4.17.16
+      art-template:
+        specifier: npm:@karinjs/art-template@1.1.0
+        version: '@karinjs/art-template@1.1.0'
+      axios:
+        specifier: npm:@karinjs/axios@1.2.0
+        version: '@karinjs/axios@1.2.0'
+      chalk:
+        specifier: 5.4.1
+        version: 5.4.1
+      chokidar:
+        specifier: 4.0.3
+        version: 4.0.3
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
@@ -129,6 +108,27 @@ importers:
       jsonwebtoken:
         specifier: npm:@karinjs/jsonwebtoken@^1.1.1
         version: '@karinjs/jsonwebtoken@1.1.1'
+      lodash:
+        specifier: npm:@karinjs/lodash@1.1.1
+        version: '@karinjs/lodash@1.1.1'
+      log4js:
+        specifier: ^6.9.1
+        version: 6.9.1
+      moment:
+        specifier: npm:@karinjs/moment@1.1.5
+        version: '@karinjs/moment@1.1.5'
+      node-schedule:
+        specifier: npm:@karinjs/node-schedule@1.0.0
+        version: '@karinjs/node-schedule@1.0.0'
+      redis:
+        specifier: npm:@karinjs/redis@1.1.3
+        version: '@karinjs/redis@1.1.3'
+      ws:
+        specifier: npm:@karinjs/ws@1.0.4
+        version: '@karinjs/ws@1.0.4'
+      yaml:
+        specifier: 2.7.0
+        version: 2.7.0
 
   packages/create-karin:
     dependencies:

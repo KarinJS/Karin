@@ -1,0 +1,1 @@
+import 'moment/locale/gl.js'
