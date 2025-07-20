@@ -18,7 +18,7 @@ export interface NavItem {
     href: string
     label?: string
     icon: FrontendInstalledPluginListResponse['icon']
-    type?: 'git' | 'npm' | 'app'
+    type?: 'git' | 'npm' | 'apps'
     hasConfig?: boolean
   }[]
 }
@@ -108,7 +108,7 @@ export const initSiteConfig = async (isRefresh = false) => {
               href: plugin.href,
               label: plugin.label,
               icon: plugin.icon!,
-              type: plugin.type,
+              type: plugin.type as 'npm' | 'git' | 'apps',
               hasConfig: plugin.hasConfig,
             }))
             .sort((a, b) => {
