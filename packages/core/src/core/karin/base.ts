@@ -79,7 +79,7 @@ export const createPluginFileProperties = (absPath: string): PluginCacheKeyFile 
   return {
     absPath: formatPath(absPath),
     get basename () {
-      return formatPath(path.basename(absPath))
+      return path.basename(absPath)
     },
     get dirname () {
       return formatPath(path.dirname(absPath))

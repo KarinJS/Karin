@@ -75,8 +75,8 @@ export const handler = (key: string, fnc: HandlerCache['register']['fnc'], optio
   const type = 'handler'
   let keyCache = key
   let fncCache = fnc
-  let optCache = Object.freeze(formatOptions(options))
-  const logCache = Object.freeze(createLogger(options.log, true))
+  let optCache = formatOptions(options)
+  const logCache = createLogger(options.log, true)
 
   const cache: HandlerCache = {
     get type (): typeof type {

@@ -78,9 +78,9 @@ export const accept = <T extends keyof NoticeAndRequest> (
   const id = createID()
   const type = 'accept'
   let fncCache = fnc as FNC<NoticeAndRequest[keyof NoticeAndRequest]>
-  let eventCache = Object.freeze(event as keyof NoticeAndRequest)
-  let optCache = Object.freeze(formatOptions(options))
-  const logCache = Object.freeze(createLogger(options.log, true))
+  let eventCache = event as keyof NoticeAndRequest
+  let optCache = formatOptions(options)
+  const logCache = createLogger(options.log, true)
 
   const cache: AcceptCache = {
     get type (): typeof type {

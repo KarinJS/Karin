@@ -6,7 +6,7 @@ import { formatReg, createLogger } from './util'
 import { CommandCache } from '@/core/karin/command'
 
 import type { FNC } from './util'
-import type { Message, MessageEventMap, Permission, AdapterProtocol } from '@/types'
+import type { Message, MessageEventMap, Permission, AdapterProtocol, AdapterType } from '@/types'
 
 export interface RuleItemBase {
   /** 命令正则 */
@@ -181,163 +181,13 @@ export abstract class Plugin<T extends keyof MessageEventMap = keyof MessageEven
 
   constructor (options: PluginOptions) {
     this._options = options
-    // let _options = formatOptions(options)
-
-    // const caller = system.getCaller(import.meta.url)
-    // const pkgName = plguinManager.getPackageName(caller)
-
-    // _options.rule.forEach(v => {
-    //   // @ts-ignore
-    //   if (typeof v.fnc === 'string' && typeof this?.[v.fnc] !== 'function') {
-    //     logger.warn(`[${caller}] 插件类中定义的 ${v.name} 方法不存在: ${v.fnc}`)
-    //     return
-    //   }
-
-    //   const id = createID()
-    //   const type = 'class'
-    //   const result: CommandCache = {
-    //     get pkg () {
-    //       if (!pkgName) {
-    //         throw new Error(`请在符合标准规范的文件中使用此方法: ${caller}`)
-    //       }
-    //       return plguinManager.getPluginPackageDetail(pkgName)!
-    //     },
-    //     get file () {
-    //       return plguinManager.getFileCache(caller)
-    //     },
-    //     get app () {
-    //       return {
-    //         get id () {
-    //           return id
-    //         },
-    //         get type (): 'class' {
-    //           return type
-    //         },
-    //         get log () {
-    //           return v.log
-    //         },
-    //         get name () {
-    //           return v.name || _options.name
-    //         },
-    //       }
-    //     },
-    //     get register () {
-    //       return {
-    //         get reg () {
-    //           /** 这里重新赋值是防止lastIndex错误 */
-    //           const r = v.reg
-    //           return r
-    //         },
-    //         get fnc () {
-    //           return fncCache
-    //         },
-    //         get options () {
-    //           return optCache
-    //         },
-    //       }
-    //     },
-    //     get control () {
-    //       return {
-    //         setReg: (reg: string | RegExp) => {
-    //           regCache = formatReg(reg)
-    //         },
-    //         setFnc: (fnc: MessageCallback<keyof MessageEventMap>) => {
-    //           fncCache = Object.freeze(fnc)
-    //         },
-    //         setOptions: (options: Options<keyof MessageEventMap>) => {
-    //           optCache = Object.freeze(formatOptions(options as Options<T>))
-    //           logCache = Object.freeze(createLogger(options.log, true))
-    //           fncCache = Object.freeze(formatFnc<T>(second, options as Options<T>) as MessageCallback<keyof MessageEventMap>)
-    //         },
-    //         remove: () => {
-    //           plguinManager.unregisterCommand(result.app.id)
-    //         },
-    //       }
-    //     },
-    //   }
-
-    //   /** 对部分属性进行冻结 */
-    //   Object.freeze(result.app.id)
-    //   Object.freeze(result.app.type)
-    //   plguinManager.registerCommand(result)
-    // })
-
-    // const result: ClassCache = {
-    //   get pkg () {
-    //     if (!pkgName) {
-    //       throw new Error(`请在符合标准规范的文件中使用此方法: ${caller}`)
-    //     }
-    //     return plguinManager.getPluginPackageDetail(pkgName)!
-    //   },
-    //   get file () {
-    //     return plguinManager.getFileCache(caller)
-    //   },
-    //   get app () {
-    //     return {
-    //       get id () {
-    //         return id
-    //       },
-    //       get type (): 'class' {
-    //         return type
-    //       },
-    //       get log () {
-    //         return createLogger(false, true)
-    //       },
-    //       get name () {
-    //         return _options.name
-    //       },
-    //     }
-    //   },
-    //   get register () {
-    //     return {
-    //       options: {
-    //         get name () {
-    //           return _options.name
-    //         },
-    //         get desc () {
-    //           return _options.desc
-    //         },
-    //         get event () {
-    //           return _options.event
-    //         },
-    //         get priority () {
-    //           return _options.priority
-    //         },
-    //         get rule () {
-    //           return _options.rule
-    //         },
-    //       },
-    //     }
-    //   },
-    //   get control () {
-    //     return {
-    //       setRule: (rule: PluginOptions['rule']) => {
-    //         try {
-    //           _options = formatOptions({ ..._options, rule } as PluginOptions)
-    //           return true
-    //         } catch (error) {
-    //           logger.error(error)
-    //           return false
-    //         }
-    //       },
-    //       setOptions: (options: PluginOptions) => {
-    //         _options = formatOptions(options)
-    //       },
-    //       remove: () => {
-    //         plguinManager.unregisterClass(result.app.id)
-    //       },
-    //     }
-    //   },
-    // }
-
-    // plguinManager.registerClass(result)
   }
 
   /**
    * 快速回复合并转发
    * @param element 合并转发消息元素节点
    */
-  async replyForward (element: Parameters<typeof this.e.bot.sendForwardMsg>[1]) {
+  async replyForward (element: Parameters<AdapterType['sendForwardMsg']>[1]) {
     const result = await this.e.bot.sendForwardMsg(this.e.contact, element)
     return {
       ...result,
@@ -447,7 +297,7 @@ export const loadClass = (
             if (typeof fnc !== 'function') {
               throw new TypeError('setFnc 参数必须是一个函数')
             }
-            fncCache = Object.freeze(fnc)
+            fncCache = fnc
           },
           setRule: (rule: RuleItemBase) => {
             const opt = { ...options, rule: [rule] }
@@ -475,8 +325,6 @@ export const loadClass = (
       },
     }
 
-    /** 对部分属性进行冻结 */
-    Object.freeze(result.app.id)
     return result
   }
 

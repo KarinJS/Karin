@@ -204,9 +204,9 @@ export const command: Callbacks = <T extends keyof MessageEventMap = keyof Messa
   const id = createID()
   const type = 'command'
   let regCache = formatReg(reg)
-  let optCache = Object.freeze(formatOptions(options))
-  let logCache = Object.freeze(createLogger(options.log, true))
-  let fncCache = Object.freeze(formatFnc<T>(second, options) as MessageCallback<keyof MessageEventMap>)
+  let optCache = formatOptions(options)
+  let logCache = createLogger(options.log, true)
+  let fncCache = formatFnc<T>(second, options) as MessageCallback<keyof MessageEventMap>
 
   const result: CommandCache = {
     get type (): typeof type {
@@ -255,12 +255,12 @@ export const command: Callbacks = <T extends keyof MessageEventMap = keyof Messa
           regCache = formatReg(reg)
         },
         setFnc: (fnc: MessageCallback<keyof MessageEventMap>) => {
-          fncCache = Object.freeze(fnc)
+          fncCache = fnc
         },
         setOptions: (options: Options<keyof MessageEventMap>) => {
-          optCache = Object.freeze(formatOptions(options as Options<T>))
-          logCache = Object.freeze(createLogger(options.log, true))
-          fncCache = Object.freeze(formatFnc<T>(second, options as Options<T>) as MessageCallback<keyof MessageEventMap>)
+          optCache = formatOptions(options as Options<T>)
+          logCache = createLogger(options.log, true)
+          fncCache = formatFnc<T>(second, options as Options<T>) as MessageCallback<keyof MessageEventMap>
         },
         remove: () => {
           register.unregisterCommand(result.app.id)
@@ -269,8 +269,6 @@ export const command: Callbacks = <T extends keyof MessageEventMap = keyof Messa
     },
   }
 
-  /** 对部分属性进行冻结 */
-  Object.freeze(result.app.id)
   register.registerCommand(result)
 
   return result

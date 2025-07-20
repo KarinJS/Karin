@@ -92,8 +92,8 @@ export const button = (
   const type = 'button'
   let regCache = formatReg(reg)
   let fncCache = fnc
-  let optCache = Object.freeze(formatOptions(options))
-  const logCache = Object.freeze(createLogger(options.log, true))
+  let optCache = formatOptions(options)
+  const logCache = createLogger(options.log, true)
 
   const cache: ButtonCache = {
     get type (): typeof type {
