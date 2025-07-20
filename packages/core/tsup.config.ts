@@ -14,7 +14,7 @@ const entry = [
 export default defineConfig({
   ...options,
   clean: false,
-  splitting: true,
+  splitting: false,
   entry,
   treeshake: 'recommended',
   dts: {

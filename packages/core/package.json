@@ -169,6 +169,7 @@
     "sqlite3": "npm:@karinjs/sqlite3-cjs@0.1.0",
     "moment": "npm:@karinjs/moment@1.1.5",
     "ws": "npm:@karinjs/ws@1.0.4",
+    "log4js": "^6.9.1",
     "yaml": "2.7.0"
   },
   "devDependencies": {
@@ -186,7 +187,6 @@
     "dotenv": "npm:@karinjs/dotenv@^1.1.2",
     "jsonwebtoken": "npm:@karinjs/jsonwebtoken@^1.1.1",
     "lodash": "npm:@karinjs/lodash@1.1.1",
-    "log4js": "^6.9.1",
     "node-schedule": "npm:@karinjs/node-schedule@1.0.0",
     "redis": "npm:@karinjs/redis@1.1.3"
   },
