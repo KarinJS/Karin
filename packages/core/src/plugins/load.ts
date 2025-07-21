@@ -38,6 +38,22 @@ export const init = async () => {
 
   sort()
   isInit = true
+
+  logger.info('插件加载完成')
+
+  logger.info(`${logger.chalk.magentaBright('plugin')}: ${manager.cache.plugins.length}`)
+  Object.keys(manager.cache.count).forEach((v) => {
+    if (v === 'handler') {
+      const { key, fnc } = manager.cache.count.handler
+      logger.info(`${logger.chalk.magentaBright(v + '.key')} ${key}`)
+      logger.info(`${logger.chalk.magentaBright(v + '.fnc')} ${fnc}`)
+      return
+    }
+    logger.info(`${logger.chalk.magentaBright(v)}: ${manager.cache.count[v as keyof typeof manager.cache.count]}`)
+  })
+
+  logger.info(logger.green('-----------'))
+
   setTimeout(() => {
     initPluginHmr()
   }, 2000)

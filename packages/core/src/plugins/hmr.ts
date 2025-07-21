@@ -95,7 +95,7 @@ const handleFileChange = async (file: string, action: 'add' | 'change' | 'unlink
  * @param file 文件路径
  */
 export const reloadApp = async (file: string) => {
-  const { status, data } = await importModule(file)
+  const { status, data } = await importModule(file, true)
   if (status) {
     const pkgName = getPackageName(file) || 'null'
     loadClass(pkgName, file, data)
