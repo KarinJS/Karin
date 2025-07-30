@@ -1,0 +1,202 @@
+{
+  "name": "node-karin",
+  "version": "1.10.20",
+  "description": "Lightweight, efficient, concise, and stable robot framework.",
+  "keywords": [
+    "node",
+    "nodejs",
+    "karin",
+    "bot",
+    "robot",
+    "icqq",
+    "onebot",
+    "kritor",
+    "node-karin"
+  ],
+  "homepage": "https://github.com/KarinJS/Karin",
+  "bugs": {
+    "url": "https://github.com/KarinJS/Karin/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarinJS/Karin.git"
+  },
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "development": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    },
+    "./types": {
+      "types": "./dist/global.d.d.ts"
+    },
+    "./app": {
+      "types": "./dist/start/app.d.ts",
+      "development": "./src/start/app.ts",
+      "default": "./dist/start/app.mjs"
+    },
+    "./run": {
+      "types": "./dist/start/app.d.ts",
+      "development": "./src/start/app.ts",
+      "default": "./dist/start/app.mjs"
+    },
+    "./start": {
+      "types": "./dist/start/index.d.ts",
+      "development": "./src/start/index.ts",
+      "default": "./dist/start/index.mjs"
+    },
+    "./dir": {
+      "types": "./dist/root.d.ts",
+      "development": "./src/root.ts",
+      "default": "./dist/root.mjs"
+    },
+    "./root": {
+      "types": "./dist/root.d.ts",
+      "development": "./src/root.ts",
+      "default": "./dist/root.mjs"
+    },
+    "./template": {
+      "types": "./dist/module/art-template.d.ts",
+      "development": "./src/module/art-template.ts",
+      "default": "./dist/module/art-template.mjs"
+    },
+    "./art-template": {
+      "types": "./dist/module/art-template.d.ts",
+      "development": "./src/module/art-template.ts",
+      "default": "./dist/module/art-template.mjs"
+    },
+    "./axios": {
+      "types": "./dist/module/axios.d.ts",
+      "development": "./src/module/axios.ts",
+      "default": "./dist/module/axios.mjs"
+    },
+    "./chalk": {
+      "types": "./dist/module/chalk.d.ts",
+      "development": "./src/module/chalk.ts",
+      "default": "./dist/module/chalk.mjs"
+    },
+    "./chokidar": {
+      "types": "./dist/module/chokidar.d.ts",
+      "development": "./src/module/chokidar.ts",
+      "default": "./dist/module/chokidar.mjs"
+    },
+    "./express": {
+      "types": "./dist/module/express.d.ts",
+      "development": "./src/module/express.ts",
+      "default": "./dist/module/express.mjs"
+    },
+    "./lodash": {
+      "types": "./dist/module/lodash.d.ts",
+      "development": "./src/module/lodash.ts",
+      "default": "./dist/module/lodash.mjs"
+    },
+    "./moment": {
+      "types": "./dist/module/moment.d.ts",
+      "development": "./src/module/moment.ts",
+      "default": "./dist/module/moment.mjs"
+    },
+    "./moment/locale/*": {
+      "development": "./dist/module/locale/*.js",
+      "default": "./dist/module/locale/*.js"
+    },
+    "./schedule": {
+      "types": "./dist/module/node-schedule.d.ts",
+      "development": "./src/module/node-schedule.ts",
+      "default": "./dist/module/node-schedule.mjs"
+    },
+    "./node-schedule": {
+      "types": "./dist/module/node-schedule.d.ts",
+      "development": "./src/module/node-schedule.ts",
+      "default": "./dist/module/node-schedule.mjs"
+    },
+    "./redis": {
+      "types": "./dist/module/redis.d.ts",
+      "development": "./src/module/redis.ts",
+      "default": "./dist/module/redis.mjs"
+    },
+    "./ws": {
+      "types": "./dist/module/ws.d.ts",
+      "development": "./src/module/ws.ts",
+      "default": "./dist/module/ws.mjs"
+    },
+    "./yaml": {
+      "types": "./dist/module/yaml.d.ts",
+      "development": "./src/module/yaml.ts",
+      "default": "./dist/module/yaml.mjs"
+    },
+    "./sqlite3": {
+      "types": "./dist/module/sqlite3.d.ts",
+      "development": "./src/module/sqlite3.ts",
+      "default": "./dist/module/sqlite3.mjs"
+    }
+  },
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "k": "./dist/cli/index.mjs",
+    "karin": "./dist/cli/index.mjs",
+    "ki": "./dist/cli/index.mjs"
+  },
+  "files": [
+    "dist",
+    "default",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    ".": "pnpm app",
+    "app": "node dist/start/index.mjs",
+    "app:bun": "bun dist/start/index.mjs",
+    "build": "tsc && tsup && pnpm build:locale",
+    "build:dev": "tsc && tsup",
+    "build:locale": "node cli/locale.js",
+    "build:types": "tsc && tsup --config tsup.config.types.ts",
+    "checkType": "tsc",
+    "cli": "node dist/cli/index.mjs",
+    "cli:dev": "tsx exports/cli/index.ts",
+    "dev": "cross-env EBV_FILE=\"development.env\" node --conditions=development --import tsx src/start/index.ts",
+    "dev:bun": "cross-env EBV_FILE=\"development.env\" bun --conditions=development src/start/index.ts",
+    "pr": "node cli/pr.js all",
+    "prepublishOnly": "pnpm run checkType",
+    "pub": "npm publish --access public",
+    "pub-beta": "npm publish --access public --tag beta",
+    "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\"",
+    "sort": "sort-package-json && sort-json tsconfig.json",
+    "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/node-karin/syncs\""
+  },
+  "dependencies": {
+    "express": "catalog:",
+    "lodash": "catalog:",
+    "log4js": "^6.9.1",
+    "moment": "catalog:",
+    "sqlite3": "catalog:",
+    "ws": "catalog:",
+    "yaml": "2.7.0"
+  },
+  "devDependencies": {
+    "@karinjs/node-pty": "^1.1.0",
+    "@karinjs/onebot": "workspace:*",
+    "@karinjs/plugin-webui-network-monitor": "^1.0.3",
+    "@karinjs/plugins-list": "^1.7.0",
+    "art-template": "npm:@karinjs/art-template@1.1.0",
+    "axios": "catalog:",
+    "chalk": "5.4.1",
+    "chokidar": "catalog:",
+    "cross-env": "^7.0.3",
+    "dotenv": "npm:@karinjs/dotenv@^1.1.2",
+    "jsonwebtoken": "npm:@karinjs/jsonwebtoken@^1.1.1",
+    "node-schedule": "npm:@karinjs/node-schedule@1.0.0",
+    "redis": "catalog:"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "time": "2025-06-30T19:55:55.123Z"
+}

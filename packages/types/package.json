@@ -4,14 +4,17 @@
   "main": "",
   "types": "index.d.ts",
   "scripts": {
-    "pub": "npm publish --access public"
+    "checkType": "tsc",
+    "prepublishOnly": "pnpm run checkType",
+    "pub": "npm publish --access public",
+    "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
   },
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org",
     "files": [
       "index.d.ts",
       "package.json"
-    ]
+    ],
+    "registry": "https://registry.npmjs.org"
   }
 }

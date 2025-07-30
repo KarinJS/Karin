@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@fs": [
+        "./src/utils/fs/main"
+      ],
+      "events": [
+        "node_modules/@types/node/events.d.ts"
+      ],
+      "node:events": [
+        "node_modules/@types/node/events.d.ts"
+      ]
+    },
+    "rootDir": "./src",
+    "types": [
+      "node"
+    ]
+  },
+  "exclude": [
+    "./plugins",
+    "./exports",
+    "sandbox",
+    "tsup.config.*.ts",
+    "dist"
+  ],
+  "extends": "../../tsconfig.base.json",
+  "include": [
+    "src"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "name": "@karinjs/logger",
+  "version": "0.0.1",
+  "description": "",
+  "keywords": [
+    "logger",
+    "log",
+    "console",
+    "karinjs"
+  ],
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "development": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "main": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "checkType": "tsc",
+    "demo": "tsx src/demo.ts",
+    "example:advanced": "tsx examples/advanced.ts",
+    "example:basic": "tsx examples/basic.ts",
+    "prepublishOnly": "pnpm run checkType",
+    "pub": "npm publish --access public",
+    "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
+  },
+  "devDependencies": {
+    "chalk": "catalog:",
+    "log4js": "catalog:"
+  },
+  "peerDependencies": {
+    "log4js": "catalog:",
+    "chalk": "catalog:"
+  }
+}

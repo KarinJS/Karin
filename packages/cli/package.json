@@ -23,7 +23,10 @@
     "REAME.md"
   ],
   "scripts": {
-    "pub": "npm publish --access public"
+    "checkType": "tsc",
+    "prepublishOnly": "pnpm run checkType",
+    "pub": "npm publish --access public",
+    "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
   },
   "engines": {
     "node": ">=18"

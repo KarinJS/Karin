@@ -1,4 +1,4 @@
-import { cron } from './cron'
+import { cron } from './create/cron'
 import { defineConfig } from './defineConfig'
 
 export default defineConfig({

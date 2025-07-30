@@ -1,0 +1,45 @@
+{
+  "name": "@karinjs/plugin",
+  "version": "0.0.1",
+  "description": "",
+  "keywords": [],
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsdown",
+    "check": "pnpm run checkType",
+    "checkType": "tsc",
+    "prepublishOnly": "pnpm run checkType",
+    "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@karinjs/adapter": "workspace:*",
+    "@karinjs/core": "workspace:*",
+    "@karinjs/envs": "workspace:*",
+    "@karinjs/events": "workspace:*",
+    "@karinjs/utils": "workspace:*",
+    "chokidar": "catalog:",
+    "lodash": "catalog:",
+    "node-karin": "workspace:*"
+  },
+  "peerDependencies": {
+    "@karinjs/adapter": "workspace:*",
+    "@karinjs/core": "workspace:*",
+    "@karinjs/envs": "workspace:*",
+    "@karinjs/events": "workspace:*",
+    "@karinjs/utils": "workspace:*",
+    "chokidar": "catalog:",
+    "lodash": "catalog:",
+    "node-karin": "workspace:*"
+  }  ,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "development": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    }
+  }
+}

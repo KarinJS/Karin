@@ -9,23 +9,26 @@
   "main": "",
   "scripts": {
     "app": "pnpm --filter node-karin run app",
-    "build:core": "pnpm --filter node-karin run build",
     "build": "pnpm -r run build",
+    "build:all": "pnpm build",
+    "build:core": "pnpm --filter node-karin run build",
     "build:prod": "pnpm --filter node-karin run build",
     "build:web": "pnpm --filter karin-webui run build",
-    "build:all": "pnpm build",
     "dev": "pnpm --filter node-karin run dev",
     "dev:cli": "pnpm --filter node-karin run dev:cli",
     "dev:web": "pnpm --filter karin-webui run dev",
-    "web": "pnpm --filter karin-webui run dev",
     "lint:fix": "eslint --fix \"packages/**/*.ts\"",
+    "pkg": "tsx scripts.ts",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "web": "pnpm --filter karin-webui run dev"
   },
   "devDependencies": {
-    "@types/node": "^18.19.120",
-    "eslint": "^9.31.0",
+    "@types/express": "^5.0.1",
+    "@types/lodash": "^4.17.20",
+    "@types/node": "^20.19.9",
+    "eslint": "^9.32.0",
     "eslint-plugin-prettier": "^5.5.3",
     "glob": "^11.0.3",
     "neostandard": "^0.12.2",
@@ -33,10 +36,10 @@
     "sort-json": "^2.0.1",
     "sort-package-json": "^3.4.0",
     "terser": "^5.43.1",
-    "tsdown": "^0.12.9",
+    "tsdown": "^0.13.0",
     "tsup": "^8.5.0",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.3",
+    "typescript": "^5.9.1-rc",
     "vite": "npm:rolldown-vite@7.0.9"
   }
 }

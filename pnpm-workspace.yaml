@@ -9,3 +9,15 @@ onlyBuiltDependencies:
   - "@parcel/watcher"
   - "@swc/core"
   - esbuild
+
+catalog:
+  axios: "npm:@karinjs/axios"
+  express: "npm:@karinjs/express"
+  lodash: "npm:@karinjs/lodash"
+  ws: "npm:@karinjs/ws"
+  moment: "npm:@karinjs/moment"
+  redis: "npm:@karinjs/redis"
+  sqlite3: "npm:@karinjs/sqlite3-cjs"
+  log4js: 6.9.1
+  chalk: 5.4.1
+  chokidar: 4.0.3
