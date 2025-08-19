@@ -1,5 +1,5 @@
 import util from 'node:util'
-import { lockProp } from 'node-karin'
+import { lockProp } from '@karinjs/utils'
 import { segment, makeMessage, createRawMessage } from './raw'
 
 import type { AdapterType, SendMsgResults } from '../../adapter/types'

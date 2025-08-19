@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { emitter } from '@karinjs/core'
+import { emitter } from '@karinjs/core/event'
 
 /** 插件名称:缺失的依赖 */
 const missing = new Map<string, { name: string, file: string, depend: string }>()

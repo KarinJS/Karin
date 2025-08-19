@@ -23,7 +23,6 @@
     "up": "ki up"
   },
   "dependencies": {
-    "@karinjs/plugin-basic": "1.0.8",
-    "node-karin": "workspace:*"
+    "@karinjs/plugin-basic": "1.0.8"
   }
 }

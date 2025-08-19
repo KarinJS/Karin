@@ -1,12 +1,12 @@
-import { system, types } from 'node-karin'
-import * as manager from '../manager/manager'
-import * as register from '../manager/register'
+import { core } from '../core/core'
+import register from '../register/register'
 import { createID, createLogger } from './util'
+import { getCaller, types } from '@karinjs/utils'
 
 import type { FNC } from './util'
-import type { PluginCache } from './base'
+import type { PluginRegisterCache } from './base'
 import type { OptionsBase } from './options'
-import type { NoticeAndRequest } from '../manager/types'
+import type { NoticeAndRequest } from '@karinjs/adapter'
 
 export interface AcceptOptions<T extends keyof NoticeAndRequest = keyof NoticeAndRequest> extends Omit<OptionsBase, 'perm' | 'permission'> {
   /** 事件类型 */
@@ -22,7 +22,7 @@ type AcceptOptionsFormat = Required<Omit<OptionsBase, 'perm' | 'permission' | 'n
 }
 
 /** accept 插件缓存对象 */
-export interface AcceptCache extends PluginCache {
+export interface AcceptCache extends PluginRegisterCache {
   type: 'accept'
   /** 注册的信息 */
   register: {
@@ -72,8 +72,8 @@ export const accept = <T extends keyof NoticeAndRequest> (
   fnc: FNC<NoticeAndRequest[T]>,
   options: AcceptOptions<T> = {}
 ): AcceptCache => {
-  const caller = system.getCaller(import.meta.url)
-  const pkgName = manager.getPackageName(caller)
+  const caller = getCaller(import.meta.url)
+  const pkgName = core.getPackageName(caller)
 
   const id = createID()
   const type = 'accept'
@@ -90,10 +90,10 @@ export const accept = <T extends keyof NoticeAndRequest> (
       if (!pkgName) {
         throw new Error(`请在符合标准规范的文件中使用此方法: ${caller}`)
       }
-      return manager.getPluginPackageDetail(pkgName)!
+      return core.getPluginPackageDetail(pkgName)!
     },
     get file () {
-      return manager.getFileCache(caller)
+      return core.getFileCache(caller)
     },
     get app () {
       return {

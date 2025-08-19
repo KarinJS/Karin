@@ -123,4 +123,4 @@ export const GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER = '/plugin/loaded/comma
 export const GET_PLUGIN_MARKET_LIST_ROUTER = '/plugin/market'
 
 /** @version 1.8.0 获取本地插件列表 用于插件索引页面渲染简约列表 */
-export const GET_LOCAL_PLUGIN_FRONTEND_LIST_ROUTER = '/plugin/local/frontend'
+export const GET_SIDEBAR_INSTALLED_PLUGIN_SUMMARY_ROUTER = '/plugin/local/frontend'

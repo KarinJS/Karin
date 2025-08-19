@@ -1,9 +1,9 @@
 import path from 'node:path'
 import { formatPath } from '@karinjs/utils'
-import type { PkgData } from '../manager/package'
 
-/** 插件包类型 */
-export type PluginPackageType = 'apps' | 'git' | 'npm' | 'root'
+import type { Package, PluginPackageType } from '../pkg'
+import type { DefineConfig } from '@karinjs/core'
+
 /** 插件 app 方法类型 */
 export type pluginTypes = 'command' | 'accept' | 'task' | 'button' | 'handler' | 'class'
 
@@ -48,14 +48,23 @@ export interface PluginCacheKeyPkg {
   get apps (): string[]
   /** 所有apps目录列表 */
   get appsDirs (): string[]
+  /** 获取入口文件 */
+  get getMain (): string | null
   /** 获取`package.json`绝对路径 */
-  get path (): string | null
+  get path (): string
   /** 读取`package.json`文件 */
-  get data (): PkgData | null
+  get data (): Package
+  /** 读取`web.config`路径 */
+  get webConfigPath (): string | null
+  /**
+   * 加载`web.config`文件
+   * @param isRefresh 是否重新载入
+   */
+  loadWebConfig (isRefresh?: boolean): Promise<DefineConfig | null>
 }
 
 /** 插件缓存对象基类 */
-export interface PluginCache {
+export interface PluginRegisterCache {
   /** app类型 必须要在顶部，否则自动推导是联合类型 */
   type: pluginTypes
   /** 当前 app 基本属性 */

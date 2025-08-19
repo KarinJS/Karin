@@ -1,6 +1,5 @@
 import { tips } from './check'
-import { exec } from '@/utils/system/exec'
-import { uptime } from '@/utils/common/uptime'
+import { exec, uptime } from '@karinjs/utils'
 
 let exitStatus = false
 
@@ -16,8 +15,16 @@ export const processExit = async (code: unknown, isKillPm2 = false) => {
     exitStatus = true
 
     logger.debug('[child] 开始保存redis数据')
-    const { redis } = await import('@/core/db/redis/redis')
-    if (redis.id === 'mock') await redis.save()
+    const { redis } = await import('@karinjs/db')
+
+    /** 2秒之内需要保存完成 */
+    await Promise.race([
+      redis.save(),
+      new Promise<void>((resolve, _reject) => setTimeout(() => {
+        logger.warn('[child] redis数据保存超时，强制退出')
+        resolve()
+      }, 2000)),
+    ])
     logger.debug('[child] redis数据保存完成')
 
     logger.mark(tips(`运行结束 运行时间：${uptime()} 退出码：${code ?? '未知'}`))

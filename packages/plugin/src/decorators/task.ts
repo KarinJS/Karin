@@ -1,8 +1,8 @@
 import { getCaller, types } from '@karinjs/utils'
-import * as manager from '../manager/manager'
-import * as register from '../manager/register'
+import { core } from '../core/core'
+import register from '../register/register'
 import { createID, createLogger } from './util'
-import type { PluginCache } from './base'
+import type { PluginRegisterCache } from './base'
 import type { OptionsBase } from './options'
 
 export interface TaskOptions extends OptionsBase {
@@ -15,7 +15,7 @@ export interface TaskOptions extends OptionsBase {
 type TaskOptionsFormat = Required<Omit<TaskOptions, 'rank' | 'notAdapter' | 'perm' | 'permission'>>
 
 /** task 插件缓存对象 */
-export interface TaskCache extends PluginCache {
+export interface TaskCache extends PluginRegisterCache {
   /** 注册的信息 */
   register: {
     /** 任务名称 */
@@ -77,7 +77,7 @@ export const task = (
   if (!fnc || typeof fnc !== 'function') throw new Error('[task]: 缺少参数或类型错误[fnc]')
 
   const caller = getCaller(import.meta.url)
-  const pkgName = manager.getPackageName(caller)
+  const pkgName = core.getPackageName(caller)
 
   const id = createID()
   const type = 'task'
@@ -96,10 +96,10 @@ export const task = (
       if (!pkgName) {
         throw new Error(`请在符合标准规范的文件中使用此方法: ${caller}`)
       }
-      return manager.getPluginPackageDetail(pkgName)!
+      return core.getPluginPackageDetail(pkgName)!
     },
     get file () {
-      return manager.getFileCache(caller)
+      return core.getFileCache(caller)
     },
     get app () {
       return {

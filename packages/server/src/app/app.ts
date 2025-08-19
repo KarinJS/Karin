@@ -9,7 +9,7 @@ import { rootRouter } from '../system/root'
 import getMimeType from '../utils/getMimeType'
 import { BASE_ROUTER } from '../router/router'
 import { createBrotliDecompress } from 'node:zlib'
-import { emitter } from '@karinjs/core'
+import { emitter } from '@karinjs/core/event'
 
 import type root from '@karinjs/paths'
 import type { Express } from 'express'

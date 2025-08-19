@@ -1,7 +1,7 @@
 import lodash from 'lodash'
 import utils from '../../utils'
 import { hooksEmit } from '@karinjs/hooks'
-import { plguinManager } from '@karinjs/plugin'
+import { cache } from '@karinjs/plugin'
 import { internalEmitter } from '@karinjs/core'
 
 import type { MessageEventMap } from '../../types'
@@ -57,13 +57,13 @@ export const dispatchGroupMessageEvent = async (
  * @param filter 场景过滤器
  * @param createPrint 创建打印函数的回调
  */
-const handleMessage = async <T extends FriendMessage | DirectMessage | GroupMessage | GuildMessage | GroupTempMessage>(
+const handleMessage = async <T extends FriendMessage | DirectMessage | GroupMessage | GuildMessage | GroupTempMessage> (
   ctx: T,
   config: ConfigPrivateValue | ConfigGroupValue,
   filter: FilterCallback,
   createPrint: (plugin: CommandCache) => (text: string) => void
 ) => {
-  for (const plugin of plguinManager.manager.cache.command) {
+  for (const plugin of cache.command) {
     if (!filter(plugin)) continue
     const print = createPrint(plugin)
     const result = await callback(ctx, plugin, config, print)

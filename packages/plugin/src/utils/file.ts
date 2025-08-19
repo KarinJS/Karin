@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { requireFile, requireFileSync } from 'node-karin'
+import { requireFile, requireFileSync } from '@karinjs/utils'
 
 /**
  * 获取目录下的所有文件夹名称

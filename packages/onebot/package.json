@@ -23,15 +23,10 @@
     "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
   },
   "devDependencies": {
-    "@types/node": "^24.0.3",
-    "@types/ws": "^8.18.1",
-    "eslint": "^9.29.0",
-    "neostandard": "^0.12.1",
     "tsup": "^8.5.0",
-    "ws": "^8.18.2"
+    "ws": "catalog:"
   },
   "peerDependencies": {
-    "@types/ws": "^8.18.1",
-    "ws": "^8.18.2"
+    "ws": "catalog:"
   }
 }

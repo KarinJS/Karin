@@ -1,7 +1,7 @@
-import { plguinManager } from '../manager'
+import { core, register } from '../manager'
 import { getCaller, types } from '@karinjs/utils'
 import { createID, createLogger } from './util'
-import type { PluginCache } from './base'
+import type { PluginRegisterCache } from './base'
 import type { OptionsBase } from './options'
 
 export interface HandlerOptions extends OptionsBase {
@@ -14,7 +14,7 @@ export interface HandlerOptions extends OptionsBase {
 type HandlerOptionsFormat = Required<Omit<HandlerOptions, 'rank' | 'notAdapter' | 'perm' | 'permission'>>
 
 /** handler 插件缓存对象 */
-export interface HandlerCache extends PluginCache {
+export interface HandlerCache extends PluginRegisterCache {
   /** 注册的信息 */
   register: {
     /** 事件key */
@@ -68,7 +68,7 @@ export const handler = (key: string, fnc: HandlerCache['register']['fnc'], optio
   if (!fnc) throw new Error('[handler]: 缺少参数[fnc]')
 
   const caller = getCaller(import.meta.url)
-  const pkgName = plguinManager.manager.getPackageName(caller)
+  const pkgName = core.getPackageName(caller)
 
   const id = createID()
   const type = 'handler'
@@ -85,10 +85,10 @@ export const handler = (key: string, fnc: HandlerCache['register']['fnc'], optio
       if (!pkgName) {
         throw new Error(`请在符合标准规范的文件中使用此方法: ${caller}`)
       }
-      return plguinManager.manager.getPluginPackageDetail(pkgName)!
+      return core.getPluginPackageDetail(pkgName)!
     },
     get file () {
-      return plguinManager.manager.getFileCache(caller)
+      return core.getFileCache(caller)
     },
     get app () {
       return {
@@ -131,12 +131,12 @@ export const handler = (key: string, fnc: HandlerCache['register']['fnc'], optio
           optCache = formatOptions(options)
         },
         remove: () => {
-          plguinManager.register.unregisterHandler(id)
+          register.unregisterHandler(id)
         },
       }
     },
   }
 
-  plguinManager.register.registerHandler(cache)
+  register.registerHandler(cache)
   return cache
 }

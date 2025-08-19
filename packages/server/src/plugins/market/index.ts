@@ -1,18 +1,17 @@
 import axios from 'axios'
 import { URL } from 'node:url'
-import { getPlugins } from '@/plugins/list'
-import { getPluginMarket, KarinPluginType } from '@/plugins/market'
-import { getFastRegistry, getPackageJson } from '@/utils/request'
-import { createSuccessResponse, createServerErrorResponse } from '@/server/utils/response'
-import { REDIS_PLUGIN_MARKET_LIST_CACHE_KEY, REDIS_PLUGIN_MARKET_LIST_CACHE_EXPIRE } from '@/env/key/redis'
+import { getFastRegistry, getPackageJson } from '@karinjs/utils'
+import { getPlugins, getPluginMarket, KarinPluginType } from '@karinjs/plugin'
+import { createSuccessResponse, createServerErrorResponse } from '../../utils'
+import { REDIS_PLUGIN_MARKET_LIST_CACHE_KEY, REDIS_PLUGIN_MARKET_LIST_CACHE_EXPIRE } from '@karinjs/envs'
 
 import type { RequestHandler } from 'express'
 import type {
   PluginMarketAuthor,
   PluginMarketRequest,
   PluginMarketResponse,
-} from '@/types'
-import type { PluginCacheKeyPkg } from '@/core/karin/base'
+} from '../../types'
+import type { PluginCacheKeyPkg } from '@karinjs/plugin'
 
 /**
  * @webui 插件市场 获取插件列表
@@ -50,7 +49,7 @@ export const getPluginMarketList: RequestHandler<null, null, PluginMarketRequest
  * 获取缓存
  */
 const getCache = async () => {
-  const { redis } = await import('@/core/db/redis/redis')
+  const { redis } = await import('@karinjs/db')
   const cache = await redis.get(REDIS_PLUGIN_MARKET_LIST_CACHE_KEY)
   return cache
 }
@@ -59,7 +58,7 @@ const getCache = async () => {
  * 设置缓存
  */
 const setCache = async (data: PluginMarketResponse[]) => {
-  const { redis } = await import('@/core/db/redis/redis')
+  const { redis } = await import('@karinjs/db')
   await redis.set(
     REDIS_PLUGIN_MARKET_LIST_CACHE_KEY,
     JSON.stringify(data),

@@ -1,7 +1,8 @@
 import path from 'node:path'
+import { core } from '../core'
 import { requireFile } from '@karinjs/utils'
-import { getPluginDetails, getPlugins as getPluginsList } from './manager'
-import { PluginCacheKeyPkg, PluginPackageType } from '../decorators/base'
+import type { PluginPackageType } from '../pkg'
+import type { PluginCacheKeyPkg } from '../decorators/base'
 
 export type GetPluginReturn<T extends boolean> = T extends true ? PluginCacheKeyPkg[] : string[]
 
@@ -31,15 +32,17 @@ export const getPlugins = async <T extends boolean = false> (
   isForce: boolean = false
 ): Promise<GetPluginReturn<T>> => {
   if (!isInfo) {
-    const result = await getPluginsList(isForce)
-    if (type === 'all') return result as GetPluginReturn<T>
-    return result.filter(v => {
-      const [t] = v.split(':')
-      return t === type
-    }) as GetPluginReturn<T>
+    const result = await core.promise.getPlugins(isForce)
+    if (type === 'all') return result.all as GetPluginReturn<T>
+    if (type === 'npm') return result.npm as GetPluginReturn<T>
+    if (type === 'git') return result.git as GetPluginReturn<T>
+    if (type === 'apps') return result.apps as GetPluginReturn<T>
+    if (type === 'root') return result.root as GetPluginReturn<T>
+    return []
   }
 
-  const list = Array.from((await getPluginDetails(isForce)).values())
+  const map = await core.promise.getPluginsMap(isForce)
+  const list = Array.from(map.values())
   if (type === 'all') return list as GetPluginReturn<T>
   return list.filter(v => {
     const [t] = v.name.split(':')

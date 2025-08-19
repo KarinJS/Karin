@@ -1,4 +1,4 @@
-import { updatePkg } from '@/utils/system'
+import { updatePkg } from '@karinjs/utils'
 
 import { createServerErrorResponse, createSuccessResponse } from '../utils/response'
 

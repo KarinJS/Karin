@@ -28,8 +28,6 @@
     "build": "tsdown",
     "checkType": "tsc",
     "demo": "tsx src/demo.ts",
-    "example:advanced": "tsx examples/advanced.ts",
-    "example:basic": "tsx examples/basic.ts",
     "prepublishOnly": "pnpm run checkType",
     "pub": "npm publish --access public",
     "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""

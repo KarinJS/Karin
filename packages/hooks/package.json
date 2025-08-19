@@ -40,15 +40,13 @@
     "@karinjs/core": "workspace:*",
     "@karinjs/plugin": "workspace:*",
     "@karinjs/logger": "workspace:*",
-    "lodash": "catalog:",
-    "node-karin": "workspace:*"
+    "lodash": "catalog:"
   },
   "peerDependencies": {
     "@karinjs/adapter": "workspace:*",
     "@karinjs/core": "workspace:*",
     "@karinjs/plugin": "workspace:*",
     "@karinjs/logger": "workspace:*",
-    "lodash": "catalog:",
-    "node-karin": "workspace:*"
+    "lodash": "catalog:"
   }
 }

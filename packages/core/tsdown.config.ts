@@ -3,7 +3,7 @@ import path from 'node:path'
 import { defineConfig } from 'tsdown/config'
 
 export default defineConfig({
-  entry: ['src/index.ts', 'src/config.ts'],
+  entry: ['src/index.ts', 'src/exports/*.ts'],
   fixedExtension: true, // 固定为mjs
   dts: true,
   format: ['esm'],

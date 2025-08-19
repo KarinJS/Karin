@@ -1,6 +1,5 @@
-import type { Icon } from '@/types/server/local'
-import type { KarinPluginType } from '@/plugins/market'
-import type { PluginPackageType } from '@/core/karin/base'
+import type { WebConfigIcon } from '@karinjs/components'
+import type { KarinPluginType, PluginPackageType } from '@karinjs/plugin'
 
 /**
  * 基类
@@ -109,7 +108,7 @@ export interface PluginAdminListResponse {
     /** 是否存在默认组件配置函数 一般用于插件的配置文件管理 */
     defaultComponent: boolean
     /** 插件图标 */
-    icon: Icon
+    icon: WebConfigIcon
   }
 }
 
@@ -137,7 +136,7 @@ export interface FrontendInstalledPluginListResponse {
     avatar: string
   }
   /** 插件图标 */
-  icon: Icon
+  icon: WebConfigIcon
   /** 插件仓库主页 */
   repoUrl: string
   /** 插件是否可配置 */

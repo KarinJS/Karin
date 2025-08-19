@@ -1,9 +1,20 @@
+// import fs from 'node:fs'
+import paths from '@karinjs/paths'
 import { Config } from '@karinjs/config'
-export * from '@karinjs/config'
 
 /**
  * @public
  * 配置文件实例
 */
-export const config: Config = new Config('./@karinjs/config')
-export type { ConfigAdapter, ConfigConfig, ConfigEnv, ConfigFiles, ConfigFormatMap, ConfigGroups, ConfigGroupValue, ConfigMap, ConfigPM2, ConfigPrivates, ConfigPrivateValue, ConfigRedis, ConfigRender, ConfigTypes, EventMap, Formatter, TypedEventMap } from '@karinjs/config'
+export let config: Config
+
+/**
+ * 初始化config
+ * @param root 根目录
+ */
+export const createSystemConfig = async () => {
+  config = new Config(paths.karinPathBase)
+  await config.init()
+}
+
+export type { ConfigAdapter, ConfigConfig, ConfigEnv, ConfigFiles, ConfigFormatMap, ConfigGroups, ConfigGroupValue, ConfigMap, ConfigPM2, ConfigPrivates, ConfigPrivateValue, ConfigRedis, ConfigRender, ConfigTypes, EventMap as ConfigEventMap, Formatter, TypedEventMap } from '@karinjs/config'

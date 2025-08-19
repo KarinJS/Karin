@@ -422,3 +422,6 @@ export type SendMessage = string | Elements | Array<string | Elements>
  * 全部消息段元素
  */
 export type ElementTypes = Elements
+
+/** 按钮类型 */
+export type ButtonType = ButtonElement | KeyboardElement | Array<ButtonElement | KeyboardElement>

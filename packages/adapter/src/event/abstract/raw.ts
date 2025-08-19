@@ -1,4 +1,4 @@
-import lodash from 'node-karin/lodash'
+import lodash from 'lodash'
 import * as segment from '../../segment/create'
 import type { CustomNodeElement, Elements, SendMessage } from '../../segment/types'
 

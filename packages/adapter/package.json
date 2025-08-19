@@ -34,7 +34,6 @@
     "@karinjs/utils": "workspace:*",
     "@karinjs/plugin": "workspace:*",
     "@karinjs/hooks": "workspace:*",
-    "node-karin": "workspace:*",
     "lodash": "catalog:"
   },
   "peerDependencies": {
@@ -45,7 +44,6 @@
     "@karinjs/utils": "workspace:*",
     "@karinjs/plugin": "workspace:*",
     "@karinjs/hooks": "workspace:*",
-    "node-karin": "workspace:*",
     "lodash": "catalog:"
   }
 }

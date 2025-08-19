@@ -18,6 +18,10 @@ catalog:
   moment: "npm:@karinjs/moment"
   redis: "npm:@karinjs/redis"
   sqlite3: "npm:@karinjs/sqlite3-cjs"
+  art-template: "npm:@karinjs/art-template"
+  node-schedule: "npm:@karinjs/node-schedule"
+  jsonwebtoken: "npm:@karinjs/jsonwebtoken"
   log4js: 6.9.1
   chalk: 5.4.1
   chokidar: 4.0.3
+  yaml: 2.7.0

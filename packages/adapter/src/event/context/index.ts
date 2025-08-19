@@ -1,4 +1,4 @@
-import { emitter } from '@karinjs/core'
+import { emitter } from '@karinjs/core/event'
 import type { Event } from '../types'
 
 /** 上下文缓存 */
@@ -17,6 +17,7 @@ export const handleContext = (event: Event) => {
     return false
   }
 
+  // @ts-ignore
   emitter.emit(`ctx:${key}`, event)
   ctxCache.delete(key)
   return true
@@ -56,6 +57,7 @@ export const context = async <T = Event> (e: Event, options?: {
       }
     }, time * 1000)
 
+    // @ts-ignore
     emitter.once(`ctx:${key}`, (event: Event) => {
       clearTimeout(timeout)
       resolve(event as T)

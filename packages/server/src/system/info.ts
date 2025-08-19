@@ -8,6 +8,7 @@ import {
 import { emitter, statusListener } from '@karinjs/core'
 import { createSuccessResponse } from '../utils/response'
 
+import type { WebSocket } from 'ws'
 import type { RequestHandler } from 'express'
 
 /**

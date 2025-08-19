@@ -1,123 +1,128 @@
-import fs from 'node:fs'
-import path from 'node:path'
+import {
+  parse,
+  decode,
+  stringify,
+  encode,
+  safe,
+  unsafe,
+} from 'ini'
+import { readFileSync, writeFileSync } from 'node:fs'
 
 /**
- * INI文件解析器，专用于解析和保存 .npmrc 格式的文件
+ * INI 解析器
  */
-interface INIParser {
+export const ini = {
   /**
-   * 从指定路径读取并解析INI文件
+   * 解析 INI 格式字符串为对象 (parse 是 decode 的别名)
+   * @example
+   * ```ts
+   * ini.parse('key=value\n[section]\nfoo=bar')
+   * // => { key: 'value', section: { foo: 'bar' } }
+   * ```
+   */
+  parse,
+  /**
+   * 解码 INI 格式字符串为对象
+   * @example
+   * ```ts
+   * ini.decode('key=value\n[section]\nfoo=bar')
+   * // => { key: 'value', section: { foo: 'bar' } }
+   * ```
+   */
+  decode,
+  /**
+   * 将对象编码为 INI 格式字符串 (stringify 是 encode 的别名)
+   * @example
+   * ```ts
+   * ini.stringify({ key: 'value', section: { foo: 'bar' } })
+   * // => 'key=value\n\n[section]\nfoo=bar\n'
+   * ```
+   */
+  stringify,
+  /**
+   * 将对象编码为 INI 格式字符串
+   * @example
+   * ```ts
+   * ini.encode({ key: 'value', section: { foo: 'bar' } })
+   * // => 'key=value\n\n[section]\nfoo=bar\n'
+   * ```
+   */
+  encode,
+  /**
+   * 将字符串转换为安全的 INI 键或值
+   * @example
+   * ```ts
+   * ini.safe('"unsafe string"')
+   * // => '\\"unsafe string\\"'
+   * ```
+   */
+  safe,
+  /**
+   * 将转义的字符串还原为原始字符串
+   * @example
+   * ```ts
+   * ini.unsafe('\\"safe string\\"')
+   * // => '"safe string"'
+   * ```
+   */
+  unsafe,
+  /**
+   * 读取并解析 INI 文件
    * @param filePath - 文件路径
-   * @returns 解析后的键值对对象
+   * @param encoding - 文件编码，默认为 'utf8'
+   * @returns 解析后的对象
+   * @example
+   * ```ts
+   * // 读取配置文件
+   * const config = ini.readFile('./config.ini')
+   * // => { database: { host: 'localhost' }, app: { name: 'myapp' } }
+   *
+   * // 使用泛型指定返回类型
+   * interface Config {
+   *   database: { host: string; port: number }
+   *   app: { name: string; version: string }
+   * }
+   * const config = ini.readFile<Config>('./config.ini')
+   * ```
    */
-  read: (filePath: string) => Record<string, string>
-
+  readFile<T = Record<string, any>> (filePath: string, encoding: BufferEncoding = 'utf8'): T {
+    const content = readFileSync(filePath, { encoding })
+    return parse(content) as T
+  },
   /**
-   * 将键值对对象保存到指定路径
-   * @param data - 要保存的键值对数据
-   * @param filePath - 保存的文件路径
-   * @returns 是否保存成功
+   * 将对象编码为 INI 格式并写入文件
+   * @param filePath - 文件路径
+   * @param data - 要写入的数据对象
+   * @param options - 写入选项
+   * @param encoding - 文件编码，默认为 'utf8'
+   * @example
+   * ```ts
+   * const config = {
+   *   database: { host: 'localhost', port: 3306 },
+   *   app: { name: 'myapp', version: '1.0.0' }
+   * }
+   *
+   * // 基本写入
+   * ini.writeFile('./config.ini', config)
+   *
+   * // 使用选项
+   * ini.writeFile('./config.ini', config, {
+   *   whitespace: true,
+   *   align: true,
+   *   section: 'main'
+   * })
+   *
+   * // 指定编码
+   * ini.writeFile('./config.ini', config, {}, 'utf16le')
+   * ```
    */
-  write: (data: Record<string, string>, filePath: string) => boolean
+  writeFile (
+    filePath: string,
+    data: any,
+    options: Parameters<typeof stringify>[1] = {},
+    encoding: BufferEncoding = 'utf8'
+  ): void {
+    const content = stringify(data, options)
+    writeFileSync(filePath, content, { encoding })
+  },
 }
-
-/**
- * 创建并返回INI解析器对象
- * @returns INI解析器对象
- */
-export const createINIParser = (): INIParser => {
-  /**
-   * 解析INI格式的字符串内容
-   * @param content - INI格式的文件内容
-   * @returns 解析后的键值对对象
-   */
-  const parseINIContent = (content: string): Record<string, string> => {
-    const result: Record<string, string> = {}
-
-    // 按行分割内容
-    const lines = content.split(/\r?\n/)
-
-    for (const line of lines) {
-      // 跳过空行和注释行
-      const trimmedLine = line.trim()
-      if (!trimmedLine || trimmedLine.startsWith('#') || trimmedLine.startsWith(';')) {
-        continue
-      }
-
-      // 解析键值对
-      const separatorIndex = trimmedLine.indexOf('=')
-      if (separatorIndex !== -1) {
-        const key = trimmedLine.slice(0, separatorIndex).trim()
-        const value = trimmedLine.slice(separatorIndex + 1).trim()
-
-        if (key) {
-          result[key] = value
-        }
-      }
-    }
-
-    return result
-  }
-
-  /**
-   * 将键值对对象转换为INI格式的字符串
-   * @param data - 键值对数据
-   * @returns INI格式的字符串
-   */
-  const stringifyINI = (data: Record<string, string>): string => {
-    return Object.entries(data)
-      .map(([key, value]) => `${key}=${value}`)
-      .join('\n')
-  }
-
-  return {
-    /**
-     * 从指定路径读取并解析INI文件
-     * @param filePath - 文件路径
-     * @returns 解析后的键值对对象
-     */
-    read: (filePath: string): Record<string, string> => {
-      try {
-        const resolvedPath = path.resolve(filePath)
-        if (!fs.existsSync(resolvedPath)) {
-          return {}
-        }
-
-        const content = fs.readFileSync(resolvedPath, 'utf-8')
-        return parseINIContent(content)
-      } catch (error) {
-        console.error(`读取INI文件失败: ${error}`)
-        return {}
-      }
-    },
-    /**
-     * 将键值对对象保存到指定路径
-     * @param data - 要保存的键值对数据
-     * @param filePath - 保存的文件路径
-     * @returns 是否保存成功
-     */
-    write: (data: Record<string, string>, filePath: string): boolean => {
-      try {
-        const resolvedPath = path.resolve(filePath)
-        const content = stringifyINI(data)
-
-        // 确保目录存在
-        const dirname = path.dirname(resolvedPath)
-        if (!fs.existsSync(dirname)) {
-          fs.mkdirSync(dirname, { recursive: true })
-        }
-
-        fs.writeFileSync(resolvedPath, content, 'utf-8')
-        return true
-      } catch (error) {
-        console.error(`保存INI文件失败: ${error}`)
-        return false
-      }
-    },
-  }
-}
-
-/**
- * INI解析器
- */
-export const ini = createINIParser()

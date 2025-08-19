@@ -1,6 +1,6 @@
 import utils from '../../utils'
 import { hooksEmit } from '@karinjs/hooks'
-import { config as Cfg } from 'node-karin'
+import { config as Cfg } from '@karinjs/core/config'
 import { FilterCallback, handleMessageCommon } from './common'
 
 import type { DirectMessage, FriendMessage } from '../../abstract/message'

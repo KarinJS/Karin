@@ -1,6 +1,6 @@
 import utils from '../../utils'
 import { hooksEmit } from '@karinjs/hooks'
-import { plguinManager } from '@karinjs/plugin'
+import { cache } from '@karinjs/plugin'
 import { internalEmitter } from '@karinjs/core'
 
 import type { Notice, Request } from '../../types'
@@ -16,7 +16,7 @@ const _dispatchNoticeEvent = async (
   ctx: Notice | Request,
   config: ConfigPrivateValue | ConfigGroupValue
 ) => {
-  for (const plugin of plguinManager.manager.cache.accept) {
+  for (const plugin of cache.accept) {
     if (
       plugin.register.event !== ctx.event &&
       plugin.register.event !== `${ctx.event}.${ctx.subEvent}`

@@ -25,37 +25,42 @@
   "scripts": {
     "build": "tsdown",
     "checkType": "tsc",
-    "demo": "tsx src/demo.ts",
-    "example:advanced": "tsx examples/advanced.ts",
-    "example:basic": "tsx examples/basic.ts",
     "prepublishOnly": "pnpm run checkType",
     "pub": "npm publish --access public",
     "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
   },
   "dependencies": {
-    "jsonwebtoken": "npm:@karinjs/jsonwebtoken@^1.1.1"
+    "jsonwebtoken": "catalog:"
   },
   "devDependencies": {
     "@karinjs/core": "workspace:*",
+    "@karinjs/components": "workspace:*",
     "@karinjs/envs": "workspace:*",
+    "@karinjs/db": "workspace:*",
+    "@karinjs/git": "workspace:*",
     "@karinjs/logger": "workspace:*",
     "@karinjs/paths": "workspace:*",
     "@karinjs/plugin": "workspace:*",
     "@karinjs/utils": "workspace:*",
     "axios": "catalog:",
     "express": "catalog:",
+    "lodash": "catalog:",
     "moment": "catalog:",
     "ws": "catalog:"
   },
   "peerDependencies": {
     "@karinjs/core": "workspace:*",
+    "@karinjs/components": "workspace:*",
     "@karinjs/envs": "workspace:*",
+    "@karinjs/db": "workspace:*",
+    "@karinjs/git": "workspace:*",
     "@karinjs/logger": "workspace:*",
     "@karinjs/paths": "workspace:*",
     "@karinjs/plugin": "workspace:*",
     "@karinjs/utils": "workspace:*",
     "axios": "catalog:",
     "express": "catalog:",
+    "lodash": "catalog:",
     "moment": "catalog:",
     "ws": "catalog:"
   }

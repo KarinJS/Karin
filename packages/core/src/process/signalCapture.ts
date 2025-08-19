@@ -1,5 +1,5 @@
 import { processExit } from './exit'
-import { listeners } from '@/core/internal/listeners'
+import { emitter } from '../event'
 
 /** 处理基本信号 */
 export const processHandler = () => {
@@ -17,21 +17,21 @@ export const processHandler = () => {
   /** 监听退出信号 与 SIGINT 类似，但会生成核心转储 */
   process.once('SIGQUIT', code => processExit(code))
   /** 捕获警告 */
-  process.on('warning', warning => listeners.emit('warn', warning))
+  process.on('warning', warning => emitter.emit('warn', warning))
   /** 捕获错误 */
   process.on('uncaughtException', (error, origin) => {
-    listeners.emit('error', error, origin)
+    emitter.emit('error', error, origin)
   })
   /** 捕获未处理的Promise错误 */
   process.on('unhandledRejection', (error, promise) => {
-    listeners.emit('error', error, promise)
+    emitter.emit('error', error, promise)
   })
   /** 捕获Promise错误 */
   process.on('rejectionHandled', error => {
-    listeners.emit('error', error)
+    emitter.emit('error', error)
   })
 
-  listeners.on('error', (...args: [unknown]) => {
+  emitter.on('error', (...args: [unknown]) => {
     logger.error(...args)
   })
 

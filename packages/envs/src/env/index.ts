@@ -4,11 +4,16 @@ import { execSync } from 'node:child_process'
 let IS_PNPM10: boolean | null = null
 
 export * from './npm'
+export * from './env'
 
 /**
  * @description 是否为Windows
  */
 export const isWin = () => process.platform === 'win32'
+/**
+ * @description 是否为Windows
+ */
+export const isWindows = () => process.platform === 'win32'
 /**
  * @description 是否为Mac
  */

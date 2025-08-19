@@ -1,9 +1,11 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import paths from '@karinjs/paths'
 import { logger } from '@karinjs/logger'
 import { Formatter } from './formatter'
+import { defaultConfig } from './default'
 import { EventEmitter } from 'node:events'
-import { requireFileSync, watch } from '@karinjs/utils'
+import { requireFileSync, watch, watchs } from '@karinjs/utils'
 import type { ConfigFormatMap, ConfigMap, ConfigPrivateValue, ConfigGroupValue, ConfigEnv } from './types'
 
 export type TypedEventMap = {
@@ -47,6 +49,7 @@ export class Config extends EventEmitter<EventMap> {
   #groupCache: Record<string, ConfigGroupValue>
   /** 清理缓存定时器 */
   #clearCacheInterval: NodeJS.Timeout | null = null
+  /** 配置文件列表 */
   #configFiles = [
     'config.json',
     'adapter.json',
@@ -65,25 +68,64 @@ export class Config extends EventEmitter<EventMap> {
     }
 
     this.#dir = dir
-    this.#files = {} as ConfigFiles
+    this.#files = {
+      adapter: { dir: '', cache: null },
+      groups: { dir: '', cache: null },
+      privates: { dir: '', cache: null },
+      config: { dir: '', cache: null },
+      redis: { dir: '', cache: null },
+      render: { dir: '', cache: null },
+      pm2: { dir: '', cache: null },
+      env: { dir: '', cache: null },
+    }
+
     this.#privateCount = {}
     this.#privateStaticCache = {}
     this.#privateCache = {}
     this.#groupCount = {}
     this.#groupStaticCache = {}
     this.#groupCache = {}
-    this.#initFiles()
-    this.#initCacheCleaner()
   }
 
-  #initFiles () {
-    const files: string[] = []
-    this.#configFiles.forEach(file => files.push(path.join(this.#dir, file)))
-    files.push(path.join(process.cwd(), process.env.EBV_FILE || '.env'))
+  async init (): Promise<Config> {
+    /** 检查env文件 */
+    const env = path.join(process.cwd(), process.env.EBV_FILE || '.env')
+    if (!fs.existsSync(env)) {
+      throw new Error(`初始化环境变量失败，未找到 .env 文件，请执行 ${logger.green('npx ki init')} 初始化项目`)
+    }
 
-    files.forEach((dir) => {
-      this.#files[dir as keyof ConfigFormatMap] = { dir, cache: null }
-    })
+    const files = this.#configFiles.map(file => path.join(this.#dir, file))
+    files.push(env)
+
+    /**
+     * 创建必要的目录
+     */
+    await Promise.all(
+      Object.keys(paths).map(async (key) => {
+        await fs.promises.mkdir(key, { recursive: true })
+      })
+    )
+
+    /**
+     * - 创建缓存对象
+     * - 创建对应的文件
+     */
+    await Promise.all([
+      ...files.map(async (file) => {
+        const key = path.basename(file, path.extname(file)).replace(/^\./, '') as keyof ConfigFormatMap
+        this.#files[key] = { dir: file, cache: null }
+      }),
+      ...Object.entries(defaultConfig).map(async ([key, value]) => {
+        const filePath = path.join(paths.karinPathConfig, `${key}.json`)
+        const exists = await fs.promises.access(filePath).then(() => true).catch(() => false)
+        if (exists) return
+
+        await fs.promises.writeFile(filePath, JSON.stringify(value, null, 2), 'utf-8')
+      }),
+    ])
+
+    this.#initCacheCleaner()
+    return this
   }
 
   /**
@@ -245,7 +287,7 @@ export class Config extends EventEmitter<EventMap> {
     /** 排除env */
     const files = Object.values(this.#files).map(v => v.dir).filter(v => v !== this.#files.env.dir)
 
-    watch(files, (file, old, data) => {
+    watchs(files, (file, old, data) => {
       /** 获取文件名称 不含后缀 */
       const name = path.basename(file, path.extname(file))
       this.emit('change', name as any, old as any, data as any)
@@ -268,7 +310,7 @@ export class Config extends EventEmitter<EventMap> {
         this.#groupCache = { ...formattedData }
         this.#groupCount = {}
       }
-    }, { type: 'json' })
+    }, { require: { type: 'json' } })
 
     /** 监听env */
     watch<ConfigFormatMap['env']['result']>(this.#files.env.dir, (old, data) => {
@@ -578,7 +620,7 @@ export class Config extends EventEmitter<EventMap> {
         value: value.value,
         comment: value.comment,
       }))
-      this.writeEnv(env)
+      this.writeEnv(env, this.#files.env.dir, true)
       return
     }
 

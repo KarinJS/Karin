@@ -29,11 +29,13 @@
   "devDependencies": {
     "@karinjs/utils": "workspace:*",
     "@karinjs/logger": "workspace:*",
+    "@karinjs/paths": "workspace:*",
     "lodash": "npm:@karinjs/lodash@^1.1.1"
   },
   "peerDependencies": {
     "@karinjs/utils": "workspace:*",
     "@karinjs/logger": "workspace:*",
+    "@karinjs/paths": "workspace:*",
     "lodash": "npm:@karinjs/lodash@^1.1.1"
   }
 }

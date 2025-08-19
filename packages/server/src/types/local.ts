@@ -1,5 +1,5 @@
-import type { PluginPackageType } from '@/plugins/types'
-import type { ComponentConfig } from '../components'
+import { ComponentConfig } from '@karinjs/core'
+import { PluginPackageType } from '@karinjs/plugin'
 
 /**
  * 插件作者

@@ -1,16 +1,12 @@
 import axios from 'axios'
 import { URL } from 'node:url'
 import { logger } from '@karinjs/logger'
+import { isWindows } from '@karinjs/envs'
 import { execSync } from 'node:child_process'
 import { common, waitPort } from '@karinjs/utils'
-import { BASE_ROUTER, EXIT_ROUTER, PING_ROUTER, SYSTEM_STATUS_KARIN_ROUTER } from '@/server/router/router'
-import type { AxiosInstance, AxiosResponse } from 'axios'
+import { BASE_ROUTER, EXIT_ROUTER, PING_ROUTER, SYSTEM_STATUS_KARIN_ROUTER } from '@karinjs/server'
 
-/**
- * 判断当前是否为Windows系统
- * @returns 是否为Windows系统
- */
-const isWindows = (): boolean => process.platform === 'win32'
+import type { AxiosInstance, AxiosResponse } from 'axios'
 
 /**
  * 请求响应类型

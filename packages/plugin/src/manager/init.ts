@@ -1,5 +1,5 @@
-import { init } from './load'
 import { errorHandler } from '../event/error'
+import { getPluginLoader } from '../load'
 
 /**
  * 初始化插件
@@ -8,7 +8,7 @@ export const initPlugins = async () => {
   logger.info(logger.green('-----------'))
   logger.info('加载插件中...')
 
-  await init()
+  await getPluginLoader().run()
   logger.info('插件加载完成')
   // /** 收集所有插件加载的Promise */
   // const allPromises: Promise<void>[] = []

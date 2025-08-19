@@ -1,7 +1,7 @@
 import { createServerErrorResponse, createSuccessResponse } from '../utils/response'
 
 import type { RequestHandler } from 'express'
-import type { NetworkStatus } from '@/types/server/network'
+import type { NetworkStatus } from '../types'
 
 let network: (() => Promise<NetworkStatus>) | null = null
 

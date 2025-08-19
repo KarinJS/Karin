@@ -6,3 +6,4 @@
 - isPublic: 应该放到core中
 - packages\utils\src\fs\pkg.ts 应该放在@kairnjs/plugin中实现
 - packages\plugin\src\decorators\emitter.ts: 处理事件分发 需要暴露事件
+- 挂载在karin上的render函数从@karinjs/render中引入，命名为fastRender

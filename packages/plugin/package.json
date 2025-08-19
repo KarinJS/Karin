@@ -21,9 +21,9 @@
     "@karinjs/envs": "workspace:*",
     "@karinjs/events": "workspace:*",
     "@karinjs/utils": "workspace:*",
+    "@karinjs/logger": "workspace:*",
     "chokidar": "catalog:",
-    "lodash": "catalog:",
-    "node-karin": "workspace:*"
+    "lodash": "catalog:"
   },
   "peerDependencies": {
     "@karinjs/adapter": "workspace:*",
@@ -31,10 +31,10 @@
     "@karinjs/envs": "workspace:*",
     "@karinjs/events": "workspace:*",
     "@karinjs/utils": "workspace:*",
+    "@karinjs/logger": "workspace:*",
     "chokidar": "catalog:",
-    "lodash": "catalog:",
-    "node-karin": "workspace:*"
-  }  ,
+    "lodash": "catalog:"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

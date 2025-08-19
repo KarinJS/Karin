@@ -1,3 +1,4 @@
+import { format } from 'node:util'
 import type { Response } from 'express'
 
 /** HTTP状态码 */
@@ -26,6 +27,7 @@ export enum HTTPStatusCode {
 
 /**
  * 创建响应
+ * @code *
  * @param res 响应
  * @param code 状态码
  * @param data 数据
@@ -45,6 +47,7 @@ export const createResponse = <T> (res: Response, code: HTTPStatusCode, data?: T
   )
 
   res.status(code).json({
+    ok: code === HTTPStatusCode.OK,
     code,
     data,
     message,
@@ -53,6 +56,7 @@ export const createResponse = <T> (res: Response, code: HTTPStatusCode, data?: T
 
 /**
  * 创建成功响应
+ * @code 200
  * @param res 响应
  * @param data 数据
  * @param message 消息
@@ -67,6 +71,7 @@ export const createSuccessResponse = <T> (res: Response, data?: T, message = '�
 
 /**
  * 创建未鉴权响应
+ * @code 401
  * @param res 响应
  * @param message 消息
  * @returns 响应
@@ -81,6 +86,7 @@ export const createUnauthorizedResponse = (res: Response, message = '未登录')
 
 /**
  * 创建访问令牌已过期响应
+ * @code 419
  * @param res 响应
  * @param message 消息
  * @returns 响应
@@ -93,6 +99,7 @@ export const createAccessTokenExpiredResponse = (res: Response, message = '访�
 
 /**
  * 创建刷新令牌已过期响应
+ * @code 420
  * @param res 响应
  * @param message 消息
  * @returns 响应
@@ -105,6 +112,7 @@ export const createRefreshTokenExpiredResponse = (res: Response, message = '刷�
 
 /**
  * 创建未找到响应
+ * @code 404
  * @param res 响应
  * @param message 消息
  * @returns 响应
@@ -119,6 +127,7 @@ export const createNotFoundResponse = (res: Response, message = '未找到') => 
 
 /**
  * 创建服务器错误响应
+ * @code 500
  * @param res 响应
  * @param message 消息
  * @returns 响应
@@ -133,6 +142,7 @@ export const createServerErrorResponse = (res: Response, message = '服务器错
 
 /**
  * 创建参数错误响应
+ * @code 400
  * @param res 响应
  * @param message 消息
  * @returns 响应
@@ -147,6 +157,7 @@ export const createBadRequestResponse = (res: Response, message = '参数错误'
 
 /**
  * 创建请求过大响应
+ * @code 413
  * @param res 响应
  * @param message 消息
  * @returns 响应
@@ -159,6 +170,7 @@ export const createPayloadTooLargeResponse = (res: Response, message = '请求�
 
 /**
  * 创建方法不允许响应
+ * @code 405
  * @param res 响应
  * @param message 消息
  * @returns 响应
@@ -170,6 +182,7 @@ export const createMethodNotAllowedResponse = (res: Response, message = '方法�
 
 /**
  * 创建禁止访问响应
+ * @code 403
  * @param res 响应
  * @param message 消息
  * @returns 响应
@@ -180,4 +193,11 @@ export const createMethodNotAllowedResponse = (res: Response, message = '方法�
  */
 export const createForbiddenResponse = (res: Response, message = '禁止访问') => {
   return createResponse(res, HTTPStatusCode.Forbidden, null, message)
+}
+
+/**
+ * 将错误对象格式化为字符串
+ */
+export const formatError = (error: unknown): string => {
+  return format(error)
 }

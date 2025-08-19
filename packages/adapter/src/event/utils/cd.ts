@@ -1,5 +1,5 @@
 import type { Notice, Request } from '../../event/types'
-import type { ConfigPrivateValue, ConfigGroupValue } from '@karinjs/core/config'
+import type { ConfigPrivateValue, ConfigGroupValue } from '@karinjs/core'
 
 /** 用户个人CD */
 const userCD: Record<string, NodeJS.Timeout> = {}

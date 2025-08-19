@@ -2,7 +2,6 @@ import { createServer } from 'node:net'
 import { sleep } from '../common/sleep'
 import { exec } from './exec'
 import { getPid } from './pid'
-import { isWin } from './system'
 
 /**
  * 检查端口是否可用
@@ -65,7 +64,8 @@ export const killApp = async (
 ): Promise<boolean> => {
   const pid: number | null = isPort ? await getPid(Number(identifier)) : Number(identifier)
   if (!pid) return false
-  const command = isWin
+  const isWindows = process.platform === 'win32'
+  const command = isWindows
     ? `taskkill /F /PID ${pid}`
     : `kill -9 ${pid}`
   const { stderr } = await exec(command)

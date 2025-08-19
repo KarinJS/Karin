@@ -8,11 +8,17 @@ import {
   WS_CONNECTION,
   WS_CONNECTION_ONEBOT,
   WS_CONNECTION_PUPPETEER,
-  WS_SNAPKA,
-  WS_CONNECTION_SANDBOX,
+  WS_CONNECTION_SNAPKA,
+  // WS_CONNECTION_SANDBOX,
   WS_CONNECTION_TERMINAL,
 } from '@karinjs/envs'
 import type { IncomingMessage } from 'node:http'
+
+type KEY = typeof WS_CONNECTION_SNAPKA |
+  typeof WS_CONNECTION |
+  typeof WS_CONNECTION_ONEBOT |
+  typeof WS_CONNECTION_PUPPETEER |
+  typeof WS_CONNECTION_TERMINAL
 
 /** ws 服务 */
 export const wss: WebSocketServer = new WebSocketServer({ server })
@@ -24,7 +30,7 @@ export const wss: WebSocketServer = new WebSocketServer({ server })
  * @param request 请求
  */
 export const emitEvent = (
-  key: string,
+  key: KEY,
   socket: WebSocket,
   request: IncomingMessage
 ) => {
@@ -103,7 +109,7 @@ wss.on('connection', (socket, request) => {
      * x-client-id: snapka 作为识别
      */
     if (request.headers['x-client-id'] === 'snapka') {
-      emitEvent(WS_SNAPKA, socket, request)
+      emitEvent(WS_CONNECTION_SNAPKA, socket, request)
     } else {
       emitEvent(WS_CONNECTION_PUPPETEER, socket, request)
     }
@@ -120,15 +126,15 @@ wss.on('connection', (socket, request) => {
     return
   }
 
-  if (request.url?.startsWith('/sandbox')) {
-    emitEvent(WS_CONNECTION_SANDBOX, socket, request)
+  // if (request.url?.startsWith('/sandbox')) {
+  //   emitEvent(WS_CONNECTION_SANDBOX, socket, request)
 
-    // socket.once('close', (code, reason) => {
-    //   emitter.emit(WS_CLOSE_SANDBOX, socket, request, code, reason)
-    // })
+  //   // socket.once('close', (code, reason) => {
+  //   //   emitter.emit(WS_CLOSE_SANDBOX, socket, request, code, reason)
+  //   // })
 
-    return
-  }
+  //   return
+  // }
 
   emitEvent(WS_CONNECTION, socket, request)
   socket.on('close', (code, reason) => {

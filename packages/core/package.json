@@ -8,14 +8,19 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./src/index.ts",
       "development": "./src/index.ts",
       "default": "./dist/index.mjs"
     },
     "./config": {
-      "types": "./dist/config.d.ts",
-      "development": "./src/config.ts",
-      "default": "./dist/config.mjs"
+      "types": "./src/exports/config.ts",
+      "development": "./src/exports/config.ts",
+      "default": "./dist/exports/config.mjs"
+    },
+    "./event": {
+      "types": "./src/exports/event.ts",
+      "development": "./src/exports/event.ts",
+      "default": "./dist/exports/event.mjs"
     }
   },
   "scripts": {
@@ -47,7 +52,7 @@
     "moment": "catalog:",
     "sqlite3": "catalog:",
     "ws": "catalog:",
-    "yaml": "2.7.0"
+    "yaml": "catalog:"
   },
   "devDependencies": {
     "@karinjs/adapter": "workspace:*",
@@ -62,6 +67,10 @@
     "@karinjs/paths": "workspace:*",
     "@karinjs/utils": "workspace:*",
     "@karinjs/logger": "workspace:*",
+    "@karinjs/server": "workspace:*",
+    "@karinjs/components": "workspace:*",
+    "@karinjs/render": "workspace:*",
+    "@karinjs/plugin": "workspace:*",
     "@types/express": "^5.0.1",
     "art-template": "npm:@karinjs/art-template@1.1.0",
     "axios": "catalog:",
@@ -81,6 +90,10 @@
     "@karinjs/events": "workspace:*",
     "@karinjs/paths": "workspace:*",
     "@karinjs/utils": "workspace:*",
-    "@karinjs/logger": "workspace:*"
+    "@karinjs/logger": "workspace:*",
+    "@karinjs/server": "workspace:*",
+    "@karinjs/components": "workspace:*",
+    "@karinjs/render": "workspace:*",
+    "@karinjs/plugin": "workspace:*"
   }
 }

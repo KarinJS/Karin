@@ -1,8 +1,8 @@
-import { plguinManager } from '../manager'
+import { core, register } from '../manager'
 import { getCaller, types } from '@karinjs/utils'
 import { formatReg, createID, createLogger } from './util'
 
-import type { PluginCache } from './base'
+import type { PluginRegisterCache } from './base'
 import type { OptionsBase } from './options'
 import type { Elements, MessageEventMap } from '@karinjs/adapter'
 import type { AddRuleItemType, FormatOptions as ClassFormatOptions, Plugin, RuleItemBase } from './class'
@@ -58,13 +58,13 @@ export interface Callbacks {
   * @param fnc 函数
   * @param options 选项
   */
-  <T extends keyof MessageEventMap>(reg: string | RegExp, fnc: MessageCallback<T>, options?: Options<T>): CommandCache
+  <T extends keyof MessageEventMap> (reg: string | RegExp, fnc: MessageCallback<T>, options?: Options<T>): CommandCache
   /**
    * @param reg 正则表达式
    * @param element 字符串或者KarinElement、KarinElement数组
    * @param options 选项
    */
-  <T extends keyof MessageEventMap>(reg: string | RegExp, element: MessageSegment, options?: StringOptions<T>): CommandCache
+  <T extends keyof MessageEventMap> (reg: string | RegExp, element: MessageSegment, options?: StringOptions<T>): CommandCache
 }
 
 /** 格式化后的参数选项类型 */
@@ -74,7 +74,7 @@ type FormatOptions<T extends keyof MessageEventMap> = Required<Omit<
 >>
 
 /** command 插件缓存对象 */
-export interface CommandPluginCache extends PluginCache {
+export interface CommandPluginCache extends PluginRegisterCache {
   type: 'command'
   /** 注册的信息 */
   register: {
@@ -99,7 +99,7 @@ export interface CommandPluginCache extends PluginCache {
 }
 
 /** class 插件缓存对象 */
-export interface ClassPluginCache extends PluginCache {
+export interface ClassPluginCache extends PluginRegisterCache {
   type: 'class'
   /** 注册的信息 */
   register: {
@@ -108,13 +108,13 @@ export interface ClassPluginCache extends PluginCache {
     /** 回调函数 */
     fnc: MessageCallback<keyof MessageEventMap>
     /** 整个类选项 */
-    get _options(): ClassFormatOptions
+    get _options (): ClassFormatOptions
     /** 当前rule规则 */
-    get options(): ClassFormatOptions['rule'][number]
+    get options (): ClassFormatOptions['rule'][number]
     /** new之后的class */
-    get instance(): Plugin
+    get instance (): Plugin
     /** 注册的插件ID组 */
-    get ids(): string[]
+    get ids (): string[]
   }
   /** 插件控制接口 */
   control: {
@@ -141,7 +141,7 @@ export type CommandCache = CommandPluginCache | ClassPluginCache
  * @param options 选项
  * @returns 返回命令选项
  */
-const formatOptions = <T extends keyof MessageEventMap>(
+const formatOptions = <T extends keyof MessageEventMap> (
   options: Options<T>
 ): Required<FormatOptions<T>> => {
   return {
@@ -162,7 +162,7 @@ const formatOptions = <T extends keyof MessageEventMap>(
  * @param options 选项
  * @returns 返回回调函数
  */
-const formatFnc = <T extends keyof MessageEventMap>(
+const formatFnc = <T extends keyof MessageEventMap> (
   fnc: MessageCallback<T> | MessageSegment,
   options: Options<T> | StringOptions<T>
 ): MessageCallback<T> => {
@@ -192,13 +192,13 @@ const formatFnc = <T extends keyof MessageEventMap>(
  * @param options 选项
  * @returns 返回插件对象
  */
-export const command: Callbacks = <T extends keyof MessageEventMap = keyof MessageEventMap>(
+export const command: Callbacks = <T extends keyof MessageEventMap = keyof MessageEventMap> (
   reg: string | RegExp,
   second: MessageCallback<T> | MessageSegment,
   options: Options<T> | StringOptions<T> = {}
 ): CommandCache => {
   const caller = getCaller(import.meta.url)
-  const pkgName = plguinManager.manager.getPackageName(caller)
+  const pkgName = core.getPackageName(caller)
 
   const id = createID()
   const type = 'command'
@@ -215,10 +215,10 @@ export const command: Callbacks = <T extends keyof MessageEventMap = keyof Messa
       if (!pkgName) {
         throw new Error(`请在符合标准规范的文件中使用此方法: ${caller}`)
       }
-      return plguinManager.manager.getPluginPackageDetail(pkgName)!
+      return core.getPluginPackageDetail(pkgName)!
     },
     get file () {
-      return plguinManager.manager.getFileCache(caller)
+      return core.getFileCache(caller)
     },
     get app () {
       return {
@@ -262,13 +262,13 @@ export const command: Callbacks = <T extends keyof MessageEventMap = keyof Messa
           fncCache = formatFnc<T>(second, options as Options<T>) as MessageCallback<keyof MessageEventMap>
         },
         remove: () => {
-          plguinManager.register.unregisterCommand(result.app.id)
+          register.unregisterCommand(result.app.id)
         },
       }
     },
   }
 
-  plguinManager.register.registerCommand(result)
+  register.registerCommand(result)
 
   return result
 }

@@ -8,7 +8,7 @@ import type { ExecException } from 'node:child_process'
 /**
  * `package.json` 类型
  */
-export interface Package {
+export interface PackageJson {
   /** 包名 */
   name: string
   /** 版本 */
@@ -75,7 +75,7 @@ export interface Package {
   }
 }
 
-const getPkg = (isForcibly = false): Promise<Package> => {
+const getPkg = (isForcibly = false): Promise<PackageJson> => {
   return requireFile('package.json', { force: isForcibly })
 }
 

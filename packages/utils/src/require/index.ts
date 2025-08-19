@@ -2,6 +2,9 @@ import yaml from 'yaml'
 import fs from 'node:fs'
 import path from 'node:path'
 
+import type { writeFileSync as FsWriteFileSync } from 'node:fs'
+import type { writeFile as FsWriteFile } from 'node:fs/promises'
+
 export interface CacheEntry<T = any> {
   /** 缓存数据 */
   data: T
@@ -59,6 +62,14 @@ export type RequireFunctionSync = <T = any>(
 const cache = new Map<string, CacheEntry>()
 
 /**
+ * 格式化路径
+ * @param filePath 文件路径
+ */
+const _formatPath = (filePath: string) => {
+  return path.resolve(filePath).replace(/\\/g, '/')
+}
+
+/**
  * @description 清除缓存
  * @param filePath 文件路径 不指定则清除所有缓存
  * @returns 是否清除成功
@@ -68,7 +79,7 @@ export const clearRequire = (filePath?: string) => {
     return cache.clear()
   }
 
-  const absPath = path.resolve(filePath).replace(/\\/g, '/')
+  const absPath = _formatPath(filePath)
   return cache.has(absPath) && cache.delete(absPath)
 }
 
@@ -81,7 +92,7 @@ export const clearRequire = (filePath?: string) => {
  */
 export const requireFile: RequireFunction = async (filePath, options = {}) => {
   const now = Date.now()
-  const absPath = path.resolve(filePath).replace(/\\/g, '/')
+  const absPath = _formatPath(filePath)
   const { encoding = 'utf-8', force = false, ex = 300, size = 0, parser, type, readCache } = options
 
   const data = fileReady(absPath, now, force, ex, readCache)
@@ -100,7 +111,7 @@ export const requireFile: RequireFunction = async (filePath, options = {}) => {
  */
 export const requireFileSync: RequireFunctionSync = (filePath, options = {}) => {
   const now = Date.now()
-  const absPath = path.resolve(filePath).replace(/\\/g, '/')
+  const absPath = _formatPath(filePath)
   const { encoding = 'utf-8', force = false, ex = 300, size = 0, parser, type, readCache } = options
 
   const data = fileReady(absPath, now, force, ex, readCache)
@@ -214,6 +225,55 @@ const parseContent = (
   if (absPath.endsWith('.yaml') || absPath.endsWith('.yml')) return yaml.parse(content)
 
   return content
+}
+
+/**
+ * 写入文件并清理缓存
+ * @param filePath 文件路径
+ * @param content 文件内容
+ * @param options 选项
+ * @description 在文件后缀名为 `.json` 时会自动格式化为 JSON，排除已经是 `string` 格式的内容
+ * @description 在文件后缀名为 `.yml` 或 `.yaml` 时会自动格式化为 YAML，排除已经是 `string` 格式的内容
+ */
+export const writeFileSync = (filePath: string, content: unknown, options: Parameters<typeof FsWriteFileSync>[2]) => {
+  if (filePath.endsWith('.json') && typeof content !== 'string') {
+    content = JSON.stringify(content, null, 2)
+  } else if ((filePath.endsWith('.yml') || filePath.endsWith('.yaml')) && typeof content !== 'string') {
+    content = yaml.stringify(content)
+  } else if (typeof content !== 'string' || !Buffer.isBuffer(content)) {
+    content = String(content)
+  }
+
+  // @ts-ignore
+  fs.writeFileSync(filePath, content, options || 'utf-8')
+
+  /** 清除缓存 */
+  filePath = _formatPath(filePath)
+  cache.delete(filePath)
+}
+
+/**
+ * 写入文件并清理缓存
+ * @param filePath 文件路径
+ * @param content 文件内容
+ * @param options 选项
+ * @description 在文件后缀名为 `.json` 时会自动格式化为 JSON，排除已经是 `string` 格式的内容
+ * @description 在文件后缀名为 `.yml` 或 `.yaml` 时会自动格式化为 YAML，排除已经是 `string` 格式的内容
+ */
+export const writeFile = async (filePath: string, content: unknown, options?: Parameters<typeof FsWriteFile>[2]) => {
+  if (filePath.endsWith('.json') && typeof content !== 'string') {
+    content = JSON.stringify(content, null, 2)
+  } else if ((filePath.endsWith('.yml') || filePath.endsWith('.yaml')) && typeof content !== 'string') {
+    content = yaml.stringify(content)
+  } else if (typeof content !== 'string' || !Buffer.isBuffer(content)) {
+    content = String(content)
+  }
+
+  // @ts-ignore
+  await fs.promises.writeFile(filePath, content, options || 'utf-8')
+
+  filePath = _formatPath(filePath)
+  cache.delete(filePath)
 }
 
 /** 每60秒检查一次过期时间 */

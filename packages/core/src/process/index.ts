@@ -10,3 +10,5 @@ export const initProcess = async (port: number) => {
   processHandler()
   await checkProcess(port)
 }
+
+export * from './exit'

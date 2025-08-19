@@ -29,4 +29,4 @@ export const WS_CLOSE_PUPPETEER = 'ws:close:puppeteer'
 export const WS_CLOSE_SANDBOX = 'ws:close:sandbox'
 
 /** 传递 snapka ws连接 */
-export const WS_SNAPKA = 'ws:connection:snapka'
+export const WS_CONNECTION_SNAPKA = 'ws:connection:snapka'

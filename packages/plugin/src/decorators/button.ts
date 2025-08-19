@@ -1,12 +1,11 @@
-import { getCaller, types } from '@karinjs/utils'
-import * as manager from '../manager/manager'
-import * as register from '../manager/register'
+import { core } from '../core/core'
+import register from '../register/register'
 import { createID, createLogger } from './util'
+import { getCaller, types } from '@karinjs/utils'
 
-import type { Event } from '@karinjs/adapter'
-import type { PluginCache } from './base'
-import type { ButtonType } from '../manager/types'
+import type { PluginRegisterCache } from './base'
 import type { OptionsBase } from './options'
+import type { ButtonType, Event } from '@karinjs/adapter'
 
 export interface ButtonOptions extends OptionsBase {
 
@@ -18,7 +17,7 @@ export interface ButtonOptions extends OptionsBase {
 type ButtonOptionsFormat = Required<Omit<ButtonOptions, 'rank' | 'notAdapter' | 'perm' | 'permission'>>
 
 /** button 插件缓存对象 */
-export interface ButtonCache extends PluginCache {
+export interface ButtonCache extends PluginRegisterCache {
   type: 'button'
   /** 注册的信息 */
   register: {
@@ -86,7 +85,7 @@ export const button = (
   if (!fnc) throw new Error('[button]: 缺少参数[fnc]')
 
   const caller = getCaller(import.meta.url)
-  const pkgName = manager.getPackageName(caller)
+  const pkgName = core.getPackageName(caller)
 
   const id = createID()
   const type = 'button'
@@ -103,10 +102,10 @@ export const button = (
       if (!pkgName) {
         throw new Error(`请在符合标准规范的文件中使用此方法: ${caller}`)
       }
-      return manager.getPluginPackageDetail(pkgName)!
+      return core.getPluginPackageDetail(pkgName)!
     },
     get file () {
-      return manager.getFileCache(caller)
+      return core.getFileCache(caller)
     },
     get app () {
       return {

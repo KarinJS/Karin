@@ -3,6 +3,8 @@ import axios from 'axios'
 import path from 'node:path'
 import { promisify } from 'node:util'
 import { pipeline } from 'node:stream'
+import { karinPathBase } from '@karinjs/paths'
+
 import type { AxiosRequestConfig, AxiosResponse } from 'axios'
 
 /**
@@ -82,25 +84,36 @@ export const downFile = async (fileUrl: string, savePath: string, param: AxiosRe
 }
 
 /**
- * 为每个插件创建基本文件夹结构
+ * 为每个插件包创建基本文件夹结构
  * @param name 插件名称
  * @param files 需要创建的文件夹列表
+ * @example
+ * ```ts
+ * createPluginDir('karin-plugin-example')
+ * // => 创建 `@karinjs/karin-plugin-example` 目录，目录下会包含 `config`、`data`、`resources` 三个子目录
+ *
+ * createPluginDir('karin-plugin-example', ['config', 'data'])
+ * // => 创建 `@karinjs/karin-plugin-example` 目录，目录下会包含 `config`、`data` 两个子目录
+ * ```
  */
 export const createPluginDir = async (name: string, files?: string[]): Promise<void> => {
-  if (!name) return
-  if (!Array.isArray(files)) files = ['config', 'data', 'resources']
+  if (!name || typeof name !== 'string') return
+  if (!Array.isArray(files)) {
+    files = ['config', 'data', 'resources']
+  }
+
   if (files.length === 0) return
 
   /** 如果是组织包，优先使用旧版兼容格式(@org-pkg-name) */
   const isOrgPkg = name.startsWith('@') && name.includes('/')
   let pluginPath = isOrgPkg
-    ? path.join(process.env.karinPathBase!, name.replace('/', '-'))
-    : path.join(process.env.karinPathBase!, name)
+    ? path.join(karinPathBase, name.replace('/', '-'))
+    : path.join(karinPathBase, name)
 
   /** 如果是组织包且旧版兼容格式(@org-pkg-name)不存在，则使用新版组织包结构(@org/pkg-name) */
   if (isOrgPkg && !fs.existsSync(pluginPath)) {
     const [orgName, pkgName] = name.split('/')
-    pluginPath = path.join(process.env.karinPathBase!, orgName, pkgName)
+    pluginPath = path.join(karinPathBase, orgName, pkgName)
   }
 
   await Promise.all(files.map(file => {

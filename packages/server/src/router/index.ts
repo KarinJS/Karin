@@ -20,14 +20,14 @@ import {
   SYSTEM_STATUS_ROUTER,
   GET_PLUGIN_CONFIG_ROUTER,
   SAVE_PLUGIN_CONFIG_ROUTER,
-  IS_PLUGIN_CONFIG_EXIST_ROUTER,
+  // IS_PLUGIN_CONFIG_EXIST_ROUTER,
   PLUGIN_ADMIN_ROUTER,
   INSTALL_PLUGIN_ROUTER,
   UNINSTALL_PLUGIN_ROUTER,
   GET_TASK_STATUS_ROUTER,
   GET_TASK_LIST_ROUTER,
   UPDATE_TASK_STATUS_ROUTER,
-  GET_LOCAL_PLUGIN_LIST_ROUTER,
+  // GET_LOCAL_PLUGIN_LIST_ROUTER,
   CREATE_TERMINAL_ROUTER,
   GET_TERMINAL_LIST_ROUTER,
   CLOSE_TERMINAL_ROUTER,
@@ -47,18 +47,18 @@ import {
   GET_NPM_CONFIG_ROUTER,
   GET_NPM_BASE_CONFIG_ROUTER,
   SAVE_NPMRC_ROUTER,
-  GET_PLUGIN_LIST_PLUGIN_ADMIN_ROUTER,
-  GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER,
+  // GET_PLUGIN_LIST_PLUGIN_ADMIN_ROUTER,
+  GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER as GET_SIDEBAR_LOADED_COMMAND_PLUGIN_CACHE_ROUTER,
   GET_PLUGIN_MARKET_LIST_ROUTER,
-  GET_LOCAL_PLUGIN_FRONTEND_LIST_ROUTER,
+  GET_SIDEBAR_INSTALLED_PLUGIN_SUMMARY_ROUTER,
 } from './router'
-import { logMiddleware } from '../log'
-import { authMiddleware } from '../auth/middleware'
+import { logMiddleware, defaultRateLimitMiddleware } from '../middleware'
+import { authMiddleware } from '../middleware/auth'
 import { loginRouter } from '../auth/login'
 import { refreshRouter } from '../auth/refresh'
-import { getConfig, saveConfig } from '../config'
+import { getPluginWebConfigRouter, getSystemConfigRouter, setPluginWebConfigRouter, setSystemConfigRouter } from './config'
 import { pingRouter } from '../system/ping'
-import { pluginGetLocalList } from '../plugins/local'
+// import { pluginGetLocalList } from '../plugins/local'
 import { consoleRouter } from '../console'
 import { getBotsRouter } from '../system/botList'
 import { updateCoreRouter } from '../system/update'
@@ -75,17 +75,12 @@ import {
   getLogRouter, logLevelRouter,
 } from '../log/getLog'
 import {
-  pluginGetConfig,
-  pluginIsConfigExist,
-  pluginSaveConfig,
-} from '../plugins/config'
-import {
   pluginGetTaskList,
   pluginGetTaskStatus,
   pluginInstall,
   pluginUninstall,
-  pluginUpdateTaskStatus,
-} from '../plugins/install'
+  pluginUpdateTaskStatus, pluginAdminRouter,
+} from '../plugins/core'
 import {
   createTerminalHandler,
   getTerminalListHandler,
@@ -99,19 +94,21 @@ import {
   getWebuiPluginVersions,
   updateWebuiPluginVersion,
 } from '../plugins/webui'
-import { pluginAdminRouter } from '../plugins/admin/router'
-import { getDependenciesListRouter } from '../dependencies/list'
-import { manageDependenciesRouter } from '../dependencies/manage'
-import { taskListRouter, taskRunRouter, taskLogsRouter, taskDeleteRouter } from '../task/list'
-import { getNpmBaseConfigRouter, getNpmrcContentRouter, getNpmrcListRouter, saveNpmrcRouter } from '../dependencies/config'
-import { getFrontendInstalledPluginList, getLoadedCommandPluginCacheList, getPluginListPluginAdmin } from '../plugins/detail'
+import { getDependenciesListRouter } from '../npm/list'
+import { manageDependenciesRouter } from '../npm/manage'
+import { taskListRouter, taskRunRouter, taskLogsRouter, taskDeleteRouter } from '../task'
+import { getNpmBaseConfigRouter, getNpmrcContentRouter, getNpmrcListRouter, saveNpmrcRouter } from '../npm'
+// import { getFrontendInstalledPluginList, getLoadedCommandPluginCacheList, getPluginListPluginAdmin } from '../plugins/detail'
 import { getPluginMarketList } from '../plugins/market'
+import { getSidebarInstalledPluginSummary, getSidebarLoadedCommandPluginCache } from '../plugins/sidebar'
 
 /**
  * karin内部路由
  */
 export const router: Router = Router()
 
+/** 访问频率限制 */
+router.use(defaultRateLimitMiddleware)
 /** 日志 */
 router.use(logMiddleware)
 /** 鉴权 */
@@ -124,9 +121,9 @@ router.post(LOGIN_ROUTER, loginRouter)
 router.post(REFRESH_ROUTER, refreshRouter)
 
 /** 获取系统配置 */
-router.post(GET_CONFIG_ROUTER, getConfig)
+router.post(GET_CONFIG_ROUTER, getSystemConfigRouter)
 /** 保存系统配置 */
-router.post(SAVE_CONFIG_ROUTER, saveConfig)
+router.post(SAVE_CONFIG_ROUTER, setSystemConfigRouter)
 
 /** 获取日志 */
 router.get(GET_LOG_ROUTER, getLogRouter)
@@ -163,11 +160,11 @@ router.get(SYSTEM_STATUS_ROUTER, systemStatusRealTimeHandler)
 router.post(CHECK_PLUGIN_ROUTER, checkPlugin)
 
 /** 获取插件配置 */
-router.post(GET_PLUGIN_CONFIG_ROUTER, pluginGetConfig)
+router.post(GET_PLUGIN_CONFIG_ROUTER, getPluginWebConfigRouter)
 /** 保存插件配置 */
-router.post(SAVE_PLUGIN_CONFIG_ROUTER, pluginSaveConfig)
-/** 判断插件web.config是否存在 */
-router.post(IS_PLUGIN_CONFIG_EXIST_ROUTER, pluginIsConfigExist)
+router.post(SAVE_PLUGIN_CONFIG_ROUTER, setPluginWebConfigRouter)
+// /** 判断插件web.config是否存在 */
+// router.post(IS_PLUGIN_CONFIG_EXIST_ROUTER, pluginIsConfigExist)
 
 /** 插件管理 */
 router.post(PLUGIN_ADMIN_ROUTER, pluginAdminRouter)
@@ -181,10 +178,10 @@ router.post(GET_TASK_STATUS_ROUTER, pluginGetTaskStatus)
 router.post(GET_TASK_LIST_ROUTER, pluginGetTaskList)
 /** 更新任务状态 */
 router.post(UPDATE_TASK_STATUS_ROUTER, pluginUpdateTaskStatus)
-/** 获取已安装插件详情 */
-router.post(GET_LOCAL_PLUGIN_LIST_ROUTER, pluginGetLocalList)
-/** @version 1.8.0 获取已安装插件名称列表 */
-router.post(GET_PLUGIN_LIST_PLUGIN_ADMIN_ROUTER, getPluginListPluginAdmin)
+// /** 获取已安装插件详情 */
+// router.post(GET_LOCAL_PLUGIN_LIST_ROUTER, pluginGetLocalList)
+// /** @version 1.8.0 获取已安装插件名称列表 */
+// router.post(GET_PLUGIN_LIST_PLUGIN_ADMIN_ROUTER, getPluginListPluginAdmin)
 
 /** 创建终端 */
 router.post(CREATE_TERMINAL_ROUTER, createTerminalHandler)
@@ -228,8 +225,8 @@ router.post(TASK_LOGS_ROUTER, taskLogsRouter)
 router.post(TASK_DELETE_ROUTER, taskDeleteRouter)
 
 /** @version 1.8.0 获取已加载命令插件缓存信息列表 */
-router.post(GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER, getLoadedCommandPluginCacheList)
+router.post(GET_SIDEBAR_LOADED_COMMAND_PLUGIN_CACHE_ROUTER, getSidebarLoadedCommandPluginCache)
 /** @version 1.8.0 获取插件市场列表 */
 router.post(GET_PLUGIN_MARKET_LIST_ROUTER, getPluginMarketList)
 /** @version 1.8.0 获取本地插件列表 用于插件索引页面渲染简约列表 */
-router.post(GET_LOCAL_PLUGIN_FRONTEND_LIST_ROUTER, getFrontendInstalledPluginList)
+router.post(GET_SIDEBAR_INSTALLED_PLUGIN_SUMMARY_ROUTER, getSidebarInstalledPluginSummary)

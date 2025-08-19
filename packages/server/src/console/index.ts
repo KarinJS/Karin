@@ -4,6 +4,8 @@ import { promises as fs } from 'node:fs'
 import { config } from '@karinjs/core'
 import { isLocalRequest } from '@karinjs/utils'
 
+// TODO: 迁移到适配器子包
+
 import type { RequestHandler } from 'express'
 import {
   createBadRequestResponse,

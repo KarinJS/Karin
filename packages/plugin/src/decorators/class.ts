@@ -1,6 +1,7 @@
+import { core } from '../core'
+import { logger } from '@karinjs/logger'
 import { types, isClass } from '@karinjs/utils'
-import * as manager from '../manager/manager'
-import * as register from '../manager/register'
+import register from '../register/register'
 import { createID, formatReg, createLogger } from './util'
 
 import type { FNC } from './util'
@@ -242,10 +243,10 @@ export const loadClass = (
         if (!pkgName) {
           throw new Error(`请在符合标准规范的文件中使用此方法: ${file}`)
         }
-        return manager.getPluginPackageDetail(pkgName)!
+        return core.getPluginPackageDetail(pkgName)!
       },
       get file () {
-        return manager.getFileCache(file)
+        return core.getFileCache(file)
       },
       get app () {
         return {

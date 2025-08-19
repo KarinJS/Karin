@@ -4,7 +4,5 @@
     "baseUrl": ".",
     "skipLibCheck": true
   },
-  "exclude": [
-    "tsdown.config.ts"
-  ]
+  "exclude": ["dist", "tsdown.config.ts"]
 }

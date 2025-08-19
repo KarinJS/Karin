@@ -1,7 +1,7 @@
 import utils from '../../utils'
 import { handleContext } from '../../context'
 import { hooksEmit } from '@karinjs/hooks'
-import { config as Cfg } from 'node-karin'
+import { config as Cfg } from '@karinjs/core/config'
 
 import type { GroupMessage, GroupTempMessage, GuildMessage, DirectMessage, FriendMessage } from '../../abstract'
 import type { ClassPluginCache, CommandPluginCache } from '@karinjs/plugin'

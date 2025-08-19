@@ -4,9 +4,9 @@
  * - npm: 从npm安装
  * - git: 在/karin/plugins目录下 并且package.json存在karin字段
  * - apps: 在/karin/plugins/*目录下 package.json不存在或存在不指定karin字段
- * - dev: 根目录的package.json存在karin字段
+ * - root: 根目录的package.json存在karin字段
  */
-export type PluginPackageType = 'npm' | 'git' | 'apps' | 'dev'
+export type PluginPackageType = 'apps' | 'git' | 'npm' | 'root'
 
 /** pkg环境变量类型 */
 export interface PackageEnv {
@@ -121,3 +121,13 @@ export interface PackageKarin extends Package {
     env: PackageEnv[],
   }
 }
+
+/**
+ * 兼容1.0
+ */
+export type PkgData = Package
+
+/**
+ * 兼容1.0
+ */
+export type PkgEnv = PackageEnv
