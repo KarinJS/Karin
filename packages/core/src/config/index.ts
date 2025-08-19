@@ -1,5 +1,3 @@
-// import fs from 'node:fs'
-import paths from '@karinjs/paths'
 import { Config } from '@karinjs/config'
 
 /**
@@ -13,7 +11,7 @@ export let config: Config
  * @param root 根目录
  */
 export const createSystemConfig = async () => {
-  config = new Config(paths.karinPathBase)
+  config = new Config()
   await config.init()
 }
 

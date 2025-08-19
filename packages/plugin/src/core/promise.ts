@@ -37,13 +37,13 @@ export class PluginCorePromise {
     const list: string[] = []
     const node = await getNodeModules()
 
-    node.forEach((v) => {
+    await Promise.all(node.map(async (v) => {
       if (NPM_EXCLUDE_LIST.includes(v)) return
       const _path = path.join(process.cwd(), 'node_modules', v, 'package.json')
-      if (!this.isPackageJsonToKarin(_path)) return
+      if (!await this.isPackageJsonToKarin(_path)) return
 
       list.push(v)
-    })
+    }))
 
     cache.plugins.npm = list
     return list

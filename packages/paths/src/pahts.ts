@@ -51,8 +51,8 @@ export const karinPathKv = Object.freeze(path.join(karinPathDb, 'kv'))
 export const karinPathLogs = Object.freeze(path.join(karinPathBase, 'logs'))
 /** html目录 `@karinjs/temp/html` */
 export const karinPathHtml = Object.freeze(path.join(karinPathTemp, 'html'))
-/** pm2配置路径 `@karinjs/config/pm2.yaml` */
-export const karinPathPm2Config = Object.freeze(path.join(karinPathConfig, 'pm2.yaml'))
+/** pm2配置路径 `@karinjs/config/pm2.json` */
+export const karinPathPm2Config = Object.freeze(path.join(karinPathConfig, 'pm2.json'))
 /** console适配器目录 `@karinjs/temp/console` */
 export const karinPathConsole = Object.freeze(path.join(karinPathTemp, 'console'))
 /** 沙盒数据目录 `@karinjs/data/sandbox` */

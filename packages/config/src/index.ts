@@ -31,6 +31,8 @@ export type * from './types'
  */
 export class Config extends EventEmitter<EventMap> {
   #isWatch = false
+  /** 初始化状态 */
+  #isInitialized = false
   /** 配置文件根目录 */
   #dir: string
   /** 配置文件路径 */
@@ -60,14 +62,10 @@ export class Config extends EventEmitter<EventMap> {
     'pm2.json',
   ]
 
-  constructor (dir: string) {
+  constructor () {
     super()
 
-    if (!dir || typeof dir !== 'string') {
-      throw new TypeError('dir is required')
-    }
-
-    this.#dir = dir
+    this.#dir = paths.karinPathConfig
     this.#files = {
       adapter: { dir: '', cache: null },
       groups: { dir: '', cache: null },
@@ -88,6 +86,12 @@ export class Config extends EventEmitter<EventMap> {
   }
 
   async init (): Promise<Config> {
+    // 防止重复初始化
+    if (this.#isInitialized) {
+      logger.debug('配置管理器已经初始化，跳过重复初始化')
+      return this
+    }
+
     /** 检查env文件 */
     const env = path.join(process.cwd(), process.env.EBV_FILE || '.env')
     if (!fs.existsSync(env)) {
@@ -98,33 +102,43 @@ export class Config extends EventEmitter<EventMap> {
     files.push(env)
 
     /**
-     * 创建必要的目录
-     */
-    await Promise.all(
-      Object.keys(paths).map(async (key) => {
-        await fs.promises.mkdir(key, { recursive: true })
-      })
-    )
-
-    /**
+     * - 创建必要的目录
      * - 创建缓存对象
-     * - 创建对应的文件
+     * - 创建对应的配置文件
      */
     await Promise.all([
+      ...Object.values(paths).map(async (value) => {
+        if (typeof value !== 'string') return
+        /** 屏蔽非 karinPath 开头的 */
+        if (!value.startsWith(paths.karinPathRoot)) return
+        /** 屏蔽带后缀的路径 带后缀的是一个文件而不是目录 */
+        if (path.extname(value).length > 0) return
+        await fs.promises.mkdir(value, { recursive: true })
+        logger.debug(`创建目录 ${value}`)
+      }),
       ...files.map(async (file) => {
         const key = path.basename(file, path.extname(file)).replace(/^\./, '') as keyof ConfigFormatMap
         this.#files[key] = { dir: file, cache: null }
       }),
       ...Object.entries(defaultConfig).map(async ([key, value]) => {
-        const filePath = path.join(paths.karinPathConfig, `${key}.json`)
+        const name = `${key}.json`
+        const filePath = path.join(this.#dir, name)
         const exists = await fs.promises.access(filePath).then(() => true).catch(() => false)
         if (exists) return
 
+        /** 兜底 */
+        await fs.promises.mkdir(path.dirname(filePath), { recursive: true })
         await fs.promises.writeFile(filePath, JSON.stringify(value, null, 2), 'utf-8')
+        logger.debug(`创建配置文件 ${name} => ${filePath}`)
       }),
     ])
 
     this.#initCacheCleaner()
+
+    // 标记为已初始化
+    this.#isInitialized = true
+    logger.debug('配置管理器初始化完成')
+
     return this
   }
 
