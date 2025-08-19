@@ -37,7 +37,7 @@
     "log4js": "catalog:"
   },
   "peerDependencies": {
-    "log4js": "catalog:",
-    "chalk": "catalog:"
+    "chalk": "catalog:",
+    "log4js": "catalog:"
   }
 }

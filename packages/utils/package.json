@@ -32,6 +32,7 @@
   "devDependencies": {
     "@karinjs/adapter": "workspace:*",
     "@karinjs/core": "workspace:*",
+    "@karinjs/db": "workspace:*",
     "@karinjs/logger": "workspace:",
     "@karinjs/paths": "workspace:*",
     "@karinjs/plugin": "workspace:",
@@ -46,6 +47,7 @@
   "peerDependencies": {
     "@karinjs/adapter": "workspace:*",
     "@karinjs/core": "workspace:*",
+    "@karinjs/db": "workspace:*",
     "@karinjs/logger": "workspace:",
     "@karinjs/paths": "workspace:*",
     "@karinjs/plugin": "workspace:",

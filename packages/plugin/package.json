@@ -6,6 +6,13 @@
   "license": "MIT",
   "author": "shijin",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "development": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    }
+  },
   "main": "index.js",
   "scripts": {
     "build": "tsdown",
@@ -20,8 +27,8 @@
     "@karinjs/core": "workspace:*",
     "@karinjs/envs": "workspace:*",
     "@karinjs/events": "workspace:*",
-    "@karinjs/utils": "workspace:*",
     "@karinjs/logger": "workspace:*",
+    "@karinjs/utils": "workspace:*",
     "chokidar": "catalog:",
     "lodash": "catalog:"
   },
@@ -30,16 +37,9 @@
     "@karinjs/core": "workspace:*",
     "@karinjs/envs": "workspace:*",
     "@karinjs/events": "workspace:*",
-    "@karinjs/utils": "workspace:*",
     "@karinjs/logger": "workspace:*",
+    "@karinjs/utils": "workspace:*",
     "chokidar": "catalog:",
     "lodash": "catalog:"
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "development": "./src/index.ts",
-      "default": "./dist/index.mjs"
-    }
   }
 }

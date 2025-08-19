@@ -27,15 +27,15 @@
     "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
   },
   "devDependencies": {
-    "@karinjs/utils": "workspace:*",
     "@karinjs/logger": "workspace:*",
     "@karinjs/paths": "workspace:*",
+    "@karinjs/utils": "workspace:*",
     "lodash": "npm:@karinjs/lodash@^1.1.1"
   },
   "peerDependencies": {
-    "@karinjs/utils": "workspace:*",
     "@karinjs/logger": "workspace:*",
     "@karinjs/paths": "workspace:*",
+    "@karinjs/utils": "workspace:*",
     "lodash": "npm:@karinjs/lodash@^1.1.1"
   }
 }

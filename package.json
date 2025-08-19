@@ -19,9 +19,7 @@
     "dev:web": "pnpm --filter karin-webui run dev",
     "lint:fix": "eslint --fix \"packages/**/*.ts\"",
     "pkg": "tsx scripts.ts",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest",
+    "sort": "pnpm -r exec sort-package-json",
     "web": "pnpm --filter karin-webui run dev"
   },
   "devDependencies": {
@@ -35,11 +33,10 @@
     "prettier": "^3.6.2",
     "sort-json": "^2.0.1",
     "sort-package-json": "^3.4.0",
-    "terser": "^5.43.1",
     "tsdown": "^0.13.0",
     "tsup": "^8.5.0",
     "tsx": "^4.20.3",
     "typescript": "^5.9.1-rc",
-    "vite": "npm:rolldown-vite@7.0.9"
+    "vite": "npm:rolldown-vite"
   }
 }
