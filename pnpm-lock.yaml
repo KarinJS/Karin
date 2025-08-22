@@ -197,6 +197,9 @@ importers:
       '@karinjs/events':
         specifier: workspace:*
         version: link:../events
+      '@karinjs/hooks':
+        specifier: workspace:*
+        version: link:../hooks
       '@karinjs/logger':
         specifier: workspace:*
         version: link:../logger

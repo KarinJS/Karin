@@ -1,5 +1,7 @@
 import path from 'node:path'
 import { PluginCoreSync } from './sync'
+import { errorHandler } from '../event/error'
+import { getPluginLoader } from '../load'
 import { formatPath, isPathEqual, isSubPath, requireFileSync } from '@karinjs/utils'
 
 import type { PackageEnv } from '../pkg'
@@ -105,8 +107,12 @@ export class PluginCore extends PluginCoreSync {
   async load () {
     logger.info(logger.green('-----------'))
     logger.info('加载插件中...')
-    // TODO: 插件加载逻辑
+
+    await getPluginLoader().run()
+
     logger.info('插件加载完成')
+    /** 打印加载错误的插件 */
+    errorHandler.printMissing()
   }
 }
 

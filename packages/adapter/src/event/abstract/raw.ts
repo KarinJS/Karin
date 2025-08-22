@@ -93,3 +93,5 @@ export const makeForward = (
   if (!Array.isArray(elements)) elements = [elements]
   return elements.map(v => segment.node(fakeId || '', fakeName || '', makeMessage(v)))
 }
+
+export const makeMessageLog = createRawMessage

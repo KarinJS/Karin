@@ -3,11 +3,12 @@ import path from 'node:path'
 import paths from '@karinjs/paths'
 import { emitter } from '../event'
 import { initDB } from '../db'
+import { core } from '@karinjs/plugin'
 import { ONLINE } from '@karinjs/envs'
 import { initProcess } from '@karinjs/utils'
-import { initPlugins } from '@karinjs/plugin'
 import { config, createSystemConfig } from '../config'
 import { createDB, createRedis, createTaskDB } from '@karinjs/db'
+import { configureLogger } from '@karinjs/logger'
 
 let isStart = false
 if (!process.env.EBV_FILE) process.env.EBV_FILE = '.env'
@@ -18,8 +19,7 @@ if (!process.env.EBV_FILE) process.env.EBV_FILE = '.env'
  */
 export const start = async () => {
   if (isStart) {
-    console.error('karin 已经启动，请勿重复启动')
-    return
+    throw new Error(`karin 已经启动，请勿重复启动: ${process.pid}`)
   }
 
   isStart = true
@@ -36,7 +36,7 @@ export const start = async () => {
    * - 创建日志目录
    * - 初始化日志模块
    */
-  // createInnerLogger(root.logsPath)
+  configureLogger(paths.karinPathLogs)
 
   /**
    * 3. 初始化配置文件
@@ -86,7 +86,7 @@ export const start = async () => {
   /**
    * 8. 初始化插件
    */
-  await initPlugins()
+  await core.load()
 
   // /**
   //  * 9. 加载适配器

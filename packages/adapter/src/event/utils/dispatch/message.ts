@@ -2,7 +2,7 @@ import lodash from 'lodash'
 import utils from '../../utils'
 import { hooksEmit } from '@karinjs/hooks'
 import { cache } from '@karinjs/plugin'
-import { internalEmitter } from '@karinjs/core'
+import { coreEmitter } from '@karinjs/core'
 
 import type { MessageEventMap } from '../../types'
 import type { CommandCache } from '@karinjs/plugin'
@@ -163,7 +163,7 @@ const callback = async (
     }
     return false
   } catch (cause) {
-    internalEmitter.emit('error', new Error(ctx.logFnc, { cause }))
+    coreEmitter.emit('error', new Error(ctx.logFnc, { cause }))
     return false
   } finally {
     const time = logger.green(Date.now() - start + 'ms')

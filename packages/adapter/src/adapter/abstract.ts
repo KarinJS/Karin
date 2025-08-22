@@ -35,7 +35,42 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
   constructor () {
     this.raw = {} as T
     this.super = {} as T
-    this.account = { uin: '', uid: '', selfId: '', subId: {}, name: '', avatar: '' }
+    this.account = {
+      uin: '',
+      uid: '',
+      selfId: '',
+      subId: {},
+      name: '',
+      avatar: '',
+      status: 'online',
+      enabled: true,
+      time: {
+        firstConnectAt: Date.now(),
+        onlineDuration: 0,
+        offlineDuration: 0,
+        lastOnlineAt: Date.now(),
+        lastOfflineAt: Date.now(),
+        currentStatusAt: Date.now(),
+      },
+      stats: {
+        onlineCount: 0,
+        offlineCount: 0,
+        connectCount: 0,
+        disconnectCount: 0,
+      },
+      events: {
+        received: {
+          total: 0,
+          message: 0,
+          notification: 0,
+          request: 0,
+          other: 0,
+        },
+        sent: {
+          message: 0,
+        },
+      },
+    }
     this.adapter = {
       index: -1,
       name: '',

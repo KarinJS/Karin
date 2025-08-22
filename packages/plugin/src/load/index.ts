@@ -24,20 +24,31 @@ class PluginLoader {
     const list = Array.from(map.values())
     await Promise.allSettled(list.map(plugin => this.loadPackage(plugin)))
 
-    /** 当this.cache.command的lengt在500ms没变化 则认为加载完成 */
-    await new Promise((resolve) => {
-      let lastLength = cache.command.length
-      const timer = setInterval(() => {
-        if (cache.command.length === lastLength) {
-          clearInterval(timer)
-          resolve(true)
-        }
+    /** 当前插件数量 */
+    let lastLength = cache.command.length
+    /** 稳定计数 */
+    let stableCount = 0
+    /** 检查计数 */
+    let checkCount = 0
 
-        lastLength = cache.command.length
-      }, 500)
-    })
+    /** 检查间隔 加载完成后排序 */
+    const timer = setInterval(() => {
+      checkCount++
 
-    register.sort()
+      if (cache.command.length === lastLength) {
+        stableCount++
+      } else {
+        stableCount = 0
+      }
+
+      lastLength = cache.command.length
+
+      if (stableCount >= 3 || checkCount >= 30) {
+        clearInterval(timer)
+        register.sort()
+      }
+    }, 200)
+
     this.#isInit = true
 
     const pluginsCount =

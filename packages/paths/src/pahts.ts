@@ -22,12 +22,12 @@ export const karinPathPlugins = Object.freeze(path.join(process.cwd(), 'plugins'
 /** 是否处于node_modules中 */
 export const isPackaged = Object.freeze(filename.includes('node_modules'))
 
-/** 默认config目录 `npm/default/config` */
-export const karinPathDefaultConfig = Object.freeze(path.join(karinPathRoot, 'default', 'config'))
-/** 默认view目录 `npm/default/view` */
-export const karinPathDefaultView = Object.freeze(path.join(karinPathRoot, 'default', 'view'))
-/** 注释目录 `npm/default/comment` */
-export const karinPathComment = Object.freeze(path.join(karinPathRoot, 'default', 'comment'))
+// /** 默认config目录 `npm/default/config` */
+// export const karinPathDefaultConfig = Object.freeze(path.join(karinPathRoot, 'default', 'config'))
+// /** 默认view目录 `npm/default/view` */
+// export const karinPathDefaultView = Object.freeze(path.join(karinPathRoot, 'default', 'view'))
+// /** 注释目录 `npm/default/comment` */
+// export const karinPathComment = Object.freeze(path.join(karinPathRoot, 'default', 'comment'))
 
 /** 配置根目录 `@karinjs` */
 export const karinPathBase = Object.freeze(path.join(process.cwd(), '@karinjs'))
@@ -69,12 +69,12 @@ export const karinMain = karinPathMain
 export const pluginDir = karinPathPlugins
 /** @deprecated 请使用 isPackaged 代替 */
 export const isPkg = isPackaged
-/** @deprecated 请使用 karinPathDefaultConfig 代替 */
-export const defaultConfigPath = karinPathDefaultConfig
-/** @deprecated 请使用 karinPathDefaultView 代替 */
-export const defaultViewPath = karinPathDefaultView
-/** @deprecated 请使用 karinPathComment 代替 */
-export const commentPath = karinPathComment
+// /** @deprecated 请使用 karinPathDefaultConfig 代替 */
+// export const defaultConfigPath = karinPathDefaultConfig
+// /** @deprecated 请使用 karinPathDefaultView 代替 */
+// export const defaultViewPath = karinPathDefaultView
+// /** @deprecated 请使用 karinPathComment 代替 */
+// export const commentPath = karinPathComment
 /** @deprecated 请使用 karinPathBase 代替 */
 export const basePath = karinPathBase
 /** @deprecated 请使用 karinPathConfig 代替 */

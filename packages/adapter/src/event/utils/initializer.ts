@@ -1,6 +1,6 @@
 import { RECV_MSG } from '@karinjs/envs'
 import { lock } from '@karinjs/utils'
-import { internalEmitter } from '@karinjs/core'
+import { coreEmitter } from '@karinjs/core'
 import { createRawMessage } from '../../event/abstract/raw'
 
 import type { ConfigConfig } from '@karinjs/config'
@@ -150,6 +150,6 @@ export const initializer = {
    * @param ctx 事件对象
    */
   emitEvent: (ctx: Event): void => {
-    internalEmitter.emit(RECV_MSG, ctx.contact)
+    coreEmitter.emit(RECV_MSG, ctx.contact)
   },
 }

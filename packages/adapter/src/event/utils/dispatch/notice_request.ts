@@ -1,7 +1,7 @@
 import utils from '../../utils'
 import { hooksEmit } from '@karinjs/hooks'
 import { cache } from '@karinjs/plugin'
-import { internalEmitter } from '@karinjs/core'
+import { coreEmitter } from '@karinjs/core'
 
 import type { Notice, Request } from '../../types'
 import type { AcceptCache } from '@karinjs/plugin'
@@ -101,7 +101,7 @@ const _callback = async (
     }
     return false
   } catch (cause) {
-    internalEmitter.emit('error', new Error(ctx.logFnc, { cause }))
+    coreEmitter.emit('error', new Error(ctx.logFnc, { cause }))
     return false
   } finally {
     plugin.app.log(ctx.selfId, `${logFnc} 处理完成 ${logger.green(Date.now() - start + 'ms')}`)

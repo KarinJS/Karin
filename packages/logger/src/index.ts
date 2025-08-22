@@ -316,12 +316,11 @@ const createLogger = (dir?: string, color?: string): Logger => {
   if (dir && !fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
 
   if (global.logger) {
-    log4js.configure(initLogger())
+    log4js.configure(initLogger(true))
     return global.logger
   }
 
-  // 首次创建logger
-  log4js.configure(initLogger())
+  log4js.configure(initLogger(true))
   const logger = addColor(log4js.getLogger('default'), color)
   global.logger = logger
   return logger
