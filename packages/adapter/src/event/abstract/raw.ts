@@ -1,8 +1,6 @@
 import lodash from 'lodash'
-import * as segment from '../../segment/create'
+import { segment } from '../../segment'
 import type { CustomNodeElement, Elements, SendMessage } from '../../segment/types'
-
-export { segment }
 
 /**
  * 将消息元素转换为字符串

@@ -9,6 +9,7 @@ import { initProcess } from '@karinjs/utils'
 import { config, createSystemConfig } from '../config'
 import { createDB, createRedis, createTaskDB } from '@karinjs/db'
 import { configureLogger } from '@karinjs/logger'
+import { registerBot } from '../bot'
 
 let isStart = false
 if (!process.env.EBV_FILE) process.env.EBV_FILE = '.env'
@@ -49,7 +50,7 @@ export const start = async () => {
    * - 初始化配置文件缓存
    */
   await createSystemConfig()
-
+  process.env.KARIN_VERSION = config.pkg().version
   await initDB()
 
   /**
@@ -91,6 +92,12 @@ export const start = async () => {
   // /**
   //  * 9. 加载适配器
   //  */
+  import('@karinjs/adapter-console')
+    .then(({ AdapterConsole }) => {
+      const adapter = AdapterConsole.getInstance()
+      registerBot('other', adapter)
+    })
+
   // await import('@/adapter')
   // await initOneBotAdapter()
   // await initRender()

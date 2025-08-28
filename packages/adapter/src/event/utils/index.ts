@@ -27,3 +27,7 @@ export const eventUtils = {
 }
 
 export default eventUtils
+
+export * from './sender'
+export * from './contact'
+// export * from './dispatch' // 内部api

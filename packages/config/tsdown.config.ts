@@ -4,9 +4,7 @@ import { defineConfig } from 'tsdown/config'
 export default defineConfig({
   entry: 'src/index.ts',
   fixedExtension: true, // 固定为mjs
-  dts: {
-    resolve: true,
-  },
+  dts: true,
   format: ['esm'],
   target: 'node18',
   platform: 'node',

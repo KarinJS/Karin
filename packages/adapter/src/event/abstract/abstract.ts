@@ -1,6 +1,7 @@
 import util from 'node:util'
 import { lockProp } from '@karinjs/utils'
-import { segment, makeMessage, createRawMessage } from './raw'
+import { segment } from '../../segment'
+import { makeMessage, createRawMessage } from './raw'
 
 import type { AdapterType, SendMsgResults } from '../../adapter/types'
 import type {

@@ -6,6 +6,8 @@ import { Formatter } from './formatter'
 import { defaultConfig } from './default'
 import { EventEmitter } from 'node:events'
 import { requireFileSync, watch, watchs } from '@karinjs/utils'
+
+import type { PackageJson, RequireOptions } from '@karinjs/utils'
 import type { ConfigFormatMap, ConfigMap, ConfigPrivateValue, ConfigGroupValue, ConfigEnv } from './types'
 
 export type TypedEventMap = {
@@ -640,5 +642,19 @@ export class Config extends EventEmitter<EventMap> {
 
     const file = `${this.#dir}/${name}.json`
     fs.writeFileSync(file, JSON.stringify(data, null, 2))
+  }
+
+  /**
+   * 获取package.json文件
+   * @param dir 目录
+   * @param options 选项
+   *
+   * @default 'karin -> package.json'
+   * @description 无需传递 `package.json` 默认缓存永不过期
+   * @returns package.json内容
+   */
+  pkg (dir = paths.karinPathRoot, options: RequireOptions = { type: 'json', ex: 0 }): PackageJson {
+    dir = `${dir}/package.json`
+    return requireFileSync<PackageJson>(dir, options)
   }
 }

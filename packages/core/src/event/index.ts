@@ -40,6 +40,10 @@ export interface SystemEventMap {
   [WS_CONNECTION_PUPPETEER]: [WebSocket, IncomingMessage, CallbackHandler]
   /** 上下文事件 */
   [key: `ctx:${string}`]: [Event]
+  /** 请求关闭stdin的监听 */
+  'process:stdin:close': [void]
+  /** process:stdin:close发出后的回调 用于恢复stdin的监听 */
+  'process:stdin:resume': [void]
 }
 
 class Emitter extends EventEmitter<SystemEventMap> {

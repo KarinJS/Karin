@@ -1,6 +1,6 @@
 {
   "name": "@karinjs/core",
-  "version": "0.0.1",
+  "version": "2.0.0",
   "description": "",
   "keywords": [],
   "license": "MIT",
@@ -56,13 +56,14 @@
   },
   "devDependencies": {
     "@karinjs/adapter": "workspace:*",
+    "@karinjs/adapter-console": "workspace:*",
     "@karinjs/components": "workspace:*",
     "@karinjs/config": "workspace:*",
     "@karinjs/db": "workspace:*",
     "@karinjs/envs": "workspace:*",
     "@karinjs/events": "workspace:*",
     "@karinjs/logger": "workspace:*",
-    "@karinjs/node-pty": "^1.1.0",
+    "@karinjs/node-pty": "catalog:",
     "@karinjs/onebot": "workspace:*",
     "@karinjs/paths": "workspace:*",
     "@karinjs/hooks": "workspace:*",
@@ -85,6 +86,7 @@
   },
   "peerDependencies": {
     "@karinjs/adapter": "workspace:*",
+    "@karinjs/adapter-console": "workspace:*",
     "@karinjs/components": "workspace:*",
     "@karinjs/config": "workspace:*",
     "@karinjs/db": "workspace:*",

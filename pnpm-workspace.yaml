@@ -11,17 +11,18 @@ onlyBuiltDependencies:
   - esbuild
 
 catalog:
-  axios: "npm:@karinjs/axios"
-  express: "npm:@karinjs/express"
-  lodash: "npm:@karinjs/lodash"
-  ws: "npm:@karinjs/ws"
-  moment: "npm:@karinjs/moment"
-  redis: "npm:@karinjs/redis"
-  sqlite3: "npm:@karinjs/sqlite3-cjs"
+  "@karinjs/node-pty": "npm:@karinjs/node-pty"
   art-template: "npm:@karinjs/art-template"
-  node-schedule: "npm:@karinjs/node-schedule"
-  jsonwebtoken: "npm:@karinjs/jsonwebtoken"
-  log4js: 6.9.1
+  axios: "npm:@karinjs/axios"
   chalk: 5.4.1
   chokidar: 4.0.3
+  express: "npm:@karinjs/express"
+  jsonwebtoken: "npm:@karinjs/jsonwebtoken"
+  lodash: "npm:@karinjs/lodash"
+  log4js: 6.9.1
+  moment: "npm:@karinjs/moment"
+  node-schedule: "npm:@karinjs/node-schedule"
+  redis: "npm:@karinjs/redis"
+  sqlite3: "npm:@karinjs/sqlite3-cjs"
+  ws: "npm:@karinjs/ws"
   yaml: 2.7.0

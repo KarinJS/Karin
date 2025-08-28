@@ -1,4 +1,4 @@
-import { handler } from '@karinjs/core'
+import { handler } from '../handler'
 import type { Event } from '@karinjs/adapter'
 
 type Args = { e?: Event } & Record<string, any>
