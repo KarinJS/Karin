@@ -1,0 +1,1 @@
+import 'moment/locale/hi.js'

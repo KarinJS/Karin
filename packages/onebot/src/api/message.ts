@@ -1,4 +1,4 @@
-import type { SenderPrivate, SenderGroup } from '../event/sender'
+import type { SenderPrivate, SenderGroupType } from '../event/sender'
 import type {
   OneBotMessage,
   NodeMessage,
@@ -100,7 +100,7 @@ export interface OneBotMessageApi {
       message_type: 'group',
       message_id: number,
       real_id: number,
-      sender: SenderGroup,
+      sender: SenderGroupType,
       message: OneBotMessage[]
       group_id: number
     } | {
@@ -299,7 +299,7 @@ export interface OneBotMessageApi {
       messages: Array<{
         message_id: number,
         real_id: number,
-        sender: SenderGroup,
+        sender: SenderGroupType,
         time: number,
         message: OneBotMessage[],
         raw_message: string
@@ -321,7 +321,7 @@ export interface OneBotMessageApi {
       messages: Array<{
         message_id: number,
         real_id: number,
-        sender: SenderGroup,
+        sender: SenderGroupType,
         time: number,
         message: OneBotMessage[],
         raw_message: string
@@ -341,7 +341,7 @@ export interface OneBotMessageApi {
       messages: Array<{
         message_id: number,
         real_id: number,
-        sender: SenderGroup,
+        sender: SenderGroupType,
         time: number,
         message: OneBotMessage[],
         raw_message: string

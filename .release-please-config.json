@@ -79,6 +79,16 @@
       "release-type": "node",
       "package-name": "karin-webui",
       "component": "web"
+    },
+    "packages/glob": {
+      "release-type": "node",
+      "package-name": "karin-glob",
+      "component": "glob"
+    },
+    "packages/onebot": {
+      "release-type": "node",
+      "package-name": "karin-onebot",
+      "component": "onebot"
     }
   },
   "commit-search-depth": 50

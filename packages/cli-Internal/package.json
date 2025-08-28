@@ -24,10 +24,16 @@
   ],
   "scripts": {
     "app": "node dist/index.mjs",
+    "build": "pnpm cp && tsc && tsdown",
+    "build:dev": "pnpm cp && tsc && tsdown --mode development",
+    "checkType": "tsc",
     "cp": "node index.mjs",
     "dev": "tsx src/index.ts",
-    "build": "pnpm cp && tsc && vite build&& tsup ",
-    "build:dev": "pnpm cp && tsc && vite build --mode development && tsup --development"
+    "prepublishOnly": "pnpm run checkType",
+    "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
+  },
+  "dependencies": {
+    "yaml": "2.7.0"
   },
   "devDependencies": {
     "commander": "^13.1.0"
@@ -39,8 +45,5 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
-  "time": "2025-04-10T19:55:45.123Z",
-  "dependencies": {
-    "yaml": "2.7.0"
-  }
+  "time": "2025-04-10T19:55:45.123Z"
 }

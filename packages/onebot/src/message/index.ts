@@ -84,12 +84,12 @@ export enum OneBotMessageType {
   Markdown = 'markdown',
 }
 
-export interface MessageBase {
+export interface MessageBaseType {
   type: OneBotMessageType
 }
 
 /** 纯文本 */
-export interface TextMessage extends MessageBase {
+export interface TextMessage extends MessageBaseType {
   type: OneBotMessageType.Text
   data: {
     text: string
@@ -97,7 +97,7 @@ export interface TextMessage extends MessageBase {
 }
 
 /** QQ表情 */
-export interface FaceMessage extends MessageBase {
+export interface FaceMessage extends MessageBaseType {
   type: OneBotMessageType.Face
   data: {
     id: string
@@ -105,7 +105,7 @@ export interface FaceMessage extends MessageBase {
 }
 
 /** 图片消息段 */
-export interface ImageMessage extends MessageBase {
+export interface ImageMessage extends MessageBaseType {
   type: OneBotMessageType.Image
   data: {
     file: string
@@ -131,7 +131,7 @@ export interface ImageMessage extends MessageBase {
 }
 
 /** 语音消息段 */
-export interface RecordMessage extends MessageBase {
+export interface RecordMessage extends MessageBaseType {
   type: OneBotMessageType.Record
   data: {
     file: string
@@ -144,7 +144,7 @@ export interface RecordMessage extends MessageBase {
 }
 
 /** 短视频消息段 */
-export interface VideoMessage extends MessageBase {
+export interface VideoMessage extends MessageBaseType {
   type: OneBotMessageType.Video
   data: {
     file: string
@@ -156,7 +156,7 @@ export interface VideoMessage extends MessageBase {
 }
 
 /** @某人消息段 */
-export interface AtMessage extends MessageBase {
+export interface AtMessage extends MessageBaseType {
   type: OneBotMessageType.At
   data: {
     qq: string | 'all',
@@ -165,25 +165,25 @@ export interface AtMessage extends MessageBase {
 }
 
 /** 猜拳魔法表情消息段 */
-export interface RpsMessage extends MessageBase {
+export interface RpsMessage extends MessageBaseType {
   type: OneBotMessageType.Rps
   data: {}
 }
 
 /** 掷骰子魔法表情消息段 */
-export interface DiceMessage extends MessageBase {
+export interface DiceMessage extends MessageBaseType {
   type: OneBotMessageType.Dice
   data: {}
 }
 
 /** 窗口抖动（戳一戳）消息段 */
-export interface ShakeMessage extends MessageBase {
+export interface ShakeMessage extends MessageBaseType {
   type: OneBotMessageType.Shake
   data: {}
 }
 
 /** 戳一戳消息段 */
-export interface PokeMessage extends MessageBase {
+export interface PokeMessage extends MessageBaseType {
   type: OneBotMessageType.Poke
   data: {
     type: string
@@ -193,7 +193,7 @@ export interface PokeMessage extends MessageBase {
 }
 
 /** 匿名发消息消息段 */
-export interface AnonymousMessage extends MessageBase {
+export interface AnonymousMessage extends MessageBaseType {
   type: OneBotMessageType.Anonymous
   data: {
     ignore?: 0 | 1
@@ -201,7 +201,7 @@ export interface AnonymousMessage extends MessageBase {
 }
 
 /** 链接分享消息段 */
-export interface ShareMessage extends MessageBase {
+export interface ShareMessage extends MessageBaseType {
   type: OneBotMessageType.Share
   data: {
     url: string
@@ -212,7 +212,7 @@ export interface ShareMessage extends MessageBase {
 }
 
 /** 推荐好友/群消息段 */
-export interface ContactMessage extends MessageBase {
+export interface ContactMessage extends MessageBaseType {
   type: OneBotMessageType.Contact
   data: {
     type: 'qq' | 'group'
@@ -221,7 +221,7 @@ export interface ContactMessage extends MessageBase {
 }
 
 /** 位置消息段 */
-export interface LocationMessage extends MessageBase {
+export interface LocationMessage extends MessageBaseType {
   type: OneBotMessageType.Location
   data: {
     lat: string
@@ -232,7 +232,7 @@ export interface LocationMessage extends MessageBase {
 }
 
 /** 音乐分享消息段 */
-export interface MusicMessage extends MessageBase {
+export interface MusicMessage extends MessageBaseType {
   type: OneBotMessageType.Music
   data: {
     type: 'qq' | '163' | 'xm'
@@ -248,7 +248,7 @@ export interface MusicMessage extends MessageBase {
 }
 
 /** 回复消息段 */
-export interface ReplyMessage extends MessageBase {
+export interface ReplyMessage extends MessageBaseType {
   type: OneBotMessageType.Reply
   data: {
     id: string
@@ -256,7 +256,7 @@ export interface ReplyMessage extends MessageBase {
 }
 
 /** 合并转发消息段 */
-export interface ForwardMessage extends MessageBase {
+export interface ForwardMessage extends MessageBaseType {
   type: OneBotMessageType.Forward
   data: {
     id: string
@@ -264,7 +264,7 @@ export interface ForwardMessage extends MessageBase {
 }
 
 /** XML消息段 */
-export interface XmlMessage extends MessageBase {
+export interface XmlMessage extends MessageBaseType {
   type: OneBotMessageType.Xml
   data: {
     data: string
@@ -272,7 +272,7 @@ export interface XmlMessage extends MessageBase {
 }
 
 /** JSON消息段 */
-export interface JsonMessage extends MessageBase {
+export interface JsonMessage extends MessageBaseType {
   type: OneBotMessageType.Json
   data: {
     data: string
@@ -280,7 +280,7 @@ export interface JsonMessage extends MessageBase {
 }
 
 /** 合并转发节点: `发` */
-export interface NodeIDMessage extends MessageBase {
+export interface NodeIDMessage extends MessageBaseType {
   type: OneBotMessageType.Node
   data: {
     id: string
@@ -288,7 +288,7 @@ export interface NodeIDMessage extends MessageBase {
 }
 
 /** 合并转发自定义节点 */
-export interface NodeCustomMessage extends MessageBase {
+export interface NodeCustomMessage extends MessageBaseType {
   type: OneBotMessageType.Node
   data: {
     user_id: string,
@@ -307,7 +307,7 @@ export interface NodeCustomMessage extends MessageBase {
 export type NodeMessage = NodeIDMessage | NodeCustomMessage
 
 /** 文件消息段 `收` */
-export interface FileMessage<T = any> extends MessageBase {
+export interface FileMessage<T = any> extends MessageBaseType {
   type: OneBotMessageType.File
   data: T
 }

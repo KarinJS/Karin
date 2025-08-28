@@ -1,7 +1,7 @@
 import { EventPostType } from './event'
 import type { EventBase } from './event'
 import type { OneBotMessage } from '../message'
-import type { SenderGroup, SenderPrivate } from './sender'
+import type { SenderGroupType, SenderPrivate } from './sender'
 
 /**
  * 消息类型枚举
@@ -74,7 +74,7 @@ export interface MessageGroupEvent extends EventBase {
   /** 字体 */
   font: number
   /** 发送人信息 */
-  sender: SenderGroup
+  sender: SenderGroupType
 }
 
 /**

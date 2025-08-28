@@ -1,0 +1,1 @@
+import 'moment/locale/es-do.js'

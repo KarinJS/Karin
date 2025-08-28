@@ -1,35 +1,10 @@
 {
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@fs": [
-        "./src/utils/fs/main"
-      ],
-      "events": [
-        "node_modules/@types/node/events.d.ts"
-      ],
-      "node:events": [
-        "node_modules/@types/node/events.d.ts"
-      ]
-    },
-    "rootDir": "./src",
-    "types": [
-      "./src/global.d.ts",
-      "node"
-    ],
+    "skipLibCheck": true
   },
   "exclude": [
-    "./plugins",
-    "./exports",
-    "sandbox",
-    "tsup.config.*.ts",
-    "dist",
+    "tsdown.config.ts"
   ],
-  "include": [
-    "src"
-  ]
+  "extends": "../../tsconfig.base.json"
 }

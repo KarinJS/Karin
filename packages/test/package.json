@@ -2,25 +2,27 @@
   "name": "test",
   "version": "0.0.1",
   "description": "",
+  "keywords": [],
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "ki": "ki",
-    "karin": "ki",
     "app": "node index.mjs",
-    "start": "node index.mjs",
-    "pm2": "pm2 start @karinjs/config/pm2.json",
-    "stop": "ki stop",
-    "rs": "ki rs",
+    "checkType": "tsc",
+    "karin": "ki",
+    "ki": "ki",
     "log": "ki log",
+    "pm2": "pm2 start @karinjs/config/pm2.json",
+    "prepublishOnly": "pnpm run checkType",
+    "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\"",
+    "rs": "ki rs",
+    "start": "node index.mjs",
+    "stop": "ki stop",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "up": "ki up"
   },
-  "keywords": [],
-  "author": "shijin",
-  "license": "MIT",
   "dependencies": {
-    "node-karin": "workspace:*",
     "@karinjs/plugin-basic": "1.0.8"
-  },
-  "type": "module"
+  }
 }

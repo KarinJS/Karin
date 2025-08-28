@@ -1,8 +1,6 @@
 {
   "name": "karin-plugin-template-ts",
   "version": "1.0.0",
-  "author": "shijin",
-  "type": "module",
   "description": "karin plugin template",
   "homepage": "https://github.com/KarinJS/karin",
   "bugs": {
@@ -12,13 +10,24 @@
     "type": "git",
     "url": "git+https://github.com/KarinJS/karin.git"
   },
+  "author": "shijin",
+  "type": "module",
+  "main": "lib/index.js",
+  "files": [
+    "/lib/**/*.js",
+    "/lib/**/*.d.ts",
+    "/config/*.json",
+    "resources",
+    "!lib/app.js"
+  ],
   "scripts": {
     "app": "node lib/app.js",
     "build": "tsup",
+    "checkType": "tsc",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts",
+    "prepublishOnly": "pnpm run checkType",
     "pub": "npm publish --access public"
   },
-  "main": "lib/index.js",
   "devDependencies": {
     "@types/express": "^5.0.1",
     "@types/lodash": "^4.17.16",
@@ -26,10 +35,13 @@
     "cross-env": "^7.0.3",
     "eslint": "^9.7.0",
     "neostandard": "^0.11.9",
-    "node-karin": "workspace:*",
     "tsup": "^8.5.0",
     "tsx": "^4.19.2",
     "typescript": "^5.5.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   },
   "karin": {
     "main": "src/index.ts",
@@ -47,16 +59,5 @@
       "data",
       "resources"
     ]
-  },
-  "files": [
-    "/lib/**/*.js",
-    "/lib/**/*.d.ts",
-    "/config/*.json",
-    "resources",
-    "!lib/app.js"
-  ],
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
   }
 }
