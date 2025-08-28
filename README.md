@@ -24,7 +24,7 @@
 
 ## 快速开始
 
-[📚 查看最新文档](https://karin.fun/)
+[📚 查看最新文档](https://karinjs.com/)
 
 一键初始化：`pnpm create karin`
 
@@ -38,7 +38,7 @@
 
 我们提供多个文档站点供您访问，解决可能出现的访问困难：
 
-- **主文档站**: [https://karin.fun](https://karin.fun) (基于 GitHub Pages)
+- **主文档站**: [https://karinjs.com](https://karinjs.com) (基于 GitHub Pages)
 - **镜像站点**:
   - 憨憨镜像: [https://karin.hanhanz.top](https://karin.hanhanz.top) (**推荐访问**)
   - Vercel 镜像: [https://docs.karin.fun](https://docs.karin.fun) (**推荐访问**)
@@ -60,7 +60,7 @@ Thanks to [valqelyan](https://github.com/valqelyan) for transferring the `karin`
 
 相关讨论请见：[valqelyan/karin#6](https://github.com/valqelyan/karin/issues/6)
 
-> 🧙‍♂️ 感谢三位大佬的魔法加持！
+> 🧙‍♂️ 感谢四位大佬的魔法加持！
 
 ### 贡献者
 
@@ -77,7 +77,7 @@ Thanks to [valqelyan](https://github.com/valqelyan) for transferring the `karin`
 ## 常见问题
 
 - 文档没看懂？[点我提问](https://github.com/KarinJS/Karin/issues) 或加群 967068507
-- 插件不会写？欢迎参考[插件开发文档](https://karin.fun/plugins/)
+- 插件不会写？欢迎参考[插件开发文档](https://karinjs.com/plugins/)
 - 遇到 bug？大胆提 Issue，我们超快响应！
 
 ## 如何参与贡献（PR）
