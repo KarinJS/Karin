@@ -4,7 +4,11 @@
 
 `karin`（卡琳）是一款灵活、现代、极易扩展的 Node.js 插件化应用框架，专为开发者打造，助你轻松构建属于自己的高效工具链和自动化服务。
 
+> 🎉 **重要更新**：感谢 [valqelyan](https://github.com/valqelyan) 的慷慨转让，从 2.0 版本开始，我们将正式使用 `karin` 作为 npm 包名！
+> **Important Update**: Thanks to [valqelyan](https://github.com/valqelyan)'s generous transfer, starting from version 2.0, we will officially use `karin` as our npm package name!
+
 ✨ **主要特性**：
+
 - ~~插件化架构，支持热插拔，生态丰富~~
 - 一行命令即可初始化项目，快速上手
 - 丰富的 Web UI（基于 React + HeroUI），颜值与功能并存
@@ -48,6 +52,14 @@
 - docs: [ikenxuan](https://github.com/ikenxuan)
 - name: [fuqiuluo](https://github.com/fuqiuluo)
 
+### 特别感谢 / Special Thanks
+
+感谢 [valqelyan](https://github.com/valqelyan) 将 `karin` npm 包名转让给我们！这位伟大的开发者将他们闲置的包名无偿转让，让 Karin 项目能够在 2.0 版本正式启用 `karin` 这个更直观的包名。
+
+Thanks to [valqelyan](https://github.com/valqelyan) for transferring the `karin` npm package name to us! This amazing developer generously transferred their unused package name, allowing the Karin project to officially use the more intuitive `karin` package name starting from version 2.0.
+
+相关讨论请见：[valqelyan/karin#6](https://github.com/valqelyan/karin/issues/6)
+
 > 🧙‍♂️ 感谢三位大佬的魔法加持！
 
 ### 贡献者
@@ -56,7 +68,7 @@
 
 [![贡献者](https://contributors-img.web.app/image?repo=KarinJS/Karin)](https://github.com/KarinJS/Karin/graphs/contributors)
 
-![Alt](https://repobeats.axiom.co/api/embed/aaaa2759c8885691443a4d80e5753f975d4f250e.svg "Repobeats analytics image")
+![Alt](https://repobeats.axiom.co/api/embed/aaaa2759c8885691443a4d80e5753f975d4f250e.svg 'Repobeats analytics image')
 
 ---
 
