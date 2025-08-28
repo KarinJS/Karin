@@ -41,7 +41,7 @@
 - **主文档站**: [https://karinjs.com](https://karinjs.com) (基于 GitHub Pages)
 - **镜像站点**:
   - 憨憨镜像: [https://karin.hanhanz.top](https://karin.hanhanz.top) (**推荐访问**)
-  - Vercel 镜像: [https://docs.karin.fun](https://docs.karin.fun) (**推荐访问**)
+  - Vercel 镜像: [https://docs.karinjs.com](https://docs.karinjs.com) (**推荐访问**)
   - Deno 镜像: [https://karin.deno.dev](https://karin.deno.dev) (**推荐访问**)
 
 > 💡 主文档站托管在 GitHub 上，如访问不畅，推荐使用 Deno 镜像站
