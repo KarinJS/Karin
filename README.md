@@ -77,7 +77,7 @@ Thanks to [valqelyan](https://github.com/valqelyan) for transferring the `karin`
 ## 常见问题
 
 - 文档没看懂？[点我提问](https://github.com/KarinJS/Karin/issues) 或加群 967068507
-- 插件不会写？欢迎参考[插件开发文档](https://karinjs.com/plugins/)
+- 插件不会写？欢迎参考[插件开发文档](https://karinjs.com/guide/index/)
 - 遇到 bug？大胆提 Issue，我们超快响应！
 
 ## 如何参与贡献（PR）
