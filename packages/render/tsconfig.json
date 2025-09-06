@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "paths": {
+      "@karinjs/*": [
+        "../../packages/*"
+      ]
+    }
+  },
+  "exclude": [
+    "tsdown.config.ts"
+  ]
+}

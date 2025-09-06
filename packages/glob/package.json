@@ -1,0 +1,47 @@
+{
+  "name": "@karinjs/glob",
+  "version": "0.0.1",
+  "description": "glob",
+  "keywords": [
+    "glob",
+    "karin"
+  ],
+  "homepage": "https://github.com/KarinJS/glob",
+  "bugs": {
+    "url": "https://github.com/KarinJS/glob/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarinJS/glob.git"
+  },
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "development": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && tsdown",
+    "checkType": "tsc",
+    "prepublishOnly": "pnpm run checkType",
+    "pub": "npm publish --access public",
+    "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\"",
+    "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/@karinjs/glob/syncs\""
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
+}

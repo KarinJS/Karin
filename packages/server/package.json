@@ -1,0 +1,69 @@
+{
+  "name": "@karinjs/server",
+  "version": "0.0.1",
+  "description": "",
+  "keywords": [
+    "server",
+    "karinjs"
+  ],
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "development": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "main": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "checkType": "tsc",
+    "prepublishOnly": "pnpm run checkType",
+    "pub": "npm publish --access public",
+    "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
+  },
+  "dependencies": {
+    "jsonwebtoken": "catalog:"
+  },
+  "devDependencies": {
+    "@karinjs/components": "workspace:*",
+    "@karinjs/core": "workspace:*",
+    "@karinjs/db": "workspace:*",
+    "@karinjs/envs": "workspace:*",
+    "@karinjs/git": "workspace:*",
+    "@karinjs/logger": "workspace:*",
+    "@karinjs/paths": "workspace:*",
+    "@karinjs/plugin": "workspace:*",
+    "@karinjs/utils": "workspace:*",
+    "@karinjs/node-pty": "catalog:",
+    "axios": "catalog:",
+    "express": "catalog:",
+    "lodash": "catalog:",
+    "moment": "catalog:",
+    "ws": "catalog:"
+  },
+  "peerDependencies": {
+    "@karinjs/components": "workspace:*",
+    "@karinjs/core": "workspace:*",
+    "@karinjs/db": "workspace:*",
+    "@karinjs/envs": "workspace:*",
+    "@karinjs/git": "workspace:*",
+    "@karinjs/logger": "workspace:*",
+    "@karinjs/paths": "workspace:*",
+    "@karinjs/plugin": "workspace:*",
+    "@karinjs/utils": "workspace:*",
+    "@karinjs/node-pty": "catalog:",
+    "axios": "catalog:",
+    "express": "catalog:",
+    "lodash": "catalog:",
+    "moment": "catalog:",
+    "ws": "catalog:"
+  }
+}

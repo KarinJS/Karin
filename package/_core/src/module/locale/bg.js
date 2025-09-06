@@ -1,0 +1,1 @@
+import 'moment/locale/bg.js'
