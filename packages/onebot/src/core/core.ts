@@ -72,7 +72,7 @@ export abstract class OneBotCore extends EventEmitter {
    * @param data - 事件数据
    */
   isEcho (data: OneBotWsEvent): data is Echo {
-    return 'echo' in data && 'status' in data && 'data' in data
+    return 'echo' in data && 'status' in data
   }
 
   /**

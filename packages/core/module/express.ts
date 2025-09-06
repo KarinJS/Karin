@@ -1,4 +1,18 @@
 export { default } from 'express'
+
+export {
+  application,
+  request,
+  response,
+  // @ts-ignore
+  Route,
+  Router,
+  json,
+  raw,
+  text,
+  urlencoded,
+} from 'express'
+
 export {
   type Express,
   type RouterOptions,
