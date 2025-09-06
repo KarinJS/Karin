@@ -3,7 +3,6 @@ import { OneBotCloseType, OneBotErrorType, OneBotEventKey } from './events'
 
 import type { WebSocket } from 'ws'
 import type { OneBotApi } from '../api'
-import type { Echo, OneBotWsEvent } from '../event'
 import type { OneBotWsBaseOptions } from './types'
 /**
  * OneBot WebSocket 基类
@@ -83,14 +82,6 @@ export abstract class OneBotWsBase extends OneBotCore {
     return () => {
       this._setSocket = false
     }
-  }
-
-  /**
-   * 判断是否为echo事件
-   * @param data - 事件数据
-   */
-  isEcho (data: OneBotWsEvent): data is Echo {
-    return 'echo' in data && 'status' in data && 'data' in data
   }
 
   /**
