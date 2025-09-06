@@ -24,7 +24,7 @@ export class PluginCoreSync {
   promise: PluginCorePromise
 
   constructor () {
-    const dir = (process.env.KARIN_PLUGINS_DIR || './plugins').replace(/\\/g, '/')
+    const dir = path.resolve(process.env.KARIN_PLUGINS_DIR || './plugins').replace(/\\/g, '/')
     this.promise = new PluginCorePromise(dir)
     this.#dir = dir
   }

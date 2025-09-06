@@ -1,4 +1,6 @@
-import { getCaller, types } from '@karinjs/utils'
+import callsites from 'callsites'
+import { fileURLToPath } from 'node:url'
+import { types } from '@karinjs/utils'
 import { core } from '../core/core'
 import register from '../register/register'
 import { createID, createLogger } from './util'
@@ -76,7 +78,7 @@ export const task = (
   if (!cron) throw new Error('[task]: 缺少参数[cron]')
   if (!fnc || typeof fnc !== 'function') throw new Error('[task]: 缺少参数或类型错误[fnc]')
 
-  const caller = getCaller(import.meta.url)
+  const caller = fileURLToPath(callsites()[1].getFileName()!)
   const pkgName = core.getPackageName(caller)
 
   const id = createID()

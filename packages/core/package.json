@@ -57,6 +57,7 @@
   "devDependencies": {
     "@karinjs/adapter": "workspace:*",
     "@karinjs/adapter-console": "workspace:*",
+    "@karinjs/adapter-onebot": "workspace:*",
     "@karinjs/components": "workspace:*",
     "@karinjs/config": "workspace:*",
     "@karinjs/db": "workspace:*",
@@ -87,6 +88,7 @@
   "peerDependencies": {
     "@karinjs/adapter": "workspace:*",
     "@karinjs/adapter-console": "workspace:*",
+    "@karinjs/adapter-onebot": "workspace:*",
     "@karinjs/components": "workspace:*",
     "@karinjs/config": "workspace:*",
     "@karinjs/db": "workspace:*",

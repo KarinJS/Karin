@@ -56,6 +56,9 @@ export const getCaller = (url: string, customError?: Error): string => {
    * 过滤basePath在paths中的所有值
    */
   paths = paths.filter(v => v !== basePath)
+  /**
+   * 过来当前文件本身
+   */
 
   if (paths.length === 0) {
     throw new Error('解析调用栈失败')

@@ -1,6 +1,8 @@
 import fs from 'node:fs'
 import chalk from 'chalk'
-import log4js, { type Configuration, Logger as Log4jsLogger } from 'log4js'
+import log4js from 'log4js'
+
+import type { Level, Configuration, Logger as Log4jsLogger } from 'log4js'
 
 /** 全局声明，使TypeScript识别全局logger变量 */
 declare global {
@@ -18,6 +20,19 @@ export type LogMethodNames = Exclude<LoggerLevel, 'off'>
 
 /** 仅包含日志方法的Logger类型 */
 export type LogMethodsOnly = Pick<Logger, LogMethodNames>
+
+/** 带前缀的日志方法 */
+export interface Prefix<T extends readonly any[]> {
+  trace: (...args: [...T, ...any[]]) => void
+  debug: (...args: [...T, ...any[]]) => void
+  info: (...args: [...T, ...any[]]) => void
+  warn: (...args: [...T, ...any[]]) => void
+  error: (...args: [...T, ...any[]]) => void
+  fatal: (...args: [...T, ...any[]]) => void
+  mark: (...args: [...T, ...any[]]) => void
+  log: (...args: [...T, ...any[]]) => void
+  level: Level | string
+}
 
 /**
  * @description 日志接口
@@ -53,6 +68,27 @@ export interface Logger extends Log4jsLogger {
    * @param args - 日志内容
    */
   bot: (level: LogMethodNames, id: string, ...args: any[]) => void
+
+  /**
+   * @description 创建带固定前缀的Logger
+   * @param prefix - 前缀字符串
+   * @example
+   * ```ts
+   * // 接受任何参数
+   * const log = logger.prefix('test')
+   *
+   * // 所有方法接受一个数字和任何参数
+   * const log = logger.prefix<[number]>('test')
+   * log.trace(1, 'trace message')
+   * log.info(3, 'info message')
+   *
+   * // 接受字符串、数字和任何参数
+   * const log = logger.prefix<[number, string]>('test')
+   * log.trace('log', 1, 'trace message')
+   * log.info('log', 3, 'info message')
+   * ```
+   */
+  prefix: <T extends readonly any[] = any[]>(prefix: string) => Prefix<T>
 
   /** @description 打印追踪日志 */
   trace (...args: any[]): void
@@ -303,6 +339,30 @@ const addColor = (Logger: log4js.Logger, color?: string) => {
         return logger.info(logger.violet(`[Bot:${id}]`), ...args)
     }
   }
+
+  logger.prefix = (prefix) => {
+    const result: Prefix<any[]> = {
+      trace: (...args) => logger.trace(prefix, ...args),
+      debug: (...args) => logger.debug(prefix, ...args),
+      info: (...args) => logger.info(prefix, ...args),
+      warn: (...args) => logger.warn(prefix, ...args),
+      error: (...args) => logger.error(prefix, ...args),
+      fatal: (...args) => logger.fatal(prefix, ...args),
+      mark: (...args) => logger.mark(prefix, ...args),
+      log: (...args) => logger.info(prefix, ...args),
+      level: logger.level,
+    }
+
+    // 给level加上get/set
+    Object.defineProperty(result, 'level', {
+      get: () => logger.level,
+      set: (value) => {
+        logger.level = value
+      },
+    })
+
+    return result
+  }
   return logger
 }
 
@@ -323,6 +383,8 @@ const createLogger = (dir?: string, color?: string): Logger => {
   log4js.configure(initLogger(true))
   const logger = addColor(log4js.getLogger('default'), color)
   global.logger = logger
+  const log = logger.prefix('test')
+  log.info(123, 'abc', '123')
   return logger
 }
 

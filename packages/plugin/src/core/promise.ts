@@ -60,8 +60,10 @@ export class PluginCorePromise {
       return [...cache.plugins.git]
     }
 
-    this.#refreshGitAndAppsPlugins()
-    return [...cache.plugins.git]
+    const { git, apps } = await this.#refreshGitAndAppsPlugins()
+    cache.plugins.git = git
+    cache.plugins.apps = apps
+    return git
   }
 
   /**
@@ -75,8 +77,10 @@ export class PluginCorePromise {
       return [...cache.plugins.apps]
     }
 
-    await this.#refreshGitAndAppsPlugins()
-    return [...cache.plugins.apps]
+    const { git, apps } = await this.#refreshGitAndAppsPlugins()
+    cache.plugins.git = git
+    cache.plugins.apps = apps
+    return apps
   }
 
   /**
@@ -102,6 +106,7 @@ export class PluginCorePromise {
       root.push(pkg.name)
     }
 
+    cache.plugins.root = root
     return root
   }
 
@@ -182,6 +187,7 @@ export class PluginCorePromise {
             name: v,
             version: '0.0.0',
             description: '',
+            type: 'module',
             main: '',
             scripts: {},
             dependencies: {},
@@ -193,6 +199,12 @@ export class PluginCorePromise {
       }
 
       const pkg = await this.#requireJson(_path)
+      /** 检查type === module */
+      if (pkg.type !== 'module') {
+        pkg.type = 'module'
+        fs.writeFileSync(_path, JSON.stringify(pkg, null, 2))
+      }
+
       /** 配置了karin字段视为git */
       if (typeof pkg?.karin === 'object') {
         git.push(v)

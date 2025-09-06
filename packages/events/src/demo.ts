@@ -1,4 +1,4 @@
-import { EventEmitter } from './index'
+import { EventEmitter } from './emitter'
 
 /**
  * 定义应用中的事件类型映射

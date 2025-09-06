@@ -1,5 +1,7 @@
+import callsites from 'callsites'
+import { fileURLToPath } from 'node:url'
+import { types } from '@karinjs/utils'
 import { core, register } from '../manager'
-import { getCaller, types } from '@karinjs/utils'
 import { formatReg, createID, createLogger } from './util'
 
 import type { PluginRegisterCache } from './base'
@@ -197,7 +199,9 @@ export const command: Callbacks = <T extends keyof MessageEventMap = keyof Messa
   second: MessageCallback<T> | MessageSegment,
   options: Options<T> | StringOptions<T> = {}
 ): CommandCache => {
-  const caller = getCaller(import.meta.url)
+  const file = callsites()
+  const filename = file[1].getFileName()!
+  const caller = fileURLToPath(filename)
   const pkgName = core.getPackageName(caller)
 
   const id = createID()

@@ -1,4 +1,4 @@
-import { EventEmitter } from '../src'
+import { EventEmitter } from '../src/emitter'
 
 /**
  * 定义应用中的事件类型映射

@@ -29,6 +29,7 @@
     "@karinjs/events": "workspace:*",
     "@karinjs/logger": "workspace:*",
     "@karinjs/utils": "workspace:*",
+    "callsites": "^4.2.0",
     "chokidar": "catalog:",
     "lodash": "catalog:"
   },

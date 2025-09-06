@@ -1,4 +1,4 @@
-export * from './event'
+export * from './core'
 export * from './start/core'
 export * from './db'
 export * from './config'

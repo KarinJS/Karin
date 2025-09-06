@@ -1,5 +1,7 @@
+import callsites from 'callsites'
+import { fileURLToPath } from 'node:url'
 import { core, register } from '../manager'
-import { getCaller, types } from '@karinjs/utils'
+import { types } from '@karinjs/utils'
 import { createID, createLogger } from './util'
 import type { PluginRegisterCache } from './base'
 import type { OptionsBase } from './options'
@@ -67,7 +69,7 @@ export const handler = (key: string, fnc: HandlerCache['register']['fnc'], optio
   if (!key) throw new Error('[handler]: 缺少参数[key]')
   if (!fnc) throw new Error('[handler]: 缺少参数[fnc]')
 
-  const caller = getCaller(import.meta.url)
+  const caller = fileURLToPath(callsites()[1].getFileName()!)
   const pkgName = core.getPackageName(caller)
 
   const id = createID()

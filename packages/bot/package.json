@@ -1,5 +1,5 @@
 {
-  "name": "@karinjs/adapter-console",
+  "name": "@karinjs/bot",
   "version": "0.0.1",
   "description": "",
   "keywords": [],
@@ -18,18 +18,18 @@
   },
   "devDependencies": {
     "@karinjs/adapter": "workspace:*",
-    "@karinjs/core": "workspace:*",
+    "@karinjs/db": "workspace:*",
     "@karinjs/envs": "workspace:*",
+    "@karinjs/events": "workspace:*",
     "@karinjs/logger": "workspace:*",
-    "@karinjs/paths": "workspace:*",
-    "@karinjs/utils": "workspace:*"
+    "@karinjs/hooks": "workspace:*"
   },
   "peerDependencies": {
     "@karinjs/adapter": "workspace:*",
-    "@karinjs/core": "workspace:*",
+    "@karinjs/db": "workspace:*",
     "@karinjs/envs": "workspace:*",
+    "@karinjs/events": "workspace:*",
     "@karinjs/logger": "workspace:*",
-    "@karinjs/paths": "workspace:*",
-    "@karinjs/utils": "workspace:*"
+    "@karinjs/hooks": "workspace:*"
   }
 }

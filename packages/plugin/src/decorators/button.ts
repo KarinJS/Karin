@@ -1,7 +1,9 @@
+import callsites from 'callsites'
+import { fileURLToPath } from 'node:url'
 import { core } from '../core/core'
 import register from '../register/register'
 import { createID, createLogger } from './util'
-import { getCaller, types } from '@karinjs/utils'
+import { types } from '@karinjs/utils'
 
 import type { PluginRegisterCache } from './base'
 import type { OptionsBase } from './options'
@@ -84,7 +86,7 @@ export const button = (
   if (!reg) throw new Error('[button]: 缺少参数[reg]')
   if (!fnc) throw new Error('[button]: 缺少参数[fnc]')
 
-  const caller = getCaller(import.meta.url)
+  const caller = fileURLToPath(callsites()[1].getFileName()!)
   const pkgName = core.getPackageName(caller)
 
   const id = createID()

@@ -89,17 +89,23 @@ export const start = async () => {
    */
   await core.load()
 
-  // /**
-  //  * 9. 加载适配器
-  //  */
+  /**
+   * 9. 加载适配器
+   */
   import('@karinjs/adapter-console')
     .then(({ AdapterConsole }) => {
-      const adapter = AdapterConsole.getInstance()
-      registerBot('other', adapter)
+      const consoleAdapter = AdapterConsole.getInstance()
+      registerBot('other', consoleAdapter)
     })
 
-  // await import('@/adapter')
-  // await initOneBotAdapter()
+  import('@karinjs/adapter-onebot')
+    .then(({ OneBotCore }) => {
+      const OneBotAdapter = OneBotCore.getInstance()
+      OneBotAdapter.init().then(() => {
+        logger.debug('OneBot 适配器加载完成')
+      })
+    })
+
   // await initRender()
 
   // /**

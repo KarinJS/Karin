@@ -145,8 +145,12 @@ export class PluginPackage implements PluginCacheKeyPkg {
 
   get appsDirs () {
     const pkg = this.data
+    if (this.#type === 'apps') {
+      return [this.#dir]
+    }
+
     if (!pkg) {
-      return this.#type === 'apps' ? [this.#dir] : []
+      return []
     }
 
     const getApps = (apps?: string | string[]) => {

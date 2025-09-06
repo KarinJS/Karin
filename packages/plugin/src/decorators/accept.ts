@@ -1,7 +1,9 @@
+import callsites from 'callsites'
+import { fileURLToPath } from 'node:url'
 import { core } from '../core/core'
+import { types } from '@karinjs/utils'
 import register from '../register/register'
 import { createID, createLogger } from './util'
-import { getCaller, types } from '@karinjs/utils'
 
 import type { FNC } from './util'
 import type { PluginRegisterCache } from './base'
@@ -72,7 +74,7 @@ export const accept = <T extends keyof NoticeAndRequest> (
   fnc: FNC<NoticeAndRequest[T]>,
   options: AcceptOptions<T> = {}
 ): AcceptCache => {
-  const caller = getCaller(import.meta.url)
+  const caller = fileURLToPath(callsites()[1].getFileName()!)
   const pkgName = core.getPackageName(caller)
 
   const id = createID()

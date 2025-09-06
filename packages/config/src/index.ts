@@ -136,6 +136,8 @@ export class Config extends EventEmitter<EventMap> {
     ])
 
     this.#initCacheCleaner()
+    this.groups(true)
+    this.privates(true)
 
     // 标记为已初始化
     this.#isInitialized = true
@@ -225,6 +227,8 @@ export class Config extends EventEmitter<EventMap> {
       return this.#privateCache[key]
     }
 
+    /** 如果缓存不存在 需要创建默认缓存 */
+    this.#privateCache[key] = this.#privateCache.default
     return this.#privateCache.default
   }
 
@@ -268,6 +272,9 @@ export class Config extends EventEmitter<EventMap> {
       this.#initGroupCount(key)
       return this.#groupCache[key]
     }
+
+    /** 如果缓存不存在 需要创建默认缓存 */
+    this.#groupCache[key] = this.#groupCache.default
 
     return this.#groupCache.default
   }

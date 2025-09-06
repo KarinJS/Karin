@@ -22,11 +22,10 @@
   "main": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
-    "dist",
-    "README.md"
+    "dist"
   ],
   "scripts": {
-    "build": "tsc && tsdown",
+    "build": "tsdown",
     "checkType": "tsc",
     "demo": "tsx src/demo.ts",
     "example:advanced": "tsx examples/advanced.ts",
@@ -34,5 +33,19 @@
     "prepublishOnly": "pnpm run checkType",
     "pub": "npm publish --access public",
     "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
+  },
+  "devDependencies": {
+    "@karinjs/adapter": "workspace:*",
+    "@karinjs/bot": "workspace:*",
+    "@karinjs/envs": "workspace:*",
+    "@karinjs/events": "workspace:*",
+    "ws": "catalog:"
+  },
+  "peerDependencies": {
+    "@karinjs/adapter": "workspace:*",
+    "@karinjs/bot": "workspace:*",
+    "@karinjs/envs": "workspace:*",
+    "@karinjs/events": "workspace:*",
+    "ws": "catalog:"
   }
 }

@@ -108,7 +108,7 @@ export const filesByExt = (
       return list.push(...result)
     }
 
-    if (!extFilter(entry.name)) return
+    if (!extFilter(path.extname(entry.name))) return
 
     list.push(pathHandler(filePath, entry))
   })
@@ -235,7 +235,7 @@ export const findFiles = async (
         return
       }
 
-      if (!extFilter(entry.name)) return
+      if (!extFilter(path.extname(entry.name))) return
 
       list.push(pathHandler(filePath, entry))
     })
