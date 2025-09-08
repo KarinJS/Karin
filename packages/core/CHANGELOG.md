@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.10.23](https://github.com/KarinJS/Karin/compare/core-v1.10.22...core-v1.10.23) (2025-09-08)
+
+
+### 🐛 Bug Fixes
+
+* **core:** 修复环境变量加载时未覆盖现有值的问题 close [#522](https://github.com/KarinJS/Karin/issues/522) ([4566185](https://github.com/KarinJS/Karin/commit/4566185705baa4709f62c23eaf9b10867b7d5c4f))
+
 ## [1.10.22](https://github.com/KarinJS/Karin/compare/core-v1.10.21...core-v1.10.22) (2025-09-06)
 
 
