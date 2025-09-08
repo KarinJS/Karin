@@ -56,7 +56,10 @@ export const start = async () => {
    * - 加载环境变量到process.env
    * - 默认从.env文件加载
    */
-  dotenv.config({ path: `${path.resolve(process.cwd(), process.env.EBV_FILE!)}` })
+  dotenv.config({
+    path: `${path.resolve(process.cwd(), process.env.EBV_FILE!)}`,
+    override: true,
+  })
 
   /**
    * 2. 初始化日志模块
