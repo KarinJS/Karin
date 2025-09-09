@@ -40,17 +40,19 @@
 
 - **主文档站**: [https://karinjs.com](https://karinjs.com) (基于 GitHub Pages)
 - **镜像站点**:
-  - 憨憨镜像: [https://karin.hanhanz.top](https://karin.hanhanz.top) (**推荐访问**)
-  - Vercel 镜像: [https://docs.karinjs.com](https://docs.karinjs.com) (**推荐访问**)
-  - Deno 镜像: [https://karin.deno.dev](https://karin.deno.dev) (**推荐访问**)
+  - [Vercel 镜像(瑜笙)](https://github.com/yusheng929): [https://docs.karinjs.com](https://docs.karinjs.com)
+  - [Vercel 镜像(憨憨)](https://github.com/hanhan258): [https://karin.hanhanz.top](https://karin.hanhanz.top)
+  - Deno 镜像: [https://karin.deno.dev](https://karin.deno.dev)
+  - [自建CDN镜像(ikechan8370)](https://github.com/ikechan8370): [https://karin.chaite.cloud](https://karin.chaite.cloud)
 
-> 💡 主文档站托管在 GitHub 上，如访问不畅，推荐使用 Deno 镜像站
+> 💡 主文档站托管在 GitHub 上，如访问不畅，推荐使用 `ikechan8370` 镜像站
 
 ## 鸣谢
 
 - webui: [bietiaop](https://github.com/bietiaop)
 - docs: [ikenxuan](https://github.com/ikenxuan)
 - name: [fuqiuluo](https://github.com/fuqiuluo)
+- package-name: [valqelyan](https://github.com/valqelyan)
 
 ### 特别感谢 / Special Thanks
 
@@ -105,3 +107,4 @@ Thanks to [valqelyan](https://github.com/valqelyan) for transferring the `karin`
 ## 更新日志
 
 我们定期发布更新，查看 [CHANGELOG](https://github.com/KarinJS/Karin/releases) 了解最新变化。
+
