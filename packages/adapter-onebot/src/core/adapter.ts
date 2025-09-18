@@ -647,6 +647,7 @@ export class AdapterOneBot<T extends OneBotType = OneBotType> extends AdapterBas
     const groupName = info.group_name
     return {
       groupId,
+      groupAvatar: `https://p.qlogo.cn/gh/${groupId}/${groupId}/0`,
       groupName,
       groupRemark: groupName,
       maxMemberCount: info.max_member_count,
@@ -679,6 +680,7 @@ export class AdapterOneBot<T extends OneBotType = OneBotType> extends AdapterBas
       const groupName = info.group_name
       return {
         groupId,
+        groupAvatar: `https://p.qlogo.cn/gh/${groupId}/${groupId}/0`,
         groupName,
         groupRemark: groupName,
         maxMemberCount: info.max_member_count,

@@ -114,6 +114,8 @@ export interface UserInfo {
 export interface GroupInfo {
   /** 群ID */
   groupId: string
+  /** 群头像 */
+  groupAvatar: string
   /** 群名称 */
   groupName?: string
   /** 群主ID */
