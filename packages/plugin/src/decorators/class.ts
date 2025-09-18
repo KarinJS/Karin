@@ -201,14 +201,33 @@ export abstract class Plugin<T extends keyof MessageEventMap = keyof MessageEven
  * 加载 class 插件
  * @param pkgName 插件包名称
  * @param file 文件路径
+ * @param result 模块对象
+ */
+export const loadClass = async (pkgName: string, file: string, result: object) => {
+  await Promise.allSettled(Object.entries(result).map(async ([key, value]) => {
+    if (key === 'default') return
+    return loadRule(pkgName, file, value)
+  }))
+}
+
+/**
+ * 加载 rule
+ * @param pkgName 插件包名称
+ * @param file 文件路径
  * @param Cls 类
  */
-export const loadClass = (
+export const loadRule = (
   pkgName: string,
   file: string,
   Cls: unknown
 ) => {
-  if (!isClass<Plugin>(Cls)) return
+  logger.debug(`[loadClass] 加载文件: ${file}`)
+
+  if (!isClass<Plugin>(Cls)) {
+    logger.debug(`[loadClass] ${file} 不是class，跳过`)
+    return
+  }
+
   const plugin = new Cls()
 
   if (!plugin._options || typeof plugin._options !== 'object') {
@@ -224,7 +243,7 @@ export const loadClass = (
   const createCommand = (v: FormatOptions['rule'][number]) => {
     if (typeof v.fnc === 'string') {
       // @ts-ignore
-      if (!plugin?.[v.fnc]) {
+      if (typeof v.fnc !== 'function' && !plugin?.[v.fnc]) {
         logger.warn(`[loadClass][${pkgName}] 插件 ${file} 的 ${v.fnc} 方法不存在，跳过注册当前rule`)
         return
       }
@@ -328,10 +347,14 @@ export const loadClass = (
     return result
   }
 
+  let registeredCount = 0
   options.rule.forEach(v => {
     const command = createCommand(v)
     if (!command) return
 
     register.registerCommand(command)
+    registeredCount++
   })
+
+  logger.debug(`[loadClass] 注册了 ${registeredCount} 个命令`)
 }

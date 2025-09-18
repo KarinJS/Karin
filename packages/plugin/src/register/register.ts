@@ -39,8 +39,18 @@ class RegisterManager {
    */
   unregisterCommand (target: string): void {
     target = this._formatPath(target)
+    logger.debug(`[unregisterCommand] 尝试卸载命令，目标: ${target}`)
+
     const index = cache.command.findIndex(v => v.app.id === target || v.file.absPath === target)
-    if (index === -1) return
+
+    if (index === -1) {
+      logger.debug(`[unregisterCommand] 未找到要卸载的命令: ${target}`)
+      logger.debug('[unregisterCommand] 当前注册的命令文件路径:', cache.command.slice(0, 3).map(cmd => cmd.file.absPath))
+      return
+    }
+
+    const removedCommand = cache.command[index]
+    logger.debug(`[unregisterCommand] 卸载命令: ${removedCommand.app.name}`)
 
     cache.command.splice(index, 1)
     cache.count.command--
@@ -50,6 +60,7 @@ class RegisterManager {
    * 注册accept插件
    * @param accept 插件
    */
+
   registerAccept (accept: AcceptCache): void {
     cache.accept.push(accept)
     cache.count.accept++
@@ -156,23 +167,24 @@ class RegisterManager {
    */
   unregisterApp (target: string): void {
     target = this._formatPath(target)
+    logger.debug(`[unregisterApp] 卸载应用: ${target}`)
+
     this.unregisterAccept(target)
     this.unregisterHandler(target)
     this.unregisterButton(target)
     this.unregisterTask(target)
     this.unregisterCommand(target)
-  }
-
-  /**
+  }  /**
    * 卸载整个插件包
    * @param pkgName 插件包名称
    */
+
   unregisterPackage (pkgName: string): void {
     cache.pluginsMap.delete(pkgName)
-    cache.plugins.apps = cache.plugins.apps.filter(v => v !== pkgName || `apps:${v}`)
-    cache.plugins.npm = cache.plugins.npm.filter(v => v !== pkgName || `npm:${v}`)
-    cache.plugins.git = cache.plugins.git.filter(v => v !== pkgName || `git:${v}`)
-    cache.plugins.root = cache.plugins.root.filter(v => v !== pkgName || `root:${v}`)
+    cache.plugins.apps = cache.plugins.apps.filter(v => v !== pkgName || v !== `apps:${v}`)
+    cache.plugins.npm = cache.plugins.npm.filter(v => v !== pkgName || v !== `npm:${v}`)
+    cache.plugins.git = cache.plugins.git.filter(v => v !== pkgName || v !== `git:${v}`)
+    cache.plugins.root = cache.plugins.root.filter(v => v !== pkgName || v !== `root:${v}`)
 
     cache.accept = cache.accept.filter(v => v.pkg.name !== pkgName)
     cache.command = cache.command.filter(v => v.pkg.name !== pkgName)
@@ -191,6 +203,8 @@ class RegisterManager {
       }
       return true
     })
+
+    this.recount()
   }
 
   /**
@@ -205,6 +219,29 @@ class RegisterManager {
     Object.keys(cache.handler).forEach(key => {
       cache.handler[key] = lodash.sortBy(cache.handler[key], ['register.options.priority'], ['asc'])
     })
+  }
+
+  /**
+   * 重新统计数量
+   */
+  recount (): void {
+    cache.count.command = cache.command.length
+    cache.count.accept = cache.accept.length
+    cache.count.button = cache.button.length
+    cache.count.task = cache.task.length
+
+    const handlerKeys = Object.keys(cache.handler)
+    cache.count.handler.key = handlerKeys.length
+    cache.count.handler.fnc = 0
+    handlerKeys.forEach(key => {
+      cache.count.handler.fnc += cache.handler[key].length
+    })
+
+    cache.count.pkg =
+      cache.plugins.apps.length +
+      cache.plugins.git.length +
+      cache.plugins.npm.length +
+      cache.plugins.root.length
   }
 }
 

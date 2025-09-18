@@ -15,4 +15,4 @@ export const createSystemConfig = async () => {
   await config.init()
 }
 
-export type { ConfigAdapter, ConfigConfig, ConfigEnv, ConfigFiles, ConfigFormatMap, ConfigGroups, ConfigGroupValue, ConfigMap, ConfigPM2, ConfigPrivates, ConfigPrivateValue, ConfigRedis, ConfigRender, ConfigTypes, EventMap as ConfigEventMap, Formatter, TypedEventMap } from '@karinjs/config'
+export type { ConfigAdapter, ConfigConfig, ConfigEnv, ConfigFiles, ConfigFormatMap, ConfigGroups, ConfigGroupValue, ConfigMap, ConfigPM2, ConfigPrivates, ConfigPrivateValue, ConfigRedis, ConfigRender, ConfigTypes, ConfigEventMap, Formatter, TypedEventMap } from '@karinjs/config'

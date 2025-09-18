@@ -19,12 +19,14 @@ export class PluginCore extends PluginCoreSync {
    */
   getFileCache (dir: string): PluginCacheKeyFile {
     return {
-      absPath: dir,
+      get absPath () {
+        return formatPath(dir)
+      },
       get dirname () {
-        return path.dirname(dir)
+        return formatPath(path.dirname(dir))
       },
       get basename () {
-        return path.basename(dir)
+        return formatPath(path.basename(dir))
       },
     }
   }

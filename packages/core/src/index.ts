@@ -22,6 +22,10 @@ export {
   isNpmPlugin,
   isPublic,
   register,
+  hmr,
+  hot,
+  Plugin,
+  HMRModule,
 } from '@karinjs/plugin'
 
 export type {

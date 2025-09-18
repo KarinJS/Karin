@@ -1,5 +1,5 @@
 import { karin } from '@karinjs/core'
 
-karin.command('test', (ctx) => {
-  ctx.reply('1')
+karin.command('test1', (ctx) => {
+  ctx.reply('hmr')
 })

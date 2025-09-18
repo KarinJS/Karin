@@ -1,7 +1,10 @@
 import fs from 'node:fs'
 import { execSync } from 'node:child_process'
 
+/** 是否为pnpm10 */
 let IS_PNPM10: boolean | null = null
+/** 是否传递了 --expose-internals */
+const isInternals = process.execArgv.includes('--expose-internals')
 
 export * from './npm'
 export * from './env'
@@ -116,3 +119,8 @@ export const getModuleType = () => {
 
   return ['.js', '.mjs']
 }
+
+/**
+ * @description 是否可以使用 Node.js 内部模块
+ */
+export const canUseNodeInternals = () => isInternals && process.release.name === 'node'

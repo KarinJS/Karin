@@ -14,7 +14,7 @@ export type TypedEventMap = {
   [K in keyof ConfigMap]: [file: K, old: ConfigMap[K], data: ConfigMap[K]]
 }
 
-export interface EventMap {
+export interface ConfigEventMap {
   change: TypedEventMap[keyof ConfigMap]
 }
 
@@ -31,7 +31,7 @@ export type * from './types'
 /**
  * 配置文件管理器
  */
-export class Config extends EventEmitter<EventMap> {
+export class Config extends EventEmitter<ConfigEventMap> {
   #isWatch = false
   /** 初始化状态 */
   #isInitialized = false
