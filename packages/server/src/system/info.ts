@@ -5,7 +5,7 @@ import {
   WS_CONNECTION_ONEBOT,
   WS_CONNECTION_PUPPETEER,
 } from '@karinjs/envs'
-import { emitter, statusListener } from '@karinjs/core'
+import { emitter } from '@karinjs/events'
 import { createSuccessResponse } from '../utils/response'
 
 import type { WebSocket } from 'ws'
@@ -202,9 +202,9 @@ export const systemStatusRealTimeHandler: RequestHandler = async (req, res) => {
       logger.error(`An error occurred when writing sendStatus data to client: ${e}`)
     }
   }
-  statusListener.on('statusUpdate', sendStatus)
+  emitter.on('statusUpdate', sendStatus)
   req.on('close', () => {
-    statusListener.off('statusUpdate', sendStatus)
+    emitter.off('statusUpdate', sendStatus)
     res.end('data: end\n\n')
   })
 }

@@ -1,9 +1,11 @@
-import {
+import { Bot } from '@karinjs/bot'
+import type { Contact } from '../event/types'
+import type {
   Elements,
   ForwardOptions,
   NodeElement,
 } from '../segment/types'
-import {
+import type {
   AdapterType,
   CreateGroupFolderResponse,
   DownloadFileOptions,
@@ -18,9 +20,10 @@ import {
   GroupInfo,
   GroupMemberInfo,
   MessageResponse,
-  QQGroupHonorInfo, SendMsgResults, UserInfo,
+  QQGroupHonorInfo,
+  SendMsgResults,
+  UserInfo,
 } from './types'
-import { Contact } from '../event/types'
 
 /**
  * 适配器基类 所有的适配器都应该继承这个类
@@ -42,21 +45,17 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
       subId: {},
       name: '',
       avatar: '',
-      status: 'online',
+      status: 'initializing',
       enabled: true,
+      statusLog: [
+        { status: 'initializing', time: Date.now() },
+      ],
       time: {
-        firstConnectAt: Date.now(),
-        onlineDuration: 0,
-        offlineDuration: 0,
-        lastOnlineAt: Date.now(),
-        lastOfflineAt: Date.now(),
-        currentStatusAt: Date.now(),
-      },
-      stats: {
-        onlineCount: 0,
-        offlineCount: 0,
-        connectCount: 0,
-        disconnectCount: 0,
+        startTime: Date.now(),
+      } as AdapterType['account']['time'],
+      count: {
+        online: 0,
+        offline: 0,
       },
       events: {
         received: {
@@ -71,6 +70,40 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
         },
       },
     }
+
+    Object.defineProperty(this.account.time, 'lastOnlineAt', {
+      get: () => this.account.status === 'online' ? Date.now() : this.#findLastStatusTime('online'),
+      enumerable: true,
+      configurable: false,
+    })
+
+    Object.defineProperty(this.account.time, 'lastOfflineAt', {
+      get: () => this.account.status === 'online' ? Date.now() : this.#findLastStatusTime('online'),
+      enumerable: true,
+      configurable: false,
+    })
+
+    Object.defineProperty(this.account.time, 'onlineDuration', {
+      get: () => this.#calculateDuration('online'),
+      enumerable: true,
+      configurable: false,
+    })
+
+    Object.defineProperty(this.account.time, 'offlineDuration', {
+      get: () => this.#calculateDuration('offline'),
+      enumerable: true,
+      configurable: false,
+    })
+
+    Object.defineProperty(this.account.time, 'currentStatusDuration', {
+      get: () => {
+        const { time } = this.account.statusLog[this.account.statusLog.length - 1] || {}
+        return Date.now() - time
+      },
+      enumerable: true,
+      configurable: false,
+    })
+
     this.adapter = {
       index: -1,
       name: '',
@@ -85,8 +118,69 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
     }
   }
 
+  getRaw<T = any> (): T {
+    return this.raw as unknown as T
+  }
+
   get #errMsg (): string {
     return `[adapter][${this.adapter.protocol}] 此接口未实现`
+  }
+
+  /**
+   * 从状态日志中查找最后一次指定状态的时间
+   * @param targetStatus 目标状态
+   * @returns 找到的时间戳，如果没找到则返回 startTime
+   */
+  #findLastStatusTime (targetStatus: 'online' | 'offline' | 'initializing'): number {
+    for (let i = this.account.statusLog.length - 1; i >= 0; i--) {
+      if (this.account.statusLog[i].status === targetStatus) {
+        return this.account.statusLog[i].time
+      }
+    }
+    return this.account.time.startTime
+  }
+
+  /**
+   * 通用状态持续时间计算器
+   * @param config 配置对象
+   * @returns 总持续时长（毫秒）
+   */
+  #calculateDuration (targetStatus: 'online' | 'offline'): number {
+    /** 持续时间 */
+    let totalTime = 0
+    /** 目标状态的开始时间 */
+    let startTime: number | null = null
+
+    this.account.statusLog.forEach(({ status, time }) => {
+      /** 进入目标状态 */
+      if (status === targetStatus) {
+        /** 如果上次开始时间为空 则说明还没开始统计 */
+        if (startTime === null) {
+          startTime = time
+          return
+        }
+
+        /** 开始计时 */
+        totalTime += time - startTime
+        startTime = null
+        return
+      }
+
+      /** 如果非目标状态 结束区间 */
+      if (startTime !== null) {
+        /** 结束计时 */
+        totalTime += time - startTime
+        startTime = null
+      }
+    })
+
+    /** 如果循环结束了 但是还在目标状态中 则说明最后一个是目标状态 */
+    if (startTime !== null) {
+      totalTime += Date.now() - startTime
+      startTime = null
+    }
+
+    return totalTime
   }
 
   get selfId (): string {
@@ -97,8 +191,57 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
     return this.account.name
   }
 
+  get status (): 'online' | 'offline' | 'initializing' {
+    return this.account.status
+  }
+
   selfSubId (key: string): string {
     return this.account.subId[key]
+  }
+
+  /**
+   * 设置Bot状态
+   * @param status 新状态
+   * - online 在线
+   * - offline 离线
+   * - initializing 初始化中
+   */
+  setStatus (status: 'online' | 'offline' | 'initializing'): void {
+    this.account.statusLog.push({ status, time: Date.now() })
+    if (this.account.status !== status) {
+      this.account.status = status
+    }
+  }
+
+  /**
+   * 在初始化完成之后调用
+   * @description 将Bot注册到全局管理器中 并设置状态为在线
+   * @returns 返回Bot的索引ID
+   */
+  registerBot (): number {
+    const index = Bot.registerBot(this.adapter.communication, this)
+    this.setStatus('online')
+    this.account.count.online += 1
+    return index
+  }
+
+  /**
+   * 卸载注册的机器人
+   * @description 将Bot从全局管理器中移除 并销毁当前实例
+   */
+  unregisterBot () {
+    Bot.unregisterBot('index', this.adapter.index)
+    this.setStatus('offline')
+  }
+
+  /**
+   * Bot离线
+   */
+  setOffline () {
+    if (this.account.status !== 'offline') {
+      this.account.status = 'offline'
+      this.account.count.offline += 1
+    }
   }
 
   /**

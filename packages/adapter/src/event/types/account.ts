@@ -1,3 +1,5 @@
+export type Status = 'online' | 'offline' | 'initializing'
+
 /**
  * Bot账号信息
  */
@@ -37,12 +39,11 @@ export interface AccountInfo {
   subId: Record<string, string>
   /**
    * Bot运行状态
-   * - online: 已连接且在线
-   * - offline: 已连接但离线
-   * - disconnected: 连接断开，将保持3小时当前状态，3小时候转入 `uninstalled`
-   * - uninstalled: 已卸载，如果保持当前状态1小时，则会卸载当前整个Bot实例
+   * - online: 在线
+   * - offline: 离线
+   * - initializing: 初始化
    */
-  status: 'online' | 'offline' | 'disconnected' | 'uninstalled'
+  status: Status
 
   /**
    * Bot启用状态
@@ -52,61 +53,62 @@ export interface AccountInfo {
   enabled: boolean
 
   /**
+   * Bot的状态变化日志
+   * @deprecated 请不要直接操作此字段 请使用 `setStatus` 方法
+   */
+  statusLog: {
+    /** 状态 */
+    status: Status,
+    /** 变更时间 */
+    time: number
+  }[]
+
+  /**
    * Bot的时间信息
    */
   time: {
     /**
-     * Bot的首次连接时间
-     * - 也就是第一次注册Bot的时间
-     * @description Unix时间戳
-     * @example 1672531199000
+     * Bot的首次注册时间
      */
-    firstConnectAt: number
+    startTime: number
     /**
      * Bot的总在线时长，不包含离线时间
      * @description 单位为毫秒
      */
-    onlineDuration: number
+    get onlineDuration (): number
     /**
      * Bot的总离线时间
      * @description 单位为毫秒
      */
-    offlineDuration: number
+    get offlineDuration (): number
     /**
-     * Bot的最后在线时间
+     * Bot的最后一次在线时间
+     * @description 如果当前在线则返回当前时间 Unix时间戳
+     */
+    get lastOnlineAt (): number
+    /**
+     * Bot的最后一次离线时间
      * @description Unix时间戳
      * @example 1672531199000
      */
-    lastOnlineAt: number
+    get lastOfflineAt (): number
     /**
-     * Bot的最后离线时间
-     * @description Unix时间戳
-     * @example 1672531199000
+     * Bot的当前状态持续时间
+     * - 在线状态则为在线时长
+     * - 离线状态则为离线时长
      */
-    lastOfflineAt: number
-    /**
-     * Bot的当前状态开始时间
-     * @description Unix时间戳，表示进入当前状态的时间
-     * @example 1672531199000
-     */
-    currentStatusAt: number
+    get currentStatusDuration (): number
   }
 
   /**
    * Bot的统计信息
    */
-  stats: {
+  count: {
     /** 总在线次数(进入 online 状态的次数) */
-    onlineCount: number
+    online: number
 
     /** 总离线次数(进入 offline 状态的次数) */
-    offlineCount: number
-
-    /** 总连接次数(尝试连接成功的次数) */
-    connectCount: number
-
-    /** 总断开次数(进入 disconnected 的次数) */
-    disconnectCount: number
+    offline: number
   }
 
   /**

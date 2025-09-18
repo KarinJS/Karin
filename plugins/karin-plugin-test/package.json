@@ -4,5 +4,6 @@
   "description": "",
   "main": "",
   "scripts": {},
-  "dependencies": {}
+  "dependencies": {},
+  "type": "module"
 }

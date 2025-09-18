@@ -28,6 +28,8 @@ export const defaultConfig: {
           enable: false,
           url: 'ws://127.0.0.1:7778',
           token: '',
+          reconnectTime: 5000,
+          reconnectAttempts: 100,
         },
       ],
       http_server: [
@@ -38,6 +40,9 @@ export const defaultConfig: {
           token: '',
           api_token: '',
           post_token: '',
+          heartbeat: 5000,
+          timeout: 5000,
+          reconnectAttempts: 100,
         },
       ],
     },

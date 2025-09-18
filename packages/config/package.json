@@ -30,12 +30,12 @@
     "@karinjs/logger": "workspace:*",
     "@karinjs/paths": "workspace:*",
     "@karinjs/utils": "workspace:*",
-    "lodash": "npm:@karinjs/lodash@^1.1.1"
+    "lodash": "catalog:"
   },
   "peerDependencies": {
     "@karinjs/logger": "workspace:*",
     "@karinjs/paths": "workspace:*",
     "@karinjs/utils": "workspace:*",
-    "lodash": "npm:@karinjs/lodash@^1.1.1"
+    "lodash": "catalog:"
   }
 }

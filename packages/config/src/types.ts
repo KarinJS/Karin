@@ -101,21 +101,44 @@ export interface ConfigAdapter {
       url: string
       /** 正向ws的鉴权令牌 */
       token: string
+      /**
+       * 重连间隔时间，单位毫秒
+       * @default 5000
+       */
+      reconnectTime: number
+      /**
+       * 重连次数
+       * @default 100
+       * @description 0 为无限重连
+       */
+      reconnectAttempts: number
+
     }[]
     /** http服务器的配置 */
     http_server: {
       /** 是否启用 */
       enable: boolean
-      /** 正向http的QQ号 */
-      self_id: string
       /** http服务的地址 */
       url: string
       /** @deprecated http服务的鉴权令牌  */
       token: string
+      /** api请求超时时间 默认5000ms */
+      timeout?: number
       /** 用于发送Api请求的鉴权Token 如果协议端没有设置无需填写 */
-      api_token: string
+      api_token?: string
       /** 用于验证请求合法的Token 如果协议端没有设置无需填写 */
-      post_token: string
+      post_token?: string
+      /**
+       * 心跳间隔 单位毫秒
+       * @default 5000
+       */
+      heartbeat?: number
+      /**
+       * 重连次数 `(心跳失败次数上限)`
+       * @default 100
+       * @description 0 为无限重连
+       */
+      reconnectAttempts: number
     }[]
   }
 }

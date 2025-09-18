@@ -19,6 +19,17 @@ export class Formatter {
   }
 
   /**
+   * 如果传入的值是数字则返回数字 否则返回默认值
+   * @param taget 目标值
+   * @param defaultValue 默认值
+   * @returns 数字
+   */
+  static number (taget: unknown, defaultValue: number): number {
+    if (typeof taget === 'number') return taget
+    return defaultValue
+  }
+
+  /**
    * 传入一个对象 将对象中的嵌套数组中所有元素为字符串
    * @param data 数据
    * @returns 统一后的数据
@@ -129,17 +140,20 @@ export class Formatter {
       onebot: {
         ws_server: {
           ...data.onebot.ws_server,
-          timeout: Number(data.onebot.ws_server.timeout) || 120,
+          timeout: Formatter.number(data.onebot.ws_server.timeout, 120),
         },
         ws_client: data.onebot.ws_client.map(v => ({
           ...v,
+          reconnectTime: Formatter.number(v.reconnectTime, 5000),
+          reconnectAttempts: Formatter.number(v.reconnectAttempts, 100),
           token: String(v.token),
         })),
         http_server: data.onebot.http_server.map(v => ({
           ...v,
-          self_id: String(v.self_id),
           api_token: String(v?.api_token) || String(v.token),
           post_token: String(v.post_token),
+          heartbeat: Formatter.number(v.heartbeat, 5000),
+          timeout: Formatter.number(v.timeout, 5000),
         })),
       },
     }
@@ -303,8 +317,8 @@ export class Formatter {
         enable: typeof v.enable === 'boolean' ? v.enable : false,
         url: String(v.url),
         isSnapka: typeof v.isSnapka === 'boolean' ? v.isSnapka : false,
-        reconnectTime: typeof v.reconnectTime === 'number' ? v.reconnectTime : 5000,
-        heartbeatTime: typeof v.heartbeatTime === 'number' ? v.heartbeatTime : 30000,
+        reconnectTime: Formatter.number(v.reconnectTime, 5000),
+        heartbeatTime: Formatter.number(v.heartbeatTime, 30000),
         token: String(v.token),
       })),
       http_server: Array.from(data.http_server).map(v => ({

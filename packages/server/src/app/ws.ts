@@ -1,6 +1,7 @@
 import { server } from './app'
-import { WebSocketServer, type WebSocket } from 'ws'
-import { emitter, config } from '@karinjs/core'
+import { config } from '@karinjs/core'
+import { emitter } from '@karinjs/events'
+import { WebSocketServer } from 'ws'
 import {
   WS_CLOSE,
   WS_CLOSE_ONEBOT,
@@ -12,7 +13,9 @@ import {
   // WS_CONNECTION_SANDBOX,
   WS_CONNECTION_TERMINAL,
 } from '@karinjs/envs'
+
 import type { IncomingMessage } from 'node:http'
+import type { WebSocket } from 'ws'
 
 type KEY = typeof WS_CONNECTION_SNAPKA |
   typeof WS_CONNECTION |

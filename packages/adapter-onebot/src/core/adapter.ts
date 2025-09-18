@@ -1,4 +1,4 @@
-import { OneBotEventKey, OneBotMessageType } from '@karinjs/onebot'
+import { OneBotMessageType } from '@karinjs/onebot'
 import { OneBotConverter } from './convert'
 import { CreateOneBotEvent } from 'src/core/event'
 import { registerBot, unregisterBot } from '@karinjs/bot'
@@ -25,7 +25,6 @@ import type {
 } from '@karinjs/adapter'
 
 export class AdapterOneBot<T extends OneBotType = OneBotType> extends AdapterBase {
-  #isInit = false
   core: T
   /** OneBot消息转换器 */
   converter: OneBotConverter
@@ -42,13 +41,10 @@ export class AdapterOneBot<T extends OneBotType = OneBotType> extends AdapterBas
   }
 
   async init () {
-    if (this.#isInit) return
-    this.#isInit = true
-    await this.core.init()
     this.setAdapterInfo()
     this.setBotInfo()
 
-    this.core.on(OneBotEventKey.EVENT, (event) => this.createEvent.dispatch(event))
+    this.core.on('event', (event) => this.createEvent.dispatch(event))
   }
 
   /**
@@ -56,13 +52,17 @@ export class AdapterOneBot<T extends OneBotType = OneBotType> extends AdapterBas
    */
   registerBot () {
     logger.bot('info', this.selfId, `[OneBot][${this.adapter.communication}] 连接成功: ${this.adapter.address}`)
-    this.adapter.index = registerBot(this.adapter.communication, this)
+    const index = registerBot(this.adapter.communication, this)
+    this.setStatus('online')
+    this.adapter.index = index
+    return index
   }
 
   /**
    * 卸载注册的机器人
    */
   unregisterBot () {
+    this.setStatus('offline')
     unregisterBot('index', this.adapter.index)
     logger.bot('info', this.selfId, `连接关闭: ${this.adapter.address}`)
   }
@@ -95,6 +95,22 @@ export class AdapterOneBot<T extends OneBotType = OneBotType> extends AdapterBas
     this.account.name = this.core.self.nickname
     this.account.avatar = this.core.self.avatar
     this.account.selfId = this.core.self_id + ''
+  }
+
+  /**
+   * 记录发送的消息
+   */
+  #recordSentMessage () {
+    this.account.events.sent.message++
+  }
+
+  /**
+   * 记录接收的事件
+   * @param type - 事件类型
+   */
+  recordReceivedEvent (type: 'message' | 'notification' | 'request' | 'other') {
+    this.account.events.received.total++
+    this.account.events.received[type]++
   }
 
   async sendApi<T extends keyof OneBotApi> (
@@ -169,6 +185,9 @@ export class AdapterOneBot<T extends OneBotType = OneBotType> extends AdapterBas
       const messageId = String(res.message_id)
       const messageTime = Date.now()
       const rawData = res
+
+      // 记录发送的消息
+      this.#recordSentMessage()
 
       return { messageId, messageTime, rawData, message_id: messageId, time: messageTime }
     } catch (error) {

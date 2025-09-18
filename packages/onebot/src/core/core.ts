@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+import { retry } from '../tools'
 import { EventEmitter } from 'node:events'
 import { OneBotMessageApiAction } from '../api'
 import { OneBotFriendApiAction } from '../api/friend'
@@ -6,19 +8,31 @@ import { OneBotFileApiAction } from '../api/file'
 import { OneBotBotApiAction } from '../api/bot'
 import { OneBotOtherApiAction } from '../api/other'
 import { EventPostType } from '../event'
-import { OneBotEventKey, OneBotOnEvent } from '../ws/events'
+import { OneBotEventMap } from './ws/events'
 
+import type { WebSocket } from 'ws'
 import type { OneBotApi } from '../api'
+import type { OneBotWsClient, OneBotWsServer } from './ws'
 import type { OneBotMessage, NodeMessage } from '../message'
 import type { OneBotWsEvent, OneBotEvent, Echo } from '../event'
+import type { OneBotHttpClient } from './http'
+
+/**
+ * OneBot实例类型
+ */
+export type OneBotType = OneBotHttpClient | OneBotWsClient | OneBotWsServer
 
 /**
  * OneBot核心类
  * @extends EventEmitter
  */
-export abstract class OneBotCore extends EventEmitter {
-  /** 是否主动关闭 */
-  _manualClosed: boolean = false
+export abstract class OneBotCore extends EventEmitter<OneBotEventMap> {
+  /** 请求唯一标识符 */
+  echo: bigint = BigInt(0)
+
+  /** WebSocket实例 */
+  socket!: WebSocket
+
   /** 协议信息 */
   protocol: {
     /** 协议名称 例如`NapCat` */
@@ -43,6 +57,12 @@ export abstract class OneBotCore extends EventEmitter {
   _options: {
     timeout: number
   }
+
+  /**
+   * 默认超时时间
+   * @default 60000 (60秒)
+   */
+  static DEFAULT_TIMEOUT: number = 60 * 1000
 
   constructor (options?: {
     timeout?: number
@@ -72,11 +92,31 @@ export abstract class OneBotCore extends EventEmitter {
    * @param data - 事件数据
    */
   isEcho (data: OneBotWsEvent): data is Echo {
-    return 'echo' in data && 'status' in data && 'data' in data
+    // @ts-ignore
+    return !!data.echo
   }
 
   /**
-   * 将`base64://`转为`base64://...`
+   * 将 `WebSocket.RawData` 安全的转为可 `JSON.parse` 的字符串
+   * @param event - WebSocket.RawData事件
+   * @example
+   * ```ts
+   * const { str, result } = this.safeJsonParse<OneBotEvent>(event)
+   * console.log(str) // 原始字符串
+   * console.log(result) // 解析结果 javascript对象
+   * ```
+   */
+  parse<T = any> (event: WebSocket.RawData): { str: string, result: T } {
+    try {
+      const raw = event.toString()
+      return { str: raw, result: JSON.parse(raw) as T }
+    } catch {
+      return { str: '{}', result: {} as T }
+    }
+  }
+
+  /**
+   * 将 `base64://{string}` 转为 `base64://...`
    */
   _formatBase64 (base64: string) {
     return base64.replace(/(["']?(?:base64|base):\/\/)[^"',}\s]*["']?/g, '$1...')
@@ -108,109 +148,75 @@ export abstract class OneBotCore extends EventEmitter {
   }
 
   /**
+   * 关闭连接
+   */
+  close (): void {
+    this.socket.close()
+  }
+
+  /**
    * 初始化Bot基本信息
    * @param maxRetries - 最大重试次数
    * @param retryInterval - 重试间隔(毫秒)
    * @returns 是否初始化成功
    */
-  async _initBotInfo (maxRetries: number = 3, retryInterval: number = 1000) {
-    const fetchBotInfo = async (): Promise<void> => {
-      /** 获取账号信息 */
-      const { user_id, nickname } = await this.getLoginInfo()
-      this.self.id = user_id
-      this.self.nickname = nickname
-      this.self.avatar = `https://q1.qlogo.cn/g?b=qq&s=0&nk=${user_id}`
+  async initBotInfo (maxRetries: number = 3, retryInterval: number = 1000) {
+    await retry(
+      async () => {
+        const { user_id, nickname } = await this.getLoginInfo()
+        this.self.id = user_id
+        this.self.nickname = nickname
+        this.self.avatar = `https://q1.qlogo.cn/g?b=qq&s=0&nk=${user_id}`
 
-      /** 获取协议信息 */
-      const { app_name, app_version } = await this.getVersionInfo()
-      this.protocol.name = app_name
-      this.protocol.version = app_version
-    }
+        // 获取协议信息
+        const { app_name, app_version } = await this.getVersionInfo()
+        this.protocol.name = app_name
+        this.protocol.version = app_version
+      }, maxRetries, retryInterval
+    ).catch(cause => {
+      this.emit(
+        'error',
+        new Error(`初始化Bot信息失败，已重试${maxRetries}次`, { cause })
+      )
+      return false
+    })
+  }
 
-    for (let i = 0; i < maxRetries; i++) {
-      try {
-        await fetchBotInfo()
-        return true
-      } catch (error) {
-        if (i === maxRetries - 1) {
-          throw new Error(`初始化Bot信息失败，已重试${maxRetries}次`, { cause: error })
+  /**
+   * 发送API请求
+   * @param action - API动作
+   * @param params - API参数
+   * @param timeout - 超时时间
+   * @returns 返回API响应 注意: 返回的是response.data，而不是response
+   */
+  async sendApi<T extends keyof OneBotApi> (
+    action: T,
+    params: OneBotApi[T]['params'],
+    timeout: number = this._options.timeout
+  ): Promise<OneBotApi[T]['response']> {
+    const echo = (++this.echo).toString()
+    const request = JSON.stringify({ echo, action, params })
+
+    return new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => {
+        reject(this._formatApiError(action, request, '请求超时'))
+      }, timeout * 1000)
+
+      this.emit('sendApi', { echo, action, params, request })
+      this.socket.send(request)
+      this.once(`echo:${echo}`, data => {
+        /** 停止监听器 */
+        clearTimeout(timeoutId)
+
+        if (data.status === 'ok') {
+          resolve(data.data as OneBotApi[T]['response'])
+        } else {
+          reject(this._formatApiError(action, request, data))
         }
-        await new Promise(resolve => setTimeout(resolve, retryInterval))
-      }
-    }
 
-    return false
-  }
-
-  /**
- * 添加事件监听
- * @param event - 事件名称 请导入`OneBotEventKey`枚举使用
- * @param listener - 事件监听器
- */
-  on<K extends keyof OneBotOnEvent> (event: K, listener: (arg: OneBotOnEvent[K]) => void) {
-    return super.on(event, listener)
-  }
-
-  /**
-   * 添加一次性事件监听
-   * @param event - 事件名称 请导入`OneBotEventKey`枚举使用
-   * @param listener - 事件监听器
-   */
-  once<K extends keyof OneBotOnEvent> (event: K, listener: (arg: OneBotOnEvent[K]) => void) {
-    return super.once(event, listener)
-  }
-
-  /**
-   * 触发事件
-   * @param event - 事件名称 请导入`OneBotEventKey`枚举使用
-   * @param arg - 事件参数
-   */
-  emit<K extends keyof OneBotOnEvent> (event: K, arg: OneBotOnEvent[K] = {} as OneBotOnEvent[K]) {
-    return super.emit(event, arg)
-  }
-
-  /**
-   * 移除事件监听
-   * @param event - 事件名称 请导入`OneBotEventKey`枚举使用
-   * @param listener - 事件监听器
-   */
-  off<K extends keyof OneBotOnEvent> (event: K, listener: (arg: OneBotOnEvent[K]) => void) {
-    return super.off(event, listener)
-  }
-
-  /**
-   * 移除事件监听
-   * @param event - 事件名称 请导入`OneBotEventKey`枚举使用
-   * @param listener - 事件监听器
-   */
-  removeListener<K extends keyof OneBotOnEvent> (event: K, listener: (arg: OneBotOnEvent[K]) => void) {
-    return super.removeListener(event, listener)
-  }
-
-  /**
-   * 移除所有事件监听
-   * @param event - 事件名称 请导入`OneBotEventKey`枚举使用
-   */
-  removeAllListeners<K extends keyof OneBotOnEvent> (event?: K) {
-    return super.removeAllListeners(event)
-  }
-
-  /**
-   * 获取事件监听器
-   * @param event - 事件名称 请导入`OneBotEventKey`枚举使用
-   * @returns 事件监听器
-   */
-  listeners<K extends keyof OneBotOnEvent> (event: K) {
-    return super.listeners(event)
-  }
-
-  /**
-   * 获取事件监听器数量
-   * @param event - 事件名称 请导入`OneBotEventKey`枚举使用
-   * @returns 事件监听器数量
-   */
-  listenerCount<K extends keyof OneBotOnEvent> (event: K) {
-    return super.listenerCount(event)
+        this.emit('response', { echo, action, params, request, data })
+      })
+    })
   }
 
   /** 机器人ID */
@@ -219,60 +225,37 @@ export abstract class OneBotCore extends EventEmitter {
   }
 
   /**
-   * 初始化
-   */
-  async init () {
-    throw new Error('Not implemented')
-  }
-
-  /**
    * 事件分发
    * @param data - 事件数据
    */
   _dispatch (data: OneBotEvent) {
-    this.emit(OneBotEventKey.EVENT, data)
-
+    setTimeout(() => this.emit('event', data), 100)
     if (data.post_type === EventPostType.Message) {
-      this.emit(OneBotEventKey.MESSAGE, data)
+      this.emit('message', data)
       return
     }
 
     if (data.post_type === EventPostType.MessageSent) {
-      this.emit(OneBotEventKey.MESSAGE_SENT, data)
+      this.emit('message_sent', data)
       return
     }
 
     if (data.post_type === EventPostType.Notice) {
-      this.emit(OneBotEventKey.NOTICE, data)
+      this.emit('notice', data)
       return
     }
 
     if (data.post_type === EventPostType.Request) {
-      this.emit(OneBotEventKey.REQUEST, data)
+      this.emit('request', data)
       return
     }
 
     if (data.post_type === EventPostType.MetaEvent) {
-      this.emit(OneBotEventKey.META_EVENT, data)
+      this.emit('metaEvent', data)
       return
     }
 
     throw new Error(`[OneBot][WebSocket] 未知事件类型: ${JSON.stringify(data)}`)
-  }
-
-  /**
-   * 发送API请求
-   * @param action - API动作
-   * @param params - API参数
-   * @param timeout - 超时时间
-   * @returns
-   */
-  async sendApi<T extends keyof OneBotApi> (
-    _action: T,
-    _params: OneBotApi[T]['params'],
-    _timeout: number = this._options.timeout
-  ): Promise<OneBotApi[T]['response']> {
-    throw new Error('Not implemented')
   }
 
   /**

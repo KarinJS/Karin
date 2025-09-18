@@ -27,6 +27,7 @@
     "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
   },
   "devDependencies": {
+    "@karinjs/bot": "workspace:*",
     "@karinjs/config": "workspace:*",
     "@karinjs/core": "workspace:*",
     "@karinjs/envs": "workspace:*",
@@ -37,6 +38,7 @@
     "lodash": "catalog:"
   },
   "peerDependencies": {
+    "@karinjs/bot": "workspace:*",
     "@karinjs/config": "workspace:*",
     "@karinjs/core": "workspace:*",
     "@karinjs/envs": "workspace:*",

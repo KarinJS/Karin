@@ -6,5 +6,8 @@
   },
   "exclude": [
     "tsdown.config.ts"
+  ],
+  "include": [
+    "src"
   ]
 }

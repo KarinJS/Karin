@@ -17,13 +17,12 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc && tsup",
+    "build": "tsdown",
     "checkType": "tsc",
     "prepublishOnly": "pnpm run checkType",
     "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
   },
   "devDependencies": {
-    "tsup": "^8.5.0",
     "ws": "catalog:"
   },
   "peerDependencies": {

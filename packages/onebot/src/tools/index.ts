@@ -1,4 +1,5 @@
 import http from './http'
+export * from './retry'
 
 export {
   http,

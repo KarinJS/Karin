@@ -34,6 +34,7 @@ export interface RequestConfig {
 
   /**
    * 响应类型
+   * 注意：实际解析时会优先根据响应的 Content-Type 头判断，此参数作为回退选项
    */
   responseType?: 'json' | 'text' | 'blob' | 'arraybuffer'
 }
@@ -128,6 +129,34 @@ const headersToObject = (headers: Headers): Record<string, string> => {
 }
 
 /**
+ * 根据 Content-Type 判断响应数据类型
+ * @param contentType - Content-Type 响应头
+ * @returns 推断的响应类型
+ */
+const getResponseTypeFromContentType = (contentType: string): 'json' | 'text' | 'blob' | 'arraybuffer' => {
+  const type = contentType.toLowerCase()
+
+  if (type.includes('application/json') || type.includes('text/json')) {
+    return 'json'
+  }
+
+  if (type.includes('text/') || type.includes('application/xml') || type.includes('application/xhtml')) {
+    return 'text'
+  }
+
+  if (type.includes('application/octet-stream') ||
+    type.includes('application/pdf') ||
+    type.includes('application/zip')) {
+    return 'arraybuffer'
+  }
+
+  if (type.includes('image/') || type.includes('audio/') || type.includes('video/')) {
+    return 'blob'
+  }
+
+  // 默认尝试 JSON，如果失败则降级为 text
+  return 'json'
+}/**
  * 创建超时控制器
  * @param abortController - 中止控制器
  * @param timeout - 超时时间（毫秒）
@@ -194,9 +223,20 @@ const request = async <T = any> (config: RequestConfig): Promise<HttpResponse<T>
     // 解析响应数据
     let responseData: T
 
-    switch (responseType) {
+    // 获取 Content-Type 响应头
+    const contentType = response.headers.get('content-type') || ''
+
+    // 优先根据 Content-Type 判断响应类型，responseType 作为回退
+    const actualResponseType = contentType ? getResponseTypeFromContentType(contentType) : responseType
+
+    switch (actualResponseType) {
       case 'json':
-        responseData = await response.json() as T
+        try {
+          responseData = await response.json() as T
+        } catch {
+          // JSON 解析失败，降级为文本
+          responseData = await response.text() as unknown as T
+        }
         break
       case 'text':
         responseData = await response.text() as unknown as T
@@ -208,6 +248,7 @@ const request = async <T = any> (config: RequestConfig): Promise<HttpResponse<T>
         responseData = await response.arrayBuffer() as unknown as T
         break
       default:
+        // 默认尝试 JSON，失败则降级为文本
         try {
           responseData = await response.json() as T
         } catch {

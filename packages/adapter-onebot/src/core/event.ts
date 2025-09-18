@@ -53,16 +53,23 @@ export class CreateOneBotEvent {
    */
   async dispatch (event: OneBotWsEvent) {
     if (this.core.core.isEcho(event)) return
+
+    // 统计接收到的事件
     switch (event.post_type) {
       case 'message':
+        this.core.recordReceivedEvent('message')
         return this.message(event)
       case 'notice':
+        this.core.recordReceivedEvent('notification')
         return this.notice(event)
       case 'request':
+        this.core.recordReceivedEvent('request')
         return this.request(event)
       case 'meta_event':
+        this.core.recordReceivedEvent('other')
         return this.meta(event)
       default:
+        this.core.recordReceivedEvent('other')
         return this.unknown(event)
     }
   }

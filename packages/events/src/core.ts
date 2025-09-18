@@ -5,7 +5,7 @@
  */
 
 import os from 'node:os'
-import { botManager } from '@karinjs/bot'
+import { Bot } from '@karinjs/bot'
 import { EventEmitter } from './emitter'
 
 import type { WebSocket } from 'ws'
@@ -604,7 +604,7 @@ export class Emitter extends EventEmitter<SystemEventMap> {
    * @param index - Bot的索引id
    */
   getBotByIndex (index: number) {
-    return botManager.getBot(index)
+    return Bot.getBot(index)
   }
 
   /**
@@ -612,7 +612,7 @@ export class Emitter extends EventEmitter<SystemEventMap> {
    * @returns Bot数量
    */
   getBotCount () {
-    return botManager.getBotCount()
+    return Bot.getBotCount()
   }
 
   /**
@@ -620,10 +620,10 @@ export class Emitter extends EventEmitter<SystemEventMap> {
    * @param isIndex - 是否返回包含的索引列表 默认`false` 返回Bot列表
    */
   getBotAll<T extends boolean = false> (isIndex?: T): T extends true
-    ? ReturnType<typeof botManager.getAllBotList>
-    : ReturnType<typeof botManager.getAllBot> {
-    if (isIndex) return botManager.getAllBotList() as any
-    return botManager.getAllBot().map((item) => item) as any
+    ? ReturnType<typeof Bot.getAllBotList>
+    : ReturnType<typeof Bot.getAllBot> {
+    if (isIndex) return Bot.getAllBotList() as any
+    return Bot.getAllBot().map((item) => item) as any
   }
 }
 

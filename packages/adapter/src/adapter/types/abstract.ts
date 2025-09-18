@@ -22,7 +22,10 @@ import type {
 
 /** 适配器类型 */
 export interface AdapterType<T = any> {
-  /** 原生方法 */
+  /**
+   * 原生方法
+   * @deprecated
+   */
   super: T
   /** 原生方法 */
   raw: T
@@ -44,6 +47,24 @@ export interface AdapterType<T = any> {
   get selfId (): string
   /** 获取Bot的name */
   get selfName (): string
+  /**
+   * 获取Bot的状态
+   * - online: 在线
+   * - offline: 离线
+   * - initializing: 初始化中
+   */
+  get status (): 'online' | 'offline' | 'initializing'
+
+  /**
+   * 获取Bot原生实例
+   * @example
+   * ```ts
+   * const icqq = bot.getRaw<icqq>()
+   * // 这里可以使用icqq的所有方法
+   * ```
+   * @returns 原生实例
+   */
+  getRaw<T = any> (): T
 
   /**
    * 获取Bot的subId

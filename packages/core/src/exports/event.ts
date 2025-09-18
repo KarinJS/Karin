@@ -1,1 +1,1 @@
-export * from '../event'
+export * from '@karinjs/events'

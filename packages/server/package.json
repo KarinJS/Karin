@@ -37,6 +37,7 @@
     "@karinjs/core": "workspace:*",
     "@karinjs/db": "workspace:*",
     "@karinjs/envs": "workspace:*",
+    "@karinjs/events": "workspace:*",
     "@karinjs/git": "workspace:*",
     "@karinjs/logger": "workspace:*",
     "@karinjs/paths": "workspace:*",

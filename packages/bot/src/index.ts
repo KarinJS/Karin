@@ -4,14 +4,13 @@ import { createRawMessage, makeMessage, segment } from '@karinjs/adapter'
 
 import type {
   Contact,
-  AdapterBase,
+  AdapterType,
   Elements,
   ForwardOptions,
   NodeElement,
   SendMsgResults,
   AdapterCommunication,
   AdapterProtocol,
-  AdapterType,
   SendMessage,
 } from '@karinjs/adapter'
 
@@ -55,9 +54,16 @@ export class BotManager {
 
   /**
    * 获取所有Bot类 不包含索引
+   * @param state Bot状态 默认返回全部
+   * - online: 在线
+   * - offline: 离线
+   * - initializing: 初始化中
    * @returns Bot类列表
    */
-  getAllBot () {
+  getAllBot (state?: 'online' | 'offline' | 'initializing') {
+    if (state) {
+      return this.#list.filter(item => item.bot.status === state).map(item => item.bot)
+    }
     return this.#list.map(item => item.bot)
   }
 
@@ -126,7 +132,7 @@ export class BotManager {
    * @param bot 适配器实例
    * @returns 适配器索引
    */
-  registerBot (communication: AdapterCommunication, bot: AdapterBase) {
+  registerBot (communication: AdapterCommunication, bot: AdapterType) {
     const id = ++this.#index
     this.#list.push({ index: id, bot })
 
@@ -273,7 +279,7 @@ export class BotManager {
  * @public
  * bot管理器
  */
-export const botManager = new BotManager()
+export const Bot = new BotManager()
 
 export type GetBot = {
   /**
@@ -321,7 +327,7 @@ export type UnregisterBot = {
  * @returns 适配器
  */
 export const getBot: GetBot = (id: number | AdapterProtocol | string, isProtocol = false) => {
-  return botManager.getBot(id, isProtocol as boolean)
+  return Bot.getBot(id, isProtocol as boolean)
 }
 
 /**
@@ -329,7 +335,7 @@ export const getBot: GetBot = (id: number | AdapterProtocol | string, isProtocol
  * @returns Bot类列表
  */
 export const getAllBot = () => {
-  return botManager.getAllBot()
+  return Bot.getAllBot()
 }
 
 /**
@@ -337,7 +343,7 @@ export const getAllBot = () => {
  * @returns 注册的Bot列表
  */
 export const getAllBotList = () => {
-  return botManager.getAllBotList()
+  return Bot.getAllBotList()
 }
 
 /**
@@ -345,7 +351,7 @@ export const getAllBotList = () => {
  * @returns BotID列表
  */
 export const getAllBotID = () => {
-  return botManager.getAllBotID()
+  return Bot.getAllBotID()
 }
 
 /**
@@ -353,7 +359,7 @@ export const getAllBotID = () => {
  * @returns Bot数量
  */
 export const getBotCount = () => {
-  return botManager.getBotCount()
+  return Bot.getBotCount()
 }
 
 /**
@@ -364,7 +370,7 @@ export const getBotCount = () => {
  */
 export const unregisterBot: UnregisterBot = (type, idOrIndex, address?) => {
   // @ts-ignore
-  return botManager.unregisterBot(type, idOrIndex, address)
+  return Bot.unregisterBot(type, idOrIndex, address)
 }
 
 /**
@@ -373,8 +379,8 @@ export const unregisterBot: UnregisterBot = (type, idOrIndex, address?) => {
  * @param bot 适配器实例
  * @returns 适配器索引
  */
-export const registerBot = (communication: AdapterCommunication, bot: AdapterBase) => {
-  return botManager.registerBot(communication, bot)
+export const registerBot = (communication: AdapterCommunication, bot: AdapterType) => {
+  return Bot.registerBot(communication, bot)
 }
 
 /**
@@ -390,5 +396,5 @@ export const sendMsg = async (
   elements: SendMessage,
   options: SendMsgOptions = { recallMsg: 0, retryCount: 1, retry_count: 1 }
 ): Promise<SendMsgResults> => {
-  return botManager.sendMsg(selfId, contact, elements, options)
+  return Bot.sendMsg(selfId, contact, elements, options)
 }

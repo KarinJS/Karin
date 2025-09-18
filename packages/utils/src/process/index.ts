@@ -32,7 +32,7 @@ type ProcessStatus = {
  * @param isTrim - 是否去除空格
  * @returns 带前缀的日志内容
  */
-const tips = (msg: string, isTrim = false): string => `[init] ${isTrim ? '' : ' '}${msg}`
+const tips = (msg: string, isTrim = false): string => `[进程管理]${isTrim ? '' : ' '}${msg}`
 
 /**
  * 创建HTTP客户端

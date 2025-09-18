@@ -1,4 +1,4 @@
-import { emitter } from '../event'
+import { emitter } from '@karinjs/events'
 import { logger } from '@karinjs/logger'
 import { SEND_MSG } from '@karinjs/envs'
 import { hooksEmit } from '@karinjs/hooks'

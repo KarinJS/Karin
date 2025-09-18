@@ -1,10 +1,10 @@
 import dotenv from 'dotenv'
 import path from 'node:path'
 import paths from '@karinjs/paths'
-import { emitter } from '../event'
 import { initDB } from '../db'
 import { core } from '@karinjs/plugin'
 import { ONLINE } from '@karinjs/envs'
+import { emitter } from '@karinjs/events'
 import { initProcess } from '@karinjs/utils'
 import { config, createSystemConfig } from '../config'
 import { createDB, createRedis, createTaskDB } from '@karinjs/db'
@@ -30,7 +30,7 @@ export const start = async () => {
    * - 加载环境变量到process.env
    * - 默认从.env文件加载
    */
-  dotenv.config({ path: `${path.resolve(process.cwd(), process.env.EBV_FILE!)}` })
+  dotenv.config({ path: `${path.resolve(process.cwd(), process.env.EBV_FILE!)}`, override: true })
 
   /**
    * 2. 初始化日志模块
@@ -94,19 +94,28 @@ export const start = async () => {
    */
   import('@karinjs/adapter-console')
     .then(({ AdapterConsole }) => {
+      logger.debug('@karinjs/adapter-console 开始加载...')
       const consoleAdapter = AdapterConsole.getInstance()
       registerBot('other', consoleAdapter)
+      logger.debug('@karinjs/adapter-console 加载完成')
     })
 
   import('@karinjs/adapter-onebot')
     .then(({ OneBotCore }) => {
+      logger.debug('@karinjs/adapter-onebot 适配器开始加载...')
       const OneBotAdapter = OneBotCore.getInstance()
       OneBotAdapter.init().then(() => {
-        logger.debug('OneBot 适配器加载完成')
+        logger.debug('@karinjs/adapter-onebot 适配器加载完成')
       })
     })
 
-  // await initRender()
+  import('@karinjs/render')
+    .then(({ initRender }) => {
+      logger.debug('@karinjs/render 开始加载...')
+      initRender().then(() => {
+        logger.debug('@karinjs/render 加载完成')
+      })
+    })
 
   // /**
   //  * 10. 清理HTML缓存
