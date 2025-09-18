@@ -129,3 +129,14 @@ export type Request = PrivateApplyRequest | GroupApplyRequest | GroupInviteReque
  * @description 所有事件类型
  */
 export type Event = Message | Notice | Request
+
+/**
+ * @description 事件分发
+ */
+export type AdapterEventMap = {
+  [K in keyof MessageEventMap]: [MessageEventMap[K]]
+} & {
+  [K in keyof NoticeEventMap]: [NoticeEventMap[K]]
+} & {
+  [K in keyof RequestEventMap]: [RequestEventMap[K]]
+}

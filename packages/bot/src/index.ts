@@ -1,3 +1,4 @@
+import EventEmitter from 'node:events'
 import { logger } from '@karinjs/logger'
 import { hooksEmit } from '@karinjs/hooks'
 import { createRawMessage, makeMessage, segment } from '@karinjs/adapter'
@@ -12,6 +13,7 @@ import type {
   AdapterCommunication,
   AdapterProtocol,
   SendMessage,
+  AdapterEventMap,
 } from '@karinjs/adapter'
 
 interface SendMsgOptions {
@@ -26,7 +28,7 @@ interface SendMsgOptions {
 /**
  * Bot管理器类
  */
-export class BotManager {
+export class BotManager extends EventEmitter<AdapterEventMap> {
   #index: number = 0
   #list: { index: number, bot: AdapterType }[] = []
 
