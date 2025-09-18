@@ -1,4 +1,5 @@
 import utils from '../../utils'
+import { Bot } from '@karinjs/bot'
 import { hooksEmit } from '@karinjs/hooks'
 import { config as Cfg } from '@karinjs/core/config'
 import { FilterCallback, handleMessageCommon } from './common'
@@ -10,6 +11,10 @@ import type { DirectMessage, FriendMessage } from '../../abstract/message'
  * @param ctx 好友消息事件
  */
 export const friendHandler = async (ctx: FriendMessage) => {
+  // @ts-ignore 编译后文件类型分开了...
+  Bot.emit('message', ctx)
+  // @ts-ignore
+  Bot.emit('message.friend', ctx)
   const systemConfig = Cfg.config()
   /** 获取配置 */
   const eventConfig = Cfg.getFriendCfg(ctx.userId, ctx.selfId)
@@ -48,6 +53,11 @@ export const friendHandler = async (ctx: FriendMessage) => {
  * @param ctx 频道私信消息事件
  */
 export const directHandler = async (ctx: DirectMessage) => {
+  // @ts-ignore 编译后文件类型分开了...
+  Bot.emit('message', ctx)
+  // @ts-ignore
+  Bot.emit('message.direct', ctx)
+
   const systemConfig = Cfg.config()
   /** 获取配置 */
   const eventConfig = Cfg.getDirectCfg(ctx.userId, ctx.selfId)

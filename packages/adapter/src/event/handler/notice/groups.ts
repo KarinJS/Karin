@@ -1,3 +1,4 @@
+import { Bot } from '@karinjs/bot'
 import utils from '../../utils'
 import { config as cfg } from '@karinjs/core'
 
@@ -10,6 +11,11 @@ import type { GroupNoticeEventMap } from '../../types'
 export const groupNoticeHandler = async (
   ctx: GroupNoticeEventMap[keyof GroupNoticeEventMap]
 ) => {
+  // @ts-ignore 编译后文件类型分开了...
+  Bot.emit('notice', ctx)
+  // @ts-ignore
+  Bot.emit(`notice.${ctx.subEvent}`, ctx)
+
   /** 基本配置 */
   const config = cfg.config()
   /** 群配置 */

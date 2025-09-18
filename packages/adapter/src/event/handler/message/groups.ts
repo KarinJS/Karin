@@ -1,4 +1,5 @@
 import utils from '../../utils'
+import { Bot } from '@karinjs/bot'
 import { hooksEmit } from '@karinjs/hooks'
 import { config as Cfg } from '@karinjs/core/config'
 import { FilterCallback, handleMessageCommon } from './common'
@@ -10,6 +11,11 @@ import type { GroupMessage, GroupTempMessage, GuildMessage } from '../../abstrac
  * @param ctx 群聊消息事件
  */
 export const groupHandler = async (ctx: GroupMessage) => {
+  // @ts-ignore 编译后文件类型分开了...
+  Bot.emit('message', ctx)
+  // @ts-ignore
+  Bot.emit('message.group', ctx)
+
   /** 获取配置 */
   const systemConfig = Cfg.config()
   const eventConfig = Cfg.getGroupCfg(ctx.groupId, ctx.selfId)
@@ -55,6 +61,11 @@ export const groupHandler = async (ctx: GroupMessage) => {
  * @param ctx 群聊临时消息事件
  */
 export const groupTempHandler = async (ctx: GroupTempMessage) => {
+  // @ts-ignore 编译后文件类型分开了...
+  Bot.emit('message', ctx)
+  // @ts-ignore
+  Bot.emit('message.groupTemp', ctx)
+
   /** 获取配置 */
   const systemConfig = Cfg.config()
   const eventConfig = Cfg.getGroupCfg(ctx.groupId, ctx.selfId)
@@ -94,6 +105,11 @@ export const groupTempHandler = async (ctx: GroupTempMessage) => {
  * @param ctx 频道消息事件
  */
 export const guildHandler = async (ctx: GuildMessage) => {
+  // @ts-ignore 编译后文件类型分开了...
+  Bot.emit('message', ctx)
+  // @ts-ignore
+  Bot.emit('message.guild', ctx)
+
   /** 获取配置 */
   const systemConfig = Cfg.config()
   const eventConfig = Cfg.getGuildCfg(ctx.guildId, ctx.channelId, ctx.selfId)

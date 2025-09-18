@@ -1,3 +1,4 @@
+import { Bot } from '@karinjs/bot'
 import utils from '../../utils'
 import { config as cfg } from '@karinjs/core'
 
@@ -10,6 +11,11 @@ import type { FriendRequestEventMap } from '../../types'
 export const friendRequestHandler = async (
   ctx: FriendRequestEventMap[keyof FriendRequestEventMap]
 ) => {
+  // @ts-ignore 编译后文件类型分开了...
+  Bot.emit('request', ctx)
+  // @ts-ignore
+  Bot.emit(`request.${ctx.subEvent}`, ctx)
+
   /** 基本配置 */
   const config = cfg.config()
   /** 好友配置 */
