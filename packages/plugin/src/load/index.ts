@@ -1,9 +1,10 @@
 import path from 'node:path'
 import { cache, core } from '../core'
 import { loadClass } from '../decorators'
+import { hmrProduction } from '../hmr/simple'
 import { errorHandler } from '../event/error'
 import { register } from '../register/register'
-import { DEFAULT_CREATE_FILES } from '@karinjs/envs'
+import { DEFAULT_CREATE_FILES, isDev } from '@karinjs/envs'
 import { createPluginDir, imports, satisfies } from '@karinjs/utils'
 
 import type { PluginCacheKeyPkg } from '../decorators'
@@ -70,9 +71,15 @@ class PluginLoader {
 
     logger.info(logger.green('-----------'))
 
+    if (isDev()) return
     setTimeout(() => {
-      // TODO: hmr
-      // initPluginHmr()
+      const target: string[] = []
+      list.forEach(plugin => {
+        if (plugin.type !== 'apps') return
+        target.push(...plugin.appsDirs)
+      })
+
+      hmrProduction(target)
     }, 2000)
   }
 

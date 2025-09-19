@@ -33,8 +33,8 @@ export class PluginCore extends PluginCoreSync {
 
   /**
    * @public
-   * 传入一个pnpm包路径 返回包名
-   * @param appPath pnpm包路径
+   * 传入一个路径 返回包名
+   * @param appPath 文件路径
    * @returns 包名
    */
   getPackageName (appPath: string): string | null {

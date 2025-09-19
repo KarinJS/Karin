@@ -1,17 +1,32 @@
 import path from 'node:path'
 import chokidar from 'chokidar'
 import { cache, core } from '../core'
-import { loadClass } from '../decorators'
 import { register } from '../register/register'
 import { getPluginLoader } from '../load'
-import { imports } from '@karinjs/utils'
 import { EventEmitter } from 'node:events'
-import { fileURLToPath } from 'node:url'
+import { formatPath } from '@karinjs/utils'
 import { findDependentModules, clearModuleCaches } from './internal'
 
 import type { Stats } from 'node:fs'
 import type { EventName } from 'chokidar/handler.js'
 import type { FSWatcher, ChokidarOptions } from 'chokidar'
+
+/**
+ * HMR 选项接口
+ */
+export interface HMROptions extends ChokidarOptions {
+  /**
+   * 插件包名称
+   * @description 用于重载插件时，识别哪些模块属于 apps 下的插件模块
+   */
+  pluginName: string
+
+  /**
+   * 这些文件路径将被保护不被清理缓存
+   * @description node_modules、node自身模块、karin本身模块永远被保护
+   */
+  exclude?: string[]
+}
 
 export interface EventContext {
   /** 受影响的apps */
@@ -64,21 +79,11 @@ type HMREvent =
 /** HMR 回调函数类型 */
 type HMRCallback = (event: HMREvent) => void | Promise<void>
 
-/** 操作类型 */
-type OperationType = '加载' | '卸载' | '重载'
-
-/** 插件包信息返回类型 */
-interface PackageInfo {
-  pkgName: string
-  pluginPkg: any
-  normalizedPath: string
-}
-
 /**
  * @class
- * 热更新管理器
+ * 开发环境热更新管理器
  */
-class HotReloadManager {
+class HmrDevManager {
   logger: ReturnType<typeof logger.prefix>
 
   constructor () {
@@ -86,105 +91,18 @@ class HotReloadManager {
   }
 
   /**
-   * 路径工具类 - 统一路径处理逻辑
-   */
-  readonly pathUtils = {
-    /**
-     * 规范化路径 - 转换为绝对路径并统一分隔符
-     * @param filePath 文件路径（绝对路径或file URL）
-     * @returns 规范化的绝对路径，使用正斜杠分隔
-     */
-    normalize: (filePath: string): string => {
-      const absolutePath = filePath.startsWith('file://')
-        ? fileURLToPath(filePath)
-        : path.resolve(filePath)
-      return absolutePath.replace(/\\/g, '/')
-    },
-
-    /**
-     * 转换为相对路径
-     * @param filePath 文件路径（绝对路径或file URL）
-     * @returns 相对于工作目录的路径
-     */
-    toRelative: (filePath: string): string => {
-      const absolutePath = this.pathUtils.normalize(filePath)
-      return path.relative(process.cwd(), absolutePath).replace(/\\/g, '/')
-    },
-  }
-
-  /**
-   * 插件包操作工具类 - 统一插件包验证和获取逻辑
-   */
-  readonly packageUtils = {
-    /**
-     * 验证并获取插件包信息
-     * @param pkgName 插件包名称
-     * @param throwOnNotFound 不存在时是否抛出错误
-     * @returns 插件包信息或null
-     */
-    validateAndGet: async (pkgName: string, throwOnNotFound = true) => {
-      const pluginPkg = await core.promise.getPluginPackageDetail(pkgName, true)
-      if (!pluginPkg && throwOnNotFound) {
-        throw new Error(`插件包 ${pkgName} 不存在`)
-      }
-      return pluginPkg
-    },
-
-    /**
-     * 从路径获取插件包名称并验证
-     * @param appPath app的绝对路径
-     * @returns 插件包名称和详细信息
-     */
-    getPackageByPath: async (appPath: string): Promise<PackageInfo> => {
-      const normalizedPath = this.pathUtils.normalize(appPath)
-      const pkgName = core.getPackageName(normalizedPath)
-
-      if (!pkgName) {
-        throw new Error(`无法确定app ${normalizedPath} 所属的插件包`)
-      }
-
-      const pluginPkg = await core.promise.getPluginPackageDetail(pkgName)
-      if (!pluginPkg) {
-        throw new Error(`插件包 ${pkgName} 不存在`)
-      }
-
-      return { pkgName, pluginPkg, normalizedPath }
-    },
-
-    /**
-     * 检查插件包是否存在于缓存中
-     * @param pkgName 插件包名称
-     * @returns 是否存在
-     */
-    isLoaded: (pkgName: string) => cache.pluginsMap.has(pkgName),
-  }
-
-  /**
-   * 日志工具类 - 统一日志输出格式
-   */
-  readonly logUtils = {
-    logOperation: (operation: OperationType, target: string, isPackage = false) => {
-      const displayPath = isPackage ? target : this.pathUtils.toRelative(target)
-      const prefix = isPackage ? '插件包' : ''
-      this.logger.info(`${operation}${prefix}: ${displayPath}`)
-    },
-  }
-
-  /**
    * 动态加载插件包
    * @param pkgName 插件包名称(不带前缀)
    */
   async loadPackage (pkgName: string): Promise<void> {
-    const pluginPkg = await this.packageUtils.validateAndGet(pkgName)
-
-    /** 检查是否已经存在, 如果存在则先卸载 */
-    if (this.packageUtils.isLoaded(pkgName)) {
-      await this.unloadPackage(pkgName)
+    const pluginPkg = await core.promise.getPluginPackageDetail(pkgName, true)
+    if (!pluginPkg) {
+      this.logger.warn(`插件包 ${pkgName} 不存在, 跳过加载`)
+      return
     }
 
-    /** 使用现有的加载器加载插件包 */
-    await getPluginLoader().loadPackage(pluginPkg!, true)
-    this.logUtils.logOperation('加载', pkgName, true)
+    await getPluginLoader().loadPackage(pluginPkg, true)
+    this.logger.info(`add: ${logger.green(pkgName)}`)
   }
 
   /**
@@ -192,18 +110,8 @@ class HotReloadManager {
    * @param appPath app的绝对路径
    */
   async loadApp (appPath: string): Promise<void> {
-    const { pkgName, normalizedPath } = await this.packageUtils.getPackageByPath(appPath)
-
-    this.logger.debug(`开始加载app: ${normalizedPath}`)
-
-    /** 重新导入模块 */
-    const result = await imports(normalizedPath, { eager: true })
-    this.logger.debug(`模块导入成功: ${normalizedPath}`)
-
-    /** 加载class插件 */
-    loadClass(pkgName, normalizedPath, result)
-
-    this.logUtils.logOperation('加载', normalizedPath)
+    await register.loadApp(appPath, true)
+    this.logger.info(`add: ${logger.green(formatPath(appPath, { type: 'rel' }))}`)
   }
 
   /**
@@ -219,7 +127,7 @@ class HotReloadManager {
 
     /** 卸载插件包注册信息 */
     register.unregisterPackage(pkgName)
-    this.logUtils.logOperation('卸载', pkgName, true)
+    this.logger.info(`unlink: ${logger.red(pkgName)}`)
   }
 
   /**
@@ -227,11 +135,8 @@ class HotReloadManager {
    * @param appPath app的绝对路径
    */
   async unloadApp (appPath: string): Promise<void> {
-    const normalizedPath = this.pathUtils.normalize(appPath)
-
-    /** 卸载app注册信息 */
-    register.unregisterApp(normalizedPath)
-    this.logUtils.logOperation('卸载', normalizedPath)
+    register.unregisterApp(appPath)
+    this.logger.info(`unlink: ${logger.red(formatPath(appPath, { type: 'rel' }))}`)
   }
 
   /**
@@ -248,53 +153,21 @@ class HotReloadManager {
    * @param appPath app的绝对路径
    */
   async reloadApp (appPath: string): Promise<void> {
-    const { pkgName, normalizedPath } = await this.packageUtils.getPackageByPath(appPath)
-
-    /** 静默卸载：只执行卸载逻辑，不输出日志 */
-    register.unregisterApp(normalizedPath)
-
-    /** 静默加载：执行加载逻辑，但不输出加载日志 */
-    const result = await imports(normalizedPath, { eager: true })
-    loadClass(pkgName, normalizedPath, result)
-
-    /** 输出重载日志 */
-    this.logUtils.logOperation('重载', normalizedPath)
+    register.unregisterApp(appPath)
+    await register.loadApp(appPath, true)
+    this.logger.info(`change: ${logger.yellow(formatPath(appPath, { type: 'rel' }))}`)
   }
 }
 
 /**
  * 热更新管理器单例
  */
-export const hot = new HotReloadManager()
-
-/**
- * fileUrl 前缀
- * - windows: `file:///`
- * - macOS/Linux: `file://`
- */
-const fileUrlPrefix = process.platform === 'win32' ? 'file:///' : 'file://'
-
-/**
- * HMR 选项接口
- */
-export interface HMROptions extends ChokidarOptions {
-  /**
-   * 插件包名称
-   * @description 用于重载插件时，识别哪些模块属于 apps 下的插件模块
-   */
-  pluginName: string
-
-  /**
-   * 这些文件路径将被保护不被清理缓存
-   * @description node_modules、node自身模块、karin本身模块永远被保护
-   */
-  exclude?: string[]
-}
+export const hot = new HmrDevManager()
 
 /**
  * @class HMRModule
  * @extends EventEmitter
- * HMR 模块
+ * 开发环境热更新管理器
  */
 export class HMRModule extends EventEmitter<EventMap> {
   /** 受保护的文件路径 */
@@ -313,13 +186,13 @@ export class HMRModule extends EventEmitter<EventMap> {
   constructor (files: string | string[], options: HMROptions) {
     super()
     const exclude: string[] = Array.isArray(options.exclude) ? options.exclude : []
-    this.exclude = exclude.map(p => this.formatFileUrl(p))
+    this.exclude = exclude.map(p => formatPath(p, { type: 'fileURL' }))
     this.options = {
       ...options,
+      atomic: true,
+      awaitWriteFinish: true,
       ignoreInitial: options.ignoreInitial ?? true,
       ignored: options.ignored ?? /(^|[/\\])\../,
-      // 返回绝对路径
-
     }
     this.watcher = chokidar.watch(files, this.options)
   }
@@ -330,11 +203,11 @@ export class HMRModule extends EventEmitter<EventMap> {
         file = path.resolve(this.options.cwd, file)
       }
 
-      const fileUrl = this.formatFileUrl(file)
+      const fileUrl = formatPath(file, { type: 'fileURL' })
 
       if (event !== 'change' && event !== 'unlink') {
         if (event === 'add') {
-          this.hot.loadApp(this.hot.pathUtils.normalize(file))
+          this.hot.loadApp(file)
         }
         this.emit(event, fileUrl, stats)
         return
@@ -346,11 +219,10 @@ export class HMRModule extends EventEmitter<EventMap> {
         apps,
         fileUrl,
         clear: clearModuleCaches,
-        load: (file: string) => this.hot.loadApp(this.hot.pathUtils.normalize(file)),
-        unlink: (file: string) => this.hot.unloadApp(this.hot.pathUtils.normalize(file)),
+        load: (file: string) => this.hot.loadApp(file),
+        unlink: (file: string) => this.hot.unloadApp(file),
         reloadApp: async (file: string) => {
-          const normalizedFile = this.hot.pathUtils.normalize(file)
-          await this.hot.reloadApp(normalizedFile)
+          await this.hot.reloadApp(file)
         },
         reload: () => this.reload(list, apps, event),
       })
@@ -389,34 +261,17 @@ export class HMRModule extends EventEmitter<EventMap> {
   getPluginModules (fileUrl: string[]): string[] {
     const result = core.getPluginPackageDetail(this.options.pluginName)
     if (!result || !result.apps.length) return []
-    return fileUrl.map(url => this.hot.pathUtils.normalize(url))
+    return fileUrl.map(url => formatPath(url))
       .filter(localPath => result.apps.includes(localPath))
-  }
-
-  /**
-   * 格式化文件路径为 file URL
-   * - Windows: `file:///D:/path/to/file.js`
-   * - macOS/Linux: `file:///D:/path/to/file.js`
-   * @param filePath 模块文件路径
-   */
-  formatFileUrl (filePath: string): string {
-    /** 规范化路径 */
-    const normalizedPath = this.hot.pathUtils.normalize(filePath)
-    /** 添加 file URL 前缀 */
-    return `${fileUrlPrefix}${normalizedPath}`
-  }
-
-  /**
-   * 优雅的相对路径转换
-   * @description 以工作目录为起点，将绝对路径转换为相对路径，并将反斜杠替换为正斜杠
-   * @param filePath 文件路径（绝对路径或file URL）
-   * @returns 相对于工作目录的路径，使用正斜杠分隔
-   */
-  toRelativePath (filePath: string): string {
-    return this.hot.pathUtils.toRelative(filePath)
   }
 }
 
+/** 热更新函数
+ * @param files 监听的文件路径或路径数组
+ * @param cb 回调函数
+ * @param options 选项
+ * @returns HMRModule 实例
+ */
 export const hmr = async (
   files: string | string[],
   cb: HMRCallback,

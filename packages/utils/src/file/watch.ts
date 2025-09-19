@@ -72,7 +72,12 @@ export const watch = <T> (
   }
 
   /** 新的监听 */
-  const watcher = chokidar.watch(file)
+  const watcher = chokidar.watch(file, {
+    atomic: true,
+    awaitWriteFinish: true,
+    ignoreInitial: true,
+    ignored: /(^|[/\\])\../,
+  })
   /** 缓存监听器 */
   cache.set(file, watcher)
   /** 监听文件变动 */
@@ -226,7 +231,14 @@ export const watchs = <T = unknown> (paths: string | string[], callback: Callbac
     throw new TypeError('请正确传递 callback 参数，接受 function 类型')
   }
 
-  const watcher = chokidar.watch(paths, options?.chokidar)
+  const watcher = chokidar.watch(paths, {
+    ...options?.chokidar,
+    atomic: options?.chokidar?.atomic ?? true,
+    awaitWriteFinish: options?.chokidar?.awaitWriteFinish ?? true,
+    ignoreInitial: options?.chokidar?.ignoreInitial ?? true,
+    ignored: options?.chokidar?.ignored ?? /(^|[/\\])\../,
+  })
+
   watcher.on('change', async (_path, stats) => {
     const read = (() => {
       if (options?.write === 'requireFileSync') {

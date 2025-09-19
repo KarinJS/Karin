@@ -1,6 +1,7 @@
 import lodash from 'lodash'
-import { cache } from '../core'
-import { formatPath } from '@karinjs/utils'
+import { cache, core } from '../core'
+import { loadClass } from '../decorators'
+import { formatPath, imports } from '@karinjs/utils'
 import type { TaskCache } from '../decorators/task'
 import type { AcceptCache } from '../decorators/accept'
 import type { ButtonCache } from '../decorators/button'
@@ -11,6 +12,12 @@ import type { CommandCache } from '../decorators/command'
  * 插件注册管理类
  */
 class RegisterManager {
+  logger: ReturnType<typeof logger.prefix>
+
+  constructor () {
+    this.logger = logger.prefix('[register]')
+  }
+
   /**
    * 格式化路径
    * @param target 目标路径
@@ -22,6 +29,27 @@ class RegisterManager {
       return formatPath(target)
     }
     return target
+  }
+
+  /**
+   * 加载单个App插件
+   * @param file app的绝对路径
+   * @param eager 是否立即执行
+   */
+  async loadApp (file: string, eager: boolean = false): Promise<void> {
+    const pkgName = core.getPackageName(file)
+
+    if (!pkgName) {
+      throw new Error(`无法确定 ${file} 所属的插件包`)
+    }
+
+    this.logger.debug(`开始加载app: ${file}`)
+    const result = await imports(file, { eager })
+    this.logger.debug(`模块导入成功: ${file}`)
+
+    /** 加载class插件 */
+    await loadClass(pkgName, file, result)
+    this.logger.debug(`加载: ${file}`)
   }
 
   /**
@@ -39,18 +67,18 @@ class RegisterManager {
    */
   unregisterCommand (target: string): void {
     target = this._formatPath(target)
-    logger.debug(`[unregisterCommand] 尝试卸载命令，目标: ${target}`)
+    this.logger.debug(`尝试卸载命令，目标: ${target}`)
 
     const index = cache.command.findIndex(v => v.app.id === target || v.file.absPath === target)
 
     if (index === -1) {
-      logger.debug(`[unregisterCommand] 未找到要卸载的命令: ${target}`)
-      logger.debug('[unregisterCommand] 当前注册的命令文件路径:', cache.command.slice(0, 3).map(cmd => cmd.file.absPath))
+      this.logger.debug(`未找到要卸载的命令: ${target}`)
+      this.logger.debug('当前注册的命令文件路径:', cache.command.slice(0, 3).map(cmd => cmd.file.absPath))
       return
     }
 
     const removedCommand = cache.command[index]
-    logger.debug(`[unregisterCommand] 卸载命令: ${removedCommand.app.name}`)
+    this.logger.debug(`卸载命令: ${removedCommand.app.name}`)
 
     cache.command.splice(index, 1)
     cache.count.command--

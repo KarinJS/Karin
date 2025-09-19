@@ -328,14 +328,62 @@ export const isSubPath = (root: string, target: string, isAbs = true) => {
 }
 
 /**
- * @description 将路径统一格式
+ * 将路径统一格式
+ * @description 默认返回绝对路径
  * - 绝对路径
+ * - 支持file URL
  * - 统一分隔符`/`
  * @param filePath - 路径
+ * @param options - 选项
+ * @param options.cwd - 当前工作目录，默认`process.cwd()`
+ * @param options.type - 返回类型，`abs=绝对路径` `rel=相对路径` `fileURL=file URL`，默认`abs`
+ * @example
+ * ```ts
+ * formatPath('C:\\Users\\admin\\project\\..\\file.txt')
+ * // -> 'C:/Users/admin/file.txt' 绝对路径
+ *
+ * formatPath('./file.txt', { type: 'rel' })
+ * // -> 'file.txt' 相对路径
+ * formatPath('./project/file.txt', { type: 'rel', cwd: 'C:/Users/admin/project' })
+ * // -> './file.txt' 相对路径
+ *
+ * formatPath('file:///C:/Users/admin/file.txt', { type: 'fileURL' })
+ * // -> 'file:///C:/Users/admin/file.txt' file URL
+ * ```
  * @returns 统一格式后的路径
  */
-export const formatPath = (filePath: string) => {
-  return path.resolve(filePath).replace(/\\/g, '/')
+export const formatPath = (
+  filePath: string,
+  options?: {
+    /**
+     * 当前工作目录
+     * @default process.cwd()
+     */
+    cwd?: string
+    /**
+     * 返回类型
+     * @default 'abs' - 绝对路径
+     */
+    type?: 'abs' | 'rel' | 'fileURL'
+  }
+) => {
+  const cwd = options?.cwd ? options.cwd : process.cwd()
+  const type = options?.type || 'abs'
+
+  /** 先转为绝对路径 */
+  const abs = filePath.startsWith('file://') ? filePath.replace(sep, '') : filePath
+  const file = path.resolve(cwd, abs).replace(/\\/g, '/')
+
+  if (type === 'fileURL') {
+    return process.platform === 'win32' ? `file:///${file}` : `file://${file}`
+  }
+
+  if (type === 'rel') {
+    const rel = path.relative(cwd, file).replace(/\\/g, '/')
+    return `./${rel.replace(/^\.\//, '')}`
+  }
+
+  return file
 }
 
 /**
