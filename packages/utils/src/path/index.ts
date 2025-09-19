@@ -5,6 +5,8 @@ import { sep } from '../file'
 import { fileURLToPath } from 'node:url'
 import { requireFileSync } from '../require'
 
+const prefix = process.platform === 'win32' ? 'file:///' : 'file://'
+
 /**
  * 文件查找选项接口
  */
@@ -367,23 +369,22 @@ export const formatPath = (
     type?: 'abs' | 'rel' | 'fileURL'
   }
 ) => {
-  const cwd = options?.cwd ? options.cwd : process.cwd()
-  const type = options?.type || 'abs'
-
-  /** 先转为绝对路径 */
-  const abs = filePath.startsWith('file://') ? filePath.replace(sep, '') : filePath
-  const file = path.resolve(cwd, abs).replace(/\\/g, '/')
-
-  if (type === 'fileURL') {
-    return process.platform === 'win32' ? `file:///${file}` : `file://${file}`
+  if (!options) {
+    return path.resolve(filePath.replace(sep, '')).replace(/\\/g, '/')
   }
+
+  const type = options?.type || 'abs'
+  const cwd = options?.cwd ? options.cwd : process.cwd()
 
   if (type === 'rel') {
-    const rel = path.relative(cwd, file).replace(/\\/g, '/')
-    return `./${rel.replace(/^\.\//, '')}`
+    return path.relative(cwd, filePath.replace(sep, '')).replace(/\\/g, '/') || '.'
   }
 
-  return file
+  if (type === 'fileURL') {
+    return `${prefix}${path.resolve(cwd, filePath.replace(sep, '')).replace(/\\/g, '/')}`
+  }
+
+  return path.resolve(cwd, filePath.replace(sep, '')).replace(/\\/g, '/')
 }
 
 /**

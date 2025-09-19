@@ -22,7 +22,6 @@ export const hmrProduction = (list: string[]): FSWatcher | null => {
   const exts = getModuleType()
   const watcher = chokidar.watch(list, {
     atomic: true,
-    awaitWriteFinish: true,
     ignoreInitial: true,
     ignored: (file, stats) => {
       if (!stats?.isFile()) {

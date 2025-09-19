@@ -74,7 +74,6 @@ export const watch = <T> (
   /** 新的监听 */
   const watcher = chokidar.watch(file, {
     atomic: true,
-    awaitWriteFinish: true,
     ignoreInitial: true,
     ignored: /(^|[/\\])\../,
   })
@@ -234,7 +233,6 @@ export const watchs = <T = unknown> (paths: string | string[], callback: Callbac
   const watcher = chokidar.watch(paths, {
     ...options?.chokidar,
     atomic: options?.chokidar?.atomic ?? true,
-    awaitWriteFinish: options?.chokidar?.awaitWriteFinish ?? true,
     ignoreInitial: options?.chokidar?.ignoreInitial ?? true,
     ignored: options?.chokidar?.ignored ?? /(^|[/\\])\../,
   })

@@ -1,4 +1,3 @@
-import path from 'node:path'
 import chokidar from 'chokidar'
 import { cache, core } from '../core'
 import { register } from '../register/register'
@@ -26,13 +25,36 @@ export interface HMROptions extends ChokidarOptions {
    * @description node_modules、node自身模块、karin本身模块永远被保护
    */
   exclude?: string[]
+  /**
+   * 监听器的当前工作目录
+   * @default process.cwd()
+   */
+  cwd?: string
+  /**
+   * 忽视规则
+   * - 支持字符串、正则表达式、函数、对象、数组等多种形式
+   * @example
+   * ```ts
+   * {
+   *   ignored: (file, stats) => {
+   *     return stats?.isFile() && path.extname(file) !== '.mjs' // 仅监听mjs文件变化
+   *   },
+   *   ignored: /(^|[/\\])\../, // 忽略所有点文件
+   *   ignored: [/*test.js', /(^|[/\\])\../], // 忽略test.js和所有点文件
+   *   ignored: 'test.js', // 忽略test.js文件
+   *   ...
+   * }
+   */
+  ignored?: ChokidarOptions['ignored']
 }
 
 export interface EventContext {
-  /** 受影响的apps */
-  apps: string[]
   /** 变动的文件 */
   fileUrl: string
+  /** 受影响的app列表 */
+  apps: () => Promise<string[]>
+  /** 需要删除缓存的模块URL */
+  modules: () => Promise<string[]>
   /**
    * 清理缓存函数
    * @param fileUrl 需要清理的模块URL数组
@@ -190,7 +212,6 @@ export class HMRModule extends EventEmitter<EventMap> {
     this.options = {
       ...options,
       atomic: true,
-      awaitWriteFinish: true,
       ignoreInitial: options.ignoreInitial ?? true,
       ignored: options.ignored ?? /(^|[/\\])\../,
     }
@@ -199,12 +220,9 @@ export class HMRModule extends EventEmitter<EventMap> {
 
   async init (): Promise<void> {
     this.watcher.on('all', async (event, file, stats) => {
-      if (this.options.cwd) {
-        file = path.resolve(this.options.cwd, file)
-      }
-
-      const fileUrl = formatPath(file, { type: 'fileURL' })
-
+      console.time(`hmr event ${event}`)
+      const fileUrl = formatPath(file, { type: 'fileURL', cwd: this.options.cwd })
+      console.timeLog(`hmr event ${event}`)
       if (event !== 'change' && event !== 'unlink') {
         if (event === 'add') {
           this.hot.loadApp(file)
@@ -212,19 +230,43 @@ export class HMRModule extends EventEmitter<EventMap> {
         this.emit(event, fileUrl, stats)
         return
       }
+      console.timeLog(`hmr event ${event}`)
+      const cache = {
+        modules: { isCached: false, data: [] as string[] },
+        apps: { isCached: false, data: [] as string[] },
+      }
+      const modules = async () => {
+        if (cache.modules.isCached) return cache.modules.data
+        const m = await findDependentModules(fileUrl, this.exclude)
+        cache.modules.isCached = true
+        cache.modules.data = m
+        return m
+      }
 
-      const list = await findDependentModules(fileUrl, this.exclude)
-      const apps = this.getPluginModules(list)
+      const apps = async () => {
+        if (cache.apps.isCached) return cache.apps.data
+        const m = await modules()
+        const app = this.getPluginModules(m)
+        cache.apps.isCached = true
+        cache.apps.data = app
+        return app
+      }
+
+      console.timeEnd(`hmr event ${event}`)
       this.emit(event, {
-        apps,
         fileUrl,
+        apps,
+        modules,
         clear: clearModuleCaches,
         load: (file: string) => this.hot.loadApp(file),
         unlink: (file: string) => this.hot.unloadApp(file),
         reloadApp: async (file: string) => {
           await this.hot.reloadApp(file)
         },
-        reload: () => this.reload(list, apps, event),
+        reload: async () => {
+          const [list, app] = await Promise.all([modules(), apps()])
+          return this.reload(list, app, event)
+        },
       })
     })
   }

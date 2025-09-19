@@ -4,7 +4,7 @@ import { loadClass } from '../decorators'
 import { hmrProduction } from '../hmr/simple'
 import { errorHandler } from '../event/error'
 import { register } from '../register/register'
-import { DEFAULT_CREATE_FILES, isDev } from '@karinjs/envs'
+import { DEFAULT_CREATE_FILES, canUseNodeInternals } from '@karinjs/envs'
 import { createPluginDir, imports, satisfies } from '@karinjs/utils'
 
 import type { PluginCacheKeyPkg } from '../decorators'
@@ -71,7 +71,7 @@ class PluginLoader {
 
     logger.info(logger.green('-----------'))
 
-    if (isDev()) return
+    if (canUseNodeInternals()) return
     setTimeout(() => {
       const target: string[] = []
       list.forEach(plugin => {
