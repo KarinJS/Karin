@@ -1,6 +1,6 @@
 import { OneBotMessageType } from '@karinjs/onebot'
 import { OneBotConverter } from './convert'
-import { CreateOneBotEvent } from 'src/core/event'
+import { CreateOneBotEvent } from '../core/event'
 import { registerBot, unregisterBot } from '@karinjs/bot'
 import { AdapterBase, senderGroup } from '@karinjs/adapter'
 

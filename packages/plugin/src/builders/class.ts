@@ -1,11 +1,11 @@
 import { core } from '../core'
 import { logger } from '@karinjs/logger'
 import { types, isClass } from '@karinjs/utils'
-import register from '../register/register'
+import register from '../manager/register'
 import { createID, formatReg, createLogger } from './util'
 
 import type { FNC } from './util'
-import type { CommandCache } from '../decorators/command'
+import type { CommandCache } from './command'
 import type { Message, MessageEventMap, Permission, AdapterProtocol, AdapterType } from '@karinjs/adapter'
 
 export interface RuleItemBase {

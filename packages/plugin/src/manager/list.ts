@@ -1,8 +1,8 @@
 import path from 'node:path'
 import { core } from '../core'
 import { requireFile } from '@karinjs/utils'
-import type { PluginPackageType } from '../pkg'
-import type { PluginCacheKeyPkg } from '../decorators/base'
+import type { PluginPackageType } from '../core'
+import type { PluginCacheKeyPkg } from '../builders/base'
 
 export type GetPluginReturn<T extends boolean> = T extends true ? PluginCacheKeyPkg[] : string[]
 

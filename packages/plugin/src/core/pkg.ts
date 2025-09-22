@@ -4,9 +4,9 @@ import { isTs, isDev, getModuleType } from '@karinjs/envs'
 import { requireFileSync, formatPath, imports, filesByExt } from '@karinjs/utils'
 
 import type { PluginCoreSync } from './sync'
-import type { PluginPackageType } from '../pkg'
+import type { PluginPackageType } from './types'
 import type { PluginCorePromise } from './promise'
-import type { PluginCacheKeyPkg } from '../decorators/base'
+import type { PluginCacheKeyPkg } from '../builders/base'
 
 /** 插件包分类结果 */
 export interface PluginsResult {
@@ -209,6 +209,18 @@ export class PluginPackage implements PluginCacheKeyPkg {
     if (!dir || !fs.existsSync(dir)) return null
 
     return imports(dir, { import: 'default', eager: isDev() })
+  }
+
+  /**
+   * 加载`karin.config.mjs`文件
+   * @param isRefresh 是否重新载入
+   */
+  async loadKarinConfig (isRefresh?: boolean) {
+    if (!isRefresh) isRefresh = isDev()
+    const configPath = path.join(this.#dir, 'karin.config.mjs')
+    if (!fs.existsSync(configPath)) return null
+
+    return imports(configPath, { import: 'default', eager: isRefresh })
   }
 
   /**

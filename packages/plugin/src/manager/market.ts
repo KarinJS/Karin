@@ -1,7 +1,7 @@
 import { raceRequest } from '@karinjs/utils'
 import { REDIS_PLUGIN_LIST_CACHE_KEY } from '@karinjs/envs'
 
-import type { PluginPackageType } from '../pkg'
+import type { PluginPackageType } from '../core'
 
 /**
  * 插件基础类型

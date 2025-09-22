@@ -1,12 +1,12 @@
 import lodash from 'lodash'
 import { cache, core } from '../core'
-import { loadClass } from '../decorators'
+import { loadClass } from '../builders'
 import { formatPath, imports } from '@karinjs/utils'
-import type { TaskCache } from '../decorators/task'
-import type { AcceptCache } from '../decorators/accept'
-import type { ButtonCache } from '../decorators/button'
-import type { HandlerCache } from '../decorators/handler'
-import type { CommandCache } from '../decorators/command'
+import type { TaskCache } from '../builders/task'
+import type { AcceptCache } from '../builders/accept'
+import type { ButtonCache } from '../builders/button'
+import type { HandlerCache } from '../builders/handler'
+import type { CommandCache } from '../builders/command'
 
 /**
  * 插件注册管理类

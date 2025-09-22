@@ -1,12 +1,13 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { cache } from '../cache/cache'
+import { cache } from './cache'
 import { PluginPackage } from './pkg'
 import { isDev, NPM_EXCLUDE_LIST } from '@karinjs/envs'
-import { getDirs, getNodeModules, requireFile } from '@karinjs/utils'
+import { getNodeModules, requireFile } from '@karinjs/utils'
+import { searchGitAndApps } from '../utils'
 
-import type { PluginPackageType } from '../pkg'
-import type { PluginCacheKeyPkg } from '../decorators/base'
+import type { PluginPackageType } from './types'
+import type { PluginCacheKeyPkg } from '../builders/base'
 import type { PluginsResult, PluginInfo } from './pkg'
 
 /**
@@ -169,51 +170,23 @@ export class PluginCorePromise {
    * 刷新 git 和 apps 插件包缓存
    */
   async #refreshGitAndAppsPlugins (): Promise<{ git: string[], apps: string[] }> {
+    const result = await searchGitAndApps(this.#dir)
+
+    // 处理 git 和 apps 包，确保符合 karin-plugin- 命名规范
     const git: string[] = []
     const apps: string[] = []
-    const dirs = await getDirs(this.#dir)
 
-    await Promise.all(dirs.map(async (v) => {
-      const _path = path.join(this.#dir, v, 'package.json')
-      /** 需要是karin-plugin-开头的目录 */
-      if (!v.startsWith('karin-plugin-')) return
-
-      /** 如果是没有package.json的目录 则判断为 apps */
-      if (!fs.existsSync(_path)) {
-        /** 创建一个空的package.json */
-        fs.writeFileSync(
-          _path,
-          JSON.stringify({
-            name: v,
-            version: '0.0.0',
-            description: '',
-            type: 'module',
-            main: '',
-            scripts: {},
-            dependencies: {},
-          }, null, 2)
-        )
-
-        apps.push(v)
-        return
+    result.git.forEach(item => {
+      if (item.name.startsWith('karin-plugin-')) {
+        git.push(item.name)
       }
+    })
 
-      const pkg = await this.#requireJson(_path)
-      /** 检查type === module */
-      if (pkg.type !== 'module') {
-        pkg.type = 'module'
-        fs.writeFileSync(_path, JSON.stringify(pkg, null, 2))
+    result.apps.forEach(item => {
+      if (item.name.startsWith('karin-plugin-')) {
+        apps.push(item.name)
       }
-
-      /** 配置了karin字段视为git */
-      if (typeof pkg?.karin === 'object') {
-        git.push(v)
-        return
-      }
-
-      /** 没有配置karin字段视为apps */
-      apps.push(v)
-    }))
+    })
 
     return { git, apps }
   }

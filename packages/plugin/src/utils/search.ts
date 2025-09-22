@@ -2,7 +2,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { getFolders, getFoldersSync, hasKarinField, hasKarinFieldSync } from './file'
 
-type SearchResult = {
+/** 搜索结果类型 */
+export type SearchResult = {
   /** 包名 */
   name: string
   /** 包路径 */
@@ -23,14 +24,14 @@ type SearchResult = {
  * // ]
  * ```
  */
-export const searchNpm = async (dir: string = process.cwd()) => {
+export const searchNpm = async (dir: string = process.cwd()): Promise<SearchResult[]> => {
   const list: SearchResult[] = []
 
   const files = await getFolders(dir)
-  await Promise.all(files.map(async (file) => {
+  await Promise.all(files.map(async (file: string) => {
     if (file.startsWith('@')) {
       const scopedFiles = await getFolders(path.join(dir, file))
-      scopedFiles.forEach((name) => {
+      scopedFiles.forEach((name: string) => {
         list.push({ name: `${file}/${name}`, path: path.join(dir, file, name) })
       })
       return
@@ -56,14 +57,14 @@ export const searchNpm = async (dir: string = process.cwd()) => {
  * // ]
  * ```
  */
-export const searchNpmSync = (dir: string = process.cwd()) => {
+export const searchNpmSync = (dir: string = process.cwd()): SearchResult[] => {
   const list: SearchResult[] = []
 
   const files = getFoldersSync(dir)
-  files.forEach((file) => {
+  files.forEach((file: string) => {
     if (file.startsWith('@')) {
       const scopedFiles = getFoldersSync(path.join(dir, file))
-      scopedFiles.forEach((name) => {
+      scopedFiles.forEach((name: string) => {
         list.push({ name: `${file}/${name}`, path: path.join(dir, file, name) })
       })
       return
@@ -79,18 +80,18 @@ export const searchNpmSync = (dir: string = process.cwd()) => {
  * 查找所有符合条件的git、apps包
  * @param dir 查找的目录
  */
-export const searchGitAndApps = async (dir: string = process.cwd()) => {
+export const searchGitAndApps = async (dir: string = process.cwd()): Promise<{ git: SearchResult[], apps: SearchResult[] }> => {
   const git: SearchResult[] = []
   const apps: SearchResult[] = []
 
   const files = await getFolders(dir)
-  await Promise.all(files.map(async (file) => {
+  await Promise.all(files.map(async (file: string) => {
     const pkgDir = path.join(dir, file)
-    const packageDir = path.join(pkgDir, 'package.json')
+    const packageJsonPath = path.join(pkgDir, 'package.json')
 
-    if (!await fs.promises.stat(packageDir)) return
+    if (!await fs.promises.stat(packageJsonPath).catch(() => null)) return
 
-    if (await hasKarinField(packageDir)) {
+    if (await hasKarinField(packageJsonPath)) {
       return git.push({ name: file, path: pkgDir })
     }
 
@@ -104,18 +105,18 @@ export const searchGitAndApps = async (dir: string = process.cwd()) => {
  * 同步查找所有符合条件的git、apps包
  * @param dir 查找的目录
  */
-export const searchGitAndAppsSync = (dir: string = process.cwd()) => {
+export const searchGitAndAppsSync = (dir: string = process.cwd()): { git: SearchResult[], apps: SearchResult[] } => {
   const git: SearchResult[] = []
   const apps: SearchResult[] = []
 
   const files = getFoldersSync(dir)
-  files.forEach((file) => {
+  files.forEach((file: string) => {
     const pkgDir = path.join(dir, file)
-    const packageDir = path.join(pkgDir, 'package.json')
+    const packageJsonPath = path.join(pkgDir, 'package.json')
 
-    if (!fs.existsSync(packageDir)) return
+    if (!fs.existsSync(packageJsonPath)) return
 
-    if (hasKarinFieldSync(packageDir)) {
+    if (hasKarinFieldSync(packageJsonPath)) {
       return git.push({ name: file, path: pkgDir })
     }
 

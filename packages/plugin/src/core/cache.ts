@@ -1,9 +1,9 @@
-import type { CommandCache } from '../decorators/command'
-import type { AcceptCache } from '../decorators/accept'
-import type { HandlerCache } from '../decorators/handler'
-import type { ButtonCache } from '../decorators/button'
-import type { TaskCache } from '../decorators/task'
-import type { PluginCacheKeyPkg } from '../decorators/base'
+import type { CommandCache } from '../builders/command'
+import type { AcceptCache } from '../builders/accept'
+import type { HandlerCache } from '../builders/handler'
+import type { ButtonCache } from '../builders/button'
+import type { TaskCache } from '../builders/task'
+import type { PluginCacheKeyPkg } from '../builders/base'
 
 /** 插件包核心缓存 */
 export interface PluginCoreCache {

@@ -1,7 +1,7 @@
 import callsites from 'callsites'
 import { fileURLToPath } from 'node:url'
 import { core } from '../core/core'
-import register from '../register/register'
+import register from '../manager/register'
 import { createID, createLogger } from './util'
 import { types } from '@karinjs/utils'
 

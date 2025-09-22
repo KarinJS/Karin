@@ -1,6 +1,6 @@
 import path from 'node:path'
 import chokidar from 'chokidar'
-import { register } from '../register/register'
+import { register } from './register'
 import { formatPath } from '@karinjs/utils'
 import { getModuleType } from '@karinjs/envs'
 

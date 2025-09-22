@@ -1,13 +1,13 @@
 import path from 'node:path'
 import { cache, core } from '../core'
-import { loadClass } from '../decorators'
-import { hmrProduction } from '../hmr/simple'
-import { errorHandler } from '../event/error'
-import { register } from '../register/register'
+import { loadClass } from '../builders'
+import { hmrProduction } from './simple'
+import { errorHandler } from '../utils/error'
+import { register } from './register'
 import { DEFAULT_CREATE_FILES, canUseNodeInternals } from '@karinjs/envs'
 import { createPluginDir, imports, satisfies } from '@karinjs/utils'
 
-import type { PluginCacheKeyPkg } from '../decorators'
+import type { PluginCacheKeyPkg } from '../builders'
 
 /**
  * @class

@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { formatPath } from '@karinjs/utils'
 
-import type { Package, PluginPackageType } from '../pkg'
+import type { Package, PackageEnv, PluginPackageType } from '../core'
 import type { DefineConfig } from '@karinjs/core'
 
 /** 插件 app 方法类型 */
@@ -36,6 +36,35 @@ export interface PluginCacheKeyFile {
   get basename (): string
 }
 
+export interface KarinConfigType extends DefineConfig {
+  /**
+   * 入口文件
+   * @description 优先加载入口文件 其次轮到apps
+   */
+  entry?: string | string[] | { type: 'dev' | 'prod', path: string | string[] }[]
+  /**
+   * app路径
+   * @description 适用于不想创建目录 但是想加载单个、多个app文件
+   */
+  app?: string | string[]
+  /**
+   * apps 目录
+   * @description 此项配置会要求为必须是目录 将会循环读取加载目录下的所有符合标准的文件
+   */
+  apps?: string | string[]
+  /**
+   * 静态资源目录
+   */
+  static?: string | string[]
+  /**
+   * 在初始化的时候需要创建的文件夹结构
+   * @default ['config', 'data', 'resources']
+   */
+  files?: string[]
+  /** 环境变量配置 */
+  env?: PackageEnv[]
+}
+
 /** 插件缓存包属性类型 */
 export interface PluginCacheKeyPkg {
   /** 插件包名称 */
@@ -61,6 +90,11 @@ export interface PluginCacheKeyPkg {
    * @param isRefresh 是否重新载入
    */
   loadWebConfig (isRefresh?: boolean): Promise<DefineConfig | null>
+  /**
+   * 加载`karin.config.mjs`文件
+   * @param isRefresh 是否重新载入
+   */
+  loadKarinConfig (isRefresh?: boolean): Promise<DefineConfig | null>
 }
 
 /** 插件缓存对象基类 */

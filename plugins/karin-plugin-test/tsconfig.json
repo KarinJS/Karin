@@ -2,5 +2,9 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
-  }
+    "skipLibCheck": true
+  },
+  "exclude": [
+    "tsdown.config.ts"
+  ]
 }

@@ -1,11 +1,11 @@
 import path from 'node:path'
 import { PluginCoreSync } from './sync'
-import { errorHandler } from '../event/error'
-import { getPluginLoader } from '../load'
+import { errorHandler } from '../utils/error'
+import { getPluginLoader } from '../manager/load'
 import { formatPath, isPathEqual, isSubPath, requireFileSync } from '@karinjs/utils'
 
-import type { PackageEnv } from '../pkg'
-import type { PluginCacheKeyFile } from '../decorators/base'
+import type { PackageEnv } from './types'
+import type { PluginCacheKeyFile } from '../builders/base'
 
 /**
  * 插件管理器类

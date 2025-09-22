@@ -1,12 +1,16 @@
+/**
+ * Karin 插件系统
+ * 提供插件开发、管理、热重载等完整功能
+ */
+
+// === 核心功能 ===
 export * from './core'
-export * from './decorators'
-export * from './event'
+
+// === 插件构建工具 ===
+export * from './builders'
+
+// === 管理功能 ===
 export * from './manager'
+
+// === 工具功能 ===
 export * from './utils'
-export * from './cache'
-export * from './load'
-export * from './market'
-export * from './register'
-export * from './web'
-export * from './pkg'
-export * from './hmr'
