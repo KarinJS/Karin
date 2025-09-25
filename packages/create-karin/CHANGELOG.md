@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/KarinJS/Karin/compare/create-karin-v1.2.1...create-karin-v1.2.2) (2025-09-25)
+
+
+### 🐛 Bug Fixes
+
+* 修改文档路径 ([#532](https://github.com/KarinJS/Karin/issues/532)) ([91c0e2f](https://github.com/KarinJS/Karin/commit/91c0e2f0cf479bda075cfd3196185d952607974c))
+
 ## [1.2.1](https://github.com/KarinJS/Karin/compare/create-karin-v1.2.0...create-karin-v1.2.1) (2025-06-08)
 
 
