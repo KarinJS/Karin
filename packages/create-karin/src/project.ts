@@ -49,7 +49,7 @@ export const createProject = async (
     green('  pnpm app\n'),
     '  快捷指令(上下任选其一):\n',
     magenta(`  cd ${projectName} && pnpm app\n`),
-    'docs: https://karin.fun',
+    'docs: https://karinjs.com',
     '点个star吧：https://github.com/Karinjs/Karin',
     '🚀 开始愉快的使用吧！',
   ].join('\n'))
@@ -107,7 +107,7 @@ export const createPlugin = async (
     green('  pnpm dev\n'),
     '  快捷指令(上下任选其一):\n',
     magenta(`  cd ${projectName} && pnpm dev\n`),
-    'docs: https://karin.fun',
+    'docs: https://karinjs.com',
     '点个star吧：https://github.com/Karinjs/Karin',
     '🚀 开始愉快的开发吧！',
   ].join('\n'))

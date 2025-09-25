@@ -337,7 +337,7 @@ const AboutUs = () => {
                   </Button>
                   <Button
                     as='a'
-                    href='https://docs.karin.fun'
+                    href='https://karinjs.com'
                     color='primary'
                     size={buttonSize}
                     variant='shadow'
@@ -706,7 +706,7 @@ const AboutUs = () => {
             <div className='mt-8 text-center'>
               <Button
                 as='a'
-                href='https://docs.karin.fun/other/changelog'
+                href='https://karinjs.com/changelog/'
                 color='primary'
                 variant='flat'
                 radius='full'
@@ -890,7 +890,7 @@ const AboutUs = () => {
                   <Github className='h-6 w-6' />
                 </motion.a>
                 <motion.a
-                  href='https://docs.karin.fun'
+                  href='https://karinjs.com'
                   className='text-gray-600 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 transition-colors'
                   whileHover={{ scale: 1.2 }}
                   whileTap={{ scale: 0.9 }}
