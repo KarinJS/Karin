@@ -636,6 +636,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
   async getGroupInfo (groupId: string, noCache?: boolean) {
     const info = await this._onebot.getGroupInfo(Number(groupId), noCache)
     const groupName = info.group_name
+    const avatar = await this.getGroupAvatarUrl(groupId)
     return {
       groupId,
       groupName,
@@ -643,6 +644,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
       maxMemberCount: info.max_member_count,
       memberCount: info.member_count,
       groupDesc: '',
+      avatar,
       group_name: groupName,
       group_remark: groupName,
       max_member_count: info.max_member_count,
@@ -665,9 +667,10 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
   async getGroupList (_refresh?: boolean) {
     // TODO: 可以走群成员列表获取群主、管理员列表
     const groupList = await this._onebot.getGroupList()
-    return groupList.map(info => {
+    return Promise.all(groupList.map(async info => {
       const groupId = info.group_id + ''
       const groupName = info.group_name
+      const avatar = await this.getGroupAvatarUrl(groupId)
       return {
         groupId,
         groupName,
@@ -675,6 +678,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
         maxMemberCount: info.max_member_count,
         memberCount: info.member_count,
         groupDesc: '',
+        avatar,
         group_name: groupName,
         group_remark: groupName,
         max_member_count: info.max_member_count,
@@ -683,7 +687,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
         admins: [],
         owner: '',
       }
-    })
+    }))
   }
 
   /**

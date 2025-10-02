@@ -133,6 +133,8 @@ export interface GroupInfo {
   memberCount?: number
   /** 群描述 */
   groupDesc?: string
+  /** 群头像 */
+  avatar?: string
 }
 
 /**
