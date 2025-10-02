@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.11.1](https://github.com/KarinJS/Karin/compare/core-v1.11.0...core-v1.11.1) (2025-10-02)
+
+
+### 🐛 Bug Fixes
+
+* Change faceId type from number to number | string in setMsgReaction ([#534](https://github.com/KarinJS/Karin/issues/534)) ([5233508](https://github.com/KarinJS/Karin/commit/523350882848ff3bef2313cb0a147d46da45a2e0))
+
 ## [1.11.0](https://github.com/KarinJS/Karin/compare/core-v1.10.23...core-v1.11.0) (2025-10-02)
 
 
