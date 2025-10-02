@@ -6,7 +6,7 @@ import { makeMessageLog, makeMessage } from '@/utils/common'
 
 import type { Contact } from '@/types/event'
 import type { AdapterBase } from '@/adapter/base'
-import type { Elements, ForwardOptions, NodeElement } from '@/types/segment'
+import type { Elements, ForwardOptions, NodeElement, SendMessage } from '@/types/segment'
 import type { SendMsgResults, AdapterCommunication, AdapterProtocol, AdapterType } from '@/types/adapter'
 
 let index = 0
@@ -222,8 +222,6 @@ export const registerBot = (_: AdapterCommunication, bot: AdapterBase) => {
   return id
 }
 
-type Message = string | Elements | Array<Elements>
-
 interface SendMsgOptions {
   /** 发送成功后撤回消息时间 */
   recallMsg?: number
@@ -243,7 +241,7 @@ interface SendMsgOptions {
 export const sendMsg = async (
   selfId: string,
   contact: Contact,
-  elements: Message,
+  elements: SendMessage,
   options: SendMsgOptions = { recallMsg: 0, retryCount: 1, retry_count: 1 }
 ): Promise<SendMsgResults> => {
   /** 结果 */

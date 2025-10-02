@@ -1,9 +1,7 @@
 import { sendMsg } from '@/service/bot'
 import { master, admin } from '@/utils/config'
-import type { Elements } from '@/types/segment'
+import type { SendMessage } from '@/types/segment'
 import type { Contact } from '@/types/event'
-
-type Message = string | Elements | Array<Elements>
 
 interface SendMsgOptions {
   /** 发送成功后撤回消息时间 */
@@ -34,7 +32,7 @@ interface SendAdminOptions extends SendMsgOptions {
 export const sendMaster = async (
   selfId: string,
   targetId: string,
-  elements: Message,
+  elements: SendMessage,
   options: SendMasterOptions = { recallMsg: 0, retryCount: 1, mustMaster: false }
 ) => {
   /** 检查目标是否为主人 */
@@ -64,7 +62,7 @@ export const sendMaster = async (
 export const sendAdmin = async (
   selfId: string,
   targetId: string,
-  elements: Message,
+  elements: SendMessage,
   options: SendAdminOptions = { recallMsg: 0, retryCount: 1, mustAdmin: false }
 ) => {
   /** 检查目标是否为管理员 */
