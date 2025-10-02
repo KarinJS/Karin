@@ -1,5 +1,18 @@
 # 更新日志
 
+## [1.11.0](https://github.com/KarinJS/Karin/compare/core-v1.10.23...core-v1.11.0) (2025-10-02)
+
+
+### ✨ Features
+
+* add avatar field to GroupInfo interface ([#535](https://github.com/KarinJS/Karin/issues/535)) ([7878dcf](https://github.com/KarinJS/Karin/commit/7878dcf9488381399adb618318da9b0560258311))
+
+
+### 🐛 Bug Fixes
+
+* console adapter to use correct file extensions for video and audio files ([#538](https://github.com/KarinJS/Karin/issues/538)) ([f157112](https://github.com/KarinJS/Karin/commit/f1571120e7599c103fc9615fe9551b4eb8bf4b6e))
+* Support Array&lt;string | Elements&gt; in active message interface ([#536](https://github.com/KarinJS/Karin/issues/536)) ([3ff6d62](https://github.com/KarinJS/Karin/commit/3ff6d626436b8b892aab0c772a46abfa6f991485))
+
 ## [1.10.23](https://github.com/KarinJS/Karin/compare/core-v1.10.22...core-v1.10.23) (2025-09-08)
 
 
