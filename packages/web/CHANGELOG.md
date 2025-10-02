@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.9](https://github.com/KarinJS/Karin/compare/web-v1.9.8...web-v1.9.9) (2025-10-02)
+
+
+### 📦️ Build System
+
+* **deps-dev:** bump vite-plugin-static-copy from 2.3.0 to 2.3.2 ([#518](https://github.com/KarinJS/Karin/issues/518)) ([a434d07](https://github.com/KarinJS/Karin/commit/a434d077b312a87fc9c8df056be5785d74fe8311))
+
 ## [1.9.8](https://github.com/KarinJS/Karin/compare/web-v1.9.7...web-v1.9.8) (2025-09-25)
 
 
