@@ -326,7 +326,7 @@ export interface AdapterType<T = any> {
    * @param messageId 消息ID
    * @param faceId 表情ID
    */
-  setMsgReaction (contact: Contact, messageId: string, faceId: number, isSet: boolean): Promise<void>
+  setMsgReaction (contact: Contact, messageId: string, faceId: number | string, isSet: boolean): Promise<void>
 
   /**
    * 上传群文件、私聊文件
