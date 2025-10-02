@@ -135,7 +135,10 @@ class AdapterConsole extends AdapterBase implements AdapterType {
       }
 
       if (v.type === 'image' || v.type === 'record' || v.type === 'video') {
-        const url = v.file.startsWith('http') ? v.file : await this.getUrl(v.file, '.png')
+        let ext = '.png'
+        if (v.type === 'video') ext = '.mp4'
+        if (v.type === 'record') ext = '.mp3'
+        const url = v.file.startsWith('http') ? v.file : await this.getUrl(v.file, ext)
         msg.push(`[${v.type}: ${logger.blue(url)} ]`)
         continue
       }
