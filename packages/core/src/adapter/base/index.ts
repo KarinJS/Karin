@@ -405,7 +405,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
    * @param _messageId 消息ID
    * @param _faceId 表情ID
    */
-  setMsgReaction (_contact: Contact, _messageId: string, _faceId: number, _isSet: boolean): Promise<void> {
+  setMsgReaction (_contact: Contact, _messageId: string, _faceId: number | string, _isSet: boolean): Promise<void> {
     throw new Error(this.#errMsg)
   }
 

@@ -857,7 +857,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @param faceId 表情ID
    * @returns 此接口的返回值不值得信任
    */
-  async setMsgReaction (contact: Contact, messageId: string, faceId: number, isSet: boolean) {
+  async setMsgReaction (contact: Contact, messageId: string, faceId: number | string, isSet: boolean) {
     if (this.adapter.name === 'Lagrange.OneBot') {
       await this._onebot.lgl_setGroupReaction(+contact.peer, +messageId, faceId + '', isSet)
       return

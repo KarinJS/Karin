@@ -254,7 +254,7 @@ class AdapterConsole extends AdapterBase implements AdapterType {
     logger.info(`[setInvitedJoinGroupResult] ${requestId} ${isApprove}`)
   }
 
-  async setMsgReaction (contact: Contact, messageId: string, faceId: number, isSet: boolean) {
+  async setMsgReaction (contact: Contact, messageId: string, faceId: number | string, isSet: boolean) {
     logger.info(`[setMsgReaction] ${contact} ${messageId} ${faceId} ${isSet}`)
   }
 
