@@ -299,6 +299,91 @@ export class RedisClient extends EventEmitter {
   }
 
   /**
+   * @description 设置键值对并指定过期时间（秒）
+   * @param key 键
+   * @param seconds 过期时间（秒）
+   * @param value 值
+   */
+  async setEx (key: string, seconds: number, value: string | Buffer): Promise<string | null> {
+    return await this.set(key, value, { EX: seconds })
+  }
+
+  /**
+   * @description 设置键值对并指定过期时间（毫秒）
+   * @param key 键
+   * @param milliseconds 过期时间（毫秒）
+   * @param value 值
+   */
+  async pSetEx (key: string, milliseconds: number, value: string | Buffer): Promise<string | null> {
+    return await this.set(key, value, { PX: milliseconds })
+  }
+
+  /**
+   * @description 仅当键不存在时设置键值对
+   * @param key 键
+   * @param value 值
+   */
+  async setNX (key: string, value: string | Buffer): Promise<boolean> {
+    if (this.store[key] && !this.checkExpire(key)) {
+      return false
+    }
+    await this.set(key, value, { NX: true })
+    return true
+  }
+
+  /**
+   * @description 获取键值并设置过期时间
+   * @param key 键
+   * @param options 过期时间选项（EX: 秒, PX: 毫秒, EXAT: 秒级时间戳, PXAT: 毫秒级时间戳）
+   */
+  async getEx (key: string, options?: { EX?: number, PX?: number, EXAT?: number, PXAT?: number, PERSIST?: boolean }): Promise<string | null> {
+    const value = await this.get(key)
+    if (value === null) return null
+
+    if (options?.PERSIST) {
+      // 移除过期时间
+      if (this.store[key]) {
+        this.store[key].expire = -1
+        const { type } = this.store[key]
+        const currentValue = this.getValueStringByKey(key)
+        this.#sqlite.set(key, currentValue, type, -1)
+      }
+    } else if (options?.EX !== undefined) {
+      await this.expire(key, options.EX)
+    } else if (options?.PX !== undefined) {
+      const expire = moment().add(options.PX, 'milliseconds').valueOf()
+      this.store[key].expire = expire
+      const { type } = this.store[key]
+      const currentValue = this.getValueStringByKey(key)
+      this.#sqlite.set(key, currentValue, type, expire)
+    } else if (options?.EXAT !== undefined) {
+      this.store[key].expire = options.EXAT * 1000
+      const { type } = this.store[key]
+      const currentValue = this.getValueStringByKey(key)
+      this.#sqlite.set(key, currentValue, type, options.EXAT * 1000)
+    } else if (options?.PXAT !== undefined) {
+      this.store[key].expire = options.PXAT
+      const { type } = this.store[key]
+      const currentValue = this.getValueStringByKey(key)
+      this.#sqlite.set(key, currentValue, type, options.PXAT)
+    }
+
+    return value
+  }
+
+  /**
+   * @description 获取键值并删除键
+   * @param key 键
+   */
+  async getDel (key: string): Promise<string | null> {
+    const value = await this.get(key)
+    if (value !== null) {
+      await this.del(key)
+    }
+    return value
+  }
+
+  /**
    * @description 删除键
    * @param key 键
    */
@@ -332,6 +417,57 @@ export class RedisClient extends EventEmitter {
   }
 
   /**
+   * @description 设置键的过期时间戳（秒）
+   * @param key 键
+   * @param timestamp 过期时间戳（秒）
+   */
+  async expireAt (key: string, timestamp: number): Promise<number> {
+    if (!this.store[key]) return 0
+    this.store[key].expire = timestamp * 1000
+    this.#sqlite.expire(key, timestamp * 1000)
+    return 1
+  }
+
+  /**
+   * @description 设置键的过期时间（毫秒）
+   * @param key 键
+   * @param milliseconds 过期时间（毫秒）
+   */
+  async pExpire (key: string, milliseconds: number): Promise<number> {
+    if (!this.store[key]) return 0
+    const expire = moment().add(milliseconds, 'milliseconds').valueOf()
+    this.store[key].expire = expire
+    this.#sqlite.expire(key, expire)
+    return 1
+  }
+
+  /**
+   * @description 设置键的过期时间戳（毫秒）
+   * @param key 键
+   * @param timestamp 过期时间戳（毫秒）
+   */
+  async pExpireAt (key: string, timestamp: number): Promise<number> {
+    if (!this.store[key]) return 0
+    this.store[key].expire = timestamp
+    this.#sqlite.expire(key, timestamp)
+    return 1
+  }
+
+  /**
+   * @description 移除键的过期时间
+   * @param key 键
+   */
+  async persist (key: string): Promise<number> {
+    if (!this.store[key]) return 0
+    if (this.store[key].expire === -1) return 0
+    this.store[key].expire = -1
+    const { type } = this.store[key]
+    const currentValue = this.getValueStringByKey(key)
+    this.#sqlite.set(key, currentValue, type, -1)
+    return 1
+  }
+
+  /**
    * @description 获取键的过期时间
    * @param key 键
    */
@@ -340,6 +476,121 @@ export class RedisClient extends EventEmitter {
     if (this.store[key].expire === -1) return -1
     if (this.checkExpire(key)) return -2
     return moment(this.store[key].expire).diff(moment(), 'seconds')
+  }
+
+  /**
+   * @description 获取键的过期时间（毫秒）
+   * @param key 键
+   */
+  async pTTL (key: string): Promise<number> {
+    if (!this.store[key]) return -2
+    if (this.store[key].expire === -1) return -1
+    if (this.checkExpire(key)) return -2
+    return moment(this.store[key].expire).diff(moment(), 'milliseconds')
+  }
+
+  /**
+   * @description 获取字符串长度
+   * @param key 键
+   */
+  async strLen (key: string): Promise<number> {
+    if (!this.store[key]) return 0
+    if (this.checkExpire(key)) return 0
+    const { type } = this.store[key]
+    if (type === Key.STR) {
+      return this.#str[key].length
+    }
+    return 0
+  }
+
+  /**
+   * @description 重命名键
+   * @param key 原键名
+   * @param newKey 新键名
+   */
+  async rename (key: string, newKey: string): Promise<string> {
+    if (!this.store[key]) throw new Error('no such key')
+    
+    // 获取原键的数据
+    const { type, expire } = this.store[key]
+    const value = this.getValueStringByKey(key)
+    
+    // 删除旧键
+    this.#del(key)
+    
+    // 创建新键
+    this.store[newKey] = { type, expire }
+    
+    // 根据类型设置值
+    switch (type) {
+      case Key.STR:
+        this.#str[newKey] = value
+        break
+      case Key.NUM:
+        this.#num[newKey] = Number(value)
+        break
+      case Key.HASH:
+        this.#hash[newKey] = JSON.parse(value)
+        break
+      case Key.LIST:
+        this.#list[newKey] = JSON.parse(value)
+        break
+      case Key.SET:
+        this.#set[newKey] = new Set(JSON.parse(value))
+        break
+      case Key.ZSET:
+        this.#zset[newKey] = JSON.parse(value)
+        break
+      case Key.PF:
+        this.#pf[newKey] = new Set(JSON.parse(value))
+        break
+      case Key.BIT:
+        this.#bit[newKey] = Buffer.from(value, 'base64')
+        break
+    }
+    
+    this.#sqlite.set(newKey, value, type, expire)
+    return 'OK'
+  }
+
+  /**
+   * @description 仅当新键不存在时重命名键
+   * @param key 原键名
+   * @param newKey 新键名
+   */
+  async renameNX (key: string, newKey: string): Promise<number> {
+    if (!this.store[key]) return 0
+    if (this.store[newKey] && !this.checkExpire(newKey)) return 0
+    
+    await this.rename(key, newKey)
+    return 1
+  }
+
+  /**
+   * @description 返回数据库中键的数量
+   */
+  async dbSize (): Promise<number> {
+    // 清理过期键
+    const keys = Object.keys(this.store)
+    keys.forEach((key) => this.checkExpire(key))
+    return Object.keys(this.store).length
+  }
+
+  /**
+   * @description 从数据库中随机返回一个键
+   */
+  async randomKey (): Promise<string | null> {
+    const keys = Object.keys(this.store)
+    if (keys.length === 0) return null
+    
+    // 清理过期键
+    keys.forEach((key) => this.checkExpire(key))
+    
+    const validKeys = Object.keys(this.store)
+    if (validKeys.length === 0) return null
+    
+    const randomIndex = Math.floor(Math.random() * validKeys.length)
+    return validKeys[randomIndex]
   }
 
   /**
@@ -397,6 +648,44 @@ export class RedisClient extends EventEmitter {
   }
 
   /**
+   * @description 自增指定值
+   * @param key 键
+   * @param increment 增量
+   */
+  async incrBy (key: string, increment: number): Promise<number> {
+    if (!this.#num[key]) {
+      this.#num[key] = 0
+      this.store[key] = { type: Key.NUM, expire: -1 }
+    } else if (this.checkExpire(key, false)) {
+      this.store[key].expire = -1
+      this.#num[key] = 0
+    }
+
+    this.#num[key] += increment
+    this.#sqlite.set(key, String(this.#num[key]), Key.NUM, this.store[key].expire)
+    return this.#num[key]
+  }
+
+  /**
+   * @description 自增指定浮点值
+   * @param key 键
+   * @param increment 增量（浮点数）
+   */
+  async incrByFloat (key: string, increment: number): Promise<number> {
+    if (!this.#num[key]) {
+      this.#num[key] = 0
+      this.store[key] = { type: Key.NUM, expire: -1 }
+    } else if (this.checkExpire(key, false)) {
+      this.store[key].expire = -1
+      this.#num[key] = 0
+    }
+
+    this.#num[key] += increment
+    this.#sqlite.set(key, String(this.#num[key]), Key.NUM, this.store[key].expire)
+    return this.#num[key]
+  }
+
+  /**
    * @description 自减
    * @param key 键
    */
@@ -410,6 +699,25 @@ export class RedisClient extends EventEmitter {
     }
 
     this.#num[key] -= 1
+    this.#sqlite.set(key, String(this.#num[key]), Key.NUM, this.store[key].expire)
+    return this.#num[key]
+  }
+
+  /**
+   * @description 自减指定值
+   * @param key 键
+   * @param decrement 减量
+   */
+  async decrBy (key: string, decrement: number): Promise<number> {
+    if (!this.#num[key]) {
+      this.#num[key] = 0
+      this.store[key] = { type: Key.NUM, expire: -1 }
+    } else if (this.checkExpire(key, false)) {
+      this.store[key].expire = -1
+      this.#num[key] = 0
+    }
+
+    this.#num[key] -= decrement
     this.#sqlite.set(key, String(this.#num[key]), Key.NUM, this.store[key].expire)
     return this.#num[key]
   }
@@ -753,49 +1061,6 @@ export class RedisClient extends EventEmitter {
     if (!this.#pf[key]) return 0
     if (this.checkExpire(key)) return 0
     return this.#pf[key].size
-  }
-
-  /**
-   * 合并多个 HyperLogLog
-   * @param destKey 目标 HyperLogLog 的键
-   * @param sourceKeys 源 HyperLogLog 的键
-   * @returns 返回 1 表示合并成功，0 表示合并失败
-   */
-  async pExpire (key: string, seconds: number): Promise<boolean> {
-    if (!this.#pf[key]) return false
-    this.store[key].expire = moment().add(seconds, 'seconds').valueOf()
-    this.#sqlite.set(key, JSON.stringify(this.#pf[key]), Key.PF, this.store[key].expire)
-    return true
-  }
-
-  /**
-   * 设置 HyperLogLog 的过期时间
-   * @param key HyperLogLog 的键
-   * @param seconds 过期时间（秒）
-   * @returns 返回 1 表示设置成功，0 表示设置失败
-   */
-  async pTTL (key: string): Promise<number> {
-    if (!this.#pf[key]) return -2
-    if (this.store[key].expire === -1) return -1
-    if (this.checkExpire(key)) return -2
-    const ttl = moment(this.store[key].expire).diff(moment(), 'seconds')
-    this.store[key].expire = ttl
-    this.#sqlite.set(key, JSON.stringify(this.#pf[key]), Key.PF, this.store[key].expire)
-    return ttl
-  }
-
-  /**
-   * 为键设置到某个特定时间点的过期时间
-   * @param key HyperLogLog 的键
-   * @param seconds 过期时间（毫秒）
-   * @returns 返回布尔值
-   */
-  async pExpireAt (key: string, timestamp: number): Promise<boolean> {
-    if (!this.#pf[key]) return false
-    if (this.checkExpire(key)) return false
-    this.store[key].expire = timestamp
-    this.#sqlite.set(key, JSON.stringify(this.#pf[key]), Key.PF, this.store[key].expire)
-    return true
   }
 
   /**
