@@ -239,24 +239,34 @@ export class RedisClient extends EventEmitter {
       const PXAT = Number(options.PXAT)
       if (!isNaN(PXAT)) expire = PXAT
       this.store[key] = { type: Key.STR, expire }
+      this.#str[key] = value
       /** KEEPTTL */
     } else if (options?.KEEPTTL) {
-      if (this.#str[key]) {
+      if (this.#str[key] && this.store[key]) {
         this.#str[key] = value
+        expire = this.store[key].expire
       } else {
         this.store[key] = { type: Key.STR, expire: -1 }
         this.#str[key] = value
+        expire = -1
       }
       /** NX */
     } else if (options?.NX) {
       if (!this.#str[key]) {
         this.store[key] = { type: Key.STR, expire: -1 }
         this.#str[key] = value
+        this.#sqlite.set(key, value, Key.STR, expire)
       }
+      return 'OK'
       /** XX */
     } else if (options?.XX) {
-      if (this.#str[key]) {
+      if (this.#str[key] && this.store[key]) {
         this.#str[key] = value
+        const currentExpire = this.store[key].expire
+        this.#sqlite.set(key, value, Key.STR, currentExpire)
+        return 'OK'
+      } else {
+        return null
       }
       /** GET */
     } else if (options?.GET) {
