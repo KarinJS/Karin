@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.11.3](https://github.com/KarinJS/Karin/compare/core-v1.11.2...core-v1.11.3) (2025-10-07)
+
+
+### 🐛 Bug Fixes
+
+* correct Redis mock SET method options handling and type checking ([#546](https://github.com/KarinJS/Karin/issues/546)) ([fb6a999](https://github.com/KarinJS/Karin/commit/fb6a99957974932d7222eb0be1510906483d4483))
+
 ## [1.11.2](https://github.com/KarinJS/Karin/compare/core-v1.11.1...core-v1.11.2) (2025-10-07)
 
 
