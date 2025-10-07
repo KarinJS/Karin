@@ -256,6 +256,7 @@ export class RedisClient extends EventEmitter {
       if (!this.store[key] || this.checkExpire(key, false)) {
         this.store[key] = { type: Key.STR, expire: -1 }
         this.#str[key] = value
+        const expire = -1
         this.#sqlite.set(key, value, Key.STR, expire)
       }
       return 'OK'
