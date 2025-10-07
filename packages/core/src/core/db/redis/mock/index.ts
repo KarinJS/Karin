@@ -252,7 +252,8 @@ export class RedisClient extends EventEmitter {
       }
       /** NX */
     } else if (options?.NX) {
-      if (!this.#str[key]) {
+      // Check if key exists in any storage (not just string storage)
+      if (!this.store[key] || this.checkExpire(key, false)) {
         this.store[key] = { type: Key.STR, expire: -1 }
         this.#str[key] = value
         this.#sqlite.set(key, value, Key.STR, expire)
@@ -260,9 +261,41 @@ export class RedisClient extends EventEmitter {
       return 'OK'
       /** XX */
     } else if (options?.XX) {
-      if (this.#str[key] && this.store[key]) {
-        this.#str[key] = value
+      if (this.store[key]) {
+        // Key exists - update it (even if changing type)
         const currentExpire = this.store[key].expire
+        const oldType = this.store[key].type
+        
+        // Clean up old type's storage if changing type
+        if (oldType !== Key.STR) {
+          switch (oldType) {
+            case Key.NUM:
+              delete this.#num[key]
+              break
+            case Key.HASH:
+              delete this.#hash[key]
+              break
+            case Key.LIST:
+              delete this.#list[key]
+              break
+            case Key.SET:
+              delete this.#set[key]
+              break
+            case Key.ZSET:
+              delete this.#zset[key]
+              break
+            case Key.PF:
+              delete this.#pf[key]
+              break
+            case Key.BIT:
+              delete this.#bit[key]
+              break
+          }
+        }
+        
+        // Update to string type
+        this.store[key] = { type: Key.STR, expire: currentExpire }
+        this.#str[key] = value
         this.#sqlite.set(key, value, Key.STR, currentExpire)
         return 'OK'
       } else {
