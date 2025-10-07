@@ -299,6 +299,91 @@ export class RedisClient extends EventEmitter {
   }
 
   /**
+   * @description 设置键值对并指定过期时间（秒）
+   * @param key 键
+   * @param seconds 过期时间（秒）
+   * @param value 值
+   */
+  async setEx (key: string, seconds: number, value: string | Buffer): Promise<string | null> {
+    return await this.set(key, value, { EX: seconds })
+  }
+
+  /**
+   * @description 设置键值对并指定过期时间（毫秒）
+   * @param key 键
+   * @param milliseconds 过期时间（毫秒）
+   * @param value 值
+   */
+  async pSetEx (key: string, milliseconds: number, value: string | Buffer): Promise<string | null> {
+    return await this.set(key, value, { PX: milliseconds })
+  }
+
+  /**
+   * @description 仅当键不存在时设置键值对
+   * @param key 键
+   * @param value 值
+   */
+  async setNX (key: string, value: string | Buffer): Promise<boolean> {
+    if (this.store[key] && !this.checkExpire(key)) {
+      return false
+    }
+    await this.set(key, value, { NX: true })
+    return true
+  }
+
+  /**
+   * @description 获取键值并设置过期时间
+   * @param key 键
+   * @param options 过期时间选项（EX: 秒, PX: 毫秒, EXAT: 秒级时间戳, PXAT: 毫秒级时间戳）
+   */
+  async getEx (key: string, options?: { EX?: number, PX?: number, EXAT?: number, PXAT?: number, PERSIST?: boolean }): Promise<string | null> {
+    const value = await this.get(key)
+    if (value === null) return null
+
+    if (options?.PERSIST) {
+      // 移除过期时间
+      if (this.store[key]) {
+        this.store[key].expire = -1
+        const { type } = this.store[key]
+        const currentValue = this.getValueStringByKey(key)
+        this.#sqlite.set(key, currentValue, type, -1)
+      }
+    } else if (options?.EX !== undefined) {
+      await this.expire(key, options.EX)
+    } else if (options?.PX !== undefined) {
+      const expire = moment().add(options.PX, 'milliseconds').valueOf()
+      this.store[key].expire = expire
+      const { type } = this.store[key]
+      const currentValue = this.getValueStringByKey(key)
+      this.#sqlite.set(key, currentValue, type, expire)
+    } else if (options?.EXAT !== undefined) {
+      this.store[key].expire = options.EXAT * 1000
+      const { type } = this.store[key]
+      const currentValue = this.getValueStringByKey(key)
+      this.#sqlite.set(key, currentValue, type, options.EXAT * 1000)
+    } else if (options?.PXAT !== undefined) {
+      this.store[key].expire = options.PXAT
+      const { type } = this.store[key]
+      const currentValue = this.getValueStringByKey(key)
+      this.#sqlite.set(key, currentValue, type, options.PXAT)
+    }
+
+    return value
+  }
+
+  /**
+   * @description 获取键值并删除键
+   * @param key 键
+   */
+  async getDel (key: string): Promise<string | null> {
+    const value = await this.get(key)
+    if (value !== null) {
+      await this.del(key)
+    }
+    return value
+  }
+
+  /**
    * @description 删除键
    * @param key 键
    */
@@ -397,6 +482,44 @@ export class RedisClient extends EventEmitter {
   }
 
   /**
+   * @description 自增指定值
+   * @param key 键
+   * @param increment 增量
+   */
+  async incrBy (key: string, increment: number): Promise<number> {
+    if (!this.#num[key]) {
+      this.#num[key] = 0
+      this.store[key] = { type: Key.NUM, expire: -1 }
+    } else if (this.checkExpire(key, false)) {
+      this.store[key].expire = -1
+      this.#num[key] = 0
+    }
+
+    this.#num[key] += increment
+    this.#sqlite.set(key, String(this.#num[key]), Key.NUM, this.store[key].expire)
+    return this.#num[key]
+  }
+
+  /**
+   * @description 自增指定浮点值
+   * @param key 键
+   * @param increment 增量（浮点数）
+   */
+  async incrByFloat (key: string, increment: number): Promise<number> {
+    if (!this.#num[key]) {
+      this.#num[key] = 0
+      this.store[key] = { type: Key.NUM, expire: -1 }
+    } else if (this.checkExpire(key, false)) {
+      this.store[key].expire = -1
+      this.#num[key] = 0
+    }
+
+    this.#num[key] += increment
+    this.#sqlite.set(key, String(this.#num[key]), Key.NUM, this.store[key].expire)
+    return this.#num[key]
+  }
+
+  /**
    * @description 自减
    * @param key 键
    */
@@ -410,6 +533,25 @@ export class RedisClient extends EventEmitter {
     }
 
     this.#num[key] -= 1
+    this.#sqlite.set(key, String(this.#num[key]), Key.NUM, this.store[key].expire)
+    return this.#num[key]
+  }
+
+  /**
+   * @description 自减指定值
+   * @param key 键
+   * @param decrement 减量
+   */
+  async decrBy (key: string, decrement: number): Promise<number> {
+    if (!this.#num[key]) {
+      this.#num[key] = 0
+      this.store[key] = { type: Key.NUM, expire: -1 }
+    } else if (this.checkExpire(key, false)) {
+      this.store[key].expire = -1
+      this.#num[key] = 0
+    }
+
+    this.#num[key] -= decrement
     this.#sqlite.set(key, String(this.#num[key]), Key.NUM, this.store[key].expire)
     return this.#num[key]
   }
