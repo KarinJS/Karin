@@ -239,24 +239,67 @@ export class RedisClient extends EventEmitter {
       const PXAT = Number(options.PXAT)
       if (!isNaN(PXAT)) expire = PXAT
       this.store[key] = { type: Key.STR, expire }
+      this.#str[key] = value
       /** KEEPTTL */
     } else if (options?.KEEPTTL) {
-      if (this.#str[key]) {
+      if (this.#str[key] && this.store[key]) {
         this.#str[key] = value
+        expire = this.store[key].expire
       } else {
         this.store[key] = { type: Key.STR, expire: -1 }
         this.#str[key] = value
+        expire = -1
       }
       /** NX */
     } else if (options?.NX) {
-      if (!this.#str[key]) {
+      // Check if key exists in any storage (not just string storage)
+      if (!this.store[key] || this.checkExpire(key, false)) {
         this.store[key] = { type: Key.STR, expire: -1 }
         this.#str[key] = value
+        this.#sqlite.set(key, value, Key.STR, -1)
       }
+      return 'OK'
       /** XX */
     } else if (options?.XX) {
-      if (this.#str[key]) {
+      if (this.store[key]) {
+        // Key exists - update it (even if changing type)
+        const currentExpire = this.store[key].expire
+        const oldType = this.store[key].type
+        
+        // Clean up old type's storage if changing type
+        if (oldType !== Key.STR) {
+          switch (oldType) {
+            case Key.NUM:
+              delete this.#num[key]
+              break
+            case Key.HASH:
+              delete this.#hash[key]
+              break
+            case Key.LIST:
+              delete this.#list[key]
+              break
+            case Key.SET:
+              delete this.#set[key]
+              break
+            case Key.ZSET:
+              delete this.#zset[key]
+              break
+            case Key.PF:
+              delete this.#pf[key]
+              break
+            case Key.BIT:
+              delete this.#bit[key]
+              break
+          }
+        }
+        
+        // Update to string type
+        this.store[key] = { type: Key.STR, expire: currentExpire }
         this.#str[key] = value
+        this.#sqlite.set(key, value, Key.STR, currentExpire)
+        return 'OK'
+      } else {
+        return null
       }
       /** GET */
     } else if (options?.GET) {
@@ -322,13 +365,14 @@ export class RedisClient extends EventEmitter {
    * @description 仅当键不存在时设置键值对
    * @param key 键
    * @param value 值
+   * @returns 返回 1 表示键已设置，0 表示键已存在
    */
-  async setNX (key: string, value: string | Buffer): Promise<boolean> {
+  async setNX (key: string, value: string | Buffer): Promise<number> {
     if (this.store[key] && !this.checkExpire(key)) {
-      return false
+      return 0
     }
     await this.set(key, value, { NX: true })
-    return true
+    return 1
   }
 
   /**
