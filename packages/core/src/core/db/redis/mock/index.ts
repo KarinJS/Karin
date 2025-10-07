@@ -365,13 +365,14 @@ export class RedisClient extends EventEmitter {
    * @description 仅当键不存在时设置键值对
    * @param key 键
    * @param value 值
+   * @returns 返回 1 表示键已设置，0 表示键已存在
    */
-  async setNX (key: string, value: string | Buffer): Promise<boolean> {
+  async setNX (key: string, value: string | Buffer): Promise<number> {
     if (this.store[key] && !this.checkExpire(key)) {
-      return false
+      return 0
     }
     await this.set(key, value, { NX: true })
-    return true
+    return 1
   }
 
   /**
