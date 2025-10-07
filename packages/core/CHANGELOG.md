@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.11.2](https://github.com/KarinJS/Karin/compare/core-v1.11.1...core-v1.11.2) (2025-10-07)
+
+
+### 🐛 Bug Fixes
+
+* 修复 Redis Mock 客户端缺少 setEx 等常用方法的问题 ([#543](https://github.com/KarinJS/Karin/issues/543)) ([3797b4f](https://github.com/KarinJS/Karin/commit/3797b4f7721df1428f0f5b068fb77fda017a3792))
+
 ## [1.11.1](https://github.com/KarinJS/Karin/compare/core-v1.11.0...core-v1.11.1) (2025-10-02)
 
 
