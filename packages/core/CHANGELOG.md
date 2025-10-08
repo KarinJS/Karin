@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.11.4](https://github.com/KarinJS/Karin/compare/core-v1.11.3...core-v1.11.4) (2025-10-08)
+
+
+### 🐛 Bug Fixes
+
+* use ID generator API for unique incremental IDs in input adapter ([#549](https://github.com/KarinJS/Karin/issues/549)) ([a373a71](https://github.com/KarinJS/Karin/commit/a373a711899682aa84ed417d1564ab6321d69396))
+
 ## [1.11.3](https://github.com/KarinJS/Karin/compare/core-v1.11.2...core-v1.11.3) (2025-10-07)
 
 
