@@ -192,3 +192,23 @@ export const isNumberInArray = <T = number> (arr: unknown[], defaultValue: numbe
 
   return defaultValue as T
 }
+
+/**
+ * 创建一个自增ID生成器
+ * @description 返回一个函数，每次调用时返回一个递增的唯一ID
+ * @param start 起始值，默认为 0
+ * @returns 返回一个函数，调用时返回下一个ID
+ * @example
+ * const getId = createIdGenerator()
+ * getId() // 返回 1
+ * getId() // 返回 2
+ * getId() // 返回 3
+ * 
+ * const getIdFrom100 = createIdGenerator(100)
+ * getIdFrom100() // 返回 101
+ * getIdFrom100() // 返回 102
+ */
+export const createIdGenerator = (start: number = 0) => {
+  let id = start
+  return () => ++id
+}
