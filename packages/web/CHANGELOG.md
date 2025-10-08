@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.10](https://github.com/KarinJS/Karin/compare/web-v1.9.9...web-v1.9.10) (2025-10-08)
+
+
+### 🐛 Bug Fixes
+
+* Display description text for checkbox component options ([#552](https://github.com/KarinJS/Karin/issues/552)) ([85eb323](https://github.com/KarinJS/Karin/commit/85eb323526dfc6188e3eaedafa1e61c6424eae39))
+
 ## [1.9.9](https://github.com/KarinJS/Karin/compare/web-v1.9.8...web-v1.9.9) (2025-10-02)
 
 
