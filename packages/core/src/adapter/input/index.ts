@@ -7,13 +7,14 @@ import { consolePath } from '@/root'
 import { registerBot } from '@/service'
 import { segment } from '@/utils/message'
 import { adapter as adapterConfig } from '@/utils/config'
+import { createIdGenerator } from '@/utils/common'
 import { createFriendMessage, createGroupMessage } from '@/event/create'
 import { contactFriend, contactGroup, senderFriend, senderGroup } from '@/event'
 
 import type { Contact, Elements, LogMethodNames, AdapterType, SendMsgResults } from '@/types'
 
-let index = 0
-let fileIndex = 0
+const getMessageId = createIdGenerator()
+const getFileId = createIdGenerator()
 const botID = 'console'
 
 /**
@@ -113,7 +114,7 @@ class AdapterConsole extends AdapterBase implements AdapterType {
     _?: number
   ): Promise<SendMsgResults> {
     const time = Date.now()
-    const messageId = (++index).toString()
+    const messageId = getMessageId().toString()
     const result: SendMsgResults = {
       message_id: messageId,
       messageId,
@@ -160,7 +161,7 @@ class AdapterConsole extends AdapterBase implements AdapterType {
 
   async getUrl (data: string | Buffer, ext: string) {
     const cfg = adapterConfig()
-    const name = (++fileIndex).toString()
+    const name = getFileId().toString()
     const file = path.join(consolePath, `${name}${ext}`)
     await fs.promises.writeFile(file, await buffer(data))
 
