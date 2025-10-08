@@ -13,6 +13,7 @@ import { contactFriend, contactGroup, senderFriend, senderGroup } from '@/event'
 import type { Contact, Elements, LogMethodNames, AdapterType, SendMsgResults } from '@/types'
 
 let index = 0
+let fileIndex = 0
 const botID = 'console'
 
 /**
@@ -159,7 +160,7 @@ class AdapterConsole extends AdapterBase implements AdapterType {
 
   async getUrl (data: string | Buffer, ext: string) {
     const cfg = adapterConfig()
-    const name = (++index).toString()
+    const name = (++fileIndex).toString()
     const file = path.join(consolePath, `${name}${ext}`)
     await fs.promises.writeFile(file, await buffer(data))
 
