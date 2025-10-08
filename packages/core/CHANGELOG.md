@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.11.5](https://github.com/KarinJS/Karin/compare/core-v1.11.4...core-v1.11.5) (2025-10-08)
+
+
+### 🐛 Bug Fixes
+
+* Display description text for checkbox component options ([#552](https://github.com/KarinJS/Karin/issues/552)) ([85eb323](https://github.com/KarinJS/Karin/commit/85eb323526dfc6188e3eaedafa1e61c6424eae39))
+
 ## [1.11.4](https://github.com/KarinJS/Karin/compare/core-v1.11.3...core-v1.11.4) (2025-10-08)
 
 
