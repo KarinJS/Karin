@@ -52,25 +52,33 @@ export const createCheckboxGroup = (
       className: __,
       key: checkboxKey,
       componentClassName: checkboxClassName,
+      description,
       ...checkboxProps
     } = item
     const itemValue = item.value || ''
 
     return (
-      <HeroCheckbox
-        key={`${checkboxKey}-${index}`}
-        {...checkboxProps}
-        className={checkboxClassName}
-        isSelected={selectedValues.includes(itemValue)}
-        onValueChange={(checked) => {
-          const newValues = checked
-            ? [...selectedValues, itemValue]
-            : selectedValues.filter(v => v !== itemValue)
-          onChange(newValues as string[])
-        }}
-      >
-        {item.label}
-      </HeroCheckbox>
+      <div key={`${checkboxKey}-${index}-wrapper`} className="flex flex-col">
+        <HeroCheckbox
+          key={`${checkboxKey}-${index}`}
+          {...checkboxProps}
+          className={checkboxClassName}
+          isSelected={selectedValues.includes(itemValue)}
+          onValueChange={(checked) => {
+            const newValues = checked
+              ? [...selectedValues, itemValue]
+              : selectedValues.filter(v => v !== itemValue)
+            onChange(newValues as string[])
+          }}
+        >
+          {item.label}
+        </HeroCheckbox>
+        {description && (
+          <p className="text-xs text-default-400 ml-7 mt-0.5">
+            {description}
+          </p>
+        )}
+      </div>
     )
   }
 
