@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.11.6](https://github.com/KarinJS/Karin/compare/core-v1.11.5...core-v1.11.6) (2025-10-09)
+
+
+### 🐛 Bug Fixes
+
+* improve OneBot adapter compatibility for sub_type=normal in private messages ([#555](https://github.com/KarinJS/Karin/issues/555)) ([bc46fa5](https://github.com/KarinJS/Karin/commit/bc46fa5526d34dc608787c07a318334cc8b5e5a1))
+
 ## [1.11.5](https://github.com/KarinJS/Karin/compare/core-v1.11.4...core-v1.11.5) (2025-10-08)
 
 
