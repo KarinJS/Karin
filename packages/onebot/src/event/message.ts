@@ -23,6 +23,8 @@ export enum MessageSubType {
   Group = 'group',
   /** 其他 */
   Other = 'other',
+  /** 普通消息 (非标准,兼容某些实现) */
+  Normal = 'normal',
 }
 
 /**
@@ -34,7 +36,7 @@ export interface MessagePrivateEvent extends EventBase {
   /** 消息类型 */
   message_type: MessageType.Private
   /** 消息子类型 */
-  sub_type: MessageSubType.Friend | MessageSubType.Other
+  sub_type: MessageSubType.Friend | MessageSubType.Other | MessageSubType.Normal
   /** 消息 ID */
   message_id: number
   /** 发送者 QQ 号 */

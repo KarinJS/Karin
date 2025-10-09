@@ -13,7 +13,7 @@ import type { Role } from '@/types'
 export const createMessage = async (event: OneBotMessageEvent, bot: AdapterOneBot<OneBotType>) => {
   const time = event.time
   if (event.message_type === 'private') {
-    if (event.sub_type === 'friend' || event.sub_type === 'other') {
+    if (event.sub_type === 'friend' || event.sub_type === 'other' || event.sub_type === 'normal') {
       const userId = event.sender.user_id + ''
       const contact = contactFriend(userId)
       const sender = senderFriend(userId,
