@@ -17,6 +17,7 @@ lerna-debug.log*
 # 临时文件
 logs/
 /temp/
+packages/core/docs/guide/api/types/
 
 # 配置
 packages/core/plugins

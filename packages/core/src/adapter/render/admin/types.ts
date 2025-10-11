@@ -73,7 +73,7 @@ export declare interface ScreenshotOptions {
   /**
    * 图像的编码方式。
    *
-   * @deprecated 这是无效选项，强制性返回string<base64>
+   * @deprecated 这是无效选项，强制性返回base64编码的字符串
    */
   encoding?: 'base64' | 'binary'
   /**
