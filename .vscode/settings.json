@@ -11,7 +11,7 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
     ".env": "*.env",
-    "tsconfig.json": "tsconfig.*.json, env.d.ts, tsup.*.ts, vite.*.ts",
+    "tsconfig.json": "tsconfig.*.json, env.d.ts, tsup.*.ts, vite.*.ts, typedoc.json",
     "package.json": "package-lock.json, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .prettier*, prettier*, .editorconfig, CHANGELOG*.md, CODE_OF_CONDUCT.md, *.gitignore, LICENSE, README.md, .release*.json, .gitattributes"
   },
   "files.autoSave": "onFocusChange",
