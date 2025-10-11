@@ -1,7 +1,7 @@
 import { Select, SelectItem as HeroSelectItem } from '@heroui/select'
 import { Controller } from 'react-hook-form'
 import type { JSX } from 'react'
-import type { SelectProps } from 'node-karin'
+import type { SelectProps, SelectItem } from 'node-karin'
 import type { FormControl } from '../config/plugin/render'
 
 /**
@@ -42,15 +42,12 @@ export const createSelect = (
             }}
             className={componentClassName}
           >
-            {items.map(({ componentType: _, key: itemKey, componentClassName, value, label, description, isDisabled }, index) => (
+            {items.map((item: SelectItem) => (
               <HeroSelectItem
-                key={`select-item-${itemKey}-${index}`}
-                value={value}
-                textValue={label || value}
-                className={componentClassName}
-                isDisabled={isDisabled}
+                key={item.value}
+                textValue={item.label || item.value}
               >
-                {label || value}
+                {item.label || item.value}
               </HeroSelectItem>
             ))}
           </Select>

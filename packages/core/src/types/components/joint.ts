@@ -14,6 +14,7 @@ export type Children = InputProps
   | CheckboxGroupProps
   | RadioGroupProps
   | InputGroupProps
+  | SelectProps
 
 /** 组件配置类型 */
 export type ComponentConfig =
