@@ -65,7 +65,7 @@ export interface SelectProps extends ComponentProps {
     orientation?: 'horizontal' | 'vertical'
     size?: number
   }
-  /** 是否虚拟化 */
+  /** 是否虚拟化，默认true */
   isVirtualized?: boolean
   /** 最大列表框高度 */
   maxListboxHeight?: number
@@ -91,9 +91,15 @@ export interface SelectItem extends ComponentProps {
   /** 是否禁用 */
   isDisabled?: boolean
   /** 开始内容 */
-  startContent?: any
+  startContent?: {
+    type: 'image' | 'text'
+    value: string
+  }
   /** 结束内容 */
-  endContent?: any
+  endContent?: {
+    type: 'image' | 'text'
+    value: string
+  }
   /** 文本值 */
   textValue?: string
 }

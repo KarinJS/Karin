@@ -4,6 +4,8 @@ import type { JSX, ReactNode } from 'react'
 import type { SelectProps, SelectItem } from 'node-karin'
 import type { FormControl } from '../config/plugin/render'
 import { cn } from '@/lib/utils'
+import { Avatar } from '@heroui/avatar'
+import { useEffect, useState } from 'react'
 
 /**
  * 渲染下拉选择框组件
@@ -28,6 +30,30 @@ export const createSelect = (
     scrollShadowProps,
     ...options
   } = props
+
+  const [resolvedItems, setResolvedItems] = useState<SelectItem[]>([])
+  const [isLoadingItems, setIsLoadingItems] = useState(false)
+
+  useEffect(() => {
+    const loadItems = async () => {
+      if (items instanceof Promise) {
+        setIsLoadingItems(true)
+        try {
+          const result = await items
+          setResolvedItems(result)
+        } catch (error) {
+          console.error('Failed to load select items:', error)
+          setResolvedItems([])
+        } finally {
+          setIsLoadingItems(false)
+        }
+      } else {
+        setResolvedItems(items)
+      }
+    }
+
+    loadItems()
+  }, [items])
 
   return (
     <div
@@ -60,8 +86,10 @@ export const createSelect = (
             <Select
               key={key}
               {...options}
+              isVirtualized
               selectionMode={selectionMode}
               selectedKeys={selectedKeys}
+              isLoading={isLoadingItems || options.isLoading}
               onSelectionChange={(keys) => {
                 if (selectionMode === 'multiple') {
                   const selected = Array.from(keys).map(k => String(k))
@@ -71,20 +99,33 @@ export const createSelect = (
                   onChange(selected ? String(selected) : '')
                 }
               }}
-              renderValue={renderValue ? () => renderValue(items) as ReactNode : undefined}
+              renderValue={renderValue ? () => renderValue(resolvedItems) as ReactNode : undefined}
               scrollShadowProps={scrollShadowProps}
               className={componentClassName}
               startContent={options.startContent as ReactNode}
               endContent={options.endContent as ReactNode}
               selectorIcon={options.selectorIcon as ReactNode}
             >
-              {items.map((item: SelectItem) => (
+              {resolvedItems.map((item: SelectItem) => (
                 <HeroSelectItem
                   key={item.value}
                   textValue={item.textValue || item.label || item.value}
                   isDisabled={item.isDisabled}
-                  startContent={item.startContent as ReactNode}
-                  endContent={item.endContent as ReactNode}
+                  description={item.description}
+                  startContent={item.startContent?.type === 'image'
+                    ? (
+                      <Avatar size='sm' className='shrink-0' src={item.startContent.value} alt={item.startContent.value} />
+                    )
+                    : (
+                      item.startContent?.value
+                    )}
+                  endContent={item.endContent?.type === 'image'
+                    ? (
+                      <Avatar size='sm' className='shrink-0' src={item.endContent.value} alt={item.endContent.value} />
+                    )
+                    : (
+                      item.endContent?.value
+                    )}
                 >
                   {item.label || item.value}
                 </HeroSelectItem>
