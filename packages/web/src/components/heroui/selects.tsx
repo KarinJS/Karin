@@ -42,15 +42,15 @@ export const createSelect = (
             }}
             className={componentClassName}
           >
-            {items.map(({ componentType: _, key: itemKey, componentClassName, value, ...item }, index) => (
+            {items.map(({ componentType: _, key: itemKey, componentClassName, value, label, description, isDisabled }, index) => (
               <HeroSelectItem
                 key={`select-item-${itemKey}-${index}`}
-                {...item}
                 value={value}
-                textValue={item.label || value}
+                textValue={label || value}
                 className={componentClassName}
+                isDisabled={isDisabled}
               >
-                {item.label || value}
+                {label || value}
               </HeroSelectItem>
             ))}
           </Select>

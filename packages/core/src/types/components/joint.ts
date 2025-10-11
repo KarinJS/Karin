@@ -5,6 +5,7 @@ import type { RadioGroupProps } from './radioGroup'
 import type { InputGroupProps, InputProps } from './input'
 import type { CheckboxProps, CheckboxGroupProps } from './checkbox'
 import type { AccordionItemProps, AccordionProProps, AccordionProps } from './accordion'
+import type { SelectProps } from './select'
 
 export type Children = InputProps
   | SwitchProps
@@ -25,4 +26,5 @@ export type ComponentConfig =
   AccordionItemProps |
   DividerProps |
   InputGroupProps |
-  CronProps
+  CronProps |
+  SelectProps
