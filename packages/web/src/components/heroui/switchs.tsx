@@ -46,15 +46,15 @@ export const createSwitch = (
     <div className={className || 'inline-flex p-1 w-full sm:w-auto'} key={key}>
       <div
         className={cn(
-          'w-full sm:w-[320px] min-h-[100px] relative border border-default-200 rounded-lg p-0',
+          'relative p-0 w-full rounded-lg border sm:w-[320px] min-h-[100px] border-default-200',
           isDisabled
-            ? 'cursor-not-allowed opacity-60'
-            : 'hover:bg-default-100 cursor-pointer'
+            ? 'opacity-60 cursor-not-allowed'
+            : 'cursor-pointer hover:bg-default-100'
         )}
         onClick={handleContainerClick}
       >
         {/* 标题和描述区域 */}
-        <div className='w-full h-full flex flex-col justify-center p-3 sm:p-4 pr-14 sm:pr-16'>
+        <div className='flex flex-col justify-center p-3 pr-14 w-full h-full sm:p-4 sm:pr-16'>
           {props.label && (
             <p className={cn(
               'mb-1 text-sm sm:text-base',
@@ -71,7 +71,7 @@ export const createSwitch = (
             >
               <p
                 className={cn(
-                  'text-xs w-full cursor-pointer',
+                  'w-full text-xs cursor-pointer',
                   isDisabled ? 'text-default-400' : 'text-default-600',
                   isDescriptionExpanded ? '' : 'truncate',
                   'transition-all duration-200 ease-in-out'
@@ -93,7 +93,7 @@ export const createSwitch = (
         </div>
 
         {/* 开关控件位于右侧中间 */}
-        <div className='absolute right-3 sm:right-4 top-1/2 -translate-y-1/2'>
+        <div className='absolute right-3 top-1/2 -translate-y-1/2 sm:right-4'>
           <HeroSwitch
             key={key}
             {...options}

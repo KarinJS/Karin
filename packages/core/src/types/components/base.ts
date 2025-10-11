@@ -10,6 +10,8 @@
  * - checkbox-group: 复选框组
  * - radio: 单选框
  * - radio-group: 单选框组
+ * - select: 下拉选择框
+ * - select-item: 下拉选项
  */
 export type ComponentType =
   | 'input'
@@ -24,6 +26,8 @@ export type ComponentType =
   | 'radio-group'
   | 'input-group'
   | 'cron'
+  | 'select'
+  | 'select-item'
 
 /** 组件通用属性 */
 export interface ComponentProps {
