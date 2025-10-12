@@ -5,7 +5,7 @@ const config = {
     'src/index.ts',
   ],
   docsRoot: './',
-  out: './docs/guide/api/types',
+  out: './guide/api/types',
   theme: 'default',
   name: 'Karin API Docs',
   readme: '../../README.md',
