@@ -989,7 +989,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    * @param messageId 群消息ID
    * @param create true为添加精华消息，false为删除精华消息 默认为true
    */
-  async setGgroupHighlights (_: string, messageId: string, create: boolean) {
+  async setGroupHighlights (_: string, messageId: string, create: boolean) {
     if (create) {
       await this._onebot.setEssenceMsg(+messageId)
     } else {
