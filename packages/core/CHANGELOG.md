@@ -1,5 +1,18 @@
 # 更新日志
 
+## [1.11.6](https://github.com/KarinJS/Karin/compare/core-v1.11.5...core-v1.11.6) (2025-10-13)
+
+
+### 🐛 Bug Fixes
+
+* improve OneBot adapter compatibility for sub_type=normal in private messages ([#555](https://github.com/KarinJS/Karin/issues/555)) ([bc46fa5](https://github.com/KarinJS/Karin/commit/bc46fa5526d34dc608787c07a318334cc8b5e5a1))
+* 修复setGgroupHighlights的命名为setGroupHighlights ([#562](https://github.com/KarinJS/Karin/issues/562)) ([8f149a6](https://github.com/KarinJS/Karin/commit/8f149a6678eec390b3897be1a01de0af4abcc301))
+
+
+### 📝 Documentation
+
+* 添加构建文档脚本 ([#559](https://github.com/KarinJS/Karin/issues/559)) ([8cca251](https://github.com/KarinJS/Karin/commit/8cca2516bb2711775431376bca7a44945f652be2))
+
 ## [1.11.5](https://github.com/KarinJS/Karin/compare/core-v1.11.4...core-v1.11.5) (2025-10-08)
 
 
