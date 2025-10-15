@@ -357,7 +357,17 @@ const createConfigFile = (dir: string) => {
     /** 如果已存在 则合并一下配置 */
     const defData = fs.readFileSync(filePath, 'utf-8')
     const targetData = fs.readFileSync(targetFile, 'utf-8')
-    const mergedData = { ...JSON.parse(defData), ...JSON.parse(targetData) }
+    const defParsed = JSON.parse(defData)
+    const targetParsed = JSON.parse(targetData)
+    
+    /** 如果是数组类型，则直接使用目标数据，不进行合并 */
+    let mergedData
+    if (Array.isArray(defParsed) && Array.isArray(targetParsed)) {
+      mergedData = targetParsed
+    } else {
+      mergedData = { ...defParsed, ...targetParsed }
+    }
+    
     if (file.includes('pm2.json')) {
       mergedData.apps[0].script = 'index.mjs'
     }

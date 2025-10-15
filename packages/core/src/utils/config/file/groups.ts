@@ -61,6 +61,12 @@ const migrate = (
  * @returns 合并后的配置
  */
 const format = (data: Groups): Record<string, GroupsObjectValue> => {
+  /** 确保数据是数组 */
+  if (!Array.isArray(data)) {
+    logger.warn('[groups.json] 配置文件格式错误，使用默认配置')
+    data = defaultConfig.groups
+  }
+
   /** 初始: 全局配置 */
   const defaultGlobal = defaultConfig.groups[1]
   /** 初始: 群聊默认配置 */
