@@ -5,6 +5,7 @@ import { createRadioGroup } from '../../heroui/radioGroups'
 import { createCheckboxGroup } from '../../heroui/checkboxs'
 import { createInput, createInputGroup } from '../../heroui/inputs'
 import { createCron } from './createCron'
+import { createSelect } from '../../heroui/selects'
 import { Accordion as HeroAccordion, AccordionItem as HeroAccordionItem } from '@heroui/accordion'
 import { Button } from '@heroui/button'
 import { createErrorCard } from '../../heroui/error'
@@ -56,6 +57,11 @@ export const RenderComponent: React.FC<{
 
       if (option.componentType === 'radio-group') {
         list.push(createRadioGroup(option, control, basePath))
+        return
+      }
+
+      if (option.componentType === 'select') {
+        list.push(createSelect(option, control, basePath))
         return
       }
 
@@ -268,6 +274,10 @@ export const createAccordionPro = (
       }
       if (child.componentType === 'radio-group') {
         emptyItem[child.key] = { key: 'radio-group', value: '' }
+        return
+      }
+      if (child.componentType === 'select') {
+        emptyItem[child.key] = { key: 'select', value: '' }
         return
       }
       if (child.componentType === 'switch') {

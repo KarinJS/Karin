@@ -11,6 +11,7 @@ interface BaseValue {
   | 'accordion'
   | 'accordion-pro'
   | 'cron'
+  | 'select'
 }
 
 /**
@@ -81,9 +82,17 @@ export interface CronValue extends BaseValue {
 }
 
 /**
+ * 下拉选择框值类型
+ */
+export interface SelectValue extends BaseValue {
+  key: 'select'
+  value: string
+}
+
+/**
  * 联合初始值类型
  */
-export type Value = InputValue | InputGroupValue | SwitchValue | RadioGroupValue | CheckboxGroupValue | AccordionValue | AccordionProValue | CronValue
+export type Value = InputValue | InputGroupValue | SwitchValue | RadioGroupValue | CheckboxGroupValue | AccordionValue | AccordionProValue | CronValue | SelectValue
 
 /**
  * initDefaultValues函数返回值类型
@@ -131,6 +140,14 @@ const initValue = (
   if (option.componentType === 'radio-group') {
     defaultValues[option.key] = {
       key: 'radio-group',
+      value: data ?? option.defaultValue ?? '',
+    }
+    return
+  }
+
+  if (option.componentType === 'select') {
+    defaultValues[option.key] = {
+      key: 'select',
       value: data ?? option.defaultValue ?? '',
     }
     return
@@ -233,7 +250,8 @@ const resultValue = (
     option.key === 'radio-group' ||
     option.key === 'checkbox-group' ||
     option.key === 'input-group' ||
-    option.key === 'cron'
+    option.key === 'cron' ||
+    option.key === 'select'
   ) {
     result[key] = option.value
     return
