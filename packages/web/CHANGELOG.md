@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/KarinJS/Karin/compare/web-v1.9.10...web-v1.10.0) (2025-10-15)
+
+
+### ✨ Features
+
+* add select dropdown component to web.config system ([#558](https://github.com/KarinJS/Karin/issues/558)) ([9040420](https://github.com/KarinJS/Karin/commit/9040420233fb063d69b5e599025999c9ca0dec00))
+
 ## [1.9.10](https://github.com/KarinJS/Karin/compare/web-v1.9.9...web-v1.9.10) (2025-10-08)
 
 
