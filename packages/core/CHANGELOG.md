@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.12.1](https://github.com/KarinJS/Karin/compare/core-v1.12.0...core-v1.12.1) (2025-10-17)
+
+
+### 🐛 Bug Fixes
+
+* Support all semantic versioning formats in changelog parser ([#566](https://github.com/KarinJS/Karin/issues/566)) ([de6b397](https://github.com/KarinJS/Karin/commit/de6b397ebb9fdba85d8b5999a96ed29bb1da9dd8))
+
 ## [1.12.0](https://github.com/KarinJS/Karin/compare/core-v1.11.6...core-v1.12.0) (2025-10-15)
 
 
