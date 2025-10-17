@@ -1,11 +1,21 @@
 /**
+ * 转义正则表达式中的特殊字符
+ * @param str 需要转义的字符串
+ * @returns 转义后的字符串
+ */
+const escapeRegex = (str: string): string => {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+/**
  * 提取指定版本号的更新日志
  * @param version 版本号
  * @param data `CHANGELOG.md`文件内容
  * @returns 更新日志
  */
 export const log = (version: string, data: string): string | null => {
-  const regex = new RegExp(`## \\[${version}\\](.|\\n)*?(?=## \\[|$)`, 'g')
+  const escapedVersion = escapeRegex(version)
+  const regex = new RegExp(`## \\[${escapedVersion}\\](.|\\n)*?(?=## \\[|$)`, 'g')
   const match = data.match(regex)
   return match ? match[0] : null
 }
