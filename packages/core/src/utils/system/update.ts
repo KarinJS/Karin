@@ -149,6 +149,7 @@ const getPkg = (isForcibly = false): Promise<Package> => {
 /**
  * @description 传入npm包名 检查是否存在更新
  * @param name 包名
+ * @param opts 额外参数
  * @returns 是否存在更新 true: 存在更新 false: 无更新
  */
 export const checkPkgUpdate = async (
