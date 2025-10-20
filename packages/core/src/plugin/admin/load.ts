@@ -47,11 +47,20 @@ export const pkgLoads = async (
   /** 验证版本兼容性 */
   if (pkg.type !== 'app') {
     const engines = pkg.pkgData?.karin?.engines?.karin || pkg.pkgData?.engines?.karin
+    const ignoreEngines = pkg.pkgData?.karin?.ignoreEngines
     if (engines && !satisfies(engines, process.env.KARIN_VERSION)) {
-      logger.error(
-        `[load][${pkg.type}:${pkg.name}] 要求 node-karin 版本为 ${engines}，当前版本 ${process.env.KARIN_VERSION} 不符合要求，跳过加载插件`
-      )
-      return
+      if (ignoreEngines) {
+        /** 设置了忽略引擎检查，输出警告但继续加载 */
+        logger.warn(
+          `[load][${pkg.type}:${pkg.name}] 要求 node-karin 版本为 ${engines}，当前版本 ${process.env.KARIN_VERSION} 不符合要求，但插件设置了 ignoreEngines，将强制加载`
+        )
+      } else {
+        /** 版本不匹配且未设置忽略，跳过加载 */
+        logger.error(
+          `[load][${pkg.type}:${pkg.name}] 要求 node-karin 版本为 ${engines}，当前版本 ${process.env.KARIN_VERSION} 不符合要求，跳过加载插件`
+        )
+        return
+      }
     }
   }
 
