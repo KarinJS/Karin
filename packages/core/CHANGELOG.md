@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.12.2](https://github.com/KarinJS/Karin/compare/core-v1.12.1...core-v1.12.2) (2025-10-20)
+
+
+### 🐛 Bug Fixes
+
+* **update:** 增强版本比较功能，支持严格语义化版本模式 ([#568](https://github.com/KarinJS/Karin/issues/568)) ([da3843a](https://github.com/KarinJS/Karin/commit/da3843ae3c770b308583d9b0671d4dbd36ce37ec))
+
 ## [1.12.1](https://github.com/KarinJS/Karin/compare/core-v1.12.0...core-v1.12.1) (2025-10-17)
 
 
