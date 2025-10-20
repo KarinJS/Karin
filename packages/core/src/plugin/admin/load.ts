@@ -8,6 +8,7 @@ import { isTs } from '@/env'
 import { cache } from '../system/cache'
 import { formatPath } from '@/utils'
 import { createLogger } from '../tools'
+import { satisfies } from '@/utils/system'
 import { isClass } from '@/utils/system/class'
 import { createPluginDir } from '@/utils/fs/file'
 import { importModule } from '@/utils/system/import'
@@ -43,6 +44,17 @@ export const pkgLoads = async (
   pkg: PkgInfo,
   allPromises: Promise<void>[]
 ) => {
+  /** 验证版本兼容性 */
+  if (pkg.type !== 'app') {
+    const engines = pkg.pkgData?.karin?.engines?.karin || pkg.pkgData?.engines?.karin
+    if (engines && !satisfies(engines, process.env.KARIN_VERSION)) {
+      logger.error(
+        `[load][${pkg.type}:${pkg.name}] 要求 node-karin 版本为 ${engines}，当前版本 ${process.env.KARIN_VERSION} 不符合要求，跳过加载插件`
+      )
+      return
+    }
+  }
+
   pkg.id = ++seq
   cache.index[pkg.id] = pkg
 
