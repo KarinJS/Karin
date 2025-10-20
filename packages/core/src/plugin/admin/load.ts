@@ -29,6 +29,7 @@ import type {
   KarinPluginAppsType,
 } from '@/types/plugin'
 import type { Plugin as ClassPluginType } from '../class'
+import { createPluginMismatchReporter } from '../system/versionCheck'
 
 /** 插件ID */
 let seq = 0
@@ -45,22 +46,26 @@ export const pkgLoads = async (
   allPromises: Promise<void>[]
 ) => {
   /** 验证版本兼容性 */
+  const reporter = createPluginMismatchReporter()
+  let isCompatible = true
+
   if (pkg.type !== 'app') {
-    const engines = pkg.pkgData?.karin?.engines?.karin || pkg.pkgData?.engines?.karin
     const ignoreEngines = pkg.pkgData?.karin?.ignoreEngines
-    if (engines && !satisfies(engines, process.env.KARIN_VERSION)) {
-      if (ignoreEngines) {
-        /** 设置了忽略引擎检查，输出警告但继续加载 */
-        logger.warn(
-          `[load][${pkg.type}:${pkg.name}] 要求 node-karin 版本为 ${engines}，当前版本 ${process.env.KARIN_VERSION} 不符合要求，但插件设置了 ignoreEngines，将强制加载`
-        )
-      } else {
-        /** 版本不匹配且未设置忽略，跳过加载 */
-        logger.error(
-          `[load][${pkg.type}:${pkg.name}] 要求 node-karin 版本为 ${engines}，当前版本 ${process.env.KARIN_VERSION} 不符合要求，跳过加载插件`
-        )
-        return
-      }
+    const required =
+      pkg.pkgData?.karin?.engines?.karin ||
+      pkg.pkgData?.engines?.karin ||
+      pkg.pkgData?.engines?.['node-karin'] || // 兼容 engines['node-karin'] 写法
+      pkg.pkgData?.peerDependencies?.['node-karin'] ||
+      pkg.pkgData?.dependencies?.['node-karin'] ||
+      pkg.pkgData?.devDependencies?.['node-karin']
+
+    const range = required ? String(required).replace(/^workspace:|^link:/, '').trim() : ''
+    isCompatible = !range || satisfies(range, process.env.KARIN_VERSION)
+
+    if (range && !isCompatible) {
+      reporter.add(pkg.name, range)
+      await reporter.flush(true)
+      if (!ignoreEngines) return
     }
   }
 
@@ -70,15 +75,15 @@ export const pkgLoads = async (
   const files: string[] = []
   if (pkg.type === 'app') {
     files.push('config', 'data', 'resources')
-  } else if (Array.isArray(pkg.pkgData.karin?.files)) {
+  } else if (pkg.pkgData.karin?.files && Array.isArray(pkg.pkgData.karin?.files)) {
     files.push(...pkg.pkgData.karin.files)
   }
 
   /** 创建插件基本文件夹 - 这个需要立即执行 */
   await createPluginDir(pkg.name, files)
 
-  /** 收集入口文件加载的Promise */
-  if (pkg.type !== 'app') {
+  /** 收集入口文件加载的Promise：仅在兼容时执行入口 */
+  if (pkg.type !== 'app' && isCompatible) {
     const main = pkg.type === 'npm' || !isTs()
       ? await loadMainFile(pkg, pkg.pkgData?.main)
       : await loadMainFile(pkg, pkg.pkgData?.karin?.main)
