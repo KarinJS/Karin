@@ -18,6 +18,7 @@ import type {
   GetPluginLocalReturn,
   GetPluginLocalOptions,
 } from '@/types/plugin'
+import { createPluginMismatchReporter } from './versionCheck'
 
 let isInit = true
 
@@ -360,25 +361,36 @@ const collectAppPlugins = async (files: fs.Dirent[], list: string[]): Promise<vo
  * @param files 目录项列表
  * @param list 结果列表（会被修改）
  */
+// collectGitPlugins(...)
 const collectGitPlugins = async (files: fs.Dirent[], list: string[]): Promise<void> => {
+  const reporter = createPluginMismatchReporter()
   await Promise.all(
     files.map(async (v) => {
       if (!v.isDirectory()) return
       if (!v.name.startsWith('karin-plugin-')) return
       if (!fs.existsSync(path.join(karinPathPlugins, v.name, 'package.json'))) return
 
-      /** 验证版本兼容性 */
+      /** 验证版本兼容性（同时支持 engines.karin 与 node-karin peer/deps/devDeps） */
       const pkg = await requireFile<PkgData>(path.join(karinPathPlugins, v.name, 'package.json'))
-      const engines = pkg?.karin?.engines?.karin || pkg?.engines?.karin
-      if (engines && !satisfies(engines, process.env.KARIN_VERSION)) {
-        const msg = `[getPlugins][git] ${v.name} 要求 node-karin 版本为 ${engines}，当前不符合要求，跳过加载插件`
-        isInit && setTimeout(() => logger.error(msg), 1000)
+      const required =
+        pkg?.karin?.engines?.karin ||
+        pkg?.engines?.karin ||
+        pkg?.peerDependencies?.['node-karin'] ||
+        pkg?.dependencies?.['node-karin'] ||
+        pkg?.devDependencies?.['node-karin']
+
+      const range = required ? String(required).replace(/^workspace:|^link:/, '').trim() : ''
+      if (range && !satisfies(range, process.env.KARIN_VERSION)) {
+        reporter.add(v.name, range)
         return
       }
 
       list.push(`git:${v.name}`)
     })
   )
+
+  /** 打印版本不符插件 */
+  await reporter.flush(isInit)
 
   /** 检查根目录是否为插件 */
   const root = await requireFile('./package.json')
@@ -418,30 +430,38 @@ const NPM_EXCLUDE_LIST = [
  * 收集NPM类型插件
  * @param list 结果列表（会被修改）
  */
+// collectNpmPlugins(...)
 const collectNpmPlugins = async (list: string[]): Promise<void> => {
   logger.debug('[collectNpmPlugins] 开始收集NPM插件')
-  const pkg = await requireFile('./package.json', { force: true })
+  const rootPkg = await requireFile('./package.json', { force: true })
+  const reporter = createPluginMismatchReporter()
 
   /** 获取所有依赖并排除不需要的 */
   const dependencies = [
-    ...Object.keys(pkg.dependencies || {}),
-    ...Object.keys(pkg.devDependencies || {}),
+    ...Object.keys(rootPkg.dependencies || {}),
+    ...Object.keys(rootPkg.devDependencies || {}),
   ].filter((name) => !NPM_EXCLUDE_LIST.includes(name) && !name.startsWith('@types'))
 
   /** 检查每个依赖是否为karin插件 */
   await Promise.allSettled(
     dependencies.map(async (name) => {
       const file = path.join(process.cwd(), 'node_modules', name, 'package.json')
-      const pkg = await requireFile<PkgData>(file)
-      if (!pkg.karin) return
+      const depPkg = await requireFile<PkgData>(file)
+      if (!depPkg.karin) return
 
-      /** 检查版本兼容性 */
-      const engines = pkg.karin?.engines?.karin || pkg.engines?.karin
-      if (engines) {
-        if (!satisfies(engines, process.env.KARIN_VERSION)) {
-          isInit && logger.error(
-            `[getPlugins][npm] ${name} 要求 node-karin 版本为 ${engines}，当前不符合要求，跳过加载插件`
-          )
+      /** 统一解析兼容要求：karin.engines.karin、package.engines.karin、peer/deps/devDeps 中的 node-karin */
+      const required =
+        depPkg?.karin?.engines?.karin ||
+        depPkg?.engines?.karin ||
+        depPkg?.peerDependencies?.['node-karin'] ||
+        depPkg?.dependencies?.['node-karin'] ||
+        depPkg?.devDependencies?.['node-karin']
+
+      if (required) {
+        /** 规整可能出现的非语义化前缀（workspace/link） */
+        const range = String(required).replace(/^workspace:|^link:/, '').trim()
+        if (!satisfies(range, process.env.KARIN_VERSION)) {
+          reporter.add(name, range)
           return
         }
       }
@@ -449,6 +469,9 @@ const collectNpmPlugins = async (list: string[]): Promise<void> => {
       list.push(`npm:${name}`)
     })
   )
+
+  /** 打印版本不符插件 */
+  await reporter.flush(isInit)
 }
 
 /**

@@ -8,6 +8,7 @@ import { isTs } from '@/env'
 import { cache } from '../system/cache'
 import { formatPath } from '@/utils'
 import { createLogger } from '../tools'
+import { satisfies } from '@/utils/system'
 import { isClass } from '@/utils/system/class'
 import { createPluginDir } from '@/utils/fs/file'
 import { importModule } from '@/utils/system/import'
@@ -28,6 +29,7 @@ import type {
   KarinPluginAppsType,
 } from '@/types/plugin'
 import type { Plugin as ClassPluginType } from '../class'
+import { createPluginMismatchReporter } from '../system/versionCheck'
 
 /** 插件ID */
 let seq = 0
@@ -43,20 +45,51 @@ export const pkgLoads = async (
   pkg: PkgInfo,
   allPromises: Promise<void>[]
 ) => {
+  /** 验证版本兼容性 */
+  const reporter = createPluginMismatchReporter()
+  let isCompatible = true
+  let shouldLoad = true  // 是否应该加载插件
+
+  if (pkg.type !== 'app') {
+    const ignoreEngines = pkg.pkgData?.karin?.ignoreEngines
+    const required =
+      pkg.pkgData?.karin?.engines?.karin ||
+      pkg.pkgData?.engines?.karin ||
+      pkg.pkgData?.engines?.['node-karin']  // 兼容 engines['node-karin'] 写法
+
+    const range = required ? String(required).trim() : ''
+    isCompatible = !range || satisfies(range, process.env.KARIN_VERSION)
+
+    if (range && !isCompatible) {
+      reporter.add(pkg.name, range)
+      await reporter.flush(true)
+      if (!ignoreEngines) {
+        /** 版本不兼容且未设置忽略，完全阻止加载 */
+        shouldLoad = false
+      }
+      /** 版本不兼容但设置了 ignoreEngines=true，仍然允许加载（但保持 isCompatible 为 false） */
+    }
+  }
+
+  /** 如果不应该加载，直接返回 */
+  if (!shouldLoad) {
+    return
+  }
+
   pkg.id = ++seq
   cache.index[pkg.id] = pkg
 
   const files: string[] = []
   if (pkg.type === 'app') {
     files.push('config', 'data', 'resources')
-  } else if (Array.isArray(pkg.pkgData.karin?.files)) {
+  } else if (pkg.pkgData.karin?.files && Array.isArray(pkg.pkgData.karin?.files)) {
     files.push(...pkg.pkgData.karin.files)
   }
 
   /** 创建插件基本文件夹 - 这个需要立即执行 */
   await createPluginDir(pkg.name, files)
 
-  /** 收集入口文件加载的Promise */
+  /** 收集入口文件加载的Promise：仅非app类型插件执行入口 */
   if (pkg.type !== 'app') {
     const main = pkg.type === 'npm' || !isTs()
       ? await loadMainFile(pkg, pkg.pkgData?.main)

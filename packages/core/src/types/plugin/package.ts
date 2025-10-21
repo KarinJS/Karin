@@ -44,6 +44,8 @@ export interface PkgData {
        */
       karin?: string
     }
+    /** 忽略引擎版本检查，强制加载插件（仅适用于karin.engines，不影响package.engines） */
+    ignoreEngines?: boolean
   }
   [key: string]: any
 }
