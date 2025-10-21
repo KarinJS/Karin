@@ -65,7 +65,12 @@ export const pkgLoads = async (
     if (range && !isCompatible) {
       reporter.add(pkg.name, range)
       await reporter.flush(true)
-      if (!ignoreEngines) return
+      if (!ignoreEngines) {
+        /** 版本不兼容且未设置忽略，完全阻止加载 */
+        return
+      }
+      /** 版本不兼容但设置了 ignoreEngines=true，强制设置为兼容以允许加载 */
+      isCompatible = true
     }
   }
 
