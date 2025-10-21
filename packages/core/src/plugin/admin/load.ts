@@ -48,18 +48,16 @@ export const pkgLoads = async (
   /** 验证版本兼容性 */
   const reporter = createPluginMismatchReporter()
   let isCompatible = true
+  let shouldLoad = true  // 是否应该加载插件
 
   if (pkg.type !== 'app') {
     const ignoreEngines = pkg.pkgData?.karin?.ignoreEngines
     const required =
       pkg.pkgData?.karin?.engines?.karin ||
       pkg.pkgData?.engines?.karin ||
-      pkg.pkgData?.engines?.['node-karin'] || // 兼容 engines['node-karin'] 写法
-      pkg.pkgData?.peerDependencies?.['node-karin'] ||
-      pkg.pkgData?.dependencies?.['node-karin'] ||
-      pkg.pkgData?.devDependencies?.['node-karin']
+      pkg.pkgData?.engines?.['node-karin']  // 兼容 engines['node-karin'] 写法
 
-    const range = required ? String(required).replace(/^workspace:|^link:/, '').trim() : ''
+    const range = required ? String(required).trim() : ''
     isCompatible = !range || satisfies(range, process.env.KARIN_VERSION)
 
     if (range && !isCompatible) {
@@ -67,11 +65,15 @@ export const pkgLoads = async (
       await reporter.flush(true)
       if (!ignoreEngines) {
         /** 版本不兼容且未设置忽略，完全阻止加载 */
-        return
+        shouldLoad = false
       }
-      /** 版本不兼容但设置了 ignoreEngines=true，强制设置为兼容以允许加载 */
-      isCompatible = true
+      /** 版本不兼容但设置了 ignoreEngines=true，仍然允许加载（但保持 isCompatible 为 false） */
     }
+  }
+
+  /** 如果不应该加载，直接返回 */
+  if (!shouldLoad) {
+    return
   }
 
   pkg.id = ++seq
@@ -87,8 +89,8 @@ export const pkgLoads = async (
   /** 创建插件基本文件夹 - 这个需要立即执行 */
   await createPluginDir(pkg.name, files)
 
-  /** 收集入口文件加载的Promise：仅在兼容时执行入口 */
-  if (pkg.type !== 'app' && isCompatible) {
+  /** 收集入口文件加载的Promise：仅非app类型插件执行入口 */
+  if (pkg.type !== 'app') {
     const main = pkg.type === 'npm' || !isTs()
       ? await loadMainFile(pkg, pkg.pkgData?.main)
       : await loadMainFile(pkg, pkg.pkgData?.karin?.main)
