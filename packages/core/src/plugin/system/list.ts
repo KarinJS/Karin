@@ -361,7 +361,6 @@ const collectAppPlugins = async (files: fs.Dirent[], list: string[]): Promise<vo
  * @param files 目录项列表
  * @param list 结果列表（会被修改）
  */
-// collectGitPlugins(...)
 const collectGitPlugins = async (files: fs.Dirent[], list: string[]): Promise<void> => {
   const reporter = createPluginMismatchReporter()
   await Promise.all(
@@ -370,27 +369,33 @@ const collectGitPlugins = async (files: fs.Dirent[], list: string[]): Promise<vo
       if (!v.name.startsWith('karin-plugin-')) return
       if (!fs.existsSync(path.join(karinPathPlugins, v.name, 'package.json'))) return
 
-      /** 验证版本兼容性（同时支持 engines.karin 与 node-karin peer/deps/devDeps） */
       const pkg = await requireFile<PkgData>(path.join(karinPathPlugins, v.name, 'package.json'))
-      const required =
-        pkg?.karin?.engines?.karin ||
-        pkg?.engines?.karin ||
-        pkg?.peerDependencies?.['node-karin'] ||
-        pkg?.dependencies?.['node-karin'] ||
-        pkg?.devDependencies?.['node-karin']
 
-      const range = required ? String(required).replace(/^workspace:|^link:/, '').trim() : ''
-      if (range && !satisfies(range, process.env.KARIN_VERSION)) {
-        reporter.add(v.name, range)
-        return
+      /** 版本范围优先级：karin.engines > engines.karin > engines['node-karin'] */
+      const ignore = pkg?.karin?.ignoreEngines === true
+      const preferred = typeof pkg?.karin?.engines === 'string' ? pkg.karin.engines.trim() : ''
+      let fallback = ''
+      if (!preferred) {
+        if (typeof pkg?.engines?.karin === 'string') fallback = pkg.engines.karin.trim()
+        else if (typeof pkg?.engines?.['node-karin'] === 'string') fallback = pkg.engines['node-karin'].trim()
       }
+      const range = preferred || fallback
 
-      list.push(`git:${v.name}`)
+      if (range && !satisfies(range, process.env.KARIN_VERSION)) {
+        if (ignore) {
+          /** 忽略检查：允许加载且不记录不匹配 */
+          list.push(`git:${v.name}`)
+        } else {
+          reporter.add(v.name, range)
+        }
+      } else {
+        list.push(`git:${v.name}`)
+      }
     })
   )
 
   /** 打印版本不符插件 */
-  await reporter.flush(isInit)
+  await reporter.flush(isInit, process.env.KARIN_VERSION)
 
   /** 检查根目录是否为插件 */
   const root = await requireFile('./package.json')
@@ -430,7 +435,6 @@ const NPM_EXCLUDE_LIST = [
  * 收集NPM类型插件
  * @param list 结果列表（会被修改）
  */
-// collectNpmPlugins(...)
 const collectNpmPlugins = async (list: string[]): Promise<void> => {
   logger.debug('[collectNpmPlugins] 开始收集NPM插件')
   const rootPkg = await requireFile('./package.json', { force: true })
@@ -449,29 +453,31 @@ const collectNpmPlugins = async (list: string[]): Promise<void> => {
       const depPkg = await requireFile<PkgData>(file)
       if (!depPkg.karin) return
 
-      /** 统一解析兼容要求：karin.engines.karin、package.engines.karin、peer/deps/devDeps 中的 node-karin */
-      const required =
-        depPkg?.karin?.engines?.karin ||
-        depPkg?.engines?.karin ||
-        depPkg?.peerDependencies?.['node-karin'] ||
-        depPkg?.dependencies?.['node-karin'] ||
-        depPkg?.devDependencies?.['node-karin']
-
-      if (required) {
-        /** 规整可能出现的非语义化前缀（workspace/link） */
-        const range = String(required).replace(/^workspace:|^link:/, '').trim()
-        if (!satisfies(range, process.env.KARIN_VERSION)) {
-          reporter.add(name, range)
-          return
-        }
+      /** 版本范围优先级：karin.engines > engines.karin > engines['node-karin'] */
+      const ignore = depPkg?.karin?.ignoreEngines === true
+      const preferred = typeof depPkg?.karin?.engines === 'string' ? depPkg.karin.engines.trim() : ''
+      let fallback = ''
+      if (!preferred) {
+        if (typeof depPkg?.engines?.karin === 'string') fallback = depPkg.engines.karin.trim()
+        else if (typeof depPkg?.engines?.['node-karin'] === 'string') fallback = depPkg.engines['node-karin'].trim()
       }
+      const range = preferred || fallback
 
-      list.push(`npm:${name}`)
+      if (range && !satisfies(range, process.env.KARIN_VERSION)) {
+        if (ignore) {
+          /** 忽略检查：允许加载且不记录不匹配 */
+          list.push(`npm:${name}`)
+        } else {
+          reporter.add(name, range)
+        }
+      } else {
+        list.push(`npm:${name}`)
+      }
     })
   )
 
   /** 打印版本不符插件 */
-  await reporter.flush(isInit)
+  await reporter.flush(isInit, process.env.KARIN_VERSION)
 }
 
 /**

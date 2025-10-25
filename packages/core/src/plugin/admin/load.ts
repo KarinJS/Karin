@@ -51,23 +51,26 @@ export const pkgLoads = async (
   let shouldLoad = true  // 是否应该加载插件
 
   if (pkg.type !== 'app') {
-    const ignoreEngines = pkg.pkgData?.karin?.ignoreEngines
-    const required =
-      pkg.pkgData?.karin?.engines?.karin ||
-      pkg.pkgData?.engines?.karin ||
-      pkg.pkgData?.engines?.['node-karin']  // 兼容 engines['node-karin'] 写法
+    /** 版本范围优先级：karin.engines > engines.karin > engines['node-karin'] */
+    const ignoreEngines = pkg.pkgData?.karin?.ignoreEngines === true
+    const preferred = typeof pkg.pkgData?.karin?.engines === 'string' ? String(pkg.pkgData.karin.engines).trim() : ''
+    let fallback = ''
+    if (!preferred) {
+      if (typeof pkg.pkgData?.engines?.karin === 'string') fallback = String(pkg.pkgData.engines.karin).trim()
+      else if (typeof pkg.pkgData?.engines?.['node-karin'] === 'string') fallback = String(pkg.pkgData.engines['node-karin']).trim()
+    }
+    const range = preferred || fallback
 
-    const range = required ? String(required).trim() : ''
     isCompatible = !range || satisfies(range, process.env.KARIN_VERSION)
 
     if (range && !isCompatible) {
-      reporter.add(pkg.name, range)
-      await reporter.flush(true)
       if (!ignoreEngines) {
-        /** 版本不兼容且未设置忽略，完全阻止加载 */
+        /** 未忽略：打印日志并禁止加载 */
+        reporter.add(pkg.name, range)
+        await reporter.flush(true, process.env.KARIN_VERSION)
         shouldLoad = false
       }
-      /** 版本不兼容但设置了 ignoreEngines=true，仍然允许加载（但保持 isCompatible 为 false） */
+      /** 忽略：不打印日志且允许加载（保持 isCompatible 为 false） */
     }
   }
 
@@ -90,7 +93,7 @@ export const pkgLoads = async (
   await createPluginDir(pkg.name, files)
 
   /** 收集入口文件加载的Promise：仅非app类型插件执行入口 */
-  if (pkg.type !== 'app') {
+  if (pkg.type !== 'app' && shouldLoad) {
     const main = pkg.type === 'npm' || !isTs()
       ? await loadMainFile(pkg, pkg.pkgData?.main)
       : await loadMainFile(pkg, pkg.pkgData?.karin?.main)
@@ -106,7 +109,7 @@ export const pkgLoads = async (
   }
 
   /** 收集所有app加载的Promise */
-  pkg.apps.forEach(app => {
+  shouldLoad && pkg.apps.forEach(app => {
     const promise = async () => {
       const result = await pkgLoadModule(pkg.name, app)
       pkgCache(result, pkg, app)

@@ -1,4 +1,4 @@
-import { checkPkgUpdate, getPkgVersion, satisfies } from '@/utils/system'
+import { satisfies } from '@/utils/system'
 
 /** 版本比较（仅 X.Y.Z） */
 const cmpVer = (a: string, b: string): number => {
@@ -88,10 +88,9 @@ export const createPluginMismatchReporter = () => {
   }
 
   /** 打印不匹配项 */
-  const flush = async (shouldPrint = true) => {
+  const flush = async (shouldPrint = true, currentVersion?: string) => {
     if (!items.length || !shouldPrint) return
 
-    const result = await checkPkgUpdate('node-karin', { compare: 'semver' })
     const lines: string[] = []
 
     lines.push(logger.yellow('⚠ 以下插件版本不匹配当前 Karin 版本:'))
@@ -104,16 +103,13 @@ export const createPluginMismatchReporter = () => {
     lines.push('')
     lines.push(logger.yellow('dependencies:'))
 
-    if (result.status === 'yes') {
-      const target = maxRequired || result.remote
-      lines.push(`  ${logger.green('node-karin:')} ${logger.gray(result.local)} -> ${logger.cyan(target)}`)
-      lines.push('')
-      lines.push(logger.white(`为达到此部分插件的最低运行要求，建议执行：${logger.yellow(`pnpm up node-karin@${target}`)}`))
-    } else if (result.status === 'error') {
-      lines.push(`  ${logger.red('node-karin:')} 检查失败 -> ${(result.error?.message) || String(result.error)}`)
-
-      const localVer = await getPkgVersion('node-karin')
-      if (localVer && maxRequired) {
+    if (maxRequired) {
+      if (currentVersion && cmpVer(currentVersion, maxRequired) < 0) {
+        lines.push(`  ${logger.green('node-karin:')} ${logger.gray(currentVersion)} -> ${logger.cyan(maxRequired)}`)
+        lines.push('')
+        lines.push(logger.white(`为达到此部分插件的最低运行要求，建议执行：${logger.yellow(`pnpm up node-karin@${maxRequired}`)}`))
+      } else if (!currentVersion) {
+        lines.push(`  ${logger.green('node-karin:')} ${logger.cyan(maxRequired)}`)
         lines.push('')
         lines.push(logger.white(`为达到此部分插件的最低运行要求，建议执行：${logger.yellow(`pnpm up node-karin@${maxRequired}`)}`))
       }
