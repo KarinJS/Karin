@@ -29,6 +29,7 @@ export const options: Options = {
     ...Object.keys(pkg.dependencies),
     '@karinjs/node-pty',
     '@karinjs/plugin-webui-network-monitor',
+    '@karinjs/plugin-ffmpeg',
   ],
   outExtension () {
     return {
