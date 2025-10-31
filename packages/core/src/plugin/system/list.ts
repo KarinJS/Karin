@@ -18,6 +18,7 @@ import type {
   GetPluginLocalReturn,
   GetPluginLocalOptions,
 } from '@/types/plugin'
+import { createPluginMismatchReporter } from './versionCheck'
 
 let isInit = true
 
@@ -361,24 +362,40 @@ const collectAppPlugins = async (files: fs.Dirent[], list: string[]): Promise<vo
  * @param list 结果列表（会被修改）
  */
 const collectGitPlugins = async (files: fs.Dirent[], list: string[]): Promise<void> => {
+  const reporter = createPluginMismatchReporter()
   await Promise.all(
     files.map(async (v) => {
       if (!v.isDirectory()) return
       if (!v.name.startsWith('karin-plugin-')) return
       if (!fs.existsSync(path.join(karinPathPlugins, v.name, 'package.json'))) return
 
-      /** 验证版本兼容性 */
       const pkg = await requireFile<PkgData>(path.join(karinPathPlugins, v.name, 'package.json'))
-      const engines = pkg?.karin?.engines?.karin || pkg?.engines?.karin
-      if (engines && !satisfies(engines, process.env.KARIN_VERSION)) {
-        const msg = `[getPlugins][git] ${v.name} 要求 node-karin 版本为 ${engines}，当前不符合要求，跳过加载插件`
-        isInit && setTimeout(() => logger.error(msg), 1000)
-        return
-      }
 
-      list.push(`git:${v.name}`)
+      /** 版本范围优先级：karin.engines > engines.karin > engines['node-karin'] */
+      const ignore = pkg?.karin?.ignoreEngines === true
+      const preferred = typeof pkg?.karin?.engines === 'string' ? pkg.karin.engines.trim() : ''
+      let fallback = ''
+      if (!preferred) {
+        if (typeof pkg?.engines?.karin === 'string') fallback = pkg.engines.karin.trim()
+        else if (typeof pkg?.engines?.['node-karin'] === 'string') fallback = pkg.engines['node-karin'].trim()
+      }
+      const range = preferred || fallback
+
+      if (range && !satisfies(range, process.env.KARIN_VERSION)) {
+        if (ignore) {
+          /** 忽略检查：允许加载且不记录不匹配 */
+          list.push(`git:${v.name}`)
+        } else {
+          reporter.add(v.name, range)
+        }
+      } else {
+        list.push(`git:${v.name}`)
+      }
     })
   )
+
+  /** 打印版本不符插件 */
+  await reporter.flush(isInit, process.env.KARIN_VERSION)
 
   /** 检查根目录是否为插件 */
   const root = await requireFile('./package.json')
@@ -420,35 +437,47 @@ const NPM_EXCLUDE_LIST = [
  */
 const collectNpmPlugins = async (list: string[]): Promise<void> => {
   logger.debug('[collectNpmPlugins] 开始收集NPM插件')
-  const pkg = await requireFile('./package.json', { force: true })
+  const rootPkg = await requireFile('./package.json', { force: true })
+  const reporter = createPluginMismatchReporter()
 
   /** 获取所有依赖并排除不需要的 */
   const dependencies = [
-    ...Object.keys(pkg.dependencies || {}),
-    ...Object.keys(pkg.devDependencies || {}),
+    ...Object.keys(rootPkg.dependencies || {}),
+    ...Object.keys(rootPkg.devDependencies || {}),
   ].filter((name) => !NPM_EXCLUDE_LIST.includes(name) && !name.startsWith('@types'))
 
   /** 检查每个依赖是否为karin插件 */
   await Promise.allSettled(
     dependencies.map(async (name) => {
       const file = path.join(process.cwd(), 'node_modules', name, 'package.json')
-      const pkg = await requireFile<PkgData>(file)
-      if (!pkg.karin) return
+      const depPkg = await requireFile<PkgData>(file)
+      if (!depPkg.karin) return
 
-      /** 检查版本兼容性 */
-      const engines = pkg.karin?.engines?.karin || pkg.engines?.karin
-      if (engines) {
-        if (!satisfies(engines, process.env.KARIN_VERSION)) {
-          isInit && logger.error(
-            `[getPlugins][npm] ${name} 要求 node-karin 版本为 ${engines}，当前不符合要求，跳过加载插件`
-          )
-          return
-        }
+      /** 版本范围优先级：karin.engines > engines.karin > engines['node-karin'] */
+      const ignore = depPkg?.karin?.ignoreEngines === true
+      const preferred = typeof depPkg?.karin?.engines === 'string' ? depPkg.karin.engines.trim() : ''
+      let fallback = ''
+      if (!preferred) {
+        if (typeof depPkg?.engines?.karin === 'string') fallback = depPkg.engines.karin.trim()
+        else if (typeof depPkg?.engines?.['node-karin'] === 'string') fallback = depPkg.engines['node-karin'].trim()
       }
+      const range = preferred || fallback
 
-      list.push(`npm:${name}`)
+      if (range && !satisfies(range, process.env.KARIN_VERSION)) {
+        if (ignore) {
+          /** 忽略检查：允许加载且不记录不匹配 */
+          list.push(`npm:${name}`)
+        } else {
+          reporter.add(name, range)
+        }
+      } else {
+        list.push(`npm:${name}`)
+      }
     })
   )
+
+  /** 打印版本不符插件 */
+  await reporter.flush(isInit, process.env.KARIN_VERSION)
 }
 
 /**

@@ -8,6 +8,7 @@ import { isTs } from '@/env'
 import { cache } from '../system/cache'
 import { formatPath } from '@/utils'
 import { createLogger } from '../tools'
+import { satisfies } from '@/utils/system'
 import { isClass } from '@/utils/system/class'
 import { createPluginDir } from '@/utils/fs/file'
 import { importModule } from '@/utils/system/import'
@@ -28,6 +29,7 @@ import type {
   KarinPluginAppsType,
 } from '@/types/plugin'
 import type { Plugin as ClassPluginType } from '../class'
+import { createPluginMismatchReporter } from '../system/versionCheck'
 
 /** 插件ID */
 let seq = 0
@@ -43,21 +45,55 @@ export const pkgLoads = async (
   pkg: PkgInfo,
   allPromises: Promise<void>[]
 ) => {
+  /** 验证版本兼容性 */
+  const reporter = createPluginMismatchReporter()
+  let isCompatible = true
+  let shouldLoad = true  // 是否应该加载插件
+
+  if (pkg.type !== 'app') {
+    /** 版本范围优先级：karin.engines > engines.karin > engines['node-karin'] */
+    const ignoreEngines = pkg.pkgData?.karin?.ignoreEngines === true
+    const preferred = typeof pkg.pkgData?.karin?.engines === 'string' ? String(pkg.pkgData.karin.engines).trim() : ''
+    let fallback = ''
+    if (!preferred) {
+      if (typeof pkg.pkgData?.engines?.karin === 'string') fallback = String(pkg.pkgData.engines.karin).trim()
+      else if (typeof pkg.pkgData?.engines?.['node-karin'] === 'string') fallback = String(pkg.pkgData.engines['node-karin']).trim()
+    }
+    const range = preferred || fallback
+
+    isCompatible = !range || satisfies(range, process.env.KARIN_VERSION)
+
+    if (range && !isCompatible) {
+      if (!ignoreEngines) {
+        /** 未忽略：打印日志并禁止加载 */
+        reporter.add(pkg.name, range)
+        await reporter.flush(true, process.env.KARIN_VERSION)
+        shouldLoad = false
+      }
+      /** 忽略：不打印日志且允许加载（保持 isCompatible 为 false） */
+    }
+  }
+
+  /** 如果不应该加载，直接返回 */
+  if (!shouldLoad) {
+    return
+  }
+
   pkg.id = ++seq
   cache.index[pkg.id] = pkg
 
   const files: string[] = []
   if (pkg.type === 'app') {
     files.push('config', 'data', 'resources')
-  } else if (Array.isArray(pkg.pkgData.karin?.files)) {
+  } else if (pkg.pkgData.karin?.files && Array.isArray(pkg.pkgData.karin?.files)) {
     files.push(...pkg.pkgData.karin.files)
   }
 
   /** 创建插件基本文件夹 - 这个需要立即执行 */
   await createPluginDir(pkg.name, files)
 
-  /** 收集入口文件加载的Promise */
-  if (pkg.type !== 'app') {
+  /** 收集入口文件加载的Promise：仅非app类型插件执行入口 */
+  if (pkg.type !== 'app' && shouldLoad) {
     const main = pkg.type === 'npm' || !isTs()
       ? await loadMainFile(pkg, pkg.pkgData?.main)
       : await loadMainFile(pkg, pkg.pkgData?.karin?.main)
@@ -73,7 +109,7 @@ export const pkgLoads = async (
   }
 
   /** 收集所有app加载的Promise */
-  pkg.apps.forEach(app => {
+  shouldLoad && pkg.apps.forEach(app => {
     const promise = async () => {
       const result = await pkgLoadModule(pkg.name, app)
       pkgCache(result, pkg, app)
