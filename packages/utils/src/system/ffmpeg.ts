@@ -1,23 +1,17 @@
 import { exec } from './exec'
+import type { } from '@karinjs/envs'
 import type { ExecOptions, ExecReturn } from './exec'
 
-let ffmpegPath = 'ffmpeg'
-let ffprobePath = 'ffprobe'
-let ffplayPath = 'ffplay'
-
-/** 延迟1秒 不然会阻塞 */
-setTimeout(async () => {
-  const env = await exec('ffmpeg -version', { booleanResult: true })
-  if (!env) {
-    const ffmpeg = process.env.FFMPEG_PATH
-    const ffprobe = process.env.FFPROBE_PATH
-    const ffplay = process.env.FFPLAY_PATH
-
-    ffmpegPath = ffmpeg ? `"${ffmpeg}"` : ffmpegPath
-    ffprobePath = ffprobe ? `"${ffprobe}"` : ffprobePath
-    ffplayPath = ffplay ? `"${ffplay}"` : ffplayPath
-  }
-}, 1000)
+/**
+ * 组合命令
+ * @param env 环境变量
+ * @param defaultCmd 默认命令
+ * @param command 原始命令
+ */
+const getCommand = (env: string, defaultCmd: string, command: string) => {
+  const prefix = env ? `"${env}"` : defaultCmd
+  return `${prefix} ${command.replace(new RegExp(`^${defaultCmd}`), '').trim()}`
+}
 
 /**
  * @description ffmpeg命令
@@ -28,9 +22,8 @@ export const ffmpeg = async <T extends boolean = false> (
   cmd: string,
   options?: ExecOptions<T>
 ): Promise<ExecReturn<T>> => {
-  cmd = cmd.replace(/^ffmpeg/, '').trim()
-  cmd = `${ffmpegPath} ${cmd}`
-  return await exec(cmd, options)
+  const command = getCommand(process.env.FFMPEG_PATH, 'ffmpeg', cmd)
+  return exec(command, options)
 }
 
 /**
@@ -42,9 +35,8 @@ export const ffprobe = async <T extends boolean = false> (
   cmd: string,
   options?: ExecOptions<T>
 ): Promise<ExecReturn<T>> => {
-  cmd = cmd.replace(/^ffprobe/, '').trim()
-  cmd = `${ffprobePath} ${cmd}`
-  return await exec(cmd, options)
+  const command = getCommand(process.env.FFPROBE_PATH, 'ffprobe', cmd)
+  return exec(command, options)
 }
 
 /**
@@ -56,7 +48,6 @@ export const ffplay = async <T extends boolean = false> (
   cmd: string,
   options?: ExecOptions<T>
 ): Promise<ExecReturn<T>> => {
-  cmd = cmd.replace(/^ffplay/, '').trim()
-  cmd = `${ffplayPath} ${cmd}`
-  return await exec(cmd, options)
+  const command = getCommand(process.env.FFPLAY_PATH, 'ffplay', cmd)
+  return exec(command, options)
 }

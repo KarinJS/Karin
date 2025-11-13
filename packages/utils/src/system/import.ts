@@ -17,24 +17,7 @@ interface ImportErrorResult {
 /**
  * 动态导入模块结果
  */
-export type ImportModuleResult<T = any> = ImportSuccessResult<T> | ImportErrorResult
-
-/**
- * 动态导入模块
- * @param url 模块地址 仅支持绝对路径 无需传递 `file://` 前缀
- * @param isRefresh 是否重新加载 不使用缓存
- */
-export const importModule = async <T = any> (
-  url: string,
-  isRefresh = false
-): Promise<ImportModuleResult<T>> => {
-  try {
-    const module = await import(`file://${url}${isRefresh ? `?t=${Date.now()}` : ''}`)
-    return { status: true, data: module }
-  } catch (error) {
-    return { status: false, data: error }
-  }
-}
+export type importsResult<T = any> = ImportSuccessResult<T> | ImportErrorResult
 
 /**
  * 动态导入模块
@@ -71,13 +54,12 @@ export const imports = async <T = any> (url: string, options: {
   eager?: boolean
 } = {}): Promise<T> => {
   const { eager = false, import: importType = '*' } = options
-  const module = await import(`file://${url}${eager ? `?t=${Date.now()}` : ''}`)
 
-  if (importType === 'default') {
-    return module.default
-  } else if (importType === '*') {
-    return module
-  } else {
-    return module[importType]
-  }
+  const isFilePath = /^([a-zA-Z]:)?[/\\]|^\.\.?[/\\]/.test(url)
+  const timestamp = eager ? `?t=${Date.now()}` : ''
+  const prefix = isFilePath ? `file://${url}` : `${url}`
+  const importUrl = `${prefix}${timestamp}`
+
+  const module = await import(importUrl)
+  return importType === '*' ? module : module[importType]
 }

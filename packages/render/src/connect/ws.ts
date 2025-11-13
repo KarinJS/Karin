@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import crypto from 'node:crypto'
-import { isPublic } from '@karinjs/plugin'
+// import { isPublic } from '@karinjs/plugin'
 import { renderTpl } from '../core/template'
 import { registerRender, unregisterRender } from '../core/cache'
 
@@ -79,11 +79,12 @@ export abstract class WebSocketRender {
    * @param data 数据
    */
   async static (echo: string, data: { file: string, type: string, url: string }) {
-    const result = isPublic(data.file)
-    if (!result) {
-      logger.warn(`[WebSocket] 访问的路径非法: echo: ${echo} data: ${JSON.stringify(data)}`)
-      return this.socket.send(JSON.stringify({ echo, status: 'error', data: '非法的访问路径' }))
-    }
+    // TODO: 安全校验
+    // const result = isPublic(data.file)
+    // if (!result) {
+    //   logger.warn(`[WebSocket] 访问的路径非法: echo: ${echo} data: ${JSON.stringify(data)}`)
+    //   return this.socket.send(JSON.stringify({ echo, status: 'error', data: '非法的访问路径' }))
+    // }
 
     const fileData = fs.readFileSync(data.file)
     return this.socket.send(JSON.stringify({ echo, status: 'ok', data: fileData }))

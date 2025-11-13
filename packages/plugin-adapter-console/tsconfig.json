@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+  },
+  "exclude": [
+    "tsdown.config.ts"
+  ],
+  "extends": "../../tsconfig.base.json"
+}

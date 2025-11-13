@@ -44,14 +44,14 @@ export const getCaller = (url: string, customError?: Error): string => {
     }
 
     /** 去掉后面的: */
-    paths.push(file.replace(/\\/g, '/').replace(/:\d+:\d+$/, ''))
+    paths.push(file.replaceAll('\\', '/').replace(/:\d+:\d+$/, ''))
   }
 
   if (paths.length === 0) {
     throw new Error('解析调用栈失败')
   }
 
-  const basePath = fileURLToPath(url).replace(/\\/g, '/')
+  const basePath = fileURLToPath(url).replaceAll('\\', '/')
   /**
    * 过滤basePath在paths中的所有值
    */

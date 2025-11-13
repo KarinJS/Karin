@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import sqlite3 from 'sqlite3'
-import { logger } from '@karinjs/logger'
+import type { } from '@karinjs/logger' // 类型导入
 
 /**
  * @description 日志前缀
@@ -386,7 +386,7 @@ export class SQLiteWrapper {
    * @param params 参数数组
    * @returns 返回受影响的行数
    */
-  async run<T>(sql: string, params: T): Promise<number> {
+  async run<T> (sql: string, params: T): Promise<number> {
     if (this.#isClosing) {
       throw new Error('数据库正在关闭中...')
     }

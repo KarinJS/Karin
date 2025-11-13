@@ -11,7 +11,7 @@ import { BASE_ROUTER } from '../router/router'
 import { createBrotliDecompress } from 'node:zlib'
 import { emitter } from '@karinjs/events'
 
-import type root from '@karinjs/paths'
+import type root from '@karinjs/store'
 import type { Express } from 'express'
 
 /**

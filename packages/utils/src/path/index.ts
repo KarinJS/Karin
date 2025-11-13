@@ -1,9 +1,36 @@
+/**
+ * 路径处理模块
+ *
+ * 提供路径格式化、匹配、解析、查找等功能
+ *
+ * @module path
+ * @example
+ * ```typescript
+ * import utils from '@karinjs/utils'
+ *
+ * // 格式化路径
+ * const absPath = utils.path.format('./file.txt')
+ *
+ * // 比较路径
+ * const isSame = utils.path.isEqual('/path/a', '/path/b')
+ *
+ * // 查找文件
+ * const files = await utils.path.findFiles('./src', { ext: 'ts' })
+ * ```
+ */
+
+// 保留旧的导出以兼容
 import fs from 'node:fs'
 import lodash from 'lodash'
 import path from 'node:path'
 import { sep } from '../file'
 import { fileURLToPath } from 'node:url'
 import { requireFileSync } from '../require'
+
+export * from './format'
+export * from './match'
+export * from './parse'
+export * from './find'
 
 const prefix = process.platform === 'win32' ? 'file:///' : 'file://'
 
@@ -254,13 +281,13 @@ export const findFiles = async (
  * @returns 标准化后的路径
  */
 export const absPath = (file: string, absPath = true, prefix = false): string => {
-  file = file.replace(/\\/g, '/')
+  file = file.replaceAll('\\', '/')
   if (file.startsWith('file://')) file = file.replace(sep, '')
 
   file = path.normalize(file)
   if (absPath) file = path.resolve(file)
   if (prefix) file = 'file://' + file
-  return file.replace(/\\/g, '/')
+  return file.replaceAll('\\', '/')
 }
 
 /**
@@ -330,15 +357,54 @@ export const isSubPath = (root: string, target: string, isAbs = true) => {
 }
 
 /**
+ * 将路径转换为 file:// URL 格式
+ * @description 返回 file:// 格式的 URL
+ * - 支持相对路径和绝对路径
+ * - 统一分隔符`/`
+ * - 自动添加正确的 file:// 前缀
+ * @param filePath - 路径
+ * @param options - 选项
+ * @param options.cwd - 当前工作目录，默认`process.cwd()`
+ * @example
+ * ```ts
+ * formatFileURL('C:\\Users\\admin\\file.txt')
+ * // -> 'file:///C:/Users/admin/file.txt' (Windows)
+ *
+ * formatFileURL('/home/user/file.txt')
+ * // -> 'file:///home/user/file.txt' (Linux/Mac)
+ *
+ * formatFileURL('./file.txt', { cwd: 'C:/Users/admin' })
+ * // -> 'file:///C:/Users/admin/file.txt'
+ *
+ * formatFileURL('file:///C:/Users/admin/file.txt')
+ * // -> 'file:///C:/Users/admin/file.txt' (保持不变)
+ * ```
+ * @returns file:// URL 格式的路径
+ */
+export const formatFileURL = (
+  filePath: string,
+  options?: {
+    /**
+     * 当前工作目录
+     * @default process.cwd()
+     */
+    cwd?: string
+  }
+) => {
+  const cwd = options?.cwd || process.cwd()
+  const absPath = path.resolve(cwd, filePath.replace(sep, '')).replaceAll('\\', '/')
+  return `${prefix}${absPath}`
+}
+
+/**
  * 将路径统一格式
  * @description 默认返回绝对路径
  * - 绝对路径
- * - 支持file URL
  * - 统一分隔符`/`
  * @param filePath - 路径
  * @param options - 选项
  * @param options.cwd - 当前工作目录，默认`process.cwd()`
- * @param options.type - 返回类型，`abs=绝对路径` `rel=相对路径` `fileURL=file URL`，默认`abs`
+ * @param options.type - 返回类型，`abs=绝对路径` `rel=相对路径`，默认`abs`
  * @example
  * ```ts
  * formatPath('C:\\Users\\admin\\project\\..\\file.txt')
@@ -346,11 +412,9 @@ export const isSubPath = (root: string, target: string, isAbs = true) => {
  *
  * formatPath('./file.txt', { type: 'rel' })
  * // -> 'file.txt' 相对路径
- * formatPath('./project/file.txt', { type: 'rel', cwd: 'C:/Users/admin/project' })
- * // -> './file.txt' 相对路径
  *
- * formatPath('file:///C:/Users/admin/file.txt', { type: 'fileURL' })
- * // -> 'file:///C:/Users/admin/file.txt' file URL
+ * formatPath('./project/file.txt', { type: 'rel', cwd: 'C:/Users/admin/project' })
+ * // -> 'file.txt' 相对路径
  * ```
  * @returns 统一格式后的路径
  */
@@ -366,25 +430,22 @@ export const formatPath = (
      * 返回类型
      * @default 'abs' - 绝对路径
      */
-    type?: 'abs' | 'rel' | 'fileURL'
+    type?: 'abs' | 'rel'
   }
 ) => {
   if (!options) {
-    return path.resolve(filePath.replace(sep, '')).replace(/\\/g, '/')
+    return path.resolve(filePath.replace(sep, '')).replaceAll('\\', '/')
   }
 
-  const type = options?.type || 'abs'
-  const cwd = options?.cwd ? options.cwd : process.cwd()
+  const { type = 'abs', cwd = process.cwd() } = options || {}
+  const normalizedPath = filePath.replace(sep, '')
 
   if (type === 'rel') {
-    return path.relative(cwd, filePath.replace(sep, '')).replace(/\\/g, '/') || '.'
+    return path.relative(cwd, normalizedPath).replaceAll('\\', '/') || '.'
   }
 
-  if (type === 'fileURL') {
-    return `${prefix}${path.resolve(cwd, filePath.replace(sep, '')).replace(/\\/g, '/')}`
-  }
-
-  return path.resolve(cwd, filePath.replace(sep, '')).replace(/\\/g, '/')
+  // type === 'abs'
+  return path.resolve(cwd, normalizedPath).replaceAll('\\', '/')
 }
 
 /**
@@ -491,4 +552,26 @@ export const getNodeModulesSync = () => {
   list = list.filter(v => !v.includes('node-karin'))
 
   return list
+}
+
+/**
+ * 从路径中获取npm包名
+ * @param filePath 路径
+ * @returns 包名或null
+ */
+export const getPackageName = (filePath: string): string | null => {
+  const file = formatPath(filePath, { type: 'abs' })
+
+  const idx = file.lastIndexOf('node_modules/')
+  if (idx === -1) return null
+
+  const suffix = file.slice(idx + 13)
+  const parts = suffix.split('/').filter(Boolean)
+  if (parts.length === 0) return null
+
+  if (parts[0].startsWith('@')) {
+    return `${parts[0]}/${parts[1]}`
+  } else {
+    return parts[0]
+  }
 }

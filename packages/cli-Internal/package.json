@@ -14,8 +14,6 @@
   "license": "MIT",
   "author": "shijin",
   "type": "module",
-  "main": "./index.mjs",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "CHANGELOG.md",

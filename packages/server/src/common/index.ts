@@ -1,4 +1,4 @@
-import { authKey } from '@karinjs/utils'
+// import { authKey } from '@karinjs/utils'
 import { verifyJwt } from '../auth/jwt'
 import {
   createAccessTokenExpiredResponse,
@@ -33,7 +33,7 @@ const verifyToken = async (
 
   if (!userId) {
     /** 尝试明文密码验证 */
-    if (authKey() === token) return true
+    // if (authKey() === token) return true
     createUnauthorizedResponse(res, AuthErrorType.TokenError)
     return false
   }
@@ -44,7 +44,7 @@ const verifyToken = async (
   if (verifyStatus.status === HTTPStatusCode.OK) return true
 
   /** JWT验证失败后尝试明文密码 */
-  if (authKey() === token) return true
+  // if (authKey() === token) return true
 
   /** 处理各种错误情况 */
   switch (verifyStatus.status) {

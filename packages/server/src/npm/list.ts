@@ -1,6 +1,6 @@
 import lodash from 'lodash'
-import { getPlugins } from '@karinjs/plugin'
-import { exec, requireFileSync, getNpmRegistry } from '@karinjs/utils'
+// import { getPlugins } from '@karinjs/plugin'
+import { exec, requireFileSync } from '@karinjs/utils'
 import { createBadRequestResponse, createServerErrorResponse, createSuccessResponse } from '../utils/response'
 import { REDIS_DEPENDENCIES_LIST_CACHE_KEY, REDIS_DEPENDENCIES_LIST_CACHE_EXPIRE } from '@karinjs/envs'
 

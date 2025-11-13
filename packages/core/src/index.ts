@@ -10,24 +10,24 @@ export * from '@karinjs/envs'
 // export * from '@karinjs/events'
 export * from '@karinjs/logger'
 // export * from '@karinjs/onebot'
-export * from '@karinjs/paths'
+export * from '@karinjs/store'
 
 export * from '@karinjs/render'
 export * from '@karinjs/server'
 export * from '@karinjs/utils'
 
-export {
-  getPluginMarket,
-  getPlugins,
-  isNpmPlugin,
-  isPublic,
-  register,
-  hmr,
-  hot,
-  Plugin,
-  HMRModule,
-} from '@karinjs/plugin'
+// export {
+//   getPluginMarket,
+//   getPlugins,
+//   isNpmPlugin,
+//   isPublic,
+//   register,
+//   hmr,
+//   hot,
+//   Plugin,
+//   HMRModule,
+// } from '@karinjs/plugin'
 
-export type {
-  pluginTypes,
-} from '@karinjs/plugin'
+// export type {
+//   pluginTypes,
+// } from '@karinjs/plugin'

@@ -13,7 +13,6 @@
   "license": "MIT",
   "author": "",
   "type": "module",
-  "main": "index.js",
   "bin": {
     "karin": "index.js",
     "ki": "index.js"

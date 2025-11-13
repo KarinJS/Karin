@@ -14,13 +14,10 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "development": "./src/index.ts",
-      "default": "./dist/index.mjs"
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
     }
   },
-  "main": "dist/index.mjs",
-  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
@@ -35,17 +32,9 @@
     "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
   },
   "devDependencies": {
-    "@karinjs/adapter": "workspace:*",
-    "@karinjs/bot": "workspace:*",
-    "@karinjs/envs": "workspace:*",
-    "@karinjs/events": "workspace:*",
     "ws": "catalog:"
   },
   "peerDependencies": {
-    "@karinjs/adapter": "workspace:*",
-    "@karinjs/bot": "workspace:*",
-    "@karinjs/envs": "workspace:*",
-    "@karinjs/events": "workspace:*",
     "ws": "catalog:"
   }
 }

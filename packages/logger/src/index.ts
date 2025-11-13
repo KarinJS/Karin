@@ -34,6 +34,19 @@ export interface Prefix<T extends readonly any[]> {
   level: Level | string
 }
 
+export interface LoggerOptions {
+  /** 日志文件夹路径 */
+  dir: string
+  /** 自定义颜色 */
+  color?: string
+  /** 是否为开发环境 */
+  isDev: boolean
+  /** 日志级别 */
+  level: LoggerLevel
+  /** 日志保留天数 */
+  daysToKeep: number
+}
+
 /**
  * @description 日志接口
  */
@@ -187,10 +200,13 @@ export const DEFAULT_LOGGER_CONFIG: LoggerConfig = {
  * 创建日志记录器
  * @param isSaveFile - 是否保存到文件
  */
-const initLogger = (isSaveFile: boolean = false): Configuration => {
-  const level = process.env.LOG_LEVEL as LoggerLevel || 'info'
-  const daysToKeep = Number(process.env.LOG_DAYS_TO_KEEP) || 30
-  // const maxFileSize = Number(process.env.LOG_MAX_LOG_SIZE) || 0
+const initLogger = (opt: {
+  level: string,
+  daysToKeep: number,
+  isDev: boolean
+}): Configuration => {
+  const level = opt.level
+  const daysToKeep = opt.daysToKeep
 
   const config: Configuration = {
     appenders: {
@@ -198,7 +214,7 @@ const initLogger = (isSaveFile: boolean = false): Configuration => {
         type: 'console',
         layout: {
           type: 'pattern',
-          pattern: `%[[Karin][%d{hh:mm:ss.SSS}][%4.4p]%] ${process.env.RUNTIME === 'tsx' ? '[%f{3}:%l] ' : ''}%m`,
+          pattern: `%[[Karin][%d{hh:mm:ss.SSS}][%4.4p]%] ${opt.isDev ? '[%f{3}:%l] ' : ''}%m`,
         },
       },
     },
@@ -206,16 +222,12 @@ const initLogger = (isSaveFile: boolean = false): Configuration => {
       default: {
         appenders: ['console'],
         level,
-        enableCallStack: process.env.RUNTIME === 'tsx',
+        enableCallStack: opt.isDev,
       },
     },
     levels: {
       handler: { value: 15000, colour: 'cyan' },
     },
-  }
-
-  if (!isSaveFile) {
-    return config
   }
 
   /** 碎片化: 将日志分片，达到指定大小后自动切割 日志较多的情况下不建议与整体化同时开启 */
@@ -243,7 +255,7 @@ const initLogger = (isSaveFile: boolean = false): Configuration => {
     /** 输出到文件 */
     type: 'dateFile',
     /** 日志文件名 */
-    filename: '@karinjs/logs/logger',
+    filename: '.karin/logs/logger',
     /** 日期后缀 */
     pattern: 'yyyy-MM-dd.log',
     /** 日期后缀 */
@@ -267,7 +279,7 @@ const initLogger = (isSaveFile: boolean = false): Configuration => {
     /** 输出到文件 */
     type: 'dateFile',
     /** 日志文件名 */
-    filename: '@karinjs/logs/error/logger',
+    filename: '.karin/logs/error/logger',
     /** 日期后缀 */
     pattern: 'yyyy-MM-dd.log',
     /** 日期后缀 */
@@ -306,7 +318,7 @@ const initLogger = (isSaveFile: boolean = false): Configuration => {
  * @param Logger - 日志记录器
  * @param color - 自定义颜色，可选
  */
-const addColor = (Logger: log4js.Logger, color?: string) => {
+const addColor = (Logger: Log4jsLogger, color?: string) => {
   const logger = Logger as unknown as Logger
   logger.chalk = chalk
   logger.red = chalk.red
@@ -350,16 +362,13 @@ const addColor = (Logger: log4js.Logger, color?: string) => {
       fatal: (...args) => logger.fatal(prefix, ...args),
       mark: (...args) => logger.mark(prefix, ...args),
       log: (...args) => logger.info(prefix, ...args),
-      level: logger.level,
-    }
-
-    // 给level加上get/set
-    Object.defineProperty(result, 'level', {
-      get: () => logger.level,
-      set: (value) => {
+      get level () {
+        return logger.level
+      },
+      set level (value) {
         logger.level = value
       },
-    })
+    }
 
     return result
   }
@@ -372,19 +381,16 @@ const addColor = (Logger: log4js.Logger, color?: string) => {
  * @param color - 自定义颜色，可选
  * @returns 日志记录器
  */
-const createLogger = (dir?: string, color?: string): Logger => {
-  if (dir && !fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+const createLogger = (): Logger => {
+  const config = initLogger({
+    level: 'trace',
+    daysToKeep: 7,
+    isDev: process.env.NODE_ENV === 'development',
+  })
 
-  if (global.logger) {
-    log4js.configure(initLogger(true))
-    return global.logger
-  }
-
-  log4js.configure(initLogger(true))
-  const logger = addColor(log4js.getLogger('default'), color)
+  log4js.configure(config)
+  const logger = addColor(log4js.getLogger('default'))
   global.logger = logger
-  const log = logger.prefix('test')
-  log.info(123, 'abc', '123')
   return logger
 }
 
@@ -401,6 +407,16 @@ export const logger: Logger = createLogger()
  * @param color - 自定义颜色
  * @returns 更新后的日志记录器
  */
-export const configureLogger = (dir: string, color?: string): Logger => {
-  return createLogger(dir, color)
+export const configureLogger = (opt: LoggerOptions): Logger => {
+  if (!fs.existsSync(opt.dir)) {
+    fs.mkdirSync(opt.dir, { recursive: true })
+  }
+  const config = initLogger(opt)
+  log4js.configure(config)
+  const logger = addColor(log4js.getLogger('default'), opt.color)
+  global.logger = logger
+  logger.level = opt.level
+
+  logger.debug(`日志系统已初始化，当前日志等级：${logger.level}`)
+  return logger
 }

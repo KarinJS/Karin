@@ -1,4 +1,4 @@
-import { updatePkg } from '@karinjs/utils'
+// import { updatePkg } from '@karinjs/utils'
 
 import { createServerErrorResponse, createSuccessResponse } from '../utils/response'
 
@@ -9,7 +9,7 @@ import type { RequestHandler } from 'express'
  */
 export const updateCoreRouter: RequestHandler = async (_req, res) => {
   console.log('收到更新请求')
-  const result = await updatePkg('node-karin')
+  // const result = await updatePkg('node-karin')
   if (result.status === 'ok') {
     createSuccessResponse(res, result, '更新成功')
   } else {

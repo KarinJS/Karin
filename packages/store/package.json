@@ -1,0 +1,33 @@
+{
+  "name": "@karinjs/store",
+  "version": "0.0.1",
+  "description": "karin的路径管理器",
+  "keywords": [
+    "store",
+    "path",
+    "typescript"
+  ],
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc && tsdown",
+    "checkType": "tsc",
+    "prepublishOnly": "pnpm run checkType",
+    "pub": "npm publish --access public",
+    "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
+  },
+  "devDependencies": {
+    "@karinjs/envs": "workspace:*"
+  }
+}

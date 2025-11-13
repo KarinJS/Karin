@@ -3,17 +3,17 @@ import path from 'node:path'
 import { AxiosError } from 'axios'
 import { webuiDB } from '@karinjs/db'
 import { spawnProcess } from './utils'
-import { getPluginMarket } from '@karinjs/plugin'
+// import { getPluginMarket } from '@karinjs/plugin'
 // @ts-ignore TODO
 // import { reloadPackage } from '@/plugins/hmr'
-import { karinPathPlugins } from '@karinjs/paths'
+import { karinPathPlugins } from '@karinjs/store'
 import { isPnpm10, isWorkspace } from '@karinjs/envs'
-import { downloadFile, getFastGithub, raceRequest } from '@karinjs/utils'
+// import { downloadFile, getFastGithub, raceRequest } from '@karinjs/utils'
 
 import type { Response } from 'express'
 import type { TaskEntity } from '@karinjs/db'
 import type { PluginAdminInstall, PluginAdminCustomInstall, PluginAdminMarketInstall, PluginAdminMarketInstallApp } from './types'
-import type { KarinPluginType } from '@karinjs/plugin'
+// import type { KarinPluginType } from '@karinjs/plugin'
 
 /**
  * 插件安装管理类

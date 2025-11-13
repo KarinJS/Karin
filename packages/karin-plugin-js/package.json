@@ -12,7 +12,6 @@
   },
   "author": "shijin",
   "type": "module",
-  "main": "lib/index.js",
   "files": [
     "/lib/**/*.js",
     "/config/*.json",

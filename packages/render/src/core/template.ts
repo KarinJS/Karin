@@ -3,7 +3,7 @@ import path from 'node:path'
 import crypto from 'node:crypto'
 import template from 'art-template'
 import schedule from 'node-schedule'
-import { htmlPath } from '@karinjs/paths'
+import { htmlPath } from '@karinjs/store'
 import { getAllFiles } from '@karinjs/utils'
 import type { KarinScreenshotOptions, Snapka } from './types'
 

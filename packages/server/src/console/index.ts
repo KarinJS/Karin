@@ -1,8 +1,8 @@
 import path from 'node:path'
-import { consolePath } from '@karinjs/paths'
+import { consolePath } from '@karinjs/store'
 import { promises as fs } from 'node:fs'
 import { config } from '@karinjs/core'
-import { isLocalRequest } from '@karinjs/utils'
+// import { isLocalRequest } from '@karinjs/utils'
 
 // TODO: 迁移到适配器子包
 
@@ -60,7 +60,7 @@ export const consoleRouter: RequestHandler = async (req, res) => {
       return createBadRequestResponse(res, '不支持的文件类型')
     }
 
-    const isLocal = await isLocalRequest(req)
+    // const isLocal = await isLocalRequest(req)
     if (cfg.console.isLocal) {
       if (!isLocal) {
         return createForbiddenResponse(res, '非法请求')

@@ -1,0 +1,36 @@
+{
+  "name": "@karinjs/plugin-process",
+  "version": "0.0.1",
+  "description": "karin process management",
+  "keywords": [
+    "process",
+    "karin"
+  ],
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && tsdown",
+    "checkType": "tsc",
+    "prepublishOnly": "pnpm run checkType",
+    "pub": "npm publish --access public",
+    "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
+  },
+  "devDependencies": {
+    "@karinjs/logger": "workspace:",
+    "@karinjs/store": "workspace:*"
+  },
+  "peerDependencies": {
+    "@karinjs/logger": "workspace:",
+    "@karinjs/store": "workspace:*"
+  }
+}

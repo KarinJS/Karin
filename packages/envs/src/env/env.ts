@@ -1,60 +1,117 @@
 /**
- * 运行时环境
+ * 核心环境变量类型定义
  */
-export const RUNTIME = {
-  /** Node.js */
-  NODE: 'node',
-  /** PM2 */
-  PM2: 'pm2',
-  /** TSX */
-  TSX: 'tsx',
-  /** Bun */
-  BUN: 'bun',
-} as const
+export interface CoreEnv {
+  /**
+   * 当前运行环境
+   * - development 开发环境
+   * - production 生产环境
+   * - test 测试环境
+   */
+  NODE_ENV: 'development' | 'production' | 'test'
+  /** 是否启用调试模式 */
+  DEBUG?: string
+  /** node-karin版本 */
+  VERSION: string
+  /** node-karin版本 */
+  KARIN_VERSION: string
 
-declare global {
-  type EventEmitter = import('events').EventEmitter
+  /**
+   * HTTP监听端口
+   * @default 7777
+   */
+  HTTP_PORT: string
+  /**
+   * HTTP监听地址
+   * @default 0.0.0.0
+   */
+  HTTP_HOST: string
+  /**
+   * HTTP鉴权秘钥
+   * @description 默认随机生成
+   * @since 在2.0开始将分离 后端路由API与 WebUI登录 鉴权
+   */
+  HTTP_AUTH_KEY: string
+  /**
+   * HTTP WebUI登录账户
+   * @description 仅用于WebUI登录
+   */
+  HTTP_WEBUI_USER: string
+  /**
+   * HTTP WebUI登录秘钥
+   * @description 前端登录秘钥有2种配置方式:
+   * - 明文字符串: 直接设置环境变量 HTTP_WEBUI_KEY
+   * - 哈希: 通过sha256计算: `${password}.karin` -> sha256 -> hex -> urlsafeBase64 最终结果加上前缀 `hash:${结果}`
+   */
+  HTTP_WEBUI_KEY: string
+  /**
+   * 运行时环境
+   * - node: 使用 Node.js 运行
+   * - bun: 通过 Bun 运行
+   * - pm2: 通过 PM2 运行
+   * - tsx: 使用 TSX 运行
+   */
+  RUNTIME: 'node' | 'pm2' | 'tsx' | 'bun'
+}
+
+/**
+ * ffmpeg环境变量类型定义
+ */
+export interface FfmpegEnv {
+  /** ffmpeg路径 */
+  FFMPEG_PATH: string
+  /** ffprobe路径 */
+  FFPROBE_PATH: string
+  /** ffplay路径 */
+  FFPLAY_PATH: string
+}
+
+/**
+ * 数据目录环境变量类型定义
+ */
+export interface DataEnv {
+  /**
+   * 所有数据文件的基础目录
+   * @default @karinjs
+   * @since 2.0 变更为.karin
+   * @description 支持使用绝对路径或相对于用户主目录的路径
+   * @example
+   * ```ini
+   * # 使用绝对路径
+   * BASE_DIR=/var/lib/karin
+   *
+   * # 使用相对路径（相对于用户主目录）
+   * BASE_DIR=.karin_data
+   * ```
+   */
+  BASE_DIR?: string
+  /**
+   * karin自身配置目录名称
+   * @default core
+   * @since 2.0
+   * @description 仅支持文件夹名称 会被解析到 BASE_DIR 下
+   */
+  CORE_DIR_NAME?: string
+  /**
+   * 临时文件目录名称
+   * @default temp
+   * @since 2.0
+   * @description 仅支持文件夹名称 会被解析到 BASE_DIR 下
+   */
+  TEMP_DIR_NAME?: string
 }
 
 declare global {
+  type EventEmitter = import('events').EventEmitter
+
   namespace NodeJS {
-    interface ProcessEnv {
-      /** 是否启用HTTP */
-      HTTP_ENABLE: string
-      /** HTTP监听端口 */
-      HTTP_PORT: string
-      /** HTTP监听地址 */
-      HTTP_HOST: string
-      /** HTTP鉴权秘钥 仅用于karin自身Api */
-      HTTP_AUTH_KEY: string
-      /** ws_server鉴权秘钥 */
-      WS_SERVER_AUTH_KEY: string
-      /** 是否启用Redis 关闭后将使用内部虚拟Redis */
-      REDIS_ENABLE: string
-      /** 重启是否调用pm2 如果不调用则会直接关机 此配置适合有进程守护的程序 */
-      PM2_RESTART: string
-      /** 日志等级 */
-      LOG_LEVEL: string
-      /** 日志保留天数 */
-      LOG_DAYS_TO_KEEP: string
-      /** 日志文件最大大小 如果此项大于0则启用日志分割 */
-      LOG_MAX_LOG_SIZE: string
-      /** logger.fnc颜色 */
-      LOG_FNC_COLOR: string
-      /** 运行器 "node" | "pm2" | "tsx" */
-      RUNTIME: typeof RUNTIME[keyof typeof RUNTIME]
-      /** ffmpeg路径 */
-      FFMPEG_PATH: string
-      /** ffprobe路径 */
-      FFPROBE_PATH: string
-      /** ffplay路径 */
-      FFPLAY_PATH: string
-      /** node-karin版本 */
-      KARIN_VERSION: string
-      /** tsx监察者模式 */
-      TSX_WATCH: string
-      /** 日志实时Api最多支持同时连接数 */
-      LOG_MAX_CONNECTIONS: string
+    interface ProcessEnv extends CoreEnv, DataEnv, FfmpegEnv { }
+
+    interface ProcessVersions {
+      /** karin版本 */
+      karin: string
+      /** bun版本 */
+      bun?: string
     }
   }
 }

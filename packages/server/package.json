@@ -11,13 +11,10 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "development": "./src/index.ts",
-      "default": "./dist/index.mjs"
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
     }
   },
-  "main": "dist/index.mjs",
-  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "README.md"
@@ -40,7 +37,7 @@
     "@karinjs/events": "workspace:*",
     "@karinjs/git": "workspace:*",
     "@karinjs/logger": "workspace:*",
-    "@karinjs/paths": "workspace:*",
+    "@karinjs/store": "workspace:*",
     "@karinjs/plugin": "workspace:*",
     "@karinjs/utils": "workspace:*",
     "@karinjs/node-pty": "catalog:",
@@ -57,7 +54,7 @@
     "@karinjs/envs": "workspace:*",
     "@karinjs/git": "workspace:*",
     "@karinjs/logger": "workspace:*",
-    "@karinjs/paths": "workspace:*",
+    "@karinjs/store": "workspace:*",
     "@karinjs/plugin": "workspace:*",
     "@karinjs/utils": "workspace:*",
     "@karinjs/node-pty": "catalog:",

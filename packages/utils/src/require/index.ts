@@ -20,7 +20,7 @@ export type Parser = (content: string) => any
 /**
  * 导入文件选项
  */
-export type RequireOptions = {
+export interface RequireOptions {
   /** 指定配置文件类型 */
   type?: 'json' | 'yaml' | 'yml'
   /** 文件编码，默认utf-8 */
@@ -35,6 +35,28 @@ export type RequireOptions = {
   parser?: Parser
   /** 是否只读缓存，为true时如果缓存不存在则返回undefined */
   readCache?: boolean
+  /** 基础工作目录，若提供则相对路径基于该目录解析 */
+  cwd?: string
+}
+
+/**
+ * 写入文件选项 `(同步)`
+ */
+export interface WriteFileOptionsSync<T = any> {
+  /** fs.writeFileSync 的选项 */
+  fsOptions?: Parameters<typeof FsWriteFileSync>[2]
+  /** 序列化 */
+  stringify?: (data: T) => string | NodeJS.ArrayBufferView
+}
+
+/**
+ * 写入文件选项 `(异步)`
+ */
+export interface WriteFileOptions<T = any> {
+  /** fs.writeFile 的选项 */
+  fsOptions?: Parameters<typeof FsWriteFile>[2]
+  /** 序列化 */
+  stringify?: (data: T) => Promise<string | NodeJS.ArrayBufferView>
 }
 
 /**
@@ -64,9 +86,12 @@ const cache = new Map<string, CacheEntry>()
 /**
  * 格式化路径
  * @param filePath 文件路径
+ * @param cwd 当前工作目录
  */
-const _formatPath = (filePath: string) => {
-  return path.resolve(filePath).replace(/\\/g, '/')
+const _formatPath = (filePath: string, cwd?: string) => {
+  return cwd
+    ? path.resolve(cwd, filePath).replaceAll('\\', '/')
+    : path.resolve(filePath).replaceAll('\\', '/')
 }
 
 /**
@@ -92,8 +117,8 @@ export const clearRequire = (filePath?: string) => {
  */
 export const requireFile: RequireFunction = async (filePath, options = {}) => {
   const now = Date.now()
-  const absPath = _formatPath(filePath)
-  const { encoding = 'utf-8', force = false, ex = 300, size = 0, parser, type, readCache } = options
+  const { encoding = 'utf-8', force = false, ex = 300, size = 0, parser, type, readCache, cwd } = options
+  const absPath = _formatPath(filePath, cwd)
 
   const data = fileReady(absPath, now, force, ex, readCache)
   if (data !== false) return data
@@ -111,8 +136,8 @@ export const requireFile: RequireFunction = async (filePath, options = {}) => {
  */
 export const requireFileSync: RequireFunctionSync = (filePath, options = {}) => {
   const now = Date.now()
-  const absPath = _formatPath(filePath)
-  const { encoding = 'utf-8', force = false, ex = 300, size = 0, parser, type, readCache } = options
+  const { encoding = 'utf-8', force = false, ex = 300, size = 0, parser, type, readCache, cwd } = options
+  const absPath = _formatPath(filePath, cwd)
 
   const data = fileReady(absPath, now, force, ex, readCache)
   if (data !== false) return data
@@ -130,6 +155,9 @@ export const requireFileSync: RequireFunctionSync = (filePath, options = {}) => 
  * @param readCache 是否只读缓存
  */
 const fileReady = (absPath: string, now: number, force: boolean, ex: number, readCache?: boolean) => {
+  /** 懒加载清理过期缓存 */
+  lazyCleanExpiredCache()
+
   if (!force) {
     const cached = cache.get(absPath)
     if (cached) {
@@ -235,21 +263,46 @@ const parseContent = (
  * @description 在文件后缀名为 `.json` 时会自动格式化为 JSON，排除已经是 `string` 格式的内容
  * @description 在文件后缀名为 `.yml` 或 `.yaml` 时会自动格式化为 YAML，排除已经是 `string` 格式的内容
  */
-export const writeFileSync = (filePath: string, content: unknown, options: Parameters<typeof FsWriteFileSync>[2]) => {
-  if (filePath.endsWith('.json') && typeof content !== 'string') {
-    content = JSON.stringify(content, null, 2)
-  } else if ((filePath.endsWith('.yml') || filePath.endsWith('.yaml')) && typeof content !== 'string') {
-    content = yaml.stringify(content)
-  } else if (typeof content !== 'string' || !Buffer.isBuffer(content)) {
-    content = String(content)
+export const writeFileSync = <T = any> (
+  filePath: string,
+  content: T,
+  options?: WriteFileOptionsSync<T>
+) => {
+  /** 清理缓存 */
+  const clear = () => {
+    filePath = _formatPath(filePath)
+    cache.delete(filePath)
   }
 
-  // @ts-ignore
-  fs.writeFileSync(filePath, content, options || 'utf-8')
+  if (typeof options?.stringify === 'function') {
+    const data = options.stringify(content)
+    fs.writeFileSync(filePath, data, options.fsOptions || 'utf-8')
+    return clear()
+  }
 
-  /** 清除缓存 */
-  filePath = _formatPath(filePath)
-  cache.delete(filePath)
+  if (filePath.endsWith('.json')) {
+    const data = typeof content === 'string'
+      ? content
+      : JSON.stringify(content, null, 2)
+    fs.writeFileSync(filePath, data, options?.fsOptions || 'utf-8')
+    return clear()
+  }
+
+  if (filePath.endsWith('.yml') || filePath.endsWith('.yaml')) {
+    const data = typeof content === 'string'
+      ? content
+      : yaml.stringify(content)
+    fs.writeFileSync(filePath, data, options?.fsOptions || 'utf-8')
+    return clear()
+  }
+
+  if (Buffer.isBuffer(content)) {
+    fs.writeFileSync(filePath, content, options?.fsOptions || 'utf-8')
+    return clear()
+  }
+
+  fs.writeFileSync(filePath, String(content), options?.fsOptions || 'utf-8')
+  return clear()
 }
 
 /**
@@ -260,29 +313,60 @@ export const writeFileSync = (filePath: string, content: unknown, options: Param
  * @description 在文件后缀名为 `.json` 时会自动格式化为 JSON，排除已经是 `string` 格式的内容
  * @description 在文件后缀名为 `.yml` 或 `.yaml` 时会自动格式化为 YAML，排除已经是 `string` 格式的内容
  */
-export const writeFile = async (filePath: string, content: unknown, options?: Parameters<typeof FsWriteFile>[2]) => {
-  if (filePath.endsWith('.json') && typeof content !== 'string') {
-    content = JSON.stringify(content, null, 2)
-  } else if ((filePath.endsWith('.yml') || filePath.endsWith('.yaml')) && typeof content !== 'string') {
-    content = yaml.stringify(content)
-  } else if (typeof content !== 'string' || !Buffer.isBuffer(content)) {
-    content = String(content)
+export const writeFile = async <T = any> (
+  filePath: string,
+  content: T,
+  options?: WriteFileOptions<T>
+) => {
+  /** 清理缓存 */
+  const clear = () => {
+    filePath = _formatPath(filePath)
+    cache.delete(filePath)
   }
 
-  // @ts-ignore
-  await fs.promises.writeFile(filePath, content, options || 'utf-8')
+  if (typeof options?.stringify === 'function') {
+    const data = await options.stringify(content)
+    await fs.promises.writeFile(filePath, data, options.fsOptions || 'utf-8')
+    return clear()
+  }
 
-  filePath = _formatPath(filePath)
-  cache.delete(filePath)
+  if (filePath.endsWith('.json')) {
+    const data = typeof content === 'string'
+      ? content
+      : JSON.stringify(content, null, 2)
+    await fs.promises.writeFile(filePath, data, options?.fsOptions || 'utf-8')
+    return clear()
+  }
+
+  if (filePath.endsWith('.yml') || filePath.endsWith('.yaml')) {
+    const data = typeof content === 'string'
+      ? content
+      : yaml.stringify(content)
+    await fs.promises.writeFile(filePath, data, options?.fsOptions || 'utf-8')
+    return clear()
+  }
+
+  if (Buffer.isBuffer(content)) {
+    await fs.promises.writeFile(filePath, content, options?.fsOptions || 'utf-8')
+    return clear()
+  }
+
+  await fs.promises.writeFile(filePath, String(content), options?.fsOptions || 'utf-8')
+  return clear()
 }
 
-/** 每60秒检查一次过期时间 */
-setInterval(() => {
-  const now = Date.now()
-  for (const [key, entry] of cache.entries()) {
-    /** 永不过期 */
-    if (entry.expiry === 0) continue
-    /** 过期删除 */
-    if (entry.expiry <= now) cache.delete(key)
-  }
-}, 60000)
+/**
+ * 懒加载清理过期缓存
+ * 通过微任务异步执行，不阻塞主流程
+ */
+const lazyCleanExpiredCache = () => {
+  queueMicrotask(() => {
+    const now = Date.now()
+    for (const [key, entry] of cache.entries()) {
+      /** 永不过期 */
+      if (entry.expiry === 0) continue
+      /** 过期删除 */
+      if (entry.expiry <= now) cache.delete(key)
+    }
+  })
+}

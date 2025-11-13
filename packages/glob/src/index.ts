@@ -117,12 +117,12 @@ const createFormatPath = (options: GlobOptions) => {
   if (options.absPath) {
     return (file: string) => {
       file = path.resolve(options.cwd!, file)
-      return file.replace(/\\/g, '/')
+      return file.replaceAll('\\', '/')
     }
   }
 
   return (file: string) => {
-    return path.relative(options.cwd!, file).replace(/\\/g, '/')
+    return path.relative(options.cwd!, file).replaceAll('\\', '/')
   }
 }
 
@@ -201,11 +201,11 @@ export const importGlob = async <T = unknown> (
     if (options.absPath) {
       if (isAbsPath) return paths
       /** 转相对路径 */
-      return paths.map(p => path.relative(options.cwd!, p).replace(/\\/g, '/'))
+      return paths.map(p => path.relative(options.cwd!, p).replaceAll('\\', '/'))
     }
 
     if (isAbsPath) {
-      return paths.map(p => path.resolve(options.cwd!, p).replace(/\\/g, '/'))
+      return paths.map(p => path.resolve(options.cwd!, p).replaceAll('\\', '/'))
     }
 
     return paths

@@ -1,8 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { getPlugins } from '@karinjs/plugin'
+// import { getPlugins } from '@karinjs/plugin'
 import { webuiDB as task } from '@karinjs/db'
-import { karinPathPlugins } from '@karinjs/paths'
+import { karinPathPlugins } from '@karinjs/store'
 import { handleReturn, spawnProcess } from './utils'
 
 import type { Response } from 'express'

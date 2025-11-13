@@ -1,5 +1,3 @@
-import lodash from 'lodash'
-import moment from 'moment'
 import { Key } from './key'
 import { EventEmitter } from 'node:events'
 import { diffSimpleArray } from '@karinjs/utils'
@@ -125,7 +123,7 @@ export class RedisClient extends EventEmitter {
    */
   private checkExpire (key: string, isRemove: boolean = true): boolean {
     if (!this.store[key]) return false
-    if (this.store[key].expire !== -1 && this.store[key].expire < moment().valueOf()) {
+    if (this.store[key].expire !== -1 && this.store[key].expire < Date.now()) {
       if (!isRemove) return true
       this.#del(key)
       return true
@@ -208,7 +206,7 @@ export class RedisClient extends EventEmitter {
     }
 
     /** 参数3如果为空直接保存即可 */
-    if (lodash.isEmpty(options)) {
+    if (Object.keys(options).length === 0) {
       this.store[key] = { type: Key.STR, expire }
       this.#str[key] = value
 
@@ -219,13 +217,13 @@ export class RedisClient extends EventEmitter {
     /** EX */
     if (options?.EX !== undefined) {
       const EX = Number(options.EX)
-      if (!isNaN(EX)) expire = moment().add(EX, 'seconds').valueOf()
+      if (!isNaN(EX)) expire = Date.now() + EX * 1000
       this.store[key] = { type: Key.STR, expire }
       this.#str[key] = value
       /** PX */
     } else if (options?.PX !== undefined) {
       const PX = Number(options.PX)
-      if (!isNaN(PX)) expire = moment().add(PX, 'milliseconds').valueOf()
+      if (!isNaN(PX)) expire = Date.now() + PX
       this.store[key] = { type: Key.STR, expire }
       this.#str[key] = value
       /** EXAT */
@@ -325,7 +323,7 @@ export class RedisClient extends EventEmitter {
    */
   async expire (key: string, seconds: number): Promise<number> {
     if (!this.store[key]) return 0
-    const expire = moment().add(seconds, 'seconds').valueOf()
+    const expire = Date.now() + seconds * 1000
     this.store[key].expire = expire
     this.#sqlite.expire(key, expire)
     return 1
@@ -339,7 +337,7 @@ export class RedisClient extends EventEmitter {
     if (!this.store[key]) return -2
     if (this.store[key].expire === -1) return -1
     if (this.checkExpire(key)) return -2
-    return moment(this.store[key].expire).diff(moment(), 'seconds')
+    return Math.ceil((this.store[key].expire - Date.now()) / 1000)
   }
 
   /**
@@ -501,7 +499,9 @@ export class RedisClient extends EventEmitter {
   async hGetAll (key: string): Promise<Record<string, string>> {
     if (!this.#hash[key]) return {}
     if (this.checkExpire(key)) return {}
-    return lodash.mapValues(this.#hash[key], (value) => value.toString())
+    return Object.fromEntries(
+      Object.entries(this.#hash[key]).map(([k, v]) => [k, v.toString()])
+    )
   }
 
   /**
@@ -763,25 +763,21 @@ export class RedisClient extends EventEmitter {
    */
   async pExpire (key: string, seconds: number): Promise<boolean> {
     if (!this.#pf[key]) return false
-    this.store[key].expire = moment().add(seconds, 'seconds').valueOf()
+    this.store[key].expire = Date.now() + seconds * 1000
     this.#sqlite.set(key, JSON.stringify(this.#pf[key]), Key.PF, this.store[key].expire)
     return true
   }
 
   /**
-   * 设置 HyperLogLog 的过期时间
+   * 获取 HyperLogLog 的过期时间（秒）
    * @param key HyperLogLog 的键
-   * @param seconds 过期时间（秒）
-   * @returns 返回 1 表示设置成功，0 表示设置失败
+   * @returns 返回剩余秒数，-1 表示永不过期，-2 表示键不存在
    */
   async pTTL (key: string): Promise<number> {
     if (!this.#pf[key]) return -2
     if (this.store[key].expire === -1) return -1
     if (this.checkExpire(key)) return -2
-    const ttl = moment(this.store[key].expire).diff(moment(), 'seconds')
-    this.store[key].expire = ttl
-    this.#sqlite.set(key, JSON.stringify(this.#pf[key]), Key.PF, this.store[key].expire)
-    return ttl
+    return Math.ceil((this.store[key].expire - Date.now()) / 1000)
   }
 
   /**

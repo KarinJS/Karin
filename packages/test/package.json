@@ -6,7 +6,6 @@
   "license": "MIT",
   "author": "shijin",
   "type": "module",
-  "main": "index.js",
   "scripts": {
     "app": "node index.mjs",
     "checkType": "tsc",

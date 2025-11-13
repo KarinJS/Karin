@@ -8,39 +8,42 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "development": "./src/index.ts",
-      "default": "./dist/index.mjs"
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
     }
   },
-  "main": "index.js",
   "scripts": {
     "build": "tsdown",
     "check": "pnpm run checkType",
     "checkType": "tsc",
     "prepublishOnly": "pnpm run checkType",
     "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "esm:import:error": "node ./demo/esm-import-error/dynamic-import-demo.mjs"
   },
   "devDependencies": {
     "@karinjs/adapter": "workspace:*",
-    "@karinjs/core": "workspace:*",
+    "@karinjs/components": "workspace:*",
     "@karinjs/envs": "workspace:*",
     "@karinjs/events": "workspace:*",
+    "@karinjs/store": "workspace:*",
     "@karinjs/logger": "workspace:*",
     "@karinjs/utils": "workspace:*",
     "callsites": "^4.2.0",
     "chokidar": "catalog:",
-    "lodash": "catalog:"
+    "semver": "catalog:",
+    "node-schedule": "catalog:"
   },
   "peerDependencies": {
     "@karinjs/adapter": "workspace:*",
-    "@karinjs/core": "workspace:*",
+    "@karinjs/components": "workspace:*",
     "@karinjs/envs": "workspace:*",
     "@karinjs/events": "workspace:*",
+    "@karinjs/store": "workspace:*",
     "@karinjs/logger": "workspace:*",
     "@karinjs/utils": "workspace:*",
+    "callsites": "^4.2.0",
     "chokidar": "catalog:",
-    "lodash": "catalog:"
+    "semver": "catalog:",
+    "node-schedule": "catalog:"
   }
 }

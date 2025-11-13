@@ -137,7 +137,7 @@ export class EventEmitter<T extends EventMap<T> = DefaultEventMap> {
    * @param eventName - 可选，事件名。如果未提供，则移除所有事件的所有监听器
    * @returns 当前事件发射器实例，支持链式调用
    */
-  public removeAllListeners (eventName?: Key<unknown, T>): this {
+  public removeAllListeners<K> (eventName?: Key<K, T>): this {
     if (eventName) {
       if (typeof eventName === 'string') {
         if (isRegExpString(eventName)) {
@@ -192,7 +192,7 @@ export class EventEmitter<T extends EventMap<T> = DefaultEventMap> {
 
     toRemove.forEach(eventName => {
       if (typeof eventName === 'symbol') return
-      this.removeAllListeners(eventName)
+      this.removeAllListeners(eventName as any)
     })
 
     return this

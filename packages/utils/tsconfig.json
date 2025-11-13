@@ -9,7 +9,15 @@
       ]
     }
   },
+  "include": [
+    "src/**/*"
+  ],
   "exclude": [
-    "tsdown.config.ts"
+    "tsdown.config.ts",
+    "src/index.new.ts",
+    "src/index.old.ts",
+    "src/system/fileToUrl.ts",
+    "src/system/update.ts",
+    "src/handler/**"
   ]
 }

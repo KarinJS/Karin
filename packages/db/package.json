@@ -13,13 +13,10 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "development": "./src/index.ts",
-      "default": "./dist/index.mjs"
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
     }
   },
-  "main": "dist/index.mjs",
-  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "README.md"
@@ -31,18 +28,13 @@
     "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
   },
   "devDependencies": {
-    "@karinjs/logger": "workspace:*",
     "@karinjs/utils": "workspace:*",
-    "lodash": "catalog:",
-    "moment": "catalog:",
     "redis": "catalog:",
     "sqlite3": "catalog:"
   },
   "peerDependencies": {
     "@karinjs/logger": "workspace:*",
     "@karinjs/utils": "workspace:*",
-    "lodash": "catalog:",
-    "moment": "catalog:",
     "redis": "catalog:",
     "sqlite3": "catalog:"
   }

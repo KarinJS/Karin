@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import crypto from 'node:crypto'
-import { authKey } from '@karinjs/utils'
+// import { authKey } from '@karinjs/utils'
 import { HTTPStatusCode } from '../utils/response'
 
 /** JWT验证基础接口 */
@@ -51,14 +51,14 @@ const EXPIRES_IN = (process.env.EXPIRES_IN || '7d') as '7d'
 // 刷新令牌 30天
 const REFRESH_EXPIRES_IN = '30d'
 /** 鉴权密钥 */
-let secretOrPrivateKey = ''
+const secretOrPrivateKey = ''
 
 /**
  * 初始化鉴权密钥
  */
 export const initSecretOrPrivateKey = () => {
   if (!secretOrPrivateKey) {
-    secretOrPrivateKey = crypto.createHash('sha256').update(authKey()).digest('hex')
+    // secretOrPrivateKey = crypto.createHash('sha256').update(authKey()).digest('hex')
   }
 }
 
@@ -169,5 +169,5 @@ export const refreshAccessToken = (userId: string) => {
  * 更新缓存
  */
 export const updateJwt = () => {
-  secretOrPrivateKey = crypto.createHash('sha256').update(authKey()).digest('hex')
+  // secretOrPrivateKey = crypto.createHash('sha256').update(authKey()).digest('hex')
 }

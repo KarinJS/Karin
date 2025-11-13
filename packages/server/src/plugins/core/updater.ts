@@ -1,9 +1,9 @@
 import path from 'node:path'
 import { webuiDB } from '@karinjs/db'
-import { gitPull } from '@karinjs/git'
+// import { gitPull } from '@karinjs/git'
 import { isWorkspace } from '@karinjs/envs'
-import { getPlugins } from '@karinjs/plugin'
-import { karinPathPlugins } from '@karinjs/paths'
+// import { getPlugins } from '@karinjs/plugin'
+import { karinPathPlugins } from '@karinjs/store'
 import { handleReturn, spawnProcess } from './utils'
 
 import type { Response } from 'express'

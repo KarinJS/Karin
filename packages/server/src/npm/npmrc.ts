@@ -1,9 +1,9 @@
 import fs from 'node:fs'
-import { getNpmConfig, getNpmConfigList, setNpmConfig } from '@karinjs/utils'
+// import { getNpmConfig, getNpmConfigList, setNpmConfig } from '@karinjs/utils'
 import { createBadRequestResponse, createServerErrorResponse, createSuccessResponse } from '../utils/response'
 
 import type { RequestHandler } from 'express'
-import type { NpmBaseConfigResponse } from '@karinjs/utils'
+// import type { NpmBaseConfigResponse } from '@karinjs/utils'
 
 /**
  * 获取.npmrc文件列表

@@ -28,5 +28,10 @@
   "javascript.preferences.importModuleSpecifier": "non-relative",
   "javascript.preferences.importModuleSpecifierEnding": "minimal",
   "typescript.disableAutomaticTypeAcquisition": true,
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "js/ts.hover.maximumLength": 1000,
+  "typescript.experimental.expandableHover": true,
+  "typescript.tsserver.maxTsServerMemory": 8192,
+  // "typescript.experimental.expandableHover": false,
+  "javascript.hover.maximumLength": 10000,
+  "typescript.hover.maximumLength": 10000
 }

@@ -13,16 +13,17 @@ onlyBuiltDependencies:
 catalog:
   "@karinjs/node-pty": "npm:@karinjs/node-pty"
   art-template: "npm:@karinjs/art-template"
-  axios: "npm:@karinjs/axios"
+  axios: "npm:@karinjs/axios@1.13.0"
   chalk: 5.4.1
   chokidar: 4.0.3
   express: "npm:@karinjs/express"
   jsonwebtoken: "npm:@karinjs/jsonwebtoken"
   lodash: "npm:@karinjs/lodash"
-  log4js: 6.9.1
+  log4js: "npm:@karinjs/log4js@1.3.4"
   moment: "npm:@karinjs/moment"
-  node-schedule: "npm:@karinjs/node-schedule"
+  node-schedule: "npm:@karinjs/node-schedule@1.1.2"
   redis: "npm:@karinjs/redis"
   sqlite3: "npm:@karinjs/sqlite3-cjs"
   ws: "npm:@karinjs/ws"
   yaml: 2.7.0
+  semver: 7.7.3

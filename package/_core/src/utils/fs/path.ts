@@ -32,25 +32,70 @@ export const filesByExt = (
   const list: string[] = []
   if (!Array.isArray(ext)) ext = [ext]
 
-  const allFiles = (dir: string, entry: fs.Dirent) => {
-    /** 如果是目录则递归查找 */
-    if (entry.isDirectory()) {
-      const subFiles = filesByExt(path.join(dir, entry.name), ext, returnType)
-      list.push(...subFiles)
-    } else if (ext.includes(path.extname(entry.name))) {
-      /** 如果是文件则添加到列表 */
-      if (returnType === 'name') {
-        list.push(entry.name)
-      } else if (returnType === 'rel') {
-        const file = path.resolve(dir, entry.name)
-        list.push(path.relative(process.cwd(), file))
-      } else if (returnType === 'abs') {
-        list.push(formatPath(path.resolve(dir, entry.name)))
-      }
-    }
-  }
+  files.forEach(entry => {
+    if (!entry.isFile()) return
+    if (!ext.includes(path.extname(entry.name))) return
 
-  files.forEach(entry => allFiles(filePath, entry))
+    /** 如果是文件则添加到列表 */
+    if (returnType === 'name') {
+      list.push(entry.name)
+    } else if (returnType === 'rel') {
+      const file = path.resolve(filePath, entry.name)
+      list.push(formatPath(path.relative(process.cwd(), file)))
+    } else if (returnType === 'abs') {
+      list.push(formatPath(path.resolve(filePath, entry.name)))
+    }
+  })
+  return list
+}
+
+/**
+ * @description 根据文件后缀名从指定路径下读取符合要求的文件（异步高性能版本）
+ * @param filePath - 路径
+ * @param ext - 后缀名、或后缀名列表
+ * @param returnType - 返回类型 `name:文件名` `rel:相对路径` `abs:绝对路径`
+ * @returns Promise<string[]> - 返回文件列表的 Promise
+ * @example
+ * ```ts
+ * await filesByExtAsync('./plugins/karin-plugin-test', '.js')
+ * // -> ['1.js', '2.js']
+ * await filesByExtAsync('./plugins', ['.js', '.ts'], 'name')
+ * // -> ['1.js', '2.js', '3.ts']
+ * await filesByExtAsync('./plugins', '.js', 'rel')
+ * // -> ['plugins/1.js', 'plugins/2.js']
+ * await filesByExtAsync('./plugins', '.js', 'abs')
+ * // -> ['C:/Users/karin/plugins/1.js', 'C:/Users/karin/plugins/2.js']
+ * ```
+ */
+export const filesByExtAsync = async (
+  filePath: string,
+  ext: string | string[],
+  returnType: 'name' | 'rel' | 'abs' = 'name'
+): Promise<string[]> => {
+  const stat = await fs.promises.stat(filePath).catch(() => null)
+  if (!stat) return []
+  if (!stat.isDirectory()) return []
+
+  const list: string[] = []
+  const extensions = Array.isArray(ext) ? ext : [ext]
+  const files = await fs.promises.readdir(filePath, { withFileTypes: true })
+  if (!files.length) return []
+
+  await Promise.all(files.map(async entry => {
+    if (!entry.isFile()) return
+    if (!extensions.includes(path.extname(entry.name))) return
+
+    /** 如果是文件则添加到列表 */
+    if (returnType === 'name') {
+      list.push(entry.name)
+    } else if (returnType === 'rel') {
+      const file = path.resolve(filePath, entry.name)
+      list.push(formatPath(path.relative(process.cwd(), file)))
+    } else if (returnType === 'abs') {
+      list.push(formatPath(path.resolve(filePath, entry.name)))
+    }
+  }))
+
   return list
 }
 

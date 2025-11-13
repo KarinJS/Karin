@@ -1,5 +1,5 @@
 import util from 'node:util'
-import { lockProp } from '@karinjs/utils'
+import { system } from '@karinjs/utils'
 import { segment } from '../../segment'
 import { makeMessage, createRawMessage } from './raw'
 
@@ -33,9 +33,21 @@ export abstract class BaseEvent<T extends EventParent> {
   public reply: Reply
   /** 存储器 由开发者自行调用 */
   public store: Map<any, any>
-  /** 日志函数字符串 */
+  /**
+   * 日志函数字符串
+   * @example
+   * ```
+   * // -> [karin-plugin-example][testCommand]
+   * ```
+   */
   public logFnc: string
-  /** 日志用户字符串 */
+  /**
+   * 日志用户字符串
+   * @example
+   * ```
+   * // -> [group:967068507-100001(karin)]
+   * ```
+   */
   public logText: string
   /** 是否为主人 */
   public isMaster: boolean
@@ -130,7 +142,7 @@ export abstract class BaseEvent<T extends EventParent> {
       }
     }
 
-    lockProp(this, 'reply')
+    system.lock.prop(this, 'reply')
   }
 
   /**
@@ -240,13 +252,56 @@ export abstract class BaseEvent<T extends EventParent> {
 
   /**
    * 传入目标权限，返回当前事件触发者是否拥有该权限
+   * @param role - 目标权限 绝对匹配 不继承到上级权限
+   * @returns 是否拥有该权限
+   * @example
+   * ```ts
+   * // 检查是否拥有群管理员或群主权限（数组形式为精确匹配，不向上检查）
+   * if (ctx.hasPermission(['group:admin', 'group:owner'])) {
+   *   ctx.reply('你是群管理员或群主')
+   * }
+   * ```
+   */
+  public hasPermission (role: Permission[]): boolean
+
+  /**
+   * 传入目标权限，返回当前事件触发者是否拥有该权限
+   * @param role - 目标权限
+   * @param isUpper - 是否向上检查 例如`group:admin`向上检查到`master` 默认`true`
+   * @returns 是否拥有该权限
+   * @example
+   * ```ts
+   * // 检查是否拥有群管理员权限，默认向上检查（管理员会检查到主人、master）
+   * if (ctx.hasPermission('group:admin')) {
+   *   ctx.reply('你拥有群管理员或更高权限')
+   * }
+   *
+   * // 明确启用向上检查
+   * if (ctx.hasPermission('group:admin', true)) {
+   *   ctx.reply('你拥有群管理员或更高权限')
+   * }
+   *
+   * // 判断是否为群管理员
+   * if (ctx.hasPermission('group:admin', false)) {
+   *   ctx.reply('你正好是群管理员')
+   * }
+   * ```
+   */
+  public hasPermission (role: Permission, isUpper?: boolean): boolean
+
+  /**
+   * 传入目标权限，返回当前事件触发者是否拥有该权限
    * @param role - 目标权限
    * @param isUpper - 是否向上检查 例如`group:admin`向上检查到`master` 默认`true`
    * @returns 是否拥有该权限
    */
-  public hasPermission (role: Permission, isUpper = true): boolean {
-    if (role === 'all') return true
+  public hasPermission (role: Permission | Permission[], isUpper = true): boolean {
+    /** 对于数组的检查 需要为绝对匹配 */
+    if (Array.isArray(role)) {
+      return this.#checkPermissionArray(role)
+    }
 
+    if (role === 'all') return true
     const levels: Record<string, number> = {
       master: 100,
       admin: 80,
@@ -258,28 +313,51 @@ export abstract class BaseEvent<T extends EventParent> {
       all: 0,
     }
 
-    const userLevel = () => {
-      if (this.isMaster) return levels.master
-      if (this.isAdmin) return levels.admin
-
-      if (this.isGroup || this.isGuild) {
-        const senderRole = (this.sender as { role?: Role }).role || 'member'
-        if (senderRole === 'owner') {
-          return this.isGroup ? levels['group.owner'] : levels['guild.owner']
-        }
-
-        if (senderRole === 'admin') {
-          return this.isGroup ? levels['group.admin'] : levels['guild.admin']
-        }
-      }
-
-      return levels.member
-    }
-
+    const userLevel = this.#getUserPermissionLevel(levels)
     const requiredLevel = levels[role] || Number.MAX_SAFE_INTEGER
 
     return isUpper
-      ? userLevel() >= requiredLevel
-      : userLevel() === requiredLevel
+      ? userLevel >= requiredLevel
+      : userLevel === requiredLevel
+  }
+
+  /**
+   * 检查权限数组（绝对匹配）
+   * @param roles - 权限数组
+   * @returns 是否匹配任一权限
+   */
+  #checkPermissionArray (roles: Permission[]): boolean {
+    if (roles.length === 0) return false
+
+    const checkMap: Record<string, () => boolean> = {
+      master: () => this.isMaster,
+      admin: () => this.isAdmin,
+      'group.owner': () => this.isGroup && (this.sender as { role?: Role }).role === 'owner',
+      'guild.owner': () => this.isGuild && (this.sender as { role?: Role }).role === 'owner',
+      'group.admin': () => this.isGroup && (this.sender as { role?: Role }).role === 'admin',
+      'guild.admin': () => this.isGuild && (this.sender as { role?: Role }).role === 'admin',
+      all: () => true,
+    }
+
+    return roles.some(r => checkMap[r]?.() || false)
+  }
+
+  /**
+   * 获取用户权限等级
+   * @param levels - 权限等级映射表
+   * @returns 用户权限等级
+   */
+  #getUserPermissionLevel (levels: Record<string, number>): number {
+    if (this.isMaster) return levels.master
+    if (this.isAdmin) return levels.admin
+
+    const senderRole = (this.sender as { role?: Role }).role
+    if (!senderRole || senderRole === 'member') return levels.member
+
+    const scenePrefix = this.isGroup ? 'group' : this.isGuild ? 'guild' : ''
+    if (!scenePrefix) return levels.member
+
+    const roleKey = `${scenePrefix}.${senderRole}` as keyof typeof levels
+    return levels[roleKey] || levels.member
   }
 }

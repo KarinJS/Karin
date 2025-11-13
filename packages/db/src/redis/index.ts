@@ -44,16 +44,16 @@ const start = async () => {
 
   if (os.platform() === 'win32') {
     // tips: windows仅适配 https://github.com/redis-windows/redis-windows 项目
-    const result = await exec('redis-server.exe redis.conf', { booleanResult: true })
+    const result = await exec('redis-server.exe redis.conf', { simple: true })
     if (result) return result
 
     /** 服务项 */
     const service = 'net start Redis'
-    return await exec(service, { booleanResult: true })
+    return await exec(service, { simple: true })
   }
 
   const cmd = 'redis-server --save 300 10 --daemonize yes' + await isArm64()
-  return await exec(cmd, { booleanResult: true })
+  return await exec(cmd, { simple: true })
 }
 
 /**

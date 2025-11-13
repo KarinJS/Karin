@@ -1,6 +1,6 @@
-import { config } from '../config'
+import { config } from '@karinjs/config'
 import { db, redis, createDB, createRedis } from '@karinjs/db'
-import { karinPathDb, karinPathRedisSqlite3 } from '@karinjs/paths'
+import { karinPathDb, karinPathRedisSqlite3 } from '@karinjs/store'
 
 /**
  * 初始化数据库

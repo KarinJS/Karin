@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { URL } from 'node:url'
-import { getFastRegistry, getPackageJson } from '@karinjs/utils'
-import { getPlugins, getPluginMarket, KarinPluginType } from '@karinjs/plugin'
+// import { getFastRegistry, getPackageJson } from '@karinjs/utils'
+// import { getPlugins, getPluginMarket, KarinPluginType } from '@karinjs/plugin'
 import { createSuccessResponse, createServerErrorResponse } from '../../utils'
 import { REDIS_PLUGIN_MARKET_LIST_CACHE_KEY, REDIS_PLUGIN_MARKET_LIST_CACHE_EXPIRE } from '@karinjs/envs'
 
@@ -11,7 +11,7 @@ import type {
   PluginMarketRequest,
   PluginMarketResponse,
 } from '../../types'
-import type { PluginCacheKeyPkg } from '@karinjs/plugin'
+// import type { PluginCacheKeyPkg } from '@karinjs/plugin'
 
 /**
  * @webui 插件市场 获取插件列表

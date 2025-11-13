@@ -1,10 +1,10 @@
 import path from 'node:path'
 import { redis } from '@karinjs/db'
 import { getPluginWebConfig } from '../../config'
-import { getNpmLatestVersion } from '@karinjs/utils'
-import { getLocalCommitHash, getRemoteCommitHash } from '@karinjs/git'
+// import { getNpmLatestVersion } from '@karinjs/utils'
+// import { getLocalCommitHash, getRemoteCommitHash } from '@karinjs/git'
 import { createSuccessResponse, createServerErrorResponse } from '../../utils'
-import { cache, getPlugins, getPluginMarket, KarinPluginType } from '@karinjs/plugin'
+// import { cache, getPlugins, getPluginMarket, KarinPluginType } from '@karinjs/plugin'
 import {
   REDIS_PLUGIN_LIST_CACHE_EXPIRE,
   REDIS_LOCAL_PLUGIN_LIST_CACHE_KEY,
@@ -14,7 +14,7 @@ import {
 
 import type { RequestHandler } from 'express'
 import type { FrontendInstalledPluginListResponse } from '../../types'
-import type { PluginCacheKeyPkg, PluginPackageType } from '@karinjs/plugin'
+// import type { PluginCacheKeyPkg, PluginPackageType } from '@karinjs/plugin'
 
 /**
  * 插件管理 获取插件列表Api响应

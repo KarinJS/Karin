@@ -1,0 +1,36 @@
+{
+  "name": "@karinjs/plugin-adapter-console",
+  "version": "0.0.1",
+  "description": "",
+  "keywords": [],
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsdown"
+  },
+  "devDependencies": {
+    "@karinjs/adapter": "workspace:*",
+    "@karinjs/events": "workspace:*",
+    "@karinjs/envs": "workspace:*",
+    "@karinjs/logger": "workspace:*",
+    "@karinjs/store": "workspace:*",
+    "@karinjs/utils": "workspace:*",
+    "@karinjs/config": "workspace:*"
+  },
+  "peerDependencies": {
+    "@karinjs/adapter": "workspace:*",
+    "@karinjs/events": "workspace:*",
+    "@karinjs/envs": "workspace:*",
+    "@karinjs/logger": "workspace:*",
+    "@karinjs/store": "workspace:*",
+    "@karinjs/utils": "workspace:*",
+    "@karinjs/config": "workspace:*"
+  }
+}

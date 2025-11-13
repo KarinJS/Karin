@@ -1,6 +1,3 @@
-// Example usage
-import fs from 'node:fs'
-
 /**
  * 插件元数据
  */
@@ -42,6 +39,3 @@ export function parsePluginMetadata (content: string): PluginMetadata | null {
   if (Object.keys(metadata).length < 7) return null
   return metadata as PluginMetadata
 }
-const content = fs.readFileSync('./ver.js', 'utf-8')
-const meta = parsePluginMetadata(content)
-console.log(meta)

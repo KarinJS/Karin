@@ -1,7 +1,7 @@
 {
   "name": "@karinjs/utils",
-  "version": "0.0.1",
-  "description": "karin 工具库",
+  "version": "2.0.0",
+  "description": "karin 工具库 - 统一的模块化工具集合",
   "keywords": [
     "utils",
     "karin"
@@ -11,13 +11,10 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "development": "./src/index.ts",
-      "default": "./dist/index.mjs"
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
     }
   },
-  "main": "dist/index.mjs",
-  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "README.md"
@@ -30,31 +27,23 @@
     "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
   },
   "devDependencies": {
-    "@karinjs/adapter": "workspace:*",
-    "@karinjs/core": "workspace:*",
-    "@karinjs/db": "workspace:*",
-    "@karinjs/logger": "workspace:",
-    "@karinjs/paths": "workspace:*",
-    "@karinjs/plugin": "workspace:",
-    "@karinjs/server": "workspace:*",
+    "@karinjs/store": "workspace:*",
+    "@karinjs/envs": "workspace:*",
     "@types/ini": "^4.1.1",
     "axios": "catalog:",
-    "chokidar": "4.0.3",
+    "chokidar": "catalog:",
     "ini": "^5.0.0",
     "lodash": "catalog:",
-    "yaml": "catalog:"
+    "yaml": "catalog:",
+    "semver": "catalog:"
   },
   "peerDependencies": {
-    "@karinjs/adapter": "workspace:*",
-    "@karinjs/core": "workspace:*",
-    "@karinjs/db": "workspace:*",
-    "@karinjs/logger": "workspace:",
-    "@karinjs/paths": "workspace:*",
-    "@karinjs/plugin": "workspace:",
-    "@karinjs/server": "workspace:*",
+    "@karinjs/store": "workspace:*",
     "axios": "catalog:",
-    "chokidar": "4.0.3",
+    "chokidar": "catalog:",
+    "ini": "^5.0.0",
     "lodash": "catalog:",
-    "yaml": "catalog:"
+    "yaml": "catalog:",
+    "semver": "catalog:"
   }
 }

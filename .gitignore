@@ -24,6 +24,8 @@ packages/core/plugins
 /config/
 /resources
 @karinjs
+.karin
+*.db
 
 # 依赖
 node_modules/

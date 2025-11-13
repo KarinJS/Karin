@@ -1,9 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { watchs } from './watch'
-import { karinPathBase } from '@karinjs/paths'
+import { karinPathBase } from '@karinjs/store'
 import { findFiles, findFilesSync } from '../path'
-import { DEFAULT_CREATE_FILES } from '@karinjs/envs'
 import { requireFileSync, writeFileSync } from '../require'
 
 import type { RequireOptions } from '../require'
@@ -57,12 +56,12 @@ export class CreateConfig {
    * @param name 插件名称
    * @param files 插件配置文件列表
    */
-  constructor (name: string, files = DEFAULT_CREATE_FILES) {
+  constructor (name: string, files = ['config', 'data']) {
     if (!name || typeof name !== 'string' || !name.length) {
       throw new TypeError('插件名称必须是 string 类型')
     }
 
-    this.#dir = path.join(karinPathBase, name).replace(/\\/g, '/')
+    this.#dir = path.join(karinPathBase, name).replaceAll('\\', '/')
     files.forEach(v => this.mkdir(path.join(this.#dir, v)))
   }
 

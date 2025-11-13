@@ -1,9 +1,10 @@
 import util from 'node:util'
-import { core } from '@karinjs/plugin'
+// import { core } from '@karinjs/plugin'
 import { isDev } from '@karinjs/envs'
 
-import type { PluginCacheKeyPkg, PluginPackageType } from '@karinjs/plugin'
+// import type { PluginCacheKeyPkg, PluginPackageType } from '@karinjs/plugin'
 import type { WebConfigAuthor, WebConfigIcon, DefineConfig, ComponentConfig } from '@karinjs/components'
+// import type { KarinConfig } from '@karinjs/config'
 
 /**
  * 获取插件 web.config 配置类型
@@ -45,16 +46,31 @@ export const getWebConfigStatus = async (name: string): Promise<{
 } | {
   status: true
   pkg: PluginCacheKeyPkg,
-  data: DefineConfig
+  data: DefineConfig | KarinConfig
 }> => {
   const info = await core.promise.getPluginPackageDetail(name)
-  if (!info?.webConfigPath) {
-    return { status: false, pkg: null, data: '未提供 web.config 文件' }
+  if (!info) {
+    return { status: false, pkg: null, data: '插件不存在' }
   }
 
-  const data = await info.loadWebConfig(isDev())
+  // 优先尝试加载karin.config
+  let data = await info.loadKarinConfig(isDev())
+  if (data) {
+    return {
+      status: true,
+      pkg: info,
+      data,
+    }
+  }
+
+  // 回退到web.config
+  if (!info.webConfigPath) {
+    return { status: false, pkg: null, data: '未提供配置文件（web.config或karin.config）' }
+  }
+
+  data = await info.loadWebConfig(isDev())
   if (!data) {
-    return { status: false, pkg: null, data: '未找到 web.config 文件' }
+    return { status: false, pkg: null, data: '未找到有效的配置文件' }
   }
 
   return {

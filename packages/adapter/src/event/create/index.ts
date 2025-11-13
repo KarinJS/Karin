@@ -1,12 +1,3 @@
-import { friendNoticeHandler, groupNoticeHandler } from '../handler/notice'
-import { friendRequestHandler, groupRequestHandler } from '../handler/request'
-import {
-  directHandler,
-  friendHandler,
-  groupHandler,
-  groupTempHandler,
-  guildHandler,
-} from '../handler/message'
 import {
   FriendMessage,
   GroupMessage,
@@ -42,6 +33,21 @@ import {
   GroupInviteRequest,
   PrivateApplyRequest,
 } from '../abstract/request'
+import {
+  FriendMessageDispatch,
+  GroupMessageDispatch,
+  GroupTempMessageDispatch,
+  GuildMessageDispatch,
+  DirectMessageDispatch,
+} from '../../dispatch/message'
+import {
+  FriendNoticeDispatch,
+  GroupNoticeDispatch,
+} from '../../dispatch/notice'
+import {
+  FriendRequestDispatch,
+  GroupRequestDispatch,
+} from '../../dispatch/request'
 import type {
   FriendMessageOptions,
   GroupMessageOptions,
@@ -80,7 +86,7 @@ import type {
  */
 export const createFriendMessage = (options: FriendMessageOptions) => {
   const event = new FriendMessage(options)
-  friendHandler(event)
+  new FriendMessageDispatch(event).init()
   return event
 }
 
@@ -90,7 +96,7 @@ export const createFriendMessage = (options: FriendMessageOptions) => {
  */
 export const createGroupMessage = (options: GroupMessageOptions) => {
   const event = new GroupMessage(options)
-  groupHandler(event)
+  new GroupMessageDispatch(event).init()
   return event
 }
 
@@ -100,7 +106,7 @@ export const createGroupMessage = (options: GroupMessageOptions) => {
  */
 export const createGuildMessage = (options: GuildMessageOptions) => {
   const event = new GuildMessage(options)
-  guildHandler(event)
+  new GuildMessageDispatch(event).init()
   return event
 }
 
@@ -110,7 +116,7 @@ export const createGuildMessage = (options: GuildMessageOptions) => {
  */
 export const createDirectMessage = (options: DirectMessageOptions) => {
   const event = new DirectMessage(options)
-  directHandler(event)
+  new DirectMessageDispatch(event).init()
   return event
 }
 
@@ -120,7 +126,7 @@ export const createDirectMessage = (options: DirectMessageOptions) => {
  */
 export const createGroupTempMessage = (options: GroupTempMessageOptions) => {
   const event = new GroupTempMessage(options)
-  groupTempHandler(event)
+  new GroupTempMessageDispatch(event).init()
   return event
 }
 
@@ -130,7 +136,7 @@ export const createGroupTempMessage = (options: GroupTempMessageOptions) => {
  */
 export const createReceiveLikeNotice = (options: ReceiveLikeOptions) => {
   const event = new ReceiveLikeNotice(options)
-  friendNoticeHandler(event)
+  new FriendNoticeDispatch(event).init()
   return event
 }
 
@@ -140,7 +146,7 @@ export const createReceiveLikeNotice = (options: ReceiveLikeOptions) => {
  */
 export const createFriendIncreaseNotice = (options: FriendIncreaseOptions) => {
   const event = new FriendIncreaseNotice(options)
-  friendNoticeHandler(event)
+  new FriendNoticeDispatch(event).init()
   return event
 }
 
@@ -150,7 +156,7 @@ export const createFriendIncreaseNotice = (options: FriendIncreaseOptions) => {
  */
 export const createFriendDecreaseNotice = (options: FriendDecreaseOptions) => {
   const event = new FriendDecreaseNotice(options)
-  friendNoticeHandler(event)
+  new FriendNoticeDispatch(event).init()
   return event
 }
 
@@ -160,7 +166,7 @@ export const createFriendDecreaseNotice = (options: FriendDecreaseOptions) => {
  */
 export const createPrivatePokeNotice = (options: PrivatePokeOptions) => {
   const event = new PrivatePokeNotice(options)
-  friendNoticeHandler(event)
+  new FriendNoticeDispatch(event).init()
   return event
 }
 
@@ -170,7 +176,7 @@ export const createPrivatePokeNotice = (options: PrivatePokeOptions) => {
  */
 export const createPrivateRecallNotice = (options: PrivateRecallOptions) => {
   const event = new PrivateRecallNotice(options)
-  friendNoticeHandler(event)
+  new FriendNoticeDispatch(event).init()
   return event
 }
 
@@ -180,7 +186,7 @@ export const createPrivateRecallNotice = (options: PrivateRecallOptions) => {
  */
 export const createPrivateFileUploadedNotice = (options: PrivateFileUploadedOptions) => {
   const event = new PrivateFileUploadedNotice(options)
-  friendNoticeHandler(event)
+  new FriendNoticeDispatch(event).init()
   return event
 }
 
@@ -190,7 +196,7 @@ export const createPrivateFileUploadedNotice = (options: PrivateFileUploadedOpti
  */
 export const createGroupPokeNotice = (options: GroupPokeOptions) => {
   const event = new GroupPokeNotice(options)
-  groupNoticeHandler(event)
+  new GroupNoticeDispatch(event).init()
   return event
 }
 
@@ -200,7 +206,7 @@ export const createGroupPokeNotice = (options: GroupPokeOptions) => {
  */
 export const createGroupRecallNotice = (options: GroupRecallOptions) => {
   const event = new GroupRecallNotice(options)
-  groupNoticeHandler(event)
+  new GroupNoticeDispatch(event).init()
   return event
 }
 
@@ -210,7 +216,7 @@ export const createGroupRecallNotice = (options: GroupRecallOptions) => {
  */
 export const createGroupFileUploadedNotice = (options: GroupFileUploadedOptions) => {
   const event = new GroupFileUploadedNotice(options)
-  groupNoticeHandler(event)
+  new GroupNoticeDispatch(event).init()
   return event
 }
 
@@ -220,7 +226,7 @@ export const createGroupFileUploadedNotice = (options: GroupFileUploadedOptions)
  */
 export const createGroupCardChangedNotice = (options: GroupCardChangedOptions) => {
   const event = new GroupCardChangedNotice(options)
-  groupNoticeHandler(event)
+  new GroupNoticeDispatch(event).init()
   return event
 }
 
@@ -230,7 +236,7 @@ export const createGroupCardChangedNotice = (options: GroupCardChangedOptions) =
  */
 export const createGroupMemberTitleUpdatedNotice = (options: GroupMemberUniqueTitleChangedOptions) => {
   const event = new GroupMemberTitleUpdatedNotice(options)
-  groupNoticeHandler(event)
+  new GroupNoticeDispatch(event).init()
   return event
 }
 
@@ -240,7 +246,7 @@ export const createGroupMemberTitleUpdatedNotice = (options: GroupMemberUniqueTi
  */
 export const createGroupHlightsChangedNotice = (options: GroupHlightsChangedOptions) => {
   const event = new GroupHlightsChangedNotice(options)
-  groupNoticeHandler(event)
+  new GroupNoticeDispatch(event).init()
   return event
 }
 
@@ -250,7 +256,7 @@ export const createGroupHlightsChangedNotice = (options: GroupHlightsChangedOpti
  */
 export const createGroupMemberAddNotice = (options: GroupMemberIncreaseOptions) => {
   const event = new GroupMemberIncreaseNotice(options)
-  groupNoticeHandler(event)
+  new GroupNoticeDispatch(event).init()
   return event
 }
 
@@ -260,7 +266,7 @@ export const createGroupMemberAddNotice = (options: GroupMemberIncreaseOptions) 
  */
 export const createGroupMemberDelNotice = (options: GroupMemberDecreaseOptions) => {
   const event = new GroupMemberDecreaseNotice(options)
-  groupNoticeHandler(event)
+  new GroupNoticeDispatch(event).init()
   return event
 }
 
@@ -270,7 +276,7 @@ export const createGroupMemberDelNotice = (options: GroupMemberDecreaseOptions) 
  */
 export const createGroupAdminChangedNotice = (options: GroupAdminChangedOptions) => {
   const event = new GroupAdminChangedNotice(options)
-  groupNoticeHandler(event)
+  new GroupNoticeDispatch(event).init()
   return event
 }
 
@@ -280,7 +286,7 @@ export const createGroupAdminChangedNotice = (options: GroupAdminChangedOptions)
  */
 export const createGroupSignInNotice = (options: GroupSignInOptions) => {
   const event = new GroupSignInNotice(options)
-  groupNoticeHandler(event)
+  new GroupNoticeDispatch(event).init()
   return event
 }
 
@@ -290,7 +296,7 @@ export const createGroupSignInNotice = (options: GroupSignInOptions) => {
  */
 export const createGroupMemberBanNotice = (options: GroupMemberBanOptions) => {
   const event = new GroupMemberBanNotice(options)
-  groupNoticeHandler(event)
+  new GroupNoticeDispatch(event).init()
   return event
 }
 
@@ -300,7 +306,7 @@ export const createGroupMemberBanNotice = (options: GroupMemberBanOptions) => {
  */
 export const createGroupWholeBanNotice = (options: GroupWholeBanOptions) => {
   const event = new GroupWholeBanNotice(options)
-  groupNoticeHandler(event)
+  new GroupNoticeDispatch(event).init()
   return event
 }
 
@@ -310,7 +316,7 @@ export const createGroupWholeBanNotice = (options: GroupWholeBanOptions) => {
  */
 export const createGroupMessageReactionNotice = (options: GroupMessageReactionOptions) => {
   const event = new GroupMessageReactionNotice(options)
-  groupNoticeHandler(event)
+  new GroupNoticeDispatch(event).init()
   return event
 }
 
@@ -320,7 +326,7 @@ export const createGroupMessageReactionNotice = (options: GroupMessageReactionOp
  */
 export const createGroupLuckKingNotice = (options: GroupLuckKingOptions) => {
   const event = new GroupLuckKingNotice(options)
-  groupNoticeHandler(event)
+  new GroupNoticeDispatch(event).init()
   return event
 }
 
@@ -330,7 +336,7 @@ export const createGroupLuckKingNotice = (options: GroupLuckKingOptions) => {
  */
 export const createGroupHonorChangedNotice = (options: GroupHonorChangedOptions) => {
   const event = new GroupHonorChangedNotice(options)
-  groupNoticeHandler(event)
+  new GroupNoticeDispatch(event).init()
   return event
 }
 
@@ -340,7 +346,7 @@ export const createGroupHonorChangedNotice = (options: GroupHonorChangedOptions)
  */
 export const createGroupApplyRequest = (options: GroupApplyRequestOptions) => {
   const event = new GroupApplyRequest(options)
-  groupRequestHandler(event)
+  new GroupRequestDispatch(event).init()
   return event
 }
 
@@ -350,7 +356,7 @@ export const createGroupApplyRequest = (options: GroupApplyRequestOptions) => {
  */
 export const createGroupInviteRequest = (options: GroupInviteRequestOptions) => {
   const event = new GroupInviteRequest(options)
-  groupRequestHandler(event)
+  new GroupRequestDispatch(event).init()
   return event
 }
 
@@ -360,6 +366,6 @@ export const createGroupInviteRequest = (options: GroupInviteRequestOptions) => 
  */
 export const createPrivateApplyRequest = (options: PrivateApplyRequestOptions) => {
   const event = new PrivateApplyRequest(options)
-  friendRequestHandler(event)
+  new FriendRequestDispatch(event).init()
   return event
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@karinjs/paths",
+  "name": "@karinjs/store",
   "version": "0.0.1",
   "description": "karin的路径管理器",
   "keywords": [
@@ -17,8 +17,6 @@
       "default": "./dist/index.mjs"
     }
   },
-  "main": "dist/index.mjs",
-  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "README.md"

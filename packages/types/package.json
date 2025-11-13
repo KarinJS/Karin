@@ -1,8 +1,6 @@
 {
   "name": "@karinjs/karin-types",
   "version": "0.12.24",
-  "main": "",
-  "types": "index.d.ts",
   "scripts": {
     "checkType": "tsc",
     "prepublishOnly": "pnpm run checkType",

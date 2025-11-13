@@ -8,13 +8,10 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "development": "./src/index.ts",
-      "default": "./dist/index.mjs"
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
     }
   },
-  "main": "dist/index.mjs",
-  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "README.md"
@@ -28,14 +25,11 @@
   },
   "devDependencies": {
     "@karinjs/logger": "workspace:*",
-    "@karinjs/paths": "workspace:*",
-    "@karinjs/utils": "workspace:*",
-    "lodash": "catalog:"
+    "@karinjs/store": "workspace:*",
+    "@karinjs/utils": "workspace:*"
   },
   "peerDependencies": {
-    "@karinjs/logger": "workspace:*",
-    "@karinjs/paths": "workspace:*",
-    "@karinjs/utils": "workspace:*",
-    "lodash": "catalog:"
+    "@karinjs/store": "workspace:*",
+    "@karinjs/utils": "workspace:*"
   }
 }

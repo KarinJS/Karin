@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import moment from 'moment'
 import path from 'node:path'
-import { logsPath } from '@karinjs/paths'
+import { logsPath } from '@karinjs/store'
 import { logger } from '@karinjs/logger'
 import { createBadRequestResponse, createSuccessResponse } from '../utils/response'
 
