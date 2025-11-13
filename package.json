@@ -40,6 +40,6 @@
     "tsup": "^8.5.0",
     "tsx": "npm:@karinjs/tsx@5.1.0",
     "typescript": "^5.9.3",
-    "vite": "npm:rolldown-vite"
+    "vite": "npm:rolldown-vite@latest"
   }
 }
