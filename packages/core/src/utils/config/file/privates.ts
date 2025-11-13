@@ -60,6 +60,12 @@ const migrate = (
  * @returns 合并后的配置
  */
 const format = (data: Privates): Record<string, PrivatesObjectValue> => {
+  /** 确保数据是数组 */
+  if (!Array.isArray(data)) {
+    logger.warn('[privates.json] 配置文件格式错误，使用默认配置')
+    data = defaultConfig.privates
+  }
+
   /** 初始: 全局配置 */
   const defaultGlobal = defaultConfig.privates[1]
   /** 初始: 好友默认配置 */

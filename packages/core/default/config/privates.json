@@ -1,6 +1,16 @@
 [
   {
     "key": "default",
+    "inherit": true,
+    "cd": 0,
+    "mode": 0,
+    "alias": [],
+    "enable": [],
+    "disable": []
+  },
+  {
+    "key": "global",
+    "inherit": true,
     "cd": 0,
     "mode": 0,
     "alias": [],
@@ -9,6 +19,7 @@
   },
   {
     "key": "Bot:selfId",
+    "inherit": true,
     "cd": 0,
     "mode": 0,
     "alias": [],
@@ -17,6 +28,7 @@
   },
   {
     "key": "Bot:selfId:userId",
+    "inherit": true,
     "cd": 0,
     "mode": 0,
     "alias": [],
