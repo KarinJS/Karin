@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import chalk from 'chalk'
-import log4js, { type Configuration } from 'log4js'
+import log4js, { type Configuration, type Logger as Log4jsLogger } from 'log4js'
 import { karinPathLogs } from '@/root'
 import type { Logger, LoggerLevel } from '@/types/system/logger'
 
@@ -116,7 +116,7 @@ const initLogger = () => {
  * 为logger添加自定义颜色
  * @param logger - 日志记录器
  */
-const addColor = (Logger: log4js.Logger, color?: string) => {
+const addColor = (Logger: Log4jsLogger, color?: string) => {
   const logger = Logger as unknown as Logger
   logger.chalk = chalk
   logger.red = chalk.red
