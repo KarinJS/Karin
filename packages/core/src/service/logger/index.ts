@@ -149,6 +149,12 @@ const addColor = (Logger: Log4jsLogger, color?: string) => {
         return logger.info(logger.violet(`[Bot:${id}]`), ...args)
     }
   }
+
+  logger.setContextLayouts('pattern', {
+    type: 'pattern',
+    pattern: '[%d{hh:mm:ss.SSS}][%4.4p] %m',
+  })
+
   return logger
 }
 
