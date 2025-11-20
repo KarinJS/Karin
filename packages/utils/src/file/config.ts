@@ -5,7 +5,7 @@ import { karinPathBase } from '@karinjs/store'
 import { findFiles, findFilesSync } from '../path'
 import { requireFileSync, writeFileSync } from '../require'
 
-import type { RequireOptions } from '../require'
+import type { RequireOptions, WriteFileOptionsSync } from '../require'
 import type { Callback, WatchOptions } from './watch'
 
 /**
@@ -98,9 +98,9 @@ export class CreateConfig {
 
     const overwrite = (() => {
       if (typeof options.overwrite === 'function') {
-        return (...args: Parameters<Overwrite<false>>) => {
-          // @ts-ignore
-          const result = options.overwrite(...args)
+        const fn = options.overwrite as Overwrite<false>
+        return (srcPath: string, targetPath: string, fileName: string) => {
+          const result = fn(srcPath, targetPath, fileName)
           return result === true
         }
       }
@@ -147,9 +147,9 @@ export class CreateConfig {
 
     const overwrite = (() => {
       if (typeof options.overwrite === 'function') {
-        return async (...args: Parameters<Overwrite<true>>) => {
-          // @ts-ignore
-          const result = await options.overwrite(...args)
+        const fn = options.overwrite as Overwrite<true>
+        return async (srcPath: string, targetPath: string, fileName: string) => {
+          const result = await fn(srcPath, targetPath, fileName)
           return result === true
         }
       }
@@ -191,7 +191,7 @@ export class CreateConfig {
    * - 参数 `options` 会被传递给 `fs.writeFileSync` 方法，默认为 `utf-8`
    * @description 需要注意，文件如果已存在则不会做任何覆盖操作
    */
-  createConfigFile (name: string, content: unknown, options?: fs.WriteFileOptions) {
+  createConfigFile (name: string, content: unknown, options?: WriteFileOptionsSync) {
     const filePath = path.join(this.#dir, 'config', name)
     if (fs.existsSync(filePath)) {
       return
@@ -238,7 +238,7 @@ export class CreateConfig {
    * - 参数 `options` 会被传递给 `fs.writeFileSync` 方法，默认为 `utf-8`
    * @description 默认为覆盖写入，如需追加写入，请设置 `options.flag` 为 `'a'`
    */
-  writeConfigFile (name: string, content: unknown, options?: fs.WriteFileOptions) {
+  writeConfigFile (name: string, content: unknown, options?: WriteFileOptionsSync) {
     const filePath = path.join(this.#dir, 'config', name)
     writeFileSync(filePath, content, options)
   }

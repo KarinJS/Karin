@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { store } from '@karinjs/store'
-import { checkType, getValidPassword, getValidUsername, getFfmpegPath } from '../utils'
+import { checkType, getValidPassword, getValidUsername, getFfmpegPath, filterStringArray } from '../utils'
 
 export interface ConfigServerHttp {
   /**
@@ -39,14 +39,36 @@ export interface ConfigServerWs {
    */
   enable: boolean,
   /**
-   * 认证密钥
-   */
-  auth_key: string,
-  /**
-   * 自定义路由秘钥
+   * 路由对应的鉴权秘钥
    * @description 键为路由路径，值为秘钥
+   * @example
+   * ```ts
+   * {
+   *   '/custom/route1': 'route1_secret_key',
+   *   '/custom/route2': 'route2_secret_key',
+   *   // 客户端需要在头部或者query中提供相同的Bearer token才能通过鉴权
+   *   // 以 /custom/route2 为例子
+   *   // ws://127.0.0.1:7777/custom/route2?token=Bearer route2_secret_key
+   *   // 或者在连接时添加头部信息
+   *   // {
+   *   //   'Authorization': 'Bearer route2_secret_key'
+   *   // }
+   * }
+   * ```
    */
-  custom_routes: Record<string, string>,
+  routes: Record<string, string>,
+  /**
+   * 忽略鉴权的路由列表
+   * @description 如果某个路由不需要鉴权，可以将其添加到此列表中
+   * @example
+   * ```ts
+   * [
+   *   '/public/route1',
+   *   '/public/route2'
+   * ]
+   * ```
+   */
+  disabled_auth_routes: string[],
 }
 
 export interface ConfigServerFfmpeg {
@@ -95,8 +117,8 @@ export const configDefaultServer: ConfigServer = {
   },
   ws_server: {
     enable: true,
-    auth_key: '',
-    custom_routes: {},
+    routes: {},
+    disabled_auth_routes: [],
   },
   ffmpeg: {
     ffmpeg_path: '',
@@ -111,7 +133,7 @@ export const configDefaultServer: ConfigServer = {
  */
 export const configServerCompat = (config: Partial<ConfigServer>): ConfigServer => {
   const customRoutes: Record<string, string> = {}
-  Object.entries(config.ws_server?.custom_routes || {}).forEach(([key, value]) => {
+  Object.entries(config.ws_server?.routes || {}).forEach(([key, value]) => {
     const val = checkType('string', value, '')
     if (val.length === 0) return
     customRoutes[key] = val
@@ -119,15 +141,13 @@ export const configServerCompat = (config: Partial<ConfigServer>): ConfigServer 
 
   /** 校验失败列表 */
   const invalidList: string[] = []
-  const authKey = getValidPassword(config.ws_server?.auth_key)
+  const authKey = getValidPassword(config.http?.auth_key)
   const username = getValidUsername(config.http?.username)
   const password = getValidPassword(config.http?.password)
-  const wsAuthKey = getValidPassword(config.ws_server?.auth_key)
 
   if (username.valid === false) invalidList.push('[webui] 登录账户: server.http.username')
   if (password.valid === false) invalidList.push('[webui] 登录密码: server.http.password')
   if (authKey.valid === false) invalidList.push('[http] 鉴权秘钥: server.http.auth_key')
-  if (wsAuthKey.valid === false) invalidList.push('[ws] 通用鉴权密钥: server.ws_server.auth_key')
 
   const data = {
     http: {
@@ -139,8 +159,8 @@ export const configServerCompat = (config: Partial<ConfigServer>): ConfigServer 
     },
     ws_server: {
       enable: checkType('boolean', config.ws_server?.enable, configDefaultServer.ws_server.enable),
-      auth_key: wsAuthKey.value,
-      custom_routes: customRoutes,
+      routes: customRoutes,
+      disabled_auth_routes: filterStringArray(config.ws_server?.disabled_auth_routes),
     },
     ffmpeg: {
       ffmpeg_path: getFfmpegPath(config.ffmpeg?.ffmpeg_path, 'ffmpeg'),

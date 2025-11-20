@@ -31,8 +31,8 @@ catalogs:
       specifier: npm:@karinjs/lodash
       version: 1.1.1
     log4js:
-      specifier: npm:@karinjs/log4js@1.3.4
-      version: 1.3.4
+      specifier: npm:@karinjs/log4js@1.5.0
+      version: 1.5.0
     moment:
       specifier: npm:@karinjs/moment
       version: 1.1.5
@@ -46,8 +46,8 @@ catalogs:
       specifier: 7.7.3
       version: 7.7.3
     sqlite3:
-      specifier: npm:@karinjs/sqlite3-cjs
-      version: 0.1.0
+      specifier: npm:@karinjs/sqlite3@0.4.2
+      version: 0.4.2
     ws:
       specifier: npm:@karinjs/ws
       version: 1.2.0
@@ -148,36 +148,6 @@ importers:
         specifier: 'catalog:'
         version: '@karinjs/lodash@1.1.1'
 
-  packages/adapter-onebot:
-    devDependencies:
-      '@karinjs/adapter':
-        specifier: workspace:*
-        version: link:../adapter
-      '@karinjs/bot':
-        specifier: workspace:*
-        version: link:../bot
-      '@karinjs/core':
-        specifier: workspace:*
-        version: link:../core
-      '@karinjs/envs':
-        specifier: workspace:*
-        version: link:../envs
-      '@karinjs/events':
-        specifier: workspace:*
-        version: link:../events
-      '@karinjs/onebot':
-        specifier: workspace:*
-        version: link:../onebot
-      '@karinjs/server':
-        specifier: workspace:*
-        version: link:../server
-      express:
-        specifier: 'catalog:'
-        version: '@karinjs/express@1.0.3'
-      ws:
-        specifier: 'catalog:'
-        version: '@karinjs/ws@1.2.0'
-
   packages/bot:
     devDependencies:
       '@karinjs/adapter':
@@ -235,13 +205,13 @@ importers:
         version: '@karinjs/lodash@1.1.1'
       log4js:
         specifier: 'catalog:'
-        version: '@karinjs/log4js@1.3.4'
+        version: '@karinjs/log4js@1.5.0'
       moment:
         specifier: 'catalog:'
         version: '@karinjs/moment@1.1.5'
       sqlite3:
         specifier: 'catalog:'
-        version: '@karinjs/sqlite3-cjs@0.1.0'
+        version: '@karinjs/sqlite3@0.4.2'
       ws:
         specifier: 'catalog:'
         version: '@karinjs/ws@1.2.0'
@@ -252,9 +222,6 @@ importers:
       '@karinjs/adapter':
         specifier: workspace:*
         version: link:../adapter
-      '@karinjs/adapter-onebot':
-        specifier: workspace:*
-        version: link:../adapter-onebot
       '@karinjs/bot':
         specifier: workspace:*
         version: link:../bot
@@ -291,6 +258,9 @@ importers:
       '@karinjs/plugin-adapter-console':
         specifier: workspace:*
         version: link:../plugin-adapter-console
+      '@karinjs/plugin-adapter-onebot':
+        specifier: workspace:*
+        version: link:../plugin-adapter-onebot
       '@karinjs/plugin-process':
         specifier: workspace:*
         version: link:../plugin-process
@@ -391,7 +361,7 @@ importers:
         version: '@karinjs/redis@1.1.3'
       sqlite3:
         specifier: 'catalog:'
-        version: '@karinjs/sqlite3-cjs@0.1.0'
+        version: '@karinjs/sqlite3@0.4.2'
 
   packages/envs: {}
 
@@ -430,7 +400,7 @@ importers:
         version: 5.4.1
       log4js:
         specifier: 'catalog:'
-        version: '@karinjs/log4js@1.3.4'
+        version: '@karinjs/log4js@1.5.0'
 
   packages/node-karin:
     dependencies:
@@ -503,6 +473,39 @@ importers:
       '@karinjs/utils':
         specifier: workspace:*
         version: link:../utils
+
+  packages/plugin-adapter-onebot:
+    devDependencies:
+      '@karinjs/adapter':
+        specifier: workspace:*
+        version: link:../adapter
+      '@karinjs/bot':
+        specifier: workspace:*
+        version: link:../bot
+      '@karinjs/config':
+        specifier: workspace:*
+        version: link:../config
+      '@karinjs/envs':
+        specifier: workspace:*
+        version: link:../envs
+      '@karinjs/events':
+        specifier: workspace:*
+        version: link:../events
+      '@karinjs/onebot':
+        specifier: workspace:*
+        version: link:../onebot
+      '@karinjs/server':
+        specifier: workspace:*
+        version: link:../server
+      '@karinjs/utils':
+        specifier: workspace:*
+        version: link:../utils
+      express:
+        specifier: 'catalog:'
+        version: '@karinjs/express@1.0.3'
+      ws:
+        specifier: 'catalog:'
+        version: '@karinjs/ws@1.2.0'
 
   packages/plugin-process:
     devDependencies:
@@ -1628,8 +1631,8 @@ packages:
     resolution: {integrity: sha512-suq7TVHaaTrkD74WhEpzsm1SqZfiSf0yiWPEzoZhNbB1Kfwo/ys9yOwptZqTKXZyTghSrF+dfILvh2E32wBofw==}
     engines: {node: '>=18'}
 
-  '@karinjs/log4js@1.3.4':
-    resolution: {integrity: sha512-LRvn8SGqCGRC+7R+ojEF/JtzBnFowV+GATtHnJPXCx/q00nRizqZ7l8mLJgel9ajOulmUIbQeh1Cc1dWc7zFsg==}
+  '@karinjs/log4js@1.5.0':
+    resolution: {integrity: sha512-8NzsJdVxPp1SWY1mAqt0p7Occ2rwwMj2PMi0KhZv3e3fVAnkibbmSgu7IkQ0MoEmuLK5GuF8FEsAOdc89cXMdQ==}
     engines: {node: '>=18'}
 
   '@karinjs/moment@1.1.5':
@@ -1659,8 +1662,56 @@ packages:
     resolution: {integrity: sha512-Keo+1pJxvddTqBF4BE7AnZqvbBRXZ4QaZa8uJCKngmQ303TV3M0x0gHuKBfDNXQAkiHylw09a3YAzj68sh/Dhw==}
     engines: {node: '>=18'}
 
-  '@karinjs/sqlite3-cjs@0.1.0':
-    resolution: {integrity: sha512-7MzDRx3qF49shY2iComvLwg226R1Abmjlj+vig5z09X22iA5ib2+nlyFJzaQfZJ8uIbcTdUaBTOikQQbtGnaTw==}
+  '@karinjs/sqlite3-napi-v6-darwin-arm64@0.4.2':
+    resolution: {integrity: sha512-LJvTa8zsPsDdMbWxN7/FojIsGopv1TBA5DpHvmr4n2hdZ2GZZ2x++wmCNKJGgySoHVZ0It0cEoQfKTRKFtEW4Q==}
+    engines: {node: '>=10.20.0'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@karinjs/sqlite3-napi-v6-darwin-x64@0.4.2':
+    resolution: {integrity: sha512-hiE9x0yuIJXmmJLzHjv7zkQd3PmHUPIdCZ2pAW64Vww1+z71JCTEn2UivXXAucCH4SWhoMf6U4Eg7TW6a9rG5A==}
+    engines: {node: '>=10.20.0'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@karinjs/sqlite3-napi-v6-linux-arm64@0.4.2':
+    resolution: {integrity: sha512-8YocXQ4Cy/GneDIhRkC93hygIDnV1Gw0p1ZymjRkGeyU5pAWsd1OslcESi282MSj2uEWxBvQMeZmcWtgbWRb0g==}
+    engines: {node: '>=10.20.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@karinjs/sqlite3-napi-v6-linux-x64@0.4.2':
+    resolution: {integrity: sha512-UTc+UgXIkHCTEscyjNZ4rMld80Lmx7/MHPQEBKKv4LzkXC5a1XZKGC5AmYACDMxt6LTgKIdSVbdWkY5KAMoc9A==}
+    engines: {node: '>=10.20.0'}
+    cpu: [x64]
+    os: [linux]
+
+  '@karinjs/sqlite3-napi-v6-linuxmusl-arm64@0.4.2':
+    resolution: {integrity: sha512-VlYtRY/8ac4rHC3vd62+QgyyPAEr4W7b28Ik6L2awYejBnj/j5I9EohHp5NPrt4BZqU3rklmovULC4eggcrttQ==}
+    engines: {node: '>=10.20.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@karinjs/sqlite3-napi-v6-linuxmusl-x64@0.4.2':
+    resolution: {integrity: sha512-NwkNhGaN2Q+k9roPZjM+LZATkmlGaZaRcQ47bbfofhYe6oXvfIPglWVejAkcQXBvx7q1ystiJE1DtAyrLJPFmQ==}
+    engines: {node: '>=10.20.0'}
+    cpu: [x64]
+    os: [linux]
+
+  '@karinjs/sqlite3-napi-v6-win32-ia32@0.4.2':
+    resolution: {integrity: sha512-tGIWBtIdX2ckjr7cCCr6L/Eom05ybuJ5yLrSW13vYx+RrIRhm4zaN8qq/KGDFR6rK5btY7HxkcGXT+XukTSmvA==}
+    engines: {node: '>=10.20.0'}
+    cpu: [ia32]
+    os: [win32]
+
+  '@karinjs/sqlite3-napi-v6-win32-x64@0.4.2':
+    resolution: {integrity: sha512-B1c/iy5HgH2jDMZgkvXy9x9POfCZkbySWXTf2ig16s59Vw/UivHVWVYDpJ01BpM8pIRl9IpI/05yp6IkmLm8Pw==}
+    engines: {node: '>=10.20.0'}
+    cpu: [x64]
+    os: [win32]
+
+  '@karinjs/sqlite3@0.4.2':
+    resolution: {integrity: sha512-emMQdA8NwB3fGiUM0efaB08sbx51MOth83hGC5NO5rmmxIjm366NDAhaSW/f0vqLGtGez5ex/l7dpthfD/eoPg==}
     engines: {node: '>=18'}
 
   '@karinjs/tsx@5.1.0':
@@ -3508,9 +3559,6 @@ packages:
     resolution: {integrity: sha512-gYjt7OIqdM0PcttNYP2aVrr2G0bMALkBaoehD4BuRGjAOtipg0b6wHg1yNL+s5zSnLZZrGHOw4IrND8CD+3oIQ==}
     hasBin: true
 
-  bindings@1.5.0:
-    resolution: {integrity: sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==}
-
   birpc@2.6.1:
     resolution: {integrity: sha512-LPnFhlDpdSH6FJhJyn4M0kFO7vtQ5iPw24FnG0y21q09xC7e8+1LeR31S1MAIrDAHp4m7aas4bEkTDTvMAtebQ==}
 
@@ -4123,9 +4171,6 @@ packages:
   file-entry-cache@8.0.0:
     resolution: {integrity: sha512-XXTUwCvisa5oacNGRP9SfNtYBNAMi+RPwBFmblZEF7N7swHYQS6/Zfk7SRwx4D5j3CH211YNRco1DEMNVfZCnQ==}
     engines: {node: '>=16.0.0'}
-
-  file-uri-to-path@1.0.0:
-    resolution: {integrity: sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==}
 
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
@@ -6198,7 +6243,7 @@ snapshots:
 
   '@karinjs/lodash@1.1.1': {}
 
-  '@karinjs/log4js@1.3.4': {}
+  '@karinjs/log4js@1.5.0': {}
 
   '@karinjs/moment@1.1.5': {}
 
@@ -6218,9 +6263,40 @@ snapshots:
 
   '@karinjs/redis@1.1.3': {}
 
-  '@karinjs/sqlite3-cjs@0.1.0':
-    dependencies:
-      bindings: 1.5.0
+  '@karinjs/sqlite3-napi-v6-darwin-arm64@0.4.2':
+    optional: true
+
+  '@karinjs/sqlite3-napi-v6-darwin-x64@0.4.2':
+    optional: true
+
+  '@karinjs/sqlite3-napi-v6-linux-arm64@0.4.2':
+    optional: true
+
+  '@karinjs/sqlite3-napi-v6-linux-x64@0.4.2':
+    optional: true
+
+  '@karinjs/sqlite3-napi-v6-linuxmusl-arm64@0.4.2':
+    optional: true
+
+  '@karinjs/sqlite3-napi-v6-linuxmusl-x64@0.4.2':
+    optional: true
+
+  '@karinjs/sqlite3-napi-v6-win32-ia32@0.4.2':
+    optional: true
+
+  '@karinjs/sqlite3-napi-v6-win32-x64@0.4.2':
+    optional: true
+
+  '@karinjs/sqlite3@0.4.2':
+    optionalDependencies:
+      '@karinjs/sqlite3-napi-v6-darwin-arm64': 0.4.2
+      '@karinjs/sqlite3-napi-v6-darwin-x64': 0.4.2
+      '@karinjs/sqlite3-napi-v6-linux-arm64': 0.4.2
+      '@karinjs/sqlite3-napi-v6-linux-x64': 0.4.2
+      '@karinjs/sqlite3-napi-v6-linuxmusl-arm64': 0.4.2
+      '@karinjs/sqlite3-napi-v6-linuxmusl-x64': 0.4.2
+      '@karinjs/sqlite3-napi-v6-win32-ia32': 0.4.2
+      '@karinjs/sqlite3-napi-v6-win32-x64': 0.4.2
 
   '@karinjs/tsx@5.1.0':
     dependencies:
@@ -7976,10 +8052,6 @@ snapshots:
 
   baseline-browser-mapping@2.8.28: {}
 
-  bindings@1.5.0:
-    dependencies:
-      file-uri-to-path: 1.0.0
-
   birpc@2.6.1: {}
 
   brace-expansion@1.1.12:
@@ -8781,8 +8853,6 @@ snapshots:
   file-entry-cache@8.0.0:
     dependencies:
       flat-cache: 4.0.1
-
-  file-uri-to-path@1.0.0: {}
 
   fill-range@7.1.1:
     dependencies:

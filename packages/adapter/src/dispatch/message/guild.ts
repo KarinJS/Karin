@@ -1,13 +1,12 @@
-import lodash from 'lodash'
 import { lru } from '../LRU'
 import { Bot } from '@karinjs/bot'
 import { config } from '@karinjs/config'
-import { system } from '@karinjs/utils'
 import { emitter } from '@karinjs/events'
 import { RECV_MSG } from '@karinjs/envs'
+import { MessageDispatch } from './base'
 import { pluginCache } from '@karinjs/plugin'
 import { createRawMessage } from '../../event/abstract/raw'
-import { handleContext } from '../../event/context'
+import { MessageHooks, EventCallHooks, EmptyHooks } from '../../hooks'
 
 import type { Config } from '@karinjs/config'
 import type { GuildMessage } from '../../event/abstract/message'
@@ -16,7 +15,7 @@ import type { CreateCommand, CreateClassPlugin } from '@karinjs/plugin'
 /**
  * @description 频道消息分发类
  */
-export class GuildMessageDispatch {
+export class GuildMessageDispatch extends MessageDispatch {
   /** 消息事件上下文 */
   private ctx: GuildMessage
   /** cd */
@@ -39,6 +38,7 @@ export class GuildMessageDispatch {
   private logger: ReturnType<typeof logger.prefix>
 
   constructor (ctx: GuildMessage) {
+    super()
     this.ctx = ctx
     this.config = {
       cfg: config.config(),
@@ -63,30 +63,9 @@ export class GuildMessageDispatch {
     /** 初始化角色权限 */
     const userId = this.ctx.userId
     const boundUserId = `${this.ctx.selfId}@${this.ctx.userId}`
-    const { master, admin } = this.config.cfg
 
-    const isMaster = master.includes(boundUserId) || master.includes(userId)
-    const isAdmin = isMaster || admin.includes(boundUserId) || admin.includes(userId)
-    this.ctx.isMaster = isMaster
-    this.ctx.isAdmin = isAdmin
-    system.lock.prop(this.ctx, 'isMaster')
-    system.lock.prop(this.ctx, 'isAdmin')
-
-    /** 别名 */
-    const alias = this.config.guildConfig.alias
-    for (const regExp of alias) {
-      const reg = regExp
-      const match = reg.exec(this.ctx.msg)
-      if (match) {
-        this.ctx.msg = this.ctx.msg.replace(reg, '').trim()
-        this.ctx.alias = match[0] || ''
-        break
-      }
-    }
-
-    if (this.ctx.alias.length === 0) {
-      this.ctx.alias = ''
-    }
+    this.setMasterAndAdmin(this.ctx, this.config.cfg, boundUserId, userId)
+    this.setAlias(this.ctx, this.config.guildConfig.alias)
 
     this.print()
 
@@ -97,12 +76,7 @@ export class GuildMessageDispatch {
     /** 记录收到消息 */
     emitter.emit(RECV_MSG, this.ctx.contact)
 
-    /** 处理上下文 */
-    const context = handleContext(this.ctx)
-    if (context) {
-      this.logger.debug(`消息被上下文捕获: ${this.ctx.eventId}`)
-      return
-    }
+    if (this.filterContext(this.ctx, this.logger)) return
 
     /** 频道成员黑白名单检查 */
     if (this.config.guildConfig.member_disable.includes(this.ctx.userId)) {
@@ -203,7 +177,24 @@ export class GuildMessageDispatch {
   }
 
   private async dispatch () {
-    // TODO: hook 实现
+    this.hooksLog.debug(`开始触发消息钩子: ${this.ctx.eventId}`)
+
+    // 触发全局消息钩子
+    const continueAll = await MessageHooks.trigger(this.ctx)
+    if (!continueAll) {
+      this.hooksLog.debug(`消息钩子中断处理: ${this.ctx.eventId}`)
+      return
+    }
+
+    // 触发频道消息钩子
+    const continueGuild = await MessageHooks.triggerGuild(this.ctx)
+    if (!continueGuild) {
+      this.hooksLog.debug(`频道消息钩子中断处理: ${this.ctx.eventId}`)
+      return
+    }
+
+    this.hooksLog.debug(`消息钩子触发完成: ${this.ctx.eventId}`)
+
     let next = false
     const nextFnc = () => {
       next = true
@@ -212,8 +203,11 @@ export class GuildMessageDispatch {
     const enable = [...new Set([...this.config.guildConfig.enable, ...this.config.filter.plugin.enable])]
     const disable = [...new Set([...this.config.guildConfig.disable, ...this.config.filter.plugin.disable])]
     /** 热点缓存 */
-    await this.hotDispatch(enable, disable, nextFnc)
-    if (!next) return
+    const hot = await this.hotDispatch(this.ctx.msg, nextFnc)
+    if (hot) {
+      await this.executePlugin(hot, enable, disable, nextFnc)
+      if (!next) return
+    }
 
     for (const plugin of pluginCache.instances.normal) {
       if (!plugin.reg.test(this.ctx.msg)) {
@@ -226,24 +220,11 @@ export class GuildMessageDispatch {
     }
 
     this.logger.debug(`频道消息未命中任何插件: ${this.ctx.eventId}`)
-    // TODO: 打印未命中插件日志
-    // TODO: hook
-  }
 
-  /**
-   * @description 热更新指令分发
-   * @param next 是否继续执行后续插件
-   * @return 是否命中热更新指令
-   */
-  async hotDispatch (
-    enable: string[],
-    disable: string[],
-    nextFnc: () => void
-  ) {
-    const hot = pluginCache.instances.command.hot[this.ctx.msg]
-    if (!hot) return nextFnc()
-
-    await this.executePlugin(hot, enable, disable, nextFnc)
+    // 触发空插件钩子
+    this.hooksLog.debug(`开始触发空插件钩子: ${this.ctx.eventId}`)
+    await EmptyHooks.triggerMessage(this.ctx)
+    this.hooksLog.debug(`空插件钩子触发完成: ${this.ctx.eventId}`)
   }
 
   /**
@@ -259,91 +240,19 @@ export class GuildMessageDispatch {
     disable: string[],
     nextFnc: () => void
   ) {
-    const filterLog = `[dispatch][${this.ctx.logText}][${plugin.packageName}][${plugin.file.relPath}][${plugin.name}]`
-    const event = Array.isArray(plugin.options.event) ? plugin.options.event : [plugin.options.event]
-    if (!event.includes('message') && !event.includes('message.guild')) {
-      this.ctx.bot.logger('debug', `${filterLog} 插件事件不匹配: ${event.join(', ')}`)
-      return false
-    }
-
-    if (plugin.options.adapter.length > 0 && !plugin.options.adapter.includes(this.ctx.bot.adapter.protocol)) {
-      this.ctx.bot.logger('debug', `${filterLog} 当前适配器协议: ${this.ctx.bot.adapter.protocol}, 白名单适配器协议: ${plugin.options.adapter.join(', ')}`)
+    if (await this.filter(this.ctx, plugin, enable, disable, ['message', 'message.guild'])) {
       return
     }
 
-    if (plugin.options.dsbAdapter.length > 0 && plugin.options.dsbAdapter.includes(this.ctx.bot.adapter.protocol)) {
-      this.ctx.bot.logger('debug', `${filterLog} 当前适配器协议: ${this.ctx.bot.adapter.protocol}, 黑名单适配器协议: ${plugin.options.dsbAdapter.join(', ')}`)
-      return
+    // 触发事件调用钩子
+    this.hooksLog.debug(`开始触发事件调用钩子: ${this.ctx.eventId} 插件: ${plugin.name}`)
+    const continueCall = await EventCallHooks.triggerGuild(this.ctx, plugin)
+    if (!continueCall) {
+      this.hooksLog.debug(`事件调用钩子中断插件执行: ${this.ctx.eventId} 插件: ${plugin.name}`)
+      return nextFnc()
     }
+    this.hooksLog.debug(`事件调用钩子触发完成: ${this.ctx.eventId} 插件: ${plugin.name}`)
 
-    if (!this.filterPlugin(plugin, enable, disable)) {
-      this.ctx.bot.logger('debug', `${filterLog} 当前插件被禁用或未在启用列表中`)
-      return
-    }
-
-    const hasPerm = this.ctx.hasPermission(plugin.options.permission)
-    if (!hasPerm) {
-      if (plugin.options.authFailMsg === false) {
-        this.ctx.bot.logger('debug', `${filterLog} 用户权限不足, 需要权限: ${plugin.options.permission}`)
-        return
-      }
-
-      await this.ctx.reply(typeof plugin.options.authFailMsg === 'string' ? plugin.options.authFailMsg : '权限不足，仅管理员可操作', { reply: true })
-      return
-    }
-
-    this.ctx.logFnc = `[${plugin.packageName}][${plugin.options.name}]`
-
-    /** 前缀 */
-    const timeStart = Date.now()
-    const prefix = `${logger.fnc(this.ctx.logFnc)}${this.ctx.logText}`
-    const msg = lodash.truncate(this.ctx.msg, { length: 100 })
-
-    this.ctx.bot.logger('mark', `${prefix} 开始处理: ${msg}`)
-    await Promise.resolve(plugin.callback(this.ctx, nextFnc))
-      .catch(async error => {
-        nextFnc()
-        logger.error(`${prefix} 插件执行出错: ${error.message}\n${error.stack}`)
-      })
-      .then(async () => {
-        const time = logger.green(Date.now() - timeStart + 'ms')
-        this.ctx.bot.logger('mark', `${prefix} 处理完成: ${msg}  耗时: ${time}`)
-      })
-  }
-
-  /**
-   * 过滤插件
-   * @param plugin 插件实例
-   * @param enable 启用列表
-   * @param disable 禁用列表
-   */
-  private filterPlugin (
-    plugin: CreateCommand | CreateClassPlugin,
-    enable: string[],
-    disable: string[]
-  ) {
-    const target = [
-      plugin.packageName,
-      `${plugin.packageName}:${plugin.file.relPath}`,
-      `${plugin.packageName}:${plugin.file.relPath}:${plugin.name}`,
-    ]
-
-    if (enable.length > 0) {
-      if (!target.some(t => enable.includes(t))) {
-        return false
-      }
-
-      if (target.some(t => disable.includes(t))) {
-        return false
-      }
-    }
-
-    if (disable.length > 0) {
-      if (target.some(t => disable.includes(t))) {
-        return false
-      }
-    }
-
-    return true
+    return this.runCallback(this.ctx, plugin, nextFnc)
   }
 }

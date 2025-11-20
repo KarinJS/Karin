@@ -1,7 +1,7 @@
 import { logger } from '@karinjs/logger'
 import { HookManager } from '../core/manager'
 
-import type { CreateAccept, CreateCommand } from '@karinjs/plugin'
+import type { CreateAccept, CreateClassPlugin, CreateCommand } from '@karinjs/plugin'
 import type { HookOptions, EventCallCallback } from '../types/message'
 import type { Message, Notice, Request as Requests, FriendMessage, GroupMessage, GuildMessage, GroupTempMessage, DirectMessage } from '@karinjs/adapter'
 
@@ -143,7 +143,7 @@ export class EventCallHooks {
    * @param plugin 插件对象
    * @returns 是否继续处理
    */
-  static async triggerMessage (event: Message, plugin: CreateCommand): Promise<boolean> {
+  static async triggerMessage (event: Message, plugin: CreateCommand | CreateClassPlugin): Promise<boolean> {
     return await eventCallMessageManager.emit(event, plugin)
   }
 
@@ -153,7 +153,7 @@ export class EventCallHooks {
    * @param plugin 插件对象
    * @returns 是否继续处理
    */
-  static async triggerGroup (event: GroupMessage, plugin: CreateCommand): Promise<boolean> {
+  static async triggerGroup (event: GroupMessage, plugin: CreateCommand | CreateClassPlugin): Promise<boolean> {
     return await eventCallGroupManager.emit(event, plugin)
   }
 
@@ -163,7 +163,7 @@ export class EventCallHooks {
    * @param plugin 插件对象
    * @returns 是否继续处理
    */
-  static async triggerGuild (event: GuildMessage, plugin: CreateCommand): Promise<boolean> {
+  static async triggerGuild (event: GuildMessage, plugin: CreateCommand | CreateClassPlugin): Promise<boolean> {
     return await eventCallGuildManager.emit(event, plugin)
   }
 
@@ -173,7 +173,7 @@ export class EventCallHooks {
    * @param plugin 插件对象
    * @returns 是否继续处理
    */
-  static async triggerGroupTemp (event: GroupTempMessage, plugin: CreateCommand): Promise<boolean> {
+  static async triggerGroupTemp (event: GroupTempMessage, plugin: CreateCommand | CreateClassPlugin): Promise<boolean> {
     return await eventCallGroupTempManager.emit(event, plugin)
   }
 
@@ -183,7 +183,7 @@ export class EventCallHooks {
    * @param plugin 插件对象
    * @returns 是否继续处理
    */
-  static async triggerFriend (event: FriendMessage, plugin: CreateCommand): Promise<boolean> {
+  static async triggerFriend (event: FriendMessage, plugin: CreateCommand | CreateClassPlugin): Promise<boolean> {
     return await eventCallFriendManager.emit(event, plugin)
   }
 
@@ -193,7 +193,7 @@ export class EventCallHooks {
    * @param plugin 插件对象
    * @returns 是否继续处理
    */
-  static async triggerDirect (event: DirectMessage, plugin: CreateCommand): Promise<boolean> {
+  static async triggerDirect (event: DirectMessage, plugin: CreateCommand | CreateClassPlugin): Promise<boolean> {
     return await eventCallDirectManager.emit(event, plugin)
   }
 

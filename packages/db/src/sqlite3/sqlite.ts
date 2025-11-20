@@ -3,12 +3,14 @@ import path from 'node:path'
 import sqlite3 from 'sqlite3'
 import { logPrefix } from '../redis/mock/sqlite'
 
+import type { Database } from 'sqlite3'
+
 /**
  * @description 简单的kv存储
  */
 export class SQLiteWrapper {
   dbPath: string
-  _db!: sqlite3.Database
+  _db!: Database
 
   constructor (dbPath: string) {
     this.dbPath = dbPath

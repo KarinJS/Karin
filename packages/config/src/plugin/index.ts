@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import util from 'node:util'
 import { store } from '@karinjs/store'
-import { copyConfigSync, requireFile, requireFileSync, writeFile, writeFileSync } from '@karinjs/utils'
+import { copyConfigSync, requireFile, requireFileSync, writeFile, writeFileSync, types } from '@karinjs/utils'
 import type { RequireOptions, WriteFileOptions, WriteFileOptionsSync } from '@karinjs/utils'
 
 /**
@@ -11,6 +11,8 @@ import type { RequireOptions, WriteFileOptions, WriteFileOptionsSync } from '@ka
 export class PluginConfig<T extends Record<string, any>> {
   /** 插件名称 */
   pluginName: string
+  /** 数据操作工具 */
+  types = types
 
   /**
    * 构建函数

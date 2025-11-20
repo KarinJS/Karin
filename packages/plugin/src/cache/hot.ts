@@ -149,6 +149,7 @@ export class CommandHotCache {
 
   constructor () {
     this.startCleanup()
+    logger.debug('[HotCache] 热点缓存系统已初始化')
   }
 
   /**
@@ -174,10 +175,16 @@ export class CommandHotCache {
    */
   async track (msg: string, command: CreateCommand): Promise<void> {
     // 快速检查：如果未启用或在冷却列表，直接返回
-    if (!this.enabled || this.forceCold.has(msg)) return
+    if (!this.enabled || this.forceCold.has(msg)) {
+      if (this.forceCold.has(msg)) {
+        logger.debug(`[HotCache] 命令在冷却列表中: "${msg}"`)
+      }
+      return
+    }
 
     // 强制热点：直接加入缓存
     if (this.forceHot.has(msg)) {
+      logger.debug(`[HotCache] 强制热点命中: "${msg}"`)
       this.addToHot(msg, command, this.customTTL.get(msg))
       return
     }
@@ -215,6 +222,7 @@ export class CommandHotCache {
       if (count >= rule.minCount) {
         // 满足条件：加入热点缓存（使用自定义TTL或规则推荐的TTL）
         const ttl = this.customTTL.get(msg) ?? rule.ttl
+        logger.debug(`[HotCache] 命令提升为热点: "${msg}" (${count}次/${rule.windowMs}ms, TTL=${Math.round(ttl / 60000)}分钟)`)
         this.addToHot(msg, command, ttl)
         return
       }
@@ -225,10 +233,12 @@ export class CommandHotCache {
       const entry = this.hotCache.get(msg)!
       if (now <= entry.expireAt) {
         // 累加30分钟，但不超过120分钟上限
+        const oldExpire = entry.expireAt
         entry.expireAt = Math.min(
           entry.expireAt + 30 * 60 * 1000,
           entry.addedAt + this.config.maxTTL
         )
+        logger.debug(`[HotCache] 刷新热点TTL: "${msg}" (+${Math.round((entry.expireAt - oldExpire) / 60000)}分钟)`)
       }
     }
   }
@@ -260,11 +270,13 @@ export class CommandHotCache {
     // 检查是否过期
     if (Date.now() > entry.expireAt) {
       this.hotCache.delete(msg)
+      logger.debug(`[HotCache] 热点已过期: "${msg}"`)
       return undefined
     }
 
     // 命中：增加统计
     this.hotHits++
+    logger.debug(`[HotCache] 热点命中: "${msg}" (命中率: ${Math.round((this.hotHits / (this.hotHits + this.normalHits)) * 100)}%)`)
     return entry.command
   }
 
@@ -306,6 +318,7 @@ export class CommandHotCache {
   add (msg: string, ttl?: number): void {
     this.forceHot.add(msg)
     if (ttl) this.customTTL.set(msg, ttl)
+    logger.debug(`[HotCache] 添加强制热点: "${msg}"${ttl ? ` (TTL=${Math.round(ttl / 60000)}分钟)` : ''}`)
   }
 
   /**
@@ -326,6 +339,7 @@ export class CommandHotCache {
     this.customTTL.delete(msg)
     this.hotCache.delete(msg)
     this.stats.delete(msg)
+    logger.debug(`[HotCache] 移除热点并标记为冷却: "${msg}"`)
   }
 
   /**
@@ -393,6 +407,7 @@ export class CommandHotCache {
    */
   setEnabled (enabled: boolean): void {
     this.enabled = enabled
+    logger.debug(`[HotCache] 热点缓存系统${enabled ? '已启用' : '已禁用'}`)
   }
 
   /**
@@ -470,7 +485,10 @@ export class CommandHotCache {
       }
     }
 
-    if (oldestMsg) this.stats.delete(oldestMsg)
+    if (oldestMsg) {
+      this.stats.delete(oldestMsg)
+      logger.debug(`[HotCache] LRU淘汰最旧条目: "${oldestMsg}" (追踪条目已达上限)`)
+    }
   }
 
   /**
@@ -526,6 +544,11 @@ export class CommandHotCache {
       ) {
         this.stats.delete(msg)
       }
+    }
+
+    if (cleaned > 0) {
+      const stats = this.getStats()
+      logger.debug(`[HotCache] 清理完成: 删除${cleaned}个过期热点, 当前热点${stats.totalHotCommands}个, 追踪${stats.totalTrackedCommands}个, 命中率${stats.hitRate}%`)
     }
 
     return cleaned

@@ -1,7 +1,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import sqlite3 from 'sqlite3'
-import type { } from '@karinjs/logger' // 类型导入
+
+import type { } from '@karinjs/logger'
+import type { Database } from 'sqlite3'
 
 /**
  * @description 日志前缀
@@ -12,7 +14,7 @@ export const logPrefix = (message: string) => `[redis-mock] ${message}`
  * @description SQLite3封装类，用于Redis模拟的持久化存储 new之后需要调用init方法
  */
 export class SQLiteWrapper {
-  db!: sqlite3.Database
+  db!: Database
   #isClosing: boolean = false
   #inTransaction: boolean = false
   dbPath: string

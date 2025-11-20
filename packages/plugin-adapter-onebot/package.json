@@ -1,5 +1,5 @@
 {
-  "name": "@karinjs/adapter-onebot",
+  "name": "@karinjs/plugin-adapter-onebot",
   "version": "0.0.1",
   "description": "",
   "keywords": [],
@@ -13,27 +13,30 @@
     }
   },
   "scripts": {
-    "build": "tsdown"
+    "build": "tsdown",
+    "checkType": "tsc"
   },
   "devDependencies": {
     "@karinjs/adapter": "workspace:*",
     "@karinjs/bot": "workspace:*",
-    "@karinjs/core": "workspace:*",
+    "@karinjs/config": "workspace:*",
     "@karinjs/envs": "workspace:*",
     "@karinjs/events": "workspace:*",
     "@karinjs/onebot": "workspace:*",
     "@karinjs/server": "workspace:*",
+    "@karinjs/utils": "workspace:*",
     "express": "catalog:",
     "ws": "catalog:"
   },
   "peerDependencies": {
     "@karinjs/adapter": "workspace:*",
     "@karinjs/bot": "workspace:*",
-    "@karinjs/core": "workspace:*",
+    "@karinjs/config": "workspace:*",
     "@karinjs/envs": "workspace:*",
     "@karinjs/events": "workspace:*",
     "@karinjs/onebot": "workspace:*",
     "@karinjs/server": "workspace:*",
+    "@karinjs/utils": "workspace:*",
     "express": "catalog:",
     "ws": "catalog:"
   }

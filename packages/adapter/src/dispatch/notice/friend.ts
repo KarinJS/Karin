@@ -2,6 +2,7 @@ import { Bot } from '@karinjs/bot'
 import { config } from '@karinjs/config'
 import { system } from '@karinjs/utils'
 import { pluginCache } from '@karinjs/plugin'
+import { EventCallHooks } from '../../hooks'
 
 import type { Config } from '@karinjs/config'
 import type { CreateAccept } from '@karinjs/plugin'
@@ -138,6 +139,15 @@ export class FriendNoticeDispatch<T extends FriendNoticeEventMap[keyof FriendNot
     }
 
     this.ctx.logFnc = `[${plugin.packageName}][${plugin.options.name}]`
+
+    // 触发事件调用钩子
+    this.logger.debug(`[hooks] 开始触发事件调用钩子: ${this.ctx.eventId} 插件: ${plugin.name}`)
+    const continueCall = await EventCallHooks.triggerNotice(this.ctx, plugin)
+    if (!continueCall) {
+      this.logger.debug(`[hooks] 事件调用钩子中断插件执行: ${this.ctx.eventId} 插件: ${plugin.name}`)
+      return nextFnc()
+    }
+    this.logger.debug(`[hooks] 事件调用钩子触发完成: ${this.ctx.eventId} 插件: ${plugin.name}`)
 
     /** 前缀 */
     const timeStart = Date.now()

@@ -3,15 +3,16 @@ import { app } from '@karinjs/server'
 import { emitter } from '@karinjs/events'
 import { AdapterOneBot } from './core/adapter'
 import { WS_CONNECTION_ONEBOT } from '@karinjs/envs'
-import { config, ConfigAdapter } from '@karinjs/core/config'
 import {
   OneBotWsClient,
   OneBotWsServer,
   OneBotHttpClient,
 } from '@karinjs/onebot'
+import { config } from './config'
 
 import type { WebSocket } from 'ws'
 import type { IncomingMessage } from 'node:http'
+import type { OneBotClientConfig, OneBotHttpClientConfig } from './config'
 
 /**
  * onebot核心类 用于初始化OneBot适配器
@@ -79,15 +80,15 @@ export class OneBotCore {
       }
     )
 
-    const cfg = config.adapter()
+    const cfg = config.getConfigSync('config.json')
 
     await Promise.allSettled([
       /** 初始化OneBot WebSocket 客户端 */
       async () => {
-        if (!cfg.onebot.ws_client) return
-        if (!Array.isArray(cfg.onebot.ws_client)) return
+        if (!cfg.client.enable) return
+        if (!Array.isArray(cfg.client.targets)) return
         await Promise.allSettled(
-          cfg.onebot.ws_client.map(async (item) => {
+          cfg.client.targets.map(async (item: OneBotClientConfig) => {
             if (!item?.enable || !item?.url) return
             await this.createClient(item)
               .catch((err) => this.logger.error(`连接失败: ${item.url} 原因: ${err.message}`))
@@ -96,10 +97,10 @@ export class OneBotCore {
       },
       /** 初始化OneBot HTTP 服务 */
       async () => {
-        if (!cfg.onebot.http_server) return
-        if (!Array.isArray(cfg.onebot.http_server)) return
+        if (!cfg.http.client.enable) return
+        if (!Array.isArray(cfg.http.client.targets)) return
         await Promise.allSettled(
-          cfg.onebot.http_server.map(async (item) => {
+          cfg.http.client.targets.map(async (item: OneBotHttpClientConfig) => {
             if (!item?.enable || !item?.url) return
             await this.createHttp(item)
               .catch((err) => this.logger.error(`连接失败: ${item.url} 原因: ${err.message}`))
@@ -157,7 +158,8 @@ export class OneBotCore {
     socket: WebSocket,
     request: IncomingMessage
   ) {
-    if (!config.adapter().onebot.ws_server.enable) {
+    const cfg = config.getConfigSync('config.json')
+    if (!cfg.server.enable) {
       this.logger.warn('未启用 WebSocketServer 服务')
       return
     }
@@ -191,8 +193,8 @@ export class OneBotCore {
     }
 
     const onebot = new OneBotWsServer(socket, request, {
-      accessToken: process.env.WS_SERVER_AUTH_KEY,
-      timeout: config.adapter().onebot.ws_server.timeout,
+      accessToken: process.env.WS_SERVER_AUTH_KEY || cfg.server.token,
+      timeout: cfg.server.timeout,
     })
 
     onebot.on('close', async (code, reason) => {
@@ -226,14 +228,20 @@ export class OneBotCore {
    * 创建OneBot WebSocket客户端实例
    * @param opt - OneBot WebSocket客户端配置
    */
-  async createClient (opt: ConfigAdapter['onebot']['ws_client'][number]) {
+  async createClient (opt: OneBotClientConfig) {
+    const cfg = config.getConfigSync('config.json')
     /** 重连次数 */
     let attempts = 0
+    /** 重连间隔时间（毫秒）默认5秒 */
+    const reconnectTime = 5000
+    /** 最大重连次数 默认10次 */
+    const reconnectAttempts = 10
 
     const onebot = new OneBotWsClient({
       url: opt.url,
-      timeout: config.adapter().onebot.ws_server.timeout,
+      timeout: opt.timeout || cfg.client.timeout,
       accessToken: opt.token,
+      headers: opt.headers as Record<string, string>,
     })
 
     this.#cache.ws.client.set(opt.url, onebot)
@@ -263,7 +271,7 @@ export class OneBotCore {
           core.setStatus('offline')
         }
 
-        if (attempts >= opt.reconnectAttempts) {
+        if (attempts >= reconnectAttempts) {
           const errStr = `重连达到上限: ${opt.url} 共 ${attempts} 次`
           this.logger.error(errStr)
           // 重连到达上限 将卸载Bot
@@ -277,9 +285,9 @@ export class OneBotCore {
 
         attempts++
         this.logger.error(
-          `连接断开，将在 ${opt.reconnectTime / 1000}秒 后尝试重连(/${attempts}/${opt.reconnectAttempts}): ` +
+          `连接断开，将在 ${reconnectTime / 1000}秒 后尝试重连(/${attempts}/${reconnectAttempts}): ` +
           `${opt.url}， code: ${code}, reason: ${reason.toString() || error?.message || 'unknown'}`)
-        setTimeout(() => onebot.init(), opt.reconnectTime)
+        setTimeout(() => onebot.init(), reconnectTime)
       })
 
       onebot.on('error', async (error) => {
@@ -305,18 +313,21 @@ export class OneBotCore {
    * 创建OneBot HTTP实例
    * @param options - OneBot HTTP 配置
    */
-  async createHttp (options: ReturnType<typeof config.adapter>['onebot']['http_server'][number]) {
+  async createHttp (options: OneBotHttpClientConfig) {
     if (!options.enable) {
       this.logger.debug(`未启用Http适配器: ${options.url}`)
       return
     }
 
+    const cfg = config.getConfigSync('config.json')
     const onebot = new OneBotHttpClient({
       httpHost: options.url,
-      timeout: options.timeout,
-      heartbeat: options.heartbeat,
-      accessToken: options.api_token,
-      postEventVerifyToken: options.post_token,
+      timeout: options.timeout || cfg.http.client.timeout,
+      heartbeat: 5000,
+      accessToken: options.token,
+      postEventVerifyToken: cfg.http.webhook.token,
+      headers: options.headers as Record<string, string>,
+      reconnectAttempts: 10,
     })
 
     await onebot.init()

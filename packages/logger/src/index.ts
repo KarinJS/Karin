@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import chalk from 'chalk'
 import log4js from 'log4js'
 
-import type { Level, Configuration, Logger as Log4jsLogger } from 'log4js'
+import type { LogLevel, Configuration, Logger as Log4jsLogger } from 'log4js'
 
 /** 全局声明，使TypeScript识别全局logger变量 */
 declare global {
@@ -31,7 +31,7 @@ export interface Prefix<T extends readonly any[]> {
   fatal: (...args: [...T, ...any[]]) => void
   mark: (...args: [...T, ...any[]]) => void
   log: (...args: [...T, ...any[]]) => void
-  level: Level | string
+  level: LogLevel
 }
 
 export interface LoggerOptions {
@@ -205,7 +205,7 @@ const initLogger = (opt: {
   daysToKeep: number,
   isDev: boolean
 }): Configuration => {
-  const level = opt.level
+  const level = opt.level as LogLevel
   const daysToKeep = opt.daysToKeep
 
   const config: Configuration = {
@@ -214,7 +214,7 @@ const initLogger = (opt: {
         type: 'console',
         layout: {
           type: 'pattern',
-          pattern: `%[[Karin][%d{hh:mm:ss.SSS}][%4.4p]%] ${opt.isDev ? '[%f{3}:%l] ' : ''}%m`,
+          pattern: `%[[karin][%d{hh:mm:ss.SSS}][%4.4p]%] ${opt.isDev ? '[%f{3}:%l] ' : ''}%m`,
         },
       },
     },
@@ -226,7 +226,7 @@ const initLogger = (opt: {
       },
     },
     levels: {
-      handler: { value: 15000, colour: 'cyan' },
+      handler: { value: 15000, colour: 'yellow' },
     },
   }
 
@@ -363,15 +363,21 @@ const addColor = (Logger: Log4jsLogger, color?: string) => {
       mark: (...args) => logger.mark(prefix, ...args),
       log: (...args) => logger.info(prefix, ...args),
       get level () {
-        return logger.level
+        return logger.level.toString().toLowerCase() as LogLevel
       },
-      set level (value) {
+      set level (value: LogLevel) {
         logger.level = value
       },
     }
 
     return result
   }
+
+  logger.setContextLayouts('pattern', {
+    type: 'pattern',
+    pattern: '[%d{hh:mm:ss.SSS}][%4.4p] %m',
+  })
+
   return logger
 }
 

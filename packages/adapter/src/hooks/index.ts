@@ -43,3 +43,8 @@ export const HooksInternal = {
   /** 事件调用钩子触发器 */
   EventCall: EventCallHooks,
 }
+
+/**
+ * 导出内部钩子触发器类，供 dispatch 使用
+ */
+export { MessageHooks, SendMsgHooks, EmptyHooks, EventCallHooks }

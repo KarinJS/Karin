@@ -14,6 +14,21 @@ export const bool = <T extends unknown = boolean> (
 }
 
 /**
+ * 处理布尔值
+ * @param val 值
+ * @param defaultValue 默认值 可选
+ * @returns 返回布尔值
+ */
+export const boolean = <T extends unknown = boolean> (
+  val: unknown,
+  defaultValue?: unknown
+): T => {
+  if (typeof val === 'boolean') return val as T
+  if (defaultValue !== undefined) return defaultValue as T
+  return Boolean(val) as T
+}
+
+/**
  * 处理数字值
  * @param val 值
  * @param defaultValue 默认值 可选

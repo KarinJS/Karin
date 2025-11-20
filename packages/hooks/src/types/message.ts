@@ -1,4 +1,4 @@
-import type { AcceptCache, CommandCache } from '@karinjs/plugin'
+import type { CreateAccept, CreateCommand } from '@karinjs/plugin'
 import type { Contact, Message, Notice, Request as Requests, Elements, ForwardOptions, NodeElement, FriendMessage, GroupMessage, GuildMessage, DirectMessage, GroupTempMessage } from '@karinjs/adapter'
 
 export type UnionMessage = Message | FriendMessage | GroupMessage | GuildMessage | DirectMessage | GroupTempMessage
@@ -143,21 +143,21 @@ export interface HookCache {
   /** 事件调用插件钩子 */
   eventCall: {
     /** 通用消息事件 */
-    message: EventCallHookItem<Message, CommandCache>[]
+    message: EventCallHookItem<Message, CreateCommand>[]
     /** 群聊事件 */
-    group: EventCallHookItem<GroupMessage, CommandCache>[]
+    group: EventCallHookItem<GroupMessage, CreateCommand>[]
     /** 频道事件 */
-    guild: EventCallHookItem<GuildMessage, CommandCache>[]
+    guild: EventCallHookItem<GuildMessage, CreateCommand>[]
     /** 群临时事件 */
-    groupTemp: EventCallHookItem<GroupTempMessage, CommandCache>[]
+    groupTemp: EventCallHookItem<GroupTempMessage, CreateCommand>[]
     /** 好友事件 */
-    friend: EventCallHookItem<FriendMessage, CommandCache>[]
+    friend: EventCallHookItem<FriendMessage, CreateCommand>[]
     /** 私聊事件 */
-    direct: EventCallHookItem<DirectMessage, CommandCache>[]
+    direct: EventCallHookItem<DirectMessage, CreateCommand>[]
     /** 通知事件 */
-    notice: EventCallHookItem<Notice, AcceptCache>[]
+    notice: EventCallHookItem<Notice, CreateAccept>[]
     /** 请求事件 */
-    request: EventCallHookItem<Requests, AcceptCache>[]
+    request: EventCallHookItem<Requests, CreateAccept>[]
   }
 }
 
