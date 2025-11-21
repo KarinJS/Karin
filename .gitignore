@@ -52,4 +52,4 @@ modules.d.ts
 .lingma/rules/project_rule.md
 /packages/core/module/locale
 1.ts
-/packages/config/coverage/**/*
+/**/coverage/**/*
