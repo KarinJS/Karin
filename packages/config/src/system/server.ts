@@ -178,11 +178,11 @@ export const configServerCompat = (config: Partial<ConfigServer>): ConfigServer 
     fs.writeFileSync(abs, JSON.stringify(data, null, 2))
 
     const rel = path.relative(process.cwd(), abs)
-    logger.error('-'.repeat(50))
+    log.error('-'.repeat(50))
     log.error('以下配置项校验未通过，已自动生成新的安全值，请前往配置文件查看：')
     log.error(`文件路径: ${rel}`)
     invalidList.forEach(i => log.error(i))
-    logger.error('-'.repeat(50))
+    log.error('-'.repeat(50))
   }
 
   return data

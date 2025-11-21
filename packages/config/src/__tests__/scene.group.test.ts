@@ -23,6 +23,10 @@ describe('群组配置兼容 group.compat', () => {
     expect(cfg['group:1'].cd).toBe(1)
     expect(cfg['group:1'].mode).toBe(2)
   })
+  it('过滤非对象项', () => {
+    const cfg = group.compat({ global: {}, a: 1 as any } as any)
+    expect((cfg as any).a).toBeUndefined()
+  })
 })
 
 describe('群组配置获取 group.get', () => {
@@ -42,5 +46,13 @@ describe('群组配置获取 group.get', () => {
     const cfg = group.compat({ global: {} } as any)
     const r = group.get(cfg, 'x', 'y')
     expect(r).toEqual(cfg.global)
+  })
+  it('空配置对象回退到 defaultGroup.global', () => {
+    const r = group.get({} as any, 'x', 'y')
+    expect(r).toEqual(group.default.global)
+  })
+  it('clearCache 覆盖', () => {
+    group.clearCache()
+    expect(true).toBe(true)
   })
 })

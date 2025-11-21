@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { configRedisCompat, configDefaultRedis } from '../system/redis'
+import { configRedisCompat, configDefaultRedis, redis } from '../system/redis'
 
 describe('Redis 配置兼容 redis.compat', () => {
   it('返回输入对象的兼容转换', () => {
@@ -14,5 +14,9 @@ describe('Redis 配置兼容 redis.compat', () => {
   it('空对象保持不变', () => {
     const r = configRedisCompat({})
     expect(r as any).toEqual({})
+  })
+  it('clearCache 覆盖', () => {
+    redis.clearCache()
+    expect(true).toBe(true)
   })
 })

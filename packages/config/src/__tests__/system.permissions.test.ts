@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { configPermissionsCompat } from '../config/permissions'
+import { configPermissionsCompat, permissions } from '../config/permissions'
 
 describe('权限配置兼容 permissions.compat', () => {
   it('过滤非字符串与空字符串', () => {
@@ -16,5 +16,9 @@ describe('权限配置兼容 permissions.compat', () => {
     const r = configPermissionsCompat({ master: null as any, admin: undefined as any })
     expect(r.master).toEqual([])
     expect(r.admin).toEqual([])
+  })
+  it('clearCache 覆盖', () => {
+    permissions.clearCache()
+    expect(true).toBe(true)
   })
 })

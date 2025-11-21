@@ -38,6 +38,17 @@ export interface EventDispatchMaps extends AdapterEventMap {
   'ws:connection': [WebSocket, IncomingMessage]
   /** ws:close 事件 */
   'ws:close': [WebSocket, IncomingMessage, number, Buffer]
+  /** 框架加载完成 */
+  loaded: []
+  /** 调用插件 */
+  'plugin.call': [{
+    /** 插件包名称 */
+    pluginName: string
+    /** 插件文件绝对路径 */
+    file: string
+    /** 插件函数名称 */
+    functionName: string
+  }]
 }
 
 /**

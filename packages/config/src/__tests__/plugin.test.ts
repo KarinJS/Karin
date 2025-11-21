@@ -49,26 +49,34 @@ describe('插件配置类 PluginConfig', () => {
     const p = pc.getConfigPath('a.json')
     expect(p).toMatch(/config\/a\.json$/)
   })
-  it('写入并读取配置', async () => {
-    const pc = new PluginConfig<any>('p2')
-    try { fs.mkdirSync(pc.dir.config, { recursive: true }) } catch { }
-    const orig = pc.setConfig
-    // 使用原生 fs 写入以规避 Windows CI 下偶发 EPERM/ENOENT
-    ;(pc as any).setConfig = function (filename: any, data: any) {
-      const p = this.getConfigPath(filename)
-      fs.mkdirSync(path.dirname(p), { recursive: true })
-      fs.writeFileSync(p, JSON.stringify(data, null, 2))
-    }
-    pc.setConfig('c.json' as any, { a: 1 })
-    ;(pc as any).setConfig = orig
-    const r = await pc.getConfig('c.json' as any, { force: true, type: 'json' } as any)
-    expect(r.a).toBe(1)
+  it('getConfig 异步读取', async () => {
+    const pc = new PluginConfig<any>('p2b')
+    const utils = await import('@karinjs/utils') as any
+    const orig = utils.requireFile
+    utils.requireFile = vi.fn(() => Promise.resolve({ a: 5 }))
+    const r = await pc.getConfig('y.json' as any, { force: true, type: 'json' } as any)
+    expect(r.a).toBe(5)
+    utils.requireFile = orig
   })
-  it('createConfig 不覆盖已存在文件', () => {
+  it('getConfig 无 options 异步读取', async () => {
+    const pc = new PluginConfig<any>('p2c')
+    const utils = await import('@karinjs/utils') as any
+    const orig = utils.requireFile
+    utils.requireFile = vi.fn(() => Promise.resolve({ a: 7 }))
+    const r = await pc.getConfig('z.json' as any)
+    expect(r.a).toBe(7)
+    utils.requireFile = orig
+  })
+  it('createConfig 不覆盖已存在文件', async () => {
     const pc = new PluginConfig<any>('p3')
-    pc.createConfig('k.json' as any, { a: 1 })
+    const spyExists = vi.spyOn(fs, 'existsSync').mockImplementation(() => true)
     pc.createConfig('k.json' as any, { a: 2 })
+    spyExists.mockRestore()
+    const utils = await import('@karinjs/utils') as any
+    const orig = utils.requireFileSync
+    utils.requireFileSync = () => ({ a: 1 })
     const r = pc.getConfigSync('k.json' as any)
+    utils.requireFileSync = orig
     expect(r.a).toBe(1)
   })
   it('createConfig 支持自定义 stringify（同步）', () => {
@@ -94,5 +102,13 @@ describe('插件配置类 PluginConfig', () => {
     utils.writeFileSync = vi.fn(() => undefined)
     expect(() => pc.setConfig('a.json' as any, { b: 2 })).not.toThrow()
     utils.writeFileSync = orig
+  })
+  it('createConfig 默认写入分支（无 options）', async () => {
+    const pc = new PluginConfig<any>('p8')
+    const utils = await import('@karinjs/utils') as any
+    const spy = vi.spyOn(utils, 'writeFileSync').mockImplementation(() => undefined)
+    pc.createConfig('b.json' as any, { x: 1 })
+    expect(spy).toHaveBeenCalled()
+    spy.mockRestore()
   })
 })

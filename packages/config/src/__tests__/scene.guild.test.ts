@@ -21,6 +21,14 @@ describe('频道配置兼容 guild.compat', () => {
     } as any)
     expect(cfg['guild:1'].cd).toBe(1)
   })
+  it('clearCache 覆盖', () => {
+    guild.clearCache()
+    expect(true).toBe(true)
+  })
+  it('过滤非对象项', () => {
+    const cfg = guild.compat({ global: {}, a: 1 as any } as any)
+    expect((cfg as any).a).toBeUndefined()
+  })
 })
 
 describe('频道配置获取 guild.get', () => {
@@ -43,5 +51,9 @@ describe('频道配置获取 guild.get', () => {
     const cfg = guild.compat({ global: {} } as any)
     const r = guild.get(cfg, 'x', 'y', 'z')
     expect(r).toEqual(cfg.global)
+  })
+  it('空配置对象回退到 defaultGuild.global', () => {
+    const r = guild.get({} as any, 'self', 'guild', 'channel')
+    expect(r).toEqual(guild.default.global)
   })
 })

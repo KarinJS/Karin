@@ -141,6 +141,12 @@ export class MessageDispatch {
     const prefix = `${logger.fnc(ctx.logFnc)}${ctx.logText}`
     const msg = truncate(ctx.msg, { length: 100 })
 
+    Bot.emit('plugin.call', {
+      pluginName: plugin.packageName,
+      file: plugin.file.absPath,
+      functionName: plugin.name,
+    })
+
     ctx.bot.logger('mark', `${prefix} 开始处理: ${msg}`)
     await Promise.resolve(plugin.callback(ctx, nextFnc))
       .catch(async error => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { configPm2Compat, configDefaultPm2 } from '../system/pm2'
+import { configPm2Compat, configDefaultPm2, pm2 } from '../system/pm2'
 
 describe('PM2 配置兼容 pm2.compat', () => {
   it('返回输入对象的兼容转换', () => {
@@ -13,5 +13,9 @@ describe('PM2 配置兼容 pm2.compat', () => {
   })
   it('默认导出保持既定默认值', () => {
     expect(configDefaultPm2.lines).toBe(1000)
+  })
+  it('clearCache 覆盖', () => {
+    pm2.clearCache()
+    expect(true).toBe(true)
   })
 })

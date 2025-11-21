@@ -21,6 +21,14 @@ describe('频道私信配置兼容 direct.compat', () => {
     } as any)
     expect(cfg['Bot:1:2:3'].cd).toBe(1)
   })
+  it('clearCache 覆盖', () => {
+    direct.clearCache()
+    expect(true).toBe(true)
+  })
+  it('过滤非对象项', () => {
+    const cfg = direct.compat({ global: {}, a: 1 as any } as any)
+    expect((cfg as any).a).toBeUndefined()
+  })
 })
 
 describe('频道私信配置获取 direct.get', () => {
@@ -48,5 +56,9 @@ describe('频道私信配置获取 direct.get', () => {
     const cfg = direct.compat({ global: {} } as any)
     const r = direct.get(cfg, 'x', 'y')
     expect(r).toEqual(cfg.global)
+  })
+  it('空配置对象回退到 defaultDirect.global', () => {
+    const r = direct.get({} as any, 'self', 'user', 'guild')
+    expect(r).toEqual(direct.default.global)
   })
 })

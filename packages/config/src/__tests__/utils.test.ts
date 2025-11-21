@@ -103,6 +103,18 @@ describe('密码校验 getValidPassword', () => {
     const r = getValidPassword(123 as any)
     expect(r.valid).toBe(false)
   })
+  it('仅大写不通过', () => {
+    const r = getValidPassword('AAAAAAAA')
+    expect(r.valid).toBe(false)
+  })
+  it('仅数字不通过', () => {
+    const r = getValidPassword('12345678')
+    expect(r.valid).toBe(false)
+  })
+  it('仅特殊字符不通过', () => {
+    const r = getValidPassword('!!!!!!!!')
+    expect(r.valid).toBe(false)
+  })
 })
 
 describe('用户名校验 getValidUsername', () => {

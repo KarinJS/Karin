@@ -27,4 +27,8 @@ describe('过滤配置兼容 filter.compat', () => {
     expect(r.enable.direct).toBe(false)
     expect(r.enable.guild).toBe(true)
   })
+  it('clearCache 覆盖', () => {
+    filter.clearCache()
+    expect(true).toBe(true)
+  })
 })

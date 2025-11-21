@@ -107,6 +107,11 @@ export class RequestDispatch {
     /** 前缀 */
     const timeStart = Date.now()
     const prefix = `${logger.fnc(ctx.logFnc)}${ctx.logText}`
+    Bot.emit('plugin.call', {
+      pluginName: plugin.packageName,
+      file: plugin.file.absPath,
+      functionName: plugin.name,
+    })
 
     ctx.bot.logger('mark', `${prefix} 开始处理`)
     // @ts-ignore

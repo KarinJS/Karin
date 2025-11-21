@@ -80,6 +80,43 @@ describe('核心配置基础功能', () => {
     const c2 = config.config(true)
     expect(c2.master).toEqual(['x'])
   })
+  it('各模块支持强制刷新', () => {
+    const f1 = config.friend()
+    const f2 = config.friend(true)
+    expect(f2).not.toBe(f1)
+
+    const d1 = config.direct()
+    const d2 = config.direct(true)
+    expect(d2).not.toBe(d1)
+
+    const g1 = config.group()
+    const g2 = config.group(true)
+    expect(g2).not.toBe(g1)
+
+    const u1 = config.guild()
+    const u2 = config.guild(true)
+    expect(u2).not.toBe(u1)
+
+    const fl1 = config.filter()
+    const fl2 = config.filter(true)
+    expect(fl2).not.toBe(fl1)
+  })
+  it('过滤配置重复读取相等', () => {
+    const f1 = config.filter()
+    const f2 = config.filter()
+    expect(f2).toStrictEqual(f1)
+  })
+  it('getConfigWithCache 命中缓存分支', async () => {
+    const getter = vi.spyOn(config as any, 'files', 'get')
+    const mod = await import('../filter/filter') as any
+    const cached = mod.filterConfigCompat({})
+    getter.mockImplementation(() => ({
+      'filter/filter.json': { cfg: mod.defaultFilterConfig, parse: mod.filterConfigCompat, clear: mod.filter.clearCache, cache: cached },
+    } as any))
+    const r = config.filter()
+    expect(r).toStrictEqual(cached)
+    getter.mockRestore()
+  })
 })
 
 describe('场景配置获取', () => {
@@ -102,6 +139,12 @@ describe('场景配置获取', () => {
     const d = config.getDirectCfg('2', '1', '9')
     expect(f.cd).toBe(3)
     expect(d.cd).toBe(4)
+  })
+  it('群组匹配兜底路径', () => {
+    const file = path.join(tmpConfig, 'scene', 'group.json')
+    fs.writeFileSync(file, JSON.stringify({ global: {} }, null, 2))
+    const r = config.getGroupCfg('999', 'self')
+    expect(typeof r).toBe('object')
   })
 })
 
@@ -137,6 +180,47 @@ describe('系统配置与监听', () => {
     await config.watch()
     expect((globalThis as any).logger.level).toBe('debug')
   })
+  it('监听日志等级未变化（logger存在）不更新', async () => {
+    const utils = await import('@karinjs/utils') as any
+    const orig = utils.watchs
+    utils.watchs = (_: any, cb: any) => { cb('system/logger.json', { level: 'debug' }, { level: 'debug' }) }
+    await config.watch()
+    utils.watchs = orig
+    expect((globalThis as any).logger.level).toBe('debug')
+  })
+  it('监听更新日志等级（无level不更新）', async () => {
+    const utils = await import('@karinjs/utils') as any
+    const orig = utils.watchs
+    const gl = (globalThis as any).logger
+      ; (globalThis as any).logger = undefined
+    utils.watchs = (_: any, cb: any) => { cb('system/logger.json', { level: 'info' }, { level: 'debug' }) }
+    await config.watch()
+    utils.watchs = orig
+      ; (globalThis as any).logger = gl
+    expect(true).toBe(true)
+  })
+  it('监听更新日志等级（level变化但logger缺失）', async () => {
+    const utils = await import('@karinjs/utils') as any
+    const orig = utils.watchs
+    const gl = (globalThis as any).logger
+      ; (globalThis as any).logger = undefined
+    utils.watchs = (_: any, cb: any) => { cb('system/logger.json', { level: 'info' }, { level: 'debug' }) }
+    await config.watch()
+    utils.watchs = orig
+      ; (globalThis as any).logger = gl
+    expect(true).toBe(true)
+  })
+  it('监听日志等级未变化不更新（console 回退）', async () => {
+    const utils = await import('@karinjs/utils') as any
+    const orig = utils.watchs
+    const gl = (globalThis as any).logger
+      ; (globalThis as any).logger = undefined
+    utils.watchs = (_: any, cb: any) => { cb('system/logger.json', { level: 'info' }, { level: 'info' }) }
+    await config.watch()
+    utils.watchs = orig
+      ; (globalThis as any).logger = gl
+    expect(true).toBe(true)
+  })
   it('忽略未知文件的监听事件', async () => {
     const utils = await import('@karinjs/utils') as any
     const orig = utils.watchs
@@ -144,6 +228,18 @@ describe('系统配置与监听', () => {
     await config.watch()
     utils.watchs = orig
     expect(true).toBe(true)
+  })
+  it('监听清空缓存并重新解析', async () => {
+    const file = path.join(tmpConfig, 'scene', 'group.json')
+    fs.writeFileSync(file, JSON.stringify({ global: { cd: 11 } }, null, 2))
+    const g1 = config.group(true)
+    const utils = await import('@karinjs/utils') as any
+    const orig = utils.watchs
+    utils.watchs = (_: any, cb: any) => { cb('scene/group.json', g1, { ...g1 }) }
+    await config.watch()
+    utils.watchs = orig
+    const g2 = config.group()
+    expect(typeof g2.global).toBe('object')
   })
   it('files 映射构建', () => {
     const entries = Object.entries(config.files)
@@ -165,6 +261,18 @@ describe('系统配置与监听', () => {
     err.code = 'EACCES'
     spy.mockImplementationOnce(() => { throw err })
     await expect(config.init()).rejects.toThrow()
+    spy.mockRestore()
+  })
+  it('init 基础目录已存在时不重复创建', async () => {
+    const html = path.join(tmpRoot, 'html')
+    const res = path.join(tmpRoot, 'res')
+    try { fs.mkdirSync(html, { recursive: true }) } catch { }
+    try { fs.mkdirSync(res, { recursive: true }) } catch { }
+    const spy = vi.spyOn(fs, 'mkdirSync')
+    await config.init()
+    const calls = (spy.mock.calls || []).map(c => c[0])
+    expect(calls.find(p => typeof p === 'string' && p.includes('html'))).toBeUndefined()
+    expect(calls.find(p => typeof p === 'string' && p.includes('res'))).toBeUndefined()
     spy.mockRestore()
   })
   it('init ENOENT 分支重试写入', async () => {

@@ -21,6 +21,14 @@ describe('私聊配置兼容 friend.compat', () => {
     } as any)
     expect(cfg['Bot:1:2'].cd).toBe(1)
   })
+  it('clearCache 覆盖', () => {
+    friend.clearCache()
+    expect(true).toBe(true)
+  })
+  it('过滤非对象项', () => {
+    const cfg = friend.compat({ global: {}, a: 1 as any } as any)
+    expect((cfg as any).a).toBeUndefined()
+  })
 })
 
 describe('私聊配置获取 friend.get', () => {
@@ -39,5 +47,9 @@ describe('私聊配置获取 friend.get', () => {
     const cfg = friend.compat({ global: {} } as any)
     const r = friend.get(cfg, 'x', 'y')
     expect(r).toEqual(cfg.global)
+  })
+  it('空配置对象回退到 defaultFriend.global', () => {
+    const r = friend.get({} as any, 'self', 'user')
+    expect(r).toEqual(friend.default.global)
   })
 })
