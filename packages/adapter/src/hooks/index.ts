@@ -4,7 +4,7 @@ import { sendMsg, SendMsgHooks } from './implements/sendMsg'
 import { eventCall, EventCallHooks } from './implements/eventCall'
 
 export * from './types'
-export { HookManager, HookOptions as HookManagerOptions, HookItem, isThenable } from './core/manager'
+export type { HookManager, HookOptions as HookManagerOptions, HookItem, isThenable } from './core/manager'
 
 /**
  * 消息钩子系统类型
@@ -33,15 +33,15 @@ export const hooks: HooksType = {
 /**
  * 内部钩子触发器（框架内部使用）
  */
-export const HooksInternal = {
+export const coreHooks = {
   /** 消息钩子触发器 */
-  Message: MessageHooks,
+  message: MessageHooks,
   /** 发送消息钩子触发器 */
-  SendMsg: SendMsgHooks,
+  sendMsg: SendMsgHooks,
   /** 空插件钩子触发器 */
-  Empty: EmptyHooks,
+  empty: EmptyHooks,
   /** 事件调用钩子触发器 */
-  EventCall: EventCallHooks,
+  eventCall: EventCallHooks,
 }
 
 /**

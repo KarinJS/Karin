@@ -61,12 +61,13 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
         received: {
           total: 0,
           message: 0,
-          notification: 0,
+          notice: 0,
           request: 0,
           other: 0,
         },
         sent: {
           message: 0,
+          forward: 0,
         },
       },
     }

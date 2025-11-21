@@ -1,9 +1,6 @@
 import { lru } from '../LRU'
-import { Bot } from '@karinjs/bot'
 import { config } from '@karinjs/config'
-import { RECV_MSG } from '@karinjs/envs'
 import { MessageDispatch } from './base'
-import { emitter } from '@karinjs/events'
 import { pluginCache } from '@karinjs/plugin'
 import { createRawMessage } from '../../event/abstract/raw'
 import { MessageHooks, EventCallHooks, EmptyHooks } from '../../hooks'
@@ -66,13 +63,7 @@ export class DirectMessageDispatch extends MessageDispatch {
     this.setAlias(this.ctx, this.config.directConfig.alias)
 
     this.print()
-
-    // TODO: 待定，可能需要仅开发环境才进行事件发布
-    Bot.emit('message', this.ctx)
-    Bot.emit('message.direct', this.ctx)
-
-    /** 记录收到消息 */
-    emitter.emit(RECV_MSG, this.ctx.contact)
+    this.eventEmit(this.ctx)
 
     if (this.filterContext(this.ctx, this.logger)) return
 
@@ -97,13 +88,8 @@ export class DirectMessageDispatch extends MessageDispatch {
     const { log_enable_list: enable, log_disable_list: disable } = this.config.filter
     const message = `频道私信消息: [${this.ctx.userId}(${this.ctx.sender.nick || ''})] ${this.ctx.rawMessage}`
 
-    /** 有配置白名单 并且当前用户没在白名单中 */
-    if (enable.direct.length > 0 && !enable.direct.includes(this.ctx.userId)) {
-      return logger.bot('debug', this.ctx.selfId, message)
-    }
-
-    /** 有配置黑名单 并且当前用户在黑名单中 */
-    if (disable.direct.length > 0 && disable.direct.includes(this.ctx.userId)) {
+    /** 过滤用户 */
+    if (this.filterUser(this.ctx.userId, enable.direct, disable.direct)) {
       return logger.bot('debug', this.ctx.selfId, message)
     }
 
@@ -144,23 +130,23 @@ export class DirectMessageDispatch extends MessageDispatch {
   }
 
   private async dispatch () {
-    this.hooksLog.debug(`开始触发消息钩子: ${this.ctx.eventId}`)
+    this.logger.debug(`[hooks] 开始触发消息钩子: ${this.ctx.eventId}`)
 
     // 触发全局消息钩子
     const continueAll = await MessageHooks.trigger(this.ctx)
     if (!continueAll) {
-      this.hooksLog.debug(`消息钩子中断处理: ${this.ctx.eventId}`)
+      this.logger.debug(`[hooks] 消息钩子中断处理: ${this.ctx.eventId}`)
       return
     }
 
     // 触发私聊消息钩子
     const continueDirect = await MessageHooks.triggerDirect(this.ctx)
     if (!continueDirect) {
-      this.hooksLog.debug(`私聊消息钩子中断处理: ${this.ctx.eventId}`)
+      this.logger.debug(`[hooks] 私聊消息钩子中断处理: ${this.ctx.eventId}`)
       return
     }
 
-    this.hooksLog.debug(`消息钩子触发完成: ${this.ctx.eventId}`)
+    this.logger.debug(`[hooks] 消息钩子触发完成: ${this.ctx.eventId}`)
 
     let next = false
     const nextFnc = () => {
@@ -188,9 +174,9 @@ export class DirectMessageDispatch extends MessageDispatch {
     this.logger.debug(`频道私信消息未命中任何插件: ${this.ctx.eventId}`)
 
     // 触发空插件钩子
-    this.hooksLog.debug(`开始触发空插件钩子: ${this.ctx.eventId}`)
+    this.logger.debug(`[hooks] 开始触发空插件钩子: ${this.ctx.eventId}`)
     await EmptyHooks.triggerMessage(this.ctx)
-    this.hooksLog.debug(`空插件钩子触发完成: ${this.ctx.eventId}`)
+    this.logger.debug(`[hooks] 空插件钩子触发完成: ${this.ctx.eventId}`)
   }
 
   /**
@@ -211,13 +197,13 @@ export class DirectMessageDispatch extends MessageDispatch {
     }
 
     // 触发事件调用钩子
-    this.hooksLog.debug(`开始触发事件调用钩子: ${this.ctx.eventId} 插件: ${plugin.name}`)
+    this.logger.debug(`[hooks] 开始触发事件调用钩子: ${this.ctx.eventId} 插件: ${plugin.name}`)
     const continueCall = await EventCallHooks.triggerDirect(this.ctx, plugin)
     if (!continueCall) {
-      this.hooksLog.debug(`事件调用钩子中断插件执行: ${this.ctx.eventId} 插件: ${plugin.name}`)
+      this.logger.debug(`[hooks] 事件调用钩子中断插件执行: ${this.ctx.eventId} 插件: ${plugin.name}`)
       return nextFnc()
     }
-    this.hooksLog.debug(`事件调用钩子触发完成: ${this.ctx.eventId} 插件: ${plugin.name}`)
+    this.logger.debug(`[hooks] 事件调用钩子触发完成: ${this.ctx.eventId} 插件: ${plugin.name}`)
 
     return this.runCallback(this.ctx, plugin, nextFnc)
   }

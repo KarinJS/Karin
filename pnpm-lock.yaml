@@ -24,6 +24,9 @@ catalogs:
     express:
       specifier: npm:@karinjs/express
       version: 1.0.3
+    express-rate-limit:
+      specifier: 8.2.1
+      version: 8.2.1
     jsonwebtoken:
       specifier: npm:@karinjs/jsonwebtoken
       version: 1.1.1
@@ -113,553 +116,26 @@ importers:
       vite:
         specifier: npm:rolldown-vite@latest
         version: rolldown-vite@7.2.5(@karinjs/tsx@5.1.0)(@types/node@20.19.9)(esbuild@0.25.3)(jiti@2.6.1)(sass@1.86.0)(terser@5.43.1)(yaml@2.7.0)
+      vitest:
+        specifier: ^4.0.12
+        version: 4.0.12(@karinjs/tsx@5.1.0)(@types/node@20.19.9)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.86.0)(terser@5.43.1)(yaml@2.7.0)
 
-  packages/adapter:
-    dependencies:
-      '@karinjs/core':
-        specifier: workspace:*
-        version: link:../core
-      '@karinjs/hooks':
-        specifier: workspace:*
-        version: link:../hooks
-    devDependencies:
-      '@karinjs/bot':
-        specifier: workspace:*
-        version: link:../bot
-      '@karinjs/config':
-        specifier: workspace:*
-        version: link:../config
-      '@karinjs/envs':
-        specifier: workspace:*
-        version: link:../envs
-      '@karinjs/events':
-        specifier: workspace:*
-        version: link:../events
-      '@karinjs/logger':
-        specifier: workspace:*
-        version: link:../logger
-      '@karinjs/plugin':
-        specifier: workspace:*
-        version: link:../plugin
-      '@karinjs/utils':
-        specifier: workspace:*
-        version: link:../utils
-      lodash:
-        specifier: 'catalog:'
-        version: '@karinjs/lodash@1.1.1'
-
-  packages/bot:
-    devDependencies:
-      '@karinjs/adapter':
-        specifier: workspace:*
-        version: link:../adapter
-      '@karinjs/db':
-        specifier: workspace:*
-        version: link:../db
-      '@karinjs/envs':
-        specifier: workspace:*
-        version: link:../envs
-      '@karinjs/events':
-        specifier: workspace:*
-        version: link:../events
-      '@karinjs/hooks':
-        specifier: workspace:*
-        version: link:../hooks
-      '@karinjs/logger':
-        specifier: workspace:*
-        version: link:../logger
-
-  packages/cli: {}
-
-  packages/cli-Internal:
-    dependencies:
-      yaml:
-        specifier: 2.7.0
-        version: 2.7.0
-    devDependencies:
-      commander:
-        specifier: ^13.1.0
-        version: 13.1.0
-
-  packages/components: {}
-
-  packages/config:
+  packages-core/server:
     devDependencies:
       '@karinjs/logger':
         specifier: workspace:*
-        version: link:../logger
-      '@karinjs/store':
-        specifier: workspace:*
-        version: link:../store
-      '@karinjs/utils':
-        specifier: workspace:*
-        version: link:../utils
-
-  packages/core:
-    dependencies:
-      express:
-        specifier: npm:@karinjs/express@1.0.3
-        version: '@karinjs/express@1.0.3'
-      lodash:
-        specifier: 'catalog:'
-        version: '@karinjs/lodash@1.1.1'
-      log4js:
-        specifier: 'catalog:'
-        version: '@karinjs/log4js@1.5.0'
-      moment:
-        specifier: 'catalog:'
-        version: '@karinjs/moment@1.1.5'
-      sqlite3:
-        specifier: 'catalog:'
-        version: '@karinjs/sqlite3@0.4.2'
-      ws:
-        specifier: 'catalog:'
-        version: '@karinjs/ws@1.2.0'
-      yaml:
-        specifier: 'catalog:'
-        version: 2.7.0
-    devDependencies:
-      '@karinjs/adapter':
-        specifier: workspace:*
-        version: link:../adapter
-      '@karinjs/bot':
-        specifier: workspace:*
-        version: link:../bot
-      '@karinjs/components':
-        specifier: workspace:*
-        version: link:../components
-      '@karinjs/config':
-        specifier: workspace:*
-        version: link:../config
-      '@karinjs/db':
-        specifier: workspace:*
-        version: link:../db
-      '@karinjs/envs':
-        specifier: workspace:*
-        version: link:../envs
-      '@karinjs/events':
-        specifier: workspace:*
-        version: link:../events
-      '@karinjs/hooks':
-        specifier: workspace:*
-        version: link:../hooks
-      '@karinjs/logger':
-        specifier: workspace:*
-        version: link:../logger
-      '@karinjs/node-pty':
-        specifier: 'catalog:'
-        version: 1.1.3
-      '@karinjs/onebot':
-        specifier: workspace:*
-        version: link:../onebot
-      '@karinjs/plugin':
-        specifier: workspace:*
-        version: link:../plugin
-      '@karinjs/plugin-adapter-console':
-        specifier: workspace:*
-        version: link:../plugin-adapter-console
-      '@karinjs/plugin-adapter-onebot':
-        specifier: workspace:*
-        version: link:../plugin-adapter-onebot
-      '@karinjs/plugin-process':
-        specifier: workspace:*
-        version: link:../plugin-process
-      '@karinjs/plugin-webui-network-monitor':
-        specifier: ^1.0.3
-        version: 1.0.3
-      '@karinjs/plugins-list':
-        specifier: ^1.7.0
-        version: 1.7.0
-      '@karinjs/render':
-        specifier: workspace:*
-        version: link:../render
-      '@karinjs/server':
-        specifier: workspace:*
-        version: link:../server
-      '@karinjs/store':
-        specifier: workspace:*
-        version: link:../store
-      '@karinjs/utils':
-        specifier: workspace:*
-        version: link:../utils
-      '@types/express':
-        specifier: ^5.0.1
-        version: 5.0.1
-      art-template:
-        specifier: npm:@karinjs/art-template@1.1.0
-        version: '@karinjs/art-template@1.1.0'
-      axios:
-        specifier: 'catalog:'
-        version: '@karinjs/axios@1.13.0'
-      chalk:
-        specifier: 'catalog:'
-        version: 5.4.1
-      chokidar:
-        specifier: 'catalog:'
-        version: 4.0.3
-      cross-env:
-        specifier: ^7.0.3
-        version: 7.0.3
-      dotenv:
-        specifier: npm:@karinjs/dotenv@^1.1.2
-        version: '@karinjs/dotenv@1.1.2'
-      jsonwebtoken:
-        specifier: npm:@karinjs/jsonwebtoken@^1.1.1
-        version: '@karinjs/jsonwebtoken@1.1.1'
-      node-schedule:
-        specifier: npm:@karinjs/node-schedule@1.0.0
-        version: '@karinjs/node-schedule@1.0.0'
-      redis:
-        specifier: 'catalog:'
-        version: '@karinjs/redis@1.1.3'
-
-  packages/create-karin:
-    dependencies:
-      kolorist:
-        specifier: ^1.8.0
-        version: 1.8.0
-      prompts:
-        specifier: ^2.4.2
-        version: 2.4.2
-    devDependencies:
-      '@karinjs/axios':
-        specifier: ^1.1.8
-        version: 1.1.8
-      '@types/node':
-        specifier: ^20.11.0
-        version: 20.17.28
-      '@types/prompts':
-        specifier: ^2.4.9
-        version: 2.4.9
-      '@types/strip-json-comments':
-        specifier: ^3.0.0
-        version: 3.0.0
-      ora:
-        specifier: ^8.2.0
-        version: 8.2.0
-      strip-json-comments:
-        specifier: ^5.0.1
-        version: 5.0.1
-      tsup:
-        specifier: ^8.0.1
-        version: 8.4.0(@microsoft/api-extractor@7.52.8(@types/node@20.17.28))(@swc/core@1.15.1)(jiti@2.6.1)(postcss@8.5.6)(tsx@4.20.5)(typescript@5.8.2)(yaml@2.7.0)
-      typescript:
-        specifier: ^5.3.3
-        version: 5.8.2
-
-  packages/db:
-    dependencies:
-      '@karinjs/logger':
-        specifier: workspace:*
-        version: link:../logger
-    devDependencies:
-      '@karinjs/utils':
-        specifier: workspace:*
-        version: link:../utils
-      redis:
-        specifier: 'catalog:'
-        version: '@karinjs/redis@1.1.3'
-      sqlite3:
-        specifier: 'catalog:'
-        version: '@karinjs/sqlite3@0.4.2'
-
-  packages/envs: {}
-
-  packages/events:
-    devDependencies:
-      ws:
-        specifier: 'catalog:'
-        version: '@karinjs/ws@1.2.0'
-
-  packages/git: {}
-
-  packages/glob: {}
-
-  packages/hooks:
-    devDependencies:
-      '@karinjs/adapter':
-        specifier: workspace:*
-        version: link:../adapter
-      '@karinjs/core':
-        specifier: workspace:*
-        version: link:../core
-      '@karinjs/logger':
-        specifier: workspace:*
-        version: link:../logger
-      '@karinjs/plugin':
-        specifier: workspace:*
-        version: link:../plugin
-      lodash:
-        specifier: 'catalog:'
-        version: '@karinjs/lodash@1.1.1'
-
-  packages/logger:
-    devDependencies:
-      chalk:
-        specifier: 'catalog:'
-        version: 5.4.1
-      log4js:
-        specifier: 'catalog:'
-        version: '@karinjs/log4js@1.5.0'
-
-  packages/node-karin:
-    dependencies:
-      '@karinjs/core':
-        specifier: workspace:*
-        version: link:../core
-
-  packages/onebot:
-    devDependencies:
-      ws:
-        specifier: 'catalog:'
-        version: '@karinjs/ws@1.2.0'
-
-  packages/plugin:
-    devDependencies:
-      '@karinjs/adapter':
-        specifier: workspace:*
-        version: link:../adapter
-      '@karinjs/components':
-        specifier: workspace:*
-        version: link:../components
-      '@karinjs/envs':
-        specifier: workspace:*
-        version: link:../envs
-      '@karinjs/events':
-        specifier: workspace:*
-        version: link:../events
-      '@karinjs/logger':
-        specifier: workspace:*
-        version: link:../logger
-      '@karinjs/store':
-        specifier: workspace:*
-        version: link:../store
-      '@karinjs/utils':
-        specifier: workspace:*
-        version: link:../utils
-      callsites:
-        specifier: ^4.2.0
-        version: 4.2.0
-      chokidar:
-        specifier: 'catalog:'
-        version: 4.0.3
-      node-schedule:
-        specifier: 'catalog:'
-        version: '@karinjs/node-schedule@1.1.2'
-      semver:
-        specifier: 'catalog:'
-        version: 7.7.3
-
-  packages/plugin-adapter-console:
-    devDependencies:
-      '@karinjs/adapter':
-        specifier: workspace:*
-        version: link:../adapter
-      '@karinjs/config':
-        specifier: workspace:*
-        version: link:../config
-      '@karinjs/envs':
-        specifier: workspace:*
-        version: link:../envs
-      '@karinjs/events':
-        specifier: workspace:*
-        version: link:../events
-      '@karinjs/logger':
-        specifier: workspace:*
-        version: link:../logger
-      '@karinjs/store':
-        specifier: workspace:*
-        version: link:../store
-      '@karinjs/utils':
-        specifier: workspace:*
-        version: link:../utils
-
-  packages/plugin-adapter-onebot:
-    devDependencies:
-      '@karinjs/adapter':
-        specifier: workspace:*
-        version: link:../adapter
-      '@karinjs/bot':
-        specifier: workspace:*
-        version: link:../bot
-      '@karinjs/config':
-        specifier: workspace:*
-        version: link:../config
-      '@karinjs/envs':
-        specifier: workspace:*
-        version: link:../envs
-      '@karinjs/events':
-        specifier: workspace:*
-        version: link:../events
-      '@karinjs/onebot':
-        specifier: workspace:*
-        version: link:../onebot
-      '@karinjs/server':
-        specifier: workspace:*
-        version: link:../server
-      '@karinjs/utils':
-        specifier: workspace:*
-        version: link:../utils
+        version: link:../../packages/logger
       express:
         specifier: 'catalog:'
         version: '@karinjs/express@1.0.3'
+      express-rate-limit:
+        specifier: 'catalog:'
+        version: 8.2.1(@karinjs/express@1.0.3)
       ws:
         specifier: 'catalog:'
         version: '@karinjs/ws@1.2.0'
 
-  packages/plugin-process:
-    devDependencies:
-      '@karinjs/logger':
-        specifier: 'workspace:'
-        version: link:../logger
-      '@karinjs/store':
-        specifier: workspace:*
-        version: link:../store
-
-  packages/render:
-    devDependencies:
-      '@karinjs/core':
-        specifier: workspace:*
-        version: link:../core
-      '@karinjs/envs':
-        specifier: 'workspace:'
-        version: link:../envs
-      '@karinjs/logger':
-        specifier: 'workspace:'
-        version: link:../logger
-      '@karinjs/plugin':
-        specifier: 'workspace:'
-        version: link:../plugin
-      '@karinjs/store':
-        specifier: workspace:*
-        version: link:../store
-      '@karinjs/utils':
-        specifier: 'workspace:'
-        version: link:../utils
-      art-template:
-        specifier: 'catalog:'
-        version: '@karinjs/art-template@1.1.0'
-      axios:
-        specifier: 'catalog:'
-        version: '@karinjs/axios@1.13.0'
-      chokidar:
-        specifier: 4.0.3
-        version: 4.0.3
-      lodash:
-        specifier: 'catalog:'
-        version: '@karinjs/lodash@1.1.1'
-      node-schedule:
-        specifier: 'catalog:'
-        version: '@karinjs/node-schedule@1.1.2'
-      ws:
-        specifier: 'catalog:'
-        version: '@karinjs/ws@1.2.0'
-      yaml:
-        specifier: 2.7.0
-        version: 2.7.0
-
-  packages/server:
-    dependencies:
-      jsonwebtoken:
-        specifier: 'catalog:'
-        version: '@karinjs/jsonwebtoken@1.1.1'
-    devDependencies:
-      '@karinjs/components':
-        specifier: workspace:*
-        version: link:../components
-      '@karinjs/core':
-        specifier: workspace:*
-        version: link:../core
-      '@karinjs/db':
-        specifier: workspace:*
-        version: link:../db
-      '@karinjs/envs':
-        specifier: workspace:*
-        version: link:../envs
-      '@karinjs/events':
-        specifier: workspace:*
-        version: link:../events
-      '@karinjs/git':
-        specifier: workspace:*
-        version: link:../git
-      '@karinjs/logger':
-        specifier: workspace:*
-        version: link:../logger
-      '@karinjs/node-pty':
-        specifier: 'catalog:'
-        version: 1.1.3
-      '@karinjs/plugin':
-        specifier: workspace:*
-        version: link:../plugin
-      '@karinjs/store':
-        specifier: workspace:*
-        version: link:../store
-      '@karinjs/utils':
-        specifier: workspace:*
-        version: link:../utils
-      axios:
-        specifier: 'catalog:'
-        version: '@karinjs/axios@1.13.0'
-      express:
-        specifier: 'catalog:'
-        version: '@karinjs/express@1.0.3'
-      lodash:
-        specifier: 'catalog:'
-        version: '@karinjs/lodash@1.1.1'
-      moment:
-        specifier: 'catalog:'
-        version: '@karinjs/moment@1.1.5'
-      ws:
-        specifier: 'catalog:'
-        version: '@karinjs/ws@1.2.0'
-
-  packages/store:
-    devDependencies:
-      '@karinjs/envs':
-        specifier: workspace:*
-        version: link:../envs
-
-  packages/test:
-    dependencies:
-      '@karinjs/plugin-basic':
-        specifier: 1.0.8
-        version: 1.0.8
-
-  packages/tsdown-config: {}
-
-  packages/types: {}
-
-  packages/utils:
-    devDependencies:
-      '@karinjs/envs':
-        specifier: workspace:*
-        version: link:../envs
-      '@karinjs/store':
-        specifier: workspace:*
-        version: link:../store
-      '@types/ini':
-        specifier: ^4.1.1
-        version: 4.1.1
-      axios:
-        specifier: 'catalog:'
-        version: '@karinjs/axios@1.13.0'
-      chokidar:
-        specifier: 'catalog:'
-        version: 4.0.3
-      ini:
-        specifier: ^5.0.0
-        version: 5.0.0
-      lodash:
-        specifier: 'catalog:'
-        version: '@karinjs/lodash@1.1.1'
-      semver:
-        specifier: 'catalog:'
-        version: 7.7.3
-      yaml:
-        specifier: 'catalog:'
-        version: 2.7.0
-
-  packages/webui:
+  packages-core/webui:
     dependencies:
       '@hookform/resolvers':
         specifier: ^3.10.0
@@ -837,6 +313,544 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  packages-plugin/plugin-adapter-console:
+    devDependencies:
+      '@karinjs/adapter':
+        specifier: workspace:*
+        version: link:../../packages/adapter
+      '@karinjs/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@karinjs/envs':
+        specifier: workspace:*
+        version: link:../../packages/envs
+      '@karinjs/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@karinjs/logger':
+        specifier: workspace:*
+        version: link:../../packages/logger
+      '@karinjs/server':
+        specifier: workspace:*
+        version: link:../../packages-core/server
+      '@karinjs/store':
+        specifier: workspace:*
+        version: link:../../packages/store
+      '@karinjs/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+
+  packages-plugin/plugin-adapter-onebot:
+    devDependencies:
+      '@karinjs/adapter':
+        specifier: workspace:*
+        version: link:../../packages/adapter
+      '@karinjs/bot':
+        specifier: workspace:*
+        version: link:../../packages/bot
+      '@karinjs/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@karinjs/envs':
+        specifier: workspace:*
+        version: link:../../packages/envs
+      '@karinjs/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@karinjs/onebot':
+        specifier: workspace:*
+        version: link:../../packages/onebot
+      '@karinjs/server':
+        specifier: workspace:*
+        version: link:../../packages-core/server
+      '@karinjs/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+      express:
+        specifier: 'catalog:'
+        version: '@karinjs/express@1.0.3'
+      ws:
+        specifier: 'catalog:'
+        version: '@karinjs/ws@1.2.0'
+
+  packages/adapter:
+    devDependencies:
+      '@karinjs/bot':
+        specifier: workspace:*
+        version: link:../bot
+      '@karinjs/config':
+        specifier: workspace:*
+        version: link:../config
+      '@karinjs/envs':
+        specifier: workspace:*
+        version: link:../envs
+      '@karinjs/events':
+        specifier: workspace:*
+        version: link:../events
+      '@karinjs/logger':
+        specifier: workspace:*
+        version: link:../logger
+      '@karinjs/plugin':
+        specifier: workspace:*
+        version: link:../plugin
+      '@karinjs/utils':
+        specifier: workspace:*
+        version: link:../utils
+
+  packages/bot:
+    devDependencies:
+      '@karinjs/adapter':
+        specifier: workspace:*
+        version: link:../adapter
+      '@karinjs/db':
+        specifier: workspace:*
+        version: link:../db
+      '@karinjs/envs':
+        specifier: workspace:*
+        version: link:../envs
+      '@karinjs/events':
+        specifier: workspace:*
+        version: link:../events
+      '@karinjs/logger':
+        specifier: workspace:*
+        version: link:../logger
+      ws:
+        specifier: 'catalog:'
+        version: '@karinjs/ws@1.2.0'
+
+  packages/cli: {}
+
+  packages/cli-Internal:
+    dependencies:
+      yaml:
+        specifier: 2.7.0
+        version: 2.7.0
+    devDependencies:
+      commander:
+        specifier: ^13.1.0
+        version: 13.1.0
+
+  packages/components: {}
+
+  packages/config:
+    devDependencies:
+      '@karinjs/logger':
+        specifier: workspace:*
+        version: link:../logger
+      '@karinjs/store':
+        specifier: workspace:*
+        version: link:../store
+      '@karinjs/utils':
+        specifier: workspace:*
+        version: link:../utils
+      '@vitest/coverage-v8':
+        specifier: 4.0.12
+        version: 4.0.12(vitest@4.0.12(@types/node@20.19.9)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.86.0)(terser@5.43.1)(tsx@4.20.5)(yaml@2.7.0))
+
+  packages/core:
+    dependencies:
+      express:
+        specifier: npm:@karinjs/express@1.0.3
+        version: '@karinjs/express@1.0.3'
+      lodash:
+        specifier: 'catalog:'
+        version: '@karinjs/lodash@1.1.1'
+      log4js:
+        specifier: 'catalog:'
+        version: '@karinjs/log4js@1.5.0'
+      moment:
+        specifier: 'catalog:'
+        version: '@karinjs/moment@1.1.5'
+      sqlite3:
+        specifier: 'catalog:'
+        version: '@karinjs/sqlite3@0.4.2'
+      ws:
+        specifier: 'catalog:'
+        version: '@karinjs/ws@1.2.0'
+      yaml:
+        specifier: 'catalog:'
+        version: 2.7.0
+    devDependencies:
+      '@karinjs/adapter':
+        specifier: workspace:*
+        version: link:../adapter
+      '@karinjs/bot':
+        specifier: workspace:*
+        version: link:../bot
+      '@karinjs/components':
+        specifier: workspace:*
+        version: link:../components
+      '@karinjs/config':
+        specifier: workspace:*
+        version: link:../config
+      '@karinjs/db':
+        specifier: workspace:*
+        version: link:../db
+      '@karinjs/envs':
+        specifier: workspace:*
+        version: link:../envs
+      '@karinjs/events':
+        specifier: workspace:*
+        version: link:../events
+      '@karinjs/logger':
+        specifier: workspace:*
+        version: link:../logger
+      '@karinjs/node-pty':
+        specifier: 'catalog:'
+        version: 1.1.3
+      '@karinjs/onebot':
+        specifier: workspace:*
+        version: link:../onebot
+      '@karinjs/plugin':
+        specifier: workspace:*
+        version: link:../plugin
+      '@karinjs/plugin-adapter-console':
+        specifier: workspace:*
+        version: link:../../packages-plugin/plugin-adapter-console
+      '@karinjs/plugin-adapter-onebot':
+        specifier: workspace:*
+        version: link:../../packages-plugin/plugin-adapter-onebot
+      '@karinjs/plugin-process':
+        specifier: workspace:*
+        version: link:../plugin-process
+      '@karinjs/plugin-webui-network-monitor':
+        specifier: ^1.0.3
+        version: 1.0.3
+      '@karinjs/plugins-list':
+        specifier: ^1.7.0
+        version: 1.7.0
+      '@karinjs/render':
+        specifier: workspace:*
+        version: link:../render
+      '@karinjs/server':
+        specifier: workspace:*
+        version: link:../../packages-core/server
+      '@karinjs/store':
+        specifier: workspace:*
+        version: link:../store
+      '@karinjs/utils':
+        specifier: workspace:*
+        version: link:../utils
+      '@types/express':
+        specifier: ^5.0.1
+        version: 5.0.1
+      art-template:
+        specifier: npm:@karinjs/art-template@1.1.0
+        version: '@karinjs/art-template@1.1.0'
+      axios:
+        specifier: 'catalog:'
+        version: '@karinjs/axios@1.13.0'
+      chalk:
+        specifier: 'catalog:'
+        version: 5.4.1
+      chokidar:
+        specifier: 'catalog:'
+        version: 4.0.3
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
+      dotenv:
+        specifier: npm:@karinjs/dotenv@^1.1.2
+        version: '@karinjs/dotenv@1.1.2'
+      jsonwebtoken:
+        specifier: npm:@karinjs/jsonwebtoken@^1.1.1
+        version: '@karinjs/jsonwebtoken@1.1.1'
+      node-schedule:
+        specifier: npm:@karinjs/node-schedule@1.0.0
+        version: '@karinjs/node-schedule@1.0.0'
+      redis:
+        specifier: 'catalog:'
+        version: '@karinjs/redis@1.1.3'
+
+  packages/create-karin:
+    dependencies:
+      kolorist:
+        specifier: ^1.8.0
+        version: 1.8.0
+      prompts:
+        specifier: ^2.4.2
+        version: 2.4.2
+    devDependencies:
+      '@karinjs/axios':
+        specifier: ^1.1.8
+        version: 1.1.8
+      '@types/node':
+        specifier: ^20.11.0
+        version: 20.17.28
+      '@types/prompts':
+        specifier: ^2.4.9
+        version: 2.4.9
+      '@types/strip-json-comments':
+        specifier: ^3.0.0
+        version: 3.0.0
+      ora:
+        specifier: ^8.2.0
+        version: 8.2.0
+      strip-json-comments:
+        specifier: ^5.0.1
+        version: 5.0.1
+      tsup:
+        specifier: ^8.0.1
+        version: 8.4.0(@microsoft/api-extractor@7.52.8(@types/node@20.17.28))(@swc/core@1.15.1)(jiti@2.6.1)(postcss@8.5.6)(tsx@4.20.5)(typescript@5.8.2)(yaml@2.7.0)
+      typescript:
+        specifier: ^5.3.3
+        version: 5.8.2
+
+  packages/db:
+    dependencies:
+      '@karinjs/logger':
+        specifier: workspace:*
+        version: link:../logger
+    devDependencies:
+      '@karinjs/utils':
+        specifier: workspace:*
+        version: link:../utils
+      redis:
+        specifier: 'catalog:'
+        version: '@karinjs/redis@1.1.3'
+      sqlite3:
+        specifier: 'catalog:'
+        version: '@karinjs/sqlite3@0.4.2'
+
+  packages/envs: {}
+
+  packages/events:
+    devDependencies:
+      ws:
+        specifier: 'catalog:'
+        version: '@karinjs/ws@1.2.0'
+
+  packages/git: {}
+
+  packages/glob: {}
+
+  packages/hooks:
+    devDependencies:
+      '@karinjs/adapter':
+        specifier: workspace:*
+        version: link:../adapter
+      '@karinjs/core':
+        specifier: workspace:*
+        version: link:../core
+      '@karinjs/logger':
+        specifier: workspace:*
+        version: link:../logger
+      '@karinjs/plugin':
+        specifier: workspace:*
+        version: link:../plugin
+      lodash:
+        specifier: 'catalog:'
+        version: '@karinjs/lodash@1.1.1'
+
+  packages/logger:
+    devDependencies:
+      chalk:
+        specifier: 'catalog:'
+        version: 5.4.1
+      log4js:
+        specifier: 'catalog:'
+        version: '@karinjs/log4js@1.5.0'
+
+  packages/node-karin:
+    dependencies:
+      '@karinjs/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/onebot:
+    devDependencies:
+      ws:
+        specifier: 'catalog:'
+        version: '@karinjs/ws@1.2.0'
+
+  packages/plugin:
+    devDependencies:
+      '@karinjs/adapter':
+        specifier: workspace:*
+        version: link:../adapter
+      '@karinjs/components':
+        specifier: workspace:*
+        version: link:../components
+      '@karinjs/envs':
+        specifier: workspace:*
+        version: link:../envs
+      '@karinjs/events':
+        specifier: workspace:*
+        version: link:../events
+      '@karinjs/logger':
+        specifier: workspace:*
+        version: link:../logger
+      '@karinjs/store':
+        specifier: workspace:*
+        version: link:../store
+      '@karinjs/utils':
+        specifier: workspace:*
+        version: link:../utils
+      callsites:
+        specifier: ^4.2.0
+        version: 4.2.0
+      chokidar:
+        specifier: 'catalog:'
+        version: 4.0.3
+      node-schedule:
+        specifier: 'catalog:'
+        version: '@karinjs/node-schedule@1.1.2'
+      semver:
+        specifier: 'catalog:'
+        version: 7.7.3
+
+  packages/plugin-process:
+    devDependencies:
+      '@karinjs/logger':
+        specifier: 'workspace:'
+        version: link:../logger
+      '@karinjs/store':
+        specifier: workspace:*
+        version: link:../store
+
+  packages/render:
+    devDependencies:
+      '@karinjs/core':
+        specifier: workspace:*
+        version: link:../core
+      '@karinjs/envs':
+        specifier: 'workspace:'
+        version: link:../envs
+      '@karinjs/logger':
+        specifier: 'workspace:'
+        version: link:../logger
+      '@karinjs/plugin':
+        specifier: 'workspace:'
+        version: link:../plugin
+      '@karinjs/store':
+        specifier: workspace:*
+        version: link:../store
+      '@karinjs/utils':
+        specifier: 'workspace:'
+        version: link:../utils
+      art-template:
+        specifier: 'catalog:'
+        version: '@karinjs/art-template@1.1.0'
+      axios:
+        specifier: 'catalog:'
+        version: '@karinjs/axios@1.13.0'
+      chokidar:
+        specifier: 4.0.3
+        version: 4.0.3
+      lodash:
+        specifier: 'catalog:'
+        version: '@karinjs/lodash@1.1.1'
+      node-schedule:
+        specifier: 'catalog:'
+        version: '@karinjs/node-schedule@1.1.2'
+      ws:
+        specifier: 'catalog:'
+        version: '@karinjs/ws@1.2.0'
+      yaml:
+        specifier: 2.7.0
+        version: 2.7.0
+
+  packages/server:
+    dependencies:
+      jsonwebtoken:
+        specifier: 'catalog:'
+        version: '@karinjs/jsonwebtoken@1.1.1'
+    devDependencies:
+      '@karinjs/components':
+        specifier: workspace:*
+        version: link:../components
+      '@karinjs/core':
+        specifier: workspace:*
+        version: link:../core
+      '@karinjs/db':
+        specifier: workspace:*
+        version: link:../db
+      '@karinjs/envs':
+        specifier: workspace:*
+        version: link:../envs
+      '@karinjs/events':
+        specifier: workspace:*
+        version: link:../events
+      '@karinjs/git':
+        specifier: workspace:*
+        version: link:../git
+      '@karinjs/logger':
+        specifier: workspace:*
+        version: link:../logger
+      '@karinjs/node-pty':
+        specifier: 'catalog:'
+        version: 1.1.3
+      '@karinjs/plugin':
+        specifier: workspace:*
+        version: link:../plugin
+      '@karinjs/store':
+        specifier: workspace:*
+        version: link:../store
+      '@karinjs/utils':
+        specifier: workspace:*
+        version: link:../utils
+      axios:
+        specifier: 'catalog:'
+        version: '@karinjs/axios@1.13.0'
+      express:
+        specifier: 'catalog:'
+        version: '@karinjs/express@1.0.3'
+      lodash:
+        specifier: 'catalog:'
+        version: '@karinjs/lodash@1.1.1'
+      moment:
+        specifier: 'catalog:'
+        version: '@karinjs/moment@1.1.5'
+      ws:
+        specifier: 'catalog:'
+        version: '@karinjs/ws@1.2.0'
+
+  packages/store:
+    devDependencies:
+      '@karinjs/envs':
+        specifier: workspace:*
+        version: link:../envs
+
+  packages/test:
+    dependencies:
+      '@karinjs/plugin-basic':
+        specifier: 1.0.8
+        version: 1.0.8
+
+  packages/tsdown-config: {}
+
+  packages/types: {}
+
+  packages/utils:
+    devDependencies:
+      '@karinjs/envs':
+        specifier: workspace:*
+        version: link:../envs
+      '@karinjs/store':
+        specifier: workspace:*
+        version: link:../store
+      '@types/ini':
+        specifier: ^4.1.1
+        version: 4.1.1
+      axios:
+        specifier: 'catalog:'
+        version: '@karinjs/axios@1.13.0'
+      chokidar:
+        specifier: 'catalog:'
+        version: 4.0.3
+      ini:
+        specifier: ^5.0.0
+        version: 5.0.0
+      lodash:
+        specifier: 'catalog:'
+        version: '@karinjs/lodash@1.1.1'
+      semver:
+        specifier: 'catalog:'
+        version: 7.7.3
+      yaml:
+        specifier: 'catalog:'
+        version: 2.7.0
+
 packages:
 
   '@alloc/quick-lru@5.2.0':
@@ -855,8 +869,17 @@ packages:
     resolution: {integrity: sha512-D2hP9eA+Sqx1kBZgzxZh0y1trbuU+JoDkiEwqhQ36nodYqJwyEIhPSdMNd7lOm/4io72luTPWH20Yda0xOuUow==}
     engines: {node: '>=6.9.0'}
 
+  '@babel/helper-validator-identifier@7.28.5':
+    resolution: {integrity: sha512-qSs4ifwzKJSV39ucNjsvc6WVHs6b7S03sOh2OcHF9UHfVPqWWALUsNUVzhSBiItjRZoLHx7nIarVjqKVusUZ1Q==}
+    engines: {node: '>=6.9.0'}
+
   '@babel/parser@7.28.4':
     resolution: {integrity: sha512-yZbBqeM6TkpP9du/I2pUZnJsRMGGvOuIrhjzC1AwHwW+6he4mni6Bp/m8ijn0iOuZuPI2BfkCoSRunpyjnrQKg==}
+    engines: {node: '>=6.0.0'}
+    hasBin: true
+
+  '@babel/parser@7.28.5':
+    resolution: {integrity: sha512-KKBU1VGYR7ORr3At5HAtUQ+TV3SzRCXmA/8OdDZiLDBIZxVyzXuztPjfLd3BV1PRAQGCMWWSHYhL0F8d5uHBDQ==}
     engines: {node: '>=6.0.0'}
     hasBin: true
 
@@ -867,6 +890,14 @@ packages:
   '@babel/types@7.28.4':
     resolution: {integrity: sha512-bkFqkLhh3pMBUQQkpVgWDWq/lqzc2678eUyDlTBhRqhCHFguYYGM0Efga7tYk4TogG/3x0EEl66/OQ+WGbWB/Q==}
     engines: {node: '>=6.9.0'}
+
+  '@babel/types@7.28.5':
+    resolution: {integrity: sha512-qQ5m48eI/MFLQ5PxQj4PFaprjyCTLI37ElWMmNs0K8Lk3dVeOdNpB3ks8jc7yM5CDmVC73eMVk/trk3fgmrUpA==}
+    engines: {node: '>=6.9.0'}
+
+  '@bcoe/v8-coverage@1.0.2':
+    resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
+    engines: {node: '>=18'}
 
   '@date-fns/tz@1.2.0':
     resolution: {integrity: sha512-LBrd7MiJZ9McsOgxqWX7AaxrDjcFVjWH/tIKJd7pnR7McaslGYOP1QmmiBXdJH/H/yLCT+rcQ7FaPBUxRGUtrg==}
@@ -1598,6 +1629,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.29':
     resolution: {integrity: sha512-uw6guiW/gcAGPDhLmd77/6lW8QLeiV5RUTsAX46Db6oLhGaVj4lhnPwb184s1bkc8kdVg/+h988dro8GRDpmYQ==}
+
+  '@jridgewell/trace-mapping@0.3.31':
+    resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
   '@karinjs/art-template@1.1.0':
     resolution: {integrity: sha512-OKf0WZ61SAs9J/K19nzx1XtmLQKc+lbbxiP7AH34TLIM46L3/wSUybV2hcFl001B3zwRcUlrCOZgDlcxyVcScA==}
@@ -2758,6 +2792,11 @@ packages:
     cpu: [arm]
     os: [android]
 
+  '@rollup/rollup-android-arm-eabi@4.53.3':
+    resolution: {integrity: sha512-mRSi+4cBjrRLoaal2PnqH82Wqyb+d3HsPUN/W+WslCXsZsyHa9ZeQQX/pQsZaVIWDkPcpV6jJ+3KLbTbgnwv8w==}
+    cpu: [arm]
+    os: [android]
+
   '@rollup/rollup-android-arm64@4.38.0':
     resolution: {integrity: sha512-VUsgcy4GhhT7rokwzYQP+aV9XnSLkkhlEJ0St8pbasuWO/vwphhZQxYEKUP3ayeCYLhk6gEtacRpYP/cj3GjyQ==}
     cpu: [arm64]
@@ -2765,6 +2804,11 @@ packages:
 
   '@rollup/rollup-android-arm64@4.40.1':
     resolution: {integrity: sha512-PPkxTOisoNC6TpnDKatjKkjRMsdaWIhyuMkA4UsBXT9WEZY4uHezBTjs6Vl4PbqQQeu6oION1w2voYZv9yquCw==}
+    cpu: [arm64]
+    os: [android]
+
+  '@rollup/rollup-android-arm64@4.53.3':
+    resolution: {integrity: sha512-CbDGaMpdE9sh7sCmTrTUyllhrg65t6SwhjlMJsLr+J8YjFuPmCEjbBSx4Z/e4SmDyH3aB5hGaJUP2ltV/vcs4w==}
     cpu: [arm64]
     os: [android]
 
@@ -2778,6 +2822,11 @@ packages:
     cpu: [arm64]
     os: [darwin]
 
+  '@rollup/rollup-darwin-arm64@4.53.3':
+    resolution: {integrity: sha512-Nr7SlQeqIBpOV6BHHGZgYBuSdanCXuw09hon14MGOLGmXAFYjx1wNvquVPmpZnl0tLjg25dEdr4IQ6GgyToCUA==}
+    cpu: [arm64]
+    os: [darwin]
+
   '@rollup/rollup-darwin-x64@4.38.0':
     resolution: {integrity: sha512-Mgcmc78AjunP1SKXl624vVBOF2bzwNWFPMP4fpOu05vS0amnLcX8gHIge7q/lDAHy3T2HeR0TqrriZDQS2Woeg==}
     cpu: [x64]
@@ -2785,6 +2834,11 @@ packages:
 
   '@rollup/rollup-darwin-x64@4.40.1':
     resolution: {integrity: sha512-nIwkXafAI1/QCS7pxSpv/ZtFW6TXcNUEHAIA9EIyw5OzxJZQ1YDrX+CL6JAIQgZ33CInl1R6mHet9Y/UZTg2Bw==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@rollup/rollup-darwin-x64@4.53.3':
+    resolution: {integrity: sha512-DZ8N4CSNfl965CmPktJ8oBnfYr3F8dTTNBQkRlffnUarJ2ohudQD17sZBa097J8xhQ26AwhHJ5mvUyQW8ddTsQ==}
     cpu: [x64]
     os: [darwin]
 
@@ -2798,6 +2852,11 @@ packages:
     cpu: [arm64]
     os: [freebsd]
 
+  '@rollup/rollup-freebsd-arm64@4.53.3':
+    resolution: {integrity: sha512-yMTrCrK92aGyi7GuDNtGn2sNW+Gdb4vErx4t3Gv/Tr+1zRb8ax4z8GWVRfr3Jw8zJWvpGHNpss3vVlbF58DZ4w==}
+    cpu: [arm64]
+    os: [freebsd]
+
   '@rollup/rollup-freebsd-x64@4.38.0':
     resolution: {integrity: sha512-hCY/KAeYMCyDpEE4pTETam0XZS4/5GXzlLgpi5f0IaPExw9kuB+PDTOTLuPtM10TlRG0U9OSmXJ+Wq9J39LvAg==}
     cpu: [x64]
@@ -2805,6 +2864,11 @@ packages:
 
   '@rollup/rollup-freebsd-x64@4.40.1':
     resolution: {integrity: sha512-VXeo/puqvCG8JBPNZXZf5Dqq7BzElNJzHRRw3vjBE27WujdzuOPecDPc/+1DcdcTptNBep3861jNq0mYkT8Z6Q==}
+    cpu: [x64]
+    os: [freebsd]
+
+  '@rollup/rollup-freebsd-x64@4.53.3':
+    resolution: {integrity: sha512-lMfF8X7QhdQzseM6XaX0vbno2m3hlyZFhwcndRMw8fbAGUGL3WFMBdK0hbUBIUYcEcMhVLr1SIamDeuLBnXS+Q==}
     cpu: [x64]
     os: [freebsd]
 
@@ -2818,6 +2882,11 @@ packages:
     cpu: [arm]
     os: [linux]
 
+  '@rollup/rollup-linux-arm-gnueabihf@4.53.3':
+    resolution: {integrity: sha512-k9oD15soC/Ln6d2Wv/JOFPzZXIAIFLp6B+i14KhxAfnq76ajt0EhYc5YPeX6W1xJkAdItcVT+JhKl1QZh44/qw==}
+    cpu: [arm]
+    os: [linux]
+
   '@rollup/rollup-linux-arm-musleabihf@4.38.0':
     resolution: {integrity: sha512-tPiJtiOoNuIH8XGG8sWoMMkAMm98PUwlriOFCCbZGc9WCax+GLeVRhmaxjJtz6WxrPKACgrwoZ5ia/uapq3ZVg==}
     cpu: [arm]
@@ -2825,6 +2894,11 @@ packages:
 
   '@rollup/rollup-linux-arm-musleabihf@4.40.1':
     resolution: {integrity: sha512-m39iO/aaurh5FVIu/F4/Zsl8xppd76S4qoID8E+dSRQvTyZTOI2gVk3T4oqzfq1PtcvOfAVlwLMK3KRQMaR8lg==}
+    cpu: [arm]
+    os: [linux]
+
+  '@rollup/rollup-linux-arm-musleabihf@4.53.3':
+    resolution: {integrity: sha512-vTNlKq+N6CK/8UktsrFuc+/7NlEYVxgaEgRXVUVK258Z5ymho29skzW1sutgYjqNnquGwVUObAaxae8rZ6YMhg==}
     cpu: [arm]
     os: [linux]
 
@@ -2838,6 +2912,11 @@ packages:
     cpu: [arm64]
     os: [linux]
 
+  '@rollup/rollup-linux-arm64-gnu@4.53.3':
+    resolution: {integrity: sha512-RGrFLWgMhSxRs/EWJMIFM1O5Mzuz3Xy3/mnxJp/5cVhZ2XoCAxJnmNsEyeMJtpK+wu0FJFWz+QF4mjCA7AUQ3w==}
+    cpu: [arm64]
+    os: [linux]
+
   '@rollup/rollup-linux-arm64-musl@4.38.0':
     resolution: {integrity: sha512-fQgqwKmW0REM4LomQ+87PP8w8xvU9LZfeLBKybeli+0yHT7VKILINzFEuggvnV9M3x1Ed4gUBmGUzCo/ikmFbQ==}
     cpu: [arm64]
@@ -2846,6 +2925,16 @@ packages:
   '@rollup/rollup-linux-arm64-musl@4.40.1':
     resolution: {integrity: sha512-jEwjn3jCA+tQGswK3aEWcD09/7M5wGwc6+flhva7dsQNRZZTe30vkalgIzV4tjkopsTS9Jd7Y1Bsj6a4lzz8gQ==}
     cpu: [arm64]
+    os: [linux]
+
+  '@rollup/rollup-linux-arm64-musl@4.53.3':
+    resolution: {integrity: sha512-kASyvfBEWYPEwe0Qv4nfu6pNkITLTb32p4yTgzFCocHnJLAHs+9LjUu9ONIhvfT/5lv4YS5muBHyuV84epBo/A==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@rollup/rollup-linux-loong64-gnu@4.53.3':
+    resolution: {integrity: sha512-JiuKcp2teLJwQ7vkJ95EwESWkNRFJD7TQgYmCnrPtlu50b4XvT5MOmurWNrCj3IFdyjBQ5p9vnrX4JM6I8OE7g==}
+    cpu: [loong64]
     os: [linux]
 
   '@rollup/rollup-linux-loongarch64-gnu@4.38.0':
@@ -2868,6 +2957,11 @@ packages:
     cpu: [ppc64]
     os: [linux]
 
+  '@rollup/rollup-linux-ppc64-gnu@4.53.3':
+    resolution: {integrity: sha512-EoGSa8nd6d3T7zLuqdojxC20oBfNT8nexBbB/rkxgKj5T5vhpAQKKnD+h3UkoMuTyXkP5jTjK/ccNRmQrPNDuw==}
+    cpu: [ppc64]
+    os: [linux]
+
   '@rollup/rollup-linux-riscv64-gnu@4.38.0':
     resolution: {integrity: sha512-GEAIabR1uFyvf/jW/5jfu8gjM06/4kZ1W+j1nWTSSB3w6moZEBm7iBtzwQ3a1Pxos2F7Gz+58aVEnZHU295QTg==}
     cpu: [riscv64]
@@ -2875,6 +2969,11 @@ packages:
 
   '@rollup/rollup-linux-riscv64-gnu@4.40.1':
     resolution: {integrity: sha512-EQSP+8+1VuSulm9RKSMKitTav89fKbHymTf25n5+Yr6gAPZxYWpj3DzAsQqoaHAk9YX2lwEyAf9S4W8F4l3VBQ==}
+    cpu: [riscv64]
+    os: [linux]
+
+  '@rollup/rollup-linux-riscv64-gnu@4.53.3':
+    resolution: {integrity: sha512-4s+Wped2IHXHPnAEbIB0YWBv7SDohqxobiiPA1FIWZpX+w9o2i4LezzH/NkFUl8LRci/8udci6cLq+jJQlh+0g==}
     cpu: [riscv64]
     os: [linux]
 
@@ -2888,6 +2987,11 @@ packages:
     cpu: [riscv64]
     os: [linux]
 
+  '@rollup/rollup-linux-riscv64-musl@4.53.3':
+    resolution: {integrity: sha512-68k2g7+0vs2u9CxDt5ktXTngsxOQkSEV/xBbwlqYcUrAVh6P9EgMZvFsnHy4SEiUl46Xf0IObWVbMvPrr2gw8A==}
+    cpu: [riscv64]
+    os: [linux]
+
   '@rollup/rollup-linux-s390x-gnu@4.38.0':
     resolution: {integrity: sha512-Mpp6+Z5VhB9VDk7RwZXoG2qMdERm3Jw07RNlXHE0bOnEeX+l7Fy4bg+NxfyN15ruuY3/7Vrbpm75J9QHFqj5+Q==}
     cpu: [s390x]
@@ -2895,6 +2999,11 @@ packages:
 
   '@rollup/rollup-linux-s390x-gnu@4.40.1':
     resolution: {integrity: sha512-h8d28xzYb98fMQKUz0w2fMc1XuGzLLjdyxVIbhbil4ELfk5/orZlSTpF/xdI9C8K0I8lCkq+1En2RJsawZekkg==}
+    cpu: [s390x]
+    os: [linux]
+
+  '@rollup/rollup-linux-s390x-gnu@4.53.3':
+    resolution: {integrity: sha512-VYsFMpULAz87ZW6BVYw3I6sWesGpsP9OPcyKe8ofdg9LHxSbRMd7zrVrr5xi/3kMZtpWL/wC+UIJWJYVX5uTKg==}
     cpu: [s390x]
     os: [linux]
 
@@ -2908,6 +3017,11 @@ packages:
     cpu: [x64]
     os: [linux]
 
+  '@rollup/rollup-linux-x64-gnu@4.53.3':
+    resolution: {integrity: sha512-3EhFi1FU6YL8HTUJZ51imGJWEX//ajQPfqWLI3BQq4TlvHy4X0MOr5q3D2Zof/ka0d5FNdPwZXm3Yyib/UEd+w==}
+    cpu: [x64]
+    os: [linux]
+
   '@rollup/rollup-linux-x64-musl@4.38.0':
     resolution: {integrity: sha512-q5Zv+goWvQUGCaL7fU8NuTw8aydIL/C9abAVGCzRReuj5h30TPx4LumBtAidrVOtXnlB+RZkBtExMsfqkMfb8g==}
     cpu: [x64]
@@ -2918,6 +3032,16 @@ packages:
     cpu: [x64]
     os: [linux]
 
+  '@rollup/rollup-linux-x64-musl@4.53.3':
+    resolution: {integrity: sha512-eoROhjcc6HbZCJr+tvVT8X4fW3/5g/WkGvvmwz/88sDtSJzO7r/blvoBDgISDiCjDRZmHpwud7h+6Q9JxFwq1Q==}
+    cpu: [x64]
+    os: [linux]
+
+  '@rollup/rollup-openharmony-arm64@4.53.3':
+    resolution: {integrity: sha512-OueLAWgrNSPGAdUdIjSWXw+u/02BRTcnfw9PN41D2vq/JSEPnJnVuBgw18VkN8wcd4fjUs+jFHVM4t9+kBSNLw==}
+    cpu: [arm64]
+    os: [openharmony]
+
   '@rollup/rollup-win32-arm64-msvc@4.38.0':
     resolution: {integrity: sha512-u/Jbm1BU89Vftqyqbmxdq14nBaQjQX1HhmsdBWqSdGClNaKwhjsg5TpW+5Ibs1mb8Es9wJiMdl86BcmtUVXNZg==}
     cpu: [arm64]
@@ -2925,6 +3049,11 @@ packages:
 
   '@rollup/rollup-win32-arm64-msvc@4.40.1':
     resolution: {integrity: sha512-b2bcNm9Kbde03H+q+Jjw9tSfhYkzrDUf2d5MAd1bOJuVplXvFhWz7tRtWvD8/ORZi7qSCy0idW6tf2HgxSXQSg==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@rollup/rollup-win32-arm64-msvc@4.53.3':
+    resolution: {integrity: sha512-GOFuKpsxR/whszbF/bzydebLiXIHSgsEUp6M0JI8dWvi+fFa1TD6YQa4aSZHtpmh2/uAlj/Dy+nmby3TJ3pkTw==}
     cpu: [arm64]
     os: [win32]
 
@@ -2938,6 +3067,16 @@ packages:
     cpu: [ia32]
     os: [win32]
 
+  '@rollup/rollup-win32-ia32-msvc@4.53.3':
+    resolution: {integrity: sha512-iah+THLcBJdpfZ1TstDFbKNznlzoxa8fmnFYK4V67HvmuNYkVdAywJSoteUszvBQ9/HqN2+9AZghbajMsFT+oA==}
+    cpu: [ia32]
+    os: [win32]
+
+  '@rollup/rollup-win32-x64-gnu@4.53.3':
+    resolution: {integrity: sha512-J9QDiOIZlZLdcot5NXEepDkstocktoVjkaKUtqzgzpt2yWjGlbYiKyp05rWwk4nypbYUNoFAztEgixoLaSETkg==}
+    cpu: [x64]
+    os: [win32]
+
   '@rollup/rollup-win32-x64-msvc@4.38.0':
     resolution: {integrity: sha512-jjqy3uWlecfB98Psxb5cD6Fny9Fupv9LrDSPTQZUROqjvZmcCqNu4UMl7qqhlUUGpwiAkotj6GYu4SZdcr/nLw==}
     cpu: [x64]
@@ -2945,6 +3084,11 @@ packages:
 
   '@rollup/rollup-win32-x64-msvc@4.40.1':
     resolution: {integrity: sha512-ECyOuDeH3C1I8jH2MK1RtBJW+YPMvSfT0a5NN0nHfQYnDSJ6tUiZH3gzwVP5/Kfh/+Tt7tpWVF9LXNTnhTJ3kA==}
+    cpu: [x64]
+    os: [win32]
+
+  '@rollup/rollup-win32-x64-msvc@4.53.3':
+    resolution: {integrity: sha512-UhTd8u31dXadv0MopwGgNOBpUVROFKWVQgAg5N1ESyCz8AuBcMqm4AuTjrwgQKGDfoFuz02EuMRHQIw/frmYKQ==}
     cpu: [x64]
     os: [win32]
 
@@ -2972,6 +3116,9 @@ packages:
 
   '@rushstack/ts-command-line@5.0.1':
     resolution: {integrity: sha512-bsbUucn41UXrQK7wgM8CNM/jagBytEyJqXw/umtI8d68vFm1Jwxh1OtLrlW7uGZgjCWiiPH6ooUNa1aVsuVr3Q==}
+
+  '@standard-schema/spec@1.0.0':
+    resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
 
   '@stylistic/eslint-plugin@2.11.0':
     resolution: {integrity: sha512-PNRHbydNG5EH8NK4c+izdJlxajIR6GxcUhzsYNRsn6Myep4dsZt0qFCz3rCPnkvgO5FYibDcMqgNHUT+zvjYZw==}
@@ -3154,6 +3301,9 @@ packages:
   '@types/body-parser@1.19.5':
     resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
 
+  '@types/chai@5.2.3':
+    resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
+
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
 
@@ -3183,6 +3333,9 @@ packages:
 
   '@types/d3-timer@3.0.2':
     resolution: {integrity: sha512-Ps3T8E8dZDam6fUyNiMkekK3XUsaUEik+idO9/YjPtfj2qruF8tFBXS7XhtE4iIXBLxhmLjP3SXpLhVf21I9Lw==}
+
+  '@types/deep-eql@4.0.2':
+    resolution: {integrity: sha512-c9h9dVVMigMPc4bwTvC5dxqtqJZwQPePsWjPlpSOnojbor6pGqdk541lfA7AqFQr5pB1BRdq0juY9db81BwyFw==}
 
   '@types/estree@1.0.7':
     resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
@@ -3433,6 +3586,44 @@ packages:
       vue-router:
         optional: true
 
+  '@vitest/coverage-v8@4.0.12':
+    resolution: {integrity: sha512-d+w9xAFJJz6jyJRU4BUU7MH409Ush7FWKNkxJU+jASKg6WX33YT0zc+YawMR1JesMWt9QRFQY/uAD3BTn23FaA==}
+    peerDependencies:
+      '@vitest/browser': 4.0.12
+      vitest: 4.0.12
+    peerDependenciesMeta:
+      '@vitest/browser':
+        optional: true
+
+  '@vitest/expect@4.0.12':
+    resolution: {integrity: sha512-is+g0w8V3/ZhRNrRizrJNr8PFQKwYmctWlU4qg8zy5r9aIV5w8IxXLlfbbxJCwSpsVl2PXPTm2/zruqTqz3QSg==}
+
+  '@vitest/mocker@4.0.12':
+    resolution: {integrity: sha512-GsmA/tD5Ht3RUFoz41mZsMU1AXch3lhmgbTnoSPTdH231g7S3ytNN1aU0bZDSyxWs8WA7KDyMPD5L4q6V6vj9w==}
+    peerDependencies:
+      msw: ^2.4.9
+      vite: ^6.0.0 || ^7.0.0-0
+    peerDependenciesMeta:
+      msw:
+        optional: true
+      vite:
+        optional: true
+
+  '@vitest/pretty-format@4.0.12':
+    resolution: {integrity: sha512-R7nMAcnienG17MvRN8TPMJiCG8rrZJblV9mhT7oMFdBXvS0x+QD6S1G4DxFusR2E0QIS73f7DqSR1n87rrmE+g==}
+
+  '@vitest/runner@4.0.12':
+    resolution: {integrity: sha512-hDlCIJWuwlcLumfukPsNfPDOJokTv79hnOlf11V+n7E14rHNPz0Sp/BO6h8sh9qw4/UjZiKyYpVxK2ZNi+3ceQ==}
+
+  '@vitest/snapshot@4.0.12':
+    resolution: {integrity: sha512-2jz9zAuBDUSbnfyixnyOd1S2YDBrZO23rt1bicAb6MA/ya5rHdKFRikPIDpBj/Dwvh6cbImDmudegnDAkHvmRQ==}
+
+  '@vitest/spy@4.0.12':
+    resolution: {integrity: sha512-GZjI9PPhiOYNX8Nsyqdw7JQB+u0BptL5fSnXiottAUBHlcMzgADV58A7SLTXXQwcN1yZ6gfd1DH+2bqjuUlCzw==}
+
+  '@vitest/utils@4.0.12':
+    resolution: {integrity: sha512-DVS/TLkLdvGvj1avRy0LSmKfrcI9MNFvNGN6ECjTUHWJdlcgPDOXhjMis5Dh7rBH62nAmSXnkPbE+DZ5YD75Rw==}
+
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
     peerDependencies:
@@ -3533,9 +3724,16 @@ packages:
     resolution: {integrity: sha512-BNoCY6SXXPQ7gF2opIP4GBE+Xw7U+pHMYKuzjgCN3GwiaIR09UUeKfheyIry77QtrCBlC0KK0q5/TER/tYh3PQ==}
     engines: {node: '>= 0.4'}
 
+  assertion-error@2.0.1:
+    resolution: {integrity: sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==}
+    engines: {node: '>=12'}
+
   ast-kit@2.1.3:
     resolution: {integrity: sha512-TH+b3Lv6pUjy/Nu0m6A2JULtdzLpmqF9x1Dhj00ZoEiML8qvVA9j1flkzTKNYgdEhWrjDwtWNpyyCUbfQe514g==}
     engines: {node: '>=20.19.0'}
+
+  ast-v8-to-istanbul@0.3.8:
+    resolution: {integrity: sha512-szgSZqUxI5T8mLKvS7WTjF9is+MVbOeLADU73IseOcrqhxr/VAvy6wfoVE39KnKzA7JRhjF5eUagNlHwvZPlKQ==}
 
   async-function@1.0.0:
     resolution: {integrity: sha512-hsU18Ae8CDTR6Kgu9DYf0EbCr/a5iGL0rytQDobUcdpYOKokk8LEjVphnXkDkgpi0wYVsqrXuP0bZxJaTqdgoA==}
@@ -3612,6 +3810,10 @@ packages:
 
   caniuse-lite@1.0.30001754:
     resolution: {integrity: sha512-x6OeBXueoAceOmotzx3PO4Zpt4rzpeIFsSr6AAePTZxSkXiYDUmpypEl7e2+8NCd9bD7bXjqyef8CJYPC1jfxg==}
+
+  chai@6.2.1:
+    resolution: {integrity: sha512-p4Z49OGG5W/WBCPSS/dH3jQ73kD6tiMmUM+bckNK6Jr5JHMG3k9bg/BvKR8lKmtVBKmOiuVaV2ws8s9oSbwysg==}
+    engines: {node: '>=18'}
 
   chalk@4.1.2:
     resolution: {integrity: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==}
@@ -3923,6 +4125,9 @@ packages:
     resolution: {integrity: sha512-uDn+FE1yrDzyC0pCo961B2IHbdM8y/ACZsKD4dG6WqrjV53BADjwa7D+1aom2rsNVfLyDgU/eigvlJGJ08OQ4w==}
     engines: {node: '>= 0.4'}
 
+  es-module-lexer@1.7.0:
+    resolution: {integrity: sha512-jEQoCwk8hyb2AZziIOLhDqpm5+2ww5uIE6lkO/6jcOCusfk6LhMHpXXfBLXTZ7Ydyt0j4VoUQv6uGNYbdW+kBA==}
+
   es-object-atoms@1.1.1:
     resolution: {integrity: sha512-FGgH2h8zKNim9ljj7dankFPcICIK9Cp5bm+c2gQSYePhpaG5+esrLODihIorn+Pe6FGJzWhXQotPv73jTaldXA==}
     engines: {node: '>= 0.4'}
@@ -4113,12 +4318,25 @@ packages:
     resolution: {integrity: sha512-MMdARuVEQziNTeJD8DgMqmhwR11BRQ/cBP+pLtYdSTnf3MIO8fFeiINEbX36ZdNlfU/7A9f3gUw49B3oQsvwBA==}
     engines: {node: '>=4.0'}
 
+  estree-walker@3.0.3:
+    resolution: {integrity: sha512-7RUKfXgSMMkzt6ZuXmqapOurLGPPfgj6l9uRZ7lRGolvk0y2yocc35LdcxKC5PQZdn2DMqioAQ2NoWcrTKmm6g==}
+
   esutils@2.0.3:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
 
   eventemitter3@4.0.7:
     resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
+
+  expect-type@1.2.2:
+    resolution: {integrity: sha512-JhFGDVJ7tmDJItKhYgJCGLOWjuK9vPxiXoUFLwLDc99NlmklilbiQJwoctZtt13+xMw91MCk/REan6MWHqDjyA==}
+    engines: {node: '>=12.0.0'}
+
+  express-rate-limit@8.2.1:
+    resolution: {integrity: sha512-PCZEIEIxqwhzw4KF0n7QF4QqruVTcF73O5kFKUnGOyjbCCgizBBiFaYpd/fnBLUMPw/BWw9OsiN7GgrNYr7j6g==}
+    engines: {node: '>= 16'}
+    peerDependencies:
+      express: '>= 4.11'
 
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
@@ -4321,6 +4539,9 @@ packages:
   hookable@5.5.3:
     resolution: {integrity: sha512-Yc+BQe8SvoXH1643Qez1zqLRmbA5rCL+sSmk6TVos0LWVfNIB7PGncdlId77WzLGSIB5KaWgTaNTs2lNVEI6VQ==}
 
+  html-escaper@2.0.2:
+    resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
+
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
     engines: {node: '>= 4'}
@@ -4361,6 +4582,10 @@ packages:
   internmap@2.0.3:
     resolution: {integrity: sha512-5Hh7Y1wQbvY5ooGgPbDaL5iYLAPzMTUrjMulskHLH6wnv/A+1q5rgEaiuqEjB+oxGXIVZs1FF+R/KPN3ZSQYYg==}
     engines: {node: '>=12'}
+
+  ip-address@10.0.1:
+    resolution: {integrity: sha512-NWv9YLW4PoW2B7xtzaS3NCot75m6nK7Icdv0o3lfMceJVRfSoQwqD4wEH5rLwoKJwUiZ/rfpiVBhnaF0FK4HoA==}
+    engines: {node: '>= 12'}
 
   is-array-buffer@3.0.5:
     resolution: {integrity: sha512-DDfANUiiG2wC1qawP66qlTugJeL5HyzMpfr8lLK+jMQirGzNod0B12cFB/9q838Ru27sBwfw78/rdoU7RERz6A==}
@@ -4491,6 +4716,22 @@ packages:
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
 
+  istanbul-lib-coverage@3.2.2:
+    resolution: {integrity: sha512-O8dpsF+r0WV/8MNRKfnmrtCWhuKjxrq2w+jpzBL5UZKTi2LeVWnWOmWRxFlesJONmc+wLAGvKQZEOanko0LFTg==}
+    engines: {node: '>=8'}
+
+  istanbul-lib-report@3.0.1:
+    resolution: {integrity: sha512-GCfE1mtsHGOELCU8e/Z7YWzpmybrx/+dSTfLrvY8qRmaY6zXTKWn6WQIjaAFw069icm6GVMNkgu0NzI4iPZUNw==}
+    engines: {node: '>=10'}
+
+  istanbul-lib-source-maps@5.0.6:
+    resolution: {integrity: sha512-yg2d+Em4KizZC5niWhQaIomgf5WlL4vOOjZ5xGCmF8SnPE/mDWWXgvRExdcpCgh9lLRRa1/fSYp2ymmbJ1pI+A==}
+    engines: {node: '>=10'}
+
+  istanbul-reports@3.2.0:
+    resolution: {integrity: sha512-HGYWWS/ehqTV3xN10i23tkPkpH46MLCIMFNCaaKNavAXTF1RkqxawEPtnjnGZ6XKSInBKkiOA5BKS+aZiY3AvA==}
+    engines: {node: '>=8'}
+
   iterator.prototype@1.1.5:
     resolution: {integrity: sha512-H0dkQoCa3b2VEeKQBOxFph+JAbcrQdE7KC0UkqwpLmv2EC4P41QXP+rqo9wYodACiG5/WM5s9oDApTU8utwj9g==}
     engines: {node: '>= 0.4'}
@@ -4519,6 +4760,9 @@ packages:
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
+
+  js-tokens@9.0.1:
+    resolution: {integrity: sha512-mxa9E9ITFOt0ban3j6L5MpjwegGz6lBQmM1IJkWeBZGcMxto50+eWdjC/52xDbS2vy0k7vIMK0Fe2wfL9OQSpQ==}
 
   js-yaml@4.1.0:
     resolution: {integrity: sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==}
@@ -4692,6 +4936,13 @@ packages:
 
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
+
+  magicast@0.5.1:
+    resolution: {integrity: sha512-xrHS24IxaLrvuo613F719wvOIv9xPHFWQHuvGUBmPnCA/3MQxKI3b+r7n1jAoDHmsbC5bRhTZYR77invLAxVnw==}
+
+  make-dir@4.0.0:
+    resolution: {integrity: sha512-hXdUTZYIVOt1Ex//jAQi+wTZZpUpwBj/0QsOzqegb3rGMMeJiSEu5xLHnYfBrRV4RH2+OCSOO95Is/7x1WJ4bw==}
+    engines: {node: '>=10'}
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -5178,6 +5429,11 @@ packages:
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
 
+  rollup@4.53.3:
+    resolution: {integrity: sha512-w8GmOxZfBmKknvdXU1sdM9NHcoQejwF/4mNgj2JuEEdRaHwwF12K7e9eXn1nLZ07ad+du76mkVsyeb2rKGllsA==}
+    engines: {node: '>=18.0.0', npm: '>=8.0.0'}
+    hasBin: true
+
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
 
@@ -5255,6 +5511,9 @@ packages:
     resolution: {integrity: sha512-ZX99e6tRweoUXqR+VBrslhda51Nh5MTQwou5tnUDgbtyM0dBgmhEDtWGP/xbKn6hqfPRHujUNwz5fy/wbbhnpw==}
     engines: {node: '>= 0.4'}
 
+  siginfo@2.0.0:
+    resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
+
   signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
@@ -5305,6 +5564,12 @@ packages:
 
   stable-hash@0.0.5:
     resolution: {integrity: sha512-+L3ccpzibovGXFK+Ap/f8LOS0ahMrHTf3xu7mMLSpEGU0EO9ucaysSylKo9eRDFNhWve/y275iPmIZ4z39a9iA==}
+
+  stackback@0.0.2:
+    resolution: {integrity: sha512-1XMJE5fQo1jGH6Y/7ebnwPOBEkIEnT4QF32d5R1+VXdXveM0IBMJt8zfaxX1P3QhVwrYe+576+jkANtSS2mBbw==}
+
+  std-env@3.10.0:
+    resolution: {integrity: sha512-5GS12FdOZNliM5mAOxFRg7Ir0pWz8MdpYm6AY6VPkGpbA7ZzmbzNcBJQ0GPvvyWgcY7QAhCgf9Uy89I03faLkg==}
 
   stdin-discarder@0.2.2:
     resolution: {integrity: sha512-UhDfHmA92YAlNnCfhmq0VeNL5bDbiZGg7sZ2IvPsXubGkiNa9EC+tUTsjBRsYUAz87btI6/1wf4XoVvQ3uRnmQ==}
@@ -5439,6 +5704,9 @@ packages:
   tiny-invariant@1.3.3:
     resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
 
+  tinybench@2.9.0:
+    resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
+
   tinyexec@0.3.2:
     resolution: {integrity: sha512-KQQR9yN7R5+OSwaK0XQoj22pwHoTlgYqmUscPYoknOoWCWfj/5/ABTMRi69FrKU5ffPVh5QcFikpWJI/P1ocHA==}
 
@@ -5460,6 +5728,10 @@ packages:
   tinyglobby@0.2.15:
     resolution: {integrity: sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==}
     engines: {node: '>=12.0.0'}
+
+  tinyrainbow@3.0.3:
+    resolution: {integrity: sha512-PSkbLUoxOFRzJYjjxHJt9xro7D+iilgMX/C9lawzVuYiIdcihh9DXmVibBe8lmcFrRi/VzlPjBxbN7rH24q8/Q==}
+    engines: {node: '>=14.0.0'}
 
   to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
@@ -5666,6 +5938,83 @@ packages:
   victory-vendor@36.9.2:
     resolution: {integrity: sha512-PnpQQMuxlwYdocC8fIJqVXvkeViHYzotI+NJrCuav0ZYFoq912ZHBk3mCeuj+5/VpodOjPe1z0Fk2ihgzlXqjQ==}
 
+  vite@7.2.4:
+    resolution: {integrity: sha512-NL8jTlbo0Tn4dUEXEsUg8KeyG/Lkmc4Fnzb8JXN/Ykm9G4HNImjtABMJgkQoVjOBN/j2WAwDTRytdqJbZsah7w==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    hasBin: true
+    peerDependencies:
+      '@types/node': ^20.19.0 || >=22.12.0
+      jiti: '>=1.21.0'
+      less: ^4.0.0
+      lightningcss: ^1.21.0
+      sass: ^1.70.0
+      sass-embedded: ^1.70.0
+      stylus: '>=0.54.8'
+      sugarss: ^5.0.0
+      terser: ^5.16.0
+      tsx: ^4.8.1
+      yaml: ^2.4.2
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      jiti:
+        optional: true
+      less:
+        optional: true
+      lightningcss:
+        optional: true
+      sass:
+        optional: true
+      sass-embedded:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+      tsx:
+        optional: true
+      yaml:
+        optional: true
+
+  vitest@4.0.12:
+    resolution: {integrity: sha512-pmW4GCKQ8t5Ko1jYjC3SqOr7TUKN7uHOHB/XGsAIb69eYu6d1ionGSsb5H9chmPf+WeXt0VE7jTXsB1IvWoNbw==}
+    engines: {node: ^20.0.0 || ^22.0.0 || >=24.0.0}
+    hasBin: true
+    peerDependencies:
+      '@edge-runtime/vm': '*'
+      '@opentelemetry/api': ^1.9.0
+      '@types/debug': ^4.1.12
+      '@types/node': ^20.0.0 || ^22.0.0 || >=24.0.0
+      '@vitest/browser-playwright': 4.0.12
+      '@vitest/browser-preview': 4.0.12
+      '@vitest/browser-webdriverio': 4.0.12
+      '@vitest/ui': 4.0.12
+      happy-dom: '*'
+      jsdom: '*'
+    peerDependenciesMeta:
+      '@edge-runtime/vm':
+        optional: true
+      '@opentelemetry/api':
+        optional: true
+      '@types/debug':
+        optional: true
+      '@types/node':
+        optional: true
+      '@vitest/browser-playwright':
+        optional: true
+      '@vitest/browser-preview':
+        optional: true
+      '@vitest/browser-webdriverio':
+        optional: true
+      '@vitest/ui':
+        optional: true
+      happy-dom:
+        optional: true
+      jsdom:
+        optional: true
+
   webidl-conversions@4.0.2:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
 
@@ -5691,6 +6040,11 @@ packages:
   which@2.0.2:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}
     engines: {node: '>= 8'}
+    hasBin: true
+
+  why-is-node-running@2.3.0:
+    resolution: {integrity: sha512-hUrmaWBdVDcxvYqnyh09zunKzROWjbZTiNy8dBEjkS7ehEDQibXJ7XvlmtbwuTclUiIyN+CyXQD4Vmko8fNm8w==}
+    engines: {node: '>=8'}
     hasBin: true
 
   word-wrap@1.2.5:
@@ -5736,9 +6090,15 @@ snapshots:
 
   '@babel/helper-validator-identifier@7.27.1': {}
 
+  '@babel/helper-validator-identifier@7.28.5': {}
+
   '@babel/parser@7.28.4':
     dependencies:
       '@babel/types': 7.28.4
+
+  '@babel/parser@7.28.5':
+    dependencies:
+      '@babel/types': 7.28.5
 
   '@babel/runtime@7.28.4': {}
 
@@ -5746,6 +6106,13 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
+
+  '@babel/types@7.28.5':
+    dependencies:
+      '@babel/helper-string-parser': 7.27.1
+      '@babel/helper-validator-identifier': 7.28.5
+
+  '@bcoe/v8-coverage@1.0.2': {}
 
   '@date-fns/tz@1.2.0': {}
 
@@ -6223,7 +6590,12 @@ snapshots:
   '@jridgewell/trace-mapping@0.3.29':
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
-      '@jridgewell/sourcemap-codec': 1.5.4
+      '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@jridgewell/trace-mapping@0.3.31':
+    dependencies:
+      '@jridgewell/resolve-uri': 3.1.2
+      '@jridgewell/sourcemap-codec': 1.5.5
 
   '@karinjs/art-template@1.1.0': {}
 
@@ -7294,10 +7666,16 @@ snapshots:
   '@rollup/rollup-android-arm-eabi@4.40.1':
     optional: true
 
+  '@rollup/rollup-android-arm-eabi@4.53.3':
+    optional: true
+
   '@rollup/rollup-android-arm64@4.38.0':
     optional: true
 
   '@rollup/rollup-android-arm64@4.40.1':
+    optional: true
+
+  '@rollup/rollup-android-arm64@4.53.3':
     optional: true
 
   '@rollup/rollup-darwin-arm64@4.38.0':
@@ -7306,10 +7684,16 @@ snapshots:
   '@rollup/rollup-darwin-arm64@4.40.1':
     optional: true
 
+  '@rollup/rollup-darwin-arm64@4.53.3':
+    optional: true
+
   '@rollup/rollup-darwin-x64@4.38.0':
     optional: true
 
   '@rollup/rollup-darwin-x64@4.40.1':
+    optional: true
+
+  '@rollup/rollup-darwin-x64@4.53.3':
     optional: true
 
   '@rollup/rollup-freebsd-arm64@4.38.0':
@@ -7318,10 +7702,16 @@ snapshots:
   '@rollup/rollup-freebsd-arm64@4.40.1':
     optional: true
 
+  '@rollup/rollup-freebsd-arm64@4.53.3':
+    optional: true
+
   '@rollup/rollup-freebsd-x64@4.38.0':
     optional: true
 
   '@rollup/rollup-freebsd-x64@4.40.1':
+    optional: true
+
+  '@rollup/rollup-freebsd-x64@4.53.3':
     optional: true
 
   '@rollup/rollup-linux-arm-gnueabihf@4.38.0':
@@ -7330,10 +7720,16 @@ snapshots:
   '@rollup/rollup-linux-arm-gnueabihf@4.40.1':
     optional: true
 
+  '@rollup/rollup-linux-arm-gnueabihf@4.53.3':
+    optional: true
+
   '@rollup/rollup-linux-arm-musleabihf@4.38.0':
     optional: true
 
   '@rollup/rollup-linux-arm-musleabihf@4.40.1':
+    optional: true
+
+  '@rollup/rollup-linux-arm-musleabihf@4.53.3':
     optional: true
 
   '@rollup/rollup-linux-arm64-gnu@4.38.0':
@@ -7342,10 +7738,19 @@ snapshots:
   '@rollup/rollup-linux-arm64-gnu@4.40.1':
     optional: true
 
+  '@rollup/rollup-linux-arm64-gnu@4.53.3':
+    optional: true
+
   '@rollup/rollup-linux-arm64-musl@4.38.0':
     optional: true
 
   '@rollup/rollup-linux-arm64-musl@4.40.1':
+    optional: true
+
+  '@rollup/rollup-linux-arm64-musl@4.53.3':
+    optional: true
+
+  '@rollup/rollup-linux-loong64-gnu@4.53.3':
     optional: true
 
   '@rollup/rollup-linux-loongarch64-gnu@4.38.0':
@@ -7360,10 +7765,16 @@ snapshots:
   '@rollup/rollup-linux-powerpc64le-gnu@4.40.1':
     optional: true
 
+  '@rollup/rollup-linux-ppc64-gnu@4.53.3':
+    optional: true
+
   '@rollup/rollup-linux-riscv64-gnu@4.38.0':
     optional: true
 
   '@rollup/rollup-linux-riscv64-gnu@4.40.1':
+    optional: true
+
+  '@rollup/rollup-linux-riscv64-gnu@4.53.3':
     optional: true
 
   '@rollup/rollup-linux-riscv64-musl@4.38.0':
@@ -7372,10 +7783,16 @@ snapshots:
   '@rollup/rollup-linux-riscv64-musl@4.40.1':
     optional: true
 
+  '@rollup/rollup-linux-riscv64-musl@4.53.3':
+    optional: true
+
   '@rollup/rollup-linux-s390x-gnu@4.38.0':
     optional: true
 
   '@rollup/rollup-linux-s390x-gnu@4.40.1':
+    optional: true
+
+  '@rollup/rollup-linux-s390x-gnu@4.53.3':
     optional: true
 
   '@rollup/rollup-linux-x64-gnu@4.38.0':
@@ -7384,10 +7801,19 @@ snapshots:
   '@rollup/rollup-linux-x64-gnu@4.40.1':
     optional: true
 
+  '@rollup/rollup-linux-x64-gnu@4.53.3':
+    optional: true
+
   '@rollup/rollup-linux-x64-musl@4.38.0':
     optional: true
 
   '@rollup/rollup-linux-x64-musl@4.40.1':
+    optional: true
+
+  '@rollup/rollup-linux-x64-musl@4.53.3':
+    optional: true
+
+  '@rollup/rollup-openharmony-arm64@4.53.3':
     optional: true
 
   '@rollup/rollup-win32-arm64-msvc@4.38.0':
@@ -7396,16 +7822,28 @@ snapshots:
   '@rollup/rollup-win32-arm64-msvc@4.40.1':
     optional: true
 
+  '@rollup/rollup-win32-arm64-msvc@4.53.3':
+    optional: true
+
   '@rollup/rollup-win32-ia32-msvc@4.38.0':
     optional: true
 
   '@rollup/rollup-win32-ia32-msvc@4.40.1':
     optional: true
 
+  '@rollup/rollup-win32-ia32-msvc@4.53.3':
+    optional: true
+
+  '@rollup/rollup-win32-x64-gnu@4.53.3':
+    optional: true
+
   '@rollup/rollup-win32-x64-msvc@4.38.0':
     optional: true
 
   '@rollup/rollup-win32-x64-msvc@4.40.1':
+    optional: true
+
+  '@rollup/rollup-win32-x64-msvc@4.53.3':
     optional: true
 
   '@rtsao/scc@1.1.0':
@@ -7480,6 +7918,8 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
     optional: true
+
+  '@standard-schema/spec@1.0.0': {}
 
   '@stylistic/eslint-plugin@2.11.0(eslint@9.32.0(jiti@2.6.1))(typescript@5.9.3)':
     dependencies:
@@ -7634,6 +8074,11 @@ snapshots:
       '@types/connect': 3.4.38
       '@types/node': 20.19.9
 
+  '@types/chai@5.2.3':
+    dependencies:
+      '@types/deep-eql': 4.0.2
+      assertion-error: 2.0.1
+
   '@types/connect@3.4.38':
     dependencies:
       '@types/node': 20.19.9
@@ -7661,6 +8106,8 @@ snapshots:
   '@types/d3-time@3.0.4': {}
 
   '@types/d3-timer@3.0.2': {}
+
+  '@types/deep-eql@4.0.2': {}
 
   '@types/estree@1.0.7': {}
 
@@ -7895,6 +8342,70 @@ snapshots:
       next: 16.0.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.86.0)
       react: 19.2.0
 
+  '@vitest/coverage-v8@4.0.12(vitest@4.0.12(@types/node@20.19.9)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.86.0)(terser@5.43.1)(tsx@4.20.5)(yaml@2.7.0))':
+    dependencies:
+      '@bcoe/v8-coverage': 1.0.2
+      '@vitest/utils': 4.0.12
+      ast-v8-to-istanbul: 0.3.8
+      debug: 4.4.3
+      istanbul-lib-coverage: 3.2.2
+      istanbul-lib-report: 3.0.1
+      istanbul-lib-source-maps: 5.0.6
+      istanbul-reports: 3.2.0
+      magicast: 0.5.1
+      std-env: 3.10.0
+      tinyrainbow: 3.0.3
+      vitest: 4.0.12(@types/node@20.19.9)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.86.0)(terser@5.43.1)(tsx@4.20.5)(yaml@2.7.0)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@vitest/expect@4.0.12':
+    dependencies:
+      '@standard-schema/spec': 1.0.0
+      '@types/chai': 5.2.3
+      '@vitest/spy': 4.0.12
+      '@vitest/utils': 4.0.12
+      chai: 6.2.1
+      tinyrainbow: 3.0.3
+
+  '@vitest/mocker@4.0.12(vite@7.2.4(@karinjs/tsx@5.1.0)(@types/node@20.19.9)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.86.0)(terser@5.43.1)(yaml@2.7.0))':
+    dependencies:
+      '@vitest/spy': 4.0.12
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+    optionalDependencies:
+      vite: 7.2.4(@karinjs/tsx@5.1.0)(@types/node@20.19.9)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.86.0)(terser@5.43.1)(yaml@2.7.0)
+
+  '@vitest/mocker@4.0.12(vite@7.2.4(@types/node@20.19.9)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.86.0)(terser@5.43.1)(tsx@4.20.5)(yaml@2.7.0))':
+    dependencies:
+      '@vitest/spy': 4.0.12
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+    optionalDependencies:
+      vite: 7.2.4(@types/node@20.19.9)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.86.0)(terser@5.43.1)(tsx@4.20.5)(yaml@2.7.0)
+
+  '@vitest/pretty-format@4.0.12':
+    dependencies:
+      tinyrainbow: 3.0.3
+
+  '@vitest/runner@4.0.12':
+    dependencies:
+      '@vitest/utils': 4.0.12
+      pathe: 2.0.3
+
+  '@vitest/snapshot@4.0.12':
+    dependencies:
+      '@vitest/pretty-format': 4.0.12
+      magic-string: 0.30.21
+      pathe: 2.0.3
+
+  '@vitest/spy@4.0.12': {}
+
+  '@vitest/utils@4.0.12':
+    dependencies:
+      '@vitest/pretty-format': 4.0.12
+      tinyrainbow: 3.0.3
+
   acorn-jsx@5.3.2(acorn@8.15.0):
     dependencies:
       acorn: 8.15.0
@@ -8027,10 +8538,18 @@ snapshots:
       get-intrinsic: 1.3.0
       is-array-buffer: 3.0.5
 
+  assertion-error@2.0.1: {}
+
   ast-kit@2.1.3:
     dependencies:
       '@babel/parser': 7.28.4
       pathe: 2.0.3
+
+  ast-v8-to-istanbul@0.3.8:
+    dependencies:
+      '@jridgewell/trace-mapping': 0.3.31
+      estree-walker: 3.0.3
+      js-tokens: 9.0.1
 
   async-function@1.0.0: {}
 
@@ -8112,6 +8631,8 @@ snapshots:
   callsites@4.2.0: {}
 
   caniuse-lite@1.0.30001754: {}
+
+  chai@6.2.1: {}
 
   chalk@4.1.2:
     dependencies:
@@ -8483,6 +9004,8 @@ snapshots:
       iterator.prototype: 1.1.5
       safe-array-concat: 1.1.3
 
+  es-module-lexer@1.7.0: {}
+
   es-object-atoms@1.1.1:
     dependencies:
       es-errors: 1.3.0
@@ -8812,9 +9335,20 @@ snapshots:
 
   estraverse@5.3.0: {}
 
+  estree-walker@3.0.3:
+    dependencies:
+      '@types/estree': 1.0.8
+
   esutils@2.0.3: {}
 
   eventemitter3@4.0.7: {}
+
+  expect-type@1.2.2: {}
+
+  express-rate-limit@8.2.1(@karinjs/express@1.0.3):
+    dependencies:
+      express: '@karinjs/express@1.0.3'
+      ip-address: 10.0.1
 
   fast-deep-equal@3.1.3: {}
 
@@ -9015,6 +9549,8 @@ snapshots:
 
   hookable@5.5.3: {}
 
+  html-escaper@2.0.2: {}
+
   ignore@5.3.2: {}
 
   ignore@7.0.5: {}
@@ -9046,6 +9582,8 @@ snapshots:
       side-channel: 1.1.0
 
   internmap@2.0.3: {}
+
+  ip-address@10.0.1: {}
 
   is-array-buffer@3.0.5:
     dependencies:
@@ -9172,6 +9710,27 @@ snapshots:
 
   isexe@2.0.0: {}
 
+  istanbul-lib-coverage@3.2.2: {}
+
+  istanbul-lib-report@3.0.1:
+    dependencies:
+      istanbul-lib-coverage: 3.2.2
+      make-dir: 4.0.0
+      supports-color: 7.2.0
+
+  istanbul-lib-source-maps@5.0.6:
+    dependencies:
+      '@jridgewell/trace-mapping': 0.3.29
+      debug: 4.4.3
+      istanbul-lib-coverage: 3.2.2
+    transitivePeerDependencies:
+      - supports-color
+
+  istanbul-reports@3.2.0:
+    dependencies:
+      html-escaper: 2.0.2
+      istanbul-lib-report: 3.0.1
+
   iterator.prototype@1.1.5:
     dependencies:
       define-data-property: 1.1.4
@@ -9201,6 +9760,8 @@ snapshots:
   joycon@3.1.1: {}
 
   js-tokens@4.0.0: {}
+
+  js-tokens@9.0.1: {}
 
   js-yaml@4.1.0:
     dependencies:
@@ -9347,6 +9908,16 @@ snapshots:
   magic-string@0.30.21:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  magicast@0.5.1:
+    dependencies:
+      '@babel/parser': 7.28.5
+      '@babel/types': 7.28.5
+      source-map-js: 1.2.1
+
+  make-dir@4.0.0:
+    dependencies:
+      semver: 7.7.3
 
   math-intrinsics@1.1.0: {}
 
@@ -9909,6 +10480,34 @@ snapshots:
       '@rollup/rollup-win32-x64-msvc': 4.40.1
       fsevents: 2.3.3
 
+  rollup@4.53.3:
+    dependencies:
+      '@types/estree': 1.0.8
+    optionalDependencies:
+      '@rollup/rollup-android-arm-eabi': 4.53.3
+      '@rollup/rollup-android-arm64': 4.53.3
+      '@rollup/rollup-darwin-arm64': 4.53.3
+      '@rollup/rollup-darwin-x64': 4.53.3
+      '@rollup/rollup-freebsd-arm64': 4.53.3
+      '@rollup/rollup-freebsd-x64': 4.53.3
+      '@rollup/rollup-linux-arm-gnueabihf': 4.53.3
+      '@rollup/rollup-linux-arm-musleabihf': 4.53.3
+      '@rollup/rollup-linux-arm64-gnu': 4.53.3
+      '@rollup/rollup-linux-arm64-musl': 4.53.3
+      '@rollup/rollup-linux-loong64-gnu': 4.53.3
+      '@rollup/rollup-linux-ppc64-gnu': 4.53.3
+      '@rollup/rollup-linux-riscv64-gnu': 4.53.3
+      '@rollup/rollup-linux-riscv64-musl': 4.53.3
+      '@rollup/rollup-linux-s390x-gnu': 4.53.3
+      '@rollup/rollup-linux-x64-gnu': 4.53.3
+      '@rollup/rollup-linux-x64-musl': 4.53.3
+      '@rollup/rollup-openharmony-arm64': 4.53.3
+      '@rollup/rollup-win32-arm64-msvc': 4.53.3
+      '@rollup/rollup-win32-ia32-msvc': 4.53.3
+      '@rollup/rollup-win32-x64-gnu': 4.53.3
+      '@rollup/rollup-win32-x64-msvc': 4.53.3
+      fsevents: 2.3.3
+
   run-parallel@1.2.0:
     dependencies:
       queue-microtask: 1.2.3
@@ -10040,6 +10639,8 @@ snapshots:
       side-channel-map: 1.0.1
       side-channel-weakmap: 1.0.2
 
+  siginfo@2.0.0: {}
+
   signal-exit@4.1.0: {}
 
   sisteransi@1.0.5: {}
@@ -10088,6 +10689,10 @@ snapshots:
   stable-hash-x@0.2.0: {}
 
   stable-hash@0.0.5: {}
+
+  stackback@0.0.2: {}
+
+  std-env@3.10.0: {}
 
   stdin-discarder@0.2.2: {}
 
@@ -10236,6 +10841,8 @@ snapshots:
 
   tiny-invariant@1.3.3: {}
 
+  tinybench@2.9.0: {}
+
   tinyexec@0.3.2: {}
 
   tinyexec@1.0.1: {}
@@ -10259,6 +10866,8 @@ snapshots:
     dependencies:
       fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
+
+  tinyrainbow@3.0.3: {}
 
   to-regex-range@5.0.1:
     dependencies:
@@ -10541,6 +11150,118 @@ snapshots:
       d3-time: 3.1.0
       d3-timer: 3.0.1
 
+  vite@7.2.4(@karinjs/tsx@5.1.0)(@types/node@20.19.9)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.86.0)(terser@5.43.1)(yaml@2.7.0):
+    dependencies:
+      esbuild: 0.25.9
+      fdir: 6.5.0(picomatch@4.0.3)
+      picomatch: 4.0.3
+      postcss: 8.5.6
+      rollup: 4.53.3
+      tinyglobby: 0.2.15
+    optionalDependencies:
+      '@types/node': 20.19.9
+      fsevents: 2.3.3
+      jiti: 2.6.1
+      lightningcss: 1.30.2
+      sass: 1.86.0
+      terser: 5.43.1
+      tsx: '@karinjs/tsx@5.1.0'
+      yaml: 2.7.0
+
+  vite@7.2.4(@types/node@20.19.9)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.86.0)(terser@5.43.1)(tsx@4.20.5)(yaml@2.7.0):
+    dependencies:
+      esbuild: 0.25.9
+      fdir: 6.5.0(picomatch@4.0.3)
+      picomatch: 4.0.3
+      postcss: 8.5.6
+      rollup: 4.53.3
+      tinyglobby: 0.2.15
+    optionalDependencies:
+      '@types/node': 20.19.9
+      fsevents: 2.3.3
+      jiti: 2.6.1
+      lightningcss: 1.30.2
+      sass: 1.86.0
+      terser: 5.43.1
+      tsx: 4.20.5
+      yaml: 2.7.0
+
+  vitest@4.0.12(@karinjs/tsx@5.1.0)(@types/node@20.19.9)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.86.0)(terser@5.43.1)(yaml@2.7.0):
+    dependencies:
+      '@vitest/expect': 4.0.12
+      '@vitest/mocker': 4.0.12(vite@7.2.4(@karinjs/tsx@5.1.0)(@types/node@20.19.9)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.86.0)(terser@5.43.1)(yaml@2.7.0))
+      '@vitest/pretty-format': 4.0.12
+      '@vitest/runner': 4.0.12
+      '@vitest/snapshot': 4.0.12
+      '@vitest/spy': 4.0.12
+      '@vitest/utils': 4.0.12
+      debug: 4.4.3
+      es-module-lexer: 1.7.0
+      expect-type: 1.2.2
+      magic-string: 0.30.21
+      pathe: 2.0.3
+      picomatch: 4.0.3
+      std-env: 3.10.0
+      tinybench: 2.9.0
+      tinyexec: 0.3.2
+      tinyglobby: 0.2.15
+      tinyrainbow: 3.0.3
+      vite: 7.2.4(@karinjs/tsx@5.1.0)(@types/node@20.19.9)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.86.0)(terser@5.43.1)(yaml@2.7.0)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@types/node': 20.19.9
+    transitivePeerDependencies:
+      - jiti
+      - less
+      - lightningcss
+      - msw
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - yaml
+
+  vitest@4.0.12(@types/node@20.19.9)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.86.0)(terser@5.43.1)(tsx@4.20.5)(yaml@2.7.0):
+    dependencies:
+      '@vitest/expect': 4.0.12
+      '@vitest/mocker': 4.0.12(vite@7.2.4(@types/node@20.19.9)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.86.0)(terser@5.43.1)(tsx@4.20.5)(yaml@2.7.0))
+      '@vitest/pretty-format': 4.0.12
+      '@vitest/runner': 4.0.12
+      '@vitest/snapshot': 4.0.12
+      '@vitest/spy': 4.0.12
+      '@vitest/utils': 4.0.12
+      debug: 4.4.3
+      es-module-lexer: 1.7.0
+      expect-type: 1.2.2
+      magic-string: 0.30.21
+      pathe: 2.0.3
+      picomatch: 4.0.3
+      std-env: 3.10.0
+      tinybench: 2.9.0
+      tinyexec: 0.3.2
+      tinyglobby: 0.2.15
+      tinyrainbow: 3.0.3
+      vite: 7.2.4(@types/node@20.19.9)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.86.0)(terser@5.43.1)(tsx@4.20.5)(yaml@2.7.0)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@types/node': 20.19.9
+    transitivePeerDependencies:
+      - jiti
+      - less
+      - lightningcss
+      - msw
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - yaml
+
   webidl-conversions@4.0.2: {}
 
   whatwg-url@7.1.0:
@@ -10593,6 +11314,11 @@ snapshots:
   which@2.0.2:
     dependencies:
       isexe: 2.0.0
+
+  why-is-node-running@2.3.0:
+    dependencies:
+      siginfo: 2.0.0
+      stackback: 0.0.2
 
   word-wrap@1.2.5: {}
 

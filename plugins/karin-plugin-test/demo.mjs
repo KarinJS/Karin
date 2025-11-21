@@ -1,6 +1,7 @@
-import { karin } from '@karinjs/core'
+import { karin, segment } from '@karinjs/core'
+import path from 'node:path'
 
 karin.command('test1', async (ctx) => {
   logger.debug('123')
-  await ctx.reply('hmr2')
+  await ctx.reply(segment.image(path.resolve('./image.png')))
 })

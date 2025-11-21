@@ -21,7 +21,7 @@
     "@karinjs/envs": "workspace:*",
     "@karinjs/events": "workspace:*",
     "@karinjs/logger": "workspace:*",
-    "@karinjs/hooks": "workspace:*"
+    "ws": "catalog:"
   },
   "peerDependencies": {
     "@karinjs/adapter": "workspace:*",
@@ -29,6 +29,6 @@
     "@karinjs/envs": "workspace:*",
     "@karinjs/events": "workspace:*",
     "@karinjs/logger": "workspace:*",
-    "@karinjs/hooks": "workspace:*"
+    "ws": "catalog:"
   }
 }

@@ -8,7 +8,9 @@ import type {
   AfterMessageCallback,
   AfterForwardMessageCallback,
 } from '../types/message'
-import type { Contact, Elements, ForwardOptions, NodeElement } from '@karinjs/adapter'
+import type { Contact } from '../../event'
+import type { SendForwardMessageResponse, SendMsgResults } from '../../adapter'
+import type { ForwardOptions, NodeElement, SendElement } from '../../segment'
 
 // 创建四个钩子管理器实例
 const messageManager = new HookManager<NormalMessageCallback>('sendMsg.message')
@@ -91,7 +93,7 @@ export class SendMsgHooks {
    * @param retryCount 重试次数
    * @returns 是否继续发送消息
    */
-  static async beforeMessage (contact: Contact, elements: Array<Elements>, retryCount: number = 0): Promise<boolean> {
+  static async beforeMessage (contact: Contact, elements: Array<SendElement>, retryCount: number = 0): Promise<boolean> {
     return await messageManager.emit(contact, elements, retryCount)
   }
 
@@ -112,7 +114,7 @@ export class SendMsgHooks {
    * @param elements 消息元素
    * @param result 消息发送结果
    */
-  static async afterMessage (contact: Contact, elements: Array<Elements>, result: any): Promise<void> {
+  static async afterMessage (contact: Contact, elements: Array<SendElement>, result: SendMsgResults): Promise<void> {
     // 后置钩子不需要 next 控制流，使用 emitAll 全部执行
     await afterMessageManager.emitAll(contact, elements, result)
   }
@@ -124,7 +126,7 @@ export class SendMsgHooks {
    * @param result 转发消息发送结果
    * @param options 转发选项
    */
-  static async afterForward (contact: Contact, elements: Array<NodeElement>, result: any, options?: ForwardOptions): Promise<void> {
+  static async afterForward (contact: Contact, elements: Array<NodeElement>, result: SendForwardMessageResponse, options?: ForwardOptions): Promise<void> {
     // 后置钩子不需要 next 控制流，使用 emitAll 全部执行
     await afterForwardManager.emitAll(contact, elements, result, options)
   }

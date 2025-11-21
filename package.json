@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@karinjs/core": "workspace:*",
+    "@vitest/coverage-v8": "4.0.12",
     "@types/express": "^5.0.1",
     "@types/lodash": "^4.17.20",
     "@types/node": "^20.19.9",
@@ -40,6 +41,7 @@
     "tsup": "^8.5.0",
     "tsx": "npm:@karinjs/tsx@5.1.0",
     "typescript": "^5.9.3",
-    "vite": "npm:rolldown-vite@latest"
+    "vite": "npm:rolldown-vite@latest",
+    "vitest": "^4.0.12"
   }
 }

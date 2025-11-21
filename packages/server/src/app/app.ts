@@ -11,8 +11,10 @@ import { BASE_ROUTER } from '../router/router'
 import { createBrotliDecompress } from 'node:zlib'
 import { emitter } from '@karinjs/events'
 
+import { store } from '@karinjs/store'
+
 import type root from '@karinjs/store'
-import type { Express } from 'express'
+import type { Express, RequestHandler } from 'express'
 
 /**
  * @public
@@ -131,4 +133,40 @@ export const initExpress = async (
   app.get('/', rootRouter)
   web(dir)
   listen(port, host)
+}
+
+/**
+ * webui静态资源中间件
+ * @description 用于动态解压 .br 静态资源文件
+ */
+const webuiStaticMiddleware: RequestHandler = (req, res, next) => {
+  const dir = store.pkg.webui
+  const filePath = path.join(dir, req.path)
+  const brPath = `${filePath}.br`
+  const acceptEncoding = req.headers['accept-encoding'] || ''
+
+  if (!fs.existsSync(filePath)) {
+    return next()
+  }
+
+  if (acceptEncoding.includes('br')) {
+    // 客户端支持 Brotli，直接返回 br 文件
+    res.set({
+      'Content-Encoding': 'br',
+      'Content-Type': getMimeType(req.path),
+      'Cache-Control': 'public, max-age=604800',
+    })
+    req.url = `${req.url}.br`
+    return express.static(dir)(req, res, next)
+  }
+  // 客户端不支持 Brotli，动态解压后返回原始内容（异步）
+  res.set({
+    'Content-Encoding': 'identity',
+    'Content-Type': getMimeType(req.path),
+    'Cache-Control': 'public, max-age=604800',
+  })
+
+  const readStream = fs.createReadStream(brPath)
+  const decompressStream = createBrotliDecompress()
+  readStream.pipe(decompressStream).pipe(res)
 }

@@ -1,8 +1,7 @@
-import { Bot } from '@karinjs/bot'
+import { NoticeDispatch } from './base'
 import { config } from '@karinjs/config'
-import { system } from '@karinjs/utils'
-import { pluginCache } from '@karinjs/plugin'
 import { EventCallHooks } from '../../hooks'
+import { pluginCache } from '@karinjs/plugin'
 
 import type { Config } from '@karinjs/config'
 import type { CreateAccept } from '@karinjs/plugin'
@@ -11,7 +10,7 @@ import type { GroupNoticeEventMap } from '../../event/types'
 /**
  * @description 群通知事件分发类
  */
-export class GroupNoticeDispatch<T extends GroupNoticeEventMap[keyof GroupNoticeEventMap] = GroupNoticeEventMap[keyof GroupNoticeEventMap]> {
+export class GroupNoticeDispatch<T extends GroupNoticeEventMap[keyof GroupNoticeEventMap] = GroupNoticeEventMap[keyof GroupNoticeEventMap]> extends NoticeDispatch {
   /** 通知事件上下文 */
   private ctx: T
 
@@ -29,6 +28,7 @@ export class GroupNoticeDispatch<T extends GroupNoticeEventMap[keyof GroupNotice
   private logger: ReturnType<typeof logger.prefix>
 
   constructor (ctx: T) {
+    super()
     this.ctx = ctx
     this.config = {
       cfg: config.config(),
@@ -43,22 +43,12 @@ export class GroupNoticeDispatch<T extends GroupNoticeEventMap[keyof GroupNotice
   async init () {
     /** 初始化 tips */
     this.initTips()
-
-    /** 发布事件 */
-    Bot.emit('notice', this.ctx)
-    Bot.emit(`notice.${this.ctx.subEvent}` as any, this.ctx)
+    this.eventEmit(this.ctx)
 
     /** 初始化角色权限 */
     const userId = this.ctx.userId
     const boundUserId = `${this.ctx.selfId}@${this.ctx.userId}`
-    const { master, admin } = this.config.cfg
-
-    const isMaster = master.includes(boundUserId) || master.includes(userId)
-    const isAdmin = isMaster || admin.includes(boundUserId) || admin.includes(userId)
-    this.ctx.isMaster = isMaster
-    this.ctx.isAdmin = isAdmin
-    system.lock.prop(this.ctx, 'isMaster')
-    system.lock.prop(this.ctx, 'isAdmin')
+    this.setMasterAndAdmin(this.ctx, this.config.cfg, boundUserId, userId)
 
     this.print()
 
@@ -75,15 +65,15 @@ export class GroupNoticeDispatch<T extends GroupNoticeEventMap[keyof GroupNotice
    */
   private print () {
     const { log_enable_list: enable, log_disable_list: disable } = this.config.filter
-    const message = `群通知: [${this.ctx.subEvent}][${this.ctx.groupId}] ${this.ctx.tips}`
+    const message = `群通知: [${this.ctx.subEvent}][${this.ctx.groupId}-${this.ctx.userId}] ${this.ctx.tips}`
 
-    /** 有配置白名单 并且当前群没在白名单中 */
-    if (enable.group.length > 0 && !enable.group.includes(this.ctx.groupId)) {
+    /** 过滤群 */
+    if (this.filterGroup(this.ctx.groupId, enable.group, disable.group)) {
       return logger.bot('debug', this.ctx.selfId, message)
     }
 
-    /** 有配置黑名单 并且当前群在黑名单中 */
-    if (disable.group.length > 0 && disable.group.includes(this.ctx.groupId)) {
+    /** 过滤用户 */
+    if (this.filterUser(this.ctx.userId, enable.friend, disable.friend)) {
       return logger.bot('debug', this.ctx.selfId, message)
     }
 
@@ -121,29 +111,9 @@ export class GroupNoticeDispatch<T extends GroupNoticeEventMap[keyof GroupNotice
     disable: string[],
     nextFnc: () => void
   ) {
-    const filterLog = `[dispatch][${this.ctx.logText}][${plugin.packageName}][${plugin.file.relPath}][${plugin.name}]`
-    const event = plugin.options.event
-    if (event !== 'notice' && event === `notice.${this.ctx.subEvent}`) {
-      this.ctx.bot.logger('debug', `${filterLog} 插件事件不匹配: ${event}`)
-      return nextFnc()
+    if (await this.filter(this.ctx, plugin, enable, disable)) {
+      return
     }
-
-    if (plugin.options.adapter.length > 0 && !plugin.options.adapter.includes(this.ctx.bot.adapter.protocol)) {
-      this.ctx.bot.logger('debug', `${filterLog} 当前适配器协议: ${this.ctx.bot.adapter.protocol}, 白名单适配器协议: ${plugin.options.adapter.join(', ')}`)
-      return nextFnc()
-    }
-
-    if (plugin.options.dsbAdapter.length > 0 && plugin.options.dsbAdapter.includes(this.ctx.bot.adapter.protocol)) {
-      this.ctx.bot.logger('debug', `${filterLog} 当前适配器协议: ${this.ctx.bot.adapter.protocol}, 黑名单适配器协议: ${plugin.options.dsbAdapter.join(', ')}`)
-      return nextFnc()
-    }
-
-    if (!this.filterPlugin(plugin, enable, disable)) {
-      this.ctx.bot.logger('debug', `${filterLog} 当前插件被禁用或未在启用列表中`)
-      return nextFnc()
-    }
-
-    this.ctx.logFnc = `[${plugin.packageName}][${plugin.options.name}]`
 
     // 触发事件调用钩子
     this.logger.debug(`[hooks] 开始触发事件调用钩子: ${this.ctx.eventId} 插件: ${plugin.name}`)
@@ -153,57 +123,7 @@ export class GroupNoticeDispatch<T extends GroupNoticeEventMap[keyof GroupNotice
       return nextFnc()
     }
     this.logger.debug(`[hooks] 事件调用钩子触发完成: ${this.ctx.eventId} 插件: ${plugin.name}`)
-
-    /** 前缀 */
-    const timeStart = Date.now()
-    const prefix = `${logger.fnc(this.ctx.logFnc)}${this.ctx.logText}`
-
-    this.ctx.bot.logger('mark', `${prefix} 开始处理`)
-    await Promise.resolve(plugin.callback(this.ctx, nextFnc))
-      .catch(async error => {
-        nextFnc()
-        logger.error(`${prefix} 插件执行出错: ${error.message}\n${error.stack}`)
-      })
-      .then(async () => {
-        const time = logger.green(Date.now() - timeStart + 'ms')
-        this.ctx.bot.logger('mark', `${prefix} 处理完成  耗时: ${time}`)
-      })
-  }
-
-  /**
-   * 过滤插件
-   * @param plugin 插件实例
-   * @param enable 启用列表
-   * @param disable 禁用列表
-   */
-  private filterPlugin (
-    plugin: CreateAccept,
-    enable: string[],
-    disable: string[]
-  ) {
-    const target = [
-      plugin.packageName,
-      `${plugin.packageName}:${plugin.file.relPath}`,
-      `${plugin.packageName}:${plugin.file.relPath}:${plugin.name}`,
-    ]
-
-    if (enable.length > 0) {
-      if (!target.some(t => enable.includes(t))) {
-        return false
-      }
-
-      if (target.some(t => disable.includes(t))) {
-        return false
-      }
-    }
-
-    if (disable.length > 0) {
-      if (target.some(t => disable.includes(t))) {
-        return false
-      }
-    }
-
-    return true
+    await this.runCallback(this.ctx, plugin, nextFnc)
   }
 
   /**

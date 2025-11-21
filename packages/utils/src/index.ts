@@ -118,3 +118,5 @@ export * from './changelog'
 
 // 导出所有废弃的 API 映射
 export * from './deprecated'
+export * from './string'
+export { createStdinController } from './stdin'

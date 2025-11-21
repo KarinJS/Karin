@@ -13,6 +13,8 @@ export class PluginConfig<T extends Record<string, any>> {
   pluginName: string
   /** 数据操作工具 */
   types = types
+  /** 插件数据存储工具 */
+  store = store
 
   /**
    * 构建函数
@@ -116,6 +118,7 @@ export class PluginConfig<T extends Record<string, any>> {
     data: T[K]
   ) {
     const filePath = this.getConfigPath(filename as string)
+    fs.mkdirSync(path.dirname(filePath), { recursive: true })
     writeFileSync(filePath, data)
   }
 
@@ -163,6 +166,7 @@ export class PluginConfig<T extends Record<string, any>> {
   ): void | Promise<void> {
     const filePath = this.getConfigPath(filename as string)
     if (fs.existsSync(filePath)) return
+    fs.mkdirSync(path.dirname(filePath), { recursive: true })
     if (options?.stringify) {
       const content = options.stringify(data)
       if (!util.types.isPromise(content)) {

@@ -1,0 +1,1 @@
+export { AdapterConsole } from './core'

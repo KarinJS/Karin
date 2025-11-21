@@ -112,12 +112,7 @@ export abstract class BaseEvent<T extends EventParent> {
 
         /** 先发 提升速度 */
         const request = this.#srcReply(message)
-        const { raw } = createRawMessage(message)
-        if (this.isGroup) {
-          this.selfId !== 'console' && logger.bot('info', this.selfId, `${logger.green(`Send Group ${this.contact.peer}: `)}${raw.replace(/\n/g, '\\n')}`)
-        } else {
-          this.selfId !== 'console' && logger.bot('info', this.selfId, `${logger.green(`Send private ${this.contact.peer}: `)}${raw.replace(/\n/g, '\\n')}`)
-        }
+        this.printSendMsgLog(message)
 
         /** 发送消息 */
         result = util.types.isPromise(request) ? await request : request
@@ -143,6 +138,32 @@ export abstract class BaseEvent<T extends EventParent> {
     }
 
     system.lock.prop(this, 'reply')
+  }
+
+  /**
+   * 打印发送消息日志
+   * @param raw - 原始消息字符串
+   */
+  private async printSendMsgLog (message: Parameters<this['srcReply']>[0]) {
+    const { raw } = createRawMessage(message)
+    if (this.selfId === 'console') return
+
+    /** 首字母大写 */
+    const prefix = this.contact.scene.charAt(0).toUpperCase() + this.contact.scene.slice(1)
+    /** 目标 */
+    const target = (() => {
+      switch (this.contact.scene) {
+        case 'friend':
+        case 'group':
+          return this.contact.peer
+        case 'direct':
+        case 'guild':
+        case 'groupTemp':
+          return `${this.contact.peer}-${this.contact.subPeer}`
+      }
+    })()
+
+    logger.bot('info', this.selfId, `${logger.green(`Send ${prefix} ${target}: `)}${raw.replaceAll('\n', '\\n')}`)
   }
 
   /**

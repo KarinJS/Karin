@@ -1,8 +1,6 @@
+import { config } from './config'
 import crypto from 'node:crypto'
-import pkg from '../package.json'
 import { emitter } from '@karinjs/events'
-import { logger } from '@karinjs/logger'
-import { PluginConfig } from '@karinjs/config'
 import {
   AdapterBase,
   segment,
@@ -31,49 +29,9 @@ import {
   CommandHandler,
 } from './utils'
 
+import type { } from '@karinjs/logger'
 import type { } from '@karinjs/envs'
 import type { Contact, Elements, AdapterType, SendMsgResults } from '@karinjs/adapter'
-
-export interface ConsoleConfig {
-  /**
-   * 请求主机地址
-   * @example
-   * ```bash
-   * http://example.com
-   * ```
-   */
-  host: string
-  /**
-   * 请求验证令牌
-   */
-  token: string
-  /**
-   * 打印链接是否仅本地可访问
-   */
-  isLocal: boolean
-  /**
-   * 加盐字符串、位数
-   * @description 用于生成临时文件名称的加盐字符串或位数，提升安全性
-   * @default 3
-   * @example
-   * ```bash
-   * # 这里有2种配置方式 1. 直接填写字符串 2. 填写数字表示生成随机字符串的长度
-   * salt: karin-console-plugin
-   * # 或者
-   * salt: 3 # 对于配置长度，则会每次在启动后随机生成一个指定长度的字符串作为盐值
-   * ```
-   */
-  salt: string | number
-  /** 头像地址 */
-  avatar: {
-    /** 机器人头像 */
-    bot: string
-    /** 用户头像 */
-    user: string
-    /** 群头像 */
-    group: string
-  }
-}
 
 /**
  * 控制台交互适配器 - 单例模式
@@ -85,7 +43,7 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
   #salt: string
   #commandHandler: CommandHandler
   #messageFormatter: MessageFormatter
-  config: PluginConfig<{ 'config.json': ConsoleConfig }>
+  config: typeof config
   private static instance: AdapterConsole | null = null
 
   private constructor () {
@@ -106,7 +64,7 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
     this.account.selfId = this.#id
     this.account.avatar = avatar
 
-    this.config = new PluginConfig<{ 'config.json': ConsoleConfig }>(pkg.name)
+    this.config = config
   }
 
   /**
@@ -116,7 +74,7 @@ export class AdapterConsole extends AdapterBase implements AdapterType {
     this.config.createConfig('config.json', createDefaultConfig())
     const cfg = this.cfg
     this.#salt = generateSalt(cfg.salt)
-    await cleanTempFolder(this.config.dir.temp)
+    cleanTempFolder(this.config.dir.temp)
 
     emitter
       .on('process:stdin:resume', () => process.stdin.on('data', data => this.createEvent(data)))

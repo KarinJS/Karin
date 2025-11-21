@@ -1,5 +1,7 @@
 packages:
   - packages/*
+  - packages-core/*
+  - packages-plugin/*
   - "!packages/karin-plugin-ts"
   - "!packages/karin-plugin-js"
 onlyBuiltDependencies:
@@ -26,3 +28,4 @@ catalog:
   ws: "npm:@karinjs/ws"
   yaml: 2.7.0
   semver: 7.7.3
+  express-rate-limit: 8.2.1

@@ -8,7 +8,7 @@ import type {
   DirectMessage,
   GroupTempMessage,
   Message,
-} from '@karinjs/adapter'
+} from '../../event'
 
 import type { HookCallback, HookOptions } from '../types/message'
 

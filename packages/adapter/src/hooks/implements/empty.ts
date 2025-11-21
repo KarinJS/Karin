@@ -1,7 +1,7 @@
 import { logger } from '@karinjs/logger'
 import { HookManager } from '../core/manager'
 
-import type { Message, Notice, Request as Requests } from '@karinjs/adapter'
+import type { Message, Notice, Request as Requests } from '../../event'
 import type { HookOptions, HookCallback, GeneralHookCallback } from '../types/message'
 
 // 创建钩子管理器实例

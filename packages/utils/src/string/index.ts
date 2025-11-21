@@ -11,3 +11,4 @@ export * from './convert'
 
 // 旧版兼容
 export * from '../common/string'
+export * from './truncate'

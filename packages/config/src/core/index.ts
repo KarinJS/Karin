@@ -112,7 +112,16 @@ class Config extends EventEmitter<ConfigEventMap> {
       if (fs.existsSync(filePath)) return
 
       fs.mkdirSync(path.dirname(filePath), { recursive: true })
-      fs.writeFileSync(filePath, JSON.stringify(cfg, null, 2), 'utf-8')
+      try {
+        fs.writeFileSync(filePath, JSON.stringify(cfg, null, 2), 'utf-8')
+      } catch (e: any) {
+        if (e?.code === 'ENOENT') {
+          fs.mkdirSync(path.dirname(filePath), { recursive: true })
+          fs.writeFileSync(filePath, JSON.stringify(cfg, null, 2), 'utf-8')
+        } else {
+          throw e
+        }
+      }
 
       const relPath = path.relative(process.cwd(), filePath).replaceAll('\\', '/')
       this.#logger.debug(`[config] 创建配置文件: ${relPath}`)
@@ -330,10 +339,6 @@ class Config extends EventEmitter<ConfigEventMap> {
       }
 
       const cfg = this.files[relPath]
-      if (!cfg) {
-        this.#logger.debug(`未找到配置文件对应的处理模块：${relPath}`)
-        return
-      }
 
       cfg.clear()
       cfg.cache = null

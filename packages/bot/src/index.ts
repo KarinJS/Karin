@@ -1,14 +1,14 @@
-import EventEmitter from 'node:events'
+import { wrapBotMethods } from './hook'
 import { logger } from '@karinjs/logger'
-import { hooksEmit } from '@karinjs/hooks'
-import { createRawMessage, makeMessage, segment } from '@karinjs/adapter'
+import { EventEmitter } from 'node:events'
+import { createRawMessage, makeMessage } from '@karinjs/adapter'
 
+import type { WebSocket } from 'ws'
+import type { IncomingMessage } from 'node:http'
 import type {
   Contact,
   AdapterType,
   Elements,
-  ForwardOptions,
-  NodeElement,
   SendMsgResults,
   AdapterCommunication,
   AdapterProtocol,
@@ -16,7 +16,7 @@ import type {
   AdapterEventMap,
 } from '@karinjs/adapter'
 
-interface SendMsgOptions {
+export interface SendMsgOptions {
   /** 发送成功后撤回消息时间 */
   recallMsg?: number
   /** @deprecated 已废弃 请使用 `retryCount` */
@@ -25,12 +25,27 @@ interface SendMsgOptions {
   retryCount?: number
 }
 
+export interface EventDispatchMaps extends AdapterEventMap {
+  /** 发送消息 */
+  'send.msg': [Contact]
+  /** 发送转发消息 */
+  'send.forward': [Contact]
+  /** bot状态修改为离线 */
+  'bot.offline': [string]
+  /** bot状态修改为在线 */
+  'bot.online': [string]
+  /** ws:connection 事件 */
+  'ws:connection': [WebSocket, IncomingMessage]
+  /** ws:close 事件 */
+  'ws:close': [WebSocket, IncomingMessage, number, Buffer]
+}
+
 /**
  * Bot管理器类
  */
-export class BotManager extends EventEmitter<AdapterEventMap> {
-  #index: number = 0
-  #list: { index: number, bot: AdapterType }[] = []
+export class BotManager extends EventEmitter<EventDispatchMaps> {
+  #nextIndex: number = 0
+  #bots: Array<{ index: number, bot: AdapterType }> = []
 
   /**
    * 获取Bot
@@ -39,19 +54,42 @@ export class BotManager extends EventEmitter<AdapterEventMap> {
    * @returns 适配器
    */
   getBot (id: number | AdapterProtocol | string, isProtocol = false): AdapterType | null {
-    try {
-      if (typeof id === 'number') {
-        return this.#list.find(item => item.index === id)?.bot || null
-      }
-
-      if (isProtocol) {
-        return this.#list.find(item => item.bot.adapter.protocol === id)?.bot || null
-      }
-
-      return this.#list.find(item => item.bot.selfId === id)?.bot || null
-    } catch {
-      return null
+    if (typeof id === 'number') {
+      return this.findByIndex(id)
     }
+
+    if (isProtocol) {
+      return this.findByProtocol(id as AdapterProtocol)
+    }
+
+    return this.findBySelfId(id as string)
+  }
+
+  /**
+   * 通过索引查找Bot
+   * @param index 适配器索引
+   * @returns Bot实例或null
+   */
+  findByIndex (index: number): AdapterType | null {
+    return this.#bots.find(item => item.index === index)?.bot || null
+  }
+
+  /**
+   * 通过协议类型查找Bot
+   * @param protocol 适配器协议实现
+   * @returns Bot实例或null
+   */
+  findByProtocol (protocol: AdapterProtocol): AdapterType | null {
+    return this.#bots.find(item => item.bot.adapter.protocol === protocol)?.bot || null
+  }
+
+  /**
+   * 通过BotID查找Bot
+   * @param selfId 机器人ID
+   * @returns Bot实例或null
+   */
+  findBySelfId (selfId: string): AdapterType | null {
+    return this.#bots.find(item => item.bot.selfId === selfId)?.bot || null
   }
 
   /**
@@ -64,9 +102,9 @@ export class BotManager extends EventEmitter<AdapterEventMap> {
    */
   getAllBot (state?: 'online' | 'offline' | 'initializing') {
     if (state) {
-      return this.#list.filter(item => item.bot.status === state).map(item => item.bot)
+      return this.#bots.filter(item => item.bot.status === state).map(item => item.bot)
     }
-    return this.#list.map(item => item.bot)
+    return this.#bots.map(item => item.bot)
   }
 
   /**
@@ -74,7 +112,7 @@ export class BotManager extends EventEmitter<AdapterEventMap> {
    * @returns 注册的Bot列表
    */
   getAllBotList () {
-    return this.#list
+    return this.#bots
   }
 
   /**
@@ -82,7 +120,7 @@ export class BotManager extends EventEmitter<AdapterEventMap> {
    * @returns BotID列表
    */
   getAllBotID () {
-    return this.#list.map(item => item.bot.selfId)
+    return this.#bots.map(item => item.bot.selfId)
   }
 
   /**
@@ -90,42 +128,85 @@ export class BotManager extends EventEmitter<AdapterEventMap> {
    * @returns Bot数量
    */
   getBotCount () {
-    return this.#list.length
+    return this.#bots.length
   }
 
   /**
    * 卸载Bot
-   * @param type 卸载方式
+   * @param type 卸载类型
    * @param idOrIndex 适配器索引 | 机器人ID
    * @param address 机器人地址
    */
   unregisterBot: UnregisterBot = (type, idOrIndex, address?) => {
-    const findIndexAndRemove = (predicate: (item: { index: number, bot: AdapterType }) => boolean) => {
-      const index = this.#list.findIndex(predicate)
-      if (index !== -1) {
-        const [removed] = this.#list.splice(index, 1)
-        logger.bot('info', removed.bot.selfId, `${logger.red('[service][卸载Bot]')} ${removed.bot.adapter.name}`)
-        return true
-      }
-
-      logger.warn(`[service][卸载Bot] 未找到指定Bot: ${JSON.stringify({ type, idOrIndex, address })}`)
-      return false
-    }
-
     if (type === 'index') {
-      return findIndexAndRemove(item => item.index === idOrIndex)
+      return this.removeByIndex(idOrIndex as number)
     }
 
     if (type === 'selfId') {
-      return findIndexAndRemove(({ bot }) => bot.selfId === idOrIndex)
+      return this.removeBySelfId(idOrIndex as string)
     }
 
-    if (type === 'address') {
-      return findIndexAndRemove(({ bot }) => bot.selfId === idOrIndex && bot.adapter.address === address)
+    if (type === 'address' && typeof address === 'string') {
+      return this.removeByAddress(idOrIndex as string, address)
     }
 
-    logger.warn(`[service][卸载Bot] 未知的卸载方式: ${type}`)
+    logger.error(`[unregister] 不支持的卸载类型: ${type}`)
     return false
+  }
+
+  /**
+   * 通过索引移除Bot
+   * @param index 适配器索引
+   * @returns 是否移除成功
+   */
+  removeByIndex (index: number): boolean {
+    const botIndex = this.#bots.findIndex(item => item.index === index)
+    if (botIndex === -1) {
+      logger.warn(`[unregister] 未找到索引为 ${index} 的Bot`)
+      return false
+    }
+
+    const [removed] = this.#bots.splice(botIndex, 1)
+    const { selfId, adapter } = removed.bot
+    logger.bot('info', selfId, `[unregister] 成功卸载Bot: ${selfId}(${adapter.name})`)
+    return true
+  }
+
+  /**
+   * 通过BotID移除Bot
+   * @param selfId 机器人ID
+   * @returns 是否移除成功
+   */
+  removeBySelfId (selfId: string): boolean {
+    const index = this.#bots.findIndex(item => item.bot.selfId === selfId)
+    if (index === -1) {
+      logger.warn(`[unregister] 未找到 self_id 为 ${selfId} 的Bot`)
+      return false
+    }
+
+    const [removed] = this.#bots.splice(index, 1)
+    logger.bot('info', selfId, `[unregister] 成功卸载Bot: ${removed.bot.selfId}(${removed.bot.adapter.name})`)
+    return true
+  }
+
+  /**
+   * 通过BotID和地址移除Bot
+   * @param selfId 机器人ID
+   * @param address 机器人地址
+   * @returns 是否移除成功
+   */
+  removeByAddress (selfId: string, address: string): boolean {
+    const index = this.#bots.findIndex(
+      item => item.bot.selfId === selfId && item.bot.adapter.address === address
+    )
+    if (index === -1) {
+      logger.warn(`[unregister] 未找到 self_id 为 ${selfId}, address 为 ${address} 的Bot`)
+      return false
+    }
+
+    const [removed] = this.#bots.splice(index, 1)
+    logger.bot('info', selfId, `[unregister] 成功卸载Bot: ${selfId}(${removed.bot.adapter.name})`)
+    return true
   }
 
   /**
@@ -135,84 +216,18 @@ export class BotManager extends EventEmitter<AdapterEventMap> {
    * @returns 适配器索引
    */
   registerBot (communication: AdapterCommunication, bot: AdapterType) {
-    const id = ++this.#index
-    this.#list.push({ index: id, bot })
+    const index = ++this.#nextIndex
+    this.#bots.push({ index, bot })
 
     if (!bot.adapter.communication) {
       bot.adapter.communication = communication
     }
 
-    /**
-     * @description 重写
-     */
-    const originSendMsg = bot.sendMsg
-    const originSendForwardMsg = bot.sendForwardMsg
-    bot.sendMsg = async (
-      contact: Contact,
-      elements: Array<Elements>,
-      retryCount?: number
-    ) => {
-      const hook = await hooksEmit.sendMsg.message(contact, elements, retryCount)
-      if (!hook) return { messageId: '', time: -1, rawData: '', message_id: '', messageTime: -1 }
-
-      /** 重试sendMsg */
-      try {
-        const result = await originSendMsg.call(bot, contact, elements, retryCount)
-        /** 触发发送消息后钩子 */
-        await hooksEmit.sendMsg.afterMessage(contact, elements, result)
-        return result
-      } catch (error) {
-        if (typeof retryCount === 'number' && retryCount > 0) {
-          return bot.sendMsg(contact, elements, retryCount - 1)
-        }
-        throw error
-      }
-    }
-
-    bot.sendForwardMsg = async (
-      contact: Contact,
-      elements: Array<NodeElement>,
-      options?: ForwardOptions
-    ) => {
-      const hook = await hooksEmit.sendMsg.forward(contact, elements, options)
-      if (!hook) return { messageId: '', forwardId: '' }
-      const result = await originSendForwardMsg.call(bot, contact, elements, options)
-      /** 触发发送转发消息后钩子 */
-      await hooksEmit.sendMsg.afterForward(contact, elements, result, options)
-      return result
-    }
-
-    setTimeout(async () => {
-      const { db } = await import('@karinjs/db')
-      const key = `karin:restart:${bot.selfId}`
-      const options = await db.get<{ selfId: string, contact: Contact, messageId: string, time: number }>(key)
-      if (!options) return
-
-      try {
-        const { selfId, contact, messageId, time } = options
-        /** 重启花费时间 保留2位小数 */
-        const restartTime = ((Date.now() - time) / 1000).toFixed(2)
-        /** 超过2分钟不发 */
-        if (Number(restartTime) > 120) {
-          return false
-        }
-
-        const element = [
-          segment.reply(messageId),
-          segment.text(`\n重启成功：${restartTime}秒`),
-        ]
-        await this.sendMsg(selfId, contact, element)
-      } finally {
-        await db.del(key)
-      }
-    }, 10)
-
-    /** 延迟执行 */
-    setTimeout(() => {
-      logger.bot('info', bot.selfId, `${logger.green('[registerBot]')}[${bot.adapter.name}]: ${bot.account.name} ${bot.adapter.address}`)
-    }, 1000)
-
-    return id
+    wrapBotMethods(bot)
+    const { name, address } = bot.adapter
+    const accountName = bot.account.name
+    logger.bot('info', bot.selfId, `${logger.green('[registerBot]')}[${name}]: ${accountName} ${address}`)
+    return index
   }
 
   /**
@@ -228,52 +243,75 @@ export class BotManager extends EventEmitter<AdapterEventMap> {
     elements: SendMessage,
     options: SendMsgOptions = { recallMsg: 0, retryCount: 1, retry_count: 1 }
   ): Promise<SendMsgResults> {
-    /** 结果 */
-    let result: any = {}
-    /** 标准化 */
-    const newElements = makeMessage(elements)
-
     const bot = this.getBot(selfId)
-    if (!bot) throw new Error('发送消息失败: 未找到对应Bot实例')
-    const { recallMsg } = options
+    if (!bot) {
+      throw new Error('发送消息失败: 未找到对应Bot实例')
+    }
+
+    const normalizedElements = makeMessage(elements)
     const retryCount = options.retryCount ?? options.retry_count ?? 1
 
-    const { raw } = createRawMessage(newElements)
-    if (contact.scene === 'group') {
-      logger.bot('info', selfId, `${logger.green('Send Proactive Group')} ${contact.peer}: ${raw}`)
-    } else {
-      logger.bot('info', selfId, `${logger.green('Send Proactive private')} ${contact.peer}: ${raw}`)
+    this.#logOutgoingMessage(selfId, contact, normalizedElements)
+
+    const result = await this.#executeSendMsg(bot, selfId, contact, normalizedElements, retryCount)
+
+    this.#scheduleRecall(bot, contact, result, options.recallMsg)
+
+    return result
+  }
+
+  #logOutgoingMessage (selfId: string, contact: Contact, elements: Array<Elements>): void {
+    const { raw } = createRawMessage(elements)
+    const scene = contact.scene === 'group' ? 'Group' : 'private'
+    logger.bot('info', selfId, `${logger.green(`Send Proactive ${scene}`)} ${contact.peer}: ${raw}`)
+  }
+
+  async #executeSendMsg (
+    bot: AdapterType,
+    selfId: string,
+    contact: Contact,
+    elements: Array<Elements>,
+    retryCount: number
+  ): Promise<SendMsgResults> {
+    let result: SendMsgResults = {
+      messageId: '',
+      time: -1,
+      rawData: '',
+      message_id: '',
+      messageTime: -1,
     }
 
     try {
-      await Promise.all([
-        async () => {
-          result = await bot.sendMsg(contact, newElements, retryCount)
-        },
-        async () => {
-          const [
-            { SEND_MSG },
-            { emitter },
-          ] = await Promise.all([
-            import('@karinjs/envs'),
-            import('@karinjs/events'),
-          ])
-          emitter.emit(SEND_MSG, contact)
-        },
-      ])
+      result = await bot.sendMsg(contact, elements, retryCount)
+      result.message_id = result.messageId
+
+      this.#emitSendMsgEvent(contact)
       logger.bot('debug', selfId, `主动消息结果:${JSON.stringify(result, null, 2)}`)
     } catch (error) {
+      const { raw } = createRawMessage(elements)
       logger.bot('error', selfId, `主动消息发送失败:${raw}`)
       logger.error(error)
     }
 
-    result.message_id = result.messageId
+    return result
+  }
 
-    /** 快速撤回 */
+  async #emitSendMsgEvent (contact: Contact): Promise<void> {
+    try {
+      const [{ SEND_MSG }, { emitter }] = await Promise.all([
+        import('@karinjs/envs'),
+        import('@karinjs/events'),
+      ])
+      emitter.emit(SEND_MSG, contact)
+    } catch {
+      // 忽略事件发送失败
+    }
+  }
+
+  #scheduleRecall (bot: AdapterType, contact: Contact, result: SendMsgResults, recallMsg?: number): void {
     if (recallMsg && recallMsg > 0 && result?.messageId) {
       setTimeout(() => bot.recallMsg(contact, result.messageId), recallMsg * 1000)
     }
-    return result as SendMsgResults
   }
 }
 

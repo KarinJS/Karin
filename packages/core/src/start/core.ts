@@ -16,7 +16,7 @@ import { isDev } from '@karinjs/envs'
 let isStart = false
 if (!process.env.EBV_FILE) process.env.EBV_FILE = '.env'
 
-class InitBot {
+class StartBot {
   async dotenv () {
     const { default: dotenv } = await import('dotenv')
     const envFile = process.env.ENV_FILE || process.env.EBV_FILE || '.env'
@@ -98,6 +98,13 @@ class InitBot {
     logger.debug(`${name} 加载完成~`)
     return this
   }
+
+  async server (config: import('@karinjs/config').Config) {
+    const server = config.server()
+    const { runServer, createWebSocketContext } = await import('@karinjs/server')
+    await runServer(server.http.port, server.http.host)
+    createWebSocketContext()
+  }
 }
 
 /**
@@ -111,19 +118,20 @@ export const start = async () => {
 
   isStart = true
 
-  const initializer = new InitBot()
-  await initializer.dotenv()
-  const { config, logger } = await initializer.configAndLogger()
-  await initializer.env(config)
+  const run = new StartBot()
+  await run.dotenv()
+  const { config, logger } = await run.configAndLogger()
+  await run.env(config)
 
   logger.mark('Karin 启动中...')
   logger.mark(`当前版本: ${process.env.KARIN_VERSION}`)
   logger.mark('https://github.com/KarinJS/Karin')
 
-  await initializer.pipe(logger)
-  await initializer.db(config)
-  initializer.pluginLoader()
-  initializer.adapterConsole(logger)
+  await run.pipe(logger)
+  await run.db(config)
+  run.server(config)
+  run.pluginLoader()
+  run.adapterConsole(logger)
   // /**
   //  * 3. 初始化配置文件
   //  * - 初始化基本文件目录

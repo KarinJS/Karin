@@ -1,7 +1,8 @@
 import fs from 'node:fs'
 import { glob } from 'glob'
 import { fileURLToPath } from 'node:url'
-import { defineConfig, UserConfig } from 'tsdown/config'
+import { defineConfig } from 'tsdown/config'
+import type { UserConfig } from 'tsdown/config'
 
 const list = glob.sync('*/package.json', {
   cwd: fileURLToPath(import.meta.url + '../../../..'),

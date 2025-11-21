@@ -16,6 +16,7 @@ import type {
   GroupMemberInfo,
   MessageResponse,
   QQGroupHonorInfo,
+  SendForwardMessageResponse,
   SendMsgResults,
   UserInfo,
 } from './response'
@@ -100,7 +101,7 @@ export interface AdapterType<T = any> {
    * @param elements 消息元素
    * @param options 首层小卡片外显参数
    */
-  sendForwardMsg (contact: Contact, elements: Array<NodeElement>, options?: ForwardOptions): Promise<{ messageId: string }>
+  sendForwardMsg (contact: Contact, elements: Array<NodeElement>, options?: ForwardOptions): Promise<SendForwardMessageResponse>
 
   /**
    * 撤回消息

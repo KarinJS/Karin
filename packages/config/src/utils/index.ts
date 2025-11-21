@@ -40,12 +40,8 @@ export const filterStringArray = (arr: any): string[] => {
  * ```
  */
 const parseRegexString = (regexStr: string): RegExp | null => {
-  if (typeof regexStr !== 'string') return null
-
-  // 使用正则表达式匹配 /pattern/flags 格式
   const match = regexStr.match(/^\/(.*)\/([gimsuvy]*)$/)
   if (!match) return null
-
   try {
     const [, pattern, flags] = match
     return new RegExp(pattern, flags)

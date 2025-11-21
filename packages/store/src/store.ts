@@ -175,6 +175,13 @@ export const store = {
     get karin () {
       return formatPath(path.join(this.root, 'package.json'))
     },
+    /**
+     * webui 静态文件目录
+     * @example `/root/karin/node_modules/karin/dist/webui`
+     */
+    get webui () {
+      return formatPath(path.join(this.root, 'dist', 'webui'))
+    },
   },
   plugin: {
     /**

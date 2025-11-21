@@ -1,4 +1,4 @@
-import lodash from 'lodash'
+import { truncate } from '@karinjs/utils'
 import { segment } from '../../segment'
 import type { CustomNodeElement, Elements, SendMessage } from '../../segment/types'
 
@@ -50,7 +50,7 @@ export const createRawMessage = (data: Elements[]) => {
       case 'pasmsg': return `[pasmsg:${v.id}]`
       case 'markdownTpl': return `[markdowntpl:${JSON.stringify({ templateId: v.templateId, ...v.params })}]`
       case 'raw': return `[raw:${JSON.stringify(v.data)}]`
-      default: return `[未知:${lodash.truncate(JSON.stringify(v), { length: 200 })}]`
+      default: return `[未知:${truncate(JSON.stringify(v), { length: 200 })}]`
     }
   }).join('')
   return {

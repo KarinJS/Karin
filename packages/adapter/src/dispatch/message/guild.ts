@@ -1,8 +1,5 @@
 import { lru } from '../LRU'
-import { Bot } from '@karinjs/bot'
 import { config } from '@karinjs/config'
-import { emitter } from '@karinjs/events'
-import { RECV_MSG } from '@karinjs/envs'
 import { MessageDispatch } from './base'
 import { pluginCache } from '@karinjs/plugin'
 import { createRawMessage } from '../../event/abstract/raw'
@@ -68,13 +65,7 @@ export class GuildMessageDispatch extends MessageDispatch {
     this.setAlias(this.ctx, this.config.guildConfig.alias)
 
     this.print()
-
-    // TODO: 待定，可能需要仅开发环境才进行事件发布
-    Bot.emit('message', this.ctx)
-    Bot.emit('message.guild', this.ctx)
-
-    /** 记录收到消息 */
-    emitter.emit(RECV_MSG, this.ctx.contact)
+    this.eventEmit(this.ctx)
 
     if (this.filterContext(this.ctx, this.logger)) return
 
@@ -118,13 +109,18 @@ export class GuildMessageDispatch extends MessageDispatch {
     const { log_enable_list: enable, log_disable_list: disable } = this.config.filter
     const message = `频道消息: [${this.ctx.guildId}-${this.ctx.channelId}-${this.ctx.userId}(${this.ctx.sender.nick || ''})] ${this.ctx.rawMessage}`
 
-    /** 有配置白名单 并且当前频道没在白名单中 */
-    if (enable.guild.length > 0 && !enable.guild.includes(this.ctx.guildId)) {
+    /** 过滤频道 */
+    if (this.filterGuild(this.ctx.guildId, enable.guild, disable.guild)) {
       return logger.bot('debug', this.ctx.selfId, message)
     }
 
-    /** 有配置黑名单 并且当前频道在黑名单中 */
-    if (disable.guild.length > 0 && disable.guild.includes(this.ctx.guildId)) {
+    /** 过滤子频道 */
+    if (this.filterChannel(this.ctx.channelId, enable.channel, disable.channel)) {
+      return logger.bot('debug', this.ctx.selfId, message)
+    }
+
+    /** 过滤用户 */
+    if (this.filterUser(this.ctx.userId, enable.friend, disable.friend)) {
       return logger.bot('debug', this.ctx.selfId, message)
     }
 
@@ -177,23 +173,23 @@ export class GuildMessageDispatch extends MessageDispatch {
   }
 
   private async dispatch () {
-    this.hooksLog.debug(`开始触发消息钩子: ${this.ctx.eventId}`)
+    this.logger.debug(`[hooks] 开始触发消息钩子: ${this.ctx.eventId}`)
 
     // 触发全局消息钩子
     const continueAll = await MessageHooks.trigger(this.ctx)
     if (!continueAll) {
-      this.hooksLog.debug(`消息钩子中断处理: ${this.ctx.eventId}`)
+      this.logger.debug(`[hooks] 消息钩子中断处理: ${this.ctx.eventId}`)
       return
     }
 
     // 触发频道消息钩子
     const continueGuild = await MessageHooks.triggerGuild(this.ctx)
     if (!continueGuild) {
-      this.hooksLog.debug(`频道消息钩子中断处理: ${this.ctx.eventId}`)
+      this.logger.debug(`[hooks] 频道消息钩子中断处理: ${this.ctx.eventId}`)
       return
     }
 
-    this.hooksLog.debug(`消息钩子触发完成: ${this.ctx.eventId}`)
+    this.logger.debug(`[hooks] 消息钩子触发完成: ${this.ctx.eventId}`)
 
     let next = false
     const nextFnc = () => {
@@ -222,9 +218,9 @@ export class GuildMessageDispatch extends MessageDispatch {
     this.logger.debug(`频道消息未命中任何插件: ${this.ctx.eventId}`)
 
     // 触发空插件钩子
-    this.hooksLog.debug(`开始触发空插件钩子: ${this.ctx.eventId}`)
+    this.logger.debug(`[hooks] 开始触发空插件钩子: ${this.ctx.eventId}`)
     await EmptyHooks.triggerMessage(this.ctx)
-    this.hooksLog.debug(`空插件钩子触发完成: ${this.ctx.eventId}`)
+    this.logger.debug(`[hooks] 空插件钩子触发完成: ${this.ctx.eventId}`)
   }
 
   /**
@@ -245,13 +241,13 @@ export class GuildMessageDispatch extends MessageDispatch {
     }
 
     // 触发事件调用钩子
-    this.hooksLog.debug(`开始触发事件调用钩子: ${this.ctx.eventId} 插件: ${plugin.name}`)
+    this.logger.debug(`[hooks] 开始触发事件调用钩子: ${this.ctx.eventId} 插件: ${plugin.name}`)
     const continueCall = await EventCallHooks.triggerGuild(this.ctx, plugin)
     if (!continueCall) {
-      this.hooksLog.debug(`事件调用钩子中断插件执行: ${this.ctx.eventId} 插件: ${plugin.name}`)
+      this.logger.debug(`[hooks] 事件调用钩子中断插件执行: ${this.ctx.eventId} 插件: ${plugin.name}`)
       return nextFnc()
     }
-    this.hooksLog.debug(`事件调用钩子触发完成: ${this.ctx.eventId} 插件: ${plugin.name}`)
+    this.logger.debug(`[hooks] 事件调用钩子触发完成: ${this.ctx.eventId} 插件: ${plugin.name}`)
 
     return this.runCallback(this.ctx, plugin, nextFnc)
   }

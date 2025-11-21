@@ -22,15 +22,15 @@
     "@karinjs/logger": "workspace:*",
     "@karinjs/store": "workspace:*",
     "@karinjs/utils": "workspace:*",
-    "@karinjs/config": "workspace:*"
+    "@karinjs/config": "workspace:*",
+    "@karinjs/server": "workspace:*"
   },
   "peerDependencies": {
     "@karinjs/adapter": "workspace:*",
     "@karinjs/events": "workspace:*",
-    "@karinjs/envs": "workspace:*",
-    "@karinjs/logger": "workspace:*",
     "@karinjs/store": "workspace:*",
     "@karinjs/utils": "workspace:*",
-    "@karinjs/config": "workspace:*"
+    "@karinjs/config": "workspace:*",
+    "@karinjs/server": "workspace:*"
   }
 }

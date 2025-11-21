@@ -1,18 +1,25 @@
 import { logger } from '@karinjs/logger'
 import { HookManager } from '../core/manager'
 
-import type { CreateAccept, CreateClassPlugin, CreateCommand } from '@karinjs/plugin'
 import type { HookOptions, EventCallCallback } from '../types/message'
-import type { Message, Notice, Request as Requests, FriendMessage, GroupMessage, GuildMessage, GroupTempMessage, DirectMessage } from '@karinjs/adapter'
+import type { CreateAccept, CreateClassPlugin, CreateCommand } from '@karinjs/plugin'
+import type { Message, Notice, Request as Requests, FriendMessage, GroupMessage, GuildMessage, GroupTempMessage, DirectMessage } from '../../event'
 
-// 创建钩子管理器实例
+/** 消息事件调用钩子管理器 */
 const eventCallMessageManager = new HookManager<EventCallCallback<Message, CreateCommand>>('eventCall.message')
+/** 群聊事件调用钩子管理器 */
 const eventCallGroupManager = new HookManager<EventCallCallback<GroupMessage, CreateCommand>>('eventCall.group')
+/** 频道事件调用钩子管理器 */
 const eventCallGuildManager = new HookManager<EventCallCallback<GuildMessage, CreateCommand>>('eventCall.guild')
+/** 群临时事件调用钩子管理器 */
 const eventCallGroupTempManager = new HookManager<EventCallCallback<GroupTempMessage, CreateCommand>>('eventCall.groupTemp')
+/** 好友事件调用钩子管理器 */
 const eventCallFriendManager = new HookManager<EventCallCallback<FriendMessage, CreateCommand>>('eventCall.friend')
+/** 私聊事件调用钩子管理器 */
 const eventCallDirectManager = new HookManager<EventCallCallback<DirectMessage, CreateCommand>>('eventCall.direct')
+/** 通知事件调用钩子管理器 */
 const eventCallNoticeManager = new HookManager<EventCallCallback<Notice, CreateAccept>>('eventCall.notice')
+/** 请求事件调用钩子管理器 */
 const eventCallRequestManager = new HookManager<EventCallCallback<Requests, CreateAccept>>('eventCall.request')
 
 /**

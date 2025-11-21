@@ -1,5 +1,6 @@
 import type { CreateAccept, CreateCommand } from '@karinjs/plugin'
-import type { Contact, Message, Notice, Request as Requests, Elements, ForwardOptions, NodeElement, FriendMessage, GroupMessage, GuildMessage, DirectMessage, GroupTempMessage } from '@karinjs/adapter'
+import type { Elements, ForwardOptions, NodeElement } from '../../segment'
+import type { Contact, Message, Notice, Request as Requests, FriendMessage, GroupMessage, GuildMessage, DirectMessage, GroupTempMessage } from '../../event'
 
 export type UnionMessage = Message | FriendMessage | GroupMessage | GuildMessage | DirectMessage | GroupTempMessage
 

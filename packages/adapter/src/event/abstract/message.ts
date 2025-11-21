@@ -522,10 +522,3 @@ export class GroupTempMessage extends MessageBase {
     return true
   }
 }
-
-export type MessageContext =
-  | DirectMessage
-  | FriendMessage
-  | GroupMessage
-  | GuildMessage
-  | GroupTempMessage

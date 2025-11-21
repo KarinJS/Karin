@@ -123,7 +123,7 @@ export interface AccountInfo {
       /** 收到消息事件数量 */
       message: number
       /** 收到通知事件数量 */
-      notification: number
+      notice: number
       /** 收到请求事件数量 */
       request: number
       /** 收到其他事件数量 */
@@ -133,6 +133,8 @@ export interface AccountInfo {
     sent: {
       /** 发送消息数量 */
       message: number
+      /** 发送转发消息数量 */
+      forward: number
     }
   }
 }

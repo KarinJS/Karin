@@ -3,13 +3,15 @@
  * @description 提供各类插件实例的卸载方法
  */
 import type { PluginCacheStorage } from './default'
+import type { InstanceManager } from './instances'
 
 /**
  * 创建插件卸载器
  * @param cache - 插件缓存存储对象
+ * @param instances - 插件实例管理器
  * @returns 插件卸载器对象，包含按文件卸载和按包卸载两个方法
  */
-export const createUnregister = (cache: PluginCacheStorage) => {
+export const createUnregister = (cache: PluginCacheStorage, instances: InstanceManager) => {
   return {
     /**
      * 根据文件路径卸载插件
@@ -60,7 +62,10 @@ export const createUnregister = (cache: PluginCacheStorage) => {
       )
 
       /** 步骤9: 从排序后的 normal 命令缓存中移除该文件的所有命令实例 */
-      cache.instances.command.normal = cache.instances.command.normal.filter(
+      cache.instances.command.raw.class = cache.instances.command.raw.class.filter(
+        item => item.file.absPath !== filePath
+      )
+      cache.instances.command.raw.command = cache.instances.command.raw.command.filter(
         item => item.file.absPath !== filePath
       )
 
@@ -112,6 +117,12 @@ export const createUnregister = (cache: PluginCacheStorage) => {
       if (fileIndex !== undefined && fileIndex !== -1) {
         cache.package.index.packageToFiles[packageName].splice(fileIndex, 1)
       }
+
+      /** 步骤16: 标记缓存为脏状态，确保下次访问时重新排序 */
+      instances.markAsUnsorted('accept')
+      instances.markAsUnsorted('button')
+      instances.markAsUnsorted('command')
+      instances.markAsUnsorted('handler')
     },
 
     /**
@@ -164,7 +175,10 @@ export const createUnregister = (cache: PluginCacheStorage) => {
         )
 
         /** 步骤3.6: 从排序后的 normal 命令缓存中移除该文件的所有命令实例 */
-        cache.instances.command.normal = cache.instances.command.normal.filter(
+        cache.instances.command.raw.class = cache.instances.command.raw.class.filter(
+          item => item.file.absPath !== filePath
+        )
+        cache.instances.command.raw.command = cache.instances.command.raw.command.filter(
           item => item.file.absPath !== filePath
         )
 
@@ -217,6 +231,12 @@ export const createUnregister = (cache: PluginCacheStorage) => {
 
       /** 步骤6: 更新包总数统计，减少插件包总数计数 */
       cache.stats.pkg--
+
+      /** 步骤7: 标记缓存为脏状态，确保下次访问时重新排序 */
+      instances.markAsUnsorted('accept')
+      instances.markAsUnsorted('button')
+      instances.markAsUnsorted('command')
+      instances.markAsUnsorted('handler')
     },
   }
 }

@@ -10,23 +10,13 @@ import { EventEmitter } from './emitter'
 import type { WebSocket } from 'ws'
 import type { IncomingMessage } from 'node:http'
 
-/**
- * 回调处理器 代表链接已被函数接收
- * 5秒内如果这个回调没有触发 说明此ws链接无效
- */
-export type CallbackHandler = () => void
-
 export interface SystemEventMap {
   /** 错误事件 */
   error: unknown[]
   /** ws:close 事件 */
   ['ws:close']: [WebSocket, IncomingMessage, number, Buffer]
   /** ws:connection 事件 */
-  ['ws:connection']: [WebSocket, IncomingMessage, CallbackHandler]
-  /** 请求关闭stdin的监听 */
-  'process:stdin:close': [void]
-  /** process:stdin:close发出后的回调 用于恢复stdin的监听 */
-  'process:stdin:resume': [void]
+  ['ws:connection']: [WebSocket, IncomingMessage]
 }
 
 /**

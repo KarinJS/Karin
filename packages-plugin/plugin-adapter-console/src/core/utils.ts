@@ -3,7 +3,7 @@ import path from 'node:path'
 import crypto from 'node:crypto'
 import { buffer } from '@karinjs/utils'
 import type { } from '@karinjs/logger'
-import type { ConsoleConfig } from './core'
+import type { ConsoleConfig } from './config'
 import type { Elements } from '@karinjs/adapter'
 
 /**
@@ -12,13 +12,19 @@ import type { Elements } from '@karinjs/adapter'
 export const getFileName = (() => {
   let index = 0
   return (salt: string, ext: string) => {
-    const name = `${salt}.${index++}${ext}`
+    const name = `${salt}-${index++}${ext}`
     return name
   }
 })()
 
 /**
  * 构建临时文件访问链接
+ * @param config 控制台配置
+ * @param tempPath 临时文件夹路径
+ * @param data 文件内容
+ * @param salt 盐值
+ * @param ext 文件扩展名
+ * @returns 临时文件访问链接
  */
 export const createTempFileUrl = async (
   config: ConsoleConfig,

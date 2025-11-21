@@ -29,11 +29,14 @@ class PluginCache {
   /** 插件缓存存储对象 */
   #cache = defaultCache()
 
+  /** 插件实例管理器 */
+  #instances = new InstanceManager(this.#cache)
+
   /** 插件注册器 */
   #register = createRegister(this.#cache)
 
   /** 插件卸载器 */
-  #unregister = createUnregister(this.#cache)
+  #unregister = createUnregister(this.#cache, this.#instances)
 
   /** 插件列表管理器 */
   #list = createList(this.#cache)
@@ -52,9 +55,6 @@ class PluginCache {
 
   /** 插件统计管理器 */
   #stats = createStats(this.#cache)
-
-  /** 插件实例管理器 */
-  #instances = new InstanceManager(this.#cache)
 
   /** 插件缺失依赖管理器 */
   #missingDeps = createMissingDeps(this.#cache)

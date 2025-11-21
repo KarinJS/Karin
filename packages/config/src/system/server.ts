@@ -68,7 +68,7 @@ export interface ConfigServerWs {
    * ]
    * ```
    */
-  disabled_auth_routes: string[],
+  exclude_routes: string[],
 }
 
 export interface ConfigServerFfmpeg {
@@ -118,7 +118,7 @@ export const configDefaultServer: ConfigServer = {
   ws_server: {
     enable: true,
     routes: {},
-    disabled_auth_routes: [],
+    exclude_routes: [],
   },
   ffmpeg: {
     ffmpeg_path: '',
@@ -160,7 +160,7 @@ export const configServerCompat = (config: Partial<ConfigServer>): ConfigServer 
     ws_server: {
       enable: checkType('boolean', config.ws_server?.enable, configDefaultServer.ws_server.enable),
       routes: customRoutes,
-      disabled_auth_routes: filterStringArray(config.ws_server?.disabled_auth_routes),
+      exclude_routes: filterStringArray(config.ws_server?.exclude_routes),
     },
     ffmpeg: {
       ffmpeg_path: getFfmpegPath(config.ffmpeg?.ffmpeg_path, 'ffmpeg'),
@@ -174,6 +174,7 @@ export const configServerCompat = (config: Partial<ConfigServer>): ConfigServer 
     const abs = path.join(store.core.config, 'system', 'server.json')
 
     /** 重新保存 */
+    fs.mkdirSync(path.dirname(abs), { recursive: true })
     fs.writeFileSync(abs, JSON.stringify(data, null, 2))
 
     const rel = path.relative(process.cwd(), abs)

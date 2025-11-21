@@ -3,5 +3,6 @@
 // export * from './router/router'
 // export * from './utils/response'
 // export * from './utils/getMimeType'
+export { wsServerContext } from './ws'
 export { authMiddleware } from './middleware/auth'
 export { app, server, initExpress } from './app/app'
