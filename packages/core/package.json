@@ -166,7 +166,7 @@
     "chokidar": "4.0.3",
     "express": "npm:@karinjs/express@1.0.3",
     "lodash": "npm:@karinjs/lodash@1.1.1",
-    "log4js": "npm:@karinjs/log4js@1.5.3",
+    "log4js": "npm:@karinjs/log4js@1.5.4",
     "moment": "npm:@karinjs/moment@1.1.5",
     "node-schedule": "npm:@karinjs/node-schedule@1.0.0",
     "redis": "npm:@karinjs/redis@1.1.3",
