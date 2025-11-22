@@ -1,5 +1,18 @@
 # 更新日志
 
+## [1.13.0](https://github.com/KarinJS/Karin/compare/core-v1.12.2...core-v1.13.0) (2025-11-22)
+
+
+### ✨ Features
+
+* 使用@karinjs/log4js 增强开发体验 ([#577](https://github.com/KarinJS/Karin/issues/577)) ([4e4f998](https://github.com/KarinJS/Karin/commit/4e4f9980cb70e7267a41d63630e9841c74bab161))
+
+
+### 🐛 Bug Fixes
+
+* Prevent loading plugins with incompatible engine versions and add ignoreEngines option ([#571](https://github.com/KarinJS/Karin/issues/571)) ([33e3279](https://github.com/KarinJS/Karin/commit/33e3279a30908a4aad10cc9d1cba5cd16d17c382))
+* 增强ffmpeg鲁棒性 ([#574](https://github.com/KarinJS/Karin/issues/574)) ([972c901](https://github.com/KarinJS/Karin/commit/972c9013b13fac197a2e1eb19a7341a3a48b380c))
+
 ## [1.12.2](https://github.com/KarinJS/Karin/compare/core-v1.12.1...core-v1.12.2) (2025-10-20)
 
 
