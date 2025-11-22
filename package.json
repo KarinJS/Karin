@@ -14,7 +14,7 @@
     "build:core": "pnpm --filter node-karin run build",
     "build:prod": "pnpm --filter node-karin run build",
     "build:web": "pnpm --filter karin-webui run build",
-    "dev": "pnpm --filter node-karin run dev",
+    "dev": "tsx --conditions=development packages/core/src/start/main.ts",
     "dev:cli": "pnpm --filter node-karin run dev:cli",
     "dev:web": "pnpm --filter karin-webui run dev",
     "lint:fix": "eslint --fix \"packages/**/*.ts\"",

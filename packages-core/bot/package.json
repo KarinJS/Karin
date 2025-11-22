@@ -28,10 +28,6 @@
   },
   "peerDependencies": {
     "@karinjs/adapter": "workspace:*",
-    "@karinjs/db": "workspace:*",
-    "@karinjs/envs": "workspace:*",
-    "@karinjs/events": "workspace:*",
-    "@karinjs/logger": "workspace:*",
-    "ws": "catalog:"
+    "@karinjs/logger": "workspace:*"
   }
 }
