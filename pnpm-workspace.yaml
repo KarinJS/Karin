@@ -1,3 +1,6 @@
+# 该选项简化了跨平台运行脚本 NODE_ENV=test node test.js
+shellEmulator: true
+
 packages:
   - packages/*
   - packages-core/*

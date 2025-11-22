@@ -25,7 +25,9 @@
     "checkType": "tsc",
     "prepublishOnly": "pnpm run checkType",
     "pub": "npm publish --access public",
-    "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
+    "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\"",
+    "test": "vitest --run --coverage && node -e \"console.log('覆盖率报告已生成：packages/store/coverage')\"",
+    "test:watch": "vitest --coverage --reporter verbose"
   },
   "devDependencies": {
     "@karinjs/envs": "workspace:*"

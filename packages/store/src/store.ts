@@ -36,6 +36,8 @@ const baseDir = (() => {
   return formatPath(path.isAbsolute(dir) ? dir : path.resolve(process.cwd(), dir))
 })()
 
+const platform = process.env.STORE_PLATFORM || process.platform
+
 const coreDir = joinPath(baseDir, process.env.CORE_DIR_NAME, 'core')
 const tempDir = joinPath(baseDir, process.env.TEMP_DIR_NAME, 'temp')
 const dbDir = `${coreDir}/data/db`
@@ -136,8 +138,9 @@ export const store = {
      * @example `/root/karin/node_modules/karin` 或 `/root/karin/packages/core`
      */
     root: (() => {
+      const forcePackaged = process.env.STORE_PKG_PACKAGED === '1'
       const file = import.meta.url.replace('file:///', '')
-      if (file.includes('node_modules')) {
+      if (forcePackaged || file.includes('node_modules')) {
         return formatPath(path.join(process.cwd(), 'node_modules', 'karin'))
       }
       return formatPath(path.join(file.split('packages')[0], 'packages', 'core'))
@@ -278,7 +281,7 @@ export const store = {
      * ```
      */
     getPath: (name = 'karin') => {
-      if (process.platform === 'win32') {
+      if (platform === 'win32') {
         return `\\\\.\\pipe\\${name}`
       }
       const pipeDir = `${coreDir}/data/pipes`
@@ -304,17 +307,15 @@ export const store = {
      * ```
      */
     clean: (name = 'karin') => {
-      if (process.platform === 'win32') return true
+      if (platform === 'win32') return true
 
       const pipePath = store.pipe.getPath(name)
       if (!fs.existsSync(pipePath)) return false
 
       try {
         fs.unlinkSync(pipePath)
-        return true
-      } catch {
-        return false
-      }
+      } catch {}
+      return !fs.existsSync(pipePath)
     },
     /**
      * 检查管道文件是否存在（仅 Unix 系统）
@@ -322,7 +323,7 @@ export const store = {
      * @returns 是否存在
      */
     exists: (name = 'karin') => {
-      if (process.platform === 'win32') return false
+      if (platform === 'win32') return false
       const pipePath = store.pipe.getPath(name)
       return fs.existsSync(pipePath)
     },
@@ -336,7 +337,7 @@ export const store = {
      * ```
      */
     list: () => {
-      if (process.platform === 'win32') return []
+      if (platform === 'win32') return []
 
       const pipeDir = store.pipe.getDir()
       if (!pipeDir || !fs.existsSync(pipeDir)) return []

@@ -255,6 +255,7 @@ describe('系统配置与监听', () => {
   })
   it('init 写入异常触发抛出', async () => {
     try { fs.rmSync(tmpRoot, { recursive: true, force: true }) } catch { }
+    try { fs.rmSync(tmpConfig, { recursive: true, force: true }) } catch { }
     fs.mkdirSync(tmpConfig, { recursive: true })
     const spy = vi.spyOn(fs, 'writeFileSync')
     const err: any = new Error('no permission')

@@ -1,4 +1,7 @@
-/** npm 排除列表 */
+/**
+ * npm 排除列表
+ * @description 这些包肯定不是 Karin 插件
+ */
 export const NPM_EXCLUDE_LIST = [
   '@karinjs/node-pty',
   '@karinjs/plugin-webui-network-monitor',
@@ -23,4 +26,21 @@ export const NPM_EXCLUDE_LIST = [
   'ws',
   'yaml',
   'sqlite3',
+  '@vitest/coverage-v8',
+  '@types/node',
+  '@types/semver',
+  'eslint',
+  'eslint-plugin-prettier',
+  'glob',
+  'neostandard',
+  'prettier',
+  'sort-json',
+  'sort-package-json',
+  'tsdown',
+  'tsdown-config',
+  'tsup',
+  'tsx',
+  'typescript',
+  'vite',
+  'vitest',
 ]

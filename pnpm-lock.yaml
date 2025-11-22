@@ -61,6 +61,10 @@ catalogs:
 importers:
 
   .:
+    dependencies:
+      empty-npm-package:
+        specifier: ^1.0.0
+        version: 1.0.0
     devDependencies:
       '@karinjs/core':
         specifier: workspace:*
@@ -122,6 +126,30 @@ importers:
       vitest:
         specifier: ^4.0.12
         version: 4.0.12(@karinjs/tsx@5.1.0)(@types/node@20.19.9)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.86.0)(terser@5.43.1)(yaml@2.7.0)
+
+  packages-core/adapter:
+    devDependencies:
+      '@karinjs/bot':
+        specifier: workspace:*
+        version: link:../../packages/bot
+      '@karinjs/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@karinjs/envs':
+        specifier: workspace:*
+        version: link:../../packages/envs
+      '@karinjs/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@karinjs/logger':
+        specifier: workspace:*
+        version: link:../../packages/logger
+      '@karinjs/plugin':
+        specifier: workspace:*
+        version: link:../../packages/plugin
+      '@karinjs/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
 
   packages-core/server:
     devDependencies:
@@ -320,7 +348,10 @@ importers:
     devDependencies:
       '@karinjs/adapter':
         specifier: workspace:*
-        version: link:../../packages/adapter
+        version: link:../../packages-core/adapter
+      '@karinjs/bot':
+        specifier: workspace:*
+        version: link:../../packages/bot
       '@karinjs/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -347,7 +378,7 @@ importers:
     devDependencies:
       '@karinjs/adapter':
         specifier: workspace:*
-        version: link:../../packages/adapter
+        version: link:../../packages-core/adapter
       '@karinjs/bot':
         specifier: workspace:*
         version: link:../../packages/bot
@@ -376,35 +407,11 @@ importers:
         specifier: 'catalog:'
         version: '@karinjs/ws@1.2.0'
 
-  packages/adapter:
-    devDependencies:
-      '@karinjs/bot':
-        specifier: workspace:*
-        version: link:../bot
-      '@karinjs/config':
-        specifier: workspace:*
-        version: link:../config
-      '@karinjs/envs':
-        specifier: workspace:*
-        version: link:../envs
-      '@karinjs/events':
-        specifier: workspace:*
-        version: link:../events
-      '@karinjs/logger':
-        specifier: workspace:*
-        version: link:../logger
-      '@karinjs/plugin':
-        specifier: workspace:*
-        version: link:../plugin
-      '@karinjs/utils':
-        specifier: workspace:*
-        version: link:../utils
-
   packages/bot:
     devDependencies:
       '@karinjs/adapter':
         specifier: workspace:*
-        version: link:../adapter
+        version: link:../../packages-core/adapter
       '@karinjs/db':
         specifier: workspace:*
         version: link:../db
@@ -473,7 +480,7 @@ importers:
     devDependencies:
       '@karinjs/adapter':
         specifier: workspace:*
-        version: link:../adapter
+        version: link:../../packages-core/adapter
       '@karinjs/bot':
         specifier: workspace:*
         version: link:../bot
@@ -628,7 +635,7 @@ importers:
     devDependencies:
       '@karinjs/adapter':
         specifier: workspace:*
-        version: link:../adapter
+        version: link:../../packages-core/adapter
       '@karinjs/core':
         specifier: workspace:*
         version: link:../core
@@ -667,7 +674,7 @@ importers:
     devDependencies:
       '@karinjs/adapter':
         specifier: workspace:*
-        version: link:../adapter
+        version: link:../../packages-core/adapter
       '@karinjs/components':
         specifier: workspace:*
         version: link:../components
@@ -826,6 +833,9 @@ importers:
       '@karinjs/envs':
         specifier: workspace:*
         version: link:../envs
+      '@karinjs/logger':
+        specifier: workspace:*
+        version: link:../logger
       '@karinjs/store':
         specifier: workspace:*
         version: link:../store
@@ -4096,6 +4106,9 @@ packages:
   empathic@2.0.0:
     resolution: {integrity: sha512-i6UzDscO/XfAcNYD75CfICkmfLedpyPDdozrLMmQc5ORaQcdMoc21OnlEylMIqI7U8eniKrPMxxtj8k0vhmJhA==}
     engines: {node: '>=14'}
+
+  empty-npm-package@1.0.0:
+    resolution: {integrity: sha512-q4Mq/+XO7UNDdMiPpR/LIBIW1Zl4V0Z6UT9aKGqIAnBCtCb3lvZJM1KbDbdzdC8fKflwflModfjR29Nt0EpcwA==}
 
   enhanced-resolve@5.18.2:
     resolution: {integrity: sha512-6Jw4sE1maoRJo3q8MsSIn2onJFbLTOjY9hlx4DZXmOKvLRd1Ok2kXmAGXaafL2+ijsJZ1ClYbl/pmqr9+k4iUQ==}
@@ -8851,6 +8864,8 @@ snapshots:
   emoji-regex@9.2.2: {}
 
   empathic@2.0.0: {}
+
+  empty-npm-package@1.0.0: {}
 
   enhanced-resolve@5.18.2:
     dependencies:

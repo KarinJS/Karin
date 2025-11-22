@@ -263,9 +263,7 @@ export class BotManager extends EventEmitter<EventDispatchMaps> {
     const retryCount = options.retryCount ?? options.retry_count ?? 1
 
     this.#logOutgoingMessage(selfId, contact, normalizedElements)
-
     const result = await this.#executeSendMsg(bot, selfId, contact, normalizedElements, retryCount)
-
     this.#scheduleRecall(bot, contact, result, options.recallMsg)
 
     return result
@@ -273,7 +271,7 @@ export class BotManager extends EventEmitter<EventDispatchMaps> {
 
   #logOutgoingMessage (selfId: string, contact: Contact, elements: Array<Elements>): void {
     const { raw } = createRawMessage(elements)
-    const scene = contact.scene === 'group' ? 'Group' : 'private'
+    const scene = contact.scene.charAt(0).toUpperCase() + contact.scene.slice(1)
     logger.bot('info', selfId, `${logger.green(`Send Proactive ${scene}`)} ${contact.peer}: ${raw}`)
   }
 
@@ -296,7 +294,6 @@ export class BotManager extends EventEmitter<EventDispatchMaps> {
       result = await bot.sendMsg(contact, elements, retryCount)
       result.message_id = result.messageId
 
-      this.#emitSendMsgEvent(contact)
       logger.bot('debug', selfId, `主动消息结果:${JSON.stringify(result, null, 2)}`)
     } catch (error) {
       const { raw } = createRawMessage(elements)
@@ -305,18 +302,6 @@ export class BotManager extends EventEmitter<EventDispatchMaps> {
     }
 
     return result
-  }
-
-  async #emitSendMsgEvent (contact: Contact): Promise<void> {
-    try {
-      const [{ SEND_MSG }, { emitter }] = await Promise.all([
-        import('@karinjs/envs'),
-        import('@karinjs/events'),
-      ])
-      emitter.emit(SEND_MSG, contact)
-    } catch {
-      // 忽略事件发送失败
-    }
   }
 
   #scheduleRecall (bot: AdapterType, contact: Contact, result: SendMsgResults, recallMsg?: number): void {

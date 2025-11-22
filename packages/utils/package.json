@@ -29,6 +29,7 @@
   "devDependencies": {
     "@karinjs/store": "workspace:*",
     "@karinjs/envs": "workspace:*",
+    "@karinjs/logger": "workspace:*",
     "@types/ini": "^4.1.1",
     "axios": "catalog:",
     "chokidar": "catalog:",

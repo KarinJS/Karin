@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { exec } from '../system'
 
+import type { } from '@karinjs/logger'
+
 /** npm registry、proxy、https-proxy配置 */
 export interface NpmBaseConfigResponse {
   registry: string
@@ -105,7 +107,8 @@ export const getNpmLatestVersion = async (name: string) => {
     const result = await getNpmRegistry(name)
     return result['dist-tags'].latest
   } catch (error) {
-    logger.debug(new Error(`获取${name}最新版本失败`, { cause: error }))
+    const log = (global?.logger || console)
+    log.debug(new Error(`获取${name}最新版本失败`, { cause: error }))
     return null
   }
 }

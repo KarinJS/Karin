@@ -1,5 +1,7 @@
 import util from 'node:util'
 import { exec as execCmd } from 'child_process'
+
+import type { } from '@karinjs/logger'
 import type { exec as execChild, ExecException } from 'child_process'
 
 /**
@@ -196,7 +198,7 @@ export const exec = <T extends boolean = false> (
   cmd: string,
   options?: ExecOptions<T>
 ): Promise<ExecReturn<T>> => {
-  const log = (global?.logger || console) as Logger
+  const log = (global?.logger || console)
   const opts = normalize(options, log)
   const { verbose, simple, trim, cwd = process.cwd(), validator } = opts || {}
 

@@ -14,14 +14,14 @@ export type OneBotHttpClientOptions = {
   httpHost: string
   /** OneBot http鉴权秘钥 */
   accessToken?: string
+  /** 是否启用心跳 */
+  heartbeat?: boolean
   /** 心跳间隔 默认5000ms */
-  heartbeat?: number
+  heartbeatInterval?: number
   /** 头部 */
   headers?: Record<string, string>
   /** 超时时间 */
   timeout?: number
-  /** 验证上报事件是否合法的token */
-  postEventVerifyToken?: string
   /** 重连次数 */
   reconnectAttempts: number
 }
@@ -74,7 +74,7 @@ export class OneBotHttpClient extends OneBotCore {
 
   async init () {
     /** 发送心跳 */
-    const success = await this.heartbeat()
+    const success = await this.heartbeatInterval()
     if (!success) {
       throw new Error('OneBot HTTP 服务初始化失败，无法连接到服务器')
     }
@@ -82,14 +82,17 @@ export class OneBotHttpClient extends OneBotCore {
     /** 初始化Bot基本信息 */
     await this.initBotInfo()
     this.#setServiceStatus(OneBotHttpServiceStatus.AVAILABLE)
-    /** 设置心跳 */
-    this.#heartbeatInterval = setInterval(() => this.heartbeat(), this._options.heartbeat)
+
+    if (this._options.heartbeat) {
+      /** 设置心跳 */
+      this.#heartbeatInterval = setInterval(() => this.heartbeatInterval(), this._options.heartbeatInterval)
+    }
   }
 
   /**
    * 心跳
    */
-  async heartbeat (): Promise<boolean> {
+  async heartbeatInterval (): Promise<boolean> {
     try {
       await this.getVersionInfo()
       this.#setServiceStatus(OneBotHttpServiceStatus.AVAILABLE)
@@ -121,8 +124,10 @@ export class OneBotHttpClient extends OneBotCore {
    * @description 事件仅接受 body.toString()，请不要使用 JSON.parse(body)
    * @param event - 事件 原始请求体
    * @param headers - 请求头
+   * @param token - 事件验证令牌
+   * @returns HTTP响应内容
    */
-  dispatch (event: string, headers: IncomingHttpHeaders): { status: number, data: string } {
+  dispatch (event: string, headers: IncomingHttpHeaders, token?: string): { status: number, data: string } {
     try {
       if (this.status !== OneBotHttpServiceStatus.AVAILABLE) {
         return { status: 503, data: '服务不可用' }
@@ -133,7 +138,7 @@ export class OneBotHttpClient extends OneBotCore {
         return { status: 403, data: 'self_id 不匹配' }
       }
 
-      if (!this.verifySignature(event, headers)) {
+      if (!this.verifySignature(event, headers, token)) {
         return { status: 403, data: '签名不匹配' }
       }
 
@@ -146,20 +151,24 @@ export class OneBotHttpClient extends OneBotCore {
 
   /**
    * 对事件进行签名验证
-   * @param event - 事件
+   * @param event - event.toString()后的原始事件内容
    * @param headers - 头部
+   * @param token - 验证令牌
+   * @returns 是否验证通过
    */
-  verifySignature (event: string, headers: IncomingHttpHeaders): boolean {
-    if (!this._options.postEventVerifyToken) {
+  verifySignature (event: string, headers: IncomingHttpHeaders, token?: string): boolean {
+    if (!token || typeof token !== 'string') {
       return true
     }
 
     const signature = headers['x-signature']
     if (!signature) return false
 
+    token = `Bearer ${token.replace(/^Bearer/, '').trim()}`
+
     /** 计算签名: sha1 */
     const expected =
-      `sha1=${createHmac('sha1', this._options.postEventVerifyToken)
+      `sha1=${createHmac('sha1', token)
         .update(event)
         .digest('hex')}`
 
@@ -228,9 +237,24 @@ export class OneBotHttpClient extends OneBotCore {
     }
     this._options = OneBotHttpClient.getOptions(opt)
 
-    if (options.heartbeat && this.#heartbeatInterval) {
+    // 处理心跳相关配置变更
+    if (options.heartbeat !== undefined) {
+      if (this._options.heartbeat) {
+        // 启用心跳
+        if (!this.#heartbeatInterval) {
+          this.#heartbeatInterval = setInterval(() => this.heartbeatInterval(), this._options.heartbeatInterval)
+        }
+      } else {
+        // 禁用心跳
+        if (this.#heartbeatInterval) {
+          clearInterval(this.#heartbeatInterval)
+          this.#heartbeatInterval = undefined
+        }
+      }
+    } else if (options.heartbeatInterval && this.#heartbeatInterval) {
+      // 仅更新心跳间隔
       clearInterval(this.#heartbeatInterval)
-      this.#heartbeatInterval = setInterval(() => this.heartbeat(), this._options.heartbeat)
+      this.#heartbeatInterval = setInterval(() => this.heartbeatInterval(), this._options.heartbeatInterval)
     }
   }
 
@@ -258,14 +282,14 @@ export class OneBotHttpClient extends OneBotCore {
       ...options,
       accessToken: typeof options.accessToken === 'string' ? options.accessToken : '',
       headers: typeof options.headers === 'object' ? options.headers : {},
-      heartbeat: typeof options.heartbeat === 'number' ? options.heartbeat : 5000,
+      heartbeat: typeof options.heartbeat === 'boolean' ? options.heartbeat : true,
+      heartbeatInterval: typeof options.heartbeatInterval === 'number' ? options.heartbeatInterval : 5000,
       timeout: typeof options.timeout === 'number' ? options.timeout : this.DEFAULT_TIMEOUT,
-      postEventVerifyToken: typeof options.postEventVerifyToken === 'string' ? options.postEventVerifyToken : '',
       reconnectAttempts: typeof options.reconnectAttempts === 'number' ? options.reconnectAttempts : 100,
     }
 
     if (options.accessToken) {
-      if (options.accessToken.includes('Bearer')) {
+      if (options.accessToken.startsWith('Bearer')) {
         mergedOptions.headers['authorization'] = options.accessToken
         return mergedOptions
       }

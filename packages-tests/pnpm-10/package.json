@@ -1,0 +1,18 @@
+{
+  "name": "pnpm-10",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "shijin",
+  "license": "MIT",
+  "devDependencies": {
+    "pnpm": "^10.23.0"
+  },
+  "dependencies": {
+    "empty-npm-package": "^1.0.0"
+  }
+}

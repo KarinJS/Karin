@@ -23,7 +23,8 @@
     "@karinjs/store": "workspace:*",
     "@karinjs/utils": "workspace:*",
     "@karinjs/config": "workspace:*",
-    "@karinjs/server": "workspace:*"
+    "@karinjs/server": "workspace:*",
+    "@karinjs/bot": "workspace:*"
   },
   "peerDependencies": {
     "@karinjs/adapter": "workspace:*",
@@ -31,6 +32,7 @@
     "@karinjs/store": "workspace:*",
     "@karinjs/utils": "workspace:*",
     "@karinjs/config": "workspace:*",
-    "@karinjs/server": "workspace:*"
+    "@karinjs/server": "workspace:*",
+    "@karinjs/bot": "workspace:*"
   }
 }

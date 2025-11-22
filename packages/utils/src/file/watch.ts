@@ -4,6 +4,7 @@ import { formatPath } from '../path'
 import { clearRequire, requireFileSync, requireFile } from '../require'
 
 import type { Stats } from 'node:fs'
+import type { } from '@karinjs/logger'
 import type { RequireOptions } from '../require'
 import type { ChokidarOptions, FSWatcher } from 'chokidar'
 
@@ -139,6 +140,8 @@ export const watchs = <T = unknown> (
     ...options?.chokidar,
   })
 
+  const log = (global?.logger || console)
+
   watcher.on('change', async (eventPath, stats) => {
     const absPath = formatPath(eventPath, { cwd: options?.chokidar?.cwd })
     const relPath = toRelativePath(absPath, options?.chokidar?.cwd)
@@ -153,11 +156,11 @@ export const watchs = <T = unknown> (
 
     const callbackOptions = createCallbackOptions(absPath, stats)
     callback(relPath, prev, next, callbackOptions)
-    logger.info(`[watch][change] ${toRelativePath(absPath, options?.chokidar?.cwd)}`)
+    log.info(`[watch][change] ${toRelativePath(absPath, options?.chokidar?.cwd)}`)
   })
 
   watcher.on('unlink', (filePath) => {
-    logger.info(`[watch][unlink] ${toRelativePath(filePath, options?.chokidar?.cwd)}`)
+    log.info(`[watch][unlink] ${toRelativePath(filePath, options?.chokidar?.cwd)}`)
     clearRequire(formatPath(filePath, { cwd: options?.chokidar?.cwd }))
   })
 

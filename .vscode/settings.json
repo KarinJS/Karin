@@ -33,5 +33,5 @@
   "typescript.tsserver.maxTsServerMemory": 8192,
   // "typescript.experimental.expandableHover": false,
   "javascript.hover.maximumLength": 10000,
-  "typescript.hover.maximumLength": 10000
+  "typescript.hover.maximumLength": 10000,
 }

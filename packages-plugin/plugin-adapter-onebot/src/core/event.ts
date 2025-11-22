@@ -60,7 +60,7 @@ export class CreateOneBotEvent {
         this.core.recordReceivedEvent('message')
         return this.message(event)
       case 'notice':
-        this.core.recordReceivedEvent('notification')
+        this.core.recordReceivedEvent('notice')
         return this.notice(event)
       case 'request':
         this.core.recordReceivedEvent('request')

@@ -46,6 +46,16 @@ export interface OneBotClientConfig {
    * ```
    */
   headers: Record<string, string | string[]>
+  /**
+   * 重连次数
+   * @default 1000
+   */
+  reconnectAttempts: number
+  /**
+   * 重连间隔时间（毫秒）
+   * @default 5000
+   */
+  reconnectInterval: number
 }
 
 /**
@@ -80,6 +90,26 @@ export interface OneBotHttpClientConfig {
    * ```
    */
   headers: Record<string, string | string[]>
+  /**
+   * 重连次数
+   * @default 1000
+   */
+  reconnectAttempts: number
+  /**
+   * 重连间隔时间（毫秒）
+   * @default 5000
+   */
+  reconnectInterval: number
+  /**
+   * 是否开启心跳检测
+   * @default true
+   */
+  heartbeat: boolean
+  /**
+   * 心跳间隔时间（毫秒）
+   * @default 5000
+   */
+  heartbeatInterval: number
 }
 
 /**
@@ -122,6 +152,25 @@ export interface OneBotAdapterConfig {
      * ```
      */
     token: string
+    /**
+     * 单独设置每个QQ号的鉴权秘钥
+     * @description 如果设置此项，客户端连接时需要提供对应QQ号的Authorization头部信息才能通过鉴权，优先级高于通用鉴权秘钥
+     * @default {}
+     * @example
+     * ```ts
+     * {
+     *   '123456789': 'qq1_secret_key',
+     *   '987654321': 'qq2_secret_key'
+     * }
+     *
+     * // 当收到以下头部的连接请求时 将会走对应QQ号的鉴权秘钥进行校验
+     * {
+     *   "Sec-WebSocket-Protocol": "onebot",
+     *   "X-Self-ID": "123456789"
+     * }
+     * ```
+     */
+    tokens: Record<string, string>
   }
   /** OneBot WebSocket Client 连接配置 */
   client: {
@@ -214,6 +263,7 @@ const defaultConfig: OneBotAdapterConfig = {
     route: '/',
     timeout: 60000,
     token: '',
+    tokens: {},
   },
   client: {
     enable: false,
@@ -248,6 +298,7 @@ const writeConfig = (data: Partial<OneBotAdapterConfig>) => {
       route: config.types.string(data.server?.route, defaultConfig.server.route),
       timeout: config.types.number(data.server?.timeout, defaultConfig.server.timeout),
       token: config.types.string(data.server?.token, defaultConfig.server.token),
+      tokens: data.server?.tokens || {},
     },
     client: {
       enable: config.types.bool(data.client?.enable, defaultConfig.client.enable),
@@ -259,6 +310,8 @@ const writeConfig = (data: Partial<OneBotAdapterConfig>) => {
           timeout: config.types.number(item.timeout, defaultConfig.client.timeout),
           token: config.types.string(item.token, ''),
           headers: item.headers || {},
+          reconnectAttempts: config.types.number(item.reconnectAttempts, 1000),
+          reconnectInterval: config.types.number(item.reconnectInterval, 5000),
         }))
         : [],
     },
@@ -279,6 +332,10 @@ const writeConfig = (data: Partial<OneBotAdapterConfig>) => {
             timeout: config.types.number(item.timeout, defaultConfig.http.client.timeout),
             token: config.types.string(item.token, ''),
             headers: item.headers || {},
+            reconnectAttempts: config.types.number(item.reconnectAttempts, 1000),
+            reconnectInterval: config.types.number(item.reconnectInterval, 5000),
+            heartbeat: config.types.bool(item.heartbeat, true),
+            heartbeatInterval: config.types.number(item.heartbeatInterval, 5000),
           }))
           : [],
       },

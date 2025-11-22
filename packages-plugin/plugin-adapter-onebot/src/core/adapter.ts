@@ -108,7 +108,7 @@ export class AdapterOneBot<T extends OneBotType = OneBotType> extends AdapterBas
    * 记录接收的事件
    * @param type - 事件类型
    */
-  recordReceivedEvent (type: 'message' | 'notification' | 'request' | 'other') {
+  recordReceivedEvent (type: 'message' | 'notice' | 'request' | 'other') {
     this.account.events.received.total++
     this.account.events.received[type]++
   }

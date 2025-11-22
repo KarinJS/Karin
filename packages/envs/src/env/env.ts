@@ -41,7 +41,7 @@ export interface CoreEnv {
    * HTTP WebUI登录秘钥
    * @description 前端登录秘钥有2种配置方式:
    * - 明文字符串: 直接设置环境变量 HTTP_WEBUI_KEY
-   * - 哈希: 通过sha256计算: `${password}.karin` -> sha256 -> hex -> urlsafeBase64 最终结果加上前缀 `hash:${结果}`
+   * - 哈希: 通过sha256计算: `${password}.karin` -> sha256 -> hex -> urlsafeBase64 最终结果
    */
   HTTP_WEBUI_KEY: string
   /**

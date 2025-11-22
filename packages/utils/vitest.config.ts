@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     globals: true,
-    include: ['src/**/*.test.ts', 'src/**/*.spec.ts'],
+    include: ['src/**/*.test.ts'],
     setupFiles: ['src/__tests__/setup.ts'],
     maxConcurrency: 1,
     coverage: {
@@ -12,7 +12,7 @@ export default defineConfig({
       reportsDirectory: 'coverage',
       reporter: ['text', 'html', 'lcov'],
       include: ['src/**/*.ts'],
-      exclude: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
+      exclude: ['src/**/*.test.ts'],
     },
   },
 })

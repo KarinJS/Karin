@@ -488,10 +488,16 @@ export const getDirs = async (dir: string, options: {
   isAbs?: boolean
 } = {}) => {
   const list: string[] = []
+  const log = global?.logger || console
   const dirs = await fs.promises.readdir(dir)
-  await Promise.all(dirs.map(async (v) => {
+
+  await Promise.allSettled(dirs.map(async (v) => {
     const stat = await fs.promises.stat(path.join(dir, v))
-    if (!stat.isDirectory()) return
+      .catch(() => {
+        log.warn(`[@karinjs/utils][getDirs] 无法访问路径: ${path.join(dir, v)}`)
+        return null
+      })
+    if (!stat?.isDirectory()) return
 
     list.push(options.isAbs ? path.join(dir, v) : v)
   }))

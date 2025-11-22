@@ -83,9 +83,9 @@ export class WsServerContext {
       token: string
       query?: {
         /**
-     * 鉴权参数名
-     * @default 'access_token'
-     */
+         * 鉴权参数名
+         * @default 'access_token'
+         */
         name?: string
         /** 当请求头没有Authorization时是否从query中获取 */
         enable?: boolean
@@ -132,7 +132,7 @@ export class WsServerContext {
 
     /** 使用自定义判断函数 */
     if (options.customCheck) {
-      return Boolean(options.customCheck(options.token, authorization))
+      return Boolean(options.customCheck(options.token || '', authorization))
     }
 
     /** 如果没有提供鉴权token，则直接拒绝 */

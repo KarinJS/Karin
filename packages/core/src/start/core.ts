@@ -87,15 +87,15 @@ class StartBot {
     return this
   }
 
-  async adapterConsole (logger: import('@karinjs/logger').Logger) {
-    const name = '@karinjs/plugin-adapter-console' as const
-    const { AdapterConsole } = await import('@karinjs/plugin-adapter-console')
-    logger.debug(`${name} 开始加载...`)
-    const consoleAdapter = AdapterConsole.getInstance()
-    await consoleAdapter.init()
-    const { registerBot } = await import('../bot')
-    registerBot('other', consoleAdapter)
-    logger.debug(`${name} 加载完成~`)
+  async adapterConsole () {
+    const { KARIN_ADAPTER_RUN } = await import('@karinjs/plugin-adapter-console')
+    await KARIN_ADAPTER_RUN()
+    return this
+  }
+
+  async adapterOneBot () {
+    const { KARIN_ADAPTER_RUN } = await import('@karinjs/plugin-adapter-onebot')
+    await KARIN_ADAPTER_RUN()
     return this
   }
 
@@ -131,7 +131,9 @@ export const start = async () => {
   await run.db(config)
   run.server(config)
   run.pluginLoader()
-  run.adapterConsole(logger)
+  run.adapterConsole()
+  run.adapterOneBot()
+
   // /**
   //  * 3. 初始化配置文件
   //  * - 初始化基本文件目录
