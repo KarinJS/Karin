@@ -52,7 +52,7 @@ export const unregisterRender = (index: number) => {
  * @returns 渲染器实例
  */
 export const getRender = (id?: string | number) => {
-  if (cache.length === 0) throw new Error('渲染器列表为空: 请前往插件市场安装【@karinjs/puppeteer】插件')
+  if (cache.length === 0) throw new Error('渲染器列表为空: 请前往插件市场安装【@karinjs/plugin-puppeteer】插件')
   if (!id) {
     const app = cache[Math.floor(Math.random() * cache.length)]
     return app
