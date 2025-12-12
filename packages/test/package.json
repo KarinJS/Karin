@@ -22,5 +22,9 @@
     "node-karin": "workspace:*",
     "@karinjs/plugin-basic": "1.0.8"
   },
-  "type": "module"
+  "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
 }
