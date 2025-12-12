@@ -1,5 +1,13 @@
 # 更新日志
 
+## [1.13.1](https://github.com/KarinJS/Karin/compare/core-v1.13.0...core-v1.13.1) (2025-12-12)
+
+
+### 🐛 Bug Fixes
+
+* 修改插件名为plugin-puppeteer ([#578](https://github.com/KarinJS/Karin/issues/578)) ([5f48dba](https://github.com/KarinJS/Karin/commit/5f48dbae0c2349c143fe6c232fcffc5a8bab4d30))
+* 更新依赖 兼容node18版本 ([#580](https://github.com/KarinJS/Karin/issues/580)) ([ca80263](https://github.com/KarinJS/Karin/commit/ca802635350d205d08c377eb00ebf9054921a38d))
+
 ## [1.13.0](https://github.com/KarinJS/Karin/compare/core-v1.12.2...core-v1.13.0) (2025-11-22)
 
 
