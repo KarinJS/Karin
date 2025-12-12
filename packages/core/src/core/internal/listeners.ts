@@ -2,28 +2,20 @@
 import { EventEmitter } from 'node:events'
 import type { MessageEventMap, NoticeEventMap, RequestEventMap } from '@/types/event'
 
-// type OtherTypes = {
-//   warn: unknown
-//   error: unknown
-//   [SEND_MSG]: Contact
-//   [RECV_MSG]: Contact
-//   [EVENT_COUNT]: { plugin: PluginFncTypes, event: Event }
-//   'karin:adapter:open': unknown
-//   'karin:adapter:close': unknown
-//   'update:logger:level': unknown
-//   [key: `ctx:${string}`]: Message
-//   [key: `onebot:${string}`]: unknown
-// }
+type OtherEventMap = {
+  online: Record<string, never>
+}
 
 /** 事件字典 */
 export type EventMap<
   T extends keyof MessageEventMap = keyof MessageEventMap,
   U extends keyof NoticeEventMap = keyof NoticeEventMap,
-  V extends keyof RequestEventMap = keyof RequestEventMap
-// K extends keyof OtherTypes = keyof OtherTypes
+  V extends keyof RequestEventMap = keyof RequestEventMap,
+  K extends keyof OtherEventMap = keyof OtherEventMap
 > = { [key in T]: (event: MessageEventMap[key]) => void }
   & { [key in U]: (event: NoticeEventMap[key]) => void }
   & { [key in V]: (event: RequestEventMap[key]) => void }
+  & { [key in K]: (event: OtherEventMap[key]) => void }
   & Record<string, any>
 // & { [key in K]: (event: OtherTypes[key]) => void }
 

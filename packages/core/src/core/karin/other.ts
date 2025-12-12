@@ -246,6 +246,11 @@ const events = () => {
   listeners.on('file:change', (type: unknown, old: unknown, data: unknown) => {
     other.emit('file:change', type, old, data)
   })
+
+  /** Bot上线事件 */
+  listeners.on('online', (event: Record<string, never>) => {
+    other.emit('online', event)
+  })
 }
 
 export const other = new Other()

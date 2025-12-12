@@ -220,7 +220,7 @@ export const pkgCache = (result: LoadPluginResult, pkg: PkgInfo, app: string) =>
         } catch (error) {
           errorHandler.taskStart(val.name, val.name, error)
         }
-      })
+      })!
 
       cache.count.task++
       cache.task.push(val)

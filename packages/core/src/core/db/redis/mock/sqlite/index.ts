@@ -1,5 +1,5 @@
 import path from 'node:path'
-import sqlite3 from 'sqlite3'
+import sqlite3, { type Database } from 'sqlite3'
 import { mkdirSync } from '@/utils/fs/fsSync'
 
 /**
@@ -11,7 +11,7 @@ export const logPrefix = (message: string) => `[redis-mock] ${message}`
  * @description SQLite3封装类，用于Redis模拟的持久化存储 new之后需要调用init方法
  */
 export class SQLiteWrapper {
-  db!: sqlite3.Database
+  db!: Database
   #isClosing: boolean = false
   #inTransaction: boolean = false
   dbPath: string
