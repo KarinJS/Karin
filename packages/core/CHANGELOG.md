@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.14.0](https://github.com/KarinJS/Karin/compare/core-v1.13.8...core-v1.14.0) (2025-12-12)
+
+
+### ✨ Features
+
+* bot 连接事件 ([#597](https://github.com/KarinJS/Karin/issues/597)) ([c373d1f](https://github.com/KarinJS/Karin/commit/c373d1f328b484a4af929a6b5a1306bf912af8d2))
+
 ## [1.13.8](https://github.com/KarinJS/Karin/compare/core-v1.13.7...core-v1.13.8) (2025-12-12)
 
 
