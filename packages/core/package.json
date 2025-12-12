@@ -1,6 +1,6 @@
 {
   "name": "node-karin",
-  "version": "1.13.5",
+  "version": "1.13.6",
   "description": "Lightweight, efficient, concise, and stable robot framework.",
   "keywords": [
     "node",
@@ -192,5 +192,5 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
-  "time": "2025-10-08T06:35:20.004Z"
+  "time": "2025-10-08T06:35:20.005Z"
 }
