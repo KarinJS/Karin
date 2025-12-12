@@ -123,14 +123,19 @@
       "types": "./dist/module/sqlite3.d.ts",
       "development": "./module/sqlite3.ts",
       "default": "./dist/module/sqlite3.mjs"
+    },
+    "./log4js": {
+      "types": "./dist/module/log4js.d.ts",
+      "development": "./module/log4js.ts",
+      "default": "./dist/module/log4js.mjs"
     }
   },
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "bin": {
     "k": "./dist/cli/index.mjs",
-    "ki": "./dist/cli/index.mjs",
-    "karin": "./dist/cli/index.mjs"
+    "karin": "./dist/cli/index.mjs",
+    "ki": "./dist/cli/index.mjs"
   },
   "files": [
     "dist",
@@ -141,23 +146,23 @@
   "scripts": {
     ".": "pnpm app",
     "app": "node dist/start/index.mjs",
+    "app:bun": "bun dist/start/index.mjs",
     "build": "pnpm build:main && pnpm build:module",
     "build:dev": "pnpm build:main",
+    "build:locale": "node cli/locale.js",
     "build:main": "tsc && tsup",
     "build:module": "tsc && tsup --config tsup.config.module.ts && pnpm build:locale",
     "build:types": "tsc && tsup --config tsup.config.types.ts",
-    "build:locale": "node cli/locale.js",
-    "app:bun": "bun dist/start/index.mjs",
     "cli": "node dist/cli/index.mjs",
     "cli:dev": "tsx exports/cli/index.ts",
     "dev": "cross-env EBV_FILE=\"development.env\" node --conditions=development --import tsx src/start/index.ts",
     "dev:bun": "cross-env EBV_FILE=\"development.env\" bun --conditions=development src/start/index.ts",
+    "docs:build": "typedoc",
     "pr": "node cli/pr.js all",
     "pub": "npm publish --access public",
     "pub-beta": "npm publish --access public --tag beta",
     "sort": "sort-package-json && sort-json tsconfig.json",
-    "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/node-karin/syncs\"",
-    "docs:build": "typedoc"
+    "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/node-karin/syncs\""
   },
   "dependencies": {
     "art-template": "npm:@karinjs/art-template@1.1.0",
