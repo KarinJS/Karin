@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.13.2](https://github.com/KarinJS/Karin/compare/core-v1.13.1...core-v1.13.2) (2025-12-12)
+
+
+### 🐛 Bug Fixes
+
+* 使用可信任发布 ([#582](https://github.com/KarinJS/Karin/issues/582)) ([4a3b48d](https://github.com/KarinJS/Karin/commit/4a3b48d88d4955f5e4b312c92245bfe49c4bf1c9))
+
 ## [1.13.1](https://github.com/KarinJS/Karin/compare/core-v1.13.0...core-v1.13.1) (2025-12-12)
 
 
