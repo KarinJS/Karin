@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.13.5](https://github.com/KarinJS/Karin/compare/core-v1.13.4...core-v1.13.5) (2025-12-12)
+
+
+### 🐛 Bug Fixes
+
+* build & 暴露 `ONLINE` 事件 ([#588](https://github.com/KarinJS/Karin/issues/588)) ([788f17a](https://github.com/KarinJS/Karin/commit/788f17a33771e86312fd2cc94a453ac1081ec4a7))
+
 ## [1.13.4](https://github.com/KarinJS/Karin/compare/core-v1.13.3...core-v1.13.4) (2025-12-12)
 
 
