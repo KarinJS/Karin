@@ -35,15 +35,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9
-          run_install: true
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: 安装依赖
+        run: |
+          for i in 1 2 3; do
+            pnpm install && break || {
+              echo "安装失败，重试 $i/3"
+              sleep 2
+            }
+          done
 
       - name: 构建
         run: pnpm build
