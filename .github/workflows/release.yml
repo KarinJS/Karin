@@ -65,17 +65,17 @@ jobs:
       - name: 发布 core
         if: ${{ needs.release-please.outputs.core }}
         working-directory: packages/core
-        run: pnpm publish
+        run: pnpm publish --no-git-checks
 
       - name: 发布 cli
         if: ${{ needs.release-please.outputs.cli }}
         working-directory: packages/cli
-        run: pnpm publish
+        run: pnpm publish --no-git-checks
 
       - name: 发布 create-karin
         if: ${{ needs.release-please.outputs.create-karin }}
         working-directory: packages/create-karin
-        run: pnpm publish
+        run: pnpm publish --no-git-checks
 
   syncn:
     runs-on: ubuntu-latest
