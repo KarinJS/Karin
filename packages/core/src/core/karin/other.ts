@@ -1,7 +1,7 @@
 import { URL } from 'node:url'
 import { EventEmitter } from 'node:events'
 import { listeners } from '../internal'
-import { WS_CONNECTION } from '@/utils/fs/key'
+import { WS_CONNECTION, BOT_CONNECT, BOT_DISCONNECT } from '@/utils/fs/key'
 import { getAllBot, getAllBotList, getBot, getBotCount } from '@/service/bot'
 
 import type { WebSocket } from 'ws'
@@ -250,6 +250,16 @@ const events = () => {
   /** Bot上线事件 */
   listeners.on('online', (event: Record<string, never>) => {
     other.emit('online', event)
+  })
+
+  /** Bot连接成功 */
+  listeners.on(BOT_CONNECT, (bot: unknown) => {
+    other.emit(BOT_CONNECT, bot)
+  })
+
+  /** Bot连接断开 */
+  listeners.on(BOT_DISCONNECT, (bot: unknown) => {
+    other.emit(BOT_DISCONNECT, bot)
   })
 }
 

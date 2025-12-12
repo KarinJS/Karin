@@ -1,5 +1,5 @@
 import { segment } from '@/utils/message'
-import { SEND_MSG } from '@/utils/fs/key'
+import { SEND_MSG, BOT_CONNECT, BOT_DISCONNECT } from '@/utils/fs/key'
 import { hooksSendMsgEmit } from '@/hooks/sendMsg'
 import { listeners } from '@/core/internal/listeners'
 import { makeMessageLog, makeMessage } from '@/utils/common'
@@ -116,6 +116,8 @@ export const unregisterBot: UnregisterBot = (type, idOrIndex, address?) => {
     const index = list.findIndex(predicate)
     if (index !== -1) {
       const [removed] = list.splice(index, 1)
+      /** 触发连接断开事件 */
+      listeners.emit(BOT_DISCONNECT, removed.bot)
       logger.bot('info', removed.bot.selfId, `${logger.red('[service][卸载Bot]')} ${removed.bot.adapter.name}`)
       return true
     }
@@ -218,6 +220,9 @@ export const registerBot = (_: AdapterCommunication, bot: AdapterBase) => {
   setTimeout(() => {
     logger.bot('info', bot.selfId, `${logger.green('[registerBot]')}[${bot.adapter.name}]: ${bot.account.name} ${bot.adapter.address}`)
   }, 1000)
+
+  /** 触发连接成功事件 */
+  listeners.emit(BOT_CONNECT, bot)
 
   return id
 }
