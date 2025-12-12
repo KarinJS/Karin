@@ -28,3 +28,8 @@ export const WS_CLOSE_SANDBOX = 'ws:close:sandbox'
 
 /** 传递 snapka ws连接 */
 export const WS_SNAPKA = 'ws:connection:snapka'
+
+/** Bot连接成功 */
+export const BOT_CONNECT = 'bot.connect'
+/** Bot连接断开 */
+export const BOT_DISCONNECT = 'bot.disconnect'
