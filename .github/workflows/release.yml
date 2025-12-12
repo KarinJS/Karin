@@ -28,164 +28,50 @@ jobs:
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
 
-  build:
+  publish:
     runs-on: ubuntu-latest
     needs: release-please
-    if: ${{ needs.release-please.outputs.core || needs.release-please.outputs.cli || needs.release-please.outputs.create-karin || needs.release-please.outputs.web }}
+    if: ${{ needs.release-please.outputs.core || needs.release-please.outputs.cli || needs.release-please.outputs.create-karin }}
     steps:
-      - name: 检出代码
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: 设置 pnpm
-        uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v2
         with:
           version: 9
           run_install: true
 
-      # 编译
-      - name: 编译
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+
+      - name: 构建
         run: pnpm build
 
-      # cp README.md 到 core 目录
-      - name: 复制 README.md 到 core 目录
+      - name: 更新npm到最新
+        run: npm install -g npm
+
+      - name: 复制 README
         run: cp README.md packages/core
 
-      - name: 上传core构建产物
-        uses: actions/upload-artifact@v4
-        with:
-          name: core
-          include-hidden-files: true
-          path: |
-            packages/core/dist
-            packages/core/default
-            packages/core/CHANGELOG.md
-            packages/core/README.md
-            packages/core/package.json
+      - name: 发布 core
+        if: ${{ needs.release-please.outputs.core }}
+        working-directory: packages/core
+        run: pnpm publish
 
-      - name: 上传cli构建产物
-        uses: actions/upload-artifact@v4
-        with:
-          name: cli
-          include-hidden-files: true
-          path: |
-            packages/cli/index.js
-            packages/cli/package.json
+      - name: 发布 cli
+        if: ${{ needs.release-please.outputs.cli }}
+        working-directory: packages/cli
+        run: pnpm publish
 
-      - name: 上传create-karin构建产物
-        uses: actions/upload-artifact@v4
-        with:
-          name: create-karin
-          include-hidden-files: true
-          path: |
-            packages/create-karin/dist
-            packages/create-karin/templates
-            packages/create-karin/package.json
-
-  publish-core:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: 导入构建产物
-        uses: actions/download-artifact@v4
-        with:
-          name: core
-          path: ./
-
-      - name: 设置 Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: "https://registry.npmjs.org"
-
-      - name: 更新 npm
-        run: npm install -g npm@latest
-
-      # 发布 core 包
-      - name: 发布到 NPM
-        id: core
-        run: |
-          cd packages/core
-          pnpm publish
-          echo "name=$(npm pkg get name | tr -d '\"')" >> $GITHUB_OUTPUT
-          echo "version=$(npm pkg get version | tr -d '\"')" >> $GITHUB_OUTPUT
-
-      - name: 生成发布摘要
-        run: |
-          echo "## 发布信息 :" >> $GITHUB_STEP_SUMMARY
-          echo "包名: \`${{ steps.core.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "版本号: \`${{ steps.core.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
-
-  publish-cli:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: 导入构建产物
-        uses: actions/download-artifact@v4
-        with:
-          name: cli
-          path: ./
-
-      - name: 设置 Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: "https://registry.npmjs.org"
-
-      - name: 更新 npm
-        run: npm install -g npm@latest
-
-      # 发布 cli 包
-      - name: 发布到 NPM
-        id: cli
-        run: |
-          cd packages/cli
-          pnpm publish
-          echo "name=$(npm pkg get name | tr -d '\"')" >> $GITHUB_OUTPUT
-          echo "version=$(npm pkg get version | tr -d '\"')" >> $GITHUB_OUTPUT
-
-      - name: 生成发布摘要
-        run: |
-          echo "## 发布信息 :" >> $GITHUB_STEP_SUMMARY
-          echo "包名: \`${{ steps.cli.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "版本号: \`${{ steps.cli.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
-
-  publish-create-karin:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: 导入构建产物
-        uses: actions/download-artifact@v4
-        with:
-          name: create-karin
-          path: ./
-
-      - name: 设置 Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: "https://registry.npmjs.org"
-
-      - name: 更新 npm
-        run: npm install -g npm@latest
-
-      - name: 发布到 NPM
-        id: create-karin
-        run: |
-          cd packages/create-karin
-          pnpm publish
-          echo "name=$(npm pkg get name | tr -d '\"')" >> $GITHUB_OUTPUT
-          echo "version=$(npm pkg get version | tr -d '\"')" >> $GITHUB_OUTPUT
-
-      - name: 生成发布摘要
-        run: |
-          echo "## 发布信息 :" >> $GITHUB_STEP_SUMMARY
-          echo "包名: \`${{ steps.create-karin.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "版本号: \`${{ steps.create-karin.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+      - name: 发布 create-karin
+        if: ${{ needs.release-please.outputs.create-karin }}
+        working-directory: packages/create-karin
+        run: pnpm publish
 
   syncn:
     runs-on: ubuntu-latest
-    needs:
-      [release-please, build, publish-core, publish-cli, publish-create-karin]
+    needs: [release-please, publish]
     steps:
       - name: 同步仓库状态
         uses: benc-uk/workflow-dispatch@v1
