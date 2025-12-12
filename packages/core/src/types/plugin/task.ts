@@ -1,4 +1,4 @@
-import type schedule from 'node-schedule'
+import type { Job } from 'node-schedule'
 import type { Log, PkgInfo, PluginFile } from './base'
 
 /** 定时任务方法 */
@@ -16,5 +16,5 @@ export interface Task {
   /** 打印触发插件日志方法 */
   log: Log<false>
   /** schedule */
-  schedule?: schedule.Job
+  schedule?: Job
 }

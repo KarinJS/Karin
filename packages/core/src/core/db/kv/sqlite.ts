@@ -1,5 +1,5 @@
 import path from 'node:path'
-import sqlite3 from 'sqlite3'
+import sqlite3, { type Database } from 'sqlite3'
 import { mkdirSync } from '@/utils/fs/fsSync'
 import { logPrefix } from '../redis/mock/sqlite'
 
@@ -8,7 +8,7 @@ import { logPrefix } from '../redis/mock/sqlite'
  */
 export class SQLiteWrapper {
   dbPath: string
-  _db!: sqlite3.Database
+  _db!: Database
 
   constructor (dbPath: string) {
     this.dbPath = dbPath
@@ -54,7 +54,7 @@ export class SQLiteWrapper {
       this._db.run(
         `
           CREATE TABLE IF NOT EXISTS redis_data (
-            key TEXT PRIMARY KEY,                        
+            key TEXT PRIMARY KEY,
             value TEXT NOT NULL DEFAULT ''
           )
           `,
