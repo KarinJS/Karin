@@ -100,8 +100,8 @@ importers:
         specifier: npm:@karinjs/lodash@1.1.1
         version: '@karinjs/lodash@1.1.1'
       log4js:
-        specifier: npm:@karinjs/log4js@1.5.4
-        version: '@karinjs/log4js@1.5.4'
+        specifier: npm:@karinjs/log4js@1.5.6
+        version: '@karinjs/log4js@1.5.6'
       moment:
         specifier: npm:@karinjs/moment@1.1.5
         version: '@karinjs/moment@1.1.5'
@@ -2046,8 +2046,8 @@ packages:
     resolution: {integrity: sha512-suq7TVHaaTrkD74WhEpzsm1SqZfiSf0yiWPEzoZhNbB1Kfwo/ys9yOwptZqTKXZyTghSrF+dfILvh2E32wBofw==}
     engines: {node: '>=18'}
 
-  '@karinjs/log4js@1.5.4':
-    resolution: {integrity: sha512-CXFAAjSOTBixq212fsV4N23T0jWJTGs829HU08amaC4KT7lbzC4FMSh6AFjtgbRh3lih690M07nhnBwa330QYQ==}
+  '@karinjs/log4js@1.5.6':
+    resolution: {integrity: sha512-BwLkG/TJLOvqe1cIpgLa+FGv5PJhQ/d+K+FRD4ELjHoU3jLd///lnbUwB0nTzIWSJyO+dJcrdHr87LGU2luOrw==}
     engines: {node: '>=18'}
 
   '@karinjs/moment@1.1.5':
@@ -8305,7 +8305,7 @@ snapshots:
 
   '@karinjs/lodash@1.1.1': {}
 
-  '@karinjs/log4js@1.5.4': {}
+  '@karinjs/log4js@1.5.6': {}
 
   '@karinjs/moment@1.1.5': {}
 
