@@ -7,6 +7,7 @@ on:
 # 赋予 release-please-action 权限
 permissions:
   contents: write
+  id-token: write
   pull-requests: write
 
 jobs:
