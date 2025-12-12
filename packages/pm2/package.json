@@ -21,5 +21,9 @@
   "keywords": [],
   "author": "shijin",
   "license": "MIT",
-  "type": "module"
+  "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
 }

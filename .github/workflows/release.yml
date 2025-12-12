@@ -91,13 +91,23 @@ jobs:
           name: core
           path: ./
 
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+
+      - name: 更新 npm
+        run: npm install -g npm@latest
+
       # 发布 core 包
       - name: 发布到 NPM
         id: core
-        uses: JS-DevTools/npm-publish@v3
-        with:
-          token: ${{secrets.NPM_TOKEN}}
-          access: public
+        run: |
+          cd packages/core
+          pnpm publish
+          echo "name=$(npm pkg get name | tr -d '\"')" >> $GITHUB_OUTPUT
+          echo "version=$(npm pkg get version | tr -d '\"')" >> $GITHUB_OUTPUT
 
       - name: 生成发布摘要
         run: |
@@ -115,13 +125,23 @@ jobs:
           name: cli
           path: ./
 
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+
+      - name: 更新 npm
+        run: npm install -g npm@latest
+
       # 发布 cli 包
       - name: 发布到 NPM
         id: cli
-        uses: JS-DevTools/npm-publish@v3
-        with:
-          token: ${{secrets.NPM_TOKEN}}
-          access: public
+        run: |
+          cd packages/cli
+          pnpm publish
+          echo "name=$(npm pkg get name | tr -d '\"')" >> $GITHUB_OUTPUT
+          echo "version=$(npm pkg get version | tr -d '\"')" >> $GITHUB_OUTPUT
 
       - name: 生成发布摘要
         run: |
@@ -139,12 +159,22 @@ jobs:
           name: create-karin
           path: ./
 
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+
+      - name: 更新 npm
+        run: npm install -g npm@latest
+
       - name: 发布到 NPM
         id: create-karin
-        uses: JS-DevTools/npm-publish@v3
-        with:
-          token: ${{secrets.NPM_TOKEN}}
-          access: public
+        run: |
+          cd packages/create-karin
+          pnpm publish
+          echo "name=$(npm pkg get name | tr -d '\"')" >> $GITHUB_OUTPUT
+          echo "version=$(npm pkg get version | tr -d '\"')" >> $GITHUB_OUTPUT
 
       - name: 生成发布摘要
         run: |

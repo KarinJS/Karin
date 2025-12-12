@@ -30,5 +30,9 @@
       "development": "./src/index.ts",
       "default": "./dist/index.mjs"
     }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   }
 }
