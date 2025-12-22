@@ -105,7 +105,7 @@ export abstract class OneBotWsBase extends OneBotCore {
     timeout: number = this._options.timeout
   ): Promise<OneBotApi[T]['response']> {
     const echo = (++this.echo).toString()
-    const realAction = this._formatAction(action as string)
+    const realAction = this._formatAction(action)
     const request = JSON.stringify({ echo, action: realAction, params })
 
     return new Promise((resolve, reject) => {
