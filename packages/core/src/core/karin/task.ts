@@ -6,6 +6,12 @@ export interface TaskOptions {
   name?: string
   /** 是否启用日志 */
   log?: boolean
+  /**
+   * 任务执行策略
+   * - `default`: 默认策略，允许并发执行，即不检查上一次任务是否完成
+   * - `skip`: 跳过策略，如果上一次任务未完成，则直接跳过本次执行
+   */
+  type?: 'default' | 'skip'
 }
 
 /**
@@ -33,5 +39,7 @@ export const task = (
     schedule: undefined,
     file: createFile('task', options.name || 'task'),
     pkg: createPkg(),
+    type: options.type || 'default',
+    running: false,
   }
 }
