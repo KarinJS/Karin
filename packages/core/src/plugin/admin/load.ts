@@ -15,6 +15,7 @@ import { importModule } from '@/utils/system/import'
 import { errorHandler } from '@/core/internal'
 import { getPluginsInfo } from '../system/list'
 
+import { TaskExecutionType } from '@/types/plugin/task'
 import type {
   Task,
   Accept,
@@ -213,7 +214,7 @@ export const pkgCache = (result: LoadPluginResult, pkg: PkgInfo, app: string) =>
     if (isType<Task>(val, 'task')) {
       val.schedule = schedule.scheduleJob(val.cron, async () => {
         try {
-          if (val.type === 'skip' && val.running) {
+          if (val.type === TaskExecutionType.SKIP && val.running) {
             val.log(`[定时任务][${val.name}][${val.cron}]: 上一次任务未完成，跳过本次执行`)
             return
           }

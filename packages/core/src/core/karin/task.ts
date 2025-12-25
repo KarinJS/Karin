@@ -1,4 +1,5 @@
 import { createFile, createLogger, createPkg } from '@/plugin/tools'
+import { TaskExecutionType } from '@/types/plugin/task'
 import type { Task } from '@/types/plugin'
 
 export interface TaskOptions {
@@ -11,7 +12,7 @@ export interface TaskOptions {
    * - `default`: 默认策略，允许并发执行，即不检查上一次任务是否完成
    * - `skip`: 跳过策略，如果上一次任务未完成，则直接跳过本次执行
    */
-  type?: 'default' | 'skip'
+  type?: TaskExecutionType | `${TaskExecutionType}`
 }
 
 /**
@@ -39,7 +40,7 @@ export const task = (
     schedule: undefined,
     file: createFile('task', options.name || 'task'),
     pkg: createPkg(),
-    type: options.type || 'default',
+    type: (options.type as TaskExecutionType) || TaskExecutionType.DEFAULT,
     running: false,
   }
 }
