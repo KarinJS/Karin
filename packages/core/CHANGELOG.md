@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.14.1](https://github.com/KarinJS/Karin/compare/core-v1.14.0...core-v1.14.1) (2025-12-25)
+
+
+### 🐛 Bug Fixes
+
+* 添加定时任务执行策略选项 ([#604](https://github.com/KarinJS/Karin/issues/604)) ([7f81df5](https://github.com/KarinJS/Karin/commit/7f81df561156dba7f65d44d46dbec7583eddbcf6))
+
 ## [1.14.0](https://github.com/KarinJS/Karin/compare/core-v1.13.8...core-v1.14.0) (2025-12-12)
 
 
