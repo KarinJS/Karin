@@ -1,6 +1,14 @@
 import type { Job } from 'node-schedule'
 import type { Log, PkgInfo, PluginFile } from './base'
 
+/** 任务执行策略枚举 */
+export enum TaskExecutionType {
+  /** 默认策略，允许并发执行 */
+  DEFAULT = 'default',
+  /** 跳过策略，如果上一次任务未完成，则直接跳过本次执行 */
+  SKIP = 'skip',
+}
+
 /** 定时任务方法 */
 export interface Task {
   /** 插件包基本属性 */
@@ -17,4 +25,12 @@ export interface Task {
   log: Log<false>
   /** schedule */
   schedule?: Job
+  /**
+   * 任务执行策略
+   * - `default`: 默认策略，允许并发执行，即不检查上一次任务是否完成
+   * - `skip`: 跳过策略，如果上一次任务未完成，则直接跳过本次执行
+   */
+  type: TaskExecutionType
+  /** 运行状态 */
+  running: boolean
 }
