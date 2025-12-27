@@ -127,15 +127,16 @@ export class OneBotHttp extends OneBotCore {
     params: OneBotApi[T]['params'],
     timeout: number = this._options.timeout
   ): Promise<OneBotApi[T]['response']> {
-    const host = `${this._options.httpHost}/${action}`
+    const realAction = this._formatAction(action)
+    const host = `${this._options.httpHost}/${realAction}`
     const request = JSON.stringify(params)
-    this.emit(OneBotEventKey.SEND_API, { action, params, request, echo: '' })
+    this.emit(OneBotEventKey.SEND_API, { action: realAction, params, request, echo: '' })
     const data = await http.post(host, request, { timeout, headers: this._options.headers })
 
     if (data.data.status === 'ok') {
       return data.data.data
     } else {
-      throw this._formatApiError(action, request, data.data)
+      throw this._formatApiError(realAction, request, data.data)
     }
   }
 

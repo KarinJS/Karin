@@ -105,14 +105,15 @@ export abstract class OneBotWsBase extends OneBotCore {
     timeout: number = this._options.timeout
   ): Promise<OneBotApi[T]['response']> {
     const echo = (++this.echo).toString()
-    const request = JSON.stringify({ echo, action, params })
+    const realAction = this._formatAction(action)
+    const request = JSON.stringify({ echo, action: realAction, params })
 
     return new Promise((resolve, reject) => {
       const timeoutId = setTimeout(() => {
-        reject(this._formatApiError(action, request, '请求超时'))
+        reject(this._formatApiError(realAction, request, '请求超时'))
       }, timeout * 1000)
 
-      this.emit(OneBotEventKey.SEND_API, { echo, action, params, request })
+      this.emit(OneBotEventKey.SEND_API, { echo, action: realAction, params, request })
       this._socket.send(request)
       this.once(`echo:${echo}`, data => {
         /** 停止监听器 */
@@ -121,10 +122,10 @@ export abstract class OneBotWsBase extends OneBotCore {
         if (data.status === 'ok') {
           resolve(data.data as OneBotApi[T]['response'])
         } else {
-          reject(this._formatApiError(action, request, data))
+          reject(this._formatApiError(realAction, request, data))
         }
 
-        this.emit(OneBotEventKey.RESPONSE, { echo, action, params, request, data })
+        this.emit(OneBotEventKey.RESPONSE, { echo, action: realAction, params, request, data })
       })
     })
   }
