@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.14.2](https://github.com/KarinJS/Karin/compare/core-v1.14.1...core-v1.14.2) (2025-12-27)
+
+
+### 🎡 Continuous Integration
+
+* **workflow:** 移除docker构建 ([#606](https://github.com/KarinJS/Karin/issues/606)) ([302190a](https://github.com/KarinJS/Karin/commit/302190a5bd499b747c3c82ce443979c92825f05c))
+
 ## [1.14.1](https://github.com/KarinJS/Karin/compare/core-v1.14.0...core-v1.14.1) (2025-12-25)
 
 
