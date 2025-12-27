@@ -13,6 +13,7 @@ import {
   task,
   setContext,
   clearContext,
+  withContext,
 } from '../src/create'
 
 describe('DSL 完整覆盖测试', () => {
@@ -90,6 +91,17 @@ describe('DSL 完整覆盖测试', () => {
       const id = factory(async () => 'result')
       expect(id).toBeDefined()
     })
+
+    it('should throw for null callback', () => {
+      setContext('pkg', '/file.ts')
+      // 覆盖 line 39: throw Error
+      expect(() => handler('key', null as any)).toThrow('callback must be a function')
+    })
+
+    it('should throw for non-function callback', () => {
+      setContext('pkg', '/file.ts')
+      expect(() => handler('key', 'string' as any)).toThrow('callback must be a function')
+    })
   })
 
   describe('button() - 未覆盖行', () => {
@@ -147,6 +159,15 @@ describe('DSL 完整覆盖测试', () => {
 
     it('setContext should throw for whitespace file', () => {
       expect(() => setContext('pkg', '   ')).toThrow('file must be a non-empty string')
+    })
+
+    it('withContext should throw for non-function callback', async () => {
+      // 覆盖 line 57: throw Error
+      await expect(withContext('pkg', '/file.ts', null as any)).rejects.toThrow('fn must be a function')
+    })
+
+    it('withContext should throw for string callback', async () => {
+      await expect(withContext('pkg', '/file.ts', 'not a function' as any)).rejects.toThrow('fn must be a function')
     })
   })
 })
