@@ -19,6 +19,7 @@ let esmCacheSupported: boolean | null = null
  * ESM 模块加载缓存
  * 支持 Node.js 18+（仅开发环境）
  */
+/* istanbul ignore next -- @preserve ESM 内部 API 无法在测试环境访问 */
 const loadCache = async (): Promise<Map<string, unknown> | null> => {
   // 生产环境不使用内部 API
   if (!isDev) return null
@@ -71,6 +72,7 @@ const clearESMCache = async (fileURLs: string | string[]): Promise<void> => {
  * @param exclude 排除的模块 URL 数组
  * @returns 依赖该模块的模块 URL 数组
  */
+/* istanbul ignore next -- @preserve ESM 内部 API 无法在测试环境访问 */
 const findDependentModulesFromCache = async (
   moduleUrl: string,
   exclude: string[] = []

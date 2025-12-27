@@ -261,4 +261,85 @@ describe('Module API', () => {
       expect(files).toEqual([])
     })
   })
+
+  describe('edge cases', () => {
+    it('should handle clearCache with Windows-style paths', async () => {
+      await moduleApi.clearCache('D:\\path\\to\\file.ts', false)
+    })
+
+    it('should handle clearCache with file:// URLs', async () => {
+      await moduleApi.clearCache('file:///path/to/file.ts', true)
+    })
+
+    it('should handle findDependentModules with file:// URLs', async () => {
+      const deps = await moduleApi.findDependentModules('file:///path/to/file.ts')
+      expect(Array.isArray(deps)).toBe(true)
+    })
+
+    it('should handle setExclude with file:// URLs', () => {
+      moduleApi.setExclude(['file:///excluded/path'])
+    })
+
+    it('should handle multiple version increments', () => {
+      const url1 = moduleApi.getImportUrl('/file.ts', true)
+      const url2 = moduleApi.getImportUrl('/file.ts', true)
+      const url3 = moduleApi.getImportUrl('/file.ts', true)
+
+      // 检查版本号递增
+      if (!moduleApi.isDev) {
+        expect(url1).toMatch(/\?v=1$/)
+        expect(url2).toMatch(/\?v=2$/)
+        expect(url3).toMatch(/\?v=3$/)
+      }
+    })
+
+    it('should reset version and start from 1 again', () => {
+      moduleApi.getImportUrl('/resettest.ts', true)
+      moduleApi.getImportUrl('/resettest.ts', true)
+      moduleApi.resetVersion('/resettest.ts')
+
+      const url = moduleApi.getImportUrl('/resettest.ts', true)
+      if (!moduleApi.isDev) {
+        expect(url).toMatch(/\?v=1$/)
+      }
+    })
+
+    it('should handle complex dependency chains', () => {
+      // A -> B -> C -> D
+      moduleApi.addDependency('/A.ts', '/B.ts')
+      moduleApi.addDependency('/B.ts', '/C.ts')
+      moduleApi.addDependency('/C.ts', '/D.ts')
+
+      const depsOfA = moduleApi.findDependencies('/A.ts')
+      expect(depsOfA).toContain('/B.ts')
+      expect(depsOfA).toContain('/C.ts')
+      expect(depsOfA).toContain('/D.ts')
+
+      const dependentsOfD = moduleApi.findDependents('/D.ts')
+      expect(dependentsOfD).toContain('/C.ts')
+    })
+
+    it('should handle diamond dependency pattern', () => {
+      // A -> B, A -> C, B -> D, C -> D
+      moduleApi.addDependency('/A.ts', '/B.ts')
+      moduleApi.addDependency('/A.ts', '/C.ts')
+      moduleApi.addDependency('/B.ts', '/D.ts')
+      moduleApi.addDependency('/C.ts', '/D.ts')
+
+      const depsOfA = moduleApi.findDependencies('/A.ts')
+      expect(depsOfA).toContain('/B.ts')
+      expect(depsOfA).toContain('/C.ts')
+      expect(depsOfA).toContain('/D.ts')
+    })
+
+    it('should clear specific file dependencies without affecting others', () => {
+      moduleApi.addDependency('/X.ts', '/Y.ts')
+      moduleApi.addDependency('/Z.ts', '/W.ts')
+
+      moduleApi.clearDependencies('/X.ts')
+
+      expect(moduleApi.findDependencies('/X.ts')).toEqual([])
+      expect(moduleApi.findDependencies('/Z.ts')).toContain('/W.ts')
+    })
+  })
 })

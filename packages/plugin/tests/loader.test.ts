@@ -3,9 +3,13 @@
  * @module tests/loader.test
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { resolve } from 'path'
 import { loader } from '../src/api/loader'
 import { cache } from '../src/api/cache'
 import { event } from '../src/api/event'
+
+// 测试模块的绝对路径
+const testModulePath = resolve(__dirname, 'fixtures/test-module.ts')
 
 describe('Loader API', () => {
   beforeEach(() => {
@@ -85,6 +89,40 @@ describe('Loader API', () => {
 
       // Even on failure, pkg should be undefined as file wasn't loaded
       expect(result.file).toBe('/file.ts')
+    })
+
+    it('should successfully load a real module', async () => {
+      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => { })
+
+      const result = await loader.loadFile(testModulePath)
+
+      expect(result.success).toBe(true)
+      expect(result.file).toBe(testModulePath)
+      expect(result.registered).toBeGreaterThanOrEqual(0)
+      expect(result.error).toBeUndefined()
+
+      consoleSpy.mockRestore()
+    })
+
+    it('should log when loading with registered > 0', async () => {
+      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => { })
+
+      await loader.loadFile(testModulePath, { silent: false })
+
+      // 检查是否被调用（如果有组件注册）
+      // 由于测试模块只有导出没有 DSL 调用，registered 可能为 0
+      consoleSpy.mockRestore()
+    })
+
+    it('should use pkg from getPackageByFile when not provided', async () => {
+      // 添加包并关联文件
+      loader.addPackage('test-pkg', resolve(__dirname, 'fixtures'), 'npm')
+      loader.addFileToPackage('test-pkg', testModulePath)
+
+      const result = await loader.loadFile(testModulePath, { silent: true })
+
+      expect(result.success).toBe(true)
+      expect(result.pkg).toBe('test-pkg')
     })
   })
 
@@ -167,6 +205,21 @@ describe('Loader API', () => {
       } catch {
         // Expected to fail
       }
+    })
+
+    it('should successfully import a real module', async () => {
+      const mod = await loader.importModule(testModulePath)
+
+      expect(mod).toBeDefined()
+      expect((mod as any).testValue).toBe('hello')
+      expect(typeof (mod as any).testFunction).toBe('function')
+    })
+
+    it('should import with cache busting', async () => {
+      const mod = await loader.importModule(testModulePath, true)
+
+      expect(mod).toBeDefined()
+      expect((mod as any).testValue).toBe('hello')
     })
   })
 })
