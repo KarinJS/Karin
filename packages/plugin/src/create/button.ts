@@ -31,6 +31,14 @@ export function button (
   callback: ButtonCallback,
   options: Partial<ButtonOptions> = {}
 ): string {
+  // 参数验证
+  if (typeof id !== 'string' || !id.trim()) {
+    throw new Error('[button] id must be a non-empty string')
+  }
+  if (typeof callback !== 'function') {
+    throw new Error('[button] callback must be a function')
+  }
+
   const ctx = getContext()
 
   const instance: ButtonInstance = {
@@ -38,12 +46,14 @@ export function button (
     callback,
     options: {
       id,
-      priority: options.priority ?? 0,
+      priority: typeof options?.priority === 'number' && Number.isFinite(options.priority)
+        ? options.priority
+        : 0,
     },
   }
 
   return registry.register('button', instance, ctx.pkg, ctx.file, {
-    priority: options.priority,
+    priority: options?.priority,
     metadata: { id },
   })
 }
@@ -52,6 +62,10 @@ export function button (
  * 带选项的创建方式
  */
 button.create = (options: ButtonOptions) => {
+  // 参数验证
+  if (!options || typeof options !== 'object') {
+    throw new Error('[button.create] options must be an object')
+  }
   return (callback: ButtonCallback) => {
     return button(options.id, callback, options)
   }

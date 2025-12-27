@@ -85,12 +85,33 @@ export {
   HMRManager,
   createHMR,
   startHMR,
+  // 增强型 HMR
+  EnhancedHMR,
+  createEnhancedHMR,
+  // 副作用管理
+  effectRegistry,
+  registerEffect,
+  createEffect,
+  // HMR 配置
+  hmrConfigManager,
+  defineHMRConfig,
+  HMR_CONFIG_FILES,
 } from './hmr'
 
 export type {
   HMROptions,
   HMRReloadResult,
   EventContext,
+  // 增强型 HMR 类型
+  EnhancedHMROptions,
+  HMRConfig,
+  DefineHMRConfig,
+  HMRContext,
+  CleanupFunction,
+  ModuleHotHandler,
+  EffectRegistry,
+  ConfigChangeContext,
+  KarinConfigHooks,
 } from './hmr'
 
 // ============================================================================

@@ -31,6 +31,14 @@ export function handler (
   callback: HandlerCallback,
   options: Partial<HandlerOptions> = {}
 ): string {
+  // 参数验证
+  if (typeof key !== 'string' || !key.trim()) {
+    throw new Error('[handler] key must be a non-empty string')
+  }
+  if (typeof callback !== 'function') {
+    throw new Error('[handler] callback must be a function')
+  }
+
   const ctx = getContext()
 
   const instance: HandlerInstance = {
@@ -38,12 +46,14 @@ export function handler (
     callback,
     options: {
       key,
-      priority: options.priority ?? 0,
+      priority: typeof options?.priority === 'number' && Number.isFinite(options.priority)
+        ? options.priority
+        : 0,
     },
   }
 
   return registry.register('handler', instance, ctx.pkg, ctx.file, {
-    priority: options.priority,
+    priority: options?.priority,
     metadata: { key },
   })
 }
@@ -52,6 +62,10 @@ export function handler (
  * 带选项的创建方式
  */
 handler.create = (options: HandlerOptions) => {
+  // 参数验证
+  if (!options || typeof options !== 'object') {
+    throw new Error('[handler.create] options must be an object')
+  }
   return (callback: HandlerCallback) => {
     return handler(options.key, callback, options)
   }

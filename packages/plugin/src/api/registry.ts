@@ -20,6 +20,9 @@ function generateId (type: PluginType): string {
  * Registry API 实现
  */
 class RegistryManager {
+  /** 有效的插件类型 */
+  private validTypes: PluginType[] = ['command', 'accept', 'handler', 'button', 'task']
+
   /**
    * 注册组件
    */
@@ -30,16 +33,27 @@ class RegistryManager {
     file: string,
     options: RegisterOptions = {}
   ): string {
+    // 参数验证
+    if (!this.validTypes.includes(type)) {
+      throw new Error(`[registry] Invalid type: ${type}. Valid types: ${this.validTypes.join(', ')}`)
+    }
+    if (typeof pkg !== 'string' || !pkg.trim()) {
+      throw new Error('[registry] pkg must be a non-empty string')
+    }
+    if (typeof file !== 'string' || !file.trim()) {
+      throw new Error('[registry] file must be a non-empty string')
+    }
+
     const id = generateId(type)
     const item: RegistryItem<T> = {
       id,
       type,
       pkg,
       file,
-      priority: options.priority ?? 0,
+      priority: typeof options?.priority === 'number' ? options.priority : 0,
       enabled: true,
       instance,
-      metadata: options.metadata,
+      metadata: options?.metadata,
     }
 
     cache.instance.add(type, id, item as RegistryItem)
@@ -52,6 +66,14 @@ class RegistryManager {
    * 注销组件
    */
   unregister (type: PluginType, id: string): boolean {
+    // 参数验证
+    if (!this.validTypes.includes(type)) {
+      throw new Error(`[registry] Invalid type: ${type}. Valid types: ${this.validTypes.join(', ')}`)
+    }
+    if (typeof id !== 'string' || !id.trim()) {
+      throw new Error('[registry] id must be a non-empty string')
+    }
+
     const success = cache.instance.delete(type, id)
     if (success) {
       event.emit('registry:remove', { type, id })
@@ -63,6 +85,11 @@ class RegistryManager {
    * 按文件注销所有组件
    */
   unregisterByFile (file: string): number {
+    // 参数验证
+    if (typeof file !== 'string' || !file.trim()) {
+      throw new Error('[registry] file must be a non-empty string')
+    }
+
     const count = cache.instance.deleteByFile(file)
     if (count > 0) {
       event.emit('file:remove', { file, unregistered: count })
@@ -74,6 +101,10 @@ class RegistryManager {
    * 按包名注销所有组件
    */
   unregisterByPackage (pkg: string): number {
+    // 参数验证
+    if (typeof pkg !== 'string' || !pkg.trim()) {
+      throw new Error('[registry] pkg must be a non-empty string')
+    }
     return cache.instance.deleteByPackage(pkg)
   }
 
@@ -81,6 +112,13 @@ class RegistryManager {
    * 获取组件
    */
   get (type: PluginType, id: string): RegistryItem | undefined {
+    // 参数验证
+    if (!this.validTypes.includes(type)) {
+      throw new Error(`[registry] Invalid type: ${type}. Valid types: ${this.validTypes.join(', ')}`)
+    }
+    if (typeof id !== 'string' || !id.trim()) {
+      throw new Error('[registry] id must be a non-empty string')
+    }
     return cache.instance.get(type, id)
   }
 
@@ -88,6 +126,10 @@ class RegistryManager {
    * 获取某类型的所有组件
    */
   getAll (type: PluginType): RegistryItem[] {
+    // 参数验证
+    if (!this.validTypes.includes(type)) {
+      throw new Error(`[registry] Invalid type: ${type}. Valid types: ${this.validTypes.join(', ')}`)
+    }
     return cache.instance.getAll(type)
   }
 
@@ -95,6 +137,10 @@ class RegistryManager {
    * 获取某文件注册的所有组件
    */
   getByFile (file: string): RegistryItem[] {
+    // 参数验证
+    if (typeof file !== 'string' || !file.trim()) {
+      throw new Error('[registry] file must be a non-empty string')
+    }
     return cache.instance.getByFile(file)
   }
 
@@ -102,6 +148,10 @@ class RegistryManager {
    * 获取某包注册的所有组件
    */
   getByPackage (pkg: string): RegistryItem[] {
+    // 参数验证
+    if (typeof pkg !== 'string' || !pkg.trim()) {
+      throw new Error('[registry] pkg must be a non-empty string')
+    }
     return cache.instance.getByPackage(pkg)
   }
 
@@ -131,6 +181,14 @@ class RegistryManager {
    * 启用组件
    */
   enable (type: PluginType, id: string): boolean {
+    // 参数验证
+    if (!this.validTypes.includes(type)) {
+      throw new Error(`[registry] Invalid type: ${type}. Valid types: ${this.validTypes.join(', ')}`)
+    }
+    if (typeof id !== 'string' || !id.trim()) {
+      throw new Error('[registry] id must be a non-empty string')
+    }
+
     const item = cache.instance.get(type, id)
     if (item) {
       item.enabled = true
@@ -143,6 +201,14 @@ class RegistryManager {
    * 禁用组件
    */
   disable (type: PluginType, id: string): boolean {
+    // 参数验证
+    if (!this.validTypes.includes(type)) {
+      throw new Error(`[registry] Invalid type: ${type}. Valid types: ${this.validTypes.join(', ')}`)
+    }
+    if (typeof id !== 'string' || !id.trim()) {
+      throw new Error('[registry] id must be a non-empty string')
+    }
+
     const item = cache.instance.get(type, id)
     if (item) {
       item.enabled = false
@@ -155,6 +221,10 @@ class RegistryManager {
    * 获取已启用的组件
    */
   getEnabled (type: PluginType): RegistryItem[] {
+    // 参数验证
+    if (!this.validTypes.includes(type)) {
+      throw new Error(`[registry] Invalid type: ${type}. Valid types: ${this.validTypes.join(', ')}`)
+    }
     return cache.instance.getAll(type).filter(item => item.enabled)
   }
 

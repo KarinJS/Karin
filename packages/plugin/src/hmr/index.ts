@@ -400,3 +400,24 @@ export const HMRManager = {
   /** HMR 类 */
   Module: HotModuleReloader,
 }
+
+// ============================================================================
+// 导出增强型 HMR 功能
+// ============================================================================
+
+export { EnhancedHMR, createEnhancedHMR } from './enhanced'
+export type { EnhancedHMROptions } from './enhanced'
+
+export { effectRegistry, registerEffect, createEffect } from './effects'
+export { hmrConfigManager, defineHMRConfig, HMR_CONFIG_FILES } from './config'
+
+export type {
+  HMRConfig,
+  DefineHMRConfig,
+  HMRContext,
+  CleanupFunction,
+  ModuleHotHandler,
+  EffectRegistry,
+  ConfigChangeContext,
+  KarinConfigHooks,
+} from './types'

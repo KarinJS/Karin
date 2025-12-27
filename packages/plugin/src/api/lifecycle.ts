@@ -17,6 +17,11 @@ class LifecycleManager {
    * 启用插件包
    */
   async enable (pkgName: string): Promise<void> {
+    // 防御性检查
+    if (typeof pkgName !== 'string' || !pkgName.trim()) {
+      throw new Error('Package name must be a non-empty string')
+    }
+
     const pkg = cache.package.get(pkgName)
     if (!pkg) {
       throw new Error(`Package not found: ${pkgName}`)
@@ -36,6 +41,11 @@ class LifecycleManager {
    * 禁用插件包（保留注册但不响应事件）
    */
   async disable (pkgName: string): Promise<void> {
+    // 防御性检查
+    if (typeof pkgName !== 'string' || !pkgName.trim()) {
+      throw new Error('Package name must be a non-empty string')
+    }
+
     const pkg = cache.package.get(pkgName)
     if (!pkg) {
       throw new Error(`Package not found: ${pkgName}`)
@@ -55,6 +65,11 @@ class LifecycleManager {
    * 卸载插件包（完全移除）
    */
   async unload (pkgName: string): Promise<void> {
+    // 防御性检查
+    if (typeof pkgName !== 'string' || !pkgName.trim()) {
+      throw new Error('Package name must be a non-empty string')
+    }
+
     const pkg = cache.package.get(pkgName)
     if (!pkg) {
       throw new Error(`Package not found: ${pkgName}`)
@@ -80,6 +95,7 @@ class LifecycleManager {
    * 获取插件状态
    */
   getStatus (pkgName: string): PluginStatus {
+    if (typeof pkgName !== 'string' || !pkgName) return 'unloaded'
     const pkg = cache.package.get(pkgName)
     return pkg?.status ?? 'unloaded'
   }
@@ -110,6 +126,7 @@ class LifecycleManager {
    * 检查包是否已加载
    */
   isLoaded (pkgName: string): boolean {
+    if (typeof pkgName !== 'string' || !pkgName) return false
     return cache.package.has(pkgName)
   }
 
@@ -117,6 +134,7 @@ class LifecycleManager {
    * 检查包是否已启用
    */
   isEnabled (pkgName: string): boolean {
+    if (typeof pkgName !== 'string' || !pkgName) return false
     const pkg = cache.package.get(pkgName)
     return pkg?.status === 'enabled'
   }

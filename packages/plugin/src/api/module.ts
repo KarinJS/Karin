@@ -157,7 +157,12 @@ class ModuleManager {
    * 设置受保护的模块路径
    */
   setExclude (paths: string[]): void {
-    this.exclude = paths.map(p => formatPath(p, { type: 'fileURL' }))
+    if (!Array.isArray(paths)) {
+      throw new Error('[module] setExclude: paths must be an array')
+    }
+    this.exclude = paths
+      .filter((p): p is string => typeof p === 'string' && p.trim().length > 0)
+      .map(p => formatPath(p, { type: 'fileURL' }))
   }
 
   /**
@@ -166,6 +171,11 @@ class ModuleManager {
    * 生产环境：添加版本号查询参数
    */
   getImportUrl (filePath: string, bustCache = false): string {
+    // 参数验证
+    if (typeof filePath !== 'string' || !filePath.trim()) {
+      throw new Error('[module] getImportUrl: filePath must be a non-empty string')
+    }
+
     if (!bustCache) return filePath
 
     // 生产环境使用版本号
@@ -190,6 +200,11 @@ class ModuleManager {
    * 清除模块缓存（ESM）
    */
   async clearCache (filePath: string, recursive = false): Promise<void> {
+    // 参数验证
+    if (typeof filePath !== 'string' || !filePath.trim()) {
+      throw new Error('[module] clearCache: filePath must be a non-empty string')
+    }
+
     const fileUrl = formatPath(filePath, { type: 'fileURL' })
 
     if (recursive) {
@@ -205,13 +220,23 @@ class ModuleManager {
    * 清除多个模块缓存
    */
   async clearCaches (fileURLs: string[]): Promise<void> {
-    await clearESMCache(fileURLs)
+    // 参数验证
+    if (!Array.isArray(fileURLs)) {
+      throw new Error('[module] clearCaches: fileURLs must be an array')
+    }
+    const validUrls = fileURLs.filter((u): u is string => typeof u === 'string' && u.trim().length > 0)
+    if (validUrls.length === 0) return
+    await clearESMCache(validUrls)
   }
 
   /**
    * 查找依赖某文件的所有模块（ESM 缓存）
    */
   async findDependentModules (filePath: string): Promise<string[]> {
+    // 参数验证
+    if (typeof filePath !== 'string' || !filePath.trim()) {
+      throw new Error('[module] findDependentModules: filePath must be a non-empty string')
+    }
     const fileUrl = formatPath(filePath, { type: 'fileURL' })
     return findDependentModulesFromCache(fileUrl, this.exclude)
   }
@@ -220,6 +245,11 @@ class ModuleManager {
    * 查找依赖某文件的所有模块（本地依赖图）
    */
   findDependents (filePath: string): string[] {
+    // 参数验证
+    if (typeof filePath !== 'string' || !filePath.trim()) {
+      throw new Error('[module] findDependents: filePath must be a non-empty string')
+    }
+
     const result: string[] = []
     const visited = new Set<string>()
 
@@ -244,6 +274,11 @@ class ModuleManager {
    * 查找某文件依赖的所有模块
    */
   findDependencies (filePath: string): string[] {
+    // 参数验证
+    if (typeof filePath !== 'string' || !filePath.trim()) {
+      throw new Error('[module] findDependencies: filePath must be a non-empty string')
+    }
+
     const result: string[] = []
     const visited = new Set<string>()
 
@@ -282,6 +317,14 @@ class ModuleManager {
    * 注册依赖关系
    */
   addDependency (from: string, to: string): void {
+    // 参数验证
+    if (typeof from !== 'string' || !from.trim()) {
+      throw new Error('[module] addDependency: from must be a non-empty string')
+    }
+    if (typeof to !== 'string' || !to.trim()) {
+      throw new Error('[module] addDependency: to must be a non-empty string')
+    }
+
     // from 依赖 to
     if (!this.dependencies.has(from)) {
       this.dependencies.set(from, new Set())
@@ -299,6 +342,11 @@ class ModuleManager {
    * 清除文件的依赖关系
    */
   clearDependencies (filePath: string): void {
+    // 参数验证
+    if (typeof filePath !== 'string' || !filePath.trim()) {
+      throw new Error('[module] clearDependencies: filePath must be a non-empty string')
+    }
+
     // 清除该文件的依赖
     const deps = this.dependencies.get(filePath)
     if (deps) {

@@ -33,6 +33,14 @@ export function task (
   callback: TaskCallback,
   options: Partial<TaskOptions> = {}
 ): string {
+  // 参数验证
+  if (typeof cron !== 'string' || !cron.trim()) {
+    throw new Error('[task] cron must be a non-empty string')
+  }
+  if (typeof callback !== 'function') {
+    throw new Error('[task] callback must be a function')
+  }
+
   const ctx = getContext()
 
   const instance: TaskInstance = {
@@ -40,15 +48,15 @@ export function task (
     callback,
     options: {
       cron,
-      name: options.name,
-      immediate: options.immediate ?? false,
+      name: typeof options?.name === 'string' ? options.name : undefined,
+      immediate: Boolean(options?.immediate),
     },
   }
 
   // TODO: 实际的 cron 调度逻辑
 
   return registry.register('task', instance, ctx.pkg, ctx.file, {
-    metadata: { cron, name: options.name },
+    metadata: { cron, name: options?.name },
   })
 }
 
@@ -56,6 +64,10 @@ export function task (
  * 带选项的创建方式
  */
 task.create = (options: TaskOptions) => {
+  // 参数验证
+  if (!options || typeof options !== 'object') {
+    throw new Error('[task.create] options must be an object')
+  }
   return (callback: TaskCallback) => {
     return task(options.cron, callback, options)
   }

@@ -27,7 +27,12 @@ class LoaderManager {
    * 加载单个文件
    */
   async loadFile (filePath: string, options: LoadFileOptions = {}): Promise<LoadResult> {
-    const { force = false, pkg, silent = false } = options
+    // 参数验证
+    if (typeof filePath !== 'string' || !filePath.trim()) {
+      throw new Error('[loader] loadFile: filePath must be a non-empty string')
+    }
+
+    const { force = false, pkg, silent = false } = options ?? {}
 
     try {
       // 如果强制重新加载，先清除缓存
@@ -73,6 +78,11 @@ class LoaderManager {
    * 加载整个包
    */
   async loadPackage (pkgPath: string, _source: PluginSource = 'npm'): Promise<LoadResult[]> {
+    // 参数验证
+    if (typeof pkgPath !== 'string' || !pkgPath.trim()) {
+      throw new Error('[loader] loadPackage: pkgPath must be a non-empty string')
+    }
+
     event.emit('plugin:load:start', { pkg: pkgPath })
 
     const files = cache.package.getFiles(pkgPath)
@@ -93,6 +103,10 @@ class LoaderManager {
    * 重新加载文件
    */
   async reloadFile (filePath: string): Promise<LoadResult> {
+    // 参数验证
+    if (typeof filePath !== 'string' || !filePath.trim()) {
+      throw new Error('[loader] reloadFile: filePath must be a non-empty string')
+    }
     return this.loadFile(filePath, { force: true })
   }
 
@@ -100,6 +114,11 @@ class LoaderManager {
    * 重新加载包
    */
   async reloadPackage (pkgName: string): Promise<LoadResult[]> {
+    // 参数验证
+    if (typeof pkgName !== 'string' || !pkgName.trim()) {
+      throw new Error('[loader] reloadPackage: pkgName must be a non-empty string')
+    }
+
     // 注销所有组件
     registry.unregisterByPackage(pkgName)
 
@@ -169,10 +188,17 @@ class LoaderManager {
     source: PluginSource,
     version = '0.0.0'
   ): void {
+    // 参数验证
+    if (typeof name !== 'string' || !name.trim()) {
+      throw new Error('[loader] addPackage: name must be a non-empty string')
+    }
+    if (typeof path !== 'string' || !path.trim()) {
+      throw new Error('[loader] addPackage: path must be a non-empty string')
+    }
     cache.package.add(name, {
-      version,
+      version: typeof version === 'string' ? version : '0.0.0',
       path,
-      source,
+      source: source || 'npm',
       status: 'loaded',
       files: new Set(),
     })
@@ -182,6 +208,13 @@ class LoaderManager {
    * 添加文件到包
    */
   addFileToPackage (pkgName: string, file: string): void {
+    // 参数验证
+    if (typeof pkgName !== 'string' || !pkgName.trim()) {
+      throw new Error('[loader] addFileToPackage: pkgName must be a non-empty string')
+    }
+    if (typeof file !== 'string' || !file.trim()) {
+      throw new Error('[loader] addFileToPackage: file must be a non-empty string')
+    }
     cache.package.addFile(pkgName, file)
   }
 }
