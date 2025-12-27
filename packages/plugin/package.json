@@ -16,6 +16,9 @@
     "build": "tsdown",
     "check": "pnpm run checkType",
     "checkType": "tsc",
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest --run --coverage",
     "esm:import:error": "node ./demo/esm-import-error/dynamic-import-demo.mjs",
     "prepublishOnly": "pnpm run checkType",
     "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
