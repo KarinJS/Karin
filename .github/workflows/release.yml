@@ -39,7 +39,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          registry-url: "https://registry.npmjs.org"
+          registry-url: 'https://registry.npmjs.org'
 
       - uses: pnpm/action-setup@v2
         with:
@@ -105,5 +105,6 @@ jobs:
         if: ${{ needs.release-please.outputs.core == 'true' }}
         uses: benc-uk/workflow-dispatch@v1
         with:
+          repo: '${{ github.repository_owner }}/karin-docker'
           workflow: docker.yaml
           token: ${{ secrets.RELEASE }}
