@@ -227,10 +227,9 @@ describe('Cache API', () => {
         expect(store.size).toBe(1)
       })
 
-      it('should return empty map for unknown type', () => {
+      it('should return undefined for unknown type', () => {
         const store = cache.instance.getStore('unknown' as PluginType)
-        expect(store).toBeInstanceOf(Map)
-        expect(store.size).toBe(0)
+        expect(store).toBeUndefined()
       })
 
       it('should get all instances of a type', () => {

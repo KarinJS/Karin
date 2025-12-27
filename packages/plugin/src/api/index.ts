@@ -9,3 +9,6 @@ export { registry, type RegistryAPI } from './registry'
 export { moduleApi, moduleApi as module, type ModuleAPI } from './module'
 export { loader, type LoaderAPI } from './loader'
 export { lifecycle, type LifecycleAPI } from './lifecycle'
+
+// 热点缓存
+export { CommandHotCache, type HotCacheStats } from './hot'
