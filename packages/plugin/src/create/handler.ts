@@ -1,157 +1,58 @@
-import { types } from '@karinjs/utils'
-import { BuilderBase } from './base'
-import { pluginCache } from '../cache'
-import type { OptionsBase } from './options'
+/**
+ * Handler DSL
+ * @module create/handler
+ */
+
+import { registry } from '../api/registry'
+import { getContext } from './context'
+import type { HandlerCallback, HandlerOptions } from '../types'
 
 /**
- * Handler 插件选项
+ * Handler 实例
  */
-export interface Options extends OptionsBase {
-
+export interface HandlerInstance {
+  /** 处理器键名 */
+  key: string
+  /** 回调函数 */
+  callback: HandlerCallback
+  /** 选项 */
+  options: HandlerOptions
 }
 
 /**
- * 格式化后的参数选项类型
- */
-type FormatOptions = Required<Omit<Options, 'rank' | 'notAdapter' | 'perm' | 'permission'>>
-
-/**
- * Handler 回调函数类型
- */
-export type HandlerCallback = (
-  /** 自定义参数 由调用方传递 */
-  args: Record<string, unknown>,
-  /** 调用后将继续执行下一个handler */
-  next: (msg?: string) => void,
-) => Promise<unknown> | unknown
-
-/**
- * 快速构建 Handler 插件
- * @param key 事件key
- * @param fnc 回调函数
+ * 创建处理器
+ * @param key 处理器键名
+ * @param callback 回调函数
  * @param options 选项
+ * @returns 注册 ID
  */
-export const handler = (
+export function handler (
   key: string,
-  fnc: HandlerCallback,
-  options: Options = {}
-): CreateHandler => {
-  const result = new CreateHandler(key, fnc, options)
-  pluginCache.register.handler(key, result)
-  return result
+  callback: HandlerCallback,
+  options: Partial<HandlerOptions> = {}
+): string {
+  const ctx = getContext()
+
+  const instance: HandlerInstance = {
+    key,
+    callback,
+    options: {
+      key,
+      priority: options.priority ?? 0,
+    },
+  }
+
+  return registry.register('handler', instance, ctx.pkg, ctx.file, {
+    priority: options.priority,
+    metadata: { key },
+  })
 }
 
 /**
- * Handler 构建器
- * @class CreateHandler
+ * 带选项的创建方式
  */
-export class CreateHandler extends BuilderBase {
-  #key: string
-  #callback: HandlerCallback
-  #options: Required<FormatOptions>
-
-  constructor (
-    key: string,
-    callback: HandlerCallback,
-    options: Options = {}
-  ) {
-    super()
-    if (!key) throw new Error('[handler]: 缺少参数[key]')
-    if (!callback) throw new Error('[handler]: 缺少参数[fnc]')
-
-    this.#key = key
-    this.#callback = callback
-    this.#options = CreateHandler.options(options, this.defaultAppName)
-    this.setLog(this.#options.log)
-  }
-
-  /**
-   * 标准化 Handler 选项
-   * @param options 选项
-   * @returns 返回格式化后的选项
-   */
-  static options (
-    options: Options,
-    defaultAppName: string
-  ): Required<FormatOptions> {
-    return {
-      name: types.string(options.name, defaultAppName),
-      log: types.bool(options.log, true),
-      priority: types.number(options.priority, types.number(options.rank, 10000)),
-      adapter: types.array(options.adapter, []),
-      dsbAdapter: types.array(options.dsbAdapter, types.array(options.notAdapter, [])),
-    }
-  }
-
-  /**
-   * 当前app名称
-   */
-  get name (): string {
-    return this.#options.name
-  }
-
-  get type (): 'handler' {
-    return 'handler'
-  }
-
-  /**
-   * 事件key
-   * @returns 返回事件key
-   */
-  get key (): string {
-    return this.#key
-  }
-
-  /**
-   * 优先级
-   */
-  get priority (): number {
-    return this.#options.priority
-  }
-
-  /**
-   * 插件回调函数
-   * @returns 返回插件回调函数
-   */
-  get callback (): HandlerCallback {
-    return this.#callback
-  }
-
-  /**
-   * 插件选项
-   * @returns 返回插件选项
-   */
-  get options (): Required<FormatOptions> {
-    return this.#options
-  }
-
-  /**
-   * 更新事件key
-   * @param key 事件key
-   */
-  setKey (key: string) {
-    this.#key = key
-  }
-
-  /**
-   * 更新回调函数
-   * @param callback 回调函数
-   */
-  setCallback (callback: HandlerCallback) {
-    this.#callback = callback
-  }
-
-  /**
-   * 更新选项
-   * @param options Handler 选项
-   */
-  setOptions (options: Options) {
-    const opt = CreateHandler.options(options, this.defaultAppName)
-    /** 标记脏数据 */
-    if (opt.priority !== this.#options.priority) {
-      pluginCache.instances.markAsUnsorted('handler', this.#key)
-    }
-
-    this.#options = opt
+handler.create = (options: HandlerOptions) => {
+  return (callback: HandlerCallback) => {
+    return handler(options.key, callback, options)
   }
 }

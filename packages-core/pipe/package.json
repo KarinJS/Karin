@@ -1,5 +1,5 @@
 {
-  "name": "@karinjs/plugin-process",
+  "name": "@karinjs/core-pipe",
   "version": "0.0.1",
   "description": "karin process management",
   "keywords": [

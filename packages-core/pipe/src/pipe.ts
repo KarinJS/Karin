@@ -75,6 +75,7 @@ const pipeMessageHandler = (
 ) => {
   const message = data.toString().trim()
   if (message === 'exit') {
+    logger.info('[pipe] 收到退出消息，正在退出进程...')
     if (process.env.pm_id) {
       execSync(`npx pm2 delete ${process.env.pm_id}`, { stdio: 'ignore' })
     }

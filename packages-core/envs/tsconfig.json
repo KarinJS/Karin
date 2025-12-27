@@ -1,8 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "skipLibCheck": true
   },
-  "exclude": ["dist", "tsdown.config.ts"]
+  "exclude": [
+    "dist",
+    "tsdown.config.ts"
+  ]
 }

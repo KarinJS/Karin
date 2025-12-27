@@ -37,11 +37,32 @@ const config = (options: UserConfig = {}): UserConfig => {
     outDir: 'dist',
     clean: true,
     treeshake: true,
-    external: [...name, 'tsdown/config'],
+    external: options.external || [...name, 'tsdown/config'],
     ...options,
+    exports: {
+      devExports: true,
+      customExports: (pkg, context) => {
+        if (!context.isPublish || typeof pkg !== 'object' || pkg === null) return pkg
+        Object.entries(pkg || {}).forEach(([key, value]) => {
+          if (key === './package.json') return
+          if (typeof value !== 'string') return
+
+          pkg[key] = {
+            types: value.replace(/\.mjs$/, '.d.ts'),
+            import: value,
+            default: value,
+          }
+        })
+        return pkg
+      },
+      ...(typeof options.exports === 'object' && options.exports !== null ? options.exports : {}),
+    },
   })
 
   return cfg
 }
 
-export default config
+export {
+  config as defineConfig,
+  config as default,
+}

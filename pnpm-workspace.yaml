@@ -2,6 +2,7 @@
 shellEmulator: true
 
 packages:
+  - webui
   - packages/*
   - packages-core/*
   - packages-plugin/*
@@ -16,7 +17,7 @@ onlyBuiltDependencies:
 
 catalog:
   "@karinjs/node-pty": "npm:@karinjs/node-pty"
-  art-template: "npm:@karinjs/art-template"
+  "@karinjs/art-template": 1.1.0
   axios: "npm:@karinjs/axios@1.13.0"
   chalk: 5.4.1
   chokidar: 4.0.3
@@ -27,7 +28,7 @@ catalog:
   moment: "npm:@karinjs/moment"
   node-schedule: "npm:@karinjs/node-schedule@1.1.2"
   redis: "npm:@karinjs/redis"
-  sqlite3: "npm:@karinjs/sqlite3@0.4.2"
+  sqlite3: "npm:@karinjs/sqlite3@0.4.3"
   ws: "npm:@karinjs/ws"
   yaml: 2.7.0
   semver: 7.7.3

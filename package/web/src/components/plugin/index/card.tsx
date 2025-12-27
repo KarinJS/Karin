@@ -4,7 +4,7 @@ import { Avatar } from '@heroui/avatar'
 import { FaUser } from 'react-icons/fa6'
 import { Tooltip } from '@heroui/tooltip'
 import { BadgeCheck } from 'lucide-react'
-import { Card, CardBody } from '@heroui/card'
+import { Card, CardBody } from '@heroui/card/)
 import { Button } from '@heroui/button'
 import { IoSettingsOutline } from 'react-icons/io5'
 import { useNavigate } from 'react-router-dom'

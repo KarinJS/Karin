@@ -12,8 +12,8 @@ export * from '@karinjs/logger'
 // export * from '@karinjs/onebot'
 export * from '@karinjs/store'
 
-export * from '@karinjs/render'
-export * from '@karinjs/server'
+// export * from '@karinjs/render'
+// export * from '@karinjs/server'
 export * from '@karinjs/utils'
 
 // export {

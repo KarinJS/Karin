@@ -239,6 +239,9 @@ export interface DefineConfig {
      * ```
      */
     'change:done': (file: string) => void | Promise<void>,
+  },
+  hmr?: {
+
   }
 }
 

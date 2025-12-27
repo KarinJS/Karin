@@ -2,7 +2,6 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
-    "baseUrl": "./",
     "declaration": true,
     "declarationMap": false,
     "esModuleInterop": true,
@@ -26,6 +25,8 @@
   },
   "exclude": [
     "dist",
+    "test",
+    "tests",
     "tsdown.config.ts",
     "node_modules"
   ]

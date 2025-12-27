@@ -15,8 +15,8 @@
   "scripts": {
     "build": "tsdown",
     "test": "vitest run",
-    "test:watch": "vitest watch",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest watch"
   },
   "devDependencies": {
     "@karinjs/adapter": "workspace:*",

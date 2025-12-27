@@ -53,8 +53,6 @@
   },
   "devDependencies": {
     "@karinjs/adapter": "workspace:*",
-    "@karinjs/plugin-adapter-console": "workspace:*",
-    "@karinjs/plugin-adapter-onebot": "workspace:*",
     "@karinjs/bot": "workspace:*",
     "@karinjs/components": "workspace:*",
     "@karinjs/config": "workspace:*",
@@ -64,14 +62,15 @@
     "@karinjs/logger": "workspace:*",
     "@karinjs/node-pty": "catalog:",
     "@karinjs/onebot": "workspace:*",
-    "@karinjs/store": "workspace:*",
     "@karinjs/plugin": "workspace:*",
+    "@karinjs/plugin-adapter-console": "workspace:*",
+    "@karinjs/plugin-adapter-onebot": "workspace:*",
+    "@karinjs/core-pipe": "workspace:*",
     "@karinjs/plugin-webui-network-monitor": "^1.0.3",
     "@karinjs/plugins-list": "^1.7.0",
-    "@karinjs/render": "workspace:*",
     "@karinjs/server": "workspace:*",
+    "@karinjs/store": "workspace:*",
     "@karinjs/utils": "workspace:*",
-    "@karinjs/plugin-process": "workspace:*",
     "@types/express": "^5.0.1",
     "art-template": "npm:@karinjs/art-template@1.1.0",
     "axios": "catalog:",
@@ -85,8 +84,6 @@
   },
   "peerDependencies": {
     "@karinjs/adapter": "workspace:*",
-    "@karinjs/plugin-adapter-console": "workspace:*",
-    "@karinjs/plugin-adapter-onebot": "workspace:*",
     "@karinjs/bot": "workspace:*",
     "@karinjs/components": "workspace:*",
     "@karinjs/config": "workspace:*",
@@ -94,11 +91,12 @@
     "@karinjs/envs": "workspace:*",
     "@karinjs/events": "workspace:*",
     "@karinjs/logger": "workspace:*",
-    "@karinjs/store": "workspace:*",
     "@karinjs/plugin": "workspace:*",
-    "@karinjs/render": "workspace:*",
+    "@karinjs/plugin-adapter-console": "workspace:*",
+    "@karinjs/plugin-adapter-onebot": "workspace:*",
+    "@karinjs/core-pipe": "workspace:*",
     "@karinjs/server": "workspace:*",
-    "@karinjs/utils": "workspace:*",
-    "@karinjs/plugin-process": "workspace:*"
+    "@karinjs/store": "workspace:*",
+    "@karinjs/utils": "workspace:*"
   }
 }

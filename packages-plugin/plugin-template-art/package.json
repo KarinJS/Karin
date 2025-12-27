@@ -1,0 +1,25 @@
+{
+  "name": "@karinjs/plugin-template-art",
+  "version": "0.0.1",
+  "description": "",
+  "keywords": [],
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && tsdown"
+  },
+  "devDependencies": {
+    "@karinjs/art-template": "catalog:",
+    "@karinjs/rendering": "workspace:*",
+    "@karinjs/utils": "workspace:*",
+    "axios": "catalog:"
+  },
+  "peerDependencies": {
+    "@karinjs/art-template": "catalog:",
+    "@karinjs/rendering": "workspace:*",
+    "@karinjs/utils": "workspace:*",
+    "axios": "catalog:"
+  }
+}

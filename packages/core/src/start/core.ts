@@ -2,21 +2,39 @@ import 'dotenv/config'
 import path from 'node:path'
 import { store } from '@karinjs/store'
 import { isDev } from '@karinjs/envs'
-// import paths from '@karinjs/store'
-// import { initDB } from '../db'
-// import { pluginLoader } from '@karinjs/plugin'
-// import { ONLINE } from '@karinjs/envs'
-// import { emitter } from '@karinjs/events'
-// import { createSystemConfig } from '../config'
-// import { createDB, createRedis, createTaskDB } from '@karinjs/db'
-// import { configureLogger } from '@karinjs/logger'
-// import { registerBot } from '../bot'
-// import { initSignals, injectLogger, pipe } from '@karinjs/plugin-process'
 
 let isStart = false
 if (!process.env.EBV_FILE) process.env.EBV_FILE = '.env'
 
+/**
+ * 机器人启动类
+ * @internal
+ * @description 负责管理机器人的启动流程，包括配置加载、日志初始化、数据库连接等
+ */
 class StartBot {
+  /**
+   * 获取打印输出对象
+   * @returns 包含启动和完成打印方法的对象
+   * @description 提供启动和完成时的日志输出方法
+   */
+  get print () {
+    return {
+      start: () => {
+        logger.mark('Karin 启动中...')
+        logger.mark(`当前版本: ${process.env.KARIN_VERSION}`)
+        logger.mark('https://github.com/KarinJS/Karin')
+      },
+      done: () => {
+        logger.mark(`karin 启动完成: 耗时 ${logger.green(process.uptime().toFixed(2))} 秒...`)
+      },
+    }
+  }
+
+  /**
+   * 加载环境变量配置
+   * @returns 返回当前实例以支持链式调用
+   * @description 从 .env 文件加载环境变量配置，支持自定义环境变量文件路径
+   */
   async dotenv () {
     const { default: dotenv } = await import('dotenv')
     const envFile = process.env.ENV_FILE || process.env.EBV_FILE || '.env'
@@ -24,6 +42,11 @@ class StartBot {
     return this
   }
 
+  /**
+   * 初始化配置和日志系统
+   * @returns 返回配置和日志实例对象
+   * @description 并行加载配置模块和日志模块，初始化配置并根据配置设置日志系统
+   */
   async configAndLogger () {
     const [
       { config },
@@ -46,6 +69,12 @@ class StartBot {
     return { config, logger }
   }
 
+  /**
+   * 初始化数据库连接
+   * @param config - 配置实例
+   * @returns 返回数据库和Redis实例对象
+   * @description 并行创建数据库和Redis连接，返回数据库和Redis实例供后续使用
+   */
   async db (config: import('@karinjs/config').Config) {
     const { createDB, createRedis, db, redis } = await import('@karinjs/db')
     await Promise.all([
@@ -56,8 +85,14 @@ class StartBot {
     return { db, redis }
   }
 
+  /**
+   * 初始化管道系统
+   * @param logger - 日志实例
+   * @returns 返回当前实例以支持链式调用
+   * @description 注入日志实例，初始化信号处理，检查并创建管道
+   */
   async pipe (logger: import('@karinjs/logger').Logger) {
-    const { injectLogger, initSignals, pipe } = await import('@karinjs/plugin-process')
+    const { injectLogger, initSignals, pipe } = await import('@karinjs/core-pipe')
     injectLogger(logger)
     initSignals()
     await pipe.check()
@@ -65,12 +100,23 @@ class StartBot {
     return this
   }
 
+  /**
+   * 加载插件
+   * @returns 返回当前实例以支持链式调用
+   * @description 运行插件加载器，加载所有已安装的插件
+   */
   async pluginLoader () {
     const { pluginLoader } = await import('@karinjs/plugin')
     await pluginLoader.run()
     return this
   }
 
+  /**
+   * 设置环境变量
+   * @param config - 配置实例
+   * @returns 返回当前实例以支持链式调用
+   * @description 根据配置设置HTTP服务器相关的环境变量和版本信息
+   */
   async env (config: import('@karinjs/config').Config) {
     const server = config.server()
     process.env.HTTP_HOST = String(server.http.host)
@@ -87,18 +133,34 @@ class StartBot {
     return this
   }
 
+  /**
+   * 启动控制台适配器
+   * @returns 返回当前实例以支持链式调用
+   * @description 运行控制台适配器，提供控制台交互功能
+   */
   async adapterConsole () {
     const { KARIN_ADAPTER_RUN } = await import('@karinjs/plugin-adapter-console')
     await KARIN_ADAPTER_RUN()
     return this
   }
 
+  /**
+   * 启动OneBot适配器
+   * @returns 返回当前实例以支持链式调用
+   * @description 运行OneBot协议适配器，提供OneBot协议支持
+   */
   async adapterOneBot () {
     const { KARIN_ADAPTER_RUN } = await import('@karinjs/plugin-adapter-onebot')
     await KARIN_ADAPTER_RUN()
     return this
   }
 
+  /**
+   * 启动HTTP服务器
+   * @param config - 配置实例
+   * @returns Promise<void>
+   * @description 根据配置启动HTTP服务器和WebSocket上下文
+   */
   async server (config: import('@karinjs/config').Config) {
     const server = config.server()
     const { runServer, createWebSocketContext } = await import('@karinjs/server')
@@ -120,120 +182,18 @@ export const start = async () => {
 
   const run = new StartBot()
   await run.dotenv()
+
   const { config, logger } = await run.configAndLogger()
   await run.env(config)
-
-  logger.mark('Karin 启动中...')
-  logger.mark(`当前版本: ${process.env.KARIN_VERSION}`)
-  logger.mark('https://github.com/KarinJS/Karin')
+  run.print.start()
 
   await run.pipe(logger)
   await run.db(config)
+
   run.server(config)
   run.pluginLoader()
   run.adapterConsole()
   run.adapterOneBot()
 
-  // /**
-  //  * 3. 初始化配置文件
-  //  * - 初始化基本文件目录
-  //  * - 读取package.json
-  //  * - 设置版本号到环境变量
-  //  * - 设置运行环境到环境变量
-  //  * - 清空dir.consolePath目录 保留目录
-  //  * - 生成配置文件给予用户编辑
-  //  * - 初始化配置文件缓存
-  //  */
-  // await createSystemConfig()
-  // process.env.VERSION = config.pkg().version
-  // process.env.KARIN_VERSION = config.pkg().version
-  // await initDB()
-
-  // /**
-  //  * 4. 打印启动日志
-  //  */
-  // logger.mark('Karin 启动中...')
-  // logger.mark(`当前版本: ${process.env.KARIN_VERSION}`)
-  // logger.mark('https://github.com/KarinJS/Karin')
-
-  // /**
-  //  * 5. 初始化进程
-  //  * - 捕获异常信号
-  //  * - 检查是否存在后台进程
-  //  * - 关闭后台进程
-  //  */
-  // injectLogger(logger)
-  // initSignals()
-  // await pipe.check()
-  // await pipe.create()
-
-  // /**
-  //  * 6. 初始化express
-  //  * - 初始化express
-  //  * - 设置路由
-  //  * - 设置静态文件目录
-  //  * - 设置根路径请求
-  //  */
-  // const { initExpress, initialize } = await import('@karinjs/server')
-  // await Promise.all([
-  //   initExpress(paths, +process.env.HTTP_PORT, process.env.HTTP_HOST),
-  //   createTaskDB(paths.karinPathTaskDb),
-  //   createRedis(config.redis(), paths.karinPathRedisSqlite3),
-  //   createDB(paths.karinPathKv),
-  //   initialize(),
-  // ])
-
-  // /**
-  //  * 8. 初始化插件
-  //  */
-  // pluginLoader.run()
-
-  // /**
-  //  * 9. 加载适配器
-  //  */
-  // import('@karinjs/plugin-adapter-console')
-  //   .then(({ AdapterConsole }) => {
-  //     logger.debug('@karinjs/plugin-adapter-console 开始加载...')
-  //     const consoleAdapter = AdapterConsole.getInstance()
-  //     registerBot('other', consoleAdapter)
-  //     logger.debug('@karinjs/plugin-adapter-console 加载完成')
-  //   })
-
-  // import('@karinjs/adapter-onebot')
-  //   .then(({ OneBotCore }) => {
-  //     logger.debug('@karinjs/adapter-onebot 适配器开始加载...')
-  //     const OneBotAdapter = OneBotCore.getInstance()
-  //     OneBotAdapter.init().then(() => {
-  //       logger.debug('@karinjs/adapter-onebot 适配器加载完成')
-  //     })
-  //   })
-
-  // import('@karinjs/render')
-  //   .then(({ initRender }) => {
-  //     logger.debug('@karinjs/render 开始加载...')
-  //     initRender().then(() => {
-  //       logger.debug('@karinjs/render 加载完成')
-  //     })
-  //   })
-
-  // // /**
-  // //  * 10. 清理HTML缓存
-  // //  */
-  // // const { startCleanExpiredFiles } = await import('@karinjs/render')
-  // // startCleanExpiredFiles()
-
-  // // /**
-  // //  * 11. 初始化snapka服务
-  // //  */
-  // // const {
-  // //   initWebSocketPuppeteerServer,
-  // //   initSnapkaClient,
-  // //   initSnapkaHttp,
-  // // } = await import('@/adapter/snapka/index')
-  // // initWebSocketPuppeteerServer()
-  // // initSnapkaClient()
-  // // initSnapkaHttp()
-  // emitter.emit(ONLINE, {})
-
-  logger.mark(`karin 启动完成: 耗时 ${logger.green(process.uptime().toFixed(2))} 秒...`)
+  run.print.done()
 }

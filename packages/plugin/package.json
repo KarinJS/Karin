@@ -16,34 +16,34 @@
     "build": "tsdown",
     "check": "pnpm run checkType",
     "checkType": "tsc",
+    "esm:import:error": "node ./demo/esm-import-error/dynamic-import-demo.mjs",
     "prepublishOnly": "pnpm run checkType",
-    "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\"",
-    "esm:import:error": "node ./demo/esm-import-error/dynamic-import-demo.mjs"
+    "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
   },
   "devDependencies": {
     "@karinjs/adapter": "workspace:*",
     "@karinjs/components": "workspace:*",
     "@karinjs/envs": "workspace:*",
     "@karinjs/events": "workspace:*",
-    "@karinjs/store": "workspace:*",
     "@karinjs/logger": "workspace:*",
+    "@karinjs/store": "workspace:*",
     "@karinjs/utils": "workspace:*",
     "callsites": "^4.2.0",
     "chokidar": "catalog:",
-    "semver": "catalog:",
-    "node-schedule": "catalog:"
+    "node-schedule": "catalog:",
+    "semver": "catalog:"
   },
   "peerDependencies": {
     "@karinjs/adapter": "workspace:*",
     "@karinjs/components": "workspace:*",
     "@karinjs/envs": "workspace:*",
     "@karinjs/events": "workspace:*",
-    "@karinjs/store": "workspace:*",
     "@karinjs/logger": "workspace:*",
+    "@karinjs/store": "workspace:*",
     "@karinjs/utils": "workspace:*",
     "callsites": "^4.2.0",
     "chokidar": "catalog:",
-    "semver": "catalog:",
-    "node-schedule": "catalog:"
+    "node-schedule": "catalog:",
+    "semver": "catalog:"
   }
 }

@@ -8,18 +8,18 @@ const importWithBase = async (base: string) => {
   const oldEnv = { ...process.env }
   process.env.BASE_DIR = base
   vi.resetModules()
-  const mod = await import('../store')
+  const mod = await import('../src/store')
   Object.assign(process.env, oldEnv)
   return mod
 }
 
 describe('store.plugin 目录', () => {
   beforeEach(() => {
-    try { fs.rmSync(dirs.tmpRoot, { recursive: true, force: true }) } catch {}
+    try { fs.rmSync(dirs.tmpRoot, { recursive: true, force: true }) } catch { }
     fs.mkdirSync(dirs.tmpRoot, { recursive: true })
   })
   afterEach(() => {
-    try { fs.rmSync(dirs.tmpRoot, { recursive: true, force: true }) } catch {}
+    try { fs.rmSync(dirs.tmpRoot, { recursive: true, force: true }) } catch { }
   })
 
   it('创建插件目录与子目录', async () => {

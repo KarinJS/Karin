@@ -1,14 +1,11 @@
-export { ctx } from './context'
-export { accept, CreateAccept } from './accept'
-export { button, CreateButton } from './button'
-export { command, CreateCommand } from './command'
-export { handler, CreateHandler } from './handler'
-export { task, CreateTask } from './task'
-export { Plugin, CreateClassPlugin } from './class'
+/**
+ * Create DSL 统一导出
+ * @module create
+ */
 
-export type { AcceptCallback, Options as AcceptOptions } from './accept'
-export type { ButtonCallback, Options as ButtonOptions } from './button'
-export type { MessageCallback, Options as CommandOptions, EventTypes, EventsToUnion } from './command'
-export type { HandlerCallback, Options as HandlerOptions } from './handler'
-export type { TaskCallback, Options as TaskOptions } from './task'
-export type { PluginOptions, FormatPluginOptions, PluginRuleItem } from './class'
+export { command, type CommandInstance } from './command'
+export { accept, type AcceptInstance } from './accept'
+export { handler, type HandlerInstance } from './handler'
+export { button, type ButtonInstance } from './button'
+export { task, type TaskInstance } from './task'
+export { setContext, getContext, clearContext, withContext } from './context'

@@ -1,0 +1,26 @@
+{
+  "name": "@karinjs/plugin-template-react",
+  "version": "0.0.1",
+  "description": "",
+  "keywords": [],
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc && tsdown"
+  },
+  "devDependencies": {
+    "@snapka/types": "^0.1.2",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "esbuild-wasm": "^0.27.1",
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
+  }
+}

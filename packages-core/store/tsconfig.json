@@ -1,10 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "skipLibCheck": true
   },
   "exclude": [
+    "tests",
     "tsdown.config.ts"
   ]
 }

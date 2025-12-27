@@ -29,18 +29,18 @@
   },
   "devDependencies": {
     "@karinjs/bot": "workspace:*",
-    "@karinjs/events": "workspace:*",
     "@karinjs/config": "workspace:*",
     "@karinjs/envs": "workspace:*",
+    "@karinjs/events": "workspace:*",
     "@karinjs/logger": "workspace:*",
     "@karinjs/plugin": "workspace:*",
     "@karinjs/utils": "workspace:*"
   },
   "peerDependencies": {
     "@karinjs/bot": "workspace:*",
-    "@karinjs/events": "workspace:*",
     "@karinjs/config": "workspace:*",
     "@karinjs/envs": "workspace:*",
+    "@karinjs/events": "workspace:*",
     "@karinjs/logger": "workspace:*",
     "@karinjs/plugin": "workspace:*",
     "@karinjs/utils": "workspace:*"

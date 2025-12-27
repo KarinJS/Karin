@@ -17,22 +17,22 @@
   },
   "devDependencies": {
     "@karinjs/adapter": "workspace:*",
-    "@karinjs/events": "workspace:*",
-    "@karinjs/envs": "workspace:*",
-    "@karinjs/logger": "workspace:*",
-    "@karinjs/store": "workspace:*",
-    "@karinjs/utils": "workspace:*",
+    "@karinjs/bot": "workspace:*",
     "@karinjs/config": "workspace:*",
+    "@karinjs/envs": "workspace:*",
+    "@karinjs/events": "workspace:*",
+    "@karinjs/logger": "workspace:*",
     "@karinjs/server": "workspace:*",
-    "@karinjs/bot": "workspace:*"
+    "@karinjs/store": "workspace:*",
+    "@karinjs/utils": "workspace:*"
   },
   "peerDependencies": {
     "@karinjs/adapter": "workspace:*",
-    "@karinjs/events": "workspace:*",
-    "@karinjs/store": "workspace:*",
-    "@karinjs/utils": "workspace:*",
+    "@karinjs/bot": "workspace:*",
     "@karinjs/config": "workspace:*",
+    "@karinjs/events": "workspace:*",
     "@karinjs/server": "workspace:*",
-    "@karinjs/bot": "workspace:*"
+    "@karinjs/store": "workspace:*",
+    "@karinjs/utils": "workspace:*"
   }
 }

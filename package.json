@@ -8,27 +8,21 @@
   "type": "module",
   "main": "",
   "scripts": {
-    "app": "pnpm --filter node-karin run app",
-    "build": "pnpm -r run build",
-    "build:all": "pnpm build",
-    "build:core": "pnpm --filter node-karin run build",
-    "build:prod": "pnpm --filter node-karin run build",
-    "build:web": "pnpm --filter karin-webui run build",
-    "dev": "tsx --conditions=development packages/core/src/start/main.ts",
-    "dev:cli": "pnpm --filter node-karin run dev:cli",
-    "dev:web": "pnpm --filter karin-webui run dev",
-    "lint:fix": "eslint --fix \"packages/**/*.ts\"",
-    "pkg": "tsx scripts.ts",
-    "sort": "pnpm -r exec sort-package-json",
-    "web": "pnpm --filter karin-webui run dev"
+    "sort": "sort-package-json \"package.json\" \"packages/*/package.json\"",
+    "dev": "tsx packages/core/src/start/main.ts",
+    "dev:webui": "tsx packages/core/src/start/webui.ts"
+  },
+  "dependencies": {
+    "empty-npm-package": "^1.0.0"
   },
   "devDependencies": {
     "@karinjs/core": "workspace:*",
     "@types/express": "^5.0.1",
     "@types/lodash": "^4.17.20",
-    "@types/node": "^20.19.9",
+    "@types/node": "^22.10.7",
     "@types/semver": "^7.7.1",
     "@vitest/coverage-v8": "4.0.12",
+    "depcheck": "^1.4.7",
     "eslint": "^9.32.0",
     "eslint-plugin-prettier": "^5.5.3",
     "glob": "^11.0.3",
@@ -36,15 +30,12 @@
     "prettier": "^3.6.2",
     "sort-json": "^2.0.1",
     "sort-package-json": "^3.4.0",
-    "tsdown": "^0.15.9",
+    "tsdown": "^0.17.0",
     "tsdown-config": "workspace:*",
     "tsup": "^8.5.0",
     "tsx": "npm:@karinjs/tsx@5.1.0",
-    "typescript": "^5.9.3",
+    "typescript": "6.0.0-dev.20251205",
     "vite": "npm:rolldown-vite@latest",
     "vitest": "^4.0.12"
-  },
-  "dependencies": {
-    "empty-npm-package": "^1.0.0"
   }
 }

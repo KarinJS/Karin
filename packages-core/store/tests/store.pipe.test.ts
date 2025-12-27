@@ -8,18 +8,18 @@ const importWithEnv = async (env: Record<string, string | undefined>) => {
   const oldEnv = { ...process.env }
   Object.assign(process.env, env)
   vi.resetModules()
-  const mod = await import('../store')
+  const mod = await import('../src/store')
   Object.assign(process.env, oldEnv)
   return mod
 }
 
 describe('store.pipe 命名管道', () => {
   beforeEach(() => {
-    try { fs.rmSync(dirs.tmpRoot, { recursive: true, force: true }) } catch {}
+    try { fs.rmSync(dirs.tmpRoot, { recursive: true, force: true }) } catch { }
     fs.mkdirSync(dirs.tmpRoot, { recursive: true })
   })
   afterEach(() => {
-    try { fs.rmSync(dirs.tmpRoot, { recursive: true, force: true }) } catch {}
+    try { fs.rmSync(dirs.tmpRoot, { recursive: true, force: true }) } catch { }
   })
 
   it('Windows 平台返回 \\\.\\pipe\\name', async () => {

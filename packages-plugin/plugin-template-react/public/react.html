@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Import Map + React + TSX</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.2.0",
+            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client"
+        }
+    }
+    </script>
+
+  <script src="https://registry.npmmirror.com/esbuild-wasm/latest/files/lib/browser.min.js"></script>
+</head>
+
+<body>
+
+  <div class="min-h-screen bg-gray-100 p-8">
+    <div id="root"></div>
+    <div id="loading" class="text-center text-gray-600">Loading compiler...</div>
+  </div>
+
+  <script type="text/tsx" id="app-code">
+        "<{code}>"
+    </script>
+
+  <script>
+    (async () => {
+      try {
+        // 初始化 esbuild
+        await esbuild.initialize({
+          wasmURL: 'https://registry.npmmirror.com/esbuild-wasm/latest/files/esbuild.wasm',
+        })
+
+        const tsxCode = document.getElementById('app-code').textContent
+
+        // 编译组件代码
+        const result = await esbuild.transform(tsxCode, {
+          loader: 'tsx',
+          target: 'es2022',
+          format: 'esm'
+        })
+
+        // 创建组件模块的 Blob URL
+        const componentBlob = new Blob([result.code], { type: 'text/javascript' })
+        const componentUrl = URL.createObjectURL(componentBlob)
+
+        // 动态导入组件模块
+        const componentModule = await import(componentUrl)
+
+        // 获取默认导出的组件
+        const Component = componentModule.default
+
+        // 导入 React 渲染相关库
+        const { createRoot } = await import('react-dom/client')
+        const React = await import('react')
+
+        // 获取 props 并渲染组件
+        const props = JSON.parse("<{props}>")
+        const root = createRoot(document.getElementById('root'))
+        root.render(React.createElement(Component, props))
+
+        document.getElementById('loading').style.display = 'none'
+
+        // 清理内存
+        URL.revokeObjectURL(componentUrl)
+      } catch (e) {
+        console.error(e)
+        document.body.innerHTML += `<pre style="color:red">${e.message}</pre>`
+      }
+    })();
+  </script>
+</body>
+
+</html>

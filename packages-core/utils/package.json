@@ -10,11 +10,12 @@
   "author": "shijin",
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
-    }
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "README.md"
@@ -27,16 +28,16 @@
     "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
   },
   "devDependencies": {
-    "@karinjs/store": "workspace:*",
     "@karinjs/envs": "workspace:*",
     "@karinjs/logger": "workspace:*",
+    "@karinjs/store": "workspace:*",
     "@types/ini": "^4.1.1",
     "axios": "catalog:",
     "chokidar": "catalog:",
-    "ini": "^5.0.0",
+    "ini": "^6.0.0",
     "lodash": "catalog:",
-    "yaml": "catalog:",
-    "semver": "catalog:"
+    "semver": "catalog:",
+    "yaml": "catalog:"
   },
   "peerDependencies": {
     "@karinjs/store": "workspace:*",
@@ -44,7 +45,17 @@
     "chokidar": "catalog:",
     "ini": "^5.0.0",
     "lodash": "catalog:",
-    "yaml": "catalog:",
-    "semver": "catalog:"
+    "semver": "catalog:",
+    "yaml": "catalog:"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      },
+      "./package.json": "./package.json"
+    }
   }
 }

@@ -1,6 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "baseUrl": ".",
-  }
+  "exclude": [
+    "dist",
+    "test",
+    "tests",
+    "demo",
+    "src_old",
+    "tsdown.config.ts",
+    "node_modules"
+  ]
 }
