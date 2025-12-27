@@ -43,6 +43,7 @@ describe('marketplace/upgrade', () => {
       // 这个测试依赖网络，如果失败可能是网络问题
       try {
         const version = await getNpmPackageVersion('vitest')
+        console.log('vitest version:', version)
         expect(version).toBeTruthy()
         expect(typeof version).toBe('string')
       } catch {
