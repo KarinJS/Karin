@@ -1,4 +1,4 @@
-import type { PluginPackageType } from '@karinjs/plugin'
+import type { PluginPackageType } from '../../types/local'
 import type { CreateTaskParams } from '@karinjs/db'
 
 /** 插件管理任务参数 */

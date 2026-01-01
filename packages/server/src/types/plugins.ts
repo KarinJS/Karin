@@ -1,56 +1,68 @@
 import type { WebConfigIcon } from '@karinjs/components'
-import type { KarinPluginType, PluginPackageType } from '@karinjs/plugin'
+import type { PluginPackageType } from './local'
 
 /**
- * 基类
+ * 插件市场基础类型
  */
-interface Base {
-  /** 插件包名 */
+export interface KarinPluginBase {
+  /** 插件名称 */
   name: string
-  /**
-   * 插件类型
-   * - npm: npm 插件
-   * - git: git 插件
-   * - app: 单应用插件
-   */
-  type: 'npm' | 'git' | 'apps'
-  /** 插件描述 限制 50 长度 */
+  /** 插件描述 */
   description: string
-  /** 仓库主页 */
+  /** 插件仓库主页 */
   home: string
   /** 插件提交到仓库时间 */
   time: string
   /** 插件许可证 */
   license: {
-    /** 许可证名称 */
     name: string
-    /** 许可证地址 */
     url: string
   }
   /** 插件作者 */
   author: {
-    /** 名字 */
     name: string
-    /** 主页 */
     home: string
-    /** 头像 */
     avatar: string
   }[]
   /** 插件仓库 */
   repo: {
-    /** 仓库类型 */
     type: 'github' | 'gitee' | 'gitcode' | 'gitlab' | 'npm'
-    /** 仓库地址 */
     url: string
-    /** 分支名称 */
     branch: string
   }[]
 }
 
+/** npm 类型插件市场信息 */
+export interface KarinNpmPlugin extends KarinPluginBase {
+  type: 'npm'
+  /** npm 包版本 */
+  version: string
+  /** 下载量 */
+  downloads: number
+  /** 包大小 */
+  size: number
+}
+
+/** git 类型插件市场信息 */
+export interface KarinGitPlugin extends KarinPluginBase {
+  type: 'git'
+}
+
+/** app 类型插件市场信息 */
+export interface KarinAppPlugin extends KarinPluginBase {
+  type: 'apps'
+  /** app 文件 URL 列表 */
+  files: string[]
+}
+
+/** 插件市场类型联合 */
+export type KarinPluginType = KarinNpmPlugin | KarinGitPlugin | KarinAppPlugin
+
 /**
  * karin api返回类型
  */
-export interface PluginLists extends Base {
+export interface PluginLists extends KarinPluginBase {
+  type: 'npm' | 'git' | 'apps'
   version: string
   /** 是否已经安装 */
   installed: boolean

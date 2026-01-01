@@ -486,20 +486,19 @@ export const isPathEqual = (path1: string, path2: string) => {
 export const getDirs = async (dir: string, options: {
   /** 返回绝对路径 默认返回文件夹名称 */
   isAbs?: boolean
+  /** 静默模式，不打印无法访问路径的警告 */
+  silent?: boolean
 } = {}) => {
   const list: string[] = []
   const log = global?.logger || console
   const dirs = await fs.promises.readdir(dir)
 
   await Promise.allSettled(dirs.map(async (v) => {
-    const stat = await fs.promises.stat(path.join(dir, v))
-      .catch(() => {
-        log.warn(`[@karinjs/utils][getDirs] 无法访问路径: ${path.join(dir, v)}`)
-        return null
-      })
+    const fullPath = path.join(dir, v)
+    const stat = await fs.promises.stat(fullPath).catch(() => null)
     if (!stat?.isDirectory()) return
 
-    list.push(options.isAbs ? path.join(dir, v) : v)
+    list.push(options.isAbs ? fullPath : v)
   }))
 
   return list
@@ -510,14 +509,20 @@ export const getDirs = async (dir: string, options: {
  * @param dir 目录
  * @returns 文件夹列表
  */
-export const getDirsSync = (dir: string) => {
+export const getDirsSync = (dir: string, options: {
+  /** 返回绝对路径 默认返回文件夹名称 */
+  isAbs?: boolean
+} = {}) => {
   const list: string[] = []
   const dirs = fs.readdirSync(dir)
   dirs.forEach(v => {
-    const stat = fs.statSync(path.join(dir, v))
-    if (!stat.isDirectory()) return
-
-    list.push(v)
+    try {
+      const stat = fs.statSync(path.join(dir, v))
+      if (!stat.isDirectory()) return
+      list.push(options.isAbs ? path.join(dir, v) : v)
+    } catch {
+      // 静默忽略无法访问的路径（如无效符号链接）
+    }
   })
 
   return list

@@ -5,7 +5,7 @@ import { spawn } from 'child_process'
 import { createServerErrorResponse, createSuccessResponse } from '../../utils'
 
 import type { RequestHandler } from 'express'
-import type { PluginPackageType } from '@karinjs/plugin'
+import type { PluginPackageType } from '../../types/local'
 
 interface InstallTask {
   id: string

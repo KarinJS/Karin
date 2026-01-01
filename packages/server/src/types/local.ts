@@ -1,5 +1,10 @@
 import { ComponentConfig } from '@karinjs/core'
-import { PluginPackageType } from '@karinjs/plugin'
+
+/**
+ * 插件包类型
+ * @description server 包使用的插件类型，包含市场和管理功能所需的类型
+ */
+export type PluginPackageType = 'apps' | 'npm' | 'git' | 'dev' | 'root'
 
 /**
  * 插件作者
