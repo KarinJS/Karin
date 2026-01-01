@@ -1,9 +1,4 @@
 /**
- * 插件配置类型定义
- * @module config/types
- */
-
-/**
  * 插件作者
  */
 export interface WebConfigAuthor {

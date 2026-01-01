@@ -1,11 +1,11 @@
 import { Bot } from '@karinjs/bot'
 import { handleContext } from '../../event'
-import { pluginCache } from '@karinjs/plugin'
+import { hotCache } from '@karinjs/plugin'
 import { system, truncate } from '@karinjs/utils'
 
 import type { Config } from '@karinjs/config'
 
-import type { CreateClassPlugin, CreateCommand } from '@karinjs/plugin'
+import type { CreateCommand } from '@karinjs/plugin'
 import type { Message, MessageEventMap } from '../../event'
 
 export class MessageDispatch {
@@ -29,7 +29,7 @@ export class MessageDispatch {
     msg: string,
     nextFnc: () => void
   ) {
-    const hot = pluginCache.instances.command.hot[msg]
+    const hot = hotCache.query(msg)
     if (!hot) {
       nextFnc()
       return null
@@ -44,7 +44,7 @@ export class MessageDispatch {
    * @param disable 禁用列表
    */
   filterPlugin (
-    plugin: CreateCommand | CreateClassPlugin,
+    plugin: CreateCommand,
     enable: string[],
     disable: string[]
   ) {
@@ -82,7 +82,7 @@ export class MessageDispatch {
    */
   async filter (
     ctx: Message,
-    plugin: CreateCommand | CreateClassPlugin,
+    plugin: CreateCommand,
     enable: string[],
     disable: string[],
     targetEvent: [string, string]
@@ -133,7 +133,7 @@ export class MessageDispatch {
    */
   async runCallback (
     ctx: Message,
-    plugin: CreateCommand | CreateClassPlugin,
+    plugin: CreateCommand,
     nextFnc: () => void
   ) {
     /** 前缀 */

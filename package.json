@@ -26,6 +26,7 @@
     "eslint": "^9.32.0",
     "eslint-plugin-prettier": "^5.5.3",
     "glob": "^11.0.3",
+    "jiti": "^2.6.1",
     "neostandard": "^0.12.2",
     "prettier": "^3.6.2",
     "sort-json": "^2.0.1",

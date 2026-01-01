@@ -1,0 +1,56 @@
+{
+  "name": "@karinjs/hmr",
+  "version": "0.0.1",
+  "description": "Hot Module Replacement plugin for Karin dev packages",
+  "keywords": [
+    "hmr",
+    "hot-reload",
+    "hot-module-replacement",
+    "karin",
+    "plugin"
+  ],
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "checkType": "tsc",
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "prepublishOnly": "pnpm run checkType",
+    "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
+  },
+  "devDependencies": {
+    "@karinjs/envs": "workspace:*",
+    "@karinjs/events": "workspace:*",
+    "@karinjs/logger": "workspace:*",
+    "@karinjs/plugin": "workspace:*",
+    "@karinjs/utils": "workspace:*",
+    "chokidar": "catalog:"
+  },
+  "peerDependencies": {
+    "@karinjs/envs": "workspace:*",
+    "@karinjs/events": "workspace:*",
+    "@karinjs/logger": "workspace:*",
+    "@karinjs/plugin": "workspace:*",
+    "@karinjs/utils": "workspace:*",
+    "chokidar": "catalog:"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      },
+      "./package.json": "./package.json"
+    }
+  }
+}

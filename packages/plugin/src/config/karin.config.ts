@@ -1,8 +1,3 @@
-/**
- * karin.config 配置定义
- * @module config/karin.config
- */
-
 import type { ComponentConfig } from '@karinjs/components'
 import type { PluginMeta, WebConfigSaveResponse } from './types'
 

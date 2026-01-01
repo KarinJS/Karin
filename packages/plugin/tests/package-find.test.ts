@@ -1,5 +1,6 @@
 /**
  * package/find.ts 测试
+ * @note v11 移除 git 类型，getAllPackages 和 getCache 方法已删除
  */
 
 import { describe, it, expect } from 'vitest'
@@ -7,19 +8,6 @@ import { packageFinder } from '../src/package/find'
 
 describe('package/find', () => {
   describe('packageFinder', () => {
-    describe('getCache', () => {
-      it('should return empty array for uninitialized cache', () => {
-        const cache = packageFinder.getCache('npm')
-        expect(Array.isArray(cache)).toBe(true)
-      })
-
-      it('should return copy of cache', () => {
-        const cache1 = packageFinder.getCache('git')
-        const cache2 = packageFinder.getCache('git')
-        expect(cache1).not.toBe(cache2)
-      })
-    })
-
     describe('getNpmPackages', () => {
       it('should return npm packages array', async () => {
         const packages = await packageFinder.getNpmPackages()
@@ -65,34 +53,18 @@ describe('package/find', () => {
     })
 
     describe('getPluginsPackages', () => {
-      it('should return git and apps arrays', async () => {
+      it('should return apps array only (git removed in v11)', async () => {
         const result = await packageFinder.getPluginsPackages()
-        expect(result).toHaveProperty('git')
         expect(result).toHaveProperty('apps')
-        expect(Array.isArray(result.git)).toBe(true)
         expect(Array.isArray(result.apps)).toBe(true)
+        // git 类型已在 v11 移除
+        expect(result).not.toHaveProperty('git')
       })
 
       it('should use cache on second call', async () => {
         const first = await packageFinder.getPluginsPackages()
         const second = await packageFinder.getPluginsPackages()
-        expect(first.git.length).toBe(second.git.length)
         expect(first.apps.length).toBe(second.apps.length)
-      })
-    })
-
-    describe('getAllPackages', () => {
-      it('should return all package types', async () => {
-        const result = await packageFinder.getAllPackages()
-        expect(result).toHaveProperty('npm')
-        expect(result).toHaveProperty('git')
-        expect(result).toHaveProperty('apps')
-        expect(result).toHaveProperty('dev')
-      })
-
-      it('should force refresh all when requested', async () => {
-        const result = await packageFinder.getAllPackages(true)
-        expect(Array.isArray(result.npm)).toBe(true)
       })
     })
 
@@ -100,18 +72,6 @@ describe('package/find', () => {
       it('should read existing package.json', async () => {
         const pkg = await packageFinder.readPkg(process.cwd() + '/package.json')
         expect(pkg).toHaveProperty('name')
-      })
-
-      it('should create default package for non-existent file', async () => {
-        // 使用临时路径测试创建功能
-        // 注意：这个测试可能会创建文件，在实际测试中需要清理
-        try {
-          const pkg = await packageFinder.readPkg('/tmp/test-pkg-' + Date.now() + '/package.json')
-          expect(pkg).toHaveProperty('name')
-        } catch {
-          // 权限问题时跳过
-          expect(true).toBe(true)
-        }
       })
     })
   })

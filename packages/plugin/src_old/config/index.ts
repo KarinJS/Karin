@@ -1,5 +1,0 @@
-export { defineKarinConfig } from './karin.config'
-export { defineWebConfig, defineWebConfig as defineConfig } from './web.config'
-export type { DefineConfigWeb } from './web.config'
-export type { DefineConfig, PackageEnv } from './karin.config'
-export type { WebConfigAuthor, WebConfigSaveResponse, WebConfigIcon, PluginMeta } from './types'

@@ -1,8 +1,3 @@
-/**
- * 配置模块
- * @module config
- */
-
 export { defineKarinConfig } from './karin.config'
 export { defineWebConfig, defineWebConfig as defineConfig } from './web.config'
 export type { DefineConfigWeb } from './web.config'

@@ -1,17 +1,12 @@
 /**
- * 插件包类型定义
- * @module package/types
- */
-
-/**
  * karin的插件包类型
  * @description 插件包中的每个符合标准的文件，就是一个单独的 `app`
  * - npm: 从npm安装
- * - git: 在/karin/plugins目录下 并且package.json存在karin字段
- * - apps: 在/karin/plugins/*目录下 package.json不存在或存在不指定karin字段
- * - dev: 根目录的package.json存在karin字段
+ * - apps: 在/karin/plugins/*目录下
+ * - dev: 根目录的package.json存在karin字段（开发环境）
+ * @note v2.0 移除了 git 类型
  */
-export type PluginsTypes = 'apps' | 'git' | 'npm' | 'dev'
+export type PluginsTypes = 'apps' | 'npm' | 'dev'
 
 /**
  * 兼容1.0
@@ -173,15 +168,3 @@ export interface PackageKarin extends Package {
  * 兼容1.0
  */
 export type PkgData = Package
-
-/**
- * 包元信息缓存
- */
-export interface PackageMetaInfoCache {
-  /** package.json 文件路径 */
-  pkg: string
-  /** 包名 */
-  name: string
-  /** 绝对路径 */
-  abs: string
-}

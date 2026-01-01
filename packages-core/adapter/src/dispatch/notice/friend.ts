@@ -1,7 +1,7 @@
 import { NoticeDispatch } from './base'
 import { config } from '@karinjs/config'
 import { EventCallHooks } from '../../hooks'
-import { pluginCache } from '@karinjs/plugin'
+import { store } from '@karinjs/plugin'
 
 import type { Config } from '@karinjs/config'
 import type { Notice } from '../../event/types'
@@ -79,7 +79,7 @@ export class FriendNoticeDispatch<T extends Notice = Notice> extends NoticeDispa
     const enable = [...new Set([...this.config.friendConfig.enable, ...this.config.filter.plugin.enable])]
     const disable = [...new Set([...this.config.friendConfig.disable, ...this.config.filter.plugin.disable])]
 
-    for (const plugin of pluginCache.instances.accept) {
+    for (const plugin of store.get('accept')) {
       next = false
       await this.executePlugin(plugin, enable, disable, nextFnc)
       if (!next) return

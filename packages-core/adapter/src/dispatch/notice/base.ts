@@ -1,7 +1,7 @@
 import { Bot } from '@karinjs/bot'
 import { system } from '@karinjs/utils'
 import { handleContext } from '../../event'
-import { pluginCache } from '@karinjs/plugin'
+import { hotCache } from '@karinjs/plugin'
 
 import type { Config } from '@karinjs/config'
 import type { Notice } from '../../event'
@@ -28,7 +28,7 @@ export class NoticeDispatch {
     msg: string,
     nextFnc: () => void
   ) {
-    const hot = pluginCache.instances.command.hot[msg]
+    const hot = hotCache.query(msg)
     if (!hot) {
       nextFnc()
       return null

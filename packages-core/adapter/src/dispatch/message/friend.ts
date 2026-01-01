@@ -1,13 +1,13 @@
 import { lru } from '../LRU'
 import { config } from '@karinjs/config'
 import { MessageDispatch } from './base'
-import { pluginCache } from '@karinjs/plugin'
+import { store } from '@karinjs/plugin'
 import { createRawMessage } from '../../event/abstract/raw'
 import { MessageHooks, EventCallHooks, EmptyHooks } from '../../hooks'
 
 import type { Config } from '@karinjs/config'
 import type { FriendMessage } from '../../event/abstract/message'
-import type { CreateCommand, CreateClassPlugin } from '@karinjs/plugin'
+import type { CreateCommand } from '@karinjs/plugin'
 
 /**
  * @description 好友消息分发类
@@ -159,7 +159,7 @@ export class FriendMessageDispatch extends MessageDispatch {
     hot && await this.executePlugin(hot, enable, disable, nextFnc)
     if (!next) return
 
-    for (const plugin of pluginCache.instances.normal) {
+    for (const plugin of store.get('command')) {
       if (!plugin.reg.test(this.ctx.msg)) {
         continue
       }
@@ -185,7 +185,7 @@ export class FriendMessageDispatch extends MessageDispatch {
    * @param nextFnc 下一个函数
    */
   private async executePlugin (
-    plugin: CreateCommand | CreateClassPlugin,
+    plugin: CreateCommand,
     enable: string[],
     disable: string[],
     nextFnc: () => void

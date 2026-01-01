@@ -1,101 +1,205 @@
-# Karin 插件系统架构（Mermaid）
+# Karin 插件系统架构
+
+## 设计原则
+
+1. **核心 API 稳定**：`Plugin, accept, button, command, handler, task, ctx` 这些 API 永远不变
+2. **最小化导出**：减少 API 暴露面积，提高可维护性
+3. **HMR 可选**：热更新作为独立模块，可完全移除
+4. **缓存标准化**：统一缓存接口，支持自定义实现
+
+## 模块结构
+
+```text
+src/
+├── index.ts          # 主入口，统一导出
+├── create/           # 核心 DSL API (Plugin, command, accept 等)
+├── cache/            # 缓存系统
+├── api/              # 内部 API (event, cache, registry, module, loader, lifecycle)
+├── config/           # 配置管理 (defineKarinConfig, defineWebConfig)
+├── core/             # 核心引擎和加载器
+├── package/          # 包扫描器
+├── marketplace/      # 插件市场
+├── hmr/              # 热重载（可选模块）
+├── types/            # 类型定义
+└── utils/            # 工具函数
+```
+
+## API 层次
+
+### 第一层：核心 DSL（插件开发者使用）
+
+```ts
+import { Plugin, command, accept, button, handler, task, ctx } from '@karinjs/plugin'
+
+// 这些 API 永远不变，插件开发者主要使用这些
+command(/hello/, async () => {
+  await ctx().reply('world')
+})
+```
+
+### 第二层：配置 API
+
+```ts
+import { defineKarinConfig, defineWebConfig } from '@karinjs/plugin'
+
+// 用于配置文件
+export default defineKarinConfig({
+  // ...
+})
+```
+
+### 第三层：Store 系统
+
+```ts
+import { store, hotCache, packageList, envManager } from '@karinjs/plugin'
+
+// 访问已注册的插件
+store.get('command')   // 所有命令插件
+store.get('handler')   // 所有处理器
+store.stats()          // 统计信息
+
+// 热点缓存
+hotCache.query('#help')  // 查询热点命令
+
+// 包列表
+packageList.get('npm')   // npm 类型插件包
+
+// 环境变量
+envManager.get('my-plugin')  // 获取插件环境变量
+```
+
+### 第四层：内部 API（高级用法）
+
+```ts
+import { api } from '@karinjs/plugin'
+
+// 底层 API，通过命名空间访问
+api.event.emit('plugin:load:done', { pkg: 'my-plugin', registered: 5 })
+api.registry.sort()
+api.loader.loadFile('/path/to/file.ts')
+```
+
+### 第五层：HMR（可选，开发环境）
+
+```ts
+import { createHMR, registerEffect, defineHMRConfig } from '@karinjs/plugin'
+
+// 热重载相关，生产环境可完全移除
+const hmr = createHMR({ paths: ['./src'] })
+await hmr.start()
+```
+
+## 架构图
 
 ```mermaid
 graph TD
-   root["Karin 插件系统"]
+   root["@karinjs/plugin"]
 
-   subgraph Entry["入口调度 packages/plugin/src/index.ts"]
-      entryRun["pluginLoader.run 并行执行四类加载器"]
-      entrySort["pluginLoader.sort 刷新实例排序标记"]
-      entryEmit["emitter.emit plugin:load:done"]
-      entryStatus["printRegistryStatus / engines.print"]
-      entryDeps["missingDeps.printReport"]
+   subgraph Core["核心 DSL (不可变)"]
+      Plugin
+      command
+      accept
+      button
+      handler
+      task
+      ctx
    end
 
-   subgraph Loaders[插件加载器层 src/core/load]
-      coreBase["PluginsLoader 基类 core.ts"]
-      loaderNpm["PluginsLoaderNpm node_modules 插件"]
-      loaderDev["PluginsLoaderDev 开发态插件"]
-      loaderGit["PluginsLoaderGit plugins/* Git 插件"]
-      loaderApps["PluginsLoaderApps 纯脚本 apps"]
-      coreHooks["callHook 钩子调度"]
-      coreMain[getMain/loadMain]
-      coreEntry[getEntry/loadEntry]
-      coreSetup["setup/setupV1 环境/目录准备"]
-      coreCache["addCache 写入 pluginCache"]
-      coreVersion["checkVersion -> engines"]
+   subgraph Config["配置"]
+      defineKarinConfig
+      defineWebConfig
    end
 
-   subgraph Finder[包扫描器 src/package/find.ts]
-      scanNpm["npm.getNpmPackages 过滤 Karin 插件"]
-      scanDev["getDevPackages 读取仓库根 package.json"]
-      scanPlugins["getPluginsPackages 分类 plugins 目录"]
-      cacheNpm["pluginCache.list('npm')"]
-      cacheDev["pluginCache.list('dev')"]
-      cacheGit["pluginCache.list('git')"]
-      cacheApps["pluginCache.list('apps')"]
+   subgraph Store["Store 系统"]
+      store["store"]
+      hotCache["hotCache"]
+      packageList["packageList"]
+      envManager["envManager"]
+      commands["commands"]
+      accepts["accepts"]
+      buttons["buttons"]
+      handlers["handlers"]
+      tasks["tasks"]
    end
 
-   subgraph CacheLayer[缓存系统 src/cache]
-      cacheList["list 插件清单"]
-      cachePkg["package 元信息/入口文件"]
-      cacheInst["instances 指令/监听器"]
-      cachePublic["public 静态资源"]
-      cacheEnvs["envs 插件环境变量"]
-      cacheStats["stats 全局统计"]
-      cacheMissing["missingDeps 依赖报告"]
-      cacheHot["hotCache 命令热点"]
+   subgraph API["内部 API (api.*)"]
+      event
+      cache
+      registry
+      module
+      loader
+      lifecycle
    end
 
-   subgraph Registry[插件注册 API src/create]
-      registerModule["registerModule 入口模块登记"]
-      apiCommand[command]
-      apiAccept[accept]
-      apiButton[button]
-      apiHandler[handler]
-      apiTask[task]
-      apiCtx[ctx 运行时上下文]
+   subgraph HMR["HMR (可选)"]
+      createHMR
+      EnhancedHMR
+      registerEffect
+      defineHMRConfig
    end
 
-   subgraph Utils[配置与工具]
-      cfgDir["src/config 定义 karin.config"]
-      envUtil["core/utils/env pluginEnv"]
-      enginesUtil["core/utils/engines 语义版本"]
-      hmrDir["hmr/ 热重载能力"]
-      marketDir["marketplace/ 插件市场对接"]
+   subgraph Package["包管理"]
+      packageFinder
+      engines
+      pluginLoader
+      MarketManager
    end
 
-   root --> Entry
-   root --> Loaders
-   root --> Finder
-   root --> CacheLayer
-   root --> Registry
-   root --> Utils
+   root --> Core
+   root --> Config
+   root --> Cache
+   root --> API
+   root --> HMR
+   root --> Package
 
-   Finder -->|PackageMetaInfoCache| Loaders
-   Loaders -->|loadEntry/注册| Registry
-   Loaders -->|addCache| CacheLayer
-   Registry -->|实例数据| cacheInst
-   CacheLayer -->|统计/缺失| Entry
-   Utils -->|支撑| Loaders
+   Cache --> API
+   HMR --> API
+   Package --> Cache
 ```
 
 ## 核心流程
 
-1. **扫描阶段**：`packageFinder` 收集四类插件源，结果写入 `pluginCache.list` 供后续加载器复用。
-2. **上下文准备**：各 `PluginsLoader*` 加载器通过 `readPkg` 与 `getConfig` 读取配置，使用 `setup/setupV1` 搭建目录、静态资源与环境变量。
-3. **加载执行**：`loadMain` 解析并执行 `KARIN_PLUGIN_INIT`，`loadEntry` 逐个导入入口文件并调用 `registerModule` 完成指令、监听器等注册。
-4. **收尾动作**：统一写入 `pluginCache.package`、更新统计信息，触发钩子 `load:done` 并在 `pluginLoader.run` 中广播 `plugin:load:done` 事件、打印注册概览。
+1. **扫描阶段**：`packageFinder` 收集四类插件源（npm/dev/git/apps）
+2. **加载阶段**：`pluginLoader` 通过各加载器导入插件入口文件
+3. **注册阶段**：DSL API 自动将插件注册到 `pluginCache`
+4. **运行阶段**：事件触发时，从缓存中查找匹配的插件执行
 
 ## 关键数据流
 
-- **Package 元信息**：由扫描阶段生成 `PackageMetaInfoCache`，贯穿整条加载链，用于定位物理路径与 `package.json`。
-- **插件实例注册**：入口模块经 `registerModule` 写入 `pluginCache.instances`，支撑命令、按钮、处理器等运行时调度。
-- **环境与静态资源**：`pluginEnv` 与 `pluginCache.public` 共同确保插件所需的 env 变量与公开目录在加载时就绪。
-- **可观测性**：`pluginCache.missingDeps`、`pluginCache.hotCache`、`printRegistryStatus` 提供缺失依赖报告与热点使用统计，便于运营与调试。
+```
+插件文件 → pluginLoader.loadFile → DSL API → pluginCache → 事件匹配 → 执行回调
+```
 
-## 延伸能力
+## HMR 独立化
 
-- **热重载**：`hmr/` 模块基于缓存与入口映射可选择性重载单个插件或文件。
-- **插件市场**：`marketplace/` 负责外部插件源对接，为加载器补充上游安装管道。
-- **工具链整合**：`create/` 导出的构建 API（如 `command`、`task`）与 `config/` 的类型守卫，使插件开发沿用 TypeScript 语义并获得类型提示。
+HMR 模块设计为完全可选：
+
+- 生产环境可通过 tree-shaking 移除
+- 开发者可以自己实现热更新系统
+- 缓存接口标准化，便于外部实现
+
+```ts
+// 使用内置 HMR
+import { createHMR } from '@karinjs/plugin'
+const hmr = createHMR({ paths })
+await hmr.start()
+
+// 或者自己实现
+import { pluginCache, api } from '@karinjs/plugin'
+// 监听文件变化
+// pluginCache.unregisterByFile(path)
+// api.loader.loadFile(path, { force: true })
+// api.registry.sort()
+```
+
+## 迁移指南
+
+如果你之前使用了一些已移除的 API，请参考以下迁移：
+
+| 旧 API | 新 API |
+|--------|--------|
+| `import { event } from '@karinjs/plugin'` | `import { api } from '@karinjs/plugin'; api.event` |
+| `import { registry } from '@karinjs/plugin'` | `import { api } from '@karinjs/plugin'; api.registry` |
+| 直接访问内部模块 | 通过 `api` 命名空间统一访问 |
+
+注意：为了向后兼容，直接导入 `event, cache, registry, module, loader, lifecycle` 仍然有效。
