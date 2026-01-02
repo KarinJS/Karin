@@ -90,9 +90,15 @@ export abstract class BuilderBase {
     if (this.#callerPath) return this.#callerPath
     const file = callsites()
     const filename = file[4].getFileName()!
-    const caller = fileURLToPath(filename).replaceAll('\\', '/')
-    this.#callerPath = caller
-    return caller
+    // 处理 file:// 协议和普通路径
+    let caller: string
+    if (filename.startsWith('file://')) {
+      caller = fileURLToPath(filename)
+    } else {
+      caller = filename
+    }
+    this.#callerPath = caller.replaceAll('\\', '/')
+    return this.#callerPath
   }
 
   /**

@@ -161,7 +161,7 @@ export const command = <T extends EventTypes = keyof MessageEventMap> (
   options: Options<T> | StringOptions<T>
 ) => {
   const result = new CreateCommand<T>(reg, callback, options)
-  store.add('command', result as unknown as CreateCommand)
+  store.add('command', result)
   return result
 }
 
@@ -178,10 +178,13 @@ export class CreateCommand<T extends EventTypes = EventTypes> extends BuilderBas
     options: Options<T> | StringOptions<T>
   ) {
     super()
-    this.#rawOptions = options
+    const opt = typeof options === 'object' && options !== null
+      ? options
+      : {} as Options<T> | StringOptions<T>
+    this.#rawOptions = opt
     this.#reg = formatReg(reg)
-    this.#callback = CreateCommand.callback(callback, options, this as CreateCommand<T>)
-    this.#options = CreateCommand.options(options)
+    this.#callback = CreateCommand.callback(callback, opt, this as CreateCommand<T>)
+    this.#options = CreateCommand.options(opt)
     this.setLog(this.#options.log, true)
   }
 

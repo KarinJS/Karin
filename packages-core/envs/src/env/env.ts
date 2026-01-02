@@ -86,13 +86,6 @@ export interface DataEnv {
    */
   BASE_DIR?: string
   /**
-   * karin自身配置目录名称
-   * @default core
-   * @since 2.0
-   * @description 仅支持文件夹名称 会被解析到 BASE_DIR 下
-   */
-  CORE_DIR_NAME?: string
-  /**
    * 临时文件目录名称
    * @default temp
    * @since 2.0

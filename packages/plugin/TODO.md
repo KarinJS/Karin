@@ -16,6 +16,7 @@
 8. [API 设计](#-api-设计)
 9. [迁移清单](#-迁移清单)
 10. [测试计划](#-测试计划)
+11. [目录结构重构](#️-phase-8-目录结构重构)
 
 ---
 
@@ -1438,3 +1439,333 @@ PluginsLoaderGit      // → 已删除
 | 装饰器 | cooldown/rateLimit 等 | 中 |
 | dev.state() | HMR 状态持久化 | 中 |
 | 全类型响应式 | ref.task/ref.accept 等 | 低 |
+
+---
+
+## 🗂️ Phase 8: 目录结构重构
+
+> **目标**：清理 v1 遗留、统一命名、扁平化结构、删除无用文件
+
+### 当前目录问题分析
+
+| 问题 | 文件/目录 | 说明 |
+|------|----------|------|
+| 🗑️ 冗余文件 | `config/web.config.ts` | 与 `karin.config.ts` 重复，应合并 |
+| 🗑️ 无用方法 | `setLog()` in `create/base.ts` | v2 强制启用日志，此方法名不副实 |
+| 📁 目录臃肿 | `reactive/`, `lifecycle/`, `dev/` | 都只有单个 `index.ts`，无需独立目录 |
+| 📁 命名混淆 | `pkg/` vs `package/` | 两个目录职责不清，应合并或重命名 |
+| 📁 嵌套过深 | `core/utils/`, `core/load/` | 可扁平化 |
+| 📝 代码遗留 | `defineWebConfig` API | 冗余 API，应废弃 |
+
+### 重构方案
+
+#### 8.1 目录结构对比
+
+```
+当前结构                              新结构
+src/                                  src/
+├── config/                           ├── config/
+│   ├── index.ts                      │   ├── index.ts
+│   ├── karin.config.ts               │   ├── define.ts        # 原 karin.config.ts
+│   ├── web.config.ts     ❌ 删除     │   └── types.ts
+│   └── types.ts                      │
+├── core/                             ├── loader/              # 原 core/load/
+│   ├── index.ts                      │   ├── index.ts
+│   ├── load/                         │   ├── base.ts          # 原 core.ts
+│   │   ├── apps.ts                   │   ├── npm.ts
+│   │   ├── core.ts                   │   ├── dev.ts
+│   │   ├── dev.ts                    │   └── apps.ts
+│   │   ├── index.ts                  │
+│   │   └── npm.ts                    ├── utils/               # 原 core/utils/ 扁平化
+│   ├── metadata.ts                   │   ├── index.ts
+│   └── utils/                        │   ├── env.ts
+│       ├── engines.ts                │   ├── status.ts
+│       ├── env.ts                    │   ├── engines.ts
+│       ├── registerModule.ts         │   ├── metadata.ts      # 原 core/metadata.ts
+│       └── status.ts                 │   └── register.ts      # 原 registerModule.ts
+├── create/                           │
+│   ├── accept.ts                     ├── create/              # 合并文件
+│   ├── base.ts                       │   ├── index.ts
+│   ├── button.ts                     │   ├── base.ts          # 移除 setLog
+│   ├── cmd.ts                        │   ├── command.ts       # 合并 cmd.ts
+│   ├── command.ts                    │   ├── accept.ts
+│   ├── context.ts                    │   ├── button.ts
+│   ├── handler.ts                    │   ├── handler.ts
+│   ├── index.ts                      │   ├── task.ts
+│   ├── options.ts                    │   └── context.ts
+│   └── task.ts                       │
+├── dev/                  ❌ 合并     ├── store/               # 不变
+│   └── index.ts                      │   └── ...
+├── hot/                              │
+│   ├── apps.ts                       ├── package/             # 合并 pkg/ 和 package/
+│   └── index.ts                      │   ├── index.ts
+├── lifecycle/            ❌ 合并     │   ├── registry.ts      # 原 pkg/index.ts
+│   └── index.ts                      │   ├── finder.ts        # 原 package/find.ts
+├── package/                          │   └── types.ts
+│   ├── find.ts                       │
+│   ├── index.ts                      ├── hot/                 # 不变
+│   └── types.ts                      │   └── ...
+├── pkg/                  ❌ 合并     │
+│   └── index.ts                      ├── reactive.ts          # 原 reactive/index.ts
+├── reactive/             ❌ 扁平化   ├── lifecycle.ts         # 原 lifecycle/index.ts
+│   └── index.ts                      ├── dev.ts               # 原 dev/index.ts
+├── store/                            │
+│   └── ...                           └── index.ts
+└── index.ts
+```
+
+#### 8.2 废弃 API 清理
+
+##### 8.2.1 删除 `defineWebConfig`
+
+**原因**：`DefineConfig.components` 已涵盖所有功能
+
+```typescript
+// ❌ 废弃
+import { defineWebConfig } from '@karinjs/plugin'
+defineWebConfig({
+  info: { name: 'xxx' },
+  components: () => [...],
+  save: (config) => ({ success: true, message: 'ok' }),
+})
+
+// ✅ 使用
+import { defineKarinConfig } from '@karinjs/plugin'
+defineKarinConfig({
+  meta: { name: 'xxx' },
+  components: {
+    config: () => [...],
+    save: (config) => ({ success: true, message: 'ok' }),
+  },
+})
+```
+
+##### 8.2.2 移除 `setLog` 方法
+
+**原因**：v2 强制启用日志，`setLog(false)` 实际上不是禁用日志
+
+```typescript
+// ❌ 当前行为（误导性）
+command.setLog(false)  // 不是禁用，而是切换到 mark 日志
+
+// ✅ 新设计
+// 移除 setLog，使用 log 方法直接输出
+command.log('信息')  // 自动添加包名前缀
+```
+
+#### 8.3 实施步骤
+
+##### Step 1: 删除冗余文件
+
+```bash
+# 删除 web.config.ts
+rm src/config/web.config.ts
+
+# 更新 config/index.ts 移除 defineWebConfig 导出
+```
+
+##### Step 2: 扁平化单文件目录
+
+```bash
+# 移动并删除空目录
+mv src/reactive/index.ts src/reactive.ts
+rm -rf src/reactive/
+
+mv src/lifecycle/index.ts src/lifecycle.ts
+rm -rf src/lifecycle/
+
+mv src/dev/index.ts src/dev.ts
+rm -rf src/dev/
+```
+
+##### Step 3: 合并 pkg 和 package
+
+```bash
+# 重命名 pkg/index.ts
+mv src/pkg/index.ts src/package/registry.ts
+rm -rf src/pkg/
+
+# 更新 package/index.ts 统一导出
+```
+
+##### Step 4: 重构 core 目录
+
+```bash
+# 重命名 core/load/ → loader/
+mv src/core/load/ src/loader/
+mv src/core/metadata.ts src/utils/metadata.ts
+mv src/core/utils/* src/utils/
+rm -rf src/core/
+
+# 重命名 loader/core.ts → loader/base.ts
+mv src/loader/core.ts src/loader/base.ts
+```
+
+##### Step 5: 移除 setLog
+
+```typescript
+// src/create/base.ts
+
+// ❌ 删除
+setLog(_: boolean, isBot: boolean = true): void { ... }
+
+// ✅ 简化 log 方法，统一输出 mark
+log(...args: unknown[]) {
+  const prefix = `[${this.packageName}:${this.file.basename}]`
+  logger.mark(prefix, ...args)
+}
+```
+
+#### 8.4 删除清单
+
+> **说明**：这是内部实现重构，无需提供迁移指南，直接删除即可。
+
+##### 8.4.1 删除文件
+
+```bash
+# 废弃配置文件
+rm src/config/web.config.ts
+
+# 扁平化后删除空目录
+rm -rf src/reactive/
+rm -rf src/lifecycle/
+rm -rf src/dev/
+rm -rf src/pkg/
+rm -rf src/core/
+```
+
+##### 8.4.2 删除 API
+
+| 文件 | 删除内容 |
+|------|----------|
+| `config/index.ts` | `defineWebConfig`、`defineConfig`、`DefineConfigWeb` 导出 |
+| `index.ts` | `defineWebConfig`、`DefineConfigWeb` 导出 |
+| `create/base.ts` | `setLog()` 方法 |
+| `create/options.ts` | `log`、`rank`、`perm`、`notAdapter` 字段 |
+| `create/*.ts` | 所有 `setLog()` 调用和 `rank`/`perm`/`notAdapter` 兼容逻辑 |
+
+##### 8.4.3 删除 v1 加载逻辑
+
+| 文件 | 删除内容 |
+|------|----------|
+| `core/load/npm.ts` | `tryLoadV1()` 方法 + `resolveLoad()` 中 v1 回退 |
+| `core/load/dev.ts` | `tryLoadV1()` 方法 + `resolveLoad()` 中 v1 回退 |
+| `core/load/core.ts` | `getKarinMain()` 方法 |
+
+##### 8.4.4 删除 v1 类型
+
+| 文件 | 删除内容 |
+|------|----------|
+| `package/types.ts` | `PkgEnv`、`PkgData`、`PackageKarin` 类型 |
+| `package/types.ts` | `Package.karin` 整个字段 |
+| `config/types.ts` | `PluginMeta.id` 字段 |
+| `index.ts` | `PkgEnv`、`PackageKarin`、`PkgData` 类型导出 |
+
+#### 8.5 目录结构重构
+
+##### 8.5.1 新目录结构
+
+```
+src/
+├── index.ts                 # 唯一的根文件
+│
+├── config/                  # 配置
+│   ├── index.ts
+│   ├── define.ts            # 原 karin.config.ts
+│   └── types.ts
+│
+├── create/                  # 插件 DSL
+│   ├── index.ts
+│   ├── base.ts              # 移除 setLog
+│   ├── options.ts           # 移除废弃字段
+│   ├── command.ts           # 合并 cmd.ts
+│   ├── accept.ts
+│   ├── button.ts
+│   ├── handler.ts
+│   ├── task.ts
+│   └── context.ts
+│
+├── loader/                  # 原 core/load/
+│   ├── index.ts
+│   ├── base.ts              # 原 core.ts
+│   ├── npm.ts
+│   ├── dev.ts
+│   └── apps.ts
+│
+├── utils/                   # 原 core/utils/ + core/
+│   ├── index.ts
+│   ├── env.ts
+│   ├── status.ts
+│   ├── engines.ts
+│   ├── metadata.ts          # 原 core/metadata.ts
+│   └── register.ts          # 原 registerModule.ts
+│
+├── package/                 # 合并 pkg/ 和 package/
+│   ├── index.ts
+│   ├── registry.ts          # 原 pkg/index.ts
+│   ├── finder.ts            # 原 find.ts
+│   └── types.ts
+│
+├── store/                   # 不变
+│   └── ...
+│
+├── hot/                     # 不变
+│   └── ...
+│
+├── reactive/                # 保留目录结构
+│   └── index.ts
+│
+├── lifecycle/               # 保留目录结构
+│   └── index.ts
+│
+└── dev/                     # 保留目录结构
+    └── index.ts
+```
+
+##### 8.5.2 文件重命名
+
+| 原路径 | 新路径 | 说明 |
+|--------|--------|------|
+| `config/karin.config.ts` | `config/define.ts` | 更清晰 |
+| `core/load/` | `loader/` | 重命名目录 |
+| `core/load/core.ts` | `loader/base.ts` | 重命名文件 |
+| `core/utils/*` | `utils/*` | 移动目录 |
+| `core/utils/registerModule.ts` | `utils/register.ts` | 简化命名 |
+| `core/metadata.ts` | `utils/metadata.ts` | 归类 |
+| `pkg/index.ts` | `package/registry.ts` | 合并目录 |
+| `package/find.ts` | `package/finder.ts` | 统一命名 |
+
+##### 8.5.3 删除的文件/目录
+
+```bash
+# 废弃文件
+src/config/web.config.ts
+src/create/cmd.ts            # 合并到 command.ts
+
+# 删除空目录
+src/core/                    # 内容已迁移
+src/pkg/                     # 合并到 package/
+```
+
+#### 8.6 执行顺序
+
+1. **删除废弃代码**
+   - 删除 `web.config.ts`
+   - 移除 `setLog` 方法和调用
+   - 移除 `tryLoadV1` 方法
+   - 移除 v1 类型定义
+   - 移除废弃选项字段
+
+2. **重构目录结构**
+   - 合并 `pkg/` 到 `package/`
+   - 重命名 `core/load/` → `loader/`
+   - 移动 `core/utils/` → `utils/`
+   - 删除空的 `core/` 目录
+
+3. **更新导入路径**
+   - 全局搜索替换 import 路径
+   - 更新 `index.ts` 导出
+
+4. **更新测试和文档**
+   - 更新测试文件的 import
+   - 更新 ARCHITECTURE.md

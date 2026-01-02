@@ -120,5 +120,7 @@ vi.mock('../src/utils/logger', () => {
     debug: vi.fn(),
     warn: vi.fn(),
     error: vi.fn(),
+    mark: vi.fn(),
+    bot: vi.fn(),
   }
   ; (global as any).logger = (globalThis as any).logger

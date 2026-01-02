@@ -38,9 +38,8 @@ const baseDir = (() => {
 
 const platform = process.env.STORE_PLATFORM || process.platform
 
-const coreDir = joinPath(baseDir, process.env.CORE_DIR_NAME, 'core')
 const tempDir = joinPath(baseDir, process.env.TEMP_DIR_NAME, 'temp')
-const dbDir = `${coreDir}/data/db`
+const dbDir = `${baseDir}/data/db`
 
 /**
    * 全局路径存储对象
@@ -61,17 +60,17 @@ export const store = {
     /**
      * @example `/root/karin/.karin/core`
      */
-    dir: coreDir,
+    dir: baseDir,
     /**
      * 内部配置文件存储目录
      * @example `/root/karin/.karin/core/config`
      */
-    config: `${coreDir}/config`,
+    config: `${baseDir}/config`,
     /**
      * 内部数据目录
      * @example `/root/karin/.karin/core/data`
      */
-    data: `${coreDir}/data`,
+    data: `${baseDir}/data`,
     /**
      * 数据库根目录
      * @example `/root/karin/.karin/core/data/db`
@@ -101,7 +100,7 @@ export const store = {
      * 资源文件目录
      * @example `/root/karin/.karin/core/resource`
      */
-    resource: `${coreDir}/resource`,
+    resource: `${baseDir}/resource`,
     /**
      * 临时文件根目录
      * @example `/root/karin/.karin/temp`
@@ -121,7 +120,7 @@ export const store = {
      * 沙盒数据目录
      * @example `/root/karin/.karin/core/data/sandbox`
      */
-    sandbox: `${coreDir}/data/sandbox`,
+    sandbox: `${baseDir}/data/sandbox`,
     /**
      * 沙盒临时数据目录
      * @example `/root/karin/.karin/temp/sandbox`
@@ -284,7 +283,7 @@ export const store = {
       if (platform === 'win32') {
         return `\\\\.\\pipe\\${name}`
       }
-      const pipeDir = `${coreDir}/data/pipes`
+      const pipeDir = `${baseDir}/data/pipes`
       fs.mkdirSync(pipeDir, { recursive: true })
       return formatPath(path.join(pipeDir, `${name}.sock`))
     },
@@ -314,7 +313,7 @@ export const store = {
 
       try {
         fs.unlinkSync(pipePath)
-      } catch {}
+      } catch { }
       return !fs.existsSync(pipePath)
     },
     /**
