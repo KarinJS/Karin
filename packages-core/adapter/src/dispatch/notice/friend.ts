@@ -37,7 +37,7 @@ export class FriendNoticeDispatch<T extends Notice = Notice> extends NoticeDispa
     }
 
     this.ctx.logText = `[notice][${this.ctx.subEvent}:${this.ctx.userId}]`
-    this.logger = logger.prefix(`[dispatch][${this.ctx.logText}]`)
+    this.logger = logger.prefix(`[dispatch]${this.ctx.logText}`)
   }
 
   async init () {

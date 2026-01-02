@@ -1,0 +1,27 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview of your system status",
+    "stats": {
+      "users": "Total Users",
+      "active": "Active Sessions",
+      "uptime": "Server Uptime",
+      "memory": "Memory Usage"
+    },
+    "logs": {
+      "title": "Recent System Logs",
+      "viewAll": "View All"
+    }
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "activity": "Activity",
+    "plugins": "Plugins",
+    "settings": "Settings",
+    "admin": "Admin"
+  },
+  "common": {
+    "search": "Search...",
+    "loading": "Loading..."
+  }
+}

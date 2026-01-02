@@ -140,7 +140,7 @@ interface StringOptions<T extends EventTypes> extends Options<T> {
  */
 type FormatOptions<T extends EventTypes> = Required<Omit<
   Options<T>,
-  'notAdapter' | 'perm' | 'rank' | 'event'
+  'event'
 >> & {
   /** 监听的事件类型 */
   event: readonly (keyof MessageEventMap)[]
@@ -185,7 +185,6 @@ export class CreateCommand<T extends EventTypes = EventTypes> extends BuilderBas
     this.#reg = formatReg(reg)
     this.#callback = CreateCommand.callback(callback, opt, this as CreateCommand<T>)
     this.#options = CreateCommand.options(opt)
-    this.setLog(this.#options.log, true)
   }
 
   /**
@@ -267,13 +266,12 @@ export class CreateCommand<T extends EventTypes = EventTypes> extends BuilderBas
     return {
       authFailMsg: options.authFailMsg ?? false,
       name,
-      log: types.bool(options.log, true),
       event: eventArray,
       isListenAll,
-      permission: types.string(options.permission, types.string(options.perm, 'all')),
-      priority: types.number(options.priority, types.number(options.rank, 10000)),
+      permission: types.string(options.permission, 'all'),
+      priority: types.number(options.priority, 10000),
       adapter: types.array(options.adapter, []),
-      dsbAdapter: types.array(options.dsbAdapter, types.array(options.notAdapter, [])),
+      dsbAdapter: types.array(options.dsbAdapter, []),
     }
   }
 

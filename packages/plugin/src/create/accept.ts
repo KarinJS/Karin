@@ -8,7 +8,7 @@ import type { NoticeAndRequest } from '@karinjs/adapter'
  * Accept 插件选项
  * @template T 监听的事件类型
  */
-export interface Options<T extends keyof NoticeAndRequest = keyof NoticeAndRequest> extends Omit<OptionsBase, 'perm' | 'permission'> {
+export interface Options<T extends keyof NoticeAndRequest = keyof NoticeAndRequest> extends Omit<OptionsBase, 'permission'> {
   /**
    * 监听事件类型
    * @default 'notice'
@@ -20,10 +20,7 @@ export interface Options<T extends keyof NoticeAndRequest = keyof NoticeAndReque
  * 格式化后的参数选项类型
  * @template T 事件类型
  */
-type FormatOptions<T extends keyof NoticeAndRequest> = Required<Omit<
-  Options<T>,
-  'notAdapter' | 'perm' | 'rank'
->> & {
+type FormatOptions<T extends keyof NoticeAndRequest> = Required<Options<T>> & {
   /** 监听的事件类型 */
   event: T
 }
@@ -58,7 +55,6 @@ export class CreateAccept<T extends keyof NoticeAndRequest = keyof NoticeAndRequ
     this.#event = event
     this.#callback = callback
     this.#options = CreateAccept.options(options)
-    this.setLog(this.#options.log)
   }
 
   /**
@@ -78,10 +74,9 @@ export class CreateAccept<T extends keyof NoticeAndRequest = keyof NoticeAndRequ
     return {
       event: (options.event || 'notice') as T,
       name,
-      log: types.bool(options.log, true),
-      priority: types.number(options.priority, types.number(options.rank, 10000)),
+      priority: types.number(options.priority, 10000),
       adapter: types.array(options.adapter, []),
-      dsbAdapter: types.array(options.dsbAdapter, types.array(options.notAdapter, [])),
+      dsbAdapter: types.array(options.dsbAdapter, []),
     }
   }
 

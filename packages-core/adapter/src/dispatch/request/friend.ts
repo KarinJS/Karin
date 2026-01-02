@@ -37,7 +37,7 @@ export class FriendRequestDispatch<T extends FriendRequestEventMap[keyof FriendR
     }
 
     this.ctx.logText = `[request][${this.ctx.subEvent}:${this.ctx.userId}]`
-    this.logger = logger.prefix(`[dispatch][${this.ctx.logText}]`)
+    this.logger = logger.prefix(`[dispatch]${this.ctx.logText}`)
   }
 
   async init () {

@@ -18,23 +18,6 @@ export interface OptionsBase {
    * @description 必填，不允许为空
    */
   name: string
-  /**
-   * 是否启用日志
-   * @description 在2.0开始 将强制启用日志
-   * @deprecated 此字段废弃
-   */
-  log?: boolean
-  /** 权限 默认`all` */
-  perm?: Permission
-  /**
-   * 优先级
-   * - 数字越小优先级越高
-   * - 默认值：`10000`
-   *
-   * @description `priority` 别名
-   * @default 10000
-   */
-  rank?: number
   /** 生效的适配器 */
   adapter?: AdapterProtocol[]
   /** 禁用的适配器 */
@@ -69,9 +52,4 @@ export interface OptionsBase {
    * ```
    */
   priority?: number
-  /**
-   * 禁用的适配器
-   * @deprecated 已废弃 请使用`dsbAdapter`
-   */
-  notAdapter?: AdapterProtocol[]
 }

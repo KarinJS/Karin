@@ -7,7 +7,7 @@
  */
 
 import { store } from '../store'
-import { pkgRegistry } from '../pkg'
+import { pkgRegistry } from '../package/registry'
 import { getHookStats } from '../lifecycle'
 
 // ==================== 类型定义 ====================

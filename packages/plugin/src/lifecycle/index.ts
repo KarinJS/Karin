@@ -10,7 +10,7 @@
  */
 
 import { store } from '../store'
-import { pkgRegistry } from '../pkg'
+import { pkgRegistry } from '../package/registry'
 
 // ==================== 类型定义 ====================
 

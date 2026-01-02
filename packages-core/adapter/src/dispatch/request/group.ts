@@ -37,7 +37,7 @@ export class GroupRequestDispatch<T extends GroupRequestEventMap[keyof GroupRequ
     }
 
     this.ctx.logText = `[request][${this.ctx.subEvent}:${this.ctx.groupId}]`
-    this.logger = logger.prefix(`[dispatch][${this.ctx.logText}]`)
+    this.logger = logger.prefix(`[dispatch]${this.ctx.logText}`)
   }
 
   async init () {

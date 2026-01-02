@@ -490,7 +490,6 @@ export const getDirs = async (dir: string, options: {
   silent?: boolean
 } = {}) => {
   const list: string[] = []
-  const log = global?.logger || console
   const dirs = await fs.promises.readdir(dir)
 
   await Promise.allSettled(dirs.map(async (v) => {

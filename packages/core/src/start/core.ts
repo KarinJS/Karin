@@ -1,10 +1,8 @@
 import 'dotenv/config'
-import path from 'node:path'
 import { store } from '@karinjs/store'
 import { isDev } from '@karinjs/envs'
 
 let isStart = false
-if (!process.env.EBV_FILE) process.env.EBV_FILE = '.env'
 
 /**
  * 机器人启动类
@@ -28,18 +26,6 @@ class StartBot {
         logger.mark(`karin 启动完成: 耗时 ${logger.green(process.uptime().toFixed(2))} 秒...`)
       },
     }
-  }
-
-  /**
-   * 加载环境变量配置
-   * @returns 返回当前实例以支持链式调用
-   * @description 从 .env 文件加载环境变量配置，支持自定义环境变量文件路径
-   */
-  async dotenv () {
-    const { default: dotenv } = await import('dotenv')
-    const envFile = process.env.ENV_FILE || process.env.EBV_FILE || '.env'
-    dotenv.config({ path: `${path.resolve(process.cwd(), envFile)}`, override: true })
-    return this
   }
 
   /**
@@ -181,7 +167,7 @@ export const start = async () => {
   isStart = true
 
   const run = new StartBot()
-  await run.dotenv()
+  // await run.dotenv()
 
   const { config, logger } = await run.configAndLogger()
   await run.env(config)

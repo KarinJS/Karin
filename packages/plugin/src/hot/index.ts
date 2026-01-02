@@ -14,7 +14,7 @@ import { EventEmitter } from 'node:events'
 import { formatPath } from '@karinjs/utils'
 import { getModuleType } from '@karinjs/envs'
 import { store } from '../store'
-import { pkgRegistry } from '../pkg'
+import { pkgRegistry } from '../package/registry'
 
 import type { FSWatcher, ChokidarOptions } from 'chokidar'
 

@@ -52,7 +52,7 @@ export class CmdBuilder<T extends EventTypes = keyof MessageEventMap> {
   /**
    * 设置权限
    */
-  perm (permission: 'all' | 'master' | 'admin' | 'group.owner' | 'group.admin'): this {
+  permission (permission: 'all' | 'master' | 'admin' | 'group.owner' | 'group.admin'): this {
     this.#options.permission = permission
     this.#updateIfRegistered()
     return this
@@ -90,15 +90,6 @@ export class CmdBuilder<T extends EventTypes = keyof MessageEventMap> {
    */
   dsbAdapter (...adapters: AdapterProtocol[]): this {
     this.#options.dsbAdapter = adapters
-    this.#updateIfRegistered()
-    return this
-  }
-
-  /**
-   * 设置是否记录日志
-   */
-  log (enable: boolean): this {
-    this.#options.log = enable
     this.#updateIfRegistered()
     return this
   }

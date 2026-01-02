@@ -2,7 +2,7 @@ import path from 'node:path'
 import crypto from 'node:crypto'
 import callsites from 'callsites'
 import { fileURLToPath } from 'node:url'
-import { pkgRegistry } from '../pkg'
+import { pkgRegistry } from '../package/registry'
 import type { PluginType } from '../store/types'
 
 /** 插件缓存 package.file 属性类型 */
@@ -59,10 +59,6 @@ export abstract class BuilderBase {
    */
   #id: string | null = null
   /**
-   * 日志方法
-   */
-  #log: (...args: unknown[]) => void = (...args: unknown[]) => logger.info(...args)
-  /**
    * 当前方法所属插件包名称
    */
   #packageName: string | null = null
@@ -87,16 +83,32 @@ export abstract class BuilderBase {
    * ```
    */
   get callerPath (): string {
+    // TODO: 需要处理生产环境
     if (this.#callerPath) return this.#callerPath
     const file = callsites()
-    const filename = file[4].getFileName()!
-    // 处理 file:// 协议和普通路径
-    let caller: string
-    if (filename.startsWith('file://')) {
-      caller = fileURLToPath(filename)
+    let files = Array.from(new Set(file.map(f => f.getFileName())
+      // "node:internal/modules/esm/module_job"
+      .filter(f => f !== null)
+      .filter(f => !f.startsWith('node:internal/'))
+    ))
+
+    // 处于 karin-core 开发环境下
+    if (process.env.KARIN_ENV === 'development') {
+      files = files.filter(f => !f.includes('/packages/'))
     } else {
-      caller = filename
+      // 生产环境下，排除掉 node_modules/karin
+      files = files.filter(f => !f.includes('node_modules/karin'))
     }
+
+    const filename = files[0]
+    if (!filename) {
+      throw new Error('获取插件的绝对路径失败')
+    }
+
+    // 处理 file:// 协议和普通路径
+    const caller = filename.startsWith('file://')
+      ? fileURLToPath(filename)
+      : filename
     this.#callerPath = caller.replaceAll('\\', '/')
     return this.#callerPath
   }
@@ -169,7 +181,11 @@ export abstract class BuilderBase {
     if (this.#packageName) return this.#packageName
     const callerDir = this.file.absPath
     const name = pkgRegistry.getPackageNameByFile(callerDir)
-    this.#packageName = name ?? `${this.type}:unknown:${this.file.basename}`
+    if (!name) {
+      throw new Error(`无法通过路径获取插件包名称: ${callerDir}`)
+    }
+
+    this.#packageName = name
     return this.#packageName
   }
 
@@ -196,40 +212,12 @@ export abstract class BuilderBase {
 
   /**
    * 插件相关日志方法
-   * @description 如果是debug模式，则会自动添加前缀:`[${name}:${basename}]`
+   * @description 自动添加前缀:`[${packageName}:${basename}]`
    * @param args 日志参数
    */
   log (...args: unknown[]) {
-    this.#log(...args)
-  }
-
-  /** 设置日志方法
-   * @param isEnable 是否启用日志
-   * @param isBot 是否为Bot日志 适用于
-   * @description 在 2.0 版本之后，日志将默认启用 并且不再输出debug 统一输出mark日志
-   * - true: 启用日志，输出到控制台
-   * - false: 禁用日志，输出到debug日志，并添加前缀
-   * @example
-   * ```ts
-   * this.setLog(true) // 启用日志
-   * this.setLog(false) // 禁用日志
-   *
-   * @example
-   * ```ts
-   * const command = new CreateCommand()
-   * command.setLog(false) // 禁用日志
-   * command.log('这是调试信息') // 输出到debug日志，并添加前缀
-   * // -> [karin-plugin-example:index.mjs] 这是调试信息
-   * ```
-   */
-  setLog (_: boolean, isBot: boolean = true): void {
     const prefix = `[${this.packageName}:${this.file.basename}]`
-    this.#log = isBot
-      ? (...args: unknown[]) => {
-        const [id, ...rest] = args
-        logger.bot('mark', id as string, ...rest)
-      }
-      : (...args: unknown[]) => logger.mark(prefix, ...args)
+    logger.mark(prefix, ...args)
   }
 
   /**

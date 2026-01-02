@@ -4,7 +4,8 @@
  */
 import { store, missingDeps, packageList } from './store'
 import { emitter } from '@karinjs/events'
-import { PluginsLoaderNpm, PluginsLoaderDev, PluginsLoaderApps, printRegistryStatus, engines } from './core'
+import { PluginsLoaderNpm, PluginsLoaderDev, PluginsLoaderApps } from './loader'
+import { printRegistryStatus, engines } from './utils'
 import { createAppsHMR } from './hot'
 
 import type { AppsHMROptions } from './hot'
@@ -137,7 +138,7 @@ export {
 } from './store'
 
 /** 包注册表 */
-export { pkgRegistry } from './pkg'
+export { pkgRegistry, type PkgInfo } from './package/registry'
 
 /** 热重载 */
 export { hmr, clearModuleCaches, findDependentModules, createAppsHMR, reloadAppsFile } from './hot'
@@ -157,12 +158,12 @@ export { dev, snapshot, printReport, listPlugins } from './dev'
 
 // ==================== 配置 ====================
 
-export { defineKarinConfig, defineWebConfig } from './config'
+export { defineKarinConfig } from './config'
 
 // ==================== 包查找 ====================
 
 export { packageFinder } from './package'
-export { parsePluginMetadata } from './core/metadata'
+export { parsePluginMetadata } from './utils/metadata'
 
 // ==================== 类型导出 ====================
 
@@ -188,6 +189,6 @@ export type {
 export type { HMROptions, HMREvents, FileChangeEvent, AppsHMROptions, AppsHMREvents } from './hot'
 export type { RefPlugin, RefCommand } from './reactive'
 export type { LifecycleHook } from './lifecycle'
-export type { DefineConfigWeb, DefineConfig, PluginMeta } from './config'
-export type { PluginsTypes, PkgEnv, Package, PackageKarin, PkgData } from './package'
+export type { DefineConfig, PluginMeta } from './config'
+export type { PluginsTypes, Package } from './package'
 export type { CreateAccept, CreateButton, CreateCommand, CreateHandler, CreateTask, CmdBuilder } from './create'

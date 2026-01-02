@@ -43,11 +43,6 @@ export interface WebConfigIcon {
  */
 export interface PluginMeta {
   /**
-   * 插件id 也就是插件的包名
-   * @deprecated 无需手动提供
-   */
-  id?: string
-  /**
    * 插件名称 前端优先展示
    * @description 如果未提供则使用package.json中的name
    */

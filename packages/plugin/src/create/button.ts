@@ -15,7 +15,7 @@ export interface Options extends OptionsBase {
 /**
  * 格式化后的参数选项类型
  */
-type FormatOptions = Required<Omit<Options, 'rank' | 'notAdapter' | 'perm' | 'permission'>>
+type FormatOptions = Required<Omit<Options, 'permission'>>
 
 /**
  * Button 回调函数类型
@@ -48,7 +48,6 @@ export class CreateButton extends BuilderBase {
     this.#reg = formatReg(reg)
     this.#callback = callback
     this.#options = CreateButton.options(options)
-    this.setLog(this.#options.log)
   }
 
   /**
@@ -66,10 +65,9 @@ export class CreateButton extends BuilderBase {
 
     return {
       name,
-      log: types.bool(options.log, true),
-      priority: types.number(options.priority, types.number(options.rank, 10000)),
+      priority: types.number(options.priority, 10000),
       adapter: types.array(options.adapter, []),
-      dsbAdapter: types.array(options.dsbAdapter, types.array(options.notAdapter, [])),
+      dsbAdapter: types.array(options.dsbAdapter, []),
     }
   }
 

@@ -1,0 +1,27 @@
+{
+  "dashboard": {
+    "title": "仪表盘",
+    "subtitle": "系统状态概览",
+    "stats": {
+      "users": "总用户",
+      "active": "活跃会话",
+      "uptime": "运行时间",
+      "memory": "内存使用"
+    },
+    "logs": {
+      "title": "近期日志",
+      "viewAll": "查看全部"
+    }
+  },
+  "sidebar": {
+    "dashboard": "仪表盘",
+    "activity": "活动",
+    "plugins": "插件",
+    "settings": "设置",
+    "admin": "管理员"
+  },
+  "common": {
+    "search": "搜索...",
+    "loading": "加载中..."
+  }
+}

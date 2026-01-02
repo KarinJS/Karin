@@ -51,7 +51,7 @@ export class DirectMessageDispatch extends MessageDispatch {
     this.ctx.msg = msg
     this.ctx.rawMessage = raw
     this.ctx.logText = `[${this.ctx.contact.scene}:${this.ctx.userId}(${this.ctx.sender.nick || ''})]`
-    this.logger = logger.prefix(`[dispatch][${this.ctx.logText}]`)
+    this.logger = logger.prefix(`[dispatch]${this.ctx.logText}`)
   }
 
   async init () {

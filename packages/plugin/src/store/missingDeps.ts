@@ -3,7 +3,7 @@
  * @description 独立的依赖错误追踪模块
  */
 import path from 'node:path'
-import { pkgRegistry } from '../pkg'
+import { pkgRegistry } from '../package/registry'
 
 interface ERR_MODULE_NOT_FOUND {
   code: 'ERR_MODULE_NOT_FOUND'
