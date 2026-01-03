@@ -18,7 +18,7 @@ export function Sidebar () {
   ]
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-16 z-50 flex flex-col bg-white border-r border-slate-200">
+    <aside className="fixed left-2 top-2 bottom-2 w-16 z-50 flex flex-col bg-content1/80 backdrop-blur-xl rounded-2xl shadow-sm border border-divider/50">
       {/* Logo Section - Minimal */}
       <div className="h-16 flex items-center justify-center mb-2">
         <Logo className="w-8 h-8" />
@@ -40,10 +40,10 @@ export function Sidebar () {
                 to={item.path}
                 className="group relative flex items-center justify-center w-full h-12 mb-1"
               >
-                {/* Active Border (Left) - VS Code Style */}
+                {/* Active Indicator (Left) - Rounded Pill Style */}
                 <div className={twMerge(
-                  "absolute left-0 top-0 bottom-0 w-[3px] transition-colors duration-200",
-                  isActive ? "bg-sky-500" : "bg-transparent group-hover:bg-slate-200"
+                  "absolute left-1 top-2 bottom-2 w-1 rounded-full transition-all duration-200",
+                  isActive ? "bg-primary" : "bg-transparent"
                 )} />
 
                 {/* Icon */}
@@ -53,8 +53,8 @@ export function Sidebar () {
                   className={twMerge(
                     "transition-colors duration-200",
                     isActive
-                      ? "text-sky-500"
-                      : "text-slate-400 group-hover:text-slate-600"
+                      ? "text-primary"
+                      : "text-default-500 group-hover:text-default-900"
                   )}
                 />
               </Link>
@@ -66,15 +66,15 @@ export function Sidebar () {
       {/* Bottom Actions */}
       <div className="flex flex-col items-center w-full pb-4 gap-2">
         <Tooltip content="Logout" placement="right" color="foreground">
-          <Button isIconOnly variant="light" className="w-12 h-12 min-w-12 rounded-none">
-            <LogOut size={22} strokeWidth={1.5} className="text-slate-400 hover:text-slate-600 transition-colors" />
+          <Button isIconOnly variant="light" radius="full" className="w-10 h-10 min-w-10">
+            <LogOut size={20} strokeWidth={1.5} className="text-default-500 hover:text-default-900 transition-colors" />
           </Button>
         </Tooltip>
 
         <Avatar
           name="A"
           size="sm"
-          className="bg-sky-100 text-sky-600 font-bold text-xs"
+          className="bg-primary/10 text-primary font-bold text-xs"
         />
       </div>
     </aside>
