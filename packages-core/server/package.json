@@ -27,13 +27,17 @@
     "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
   },
   "devDependencies": {
+    "@karinjs/config": "workspace:*",
     "@karinjs/logger": "workspace:*",
+    "@karinjs/plugin": "workspace:*",
     "express": "catalog:",
     "express-rate-limit": "catalog:",
     "ws": "catalog:"
   },
   "peerDependencies": {
+    "@karinjs/config": "workspace:*",
     "@karinjs/logger": "workspace:*",
+    "@karinjs/plugin": "workspace:*",
     "express": "catalog:",
     "ws": "catalog:"
   }

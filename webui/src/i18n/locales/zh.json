@@ -20,8 +20,117 @@
     "settings": "设置",
     "admin": "管理员"
   },
+  "settings": {
+    "title": "系统设置",
+    "subtitle": "管理您的服务器配置"
+  },
   "common": {
     "search": "搜索...",
-    "loading": "加载中..."
+    "loading": "加载中...",
+    "save": "保存更改",
+    "saveChanges": "保存更改",
+    "cd": "冷却时间 (秒)",
+    "userCd": "用户冷却时间 (秒)",
+    "responseMode": "响应模式",
+    "inheritGlobal": "继承全局配置"
+  },
+  "basicConfig": {
+    "title": "基础配置",
+    "subtitle": "管理所有系统和插件配置",
+    "tabsAriaLabel": "配置选项"
+  },
+  "tabs": {
+    "permissions": "权限设置",
+    "filter": "过滤设置",
+    "group": "群聊设置",
+    "friend": "好友设置",
+    "guild": "频道设置",
+    "direct": "私聊设置",
+    "server": "服务器设置",
+    "logger": "日志设置",
+    "redis": "Redis设置",
+    "pm2": "PM2设置"
+  },
+  "mode": {
+    "all": "响应所有",
+    "master": "仅主人",
+    "admin": "仅管理员"
+  },
+  "permissions": {
+    "loadError": "加载权限失败",
+    "saveSuccess": "权限保存成功",
+    "saveError": "保存失败",
+    "masterList": "主人列表",
+    "enterUserId": "输入用户ID",
+    "noMasters": "未配置主人",
+    "adminList": "管理员列表",
+    "noAdmins": "未配置管理员"
+  },
+  "filter": {
+    "saveSuccess": "过滤配置保存成功",
+    "saveError": "保存失败",
+    "enableEvents": "启用事件",
+    "listsConfig": "列表配置",
+    "listsDesc": "管理用户、群组等的黑白名单",
+    "detailedDesc": "详细的列表管理（启用列表、禁用列表等）可通过直接编辑文件进行，或将在后续更新中添加。"
+  },
+  "group": {
+    "saveSuccess": "群聊配置保存成功",
+    "saveError": "保存失败",
+    "globalSettings": "全局群聊设置",
+    "note": "注意：目前UI仅支持全局配置。如需针对特定群组配置，请直接编辑配置文件。"
+  },
+  "friend": {
+    "saveSuccess": "好友配置保存成功",
+    "saveError": "保存失败",
+    "globalSettings": "全局好友设置"
+  },
+  "guild": {
+    "saveSuccess": "频道配置保存成功",
+    "saveError": "保存失败",
+    "globalSettings": "全局频道设置"
+  },
+  "direct": {
+    "saveSuccess": "私聊配置保存成功",
+    "saveError": "保存失败",
+    "globalSettings": "全局私聊设置"
+  },
+  "server": {
+    "saveSuccess": "服务器配置保存成功",
+    "saveError": "保存失败",
+    "httpServer": "HTTP 服务器",
+    "host": "主机地址",
+    "port": "端口",
+    "authKey": "认证密钥",
+    "username": "用户名",
+    "password": "密码",
+    "wsServer": "WebSocket 服务器",
+    "enableWs": "启用 WebSocket",
+    "ffmpeg": "FFmpeg 配置",
+    "ffmpegPath": "FFmpeg 路径",
+    "ffprobePath": "FFprobe 路径",
+    "ffplayPath": "FFplay 路径"
+  },
+  "logger": {
+    "saveSuccess": "日志配置保存成功",
+    "saveError": "保存失败",
+    "level": "日志等级",
+    "daysToKeep": "保留天数",
+    "maxLogSize": "最大日志大小",
+    "functionColor": "函数颜色"
+  },
+  "redis": {
+    "saveSuccess": "Redis 配置保存成功",
+    "saveError": "保存失败",
+    "enable": "启用 Redis",
+    "url": "连接 URL",
+    "username": "用户名",
+    "password": "密码",
+    "database": "数据库"
+  },
+  "pm2": {
+    "saveSuccess": "PM2 配置保存成功",
+    "saveError": "保存失败",
+    "rawMode": "PM2 配置界面当前处于原始模式。"
   }
 }

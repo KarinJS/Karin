@@ -20,8 +20,117 @@
     "settings": "Settings",
     "admin": "Admin"
   },
+  "settings": {
+    "title": "System Settings",
+    "subtitle": "Manage your server configuration"
+  },
   "common": {
     "search": "Search...",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "save": "Save Changes",
+    "saveChanges": "Save Changes",
+    "cd": "CD (seconds)",
+    "userCd": "User CD (seconds)",
+    "responseMode": "Response Mode",
+    "inheritGlobal": "Inherit Global Config"
+  },
+  "basicConfig": {
+    "title": "Configuration",
+    "subtitle": "Manage all system and plugin configurations",
+    "tabsAriaLabel": "Configuration Options"
+  },
+  "tabs": {
+    "permissions": "Permissions",
+    "filter": "Filter",
+    "group": "Group Scene",
+    "friend": "Friend Scene",
+    "guild": "Guild Scene",
+    "direct": "Direct Scene",
+    "server": "Server",
+    "logger": "Logger",
+    "redis": "Redis",
+    "pm2": "PM2"
+  },
+  "mode": {
+    "all": "Respond to all",
+    "master": "Master only",
+    "admin": "Admin only"
+  },
+  "permissions": {
+    "loadError": "Failed to load permissions",
+    "saveSuccess": "Permissions saved",
+    "saveError": "Failed to save",
+    "masterList": "Master List",
+    "enterUserId": "Enter User ID",
+    "noMasters": "No masters configured",
+    "adminList": "Admin List",
+    "noAdmins": "No admins configured"
+  },
+  "filter": {
+    "saveSuccess": "Filter config saved",
+    "saveError": "Failed to save",
+    "enableEvents": "Enable Events",
+    "listsConfig": "Lists Configuration",
+    "listsDesc": "Manage whitelists and blacklists for users, groups, etc.",
+    "detailedDesc": "Detailed list management (enable_list, disable_list, etc.) is available via direct file editing or will be added in future updates."
+  },
+  "group": {
+    "saveSuccess": "Group config saved",
+    "saveError": "Failed to save",
+    "globalSettings": "Global Group Settings",
+    "note": "Note: Currently only Global configuration is supported in the UI. For specific group configurations, please edit the config file directly."
+  },
+  "friend": {
+    "saveSuccess": "Friend config saved",
+    "saveError": "Failed to save",
+    "globalSettings": "Global Friend Settings"
+  },
+  "guild": {
+    "saveSuccess": "Guild config saved",
+    "saveError": "Failed to save",
+    "globalSettings": "Global Guild Settings"
+  },
+  "direct": {
+    "saveSuccess": "Direct config saved",
+    "saveError": "Failed to save",
+    "globalSettings": "Global Direct Message Settings"
+  },
+  "server": {
+    "saveSuccess": "Server config saved",
+    "saveError": "Failed to save",
+    "httpServer": "HTTP Server",
+    "host": "Host",
+    "port": "Port",
+    "authKey": "Auth Key",
+    "username": "Username",
+    "password": "Password",
+    "wsServer": "WebSocket Server",
+    "enableWs": "Enable WebSocket",
+    "ffmpeg": "FFmpeg",
+    "ffmpegPath": "FFmpeg Path",
+    "ffprobePath": "FFprobe Path",
+    "ffplayPath": "FFplay Path"
+  },
+  "logger": {
+    "saveSuccess": "Logger config saved",
+    "saveError": "Failed to save",
+    "level": "Log Level",
+    "daysToKeep": "Days to Keep",
+    "maxLogSize": "Max Log Size",
+    "functionColor": "Function Color"
+  },
+  "redis": {
+    "saveSuccess": "Redis config saved",
+    "saveError": "Failed to save",
+    "enable": "Enable Redis",
+    "url": "Connection URL",
+    "username": "Username",
+    "password": "Password",
+    "database": "Database"
+  },
+  "pm2": {
+    "saveSuccess": "PM2 config saved",
+    "saveError": "Failed to save",
+    "rawMode": "PM2 configuration UI is currently in raw mode."
   }
 }

@@ -149,7 +149,14 @@ class StartBot {
    */
   async server (config: import('@karinjs/config').Config) {
     const server = config.server()
-    const { runServer, createWebSocketContext } = await import('@karinjs/server')
+    const { app, runServer, createWebSocketContext, apiRouter } = await import('@karinjs/server')
+    const express = await import('express')
+
+    // 注册 JSON 解析中间件
+    app.use(express.default.json())
+    // 注册 API 路由
+    app.use('/api', apiRouter)
+
     await runServer(server.http.port, server.http.host)
     createWebSocketContext()
   }

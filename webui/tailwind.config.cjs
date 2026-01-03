@@ -1,12 +1,11 @@
-import { heroui } from '@heroui/theme'
-import Typography from '@tailwindcss/typography'
+const { heroui } = require("@heroui/react")
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './index.html',
-    './src/**/*.{js,ts,jsx,tsx,mdx}',
-    './node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}',
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
@@ -63,8 +62,6 @@ module.exports = {
   darkMode: 'class',
   plugins: [
     heroui(),
-    require('tailwindcss-animate'),
-    Typography(),
     function ({ addComponents }) {
       addComponents({
         '.glass-effect': {

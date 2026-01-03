@@ -1,3 +1,15 @@
 export { config } from './core'
 export { PluginConfig } from './plugin'
 export type { Config, ConfigFilesType } from './core'
+
+// 导出配置类型供前端使用
+export type { ConfigPermissions } from './config/permissions'
+export type { ConfigServer, ConfigServerHttp, ConfigServerWs, ConfigServerFfmpeg } from './system/server'
+export type { ConfigLogger } from './system/logger'
+export type { ConfigRedis } from './system/redis'
+export type { ConfigPm2 } from './system/pm2'
+export type { ConfigFilter } from './filter/filter'
+export type { ConfigGroup, GroupConfig, GroupConfigRuntime } from './scene/group'
+export type { ConfigFriend, FriendConfig, FriendConfigRuntime } from './scene/friend'
+export type { ConfigDirect, DirectConfig, DirectConfigRuntime } from './scene/direct'
+export type { ConfigGuild, GuildConfig, GuildConfigRuntime } from './scene/guild'
