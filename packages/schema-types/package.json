@@ -1,0 +1,41 @@
+{
+  "name": "@karinjs/schema-types",
+  "version": "1.0.0",
+  "description": "Schema-Driven UI 类型定义包，供前后端共同使用",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./base": "./src/base.ts",
+    "./fields": "./src/fields.ts",
+    "./schema": "./src/schema.ts",
+    "./context": "./src/context.ts"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "schema",
+    "form",
+    "ui",
+    "types",
+    "typescript",
+    "heroui",
+    "karin"
+  ],
+  "author": "sj817",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KarinJS/Karin",
+    "directory": "packages/schema-types"
+  }
+}

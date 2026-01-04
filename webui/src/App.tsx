@@ -5,6 +5,7 @@ import { DashboardLayout } from './layouts/DashboardLayout'
 import { Dashboard } from './pages/Dashboard'
 import { Settings } from './pages/Settings'
 import { BasicConfig } from './pages/BasicConfig'
+import { SchemaDemo } from './pages/SchemaDemo'
 
 function AppRoutes () {
   const navigate = useNavigate()
@@ -16,6 +17,7 @@ function AppRoutes () {
           <Route index element={<Dashboard />} />
           <Route path="settings" element={<Settings />} />
           <Route path="basic-config" element={<BasicConfig />} />
+          <Route path="schema-demo" element={<SchemaDemo />} />
           <Route path="*" element={<div className="p-6">Page not found</div>} />
         </Route>
       </Routes>

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@heroui/react": "^2.8.7",
+    "@karinjs/schema-types": "workspace:*",
     "@heroui/theme": "^2.4.25",
     "axios": "^1.13.2",
     "clsx": "^2.1.1",

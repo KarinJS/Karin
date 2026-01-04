@@ -1,4 +1,4 @@
-import { Home, Settings, Activity, Box, LogOut, Sliders } from 'lucide-react'
+import { Home, Settings, Activity, Box, LogOut, Sliders, LayoutGrid } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { twMerge } from 'tailwind-merge'
 import { Logo } from './Logo'
@@ -12,6 +12,7 @@ export function Sidebar () {
   const NAV_ITEMS = [
     { icon: Home, label: t('sidebar.dashboard'), path: '/' },
     { icon: Sliders, label: t('sidebar.basicConfig', 'Basic Config'), path: '/basic-config' },
+    { icon: LayoutGrid, label: 'Schema Demo', path: '/schema-demo' },
     { icon: Activity, label: t('sidebar.activity'), path: '/activity' },
     { icon: Box, label: t('sidebar.plugins'), path: '/plugins' },
     { icon: Settings, label: t('sidebar.settings'), path: '/settings' },
