@@ -19,7 +19,7 @@ export function Sidebar () {
   ]
 
   return (
-    <aside className="fixed left-2 top-2 bottom-2 w-16 z-50 flex flex-col bg-content1/80 backdrop-blur-xl rounded-2xl shadow-sm border border-divider/50">
+    <aside className="fixed left-2 top-2 bottom-2 w-16 z-50 flex flex-col glass-panel rounded-2xl">
       {/* Logo Section - Minimal */}
       <div className="h-16 flex items-center justify-center mb-2">
         <Logo className="w-8 h-8" />
@@ -39,24 +39,20 @@ export function Sidebar () {
             >
               <Link
                 to={item.path}
-                className="group relative flex items-center justify-center w-full h-12 mb-1"
+                className={twMerge(
+                  "group relative flex items-center justify-center w-10 h-10 mb-2 rounded-xl transition-all duration-300",
+                  isActive
+                    ? "bg-white shadow-sm text-slate-800"
+                    : "text-slate-400 hover:text-slate-600 hover:bg-white/40"
+                )}
               >
-                {/* Active Indicator (Left) - Rounded Pill Style */}
-                <div className={twMerge(
-                  "absolute left-1 top-2 bottom-2 w-1 rounded-full transition-all duration-200",
-                  isActive ? "bg-primary" : "bg-transparent"
-                )} />
+                {/* Active Indicator (Left) - Removed, using button style instead */}
 
                 {/* Icon */}
                 <item.icon
-                  size={24}
-                  strokeWidth={1.5}
-                  className={twMerge(
-                    "transition-colors duration-200",
-                    isActive
-                      ? "text-primary"
-                      : "text-default-500 group-hover:text-default-900"
-                  )}
+                  size={20}
+                  strokeWidth={isActive ? 2 : 1.5}
+                  className="transition-transform duration-300 group-hover:scale-110"
                 />
               </Link>
             </Tooltip>

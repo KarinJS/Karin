@@ -101,7 +101,7 @@ export function Settings () {
   if (loading || !config.server || !config.redis || !config.logger) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="w-8 h-8 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-slate-800 border-t-transparent rounded-full animate-spin"></div>
       </div>
     )
   }
@@ -115,36 +115,45 @@ export function Settings () {
             <p className="text-slate-500 mt-1">{t('settings.subtitle')}</p>
           </div>
           <Button
-            color="primary"
             isLoading={saving}
             startContent={!saving && <Save size={18} />}
             onPress={handleSave}
-            className="bg-sky-500"
+            className="bg-slate-800 text-white font-semibold shadow-lg shadow-slate-800/20"
           >
             {t('common.save')}
           </Button>
         </div>
 
-        <Tabs aria-label="Settings Options" color="primary" variant="underlined" classNames={{
-          tabList: "gap-6 w-full relative rounded-none p-0 border-b border-divider",
-          cursor: "w-full bg-sky-500",
-          tab: "max-w-fit px-0 h-12",
-          tabContent: "group-data-[selected=true]:text-sky-500"
+        <Tabs aria-label="Settings Options" variant="light" classNames={{
+          tabList: "gap-4 w-full relative p-1 bg-slate-100/50 rounded-lg border border-white/50",
+          cursor: "w-full bg-white shadow-sm border border-slate-200/50 rounded-md",
+          tab: "max-w-fit px-4 h-9",
+          tabContent: "group-data-[selected=true]:text-slate-800 text-slate-500 font-medium"
         }}>
           <Tab key="server" title="Server">
-            <Card className="mt-4 shadow-sm border border-slate-100">
+            <Card className="mt-4 glass-card" shadow="none">
               <CardBody className="gap-8 p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Input
                     label="HTTP Port"
                     type="number"
                     variant="bordered"
+                    classNames={{
+                      inputWrapper: "bg-white/50 border-slate-200/60 hover:border-slate-300 focus-within:!border-slate-400",
+                      label: "text-slate-500",
+                      input: "text-slate-800"
+                    }}
                     value={config.server.http.port.toString()}
                     onValueChange={(v) => updateServerHttp('port', parseInt(v) || 0)}
                   />
                   <Input
                     label="Host"
                     variant="bordered"
+                    classNames={{
+                      inputWrapper: "bg-white/50 border-slate-200/60 hover:border-slate-300 focus-within:!border-slate-400",
+                      label: "text-slate-500",
+                      input: "text-slate-800"
+                    }}
                     value={config.server.http.host}
                     onValueChange={(v) => updateServerHttp('host', v)}
                   />
@@ -152,29 +161,39 @@ export function Settings () {
                     label="Auth Key"
                     type="password"
                     variant="bordered"
+                    classNames={{
+                      inputWrapper: "bg-white/50 border-slate-200/60 hover:border-slate-300 focus-within:!border-slate-400",
+                      label: "text-slate-500",
+                      input: "text-slate-800"
+                    }}
                     value={config.server.http.auth_key}
                     onValueChange={(v) => updateServerHttp('auth_key', v)}
                   />
                   <Input
                     label="Username"
                     variant="bordered"
+                    classNames={{
+                      inputWrapper: "bg-white/50 border-slate-200/60 hover:border-slate-300 focus-within:!border-slate-400",
+                      label: "text-slate-500",
+                      input: "text-slate-800"
+                    }}
                     value={config.server.http.username}
                     onValueChange={(v) => updateServerHttp('username', v)}
                   />
                 </div>
 
-                <Divider />
+                <Divider className="bg-slate-200/60" />
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-slate-900">WebSocket Server</p>
+                    <p className="font-medium text-slate-800">WebSocket Server</p>
                     <p className="text-small text-slate-500">Enable WebSocket support for real-time communication</p>
                   </div>
                   <Switch
                     isSelected={config.server.ws_server.enable}
                     onValueChange={(v) => updateServerWs('enable', v)}
                     classNames={{
-                      wrapper: "group-data-[selected=true]:bg-sky-500",
+                      wrapper: "group-data-[selected=true]:bg-slate-800",
                     }}
                   />
                 </div>
@@ -183,28 +202,33 @@ export function Settings () {
           </Tab>
 
           <Tab key="redis" title="Redis">
-            <Card className="mt-4 shadow-sm border border-slate-100">
+            <Card className="mt-4 glass-card" shadow="none">
               <CardBody className="gap-8 p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-slate-900">Enable Redis</p>
+                    <p className="font-medium text-slate-800">Enable Redis</p>
                     <p className="text-small text-slate-500">Use Redis for high-performance caching and session storage</p>
                   </div>
                   <Switch
                     isSelected={config.redis.enable}
                     onValueChange={(v) => updateRedisState('enable', v)}
                     classNames={{
-                      wrapper: "group-data-[selected=true]:bg-sky-500",
+                      wrapper: "group-data-[selected=true]:bg-slate-800",
                     }}
                   />
                 </div>
 
-                <Divider />
+                <Divider className="bg-slate-200/60" />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Input
                     label="Redis URL"
                     variant="bordered"
+                    classNames={{
+                      inputWrapper: "bg-white/50 border-slate-200/60 hover:border-slate-300 focus-within:!border-slate-400",
+                      label: "text-slate-500",
+                      input: "text-slate-800"
+                    }}
                     value={config.redis.url}
                     onValueChange={(v) => updateRedisState('url', v)}
                     isDisabled={!config.redis.enable}
@@ -215,6 +239,11 @@ export function Settings () {
                     label="Database Index"
                     type="number"
                     variant="bordered"
+                    classNames={{
+                      inputWrapper: "bg-white/50 border-slate-200/60 hover:border-slate-300 focus-within:!border-slate-400",
+                      label: "text-slate-500",
+                      input: "text-slate-800"
+                    }}
                     value={config.redis.database.toString()}
                     onValueChange={(v) => updateRedisState('database', parseInt(v) || 0)}
                     isDisabled={!config.redis.enable}
@@ -225,11 +254,16 @@ export function Settings () {
           </Tab>
 
           <Tab key="logger" title="Logger">
-            <Card className="mt-4 shadow-sm border border-slate-100">
+            <Card className="mt-4 glass-card" shadow="none">
               <CardBody className="gap-6 p-6">
                 <Input
                   label="Log Level"
                   variant="bordered"
+                  classNames={{
+                    inputWrapper: "bg-white/50 border-slate-200/60 hover:border-slate-300 focus-within:!border-slate-400",
+                    label: "text-slate-500",
+                    input: "text-slate-800"
+                  }}
                   value={config.logger.level}
                   onValueChange={(v) => updateLoggerState('level', v)}
                   description="Available levels: info, warn, error, debug"

@@ -37,7 +37,7 @@ export function Dashboard () {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <Spinner size="lg" color="primary" />
+        <div className="w-8 h-8 border-4 border-slate-800 border-t-transparent rounded-full animate-spin"></div>
       </div>
     )
   }
@@ -64,10 +64,12 @@ export function Dashboard () {
               <Card
                 key={index}
                 className={clsx(
-                  "relative overflow-hidden group",
-                  index === 0 && "md:col-span-2 bg-gradient-to-br from-sky-400 to-sky-500 text-white border-none shadow-lg shadow-sky-200"
+                  "relative overflow-hidden group border-none",
+                  index === 0
+                    ? "md:col-span-2 bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-lg shadow-violet-200"
+                    : "glass-card bg-white/30"
                 )}
-                shadow="sm"
+                shadow="none"
               >
                 <CardBody className="p-6 overflow-visible">
                   {index === 0 && (
@@ -77,7 +79,7 @@ export function Dashboard () {
                   <div className="flex items-start justify-between mb-4 relative z-10">
                     <div className={clsx(
                       "p-3 rounded-xl transition-transform duration-300 group-hover:scale-110",
-                      index === 0 ? "bg-white/20 text-white" : "bg-sky-50 text-sky-500"
+                      index === 0 ? "bg-white/20 text-white" : "bg-white/40 text-violet-600"
                     )}>
                       <Icon size={24} />
                     </div>
@@ -98,11 +100,11 @@ export function Dashboard () {
                   <div className="relative z-10">
                     <h3 className={clsx(
                       "text-sm font-medium mb-1",
-                      index === 0 ? "text-sky-50" : "text-slate-500"
+                      index === 0 ? "text-violet-50" : "text-slate-500"
                     )}>{stat.title}</h3>
                     <p className={clsx(
                       "text-3xl font-bold tracking-tight",
-                      index === 0 ? "text-white" : "text-slate-900"
+                      index === 0 ? "text-white" : "text-slate-800"
                     )}>{stat.value}</p>
                   </div>
                 </CardBody>
@@ -114,7 +116,7 @@ export function Dashboard () {
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Chart Placeholder (Large Card) */}
-          <Card className="lg:col-span-2 min-h-[400px]" shadow="sm">
+          <Card className="lg:col-span-2 min-h-[400px] glass-card bg-white/30" shadow="none">
             <CardHeader className="flex items-center justify-between px-6 py-5">
               <h2 className="font-bold text-lg text-slate-800">Traffic Overview</h2>
               <Button isIconOnly variant="light" radius="lg" className="text-slate-400">
@@ -122,11 +124,11 @@ export function Dashboard () {
               </Button>
             </CardHeader>
             <CardBody className="px-6 pb-6 pt-0">
-              <div className="h-full bg-slate-50/50 rounded-xl border border-dashed border-slate-200 flex items-center justify-center relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-tr from-sky-400/5 to-purple-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="h-full bg-white/20 rounded-xl border border-dashed border-white/40 flex items-center justify-center relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-tr from-violet-400/10 to-fuchsia-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="text-center">
-                  <Activity size={48} className="mx-auto text-slate-300 mb-3" />
-                  <p className="text-slate-400 font-medium">Chart Visualization Area</p>
+                  <Activity size={48} className="mx-auto text-slate-400 mb-3" />
+                  <p className="text-slate-500 font-medium">Chart Visualization Area</p>
                   <p className="text-slate-400 text-sm">Waiting for real data...</p>
                 </div>
               </div>
@@ -134,17 +136,17 @@ export function Dashboard () {
           </Card>
 
           {/* Recent Logs (Side Panel) */}
-          <Card className="flex flex-col" shadow="sm">
-            <CardHeader className="px-6 py-5 border-b border-slate-100/50 flex items-center justify-between bg-white/40 backdrop-blur-sm">
+          <Card className="flex flex-col glass-card bg-white/30" shadow="none">
+            <CardHeader className="px-6 py-5 border-b border-white/20 flex items-center justify-between">
               <h2 className="font-bold text-lg text-slate-800">{t('dashboard.logs.title')}</h2>
-              <Button size="sm" variant="light" color="primary" className="font-bold uppercase tracking-wide">
+              <Button size="sm" variant="light" className="font-bold uppercase tracking-wide text-slate-500 hover:text-slate-800">
                 {t('dashboard.logs.viewAll')}
               </Button>
             </CardHeader>
             <CardBody className="p-0 overflow-hidden">
-              <div className="divide-y divide-slate-100/50 overflow-y-auto max-h-[400px]">
+              <div className="divide-y divide-white/20 overflow-y-auto max-h-[400px]">
                 {logs.map((log) => (
-                  <div key={log.id} className="px-6 py-4 hover:bg-slate-50/50 transition-colors group cursor-default">
+                  <div key={log.id} className="px-6 py-4 hover:bg-white/20 transition-colors group cursor-default">
                     <div className="flex items-start gap-3">
                       <div className={clsx(
                         "w-2 h-2 rounded-full mt-2 ring-4 ring-opacity-20",

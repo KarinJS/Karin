@@ -115,10 +115,10 @@ export function BasicConfig () {
   return (
     <div className="w-full h-full p-2 flex gap-6">
       {/* 左侧导航卡片 - 悬浮独立 */}
-      <Card className="w-64 h-full shrink-0 bg-content1/80 backdrop-blur-xl shadow-sm">
+      <Card className="w-64 h-full shrink-0 glass-panel shadow-none rounded-2xl">
         <div className="h-full flex flex-col">
-          <div className="p-2 pb-2 shrink-0">
-            <h2 className="text-lg font-bold text-default-900 px-2 mb-4">
+          <div className="p-4 pb-2 shrink-0">
+            <h2 className="text-lg font-bold text-slate-800 px-2 mb-4">
               {t('basicConfig.title', '系统配置')}
             </h2>
           </div>
@@ -127,14 +127,14 @@ export function BasicConfig () {
               aria-label={t('basicConfig.tabsAriaLabel', '配置选项')}
               selectedKey={selected}
               onSelectionChange={(key) => setSelected(key as string)}
-              color="primary"
+              color="default"
               variant="light"
               isVertical={true}
               classNames={{
                 tabList: "gap-2 w-full relative p-0",
-                cursor: "w-full bg-primary/10 rounded-lg",
-                tab: "w-full justify-start h-10 px-3 data-[selected=true]:text-primary transition-colors",
-                tabContent: "text-default-500 group-data-[selected=true]:text-primary group-data-[selected=true]:font-medium"
+                cursor: "w-full bg-white shadow-sm rounded-lg border border-white/50",
+                tab: "w-full justify-start h-10 px-3 data-[selected=true]:text-slate-800 transition-colors",
+                tabContent: "text-slate-500 group-data-[selected=true]:text-slate-800 group-data-[selected=true]:font-semibold"
               }}
             >
               {tabs.map((item) => (
@@ -154,24 +154,24 @@ export function BasicConfig () {
       </Card>
 
       {/* 右侧内容卡片 - 悬浮独立 */}
-      <Card className="flex-1 h-full bg-content1/80 backdrop-blur-xl shadow-sm overflow-hidden">
+      <Card className="flex-1 h-full glass-panel shadow-none rounded-2xl overflow-hidden">
         <div className="flex flex-col h-full">
           {/* 顶部面包屑和标题区域 */}
-          <div className="shrink-0 px-8 py-6 border-b border-divider/50">
+          <div className="shrink-0 px-8 py-6 border-b border-slate-200/50">
             <Breadcrumbs size="sm" className="mb-2">
-              <BreadcrumbItem>Karin</BreadcrumbItem>
-              <BreadcrumbItem>设置</BreadcrumbItem>
-              <BreadcrumbItem>系统配置</BreadcrumbItem>
+              <BreadcrumbItem className="text-slate-500">Karin</BreadcrumbItem>
+              <BreadcrumbItem className="text-slate-500">设置</BreadcrumbItem>
+              <BreadcrumbItem className="text-slate-800">系统配置</BreadcrumbItem>
             </Breadcrumbs>
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg text-primary">
+              <div className="p-2 bg-white/50 shadow-sm border border-white/50 rounded-lg text-slate-700">
                 <Settings size={24} />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-default-900">
+                <h1 className="text-xl font-bold text-slate-800">
                   {currentTab?.label}
                 </h1>
-                <p className="text-sm text-default-500">
+                <p className="text-sm text-slate-500">
                   {currentTab?.description}
                 </p>
               </div>
