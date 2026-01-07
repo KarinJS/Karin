@@ -38,9 +38,9 @@
 
 我们提供多个文档站点供您访问，解决可能出现的访问困难：
 
-- **主文档站**: [https://karinjs.com](https://karinjs.com) (基于 GitHub Pages)
+- **主文档站**: [https://karinjs.com](https://karinjs.com)
 - **镜像站点**:
-  - [Vercel 镜像(瑜笙)](https://github.com/yusheng929): [https://docs.karinjs.com](https://docs.karinjs.com)
+  - [wuli 镜像(雾里)](https://github.com/shiwuliya): [https://karin.wuliya.cn](https://karin.wuliya.cn)
   - [Vercel 镜像(憨憨)](https://github.com/hanhan258): [https://karin.hanhanz.top](https://karin.hanhanz.top)
   - Deno 镜像: [https://karin.deno.dev](https://karin.deno.dev)
   - [自建CDN镜像(ikechan8370)](https://github.com/ikechan8370): [https://karin.chaite.cloud](https://karin.chaite.cloud)
