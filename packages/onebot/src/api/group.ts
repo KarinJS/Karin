@@ -11,6 +11,7 @@ export enum OneBotGroupApiAction {
   setGroupName = 'set_group_name',
   setGroupLeave = 'set_group_leave',
   lgl_setGroupLeave = 'lgl_set_group_leave',
+  lgl_groupPoke = 'group_poke',
   setGroupSpecialTitle = 'set_group_special_title',
   getGroupInfo = 'get_group_info',
   getGroupList = 'get_group_list',
@@ -521,6 +522,16 @@ export interface OneBotGroupApi {
 
   /** NapCat拓展: 群内戳一戳 */
   [OneBotGroupApiAction.nc_groupPoke]: {
+    action: 'group_poke',
+    params: {
+      group_id: number,
+      user_id: number
+    },
+    response: null
+  }
+
+  /** Lagrange拓展: 群内戳一戳 */
+  [OneBotGroupApiAction.lgl_groupPoke]: {
     action: 'group_poke',
     params: {
       group_id: number,

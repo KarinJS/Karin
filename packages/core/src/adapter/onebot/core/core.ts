@@ -997,9 +997,38 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
     }
   }
 
-  async PokeMember (_: string, __: string) {
-    // 这个接口比较特殊 暂时先搁置 lgl单独接口 shamrock单独接口 gocq字段不一样 llob貌似没实现？
-    throw new Error('Method not implemented.')
+  /**
+   * 戳一戳用户
+   * @param _contact 事件来源
+   * @param _targetId 被戳目标ID
+   * @param _count 戳一戳次数，默认1
+   */
+  async pokeUser (_contact: Contact, _targetId: string, _count: number = 1): Promise<boolean> {
+    if (!['group', 'friend'].includes(_contact.scene)) {
+      throw new Error('不支持的场景')
+    }
+    const peerId = +_contact.peer
+    const targetId = +_targetId
+
+    let pokeOnce: () => Promise<null>
+
+    if (this.adapter.name === 'Lagrange.OneBot') {
+      pokeOnce = _contact.scene === 'group'
+        ? () => this._onebot.lgl_groupPoke(peerId, targetId)
+        : () => this._onebot.lgl_friendPoke(targetId)
+    } else if (this.adapter.name === 'NapCat.Onebot') {
+      pokeOnce = _contact.scene === 'group'
+        ? () => this._onebot.nc_groupPoke(peerId, targetId)
+        : () => this._onebot.nc_friendPoke(targetId)
+    } else {
+      throw new Error(`${this.adapter.name} 不支持戳一戳功能`)
+    }
+
+    for (let i = 0; i < _count; i++) {
+      await pokeOnce()
+    }
+
+    return true
   }
 
   /**
@@ -1035,11 +1064,11 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
   }
 
   /**
-   * 合并转发 karin -> adapter
-   * @param elements 消息元素
-   * @param options 首层小卡片外显参数
-   * @returns 适配器消息元素
-   */
+     * 合并转发 karin -> adapter
+     * @param elements 消息元素
+     * @param options 首层小卡片外显参数
+     * @returns 适配器消息元素
+     */
   forwardKarinConvertAdapter (elements: Array<NodeElement>, options?: ForwardOptions): Array<NodeMessage> {
     const messages: NodeMessage[] = []
     for (const elem of elements) {

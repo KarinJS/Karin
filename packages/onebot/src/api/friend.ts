@@ -20,6 +20,7 @@ export enum OneBotFriendApiAction {
   nc_getDoubtFriendsAddRequest = 'nc_get_doubt_friends_add_request',
   nc_setDoubtFriendsAddRequest = 'nc_set_doubt_friends_add_request',
   nc_friendPoke = 'nc_friend_poke',
+  lgl_friendPoke = 'lgl_friend_poke',
 }
 
 /**
@@ -271,6 +272,16 @@ export interface OneBotFriendApi {
 
   /** NapCat扩展: 好友戳一戳 */
   [OneBotFriendApiAction.nc_friendPoke]: {
+    action: 'friend_poke',
+    params: {
+      user_id?: number,
+      target_id?: number
+    },
+    response: null
+  }
+
+  /** Lagrange扩展: 好友戳一戳 */
+  [OneBotFriendApiAction.lgl_friendPoke]: {
     action: 'friend_poke',
     params: {
       user_id?: number,
