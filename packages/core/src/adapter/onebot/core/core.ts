@@ -1007,22 +1007,27 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
     if (!['group', 'friend'].includes(_contact.scene)) {
       throw new Error('不支持的场景')
     }
-    const peerId = +_contact.peer
-    const targetId = +_targetId
+    const peerId = Number(_contact.peer)
+    const targetId = Number(_targetId)
+    const scene = _contact.scene as 'group' | 'friend'
 
-    let pokeOnce: () => Promise<null>
+    const handlers = {
+      'Lagrange.OneBot': {
+        group: () => this._onebot.lgl_groupPoke(peerId, targetId),
+        friend: () => this._onebot.lgl_friendPoke(targetId),
+      },
+      'NapCat.Onebot': {
+        group: () => this._onebot.nc_groupPoke(peerId, targetId),
+        friend: () => this._onebot.nc_friendPoke(targetId),
+      },
+    } as const
 
-    if (this.adapter.name === 'Lagrange.OneBot') {
-      pokeOnce = _contact.scene === 'group'
-        ? () => this._onebot.lgl_groupPoke(peerId, targetId)
-        : () => this._onebot.lgl_friendPoke(targetId)
-    } else if (this.adapter.name === 'NapCat.Onebot') {
-      pokeOnce = _contact.scene === 'group'
-        ? () => this._onebot.nc_groupPoke(peerId, targetId)
-        : () => this._onebot.nc_friendPoke(targetId)
-    } else {
+    const adapterHandlers = handlers[this.adapter.name as keyof typeof handlers]
+    if (!adapterHandlers) {
       throw new Error(`${this.adapter.name} 不支持戳一戳功能`)
     }
+
+    const pokeOnce = adapterHandlers[scene]
 
     for (let i = 0; i < _count; i++) {
       await pokeOnce()

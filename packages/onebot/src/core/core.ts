@@ -1008,7 +1008,8 @@ export abstract class OneBotCore extends EventEmitter {
   }
 
   /** Lagrange扩展: 好友戳一戳
-   * @param user_id - 目标ID
+   * @param user_id - 用户ID
+   * @param target_id - 目标ID
    */
   async lgl_friendPoke (
     user_id?: number,
