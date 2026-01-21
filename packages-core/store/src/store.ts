@@ -37,7 +37,6 @@ const baseDir = (() => {
 })()
 
 const platform = process.env.STORE_PLATFORM || process.platform
-
 const tempDir = joinPath(baseDir, process.env.TEMP_DIR_NAME, 'temp')
 const dbDir = `${baseDir}/data/db`
 
@@ -45,7 +44,7 @@ const dbDir = `${baseDir}/data/db`
    * 全局路径存储对象
    * @since 2.0
    */
-export const store = {
+export const store = Object.freeze({
   /**
    * 所有数据文件的基础目录
    * @example `/root/karin/.karin`
@@ -363,4 +362,4 @@ export const store = {
       return count
     },
   },
-} as const
+} as const)
