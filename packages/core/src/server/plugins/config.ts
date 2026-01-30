@@ -344,7 +344,7 @@ export const getPluginType = async (name: string) => {
   for (const item of list) {
     if (item === npmName) return 'npm'
     if (item === gitName) return 'git'
-    if (item === rootName) return 'npm'
+    if (item === rootName) return 'git'
   }
 
   return null
