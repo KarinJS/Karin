@@ -441,9 +441,10 @@ export interface AdapterType<T = any> {
   /**
    * 戳一戳用户 支持群聊和私聊
    * @param contact 目标信息
+   * @param targetId 被戳用户 ID
    * @param count 戳一戳次数 默认为1
    */
-  pokeUser (contact: Contact, count?: number): Promise<boolean>
+  pokeUser (contact: Contact, targetId: string, count?: number): Promise<boolean>
 
   /**
    * 获取 Cookies
