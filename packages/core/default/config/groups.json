@@ -1,6 +1,7 @@
 [
   {
     "key": "default",
+    "inherit": true,
     "cd": 0,
     "userCD": 0,
     "mode": 0,
@@ -8,12 +9,23 @@
     "enable": [],
     "disable": [],
     "member_enable": [],
-    "member_disable": [],
-    "memberEnable": [],
-    "memberDisable": []
+    "member_disable": []
+  },
+  {
+    "key": "global",
+    "inherit": true,
+    "cd": 0,
+    "userCD": 0,
+    "mode": 0,
+    "alias": [],
+    "enable": [],
+    "disable": [],
+    "member_enable": [],
+    "member_disable": []
   },
   {
     "key": "Bot:selfId",
+    "inherit": true,
     "cd": 0,
     "userCD": 0,
     "mode": 0,
@@ -21,12 +33,11 @@
     "enable": [],
     "disable": [],
     "member_enable": [],
-    "member_disable": [],
-    "memberEnable": [],
-    "memberDisable": []
+    "member_disable": []
   },
   {
     "key": "Bot:selfId:groupId",
+    "inherit": true,
     "cd": 0,
     "userCD": 0,
     "mode": 0,
@@ -34,12 +45,11 @@
     "enable": [],
     "disable": [],
     "member_enable": [],
-    "member_disable": [],
-    "memberEnable": [],
-    "memberDisable": []
+    "member_disable": []
   },
   {
     "key": "Bot:selfId:guildId",
+    "inherit": true,
     "cd": 0,
     "userCD": 0,
     "mode": 0,
@@ -47,12 +57,11 @@
     "enable": [],
     "disable": [],
     "member_enable": [],
-    "member_disable": [],
-    "memberEnable": [],
-    "memberDisable": []
+    "member_disable": []
   },
   {
     "key": "Bot:selfId:guildId:channelId",
+    "inherit": true,
     "cd": 0,
     "userCD": 0,
     "mode": 0,
@@ -60,8 +69,6 @@
     "enable": [],
     "disable": [],
     "member_enable": [],
-    "member_disable": [],
-    "memberEnable": [],
-    "memberDisable": []
+    "member_disable": []
   }
 ]
