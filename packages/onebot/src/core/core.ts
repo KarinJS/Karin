@@ -1007,6 +1007,20 @@ export abstract class OneBotCore extends EventEmitter {
     })
   }
 
+  /** Lagrange扩展: 好友戳一戳
+   * @param user_id - 用户ID
+   * @param target_id - 目标ID
+   */
+  async lgl_friendPoke (
+    user_id?: number,
+    target_id?: number
+  ) {
+    return this.sendApi(OneBotFriendApiAction.lgl_friendPoke, {
+      user_id,
+      target_id,
+    })
+  }
+
   /**
    * 群组踢人
    * @param group_id - 群ID
@@ -1517,6 +1531,20 @@ export abstract class OneBotCore extends EventEmitter {
     user_id: number
   ) {
     return this.sendApi(OneBotGroupApiAction.nc_groupPoke, {
+      group_id,
+      user_id,
+    })
+  }
+
+  /** Lagrange拓展: 群内戳一戳
+   * @param group_id - 群ID
+   * @param user_id - 用户ID
+   */
+  async lgl_groupPoke (
+    group_id: number,
+    user_id: number
+  ) {
+    return this.sendApi(OneBotGroupApiAction.lgl_groupPoke, {
       group_id,
       user_id,
     })

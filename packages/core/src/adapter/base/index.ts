@@ -550,9 +550,10 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
   /**
    * 戳一戳用户 支持群聊和私聊
    * @param _contact 目标信息
+   * @param _targetId 被戳用户 ID
    * @param _count 戳一戳次数 默认为1
    */
-  pokeUser (_contact: Contact, _count?: number): Promise<boolean> {
+  pokeUser (_contact: Contact, _targetId: string, _count?: number): Promise<boolean> {
     throw new Error(this.#errMsg)
   }
 
