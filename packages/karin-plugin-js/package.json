@@ -23,7 +23,7 @@
     "@types/lodash": "^4.17.16",
     "@types/node": "^20.17.8",
     "cross-env": "^7.0.3",
-    "eslint": "^9.7.0",
+    "eslint": "^9.26.0",
     "neostandard": "^0.11.9",
     "node-karin": "workspace:*",
     "typescript": "^5.5.3"
