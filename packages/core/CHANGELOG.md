@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.14.3](https://github.com/KarinJS/Karin/compare/core-v1.14.2...core-v1.14.3) (2026-02-09)
+
+
+### 🐛 Bug Fixes
+
+* 修复pokeUser参数错误的问题close [#576](https://github.com/KarinJS/Karin/issues/576) ([#609](https://github.com/KarinJS/Karin/issues/609)) ([5853366](https://github.com/KarinJS/Karin/commit/5853366236226b340f60d560fab84ac8c2d20d2d))
+
 ## [1.14.2](https://github.com/KarinJS/Karin/compare/core-v1.14.1...core-v1.14.2) (2026-01-30)
 
 
