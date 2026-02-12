@@ -13,12 +13,31 @@
     "chartVisualization": "数据可视化",
     "waitingData": "等待实时数据接入...",
     "welcome": "欢迎回来",
+    "description": "轻松管理您的机器人实例，探索无限可能。",
     "quickActions": "快捷操作",
     "refresh": "刷新数据",
     "status": "系统状态",
     "logs": {
       "title": "运行日志",
       "viewAll": "查看全部"
+    },
+    "guide": {
+      "basicConfig": {
+        "title": "基础配置",
+        "desc": "配置机器人的连接、权限及基础行为"
+      },
+      "plugins": {
+        "title": "插件管理",
+        "desc": "浏览、安装及管理功能插件"
+      },
+      "schemaDemo": {
+        "title": "组件演示",
+        "desc": "探索 UI 组件库与交互示例"
+      }
+    },
+    "links": {
+      "docs": "文档",
+      "repo": "GitHub 仓库"
     }
   },
   "sidebar": {
@@ -151,6 +170,31 @@
   "pm2": {
     "saveSuccess": "PM2 配置保存成功",
     "saveError": "保存失败",
-    "rawMode": "PM2 配置界面当前处于原始模式。"
+    "rawMode": "PM2 配置界面当前处于原始模式。"  },
+  "plugins": {
+    "title": "插件市场",
+    "subtitle": "探索、安装和管理 Karin 的扩展功能",
+    "search": "搜索插件...",
+    "tabs": {
+      "all": "全部",
+      "npm": "NPM 插件",
+      "direct": "直链应用",
+      "installed": "已安装"
+    },
+    "install": "安装",
+    "uninstall": "卸载",
+    "update": "更新",
+    "sources": "来源",
+    "tags": "标签",
+    "extension_store": "扩展商店",
+    "developer": "开发者？",
+    "publish": "发布插件",
+    "author": "作者",
+    "license": "开源协议",
+    "downloads": "下载量",
+    "about": "关于此插件",
+    "read_docs": "阅读完整文档",
+    "updated": "更新于",
+    "version": "版本"
   }
 }

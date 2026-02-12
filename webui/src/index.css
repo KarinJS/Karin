@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;500;700&display=swap');
 @import "tailwindcss";
 @plugin './hero.ts';
 @source '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
@@ -52,3 +53,11 @@ body {
     0 20px 25px -5px rgba(0, 0, 0, 0.05),
     0 10px 10px -5px rgba(0, 0, 0, 0.02);
 }
+
+/* Custom Typography */
+.font-calligraphy { font-family: 'Ma Shan Zheng', cursive; }
+.font-serif-sc { font-family: 'Noto Serif SC', serif; }
+
+/* Utility */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

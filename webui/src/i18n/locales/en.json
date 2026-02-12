@@ -13,12 +13,31 @@
     "chartVisualization": "Data Visualization",
     "waitingData": "Waiting for real-time data...",
     "welcome": "Welcome Back",
+    "description": "Easily manage your bot instance and explore infinite possibilities.",
     "quickActions": "Quick Actions",
     "refresh": "Refresh",
     "status": "System Status",
     "logs": {
       "title": "System Logs",
       "viewAll": "View All"
+    },
+    "guide": {
+      "basicConfig": {
+        "title": "Basic Details",
+        "desc": "Configure bot connection, permissions and basic behaviors"
+      },
+      "plugins": {
+        "title": "Plugins",
+        "desc": "Browse, install and manage functional plugins"
+      },
+      "schemaDemo": {
+        "title": "Components",
+        "desc": "Explore UI component library and interaction examples"
+      }
+    },
+    "links": {
+      "docs": "Documentation",
+      "repo": "GitHub Repository"
     }
   },
   "sidebar": {
