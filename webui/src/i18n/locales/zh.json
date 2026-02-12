@@ -1,55 +1,75 @@
 {
   "dashboard": {
     "title": "仪表盘",
-    "subtitle": "系统状态概览",
+    "subtitle": "系统概览",
+    "systemOnline": "系统正常运行",
     "stats": {
       "users": "总用户",
       "active": "活跃会话",
       "uptime": "运行时间",
       "memory": "内存使用"
     },
+    "trafficOverview": "流量监控",
+    "chartVisualization": "数据可视化",
+    "waitingData": "等待实时数据接入...",
+    "welcome": "欢迎回来",
+    "quickActions": "快捷操作",
+    "refresh": "刷新数据",
+    "status": "系统状态",
     "logs": {
-      "title": "近期日志",
+      "title": "运行日志",
       "viewAll": "查看全部"
     }
   },
   "sidebar": {
     "dashboard": "仪表盘",
-    "activity": "活动",
-    "plugins": "插件",
-    "settings": "设置",
-    "admin": "管理员"
+    "basicConfig": "基础设置",
+    "schemaDemo": "组件演示",
+    "activity": "系统动态",
+    "plugins": "插件管理",
+    "settings": "高级设置",
+    "logout": "退出登录"
   },
   "settings": {
-    "title": "系统设置",
-    "subtitle": "管理您的服务器配置"
+    "title": "高级系统设置",
+    "subtitle": "配置服务器端口、数据库连接及日志选项"
   },
   "common": {
-    "search": "搜索...",
-    "loading": "加载中...",
     "save": "保存更改",
-    "saveChanges": "保存更改",
+    "saving": "保存中...",
+    "search": "搜索配置...",
+    "loading": "加载中...",
     "cd": "冷却时间 (秒)",
     "userCd": "用户冷却时间 (秒)",
     "responseMode": "响应模式",
     "inheritGlobal": "继承全局配置"
   },
   "basicConfig": {
-    "title": "基础配置",
+    "title": "基础场景配置",
     "subtitle": "管理所有系统和插件配置",
-    "tabsAriaLabel": "配置选项"
+    "tabsAriaLabel": "配置类别导航"
   },
   "tabs": {
-    "permissions": "权限设置",
-    "filter": "过滤设置",
-    "group": "群聊设置",
+    "permissions": "权限管理",
+    "permissionsDesc": "配置超级管理员与管理员权限",
+    "filter": "内容过滤",
+    "filterDesc": "管理命令黑白名单与事件拦截",
+    "group": "群组设置",
+    "groupDesc": "群聊消息与事件处理规则",
     "friend": "好友设置",
+    "friendDesc": "私聊消息与请求处理规则",
     "guild": "频道设置",
-    "direct": "私聊设置",
-    "server": "服务器设置",
-    "logger": "日志设置",
-    "redis": "Redis设置",
-    "pm2": "PM2设置"
+    "guildDesc": "频道内消息处理规则",
+    "direct": "临时会话",
+    "directDesc": "临时私聊消息处理规则",
+    "server": "连接设置",
+    "serverDesc": "HTTP 与 WebSocket 服务端口配置",
+    "logger": "日志记录",
+    "loggerDesc": "日志等级与存储策略",
+    "redis": "Redis缓存",
+    "redisDesc": "数据库连接配置",
+    "pm2": "进程管理",
+    "pm2Desc": "PM2 进程监控与管理"
   },
   "mode": {
     "all": "响应所有",

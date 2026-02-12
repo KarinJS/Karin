@@ -4,6 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  --font-sans: "Montserrat", "Noto Sans SC", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --color-glass: rgba(255, 255, 255, 0.7);
   --color-glass-border: rgba(255, 255, 255, 0.5);
   --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
@@ -22,6 +23,7 @@ body {
   background-attachment: fixed;
   color: #334155;
   /* Slate 700 - Softer than pure black */
+  font-family: var(--font-sans);
 }
 
 .glass-panel {

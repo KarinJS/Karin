@@ -1,64 +1,84 @@
 {
   "dashboard": {
     "title": "Dashboard",
-    "subtitle": "Overview of your system status",
+    "subtitle": "System Overview",
+    "systemOnline": "All Systems Online",
     "stats": {
       "users": "Total Users",
       "active": "Active Sessions",
-      "uptime": "Server Uptime",
+      "uptime": "Uptime",
       "memory": "Memory Usage"
     },
+    "trafficOverview": "Traffic Overview",
+    "chartVisualization": "Data Visualization",
+    "waitingData": "Waiting for real-time data...",
+    "welcome": "Welcome Back",
+    "quickActions": "Quick Actions",
+    "refresh": "Refresh",
+    "status": "System Status",
     "logs": {
-      "title": "Recent System Logs",
+      "title": "System Logs",
       "viewAll": "View All"
     }
   },
   "sidebar": {
     "dashboard": "Dashboard",
+    "basicConfig": "Configuration",
+    "schemaDemo": "Component Demo",
     "activity": "Activity",
     "plugins": "Plugins",
     "settings": "Settings",
-    "admin": "Admin"
+    "logout": "Logout"
   },
   "settings": {
     "title": "System Settings",
-    "subtitle": "Manage your server configuration"
+    "subtitle": "Manage server ports, database connections and logs"
   },
   "common": {
-    "search": "Search...",
-    "loading": "Loading...",
     "save": "Save Changes",
-    "saveChanges": "Save Changes",
-    "cd": "CD (seconds)",
-    "userCd": "User CD (seconds)",
+    "saving": "Saving...",
+    "search": "Search configuration...",
+    "loading": "Loading...",
+    "cd": "Cooldown (sec)",
+    "userCd": "User Cooldown (sec)",
     "responseMode": "Response Mode",
-    "inheritGlobal": "Inherit Global Config"
+    "inheritGlobal": "Inherit Global"
   },
   "basicConfig": {
-    "title": "Configuration",
+    "title": "Basic Configuration",
     "subtitle": "Manage all system and plugin configurations",
-    "tabsAriaLabel": "Configuration Options"
+    "tabsAriaLabel": "Configuration Categories"
   },
   "tabs": {
     "permissions": "Permissions",
-    "filter": "Filter",
-    "group": "Group Scene",
-    "friend": "Friend Scene",
-    "guild": "Guild Scene",
-    "direct": "Direct Scene",
-    "server": "Server",
-    "logger": "Logger",
-    "redis": "Redis",
-    "pm2": "PM2"
+    "permissionsDesc": "Manage superuser and admin privileges",
+    "filter": "Content Filter",
+    "filterDesc": "Command allow/block lists and event filters",
+    "group": "Group Chat",
+    "groupDesc": "Group message and event rules",
+    "friend": "Friend Chat",
+    "friendDesc": "Private message and request rules",
+    "guild": "Guild Chat",
+    "guildDesc": "Guild message handling rules",
+    "direct": "Temporary Chat",
+    "directDesc": "Temp private message rules",
+    "server": "Connections",
+    "serverDesc": "HTTP & WebSocket server ports",
+    "logger": "Logging",
+    "loggerDesc": "Log levels and storage policy",
+    "redis": "Redis Cache",
+    "redisDesc": "Database connection settings",
+    "pm2": "Process Manager",
+    "pm2Desc": "PM2 process monitoring"
   },
   "mode": {
-    "all": "Respond to all",
-    "master": "Master only",
-    "admin": "Admin only"
+    "all": "All Users",
+    "master": "Master Only",
+    "admin": "Admin Only"
   },
   "permissions": {
     "loadError": "Failed to load permissions",
-    "saveSuccess": "Permissions saved",
+    "saveSuccess": "Permissions saved successfully",
     "saveError": "Failed to save",
     "masterList": "Master List",
     "enterUserId": "Enter User ID",
@@ -67,70 +87,70 @@
     "noAdmins": "No admins configured"
   },
   "filter": {
-    "saveSuccess": "Filter config saved",
+    "saveSuccess": "Filter options saved successfully",
     "saveError": "Failed to save",
     "enableEvents": "Enable Events",
     "listsConfig": "Lists Configuration",
-    "listsDesc": "Manage whitelists and blacklists for users, groups, etc.",
-    "detailedDesc": "Detailed list management (enable_list, disable_list, etc.) is available via direct file editing or will be added in future updates."
+    "listsDesc": "Manage block/allow lists for users and groups",
+    "detailedDesc": "Detailed list management (enable/disable lists) is available via direct file editing or will be added in a future update."
   },
   "group": {
-    "saveSuccess": "Group config saved",
+    "saveSuccess": "Group settings saved successfully",
     "saveError": "Failed to save",
     "globalSettings": "Global Group Settings",
-    "note": "Note: Currently only Global configuration is supported in the UI. For specific group configurations, please edit the config file directly."
+    "note": "Note: UI currently supports global settings only. For specific groups, please edit configuration files directly."
   },
   "friend": {
-    "saveSuccess": "Friend config saved",
+    "saveSuccess": "Friend settings saved successfully",
     "saveError": "Failed to save",
     "globalSettings": "Global Friend Settings"
   },
   "guild": {
-    "saveSuccess": "Guild config saved",
+    "saveSuccess": "Guild settings saved successfully",
     "saveError": "Failed to save",
     "globalSettings": "Global Guild Settings"
   },
   "direct": {
-    "saveSuccess": "Direct config saved",
+    "saveSuccess": "Direct chat settings saved successfully",
     "saveError": "Failed to save",
-    "globalSettings": "Global Direct Message Settings"
+    "globalSettings": "Global Direct Chat Settings"
   },
   "server": {
-    "saveSuccess": "Server config saved",
+    "saveSuccess": "Server settings saved successfully",
     "saveError": "Failed to save",
     "httpServer": "HTTP Server",
-    "host": "Host",
+    "host": "Host Address",
     "port": "Port",
-    "authKey": "Auth Key",
+    "authKey": "Authentication Key",
     "username": "Username",
     "password": "Password",
     "wsServer": "WebSocket Server",
     "enableWs": "Enable WebSocket",
-    "ffmpeg": "FFmpeg",
+    "ffmpeg": "FFmpeg Configuration",
     "ffmpegPath": "FFmpeg Path",
     "ffprobePath": "FFprobe Path",
     "ffplayPath": "FFplay Path"
   },
   "logger": {
-    "saveSuccess": "Logger config saved",
+    "saveSuccess": "Logger settings saved successfully",
     "saveError": "Failed to save",
     "level": "Log Level",
-    "daysToKeep": "Days to Keep",
-    "maxLogSize": "Max Log Size",
+    "daysToKeep": "Retention Days",
+    "maxLogSize": "Max Log File Size",
     "functionColor": "Function Color"
   },
   "redis": {
-    "saveSuccess": "Redis config saved",
+    "saveSuccess": "Redis config saved successfully",
     "saveError": "Failed to save",
     "enable": "Enable Redis",
     "url": "Connection URL",
     "username": "Username",
     "password": "Password",
-    "database": "Database"
+    "database": "Database Index"
   },
   "pm2": {
-    "saveSuccess": "PM2 config saved",
+    "saveSuccess": "PM2 config saved successfully",
     "saveError": "Failed to save",
-    "rawMode": "PM2 configuration UI is currently in raw mode."
+    "rawMode": "PM2 config UI is currently in raw mode."
   }
 }

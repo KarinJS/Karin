@@ -12,11 +12,24 @@ export function Sidebar () {
   const NAV_ITEMS = [
     { icon: Home, label: t('sidebar.dashboard'), path: '/' },
     { icon: Sliders, label: t('sidebar.basicConfig', 'Basic Config'), path: '/basic-config' },
-    { icon: LayoutGrid, label: 'Schema Demo', path: '/schema-demo' },
+    { icon: LayoutGrid, label: t('sidebar.schemaDemo'), path: '/schema-demo' },
     { icon: Activity, label: t('sidebar.activity'), path: '/activity' },
     { icon: Box, label: t('sidebar.plugins'), path: '/plugins' },
     { icon: Settings, label: t('sidebar.settings'), path: '/settings' },
   ]
+
+  // Custom styling for tooltips to match glass morphism theme
+  const tooltipClasses = {
+    base: [
+      "before:bg-neutral-400/20", // Arrow color
+    ],
+    content: [
+      "py-2 px-4 shadow-xl",
+      "text-black bg-white/80 backdrop-blur-md", // Matching glass morphism
+      "border border-white/40",
+      "font-medium tracking-wide",
+    ],
+  };
 
   return (
     <aside className="fixed left-2 top-2 bottom-2 w-16 z-50 flex flex-col glass-panel rounded-2xl">
@@ -34,8 +47,27 @@ export function Sidebar () {
               key={item.path}
               content={item.label}
               placement="right"
-              color="foreground"
               offset={10}
+              classNames={tooltipClasses}
+              showArrow
+              motionProps={{
+                variants: {
+                  exit: {
+                    opacity: 0,
+                    transition: {
+                      duration: 0.1,
+                      ease: "easeIn",
+                    }
+                  },
+                  enter: {
+                    opacity: 1,
+                    transition: {
+                      duration: 0.15,
+                      ease: "easeOut",
+                    }
+                  },
+                },
+              }}
             >
               <Link
                 to={item.path}
@@ -62,7 +94,7 @@ export function Sidebar () {
 
       {/* Bottom Actions */}
       <div className="flex flex-col items-center w-full pb-4 gap-2">
-        <Tooltip content="Logout" placement="right" color="foreground">
+        <Tooltip content={t('sidebar.logout', 'Logout')} placement="right" offset={10} classNames={tooltipClasses} showArrow>
           <Button isIconOnly variant="light" radius="full" className="w-10 h-10 min-w-10">
             <LogOut size={20} strokeWidth={1.5} className="text-default-500 hover:text-default-900 transition-colors" />
           </Button>
