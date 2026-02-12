@@ -1,11 +1,8 @@
-import { useEffect, useState } from 'react'
-import { fetchStats, fetchLogs } from '../api'
-import type { StatItem, LogEntry } from '../api'
-import { ArrowUp, ArrowDown, Activity, Users, Server, Cpu, MoreHorizontal, Settings, Box, RefreshCw, Terminal, Zap, Quote } from 'lucide-react'
-import { clsx } from 'clsx'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Card, CardBody, CardHeader, Button, Chip, ScrollShadow, Spinner } from "@heroui/react"
 import { useNavigate } from 'react-router-dom'
+import { Settings, Box, Zap, Github, BookOpen, ArrowRight, Activity, Sparkles } from 'lucide-react'
+import { clsx } from 'clsx'
 
 interface Hitokoto {
   id: number
@@ -15,255 +12,215 @@ interface Hitokoto {
   creator: string
 }
 
-export function Dashboard () {
-  const [stats, setStats] = useState<StatItem[]>([])
-  const [logs, setLogs] = useState<LogEntry[]>([])
-  const [loading, setLoading] = useState(true)
-  const [hitokoto, setHitokoto] = useState<Hitokoto | null>(null)
+export function Dashboard() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const [hitokoto, setHitokoto] = useState<Hitokoto | null>(null)
+  const [mounted, setMounted] = useState(false)
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null)
 
   useEffect(() => {
-    loadData()
+    const timer = setTimeout(() => setMounted(true), 100)
+    
+    const fetchHitokoto = async () => {
+      try {
+        const res = await fetch('https://v1.hitokoto.cn/?c=i')
+        const data = await res.json()
+        setHitokoto(data)
+      } catch (e) {
+        console.error('Failed to fetch hitokoto', e)
+        setHitokoto({
+          id: 0,
+          hitokoto: "Life is what happens when you're busy making other plans.",
+          from: "John Lennon",
+          from_who: null,
+          creator: "System"
+        })
+      }
+    }
     fetchHitokoto()
+    return () => clearTimeout(timer)
   }, [])
 
-  const loadData = async () => {
-    setLoading(true)
-    try {
-      const [statsData, logsData] = await Promise.all([fetchStats(), fetchLogs()])
-      setStats(statsData)
-      setLogs(logsData)
-    } catch (error) {
-      console.error('Failed to load data', error)
-    } finally {
-      setLoading(false)
+  const guideCards = [
+    {
+      title: t('dashboard.guide.basicConfig.title'),
+      id: "01",
+      description: t('dashboard.guide.basicConfig.desc'),
+      icon: Settings,
+      path: '/basic-config',
+      // Styles for the "Cinematic" look
+      accent: "bg-blue-500",
+      iconColor: "text-blue-500",
+      bgColor: "bg-blue-50 dark:bg-blue-900/20"
+    },
+    {
+      title: t('dashboard.guide.plugins.title'),
+      id: "02",
+      description: t('dashboard.guide.plugins.desc'),
+      icon: Box,
+      path: '/plugins',
+      accent: "bg-purple-500",
+      iconColor: "text-purple-500",
+      bgColor: "bg-purple-50 dark:bg-purple-900/20"
+    },
+    {
+      title: t('dashboard.guide.schemaDemo.title'),
+      id: "03",
+      description: t('dashboard.guide.schemaDemo.desc'),
+      icon: Zap,
+      path: '/schema-demo',
+      accent: "bg-amber-500",
+      iconColor: "text-amber-500",
+      bgColor: "bg-amber-50 dark:bg-amber-900/20"
     }
-  }
-
-  const fetchHitokoto = async () => {
-    try {
-      const res = await fetch('https://v1.hitokoto.cn/')
-      const data = await res.json()
-      setHitokoto(data)
-    } catch (e) {
-      console.error('Failed to fetch hitokoto', e)
-    }
-  }
-
-  const getIcon = (title: string) => {
-    if (title.includes('Users')) return Users
-    if (title.includes('Server')) return Server
-    if (title.includes('Memory')) return Cpu
-    return Activity
-  }
-
-
-  const getLocalizedTitle = (title: string) => {
-    if (title.includes('Users')) return t('dashboard.stats.users')
-    if (title.includes('Active')) return t('dashboard.stats.active')
-    if (title.includes('Uptime')) return t('dashboard.stats.uptime')
-    if (title.includes('Memory')) return t('dashboard.stats.memory')
-    return title
-  }
-
-  const QuickActions = [
-    { icon: Settings, label: t('sidebar.basicConfig'), path: '/basic-config' },
-    { icon: Box, label: t('sidebar.plugins'), path: '/plugins' },
-    { icon: Zap, label: t('sidebar.schemaDemo'), path: '/schema-demo' },
   ]
 
-  if (loading && stats.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <Spinner size="lg" color="primary" />
-      </div>
-    )
-  }
+  const links = [
+    { label: "Docs", url: 'https://github.com/KarinJS/Karin', icon: BookOpen },
+    { label: "Github", url: 'https://github.com/KarinJS/Karin', icon: Github }
+  ]
 
   return (
-    <div className="h-full overflow-y-auto p-4 md:p-8 custom-scrollbar">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="h-full w-full bg-[#fcfcfc] dark:bg-[#09090b] overflow-y-auto overflow-x-hidden relative font-sans selection:bg-rose-500/20 scrollbar-hide">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;500;700&display=swap');
+        .font-calligraphy { font-family: 'Ma Shan Zheng', cursive; }
+        .font-serif-sc { font-family: 'Noto Serif SC', serif; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
+
+      {/* Ambient Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+         <div className="absolute top-[-10%] right-[-5%] w-150 h-150 bg-blue-500/5 rounded-full blur-[100px] opacity-70" />
+         <div className="absolute bottom-[-10%] left-[-5%] w-125 h-125 bg-rose-500/5 rounded-full blur-[100px] opacity-70" />
+      </div>
+
+      <div className="relative z-10 max-w-6xl mx-auto px-8 py-12 md:py-20 flex flex-col gap-12 min-h-[calc(100vh-4rem)]">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
-              {t('dashboard.welcome')}
-              <span className="text-2xl">👋</span>
-            </h1>
-            <p className="text-slate-500 mt-1 font-medium">{t('dashboard.subtitle')}</p>
-          </div>
-          <div className="flex gap-3">
-             <Button 
-              size="sm" 
-              variant="flat" 
-              color="primary" 
-              startContent={<RefreshCw size={16} />}
-              onPress={loadData}
-              isLoading={loading}
-            >
-              {t('dashboard.refresh')}
-            </Button>
-            <Chip color="success" variant="dot" className="pl-1 border-none bg-success-50 text-success-700 font-medium">
-              {t('dashboard.systemOnline')}
-            </Chip>
+        <div className={`flex flex-col md:flex-row justify-between items-start md:items-end gap-8 transition-all duration-1000 ease-out ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          <div className="space-y-8 max-w-3xl">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 shadow-sm">
+               <Sparkles size={12} className="text-amber-500 fill-amber-500" />
+               <span className="text-xs font-medium text-slate-500 dark:text-zinc-400 tracking-wider uppercase font-serif-sc">System Preview 0.0.1</span>
+            </div>
+
+            {/* Title Block */}
+            <div className="relative">
+              {/* Decorative ink splash behind title (optional, css only) */}
+              <h1 className="text-6xl md:text-8xl text-slate-900 dark:text-slate-100 font-calligraphy leading-tight -ml-1">
+                {t('dashboard.welcome')}
+              </h1>
+              <p className="mt-4 text-xl md:text-2xl text-slate-600 dark:text-zinc-400 font-serif-sc font-light tracking-wide opacity-90 max-w-2xl">
+                {t('dashboard.description')}
+              </p>
+            </div>
+            
+            {/* Quick Links */}
+            <div className="flex flex-wrap gap-4 pt-2">
+              {links.map((link, i) => (
+                <a 
+                  key={i}
+                  href={link.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-200 transition-colors uppercase tracking-widest"
+                >
+                  <span className="w-6 h-px bg-slate-300 dark:bg-zinc-700 group-hover:bg-slate-900 dark:group-hover:bg-zinc-200 transition-colors" />
+                  {link.label}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {stats.map((stat, index) => {
-            const Icon = getIcon(stat.title)
-            const isUp = stat.trend === 'up'
-            return (
-              <Card
-                key={index}
-                className="border-none shadow-sm hover:shadow-md transition-shadow duration-300"
+        {/* Separator - Fade line */}
+        <div className="w-full h-px bg-linear-to-r from-transparent via-slate-200 dark:via-zinc-800 to-transparent" />
+
+        {/* Cards Grid - The "Cinematic" Style */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {guideCards.map((card, index) => (
+             <div 
+              key={index}
+              className="group relative"
+              onMouseEnter={() => setHoveredCard(index)}
+              onMouseLeave={() => setHoveredCard(null)}
+              onClick={() => navigate(card.path)}
+            >
+              {/* Gradient Border Effect */}
+              <div 
+                className={clsx(
+                  "absolute -inset-px rounded-3xl bg-linear-to-b from-slate-200 to-transparent dark:from-zinc-700 dark:to-transparent opacity-0 transition-opacity duration-500",
+                  hoveredCard === index && "opacity-100"
+                )} 
+              />
+              
+              <div 
+                className={`relative h-full flex flex-col p-8 rounded-[22px] bg-white dark:bg-[#0c0c0e] border border-slate-100 dark:border-zinc-800/50 transition-all duration-500 hover:-translate-y-1 cursor-pointer overflow-hidden ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+                style={{ transitionDelay: `${index * 100}ms` }}
               >
-                <CardBody className="p-5 overflow-hidden relative">
-                  <div className="flex items-start justify-between relative z-10">
-                    <div>
-                      <p className="text-sm font-medium text-slate-500 mb-1">{getLocalizedTitle(stat.title)}</p>
-                      <h4 className="text-2xl font-bold text-slate-800">{stat.value}</h4>
-                    </div>
-                    <div className={clsx(
-                      "p-2 rounded-lg",
-                      index === 0 ? "bg-violet-100 text-violet-600" :
-                      index === 1 ? "bg-blue-100 text-blue-600" :
-                      index === 2 ? "bg-emerald-100 text-emerald-600" :
-                      "bg-amber-100 text-amber-600"
-                    )}>
-                      <Icon size={20} />
-                    </div>
+                
+                {/* Decoration blob inside card */}
+                <div className={clsx(
+                  "absolute -right-10 -top-10 w-40 h-40 rounded-full blur-[60px] opacity-0 group-hover:opacity-20 transition-opacity duration-700",
+                  card.accent
+                )} />
+
+                <div className="relative z-10 flex flex-col h-full">
+                  <div className="flex justify-between items-start mb-6">
+                     <div className={clsx(
+                       "p-4 rounded-2xl transition-colors duration-300",
+                       card.bgColor,
+                       card.iconColor
+                     )}>
+                       <card.icon size={28} strokeWidth={1.5} />
+                     </div>
+                     <span className="font-serif-sc text-sm text-slate-300 dark:text-zinc-700 select-none">0{index + 1}</span>
                   </div>
                   
-                  <div className="mt-4 flex items-center gap-2 text-xs font-medium">
-                    <Chip
-                      size="sm"
-                      variant="flat"
-                      color={isUp ? "success" : "danger"}
-                      classNames={{ content: "font-semibold px-1" }}
-                      startContent={isUp ? <ArrowUp size={10} /> : <ArrowDown size={10} />}
-                    >
-                      {stat.change}
-                    </Chip>
-                    <span className="text-slate-400">vs last month</span>
-                  </div>
-                </CardBody>
-              </Card>
-            )
-          })}
-        </div>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-zinc-100 mb-3 tracking-tight">
+                    {card.title}
+                  </h3>
+                  
+                  <p className="text-sm text-slate-500 dark:text-zinc-400 leading-relaxed font-light grow">
+                    {card.description}
+                  </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content: Traffic & Quick Actions */}
-          <div className="lg:col-span-2 space-y-6">
-             {/* Quick Actions */}
-             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-               {QuickActions.map((action, i) => (
-                 <Card 
-                  key={i} 
-                  isPressable 
-                  onPress={() => navigate(action.path)}
-                  className="bg-gradient-to-br from-white to-slate-50 border-none shadow-sm hover:shadow-md hover:scale-[1.02] transition-all"
-                >
-                   <CardBody className="flex flex-row items-center gap-4 p-4">
-                      <div className="p-3 bg-primary/10 rounded-xl text-primary">
-                        <action.icon size={20} />
-                      </div>
-                      <div className="text-left">
-                        <p className="font-semibold text-slate-700 text-sm">{action.label}</p>
-                        <p className="text-xs text-slate-400 mt-0.5">Click to configure</p>
-                      </div>
-                   </CardBody>
-                 </Card>
-               ))}
-             </div>
-
-            {/* Chart Area */}
-            <Card className="min-h-[300px] border-none shadow-sm flex flex-col">
-              <CardHeader className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-                <div className="flex items-center gap-2">
-                  <Activity size={18} className="text-primary" />
-                  <h2 className="font-bold text-lg text-slate-800">{t('dashboard.trafficOverview')}</h2>
-                </div>
-                <Button isIconOnly variant="light" size="sm" className="text-slate-400">
-                  <MoreHorizontal size={18} />
-                </Button>
-              </CardHeader>
-              <CardBody className="flex-1 flex items-center justify-center p-8 bg-slate-50/50">
-                <div className="text-center">
-                  <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
-                    <Activity size={32} className="text-slate-300" />
-                  </div>
-                  <h3 className="text-slate-600 font-medium mb-1">{t('dashboard.chartVisualization')}</h3>
-                  <p className="text-slate-400 text-sm max-w-xs mx-auto">{t('dashboard.waitingData')}</p>
-                </div>
-              </CardBody>
-            </Card>
-          </div>
-
-          {/* Right Panel: Logs */}
-          <Card className="h-full border-none shadow-sm flex flex-col">
-            <CardHeader className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Terminal size={18} className="text-slate-500" />
-                <h2 className="font-bold text-lg text-slate-800">{t('dashboard.logs.title')}</h2>
-              </div>
-              <Button size="sm" variant="light" className="text-primary font-medium text-xs">
-                {t('dashboard.logs.viewAll')}
-              </Button>
-            </CardHeader>
-            <CardBody className="p-0">
-              <ScrollShadow className="h-[400px] w-full">
-                <div className="divide-y divide-slate-50">
-                  {logs.map((log) => (
-                    <div key={log.id} className="px-6 py-4 hover:bg-slate-50 transition-colors cursor-default">
-                      <div className="flex gap-3">
-                        <div className={clsx(
-                          "w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0",
-                          log.level === 'info' && "bg-sky-500",
-                          log.level === 'warn' && "bg-amber-500",
-                          log.level === 'error' && "bg-rose-500"
-                        )} />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-slate-700 font-medium truncate">{log.message}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className={clsx(
-                              "text-[10px] px-1.5 py-0.5 rounded uppercase font-bold tracking-wider",
-                              log.level === 'info' && "bg-sky-50 text-sky-600",
-                              log.level === 'warn' && "bg-amber-50 text-amber-600",
-                              log.level === 'error' && "bg-rose-50 text-rose-600"
-                            )}>
-                              {log.level}
-                            </span>
-                            <span className="text-xs text-slate-400 font-mono">{log.timestamp}</span>
-                          </div>
-                        </div>
-                      </div>
+                  <div className="mt-6 flex items-center justify-between pt-6 border-t border-slate-50 dark:border-zinc-800/50 group-hover:border-slate-100 dark:group-hover:border-zinc-700/50 transition-colors">
+                    <span className="text-xs font-medium text-slate-400 dark:text-zinc-500 uppercase tracking-wider">Aciton</span>
+                    <div className={clsx(
+                      "transition-all duration-300 transform translate-x-0 opacity-50 group-hover:translate-x-1 group-hover:opacity-100",
+                      card.iconColor
+                    )}>
+                      <ArrowRight size={16} />
                     </div>
-                  ))}
+                  </div>
                 </div>
-              </ScrollShadow>
-            </CardBody>
-          </Card>
+              </div>
+            </div>
+          ))}
         </div>
+
+        {/* Footer */}
+        <div className="pt-8 border-t border-slate-100 dark:border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-4 mt-auto">
+           <div className="flex items-center gap-2 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+             <Activity size={16} />
+             <span className="text-xs font-mono font-medium">Karin Project</span>
+           </div>
+
+           {hitokoto && (
+             <div className="flex items-center gap-4 text-xs md:text-sm text-slate-500 dark:text-zinc-500 font-serif-sc">
+               <span className="italic">“{hitokoto.hitokoto}”</span>
+               <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-zinc-700" />
+               <span className="opacity-70">{hitokoto.from_who || hitokoto.creator}</span>
+             </div>
+           )}
+        </div>
+
       </div>
-      
-      {hitokoto && (
-        <div className="fixed bottom-6 right-8 max-w-md text-right z-50 pointer-events-none select-none hidden md:block opacity-70 hover:opacity-100 transition-opacity duration-700">
-          <p className="text-sm font-medium text-slate-500 leading-relaxed italic drop-shadow-sm font-serif">
-            "{hitokoto.hitokoto}"
-          </p>
-          <div className="flex justify-end items-center gap-2 mt-1.5">
-            <div className="h-px w-6 bg-slate-300/50"></div>
-            <p className="text-[10px] text-slate-400 font-light tracking-wide uppercase">
-              {hitokoto.from_who || hitokoto.creator} 
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
