@@ -1,1 +1,0 @@
-import 'moment/locale/en-ca.js'

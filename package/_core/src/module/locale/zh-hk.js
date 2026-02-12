@@ -1,1 +1,0 @@
-import 'moment/locale/zh-hk.js'

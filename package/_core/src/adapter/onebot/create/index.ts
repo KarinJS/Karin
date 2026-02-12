@@ -1,5 +1,0 @@
-export * from './init'
-export * from './create'
-export { createMessage as OneBotCreateMessage } from './message'
-export { createNotice as OneBotCreateNotice } from './notice'
-export { createRequest as OneBotCreateRequest } from './request'

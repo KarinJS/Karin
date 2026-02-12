@@ -1,1 +1,0 @@
-import 'moment/locale/ar-ma.js'

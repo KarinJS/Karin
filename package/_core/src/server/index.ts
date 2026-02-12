@@ -1,6 +1,0 @@
-export * from './router'
-export * from './router/router'
-export * from './utils/response'
-export * from './utils/getMimeType'
-export { authMiddleware } from './auth/middleware'
-export { app, server } from './app/app'
