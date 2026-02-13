@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@heroui/react": "^2.8.7",
-    "@karinjs/schema-types": "workspace:*",
     "@heroui/theme": "^2.4.25",
+    "@karinjs/schema-types": "workspace:*",
     "axios": "^1.13.2",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.26",
@@ -35,6 +35,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.23",
+    "code-inspector-plugin": "^1.4.2",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",

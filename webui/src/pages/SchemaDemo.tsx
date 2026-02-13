@@ -17,7 +17,7 @@ import { Eye, Code as CodeIcon } from 'lucide-react'
 /**
  * Schema-Driven UI 演示页面
  */
-export function SchemaDemo () {
+export function SchemaDemo() {
   const [activeTab, setActiveTab] = useState('demo')
   const [showJson, setShowJson] = useState(false)
   const [currentData, setCurrentData] = useState<Record<string, unknown>>({})

@@ -83,7 +83,6 @@ export function Sidebar () {
                 {/* Icon */}
                 <item.icon
                   size={20}
-                  strokeWidth={isActive ? 2 : 1.5}
                   className="transition-transform duration-300 group-hover:scale-110"
                 />
               </Link>

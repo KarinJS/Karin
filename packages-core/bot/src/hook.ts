@@ -1,10 +1,7 @@
 import { Bot } from '@karinjs/bot'
 import { coreHooks } from '@karinjs/adapter/hooks'
 
-import type {
-  AdapterType,
-  SendMsgResults,
-} from '@karinjs/adapter'
+import type { AdapterType, SendMsgResults } from '@karinjs/adapter'
 
 const sendMsg = async (
   ctx: AdapterType,
