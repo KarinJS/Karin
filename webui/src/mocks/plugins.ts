@@ -7,13 +7,13 @@ export const mockPlugins: Plugin[] = [
     description: '一个简单的 Karin 插件示例，展示了基础功能。',
     type: 'npm',
     version: '1.0.0',
-    authors: [
-      { name: 'KarinJS', url: 'https://github.com/KarinJS', avatar: 'https://github.com/KarinJS.png' }
-    ],
+    authors: { name: 'KarinJS', url: 'https://github.com/KarinJS', avatarUrl: 'https://github.com/KarinJS.png' },
     tags: ['example', 'demo'],
     license: 'MIT',
     homepage: 'https://github.com/KarinJS/karin-plugin-example',
     repo: 'https://github.com/KarinJS/karin-plugin-example',
+    readme: 'readme content',
+    downloads: 100,
     updateTime: '2023-10-01',
     installed: true
   },
@@ -23,25 +23,32 @@ export const mockPlugins: Plugin[] = [
     description: '点歌插件，支持多种音源，网易云、QQ音乐等。',
     type: 'npm',
     version: '2.1.3',
-    authors: [
-      { name: 'DeveloperA', url: 'https://github.com/DeveloperA' }
-    ],
+    authors: { name: 'DeveloperA', url: 'https://github.com/DeveloperA', avatarUrl: '' },
     tags: ['music', 'entertainment'],
     license: 'GPL-3.0',
     homepage: 'https://github.com/example/music',
+    repo: 'https://github.com/example/music',
+    icon: 'https://img.icons8.com/color/48/musical-notes.png',
+    readme: 'readme content',
+    downloads: 200,
+    updateTime: '2023-10-02',
     installed: false
   },
   {
     id: 'custom-script-weather',
     name: 'Weather Script',
     description: '通过直链安装的天气脚本，实时查询天气信息。',
-    type: 'custom',
+    type: 'url',
     version: '1.0.0',
-    authors: [
-      { name: 'ScriptMaster' }
-    ],
+    authors: { name: 'ScriptMaster', url: '', avatarUrl: '' },
     tags: ['tool', 'weather'],
     repo: 'https://example.com/scripts/weather.js',
+    license: 'MIT',
+    homepage: 'https://example.com/scripts/weather.js',
+    readme: 'readme content',
+    downloads: 300,
+    updateTime: '2023-10-03',
+    urls: { url: 'https://example.com/scripts/weather.js', name: 'weather.js', description: 'Weather Script' },
     installed: true
   },
   {
@@ -50,11 +57,15 @@ export const mockPlugins: Plugin[] = [
     description: '强大的管理插件，提供群管、踢人、禁言等功能。',
     type: 'npm',
     version: '0.5.0',
-    authors: [
-      { name: 'AdminGroup', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin' }
-    ],
+    authors: { name: 'AdminGroup', url: '', avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin' },
     tags: ['admin', 'management'],
     license: 'MIT',
+    homepage: 'https://github.com/example/admin',
+    repo: 'https://github.com/example/admin',
+    icon: 'https://img.icons8.com/color/48/admin-settings-male.png',
+    readme: '<h1>Plugin Admin</h1><p>Description with <strong>HTML</strong>.</p><script>alert("xss")</script>',
+    downloads: 400,
+    updateTime: '2023-10-04',
     installed: false
   },
   {
@@ -63,22 +74,31 @@ export const mockPlugins: Plugin[] = [
     description: '随机图片插件，二次元、风景等多种分类。',
     type: 'npm',
     version: '1.2.0',
-    authors: [
-      { name: 'ImgLover' }
-    ],
+    authors: { name: 'ImgLover', url: '', avatarUrl: '' },
     tags: ['image', 'random'],
+    license: 'MIT',
+    homepage: 'https://github.com/example/image',
+    repo: 'https://github.com/example/image',
+    readme: 'readme content',
+    downloads: 500,
+    updateTime: '2023-10-05',
     installed: false
   },
   {
     id: 'direct-link-game',
     name: 'Mini Game Collection',
     description: '包含猜数字、成语接龙等小游戏的脚本集合。',
-    type: 'custom',
+    type: 'url',
     version: '3.0.1',
-    authors: [
-      { name: 'GameDev' }
-    ],
+    authors: { name: 'GameDev', url: '', avatarUrl: '' },
     tags: ['game', 'fun'],
+    license: 'MIT',
+    homepage: 'https://github.com/example/game',
+    repo: 'https://github.com/example/game',
+    readme: 'readme content',
+    downloads: 600,
+    updateTime: '2023-10-06',
+    urls: { url: 'https://example.com/scripts/game.js', name: 'game.js', description: 'Game Script' },
     installed: true
   }
 ]

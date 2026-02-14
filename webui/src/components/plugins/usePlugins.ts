@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { mockPlugins } from '../../mocks/plugins'
 import type { Plugin } from '../../types/plugin'
 
@@ -22,7 +22,7 @@ export const usePlugins = () => {
       if (activeFilter === 'all') matchesFilter = true
       else if (activeFilter === 'installed') matchesFilter = plugin.installed
       else if (activeFilter === 'npm') matchesFilter = plugin.type === 'npm'
-      else if (activeFilter === 'custom') matchesFilter = plugin.type === 'custom'
+      else if (activeFilter === 'url') matchesFilter = plugin.type === 'url'
       else matchesFilter = plugin.tags?.includes(activeFilter) || false
 
       return matchesSearch && matchesFilter
@@ -34,15 +34,21 @@ export const usePlugins = () => {
     return filteredPlugins.slice(start, start + rowsPerPage)
   }, [page, filteredPlugins])
 
-  useEffect(() => {
+  const setFilterWithReset = (filter: string) => {
+    setActiveFilter(filter)
     setPage(1)
-  }, [searchQuery, activeFilter])
+  }
+
+  const setSearchWithReset = (query: string) => {
+    setSearchQuery(query)
+    setPage(1)
+  }
 
   return {
     activeFilter,
-    setActiveFilter,
+    setActiveFilter: setFilterWithReset,
     searchQuery,
-    setSearchQuery,
+    setSearchQuery: setSearchWithReset,
     page,
     setPage,
     selectedPlugin,

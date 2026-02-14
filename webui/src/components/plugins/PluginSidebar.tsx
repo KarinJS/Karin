@@ -72,7 +72,7 @@ export const PluginSidebar = ({ activeFilter, setActiveFilter }: PluginSidebarPr
             setActiveFilter={setActiveFilter}
           />
           <SidebarItem 
-            id="custom" 
+            id="url" 
             label={t('plugins.tabs.direct', 'Direct Link')} 
             icon={Command} 
             activeFilter={activeFilter}
@@ -101,7 +101,7 @@ export const PluginSidebar = ({ activeFilter, setActiveFilter }: PluginSidebarPr
       
       {/* Sidebar Footer */}
       <div className="p-4 border-t border-slate-100 dark:border-zinc-800/50">
-        <div className="p-3 bg-linear-to-br from-indigo-500 to-violet-600 rounded-xl shadow-lg relative overflow-hidden group">
+        <div className="p-3 bg-primary rounded-xl shadow-lg relative overflow-hidden group">
           <div className="relative z-10 text-white">
             <div className="text-xs font-medium opacity-80 mb-1">{t('plugins.developer', 'Developer?')}</div>
             <div className="text-sm font-bold flex items-center gap-1 cursor-pointer hover:underline">

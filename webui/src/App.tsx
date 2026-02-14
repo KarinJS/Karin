@@ -4,6 +4,8 @@ import { Toaster } from 'sonner'
 import { DashboardLayout } from './layouts/DashboardLayout'
 import { Dashboard } from './pages/Dashboard'
 import { Plugins } from './pages/Plugins'
+import { PluginManage } from './pages/PluginManage'
+import { PluginCustom } from './pages/PluginCustom'
 import { Settings } from './pages/Settings'
 import { BasicConfig } from './pages/BasicConfig'
 import { SchemaDemo } from './pages/SchemaDemo'
@@ -17,6 +19,8 @@ function AppRoutes () {
         <Route path="/" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="plugins" element={<Plugins />} />
+          <Route path="plugin-manage" element={<PluginManage />} />
+          <Route path="plugin-custom" element={<PluginCustom />} />
           <Route path="settings" element={<Settings />} />
           <Route path="basic-config" element={<BasicConfig />} />
           <Route path="schema-demo" element={<SchemaDemo />} />

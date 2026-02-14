@@ -21,7 +21,7 @@ export const SidebarItem = ({
   
   // Try to translate label if possible, otherwise use as is
   // This handles both static keys and dynamic tags
-  const translatedLabel = id === 'all' || id === 'installed' || id === 'npm' || id === 'custom' 
+  const translatedLabel = id === 'all' || id === 'installed' || id === 'npm' || id === 'url' 
     ? label // These are already translated in parent
     : label // For tags, we might just use the raw tag name for now
 

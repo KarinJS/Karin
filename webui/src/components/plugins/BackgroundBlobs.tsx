@@ -18,7 +18,7 @@ export const BackgroundBlobs = () => (
         scale: [1, 1.1, 1],
       }}
       transition={{ duration: 25, repeat: Infinity, ease: "linear", delay: 2 }}
-      className="absolute top-1/3 right-0 w-[500px] h-[500px] bg-purple-400/20 dark:bg-purple-600/10 rounded-full blur-3xl opacity-60"
+      className="absolute top-1/3 right-0 w-125 h-125 bg-purple-400/20 dark:bg-purple-600/10 rounded-full blur-3xl opacity-60"
     />
     <motion.div 
       animate={{ 
