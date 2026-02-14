@@ -9,6 +9,7 @@ import { PluginCustom } from './pages/PluginCustom'
 import { Settings } from './pages/Settings'
 import { BasicConfig } from './pages/BasicConfig'
 import { SchemaDemo } from './pages/SchemaDemo'
+import { PluginConfig } from './pages/PluginConfig'
 
 function AppRoutes () {
   const navigate = useNavigate()
@@ -24,6 +25,7 @@ function AppRoutes () {
           <Route path="settings" element={<Settings />} />
           <Route path="basic-config" element={<BasicConfig />} />
           <Route path="schema-demo" element={<SchemaDemo />} />
+          <Route path="plugin-config" element={<PluginConfig />} />
           <Route path="*" element={<div className="p-6">Page not found</div>} />
         </Route>
       </Routes>

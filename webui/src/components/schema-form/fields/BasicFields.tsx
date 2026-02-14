@@ -36,6 +36,9 @@ export function TextField ({ schema }: { schema: TextFieldSchema }) {
       isDisabled={schema.disabled === true}
       maxLength={schema.options?.maxLength}
       isClearable={schema.options?.clearable}
+      autoComplete="off"
+      autoCorrect="off"
+      spellCheck="false"
       startContent={schema.prefixIcon && <Icon name={schema.prefixIcon} size={18} className="text-default-400" />}
       endContent={
         schema.tooltip && (
@@ -72,6 +75,9 @@ export function PasswordField ({ schema }: { schema: PasswordFieldSchema }) {
       isRequired={schema.required}
       isDisabled={schema.disabled === true}
       maxLength={schema.options?.maxLength}
+      autoComplete="new-password"
+      autoCorrect="off"
+      spellCheck="false"
       startContent={schema.prefixIcon && <Icon name={schema.prefixIcon} size={18} className="text-default-400" />}
       endContent={
         showToggle && (
@@ -112,6 +118,9 @@ export function NumberField ({ schema }: { schema: NumberFieldSchema }) {
       min={schema.options?.min}
       max={schema.options?.max}
       step={schema.options?.step}
+      autoComplete="off"
+      autoCorrect="off"
+      spellCheck="false"
       startContent={schema.prefixIcon && <Icon name={schema.prefixIcon} size={18} className="text-default-400" />}
       endContent={
         schema.tooltip && (
@@ -146,6 +155,9 @@ export function TextareaField ({ schema }: { schema: TextareaFieldSchema }) {
       isDisabled={schema.disabled === true}
       maxLength={schema.options?.maxLength}
       minRows={schema.options?.rows || 3}
+      autoComplete="off"
+      autoCorrect="off"
+      spellCheck="false"
     />
   )
 }

@@ -19,6 +19,7 @@ import {
   DropdownItem,
   Pagination,
   Progress,
+  Card,
 } from '@heroui/react'
 import {
   Search,
@@ -271,19 +272,20 @@ export function PluginManage () {
   }
 
   return (
-    <div className="h-full w-full flex overflow-hidden bg-default-50 font-sans">
-      {/* Left Sidebar */}
-      <div className="w-64 shrink-0 flex flex-col border-r border-default-200 bg-background/60 backdrop-blur-xl z-20">
-        <div className="p-6 pb-2">
-          <h2 className="text-xl font-bold text-foreground px-1">
-            {t('pluginManage.title', '插件管理')}
-          </h2>
-          <p className="text-xs text-default-400 px-1 mt-1 font-medium tracking-wide">
-            {t('pluginManage.subtitle', '管理已安装的插件')}
-          </p>
-        </div>
+    <div className="h-full w-full p-4 flex gap-4 overflow-hidden font-sans">
+      {/* 左侧导航卡片 */}
+      <Card className="w-64 h-full shrink-0 glass-panel shadow-none rounded-2xl z-20">
+        <div className="h-full flex flex-col">
+          <div className="p-4 pb-2 shrink-0">
+            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 px-2 mb-1">
+              {t('pluginManage.title', '插件管理')}
+            </h2>
+            <p className="text-xs text-slate-400 dark:text-slate-500 px-2 mb-1">
+              {t('pluginManage.subtitle', '管理已安装的插件')}
+            </p>
+          </div>
 
-        <ScrollShadow className="flex-1 px-4 py-2 space-y-6 scrollbar-hide">
+          <ScrollShadow className="flex-1 px-3 py-2 space-y-4 scrollbar-hide">
           {/* Filter Groups */}
           <div className="space-y-1">
             <SidebarFilterItem
@@ -309,10 +311,10 @@ export function PluginManage () {
             />
           </div>
 
-          <div className="h-px bg-default-200 mx-2" />
+          <div className="h-px bg-slate-200/50 dark:bg-slate-700/50 mx-2" />
 
           <div className="space-y-1">
-            <div className="px-3 pb-2 text-xs font-semibold text-default-400 uppercase tracking-wider">
+            <div className="px-3 pb-2 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
               {t('plugins.sources', '来源')}
             </div>
             <SidebarFilterItem
@@ -330,43 +332,49 @@ export function PluginManage () {
               onClick={() => { setFilterType('url'); setPage(1) }}
             />
           </div>
-        </ScrollShadow>
+          </ScrollShadow>
 
-        {/* Sidebar Footer - Update All */}
-        <div className="p-4 border-t border-default-200">
-          <Button
-            color="primary"
-            className="w-full font-semibold"
-            startContent={<RefreshCw size={16} className={isUpdatingAll ? 'animate-spin' : ''} />}
-            onPress={handleUpdateAll}
-            isDisabled={isUpdatingAll}
-          >
-            {isUpdatingAll
-              ? t('pluginManage.updating', '更新中...')
-              : t('pluginManage.updateAll', '一键获取更新')
-            }
-          </Button>
-          {isUpdatingAll && (
-            <Progress
-              size="sm"
-              value={updateProgress}
+          {/* Sidebar Footer - Update All */}
+          <div className="px-4 py-3 border-t border-slate-200/30 dark:border-slate-700/30 shrink-0">
+            <Button
               color="primary"
-              className="mt-2"
-              aria-label="Update progress"
-            />
-          )}
+              className="w-full font-semibold"
+              size="sm"
+              startContent={<RefreshCw size={14} className={isUpdatingAll ? 'animate-spin' : ''} />}
+              onPress={handleUpdateAll}
+              isDisabled={isUpdatingAll}
+            >
+              {isUpdatingAll
+                ? t('pluginManage.updating', '更新中...')
+                : t('pluginManage.updateAll', '一键获取更新')
+              }
+            </Button>
+            {isUpdatingAll && (
+              <Progress
+                size="sm"
+                value={updateProgress}
+                color="primary"
+                className="mt-2"
+                aria-label="Update progress"
+              />
+            )}
+          </div>
         </div>
-      </div>
+      </Card>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 relative">
+      {/* 右侧内容卡片 */}
+      <Card className="flex-1 h-full glass-panel shadow-none rounded-2xl overflow-hidden flex flex-col min-w-0">
         {/* Header Bar */}
-        <div className="h-16 shrink-0 px-6 flex items-center justify-between border-b border-default-200 z-10 bg-background/80 backdrop-blur-md">
+        <div className="h-14 shrink-0 px-6 flex items-center justify-between border-b border-slate-200/50 dark:border-slate-700/50">
           <div className="flex items-center gap-3 flex-1">
             {/* Search */}
             <div className="relative w-full max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-default-400" size={16} />
               <input
+                type="text"
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck="false"
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setPage(1) }}
                 className="w-full h-9 pl-9 pr-4 rounded-xl bg-default-100 border border-default-200 focus:outline-none focus:border-primary text-sm transition-all placeholder:text-default-400"
@@ -602,7 +610,7 @@ export function PluginManage () {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="shrink-0 px-6 py-3 border-t border-default-200 flex items-center justify-center bg-background/60">
+          <div className="shrink-0 px-6 py-3 border-t border-slate-200/50 dark:border-slate-700/50 flex items-center justify-center">
             <Pagination
               total={totalPages}
               page={page}
@@ -613,7 +621,7 @@ export function PluginManage () {
             />
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Confirm Modal */}
       <Modal
@@ -682,13 +690,13 @@ function SidebarFilterItem ({ label, icon, count, active, onClick }: {
       className={`
         w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 group text-left
         ${active
-          ? 'bg-primary-50 dark:bg-primary-900/20 text-primary shadow-sm'
-          : 'text-default-500 hover:bg-default-100 hover:text-foreground'
+          ? 'bg-white dark:bg-white/10 shadow-sm text-slate-800 dark:text-slate-100 border border-white/50 dark:border-white/20'
+          : 'text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-white/5 border border-transparent'
         }
       `}
     >
       <div className="flex items-center gap-3">
-        <span className={active ? 'text-primary' : 'text-default-400 group-hover:text-default-600'}>
+        <span className={active ? 'text-primary' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-400'}>
           {icon}
         </span>
         <span>{label}</span>
@@ -698,7 +706,7 @@ function SidebarFilterItem ({ label, icon, count, active, onClick }: {
           text-[10px] px-1.5 py-0.5 rounded-md font-bold transition-colors
           ${active
             ? 'bg-primary-100 dark:bg-primary-800/30 text-primary'
-            : 'bg-default-100 text-default-400 group-hover:bg-default-200'
+            : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 group-hover:bg-slate-200 dark:group-hover:bg-slate-700'
           }
         `}>
           {count}

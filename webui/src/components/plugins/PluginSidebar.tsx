@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { 
+import {
   ScrollShadow,
   Divider,
 } from "@heroui/react"
@@ -41,19 +41,19 @@ export const PluginSidebar = ({ activeFilter, setActiveFilter }: PluginSidebarPr
       <ScrollShadow className="flex-1 px-4 py-2 space-y-6">
         {/* Main Groups */}
         <div className="space-y-1">
-          <SidebarItem 
-            id="all" 
-            label={t('plugins.tabs.all', 'Discover')} 
-            icon={LayoutGrid} 
-            count={mockPlugins.length} 
+          <SidebarItem
+            id="all"
+            label={t('plugins.tabs.all', 'Discover')}
+            icon={LayoutGrid}
+            count={mockPlugins.length}
             activeFilter={activeFilter}
             setActiveFilter={setActiveFilter}
           />
-          <SidebarItem 
-            id="installed" 
-            label={t('plugins.tabs.installed', 'Installed')} 
-            icon={CheckCircle2} 
-            count={installedCount} 
+          <SidebarItem
+            id="installed"
+            label={t('plugins.tabs.installed', 'Installed')}
+            icon={CheckCircle2}
+            count={installedCount}
             activeFilter={activeFilter}
             setActiveFilter={setActiveFilter}
           />
@@ -64,17 +64,17 @@ export const PluginSidebar = ({ activeFilter, setActiveFilter }: PluginSidebarPr
         {/* Types */}
         <div className="space-y-1">
           <div className="px-3 pb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">{t('plugins.sources', 'Sources')}</div>
-          <SidebarItem 
-            id="npm" 
-            label={t('plugins.tabs.npm', 'NPM Registry')} 
-            icon={Package} 
+          <SidebarItem
+            id="npm"
+            label={t('plugins.tabs.npm', 'NPM Registry')}
+            icon={Package}
             activeFilter={activeFilter}
             setActiveFilter={setActiveFilter}
           />
-          <SidebarItem 
-            id="url" 
-            label={t('plugins.tabs.direct', 'Direct Link')} 
-            icon={Command} 
+          <SidebarItem
+            id="url"
+            label={t('plugins.tabs.direct', 'Direct Link')}
+            icon={Command}
             activeFilter={activeFilter}
             setActiveFilter={setActiveFilter}
           />
@@ -86,10 +86,10 @@ export const PluginSidebar = ({ activeFilter, setActiveFilter }: PluginSidebarPr
         <div className="space-y-1">
           <div className="px-3 pb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">{t('plugins.tags', 'Tags')}</div>
           {allTags.map(tag => (
-            <SidebarItem 
-              key={tag} 
-              id={tag} 
-              label={tag.charAt(0).toUpperCase() + tag.slice(1)} 
+            <SidebarItem
+              key={tag}
+              id={tag}
+              label={tag.charAt(0).toUpperCase() + tag.slice(1)}
               icon={Hash}
               count={mockPlugins.filter(p => p.tags?.includes(tag)).length}
               activeFilter={activeFilter}
@@ -98,10 +98,10 @@ export const PluginSidebar = ({ activeFilter, setActiveFilter }: PluginSidebarPr
           ))}
         </div>
       </ScrollShadow>
-      
+
       {/* Sidebar Footer */}
       <div className="p-4 border-t border-slate-100 dark:border-zinc-800/50">
-        <div className="p-3 bg-primary rounded-xl shadow-lg relative overflow-hidden group">
+        <div className="p-3 bg-linear-to-br from-indigo-500 to-violet-600 rounded-xl shadow-lg relative overflow-hidden group">
           <div className="relative z-10 text-white">
             <div className="text-xs font-medium opacity-80 mb-1">{t('plugins.developer', 'Developer?')}</div>
             <div className="text-sm font-bold flex items-center gap-1 cursor-pointer hover:underline">
@@ -118,6 +118,6 @@ export const PluginSidebar = ({ activeFilter, setActiveFilter }: PluginSidebarPr
 // Helper component for the decorative icon
 const Box = ({ className }: { className: string }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 24 24" style={{ width: 'inherit', height: 'inherit' }}>
-    <path d="M12 2l5 3v7h-2v-5.86L12 4.14 7 7.14V14H5V5l7-3z"/>
+    <path d="M12 2l5 3v7h-2v-5.86L12 4.14 7 7.14V14H5V5l7-3z" />
   </svg>
 )

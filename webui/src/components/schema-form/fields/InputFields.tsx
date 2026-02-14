@@ -145,6 +145,11 @@ export const AutocompleteField: React.FC<{ schema: AutocompleteFieldSchema }> = 
         allowsCustomValue={allowCustomValue}
         isDisabled={getDisabled(schema.disabled)}
         isRequired={schema.required}
+        inputProps={{
+          autoComplete: 'off',
+          autoCorrect: 'off',
+          spellCheck: 'false',
+        }}
       >
         {items.map((item) => (
           <AutocompleteItem
@@ -225,7 +230,7 @@ export const ColorPickerField: React.FC<{ schema: ColorPickerFieldSchema }> = ({
         <PopoverTrigger>
           <Button
             variant="flat"
-            className="min-w-[140px] justify-start gap-2"
+            className="min-w-35 justify-start gap-2"
             isDisabled={getDisabled(schema.disabled)}
           >
             <div
@@ -252,6 +257,9 @@ export const ColorPickerField: React.FC<{ schema: ColorPickerFieldSchema }> = ({
             size="sm"
             value={value}
             onChange={(e) => setValue(schema.key, e.target.value)}
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck="false"
             startContent={
               <input
                 type="color"
@@ -311,7 +319,7 @@ export const TagsInputField: React.FC<{ schema: TagsInputFieldSchema }> = ({ sch
       <label className="block text-sm font-medium text-default-700 mb-2">
         {resolveI18n(schema.label)}
       </label>
-      <div className="flex flex-wrap gap-2 p-2 border border-default-200 rounded-lg min-h-[42px]">
+      <div className="flex flex-wrap gap-2 p-2 border border-default-200 rounded-lg min-h-10.5">
         {value.map((tag, index) => (
           <Chip
             key={`${tag}-${index}`}
@@ -331,7 +339,10 @@ export const TagsInputField: React.FC<{ schema: TagsInputFieldSchema }> = ({ sch
           onBlur={addTag}
           placeholder={placeholder ? resolveI18n(placeholder) : '输入后按回车添加'}
           disabled={getDisabled(schema.disabled) || (maxTags !== undefined && value.length >= maxTags)}
-          className="flex-1 min-w-[120px] bg-transparent border-0 outline-none text-sm"
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck="false"
+          className="flex-1 min-w-30 bg-transparent border-0 outline-none text-sm"
         />
       </div>
       {schema.description && (
@@ -384,6 +395,7 @@ export const OtpInputField: React.FC<{ schema: OtpInputFieldSchema }> = ({ schem
             value={value[index] ?? ''}
             onChange={(e) => handleChange(index, e.target.value)}
             disabled={getDisabled(schema.disabled)}
+            autoComplete="one-time-code"
             className={`${sizeClasses[size]} text-center border border-default-300 rounded-lg focus:border-primary focus:outline-none bg-default-100`}
           />
         ))}

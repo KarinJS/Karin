@@ -1,4 +1,4 @@
-import { Home, Settings, Activity, Box, LogOut, Sliders, LayoutGrid, Puzzle, AppWindow } from 'lucide-react'
+import { Home, Settings, Activity, Box, LogOut, Sliders, LayoutGrid, Puzzle, AppWindow, FileSliders } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { twMerge } from 'tailwind-merge'
 import { Logo } from './Logo'
@@ -17,6 +17,7 @@ export function Sidebar () {
     { icon: Box, label: t('sidebar.plugins'), path: '/plugins' },
     { icon: Puzzle, label: t('sidebar.pluginManage', '插件管理'), path: '/plugin-manage' },
     { icon: AppWindow, label: t('sidebar.pluginCustom', '插件页面'), path: '/plugin-custom' },
+    { icon: FileSliders, label: t('sidebar.pluginConfig', '插件配置'), path: '/plugin-config' },
     { icon: Settings, label: t('sidebar.settings'), path: '/settings' },
   ]
 

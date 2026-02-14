@@ -138,6 +138,7 @@ export function Settings () {
                     label="HTTP Port"
                     type="number"
                     variant="bordered"
+                    autoComplete="off"
                     classNames={{
                       inputWrapper: "bg-white/50 border-slate-200/60 hover:border-slate-300 focus-within:!border-slate-400",
                       label: "text-slate-500",
@@ -149,6 +150,7 @@ export function Settings () {
                   <Input
                     label="Host"
                     variant="bordered"
+                    autoComplete="off"
                     classNames={{
                       inputWrapper: "bg-white/50 border-slate-200/60 hover:border-slate-300 focus-within:!border-slate-400",
                       label: "text-slate-500",
@@ -161,6 +163,7 @@ export function Settings () {
                     label="Auth Key"
                     type="password"
                     variant="bordered"
+                    autoComplete="new-password"
                     classNames={{
                       inputWrapper: "bg-white/50 border-slate-200/60 hover:border-slate-300 focus-within:!border-slate-400",
                       label: "text-slate-500",
@@ -172,6 +175,7 @@ export function Settings () {
                   <Input
                     label="Username"
                     variant="bordered"
+                    autoComplete="off"
                     classNames={{
                       inputWrapper: "bg-white/50 border-slate-200/60 hover:border-slate-300 focus-within:!border-slate-400",
                       label: "text-slate-500",
@@ -224,6 +228,7 @@ export function Settings () {
                   <Input
                     label="Redis URL"
                     variant="bordered"
+                    autoComplete="off"
                     classNames={{
                       inputWrapper: "bg-white/50 border-slate-200/60 hover:border-slate-300 focus-within:!border-slate-400",
                       label: "text-slate-500",
@@ -239,6 +244,7 @@ export function Settings () {
                     label="Database Index"
                     type="number"
                     variant="bordered"
+                    autoComplete="off"
                     classNames={{
                       inputWrapper: "bg-white/50 border-slate-200/60 hover:border-slate-300 focus-within:!border-slate-400",
                       label: "text-slate-500",
@@ -259,6 +265,7 @@ export function Settings () {
                 <Input
                   label="Log Level"
                   variant="bordered"
+                  autoComplete="off"
                   classNames={{
                     inputWrapper: "bg-white/50 border-slate-200/60 hover:border-slate-300 focus-within:!border-slate-400",
                     label: "text-slate-500",
