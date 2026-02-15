@@ -47,10 +47,10 @@ export function SchemaForm ({ schema, initialData = {}, onSubmit, onChange }: Sc
 
   const SubmitButton = (
     <Button
+      type="submit"
       color="primary"
       isLoading={saving}
       startContent={!saving && <Save size={18} />}
-      onPress={handleSubmit}
     >
       {t(schema.options?.submit?.text) || '保存'}
     </Button>
@@ -59,7 +59,14 @@ export function SchemaForm ({ schema, initialData = {}, onSubmit, onChange }: Sc
   return (
     <FieldRendererProvider RenderField={FieldRenderer}>
       <FormProvider initialValues={data} onChange={handleChange}>
-        <div className="space-y-6">
+        <form 
+          autoComplete="off"
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmit()
+          }}
+          className="space-y-6"
+        >
           {/* 标题和顶部提交按钮 */}
           <div className="flex items-center justify-between">
             <div>
@@ -94,7 +101,7 @@ export function SchemaForm ({ schema, initialData = {}, onSubmit, onChange }: Sc
               {SubmitButton}
             </div>
           )}
-        </div>
+        </form>
       </FormProvider>
     </FieldRendererProvider>
   )
