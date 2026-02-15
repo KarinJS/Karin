@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSearchParams } from 'react-router-dom'
 import { Avatar, Card, Breadcrumbs, BreadcrumbItem, Chip } from '@heroui/react'
 import { Settings, Puzzle, FileSliders } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -13,15 +14,31 @@ import { PluginListSidebar } from '../components/plugins/PluginListSidebar'
  * 插件配置页面
  * 左侧侧边栏选择已安装的插件，右侧使用 Schema 驱动的表单渲染配置
  * 部分插件没有配置 Schema，会显示空状态提示
+ * 支持通过 URL 参数 ?plugin=xxx 快捷跳转到指定插件配置
  */
 export function PluginConfig () {
   const { t } = useTranslation()
+  const [searchParams] = useSearchParams()
   const [selectedPluginId, setSelectedPluginId] = useState<string | null>(null)
 
   // 仅已安装的插件才能配置
   const installedPlugins = useMemo(() => {
     return mockPlugins.filter(p => p.installed)
   }, [])
+
+  // 通过 URL 参数快捷跳转到指定插件
+  useEffect(() => {
+    const pluginIdFromUrl = searchParams.get('plugin')
+    if (pluginIdFromUrl) {
+      const found = installedPlugins.find(p => p.id === pluginIdFromUrl)
+      if (found) {
+        const timer = setTimeout(() => setSelectedPluginId(pluginIdFromUrl), 0)
+        return () => clearTimeout(timer)
+      } else {
+        toast.error(t('pluginConfig.pluginNotFound', '未找到指定插件或插件未安装'))
+      }
+    }
+  }, [searchParams, installedPlugins, t])
 
   const selectedPlugin = useMemo(() => {
     return installedPlugins.find(p => p.id === selectedPluginId) ?? null
