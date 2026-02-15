@@ -3,7 +3,6 @@ import { AnimatePresence } from 'framer-motion'
 import { motion } from 'framer-motion'
 import { 
   ScrollShadow,
-  Card,
 } from "@heroui/react"
 import { Search } from 'lucide-react'
 import type { Plugin } from '../types/plugin'
@@ -122,7 +121,7 @@ export function Plugins() {
           onOpenChange={onOpenChange}
           selectedPlugin={selectedPlugin}
         />
-      </Card>
+      </div>
     </div>
   )
 }
