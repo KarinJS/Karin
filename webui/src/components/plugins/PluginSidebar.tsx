@@ -28,7 +28,7 @@ export const PluginSidebar = ({ activeFilter, setActiveFilter }: PluginSidebarPr
   }, [])
 
   return (
-    <div className="w-64 shrink-0 flex flex-col border-r border-slate-100 dark:border-zinc-800/50 bg-white/50 dark:bg-transparent backdrop-blur-xl z-20">
+    <div className="h-full flex flex-col">
       <div className="p-6 pb-2">
         <h2 className="text-xl font-bold font-serif-sc text-slate-900 dark:text-slate-100 px-1">
           {t('plugins.title', 'Market')}
