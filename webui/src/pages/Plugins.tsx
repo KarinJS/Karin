@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion'
 import { motion } from 'framer-motion'
 import { 
   ScrollShadow,
+  Card,
 } from "@heroui/react"
 import { Search } from 'lucide-react'
 import type { Plugin } from '../types/plugin'
@@ -43,19 +44,21 @@ export function Plugins() {
   }
 
   return (
-    <div className="h-full w-full flex overflow-hidden bg-[#fcfcfc] dark:bg-[#09090b] font-sans">
+    <div className="h-full w-full p-4 flex gap-4 overflow-hidden font-sans">
       <style>{`
         .scrollbar-hide::-webkit-scrollbar { display: none; }
       `}</style>
       
-      {/* Sidebar */}
-      <PluginSidebar 
-        activeFilter={activeFilter}
-        setActiveFilter={setActiveFilter}
-      />
+      {/* Sidebar Area */}
+      <div className="w-64 h-full shrink-0 z-20">
+        <PluginSidebar 
+          activeFilter={activeFilter}
+          setActiveFilter={setActiveFilter}
+        />
+      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 bg-slate-50/30 dark:bg-black/20 relative">
+      {/* Main Content Area */}
+      <div className="flex-1 h-full flex flex-col min-w-0 overflow-hidden relative">
         {/* Background Decoration */}
         <BackgroundBlobs />
         
@@ -119,7 +122,7 @@ export function Plugins() {
           onOpenChange={onOpenChange}
           selectedPlugin={selectedPlugin}
         />
-      </div>
+      </Card>
     </div>
   )
 }
