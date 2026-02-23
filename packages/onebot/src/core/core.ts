@@ -544,13 +544,16 @@ export abstract class OneBotCore extends EventEmitter {
   /**
    * GoCQ扩展: 发送合并转发消息
    * @param messages - 消息节点列表
+   * @param options - 外显参数
    * @returns 消息ID
    */
   async sendForwardMsg (
-    messages: NodeMessage[]
+    messages: NodeMessage[],
+    options?: { news?: Array<{ text: string }>, prompt?: string, summary?: string, source?: string }
   ) {
     return this.sendApi(OneBotMessageApiAction.sendForwardMsg, {
       messages,
+      ...options,
     })
   }
 
@@ -558,15 +561,18 @@ export abstract class OneBotCore extends EventEmitter {
    * GoCQ扩展: 发送合并转发(群聊)
    * @param group_id - 群ID
    * @param messages - 消息节点列表
+   * @param options - 外显参数
    * @returns 消息ID
    */
   async sendGroupForwardMsg (
     group_id: number,
-    messages: NodeMessage[]
+    messages: NodeMessage[],
+    options?: { news?: Array<{ text: string }>, prompt?: string, summary?: string, source?: string }
   ) {
     return this.sendApi(OneBotMessageApiAction.sendGroupForwardMsg, {
       group_id,
       messages,
+      ...options,
     })
   }
 
@@ -574,15 +580,18 @@ export abstract class OneBotCore extends EventEmitter {
    * GoCQ扩展: 发送合并转发(好友)
    * @param user_id - 用户ID
    * @param messages - 消息节点列表
+   * @param options - 外显参数
    * @returns 消息ID
    */
   async sendPrivateForwardMsg (
     user_id: number,
-    messages: NodeMessage[]
+    messages: NodeMessage[],
+    options?: { news?: Array<{ text: string }>, prompt?: string, summary?: string, source?: string }
   ) {
     return this.sendApi(OneBotMessageApiAction.sendPrivateForwardMsg, {
       user_id,
       messages,
+      ...options,
     })
   }
 
