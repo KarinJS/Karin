@@ -247,6 +247,14 @@ export interface OneBotMessageApi {
     action: 'send_forward_msg',
     params: {
       messages: NodeMessage[]
+      /** napcat拓展: 小卡片中间的外显 */
+      news?: Array<{ text: string }>
+      /** napcat拓展: 消息列表的外显 */
+      prompt?: string
+      /** napcat拓展: 小卡片底下文本: 查看1条转发消息 */
+      summary?: string
+      /** napcat拓展: 小卡片标题 */
+      source?: string
     },
     response: {
       message_id: string
@@ -262,6 +270,14 @@ export interface OneBotMessageApi {
     params: {
       group_id: number,
       messages: NodeMessage[]
+      /** napcat拓展: 小卡片中间的外显 */
+      news?: Array<{ text: string }>
+      /** napcat拓展: 消息列表的外显 */
+      prompt?: string
+      /** napcat拓展: 小卡片底下文本: 查看1条转发消息 */
+      summary?: string
+      /** napcat拓展: 小卡片标题 */
+      source?: string
     },
     response: {
       message_id: string
@@ -277,6 +293,14 @@ export interface OneBotMessageApi {
     params: {
       user_id: number,
       messages: NodeMessage[]
+      /** napcat拓展: 小卡片中间的外显 */
+      news?: Array<{ text: string }>
+      /** napcat拓展: 消息列表的外显 */
+      prompt?: string
+      /** napcat拓展: 小卡片底下文本: 查看1条转发消息 */
+      summary?: string
+      /** napcat拓展: 小卡片标题 */
+      source?: string
     },
     response: {
       message_id: string

@@ -1090,12 +1090,14 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
         }
 
         if (typeof elem.options === 'object') {
+          if (elem.options.news) node.data.news = elem.options.news
           if (elem.options.prompt) node.data.prompt = elem.options.prompt
           if (elem.options.summary) node.data.summary = elem.options.summary
           if (elem.options.source) node.data.source = elem.options.source
         }
 
         if (options && messages.length === 0) {
+          node.data.news = options.news
           node.data.prompt = options.prompt
           node.data.summary = options.summary
           node.data.source = options.source
@@ -1119,14 +1121,16 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
       if (contact.scene === 'group') {
         return this._onebot.sendGroupForwardMsg(
           Number(contact.peer),
-          this.forwardKarinConvertAdapter(elements, options)
+          this.forwardKarinConvertAdapter(elements, options),
+          options
         )
       }
 
       if (contact.scene === 'friend') {
         return this._onebot.sendPrivateForwardMsg(
           Number(contact.peer),
-          this.forwardKarinConvertAdapter(elements, options)
+          this.forwardKarinConvertAdapter(elements, options),
+          options
         )
       }
 
