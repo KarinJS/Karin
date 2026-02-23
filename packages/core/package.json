@@ -177,7 +177,8 @@
     "redis": "npm:@karinjs/redis@1.1.3",
     "sqlite3": "npm:@karinjs/sqlite3@0.4.3",
     "ws": "npm:@karinjs/ws@1.0.4",
-    "yaml": "2.7.0"
+    "yaml": "2.7.0",
+    "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
     "@karinjs/node-pty": "^1.1.3",
@@ -185,10 +186,10 @@
     "@karinjs/plugin-webui-network-monitor": "^1.0.3",
     "@karinjs/plugins-list": "^1.7.0",
     "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/lodash": "^4.17.16",
     "cross-env": "^7.0.3",
-    "dotenv": "npm:@karinjs/dotenv@^1.1.2",
-    "jsonwebtoken": "npm:@karinjs/jsonwebtoken@^1.1.1"
+    "dotenv": "npm:@karinjs/dotenv@^1.1.2"
   },
   "engines": {
     "node": ">=18"
