@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.14.4](https://github.com/KarinJS/Karin/compare/core-v1.14.3...core-v1.14.4) (2026-02-23)
+
+
+### 🐛 Bug Fixes
+
+* close [#615](https://github.com/KarinJS/Karin/issues/615); 适配合并转发的外显参数 ([#616](https://github.com/KarinJS/Karin/issues/616)) ([f1129c9](https://github.com/KarinJS/Karin/commit/f1129c94317102b213148474afbdc1222b4170c5))
+
 ## [1.14.3](https://github.com/KarinJS/Karin/compare/core-v1.14.2...core-v1.14.3) (2026-02-09)
 
 
