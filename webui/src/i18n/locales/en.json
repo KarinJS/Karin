@@ -282,6 +282,9 @@
     },
     "language": "Language",
     "httpServer": "HTTP Server",
+    "network": "Network",
+    "requestTimeout": "Request Timeout (ms)",
+    "requestTimeoutDesc": "Maximum time to wait for a backend response. Requests will be aborted after this duration. Default: 10000ms.",
     "saveSuccess": "System settings saved successfully",
     "saveError": "Failed to save"
   }

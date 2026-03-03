@@ -316,6 +316,9 @@
     },
     "language": "界面语言",
     "httpServer": "HTTP 服务器",
+    "network": "网络设置",
+    "requestTimeout": "请求超时时间 (ms)",
+    "requestTimeoutDesc": "前端向后端发起请求的最长等待时间，超时后将自动中断请求。默认 10000ms。",
     "saveSuccess": "系统设置保存成功",
     "saveError": "保存失败"
   }

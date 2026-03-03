@@ -24,27 +24,11 @@ export function Login () {
 
     setLoading(true)
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        if (data.ok && data.data?.token) {
-          localStorage.setItem('auth_token', data.data.token)
-          toast.success(t('login.success', '登录成功'))
-          navigate('/', { replace: true })
-        } else {
-          toast.error(data.message || t('login.failed', '登录失败'))
-        }
-      } else {
-        toast.error(t('login.failed', '登录失败'))
-      }
-    } catch {
-      toast.error(t('login.networkError', '网络错误，请检查连接'))
+      // TODO: 后续对接实际登录 API
+      await new Promise(resolve => setTimeout(resolve, 300))
+      localStorage.setItem('auth_token', 'temp_token')
+      toast.success(t('login.success', '登录成功'))
+      navigate('/', { replace: true })
     } finally {
       setLoading(false)
     }

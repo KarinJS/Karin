@@ -2,11 +2,14 @@ import { useState, useEffect, useCallback } from 'react'
 import { Input, Switch, Card, CardBody, Button, Divider, Select, SelectItem } from '@heroui/react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { Save, Server, Sun, Moon, Monitor, Globe } from 'lucide-react'
+import { Save, Server, Sun, Moon, Monitor, Globe, Clock } from 'lucide-react'
 import { getServerConfig, updateServerConfig } from '../api'
 import type { ConfigServer } from '../api'
 
 type ThemeMode = 'light' | 'dark' | 'system'
+
+/** 默认请求超时时间 (ms) */
+const DEFAULT_TIMEOUT = 10000
 
 function getInitialTheme (): ThemeMode {
   return (localStorage.getItem('theme_mode') as ThemeMode) || 'system'
@@ -27,6 +30,10 @@ export function SystemSettings () {
   const { t, i18n } = useTranslation()
   const [themeMode, setThemeMode] = useState<ThemeMode>(getInitialTheme)
   const [serverConfig, setServerConfig] = useState<ConfigServer | null>(null)
+  const [requestTimeout, setRequestTimeout] = useState(() => {
+    const stored = localStorage.getItem('request_timeout')
+    return stored ? Number(stored) : DEFAULT_TIMEOUT
+  })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
@@ -59,7 +66,13 @@ export function SystemSettings () {
   }
 
   const handleSave = async () => {
-    if (!serverConfig) return
+    // 保存前端本地配置
+    localStorage.setItem('request_timeout', String(requestTimeout))
+
+    if (!serverConfig) {
+      toast.success(t('systemSettings.saveSuccess', '系统设置保存成功'))
+      return
+    }
     setSaving(true)
     try {
       const res = await updateServerConfig(serverConfig)
@@ -193,6 +206,39 @@ export function SystemSettings () {
                 <SelectItem key="zh">中文</SelectItem>
                 <SelectItem key="en">English</SelectItem>
               </Select>
+            </div>
+          </CardBody>
+        </Card>
+
+        {/* Request Timeout Settings */}
+        <Card shadow="none" className="glass-card">
+          <CardBody className="p-6 space-y-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Clock size={20} className="text-green-500" />
+              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+                {t('systemSettings.network', '网络设置')}
+              </h2>
+            </div>
+            <div>
+              <Input
+                label={t('systemSettings.requestTimeout', '请求超时时间 (ms)')}
+                description={t('systemSettings.requestTimeoutDesc', '前端向后端发起请求的最长等待时间，超时后将自动中断请求。默认 10000ms。')}
+                type="number"
+                variant="bordered"
+                autoComplete="off"
+                className="max-w-xs"
+                value={requestTimeout.toString()}
+                onValueChange={(v) => {
+                  const val = parseInt(v) || 0
+                  setRequestTimeout(val > 0 ? val : DEFAULT_TIMEOUT)
+                }}
+                classNames={{
+                  inputWrapper: "bg-white/50 dark:bg-zinc-800/50 border-slate-200/60 dark:border-zinc-700 hover:border-slate-300 focus-within:!border-slate-400",
+                  label: "text-slate-500 dark:text-zinc-400",
+                  input: "text-slate-800 dark:text-zinc-100"
+                }}
+                endContent={<span className="text-xs text-slate-400">ms</span>}
+              />
             </div>
           </CardBody>
         </Card>

@@ -2,10 +2,23 @@ import axios from 'axios'
 import type { ApiResponse } from './types'
 import { HTTPStatusCode } from './types'
 
+/** 默认请求超时时间 (ms) */
+const DEFAULT_TIMEOUT = 10000
+
+/** 从 localStorage 读取用户配置的超时时间 */
+function getTimeout (): number {
+  const stored = localStorage.getItem('request_timeout')
+  if (stored) {
+    const val = Number(stored)
+    if (Number.isFinite(val) && val > 0) return val
+  }
+  return DEFAULT_TIMEOUT
+}
+
 // Create axios instance
 const api = axios.create({
   baseURL: '/api',
-  timeout: 10000,
+  timeout: getTimeout(),
   headers: {
     'Content-Type': 'application/json',
   },
@@ -14,11 +27,14 @@ const api = axios.create({
 // 请求拦截器
 api.interceptors.request.use(
   (config) => {
-    // 可以在这里添加 token 等认证信息
-    // const token = localStorage.getItem('token')
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`
-    // }
+    // 每次请求时读取最新超时配置
+    config.timeout = getTimeout()
+
+    // 注入认证 token
+    const token = localStorage.getItem('auth_token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
     return config
   },
   (error) => {
