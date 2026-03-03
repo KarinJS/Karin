@@ -7,9 +7,11 @@ import { Plugins } from './pages/Plugins'
 import { PluginManage } from './pages/PluginManage'
 import { PluginCustom } from './pages/PluginCustom'
 import { Settings } from './pages/Settings'
-import { BasicConfig } from './pages/BasicConfig'
 import { SchemaDemo } from './pages/SchemaDemo'
 import { PluginConfig } from './pages/PluginConfig'
+import { Login } from './pages/Login'
+import { SystemSettings } from './pages/SystemSettings'
+import { AuthGuard } from './components/AuthGuard'
 
 function AppRoutes () {
   const navigate = useNavigate()
@@ -17,15 +19,16 @@ function AppRoutes () {
     <HeroUIProvider navigate={navigate}>
       <Toaster position="top-right" richColors />
       <Routes>
-        <Route path="/" element={<DashboardLayout />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<AuthGuard><DashboardLayout /></AuthGuard>}>
           <Route index element={<Dashboard />} />
           <Route path="plugins" element={<Plugins />} />
           <Route path="plugin-manage" element={<PluginManage />} />
           <Route path="plugin-custom" element={<PluginCustom />} />
           <Route path="settings" element={<Settings />} />
-          <Route path="basic-config" element={<BasicConfig />} />
           <Route path="schema-demo" element={<SchemaDemo />} />
           <Route path="plugin-config" element={<PluginConfig />} />
+          <Route path="system-settings" element={<SystemSettings />} />
           <Route path="*" element={<div className="p-6">Page not found</div>} />
         </Route>
       </Routes>

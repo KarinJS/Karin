@@ -74,11 +74,11 @@ export function Dashboard() {
 
   const guideCards = [
     {
-      title: t('dashboard.guide.basicConfig.title'),
+      title: t('dashboard.guide.settings.title'),
       id: "01",
-      description: t('dashboard.guide.basicConfig.desc'),
+      description: t('dashboard.guide.settings.desc'),
       icon: Settings,
-      path: '/basic-config',
+      path: '/settings',
       accent: "bg-blue-500",
       iconColor: "text-blue-500",
       bgColor: "bg-blue-50/50 dark:bg-blue-900/10",
@@ -96,11 +96,11 @@ export function Dashboard() {
       shadowColor: "hover:shadow-purple-200/50 dark:hover:shadow-purple-900/20"
     },
     {
-      title: t('dashboard.guide.schemaDemo.title'),
+      title: t('dashboard.guide.pluginManage.title'),
       id: "03",
-      description: t('dashboard.guide.schemaDemo.desc'),
+      description: t('dashboard.guide.pluginManage.desc'),
       icon: Zap,
-      path: '/schema-demo',
+      path: '/plugin-manage',
       accent: "bg-amber-500",
       iconColor: "text-amber-500",
       bgColor: "bg-amber-50/50 dark:bg-amber-900/10",

@@ -191,7 +191,7 @@ export const SliderField: React.FC<{ schema: SliderFieldSchema }> = ({ schema })
         color={color as 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'foreground'}
         isDisabled={getDisabled(schema.disabled)}
         marks={marks}
-        className="max-w-md"
+        className="w-full"
         renderValue={showValue ? ({ children }) => (
           <output className="text-small font-medium text-default-500 ml-2">
             {children}

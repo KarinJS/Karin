@@ -45,7 +45,7 @@ export const ProgressField: React.FC<{ schema: ProgressFieldSchema }> = ({ schem
         color={color}
         size={size}
         showValueLabel={showValueLabel}
-        className="max-w-md"
+        className="w-full"
       />
       {schema.description && (
         <p className="text-xs text-default-400 mt-1">

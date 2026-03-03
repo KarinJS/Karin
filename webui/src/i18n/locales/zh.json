@@ -22,17 +22,17 @@
       "viewAll": "查看全部"
     },
     "guide": {
-      "basicConfig": {
-        "title": "基础配置",
+      "settings": {
+        "title": "高级设置",
         "desc": "配置机器人的连接、权限及基础行为"
       },
       "plugins": {
-        "title": "插件管理",
+        "title": "插件市场",
         "desc": "浏览、安装及管理功能插件"
       },
-      "schemaDemo": {
-        "title": "组件演示",
-        "desc": "探索 UI 组件库与交互示例"
+      "pluginManage": {
+        "title": "插件管理",
+        "desc": "管理已安装插件的启用、禁用与更新"
       }
     },
     "links": {
@@ -42,13 +42,13 @@
   },
   "sidebar": {
     "dashboard": "仪表盘",
-    "basicConfig": "基础设置",
-    "schemaDemo": "组件演示",
     "activity": "系统动态",
     "plugins": "插件市场",
     "pluginManage": "插件管理",
     "pluginCustom": "插件页面",
+    "pluginConfig": "插件配置",
     "settings": "高级设置",
+    "systemSettings": "系统设置",
     "logout": "退出登录"
   },
   "settings": {
@@ -290,5 +290,33 @@
     "selectPlugin": "选择一个插件",
     "selectPluginDesc": "从左侧列表中选择一个插件以查看其自定义页面",
     "openInNew": "在新标签页打开"
+  },
+  "login": {
+    "title": "Karin",
+    "subtitle": "登录以管理您的机器人实例",
+    "username": "用户名",
+    "usernamePlaceholder": "请输入用户名",
+    "password": "密码",
+    "passwordPlaceholder": "请输入密码",
+    "submit": "登录",
+    "success": "登录成功",
+    "failed": "用户名或密码错误",
+    "emptyFields": "请填写用户名和密码",
+    "networkError": "网络错误，请检查连接"
+  },
+  "systemSettings": {
+    "title": "系统设置",
+    "subtitle": "管理服务器配置与前端显示偏好",
+    "appearance": "外观设置",
+    "themeMode": "主题模式",
+    "theme": {
+      "light": "浅色",
+      "dark": "深色",
+      "system": "跟随系统"
+    },
+    "language": "界面语言",
+    "httpServer": "HTTP 服务器",
+    "saveSuccess": "系统设置保存成功",
+    "saveError": "保存失败"
   }
 }

@@ -22,17 +22,17 @@
       "viewAll": "View All"
     },
     "guide": {
-      "basicConfig": {
-        "title": "Basic Details",
+      "settings": {
+        "title": "Settings",
         "desc": "Configure bot connection, permissions and basic behaviors"
       },
       "plugins": {
         "title": "Plugins",
         "desc": "Browse, install and manage functional plugins"
       },
-      "schemaDemo": {
-        "title": "Components",
-        "desc": "Explore UI component library and interaction examples"
+      "pluginManage": {
+        "title": "Plugin Manager",
+        "desc": "Manage installed plugins: enable, disable and update"
       }
     },
     "links": {
@@ -42,11 +42,13 @@
   },
   "sidebar": {
     "dashboard": "Dashboard",
-    "basicConfig": "Configuration",
-    "schemaDemo": "Component Demo",
     "activity": "Activity",
     "plugins": "Plugins",
+    "pluginManage": "Plugin Manager",
+    "pluginCustom": "Plugin Pages",
+    "pluginConfig": "Plugin Config",
     "settings": "Settings",
+    "systemSettings": "System Settings",
     "logout": "Logout"
   },
   "settings": {
@@ -254,5 +256,33 @@
     "selectPlugin": "Select a plugin",
     "selectPluginDesc": "Select an installed plugin from the sidebar to manage its configuration",
     "pluginNotFound": "Plugin not found or not installed"
+  },
+  "login": {
+    "title": "Karin",
+    "subtitle": "Sign in to manage your bot instance",
+    "username": "Username",
+    "usernamePlaceholder": "Enter username",
+    "password": "Password",
+    "passwordPlaceholder": "Enter password",
+    "submit": "Sign In",
+    "success": "Signed in successfully",
+    "failed": "Invalid username or password",
+    "emptyFields": "Please fill in username and password",
+    "networkError": "Network error, please check your connection"
+  },
+  "systemSettings": {
+    "title": "System Settings",
+    "subtitle": "Manage server configuration and frontend display preferences",
+    "appearance": "Appearance",
+    "themeMode": "Theme Mode",
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "language": "Language",
+    "httpServer": "HTTP Server",
+    "saveSuccess": "System settings saved successfully",
+    "saveError": "Failed to save"
   }
 }

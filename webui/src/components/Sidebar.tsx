@@ -1,5 +1,5 @@
-import { Home, Settings, Activity, Box, LogOut, Sliders, LayoutGrid, Puzzle, AppWindow, FileSliders } from 'lucide-react'
-import { Link, useLocation } from 'react-router-dom'
+import { Home, Settings, Activity, Box, LogOut, Puzzle, AppWindow, FileSliders, Monitor } from 'lucide-react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { twMerge } from 'tailwind-merge'
 import { Logo } from './Logo'
 import { useTranslation } from 'react-i18next'
@@ -7,18 +7,18 @@ import { Tooltip, Button, Avatar } from "@heroui/react"
 
 export function Sidebar () {
   const location = useLocation()
+  const navigate = useNavigate()
   const { t } = useTranslation()
 
   const NAV_ITEMS = [
     { icon: Home, label: t('sidebar.dashboard'), path: '/' },
-    { icon: Sliders, label: t('sidebar.basicConfig', 'Basic Config'), path: '/basic-config' },
-    { icon: LayoutGrid, label: t('sidebar.schemaDemo'), path: '/schema-demo' },
     { icon: Activity, label: t('sidebar.activity'), path: '/activity' },
     { icon: Box, label: t('sidebar.plugins'), path: '/plugins' },
     { icon: Puzzle, label: t('sidebar.pluginManage', '插件管理'), path: '/plugin-manage' },
     { icon: AppWindow, label: t('sidebar.pluginCustom', '插件页面'), path: '/plugin-custom' },
     { icon: FileSliders, label: t('sidebar.pluginConfig', '插件配置'), path: '/plugin-config' },
     { icon: Settings, label: t('sidebar.settings'), path: '/settings' },
+    { icon: Monitor, label: t('sidebar.systemSettings', '系统设置'), path: '/system-settings' },
   ]
 
   // Custom styling for tooltips to match glass morphism theme
@@ -97,7 +97,16 @@ export function Sidebar () {
       {/* Bottom Actions */}
       <div className="flex flex-col items-center w-full pb-4 gap-2">
         <Tooltip content={t('sidebar.logout', 'Logout')} placement="right" offset={10} classNames={tooltipClasses} showArrow>
-          <Button isIconOnly variant="light" radius="full" className="w-10 h-10 min-w-10">
+          <Button
+            isIconOnly
+            variant="light"
+            radius="full"
+            className="w-10 h-10 min-w-10"
+            onPress={() => {
+              localStorage.removeItem('auth_token')
+              navigate('/login')
+            }}
+          >
             <LogOut size={20} strokeWidth={1.5} className="text-default-500 hover:text-default-900 transition-colors" />
           </Button>
         </Tooltip>
