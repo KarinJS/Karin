@@ -1,0 +1,40 @@
+{
+  "name": "@karinjs/api-types",
+  "version": "1.0.0",
+  "description": "API 类型定义包，前后端共用的请求/响应类型、状态码与标准字段",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./response": "./src/response.ts",
+    "./status": "./src/status.ts",
+    "./auth": "./src/auth.ts",
+    "./config": "./src/config.ts",
+    "./plugin": "./src/plugin.ts"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "api",
+    "types",
+    "typescript",
+    "karin",
+    "shared"
+  ],
+  "author": "sj817",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KarinJS/Karin",
+    "directory": "packages/api-types"
+  }
+}
