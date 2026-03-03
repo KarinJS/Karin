@@ -47,13 +47,29 @@
     "pluginManage": "插件管理",
     "pluginCustom": "插件页面",
     "pluginConfig": "插件配置",
-    "settings": "高级设置",
-    "systemSettings": "系统设置",
+    "settings": "系统设置",
     "logout": "退出登录"
   },
   "settings": {
-    "title": "高级系统设置",
-    "subtitle": "配置服务器端口、数据库连接及日志选项"
+    "title": "系统设置",
+    "subtitle": "管理服务器配置与前端显示偏好",
+    "saveSuccess": "设置保存成功",
+    "saveError": "保存失败",
+    "tabs": {
+      "general": "通用",
+      "server": "服务器",
+      "logger": "日志"
+    },
+    "themeMode": "主题模式",
+    "theme": {
+      "light": "浅色",
+      "dark": "深色",
+      "system": "跟随系统"
+    },
+    "language": "界面语言",
+    "network": "网络设置",
+    "requestTimeout": "请求超时时间 (ms)",
+    "requestTimeoutDesc": "前端向后端发起请求的最长等待时间，超时后将自动中断请求。默认 10000ms。"
   },
   "common": {
     "save": "保存更改",
@@ -304,22 +320,30 @@
     "emptyFields": "请填写用户名和密码",
     "networkError": "网络错误，请检查连接"
   },
-  "systemSettings": {
-    "title": "系统设置",
-    "subtitle": "管理服务器配置与前端显示偏好",
-    "appearance": "外观设置",
-    "themeMode": "主题模式",
-    "theme": {
-      "light": "浅色",
-      "dark": "深色",
-      "system": "跟随系统"
+  "activity": {
+    "title": "系统动态",
+    "subtitle": "查看系统运行日志与事件动态",
+    "refresh": "刷新",
+    "search": "搜索事件...",
+    "empty": "暂无动态记录",
+    "footer": "共 {{count}} 条记录",
+    "filter": {
+      "all": "全部"
     },
-    "language": "界面语言",
-    "httpServer": "HTTP 服务器",
-    "network": "网络设置",
-    "requestTimeout": "请求超时时间 (ms)",
-    "requestTimeoutDesc": "前端向后端发起请求的最长等待时间，超时后将自动中断请求。默认 10000ms。",
-    "saveSuccess": "系统设置保存成功",
-    "saveError": "保存失败"
+    "types": {
+      "system": "系统",
+      "plugin": "插件",
+      "user": "用户",
+      "config": "配置",
+      "server": "服务器",
+      "message": "消息",
+      "custom": "自定义"
+    },
+    "levels": {
+      "info": "信息",
+      "success": "成功",
+      "warning": "警告",
+      "error": "错误"
+    }
   }
 }

@@ -48,12 +48,28 @@
     "pluginCustom": "Plugin Pages",
     "pluginConfig": "Plugin Config",
     "settings": "Settings",
-    "systemSettings": "System Settings",
     "logout": "Logout"
   },
   "settings": {
-    "title": "System Settings",
-    "subtitle": "Manage server ports, database connections and logs"
+    "title": "Settings",
+    "subtitle": "Manage server configuration and display preferences",
+    "saveSuccess": "Settings saved successfully",
+    "saveError": "Failed to save",
+    "tabs": {
+      "general": "General",
+      "server": "Server",
+      "logger": "Logger"
+    },
+    "themeMode": "Theme Mode",
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "language": "Language",
+    "network": "Network",
+    "requestTimeout": "Request Timeout (ms)",
+    "requestTimeoutDesc": "Maximum time to wait for a backend response. Requests will be aborted after this duration. Default: 10000ms."
   },
   "common": {
     "save": "Save Changes",
@@ -270,22 +286,30 @@
     "emptyFields": "Please fill in username and password",
     "networkError": "Network error, please check your connection"
   },
-  "systemSettings": {
-    "title": "System Settings",
-    "subtitle": "Manage server configuration and frontend display preferences",
-    "appearance": "Appearance",
-    "themeMode": "Theme Mode",
-    "theme": {
-      "light": "Light",
-      "dark": "Dark",
-      "system": "System"
+  "activity": {
+    "title": "Activity",
+    "subtitle": "View system logs and event feed",
+    "refresh": "Refresh",
+    "search": "Search events...",
+    "empty": "No activity records",
+    "footer": "{{count}} records in total",
+    "filter": {
+      "all": "All"
     },
-    "language": "Language",
-    "httpServer": "HTTP Server",
-    "network": "Network",
-    "requestTimeout": "Request Timeout (ms)",
-    "requestTimeoutDesc": "Maximum time to wait for a backend response. Requests will be aborted after this duration. Default: 10000ms.",
-    "saveSuccess": "System settings saved successfully",
-    "saveError": "Failed to save"
+    "types": {
+      "system": "System",
+      "plugin": "Plugin",
+      "user": "User",
+      "config": "Config",
+      "server": "Server",
+      "message": "Message",
+      "custom": "Custom"
+    },
+    "levels": {
+      "info": "Info",
+      "success": "Success",
+      "warning": "Warning",
+      "error": "Error"
+    }
   }
 }

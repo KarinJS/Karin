@@ -1,4 +1,4 @@
-import { Home, Settings, Activity, Box, LogOut, Puzzle, AppWindow, FileSliders, Monitor } from 'lucide-react'
+import { Home, Settings, Activity, Box, LogOut, Puzzle, AppWindow, FileSliders } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { twMerge } from 'tailwind-merge'
 import { Logo } from './Logo'
@@ -18,7 +18,6 @@ export function Sidebar () {
     { icon: AppWindow, label: t('sidebar.pluginCustom', '插件页面'), path: '/plugin-custom' },
     { icon: FileSliders, label: t('sidebar.pluginConfig', '插件配置'), path: '/plugin-config' },
     { icon: Settings, label: t('sidebar.settings'), path: '/settings' },
-    { icon: Monitor, label: t('sidebar.systemSettings', '系统设置'), path: '/system-settings' },
   ]
 
   // Custom styling for tooltips to match glass morphism theme

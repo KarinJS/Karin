@@ -10,7 +10,7 @@ import { Settings } from './pages/Settings'
 import { SchemaDemo } from './pages/SchemaDemo'
 import { PluginConfig } from './pages/PluginConfig'
 import { Login } from './pages/Login'
-import { SystemSettings } from './pages/SystemSettings'
+import { Activity } from './pages/Activity'
 import { AuthGuard } from './components/AuthGuard'
 
 function AppRoutes () {
@@ -28,7 +28,7 @@ function AppRoutes () {
           <Route path="settings" element={<Settings />} />
           <Route path="schema-demo" element={<SchemaDemo />} />
           <Route path="plugin-config" element={<PluginConfig />} />
-          <Route path="system-settings" element={<SystemSettings />} />
+          <Route path="activity" element={<Activity />} />
           <Route path="*" element={<div className="p-6">Page not found</div>} />
         </Route>
       </Routes>
