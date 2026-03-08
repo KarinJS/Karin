@@ -1,11 +1,11 @@
 {
-  "name": "@karin/adapter-console",
+  "name": "@karin/core-store",
   "version": "0.0.1",
-  "description": "karin 控制台适配器 — stdin/stdout 测试用",
+  "description": "karin 路径管理器 v2",
   "keywords": [
-    "karin",
-    "adapter",
-    "console"
+    "store",
+    "path",
+    "karin"
   ],
   "license": "MIT",
   "author": "shijin",
@@ -18,15 +18,15 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "build": "tsdown",
-    "checkType": "tsc"
-  },
-  "dependencies": {
-    "@karin/core": "workspace:*",
-    "@karin/types": "workspace:*"
+    "checkType": "tsc",
+    "prepublishOnly": "pnpm run checkType",
+    "pub": "npm publish --access public",
+    "rm": "node -e \"require('fs').rmSync('node_modules', { recursive: true, force: true })\""
   },
   "devDependencies": {
     "tsdown-config": "workspace:*"
@@ -35,8 +35,10 @@
     "exports": {
       ".": {
         "types": "./dist/index.d.ts",
-        "import": "./dist/index.mjs"
-      }
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      },
+      "./package.json": "./package.json"
     }
   }
 }

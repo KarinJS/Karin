@@ -190,7 +190,8 @@
   "pm2": {
     "saveSuccess": "PM2 配置保存成功",
     "saveError": "保存失败",
-    "rawMode": "PM2 配置界面当前处于原始模式。"  },
+    "rawMode": "PM2 配置界面当前处于原始模式。"
+  },
   "plugins": {
     "title": "插件市场",
     "subtitle": "探索、安装和管理 Karin 的扩展功能",

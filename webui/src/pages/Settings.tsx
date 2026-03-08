@@ -188,11 +188,10 @@ export function Settings () {
                       <button
                         key={option.key}
                         onClick={() => setThemeMode(option.key)}
-                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all duration-200 ${
-                          themeMode === option.key
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all duration-200 ${themeMode === option.key
                             ? 'bg-slate-800 dark:bg-zinc-100 text-white dark:text-zinc-900 border-slate-800 dark:border-zinc-100 shadow-md'
                             : 'bg-white/50 dark:bg-zinc-800/50 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-700 hover:border-slate-300 dark:hover:border-zinc-600'
-                        }`}
+                          }`}
                       >
                         <option.icon size={16} />
                         <span className="text-sm font-medium">{option.label}</span>

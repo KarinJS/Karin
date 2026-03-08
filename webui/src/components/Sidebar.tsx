@@ -31,7 +31,7 @@ export function Sidebar () {
       "border border-white/40",
       "font-medium tracking-wide",
     ],
-  };
+  }
 
   return (
     <aside className="fixed left-2 top-2 bottom-2 w-16 z-50 flex flex-col glass-panel rounded-2xl">

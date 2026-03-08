@@ -281,17 +281,16 @@ export function Activity () {
               <Card key={level} shadow="none" className="glass-card" isPressable
                 onPress={() => setFilterLevel(filterLevel === level ? 'all' : level)}>
                 <CardBody className="p-3 flex flex-row items-center gap-3">
-                  <div className={`p-2 rounded-lg ${
-                    level === 'info' ? 'bg-blue-50 dark:bg-blue-900/20' :
-                    level === 'success' ? 'bg-green-50 dark:bg-green-900/20' :
-                    level === 'warning' ? 'bg-amber-50 dark:bg-amber-900/20' :
-                    'bg-red-50 dark:bg-red-900/20'
-                  }`}>
+                  <div className={`p-2 rounded-lg ${level === 'info' ? 'bg-blue-50 dark:bg-blue-900/20' :
+                      level === 'success' ? 'bg-green-50 dark:bg-green-900/20' :
+                        level === 'warning' ? 'bg-amber-50 dark:bg-amber-900/20' :
+                          'bg-red-50 dark:bg-red-900/20'
+                    }`}>
                     <cfg.icon size={18} className={
                       level === 'info' ? 'text-blue-500' :
-                      level === 'success' ? 'text-green-500' :
-                      level === 'warning' ? 'text-amber-500' :
-                      'text-red-500'
+                        level === 'success' ? 'text-green-500' :
+                          level === 'warning' ? 'text-amber-500' :
+                            'text-red-500'
                     } />
                   </div>
                   <div>
@@ -324,17 +323,16 @@ export function Activity () {
                   return (
                     <div key={item.id} className="flex gap-4 p-4 hover:bg-slate-50/50 dark:hover:bg-zinc-800/30 transition-colors">
                       {/* Icon */}
-                      <div className={`shrink-0 mt-0.5 p-2 rounded-xl ${
-                        item.level === 'info' ? 'bg-blue-50 dark:bg-blue-900/20' :
-                        item.level === 'success' ? 'bg-green-50 dark:bg-green-900/20' :
-                        item.level === 'warning' ? 'bg-amber-50 dark:bg-amber-900/20' :
-                        'bg-red-50 dark:bg-red-900/20'
-                      }`}>
+                      <div className={`shrink-0 mt-0.5 p-2 rounded-xl ${item.level === 'info' ? 'bg-blue-50 dark:bg-blue-900/20' :
+                          item.level === 'success' ? 'bg-green-50 dark:bg-green-900/20' :
+                            item.level === 'warning' ? 'bg-amber-50 dark:bg-amber-900/20' :
+                              'bg-red-50 dark:bg-red-900/20'
+                        }`}>
                         <TypeIcon size={18} className={
                           item.level === 'info' ? 'text-blue-500' :
-                          item.level === 'success' ? 'text-green-500' :
-                          item.level === 'warning' ? 'text-amber-500' :
-                          'text-red-500'
+                            item.level === 'success' ? 'text-green-500' :
+                              item.level === 'warning' ? 'text-amber-500' :
+                                'text-red-500'
                         } />
                       </div>
 

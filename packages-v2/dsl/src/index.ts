@@ -51,7 +51,7 @@ export function handler (key: string, fn: (ctx: Context) => Awaitable<unknown>):
 export function task (name: string, cron: string, fn: () => Awaitable<void>): void {
   const file = _getCallerFile()
   const tasks: TaskEntry[] = (globalThis as Record<string, unknown>).__karin_tasks as TaskEntry[] ?? []
-  ;(globalThis as Record<string, unknown>).__karin_tasks = tasks
+    ; (globalThis as Record<string, unknown>).__karin_tasks = tasks
   tasks.push({ name, cron, fn, file })
 }
 

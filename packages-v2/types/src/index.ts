@@ -73,9 +73,9 @@ export type Event = MessageEvent | NoticeEvent | RequestEvent
 
 export interface AdapterApi {
   /** 发送消息，返回消息 ID */
-  sendMessage(contact: Contact, elements: Element[]): Promise<string>
+  sendMessage (contact: Contact, elements: Element[]): Promise<string>
   /** 撤回消息 */
-  recallMessage(messageId: string): Promise<void>
+  recallMessage (messageId: string): Promise<void>
 }
 
 // ─── Context ───
@@ -96,7 +96,7 @@ export interface Context {
   /** 联系人信息 */
   readonly contact: Contact
   /** 快捷回复 */
-  reply(content: string | Element[]): Promise<string>
+  reply (content: string | Element[]): Promise<string>
 }
 
 // ─── Pipe ───
