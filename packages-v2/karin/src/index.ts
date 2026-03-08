@@ -7,6 +7,8 @@ export type * from '@karin/types'
 // ════ 框架入口 ════
 
 import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
+import { commands, bots } from '@karin/core'
 import { loadApps, loadNpmPlugins, watchApps } from '@karin/loader'
 import type { KarinConfig, PluginInstance } from '@karin/types'
 
@@ -19,7 +21,8 @@ const CONFIG_NAMES = ['karin.config.ts', 'karin.config.js', 'karin.config.mjs']
 async function loadConfig (): Promise<KarinConfig> {
   for (const name of CONFIG_NAMES) {
     try {
-      const mod = await import(resolve(process.cwd(), name)) as { default?: KarinConfig }
+      const file = resolve(process.cwd(), name)
+      const mod = await import(pathToFileURL(file).href) as { default?: KarinConfig }
       return mod.default ?? {} as KarinConfig
     } catch {
       continue
@@ -44,7 +47,6 @@ export async function start (): Promise<void> {
   await loadApps(pluginsDir)
   watchApps(pluginsDir)
 
-  const { commands, bots } = await import('@karin/core')
   console.log(`[karin] ready · ${commands.length} commands · ${bots.size} bots`)
 }
 

@@ -72,6 +72,9 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
     devDependencies:
+      '@karin/adapter-console':
+        specifier: workspace:*
+        version: link:packages-v2/adapter-console
       '@karinjs/core':
         specifier: workspace:*
         version: link:packages/core
@@ -99,6 +102,9 @@ importers:
       jiti:
         specifier: ^2.6.1
         version: 2.6.1
+      karin:
+        specifier: workspace:*
+        version: link:packages-v2/karin
       oxlint:
         specifier: ^1.51.0
         version: 1.51.0
@@ -373,6 +379,19 @@ importers:
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+
+  packages-v2/adapter-console:
+    dependencies:
+      '@karin/core':
+        specifier: workspace:*
+        version: link:../core
+      '@karin/types':
+        specifier: workspace:*
+        version: link:../types
+    devDependencies:
+      tsdown-config:
+        specifier: workspace:*
+        version: link:../../packages-core/tsdown-config
 
   packages-v2/core:
     dependencies:
