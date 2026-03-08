@@ -1,0 +1,39 @@
+{
+  "name": "@karin/types",
+  "version": "0.0.1",
+  "description": "karin 核心类型定义",
+  "keywords": [
+    "karin",
+    "types"
+  ],
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "checkType": "tsc"
+  },
+  "devDependencies": {
+    "tsdown-config": "workspace:*"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      },
+      "./package.json": "./package.json"
+    }
+  }
+}

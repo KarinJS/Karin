@@ -1,0 +1,42 @@
+{
+  "name": "@karin/loader",
+  "version": "0.0.1",
+  "description": "karin 插件加载器：扫描 + HMR",
+  "keywords": [
+    "karin",
+    "loader",
+    "hmr"
+  ],
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "checkType": "tsc"
+  },
+  "dependencies": {
+    "@karin/core": "workspace:*",
+    "@karin/types": "workspace:*"
+  },
+  "devDependencies": {
+    "tsdown-config": "workspace:*"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.mjs"
+      }
+    }
+  }
+}

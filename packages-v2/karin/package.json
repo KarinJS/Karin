@@ -1,0 +1,44 @@
+{
+  "name": "karin",
+  "version": "0.0.1",
+  "description": "karin 伞包 — re-export 全部公共 API",
+  "keywords": [
+    "karin",
+    "bot",
+    "framework"
+  ],
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "checkType": "tsc"
+  },
+  "dependencies": {
+    "@karin/core": "workspace:*",
+    "@karin/dsl": "workspace:*",
+    "@karin/loader": "workspace:*",
+    "@karin/types": "workspace:*"
+  },
+  "devDependencies": {
+    "tsdown-config": "workspace:*"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.mjs"
+      }
+    }
+  }
+}

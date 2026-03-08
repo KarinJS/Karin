@@ -1,0 +1,41 @@
+{
+  "name": "@karin/core",
+  "version": "0.0.1",
+  "description": "karin 调度引擎：dispatch + bot 管理 + pipe",
+  "keywords": [
+    "karin",
+    "core",
+    "dispatch"
+  ],
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "checkType": "tsc"
+  },
+  "dependencies": {
+    "@karin/types": "workspace:*"
+  },
+  "devDependencies": {
+    "tsdown-config": "workspace:*"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.mjs"
+      }
+    }
+  }
+}

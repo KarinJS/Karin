@@ -1,0 +1,42 @@
+{
+  "name": "@karin/dsl",
+  "version": "0.0.1",
+  "description": "karin DSL：command / accept / handler / task / button + 调用栈溯源",
+  "keywords": [
+    "karin",
+    "dsl",
+    "command"
+  ],
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "checkType": "tsc"
+  },
+  "dependencies": {
+    "@karin/core": "workspace:*",
+    "@karin/types": "workspace:*"
+  },
+  "devDependencies": {
+    "tsdown-config": "workspace:*"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.mjs"
+      }
+    }
+  }
+}
