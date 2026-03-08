@@ -1,0 +1,14 @@
+{
+  "name": "tsdown-config",
+  "version": "0.0.1",
+  "description": "共享 tsdown 构建配置",
+  "license": "MIT",
+  "author": "shijin",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  }
+}

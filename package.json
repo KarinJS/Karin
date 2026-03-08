@@ -1,43 +1,21 @@
 {
   "name": "@karinjs/project",
-  "version": "1.0.0",
-  "description": "",
+  "version": "2.0.0",
+  "description": "karin v2 bot framework",
   "keywords": [],
   "license": "MIT",
   "author": "shijin",
   "type": "module",
-  "main": "",
   "scripts": {
-    "sort": "sort-package-json \"package.json\" \"packages/*/package.json\"",
-    "lint": "oxlint -c oxlintrc.json .",
-    "dev": "tsx packages/core/src/start/main.ts",
-    "dev:webui": "tsx packages/core/src/start/webui.ts",
-    "dev:v2": "tsx packages-v2/karin/src/start.ts"
-  },
-  "dependencies": {
-    "empty-npm-package": "^1.0.0"
+    "dev": "tsx packages-v2/karin/src/start.ts"
   },
   "devDependencies": {
     "@karin/adapter-console": "workspace:*",
     "karin": "workspace:*",
-    "@karinjs/core": "workspace:*",
-    "@types/express": "^5.0.1",
-    "@types/lodash": "^4.17.20",
     "@types/node": "^22.10.7",
-    "@types/semver": "^7.7.1",
-    "@vitest/coverage-v8": "4.0.12",
-    "depcheck": "^1.4.7",
-    "glob": "^11.0.3",
-    "jiti": "^2.6.1",
-    "oxlint": "^1.51.0",
-    "sort-json": "^2.0.1",
-    "sort-package-json": "^3.4.0",
     "tsdown": "^0.17.0",
     "tsdown-config": "workspace:*",
-    "tsup": "^8.5.0",
     "tsx": "npm:@karinjs/tsx@5.1.0",
-    "typescript": "6.0.0-dev.20251205",
-    "vite": "npm:rolldown-vite@latest",
-    "vitest": "^4.0.12"
+    "typescript": "6.0.0-dev.20251205"
   }
 }

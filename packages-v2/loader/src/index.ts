@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { removeByFile } from '@karin/core'
+import { logger } from '@karin/logger'
 import type { PluginEntry, PluginInstance } from '@karin/types'
 
 // ════ 加载 apps 插件 ════
@@ -28,7 +29,7 @@ async function importFile (file: string): Promise<void> {
   try {
     await import(`${pathToFileURL(file)}?t=${Date.now()}`)
   } catch (err) {
-    console.error(`[loader] ${path.basename(file)}:`, err)
+    logger.error(`[loader] ${path.basename(file)}:`, err)
   }
 }
 
@@ -50,7 +51,7 @@ export async function loadNpmPlugins (
         if (inst && typeof inst === 'object') instances.push({ ...inst, name })
       }
     } catch (err) {
-      console.error(`[loader] ${name}:`, err)
+      logger.error(`[loader] ${name}:`, err)
     } finally {
       currentLoading = null
     }
@@ -86,6 +87,6 @@ export function watchApps (dir: string): void {
 
     removeByFile(file.replaceAll('\\', '/'))
     void importFile(file)
-    console.log(`[hmr] ${filename}`)
+    logger.info(`[hmr] ${filename}`)
   })
 }

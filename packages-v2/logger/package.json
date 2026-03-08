@@ -1,11 +1,10 @@
 {
-  "name": "@karin/loader",
+  "name": "@karin/logger",
   "version": "0.0.1",
-  "description": "karin 插件加载器：扫描 + HMR",
+  "description": "karin 日志模块 — log4js + chalk",
   "keywords": [
     "karin",
-    "loader",
-    "hmr"
+    "logger"
   ],
   "license": "MIT",
   "author": "shijin",
@@ -25,9 +24,8 @@
     "checkType": "tsc"
   },
   "dependencies": {
-    "@karin/core": "workspace:*",
-    "@karin/logger": "workspace:*",
-    "@karin/types": "workspace:*"
+    "chalk": "catalog:",
+    "log4js": "catalog:"
   },
   "devDependencies": {
     "tsdown-config": "workspace:*"

@@ -1,38 +1,11 @@
-# 该选项简化了跨平台运行脚本 NODE_ENV=test node test.js
 shellEmulator: true
 
 packages:
-  - webui
-  - packages/*
-  - packages-core/*
-  - packages-plugin/*
   - packages-v2/*
-  - "!packages/karin-plugin-ts"
-  - "!packages/karin-plugin-js"
+
 onlyBuiltDependencies:
-  - "@heroui/shared-utils"
-  - "@karinjs/node-pty"
-  - "@parcel/watcher"
-  - "@swc/core"
   - esbuild
 
 catalog:
-  "better-sqlite3": "^12.6.2"
-  "@types/better-sqlite3": "^7.6.13"
-  "@karinjs/node-pty": "npm:@karinjs/node-pty"
-  "@karinjs/art-template": 1.1.0
-  axios: "npm:@karinjs/axios@1.13.0"
   chalk: 5.4.1
-  chokidar: 4.0.3
-  express: "npm:@karinjs/express"
-  jsonwebtoken: "npm:@karinjs/jsonwebtoken"
-  lodash: "npm:@karinjs/lodash"
   log4js: "npm:@karinjs/log4js@1.5.0"
-  moment: "npm:@karinjs/moment"
-  node-schedule: "npm:@karinjs/node-schedule@1.1.2"
-  redis: "npm:@karinjs/redis"
-  sqlite3: "npm:@karinjs/sqlite3@0.4.3"
-  ws: "npm:@karinjs/ws"
-  yaml: 2.7.0
-  semver: 7.7.3
-  express-rate-limit: 8.2.1

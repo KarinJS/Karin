@@ -25,6 +25,7 @@
     "checkType": "tsc"
   },
   "dependencies": {
+    "@karin/logger": "workspace:*",
     "@karin/types": "workspace:*"
   },
   "devDependencies": {

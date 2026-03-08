@@ -1,5 +1,0 @@
-export { SchemaForm } from './SchemaForm'
-export { FormProvider, useFormContext, useField } from './FormContext'
-export { FieldRenderer } from './FieldRenderer'
-export { Icon } from './Icon'
-export * from './types'

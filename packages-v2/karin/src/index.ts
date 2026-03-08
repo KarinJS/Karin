@@ -2,6 +2,7 @@
 export { dispatch, registerBot, unregisterBot, getBot, getBots, pipe } from '@karin/core'
 export { command, accept, handler, task, button } from '@karin/dsl'
 export { pluginConfig, pluginName } from '@karin/loader'
+export { logger, getLogger, createLogger } from '@karin/logger'
 export type * from '@karin/types'
 
 // ════ 框架入口 ════
@@ -10,6 +11,7 @@ import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { commands, bots } from '@karin/core'
 import { loadApps, loadNpmPlugins, watchApps } from '@karin/loader'
+import { logger } from '@karin/logger'
 import type { KarinConfig, PluginInstance } from '@karin/types'
 
 let config: KarinConfig = {}
@@ -47,7 +49,7 @@ export async function start (): Promise<void> {
   await loadApps(pluginsDir)
   watchApps(pluginsDir)
 
-  console.log(`[karin] ready · ${commands.length} commands · ${bots.size} bots`)
+  logger.info(`[karin] ready · ${commands.length} commands · ${bots.size} bots`)
 }
 
 export async function shutdown (): Promise<void> {

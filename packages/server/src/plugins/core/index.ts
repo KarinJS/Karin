@@ -1,7 +1,0 @@
-export * from './install'
-export * from './router'
-export * from './types'
-export * from './uninstall'
-export * from './updater'
-export * from './utils'
-export * from './core'

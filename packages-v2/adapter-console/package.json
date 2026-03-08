@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@karin/core": "workspace:*",
+    "@karin/logger": "workspace:*",
     "@karin/types": "workspace:*"
   },
   "devDependencies": {

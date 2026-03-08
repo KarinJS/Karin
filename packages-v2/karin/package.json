@@ -28,6 +28,7 @@
     "@karin/core": "workspace:*",
     "@karin/dsl": "workspace:*",
     "@karin/loader": "workspace:*",
+    "@karin/logger": "workspace:*",
     "@karin/types": "workspace:*"
   },
   "devDependencies": {

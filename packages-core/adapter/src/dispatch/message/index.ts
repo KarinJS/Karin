@@ -1,5 +1,0 @@
-export { FriendMessageDispatch } from './friend'
-export { DirectMessageDispatch } from './direct'
-export { GroupMessageDispatch } from './group'
-export { GroupTempMessageDispatch } from './groupTemp'
-export { GuildMessageDispatch } from './guild'

@@ -1,5 +1,6 @@
 import readline from 'node:readline'
 import { registerBot, dispatch } from '@karin/core'
+import { logger } from '@karin/logger'
 import type { AdapterApi, Contact, Element, MessageEvent } from '@karin/types'
 
 // ════ 适配器 API ════
@@ -10,7 +11,7 @@ const api: AdapterApi = {
       if (el.type === 'text') return el.text
       return `[${el.type}]`
     }).join('')
-    console.log(`[bot] ${text}`)
+    logger.info(`[bot] ${text}`)
     return `msg_${Date.now()}`
   },
   async recallMessage () {
@@ -42,4 +43,4 @@ rl.on('line', (line) => {
   void dispatch(event)
 })
 
-console.log('[console] adapter ready, type a message...')
+logger.info('[console] adapter ready, type a message...')

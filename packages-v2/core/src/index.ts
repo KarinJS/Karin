@@ -1,3 +1,4 @@
+import { logger } from '@karin/logger'
 import type {
   Event, MessageEvent, Context, AdapterApi, Element,
   CommandEntry, AcceptEntry, HandlerEntry, ButtonEntry, Pipe,
@@ -79,14 +80,14 @@ export async function dispatch (event: Event): Promise<void> {
       const m = cmd.pattern.exec(msg)
       if (!m) continue
       ctx.match = m
-      try { await cmd.fn(ctx) } catch (e) { console.error(`[cmd:${cmd.name}]`, e) }
+      try { await cmd.fn(ctx) } catch (e) { logger.error(`[cmd:${cmd.name}]`, e) }
       return
     }
   } else {
     if (accDirty) { accepts.sort((a, b) => b.priority - a.priority); accDirty = false }
     for (const acc of accepts) {
       if (acc.event !== '*' && acc.event !== event.subType) continue
-      try { await acc.fn(ctx) } catch (e) { console.error('[accept]', e) }
+      try { await acc.fn(ctx) } catch (e) { logger.error('[accept]', e) }
     }
   }
 }
