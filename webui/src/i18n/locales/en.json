@@ -1,0 +1,315 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "System Overview",
+    "systemOnline": "All Systems Online",
+    "stats": {
+      "users": "Total Users",
+      "active": "Active Sessions",
+      "uptime": "Uptime",
+      "memory": "Memory Usage"
+    },
+    "trafficOverview": "Traffic Overview",
+    "chartVisualization": "Data Visualization",
+    "waitingData": "Waiting for real-time data...",
+    "welcome": "Welcome Back",
+    "description": "Easily manage your bot instance and explore infinite possibilities.",
+    "quickActions": "Quick Actions",
+    "refresh": "Refresh",
+    "status": "System Status",
+    "logs": {
+      "title": "System Logs",
+      "viewAll": "View All"
+    },
+    "guide": {
+      "settings": {
+        "title": "Settings",
+        "desc": "Configure bot connection, permissions and basic behaviors"
+      },
+      "plugins": {
+        "title": "Plugins",
+        "desc": "Browse, install and manage functional plugins"
+      },
+      "pluginManage": {
+        "title": "Plugin Manager",
+        "desc": "Manage installed plugins: enable, disable and update"
+      }
+    },
+    "links": {
+      "docs": "Documentation",
+      "repo": "GitHub Repository"
+    }
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "activity": "Activity",
+    "plugins": "Plugins",
+    "pluginManage": "Plugin Manager",
+    "pluginCustom": "Plugin Pages",
+    "pluginConfig": "Plugin Config",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage server configuration and display preferences",
+    "saveSuccess": "Settings saved successfully",
+    "saveError": "Failed to save",
+    "tabs": {
+      "general": "General",
+      "server": "Server",
+      "logger": "Logger"
+    },
+    "themeMode": "Theme Mode",
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "language": "Language",
+    "network": "Network",
+    "requestTimeout": "Request Timeout (ms)",
+    "requestTimeoutDesc": "Maximum time to wait for a backend response. Requests will be aborted after this duration. Default: 10000ms."
+  },
+  "common": {
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "search": "Search configuration...",
+    "loading": "Loading...",
+    "cd": "Cooldown (sec)",
+    "userCd": "User Cooldown (sec)",
+    "responseMode": "Response Mode",
+    "inheritGlobal": "Inherit Global"
+  },
+  "basicConfig": {
+    "title": "Basic Configuration",
+    "subtitle": "Manage all system and plugin configurations",
+    "tabsAriaLabel": "Configuration Categories"
+  },
+  "tabs": {
+    "permissions": "Permissions",
+    "permissionsDesc": "Manage superuser and admin privileges",
+    "filter": "Content Filter",
+    "filterDesc": "Command allow/block lists and event filters",
+    "group": "Group Chat",
+    "groupDesc": "Group message and event rules",
+    "friend": "Friend Chat",
+    "friendDesc": "Private message and request rules",
+    "guild": "Guild Chat",
+    "guildDesc": "Guild message handling rules",
+    "direct": "Temporary Chat",
+    "directDesc": "Temp private message rules",
+    "server": "Connections",
+    "serverDesc": "HTTP & WebSocket server ports",
+    "logger": "Logging",
+    "loggerDesc": "Log levels and storage policy",
+    "redis": "Redis Cache",
+    "redisDesc": "Database connection settings",
+    "pm2": "Process Manager",
+    "pm2Desc": "PM2 process monitoring"
+  },
+  "mode": {
+    "all": "All Users",
+    "master": "Master Only",
+    "admin": "Admin Only"
+  },
+  "permissions": {
+    "loadError": "Failed to load permissions",
+    "saveSuccess": "Permissions saved successfully",
+    "saveError": "Failed to save",
+    "masterList": "Master List",
+    "enterUserId": "Enter User ID",
+    "noMasters": "No masters configured",
+    "adminList": "Admin List",
+    "noAdmins": "No admins configured"
+  },
+  "filter": {
+    "saveSuccess": "Filter options saved successfully",
+    "saveError": "Failed to save",
+    "enableEvents": "Enable Events",
+    "listsConfig": "Lists Configuration",
+    "listsDesc": "Manage block/allow lists for users and groups",
+    "detailedDesc": "Detailed list management (enable/disable lists) is available via direct file editing or will be added in a future update."
+  },
+  "group": {
+    "saveSuccess": "Group settings saved successfully",
+    "saveError": "Failed to save",
+    "globalSettings": "Global Group Settings",
+    "note": "Note: UI currently supports global settings only. For specific groups, please edit configuration files directly."
+  },
+  "friend": {
+    "saveSuccess": "Friend settings saved successfully",
+    "saveError": "Failed to save",
+    "globalSettings": "Global Friend Settings"
+  },
+  "guild": {
+    "saveSuccess": "Guild settings saved successfully",
+    "saveError": "Failed to save",
+    "globalSettings": "Global Guild Settings"
+  },
+  "direct": {
+    "saveSuccess": "Direct chat settings saved successfully",
+    "saveError": "Failed to save",
+    "globalSettings": "Global Direct Chat Settings"
+  },
+  "server": {
+    "saveSuccess": "Server settings saved successfully",
+    "saveError": "Failed to save",
+    "httpServer": "HTTP Server",
+    "host": "Host Address",
+    "port": "Port",
+    "authKey": "Authentication Key",
+    "username": "Username",
+    "password": "Password",
+    "wsServer": "WebSocket Server",
+    "enableWs": "Enable WebSocket",
+    "ffmpeg": "FFmpeg Configuration",
+    "ffmpegPath": "FFmpeg Path",
+    "ffprobePath": "FFprobe Path",
+    "ffplayPath": "FFplay Path"
+  },
+  "logger": {
+    "saveSuccess": "Logger settings saved successfully",
+    "saveError": "Failed to save",
+    "level": "Log Level",
+    "daysToKeep": "Retention Days",
+    "maxLogSize": "Max Log File Size",
+    "functionColor": "Function Color"
+  },
+  "redis": {
+    "saveSuccess": "Redis config saved successfully",
+    "saveError": "Failed to save",
+    "enable": "Enable Redis",
+    "url": "Connection URL",
+    "username": "Username",
+    "password": "Password",
+    "database": "Database Index"
+  },
+  "pm2": {
+    "saveSuccess": "PM2 config saved successfully",
+    "saveError": "Failed to save",
+    "rawMode": "PM2 config UI is currently in raw mode."
+  },
+  "plugins": {
+    "title": "Plugin Market",
+    "subtitle": "Explore, install and manage Karin extensions",
+    "search": "Search plugins...",
+    "sources": "Sources",
+    "install": "Install",
+    "uninstall": "Uninstall",
+    "update": "Update",
+    "updated": "Updated",
+    "version": "Version",
+    "noPlugins": "No plugins found"
+  },
+  "pluginManage": {
+    "title": "Plugin Manager",
+    "subtitle": "Manage installed plugins",
+    "search": "Search installed plugins...",
+    "noPlugins": "No installed plugins",
+    "config": "Configure",
+    "enable": "Enable",
+    "disable": "Disable",
+    "disabled": "Disabled",
+    "confirmUninstall": "Confirm Uninstall",
+    "confirmUninstallContent": "Are you sure you want to uninstall this plugin? This action cannot be undone.",
+    "confirmDisable": "Confirm Disable",
+    "confirmDisableContent": "Are you sure you want to disable this plugin?",
+    "confirmEnable": "Confirm Enable",
+    "confirmEnableContent": "Are you sure you want to enable this plugin?",
+    "filterAll": "All",
+    "filterEnabled": "Enabled",
+    "filterDisabled": "Disabled",
+    "filterUrl": "URL",
+    "sortName": "Name",
+    "sortUpdate": "Updated",
+    "sortType": "Type",
+    "selectedCount": "{{count}} selected",
+    "batchEnable": "Batch Enable",
+    "batchEnableContent": "Enable {{count}} selected plugins?",
+    "batchDisable": "Batch Disable",
+    "batchDisableContent": "Disable {{count}} selected plugins?",
+    "batchUninstall": "Batch Uninstall",
+    "batchUninstallContent": "Uninstall {{count}} selected plugins? This cannot be undone.",
+    "clearSelection": "Deselect",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "affectedPlugins": "Affected plugins:",
+    "updateAll": "Check Updates",
+    "updating": "Updating...",
+    "checkingUpdates": "Checking...",
+    "checkResult": "Update Check Result",
+    "updatesFound": "Found {{count}} updatable plugins",
+    "noUpdates": "All plugins are up to date",
+    "noUpdatesDesc": "No updatable plugins found",
+    "updateAvailable": "Update",
+    "updatable": "Updatable",
+    "updatableCount": "{{count}} updatable",
+    "updatePlugin": "Update Plugin",
+    "currentVersion": "Current",
+    "targetVersion": "Target",
+    "selectVersion": "Select target version",
+    "updateTo": "Update to",
+    "updateSuccess": "{{name}} updated to v{{version}}",
+    "latest": "Latest",
+    "current": "Current",
+    "urlUpdateWip": "URL Plugin Updates",
+    "urlUpdateWipDesc": "Version management for URL plugins is under development...",
+    "noConfig": "No configuration available",
+    "jumpToConfig": "Go to Config",
+    "confirmJumpConfig": "Navigate to {{name}} configuration page?",
+    "uninstallSuccess": "Uninstalled successfully",
+    "disableSuccess": "Disabled",
+    "enableSuccess": "Enabled"
+  },
+  "pluginConfig": {
+    "title": "Plugin Config",
+    "subtitle": "Manage installed plugin parameters",
+    "search": "Search plugins...",
+    "noConfig": "No configuration",
+    "noConfigDesc": "This plugin does not provide a configuration schema.",
+    "pluginReady": "Plugin is ready to use",
+    "selectPlugin": "Select a plugin",
+    "selectPluginDesc": "Select an installed plugin from the sidebar to manage its configuration",
+    "pluginNotFound": "Plugin not found or not installed"
+  },
+  "login": {
+    "title": "Karin",
+    "subtitle": "Sign in to manage your bot instance",
+    "username": "Username",
+    "usernamePlaceholder": "Enter username",
+    "password": "Password",
+    "passwordPlaceholder": "Enter password",
+    "submit": "Sign In",
+    "success": "Signed in successfully",
+    "failed": "Invalid username or password",
+    "emptyFields": "Please fill in username and password",
+    "networkError": "Network error, please check your connection"
+  },
+  "activity": {
+    "title": "Activity",
+    "subtitle": "View system logs and event feed",
+    "refresh": "Refresh",
+    "search": "Search events...",
+    "empty": "No activity records",
+    "footer": "{{count}} records in total",
+    "filter": {
+      "all": "All"
+    },
+    "types": {
+      "system": "System",
+      "plugin": "Plugin",
+      "user": "User",
+      "config": "Config",
+      "server": "Server",
+      "message": "Message",
+      "custom": "Custom"
+    },
+    "levels": {
+      "info": "Info",
+      "success": "Success",
+      "warning": "Warning",
+      "error": "Error"
+    }
+  }
+}
