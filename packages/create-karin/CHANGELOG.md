@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.4](https://github.com/KarinJS/Karin/compare/create-karin-v1.2.3...create-karin-v1.2.4) (2026-03-17)
+
+
+### 🐛 Bug Fixes
+
+* 修复警告被错误当错Error抛出 close [#618](https://github.com/KarinJS/Karin/issues/618) ([#620](https://github.com/KarinJS/Karin/issues/620)) ([a392d40](https://github.com/KarinJS/Karin/commit/a392d40fcb76d7e398ff28d54674b7c919e49234))
+
+
+### 🎫 Chores
+
+* release main ([#621](https://github.com/KarinJS/Karin/issues/621)) ([8d2125c](https://github.com/KarinJS/Karin/commit/8d2125c9552230d4d776fcc26f53eb099594a8f3))
+
 ## [1.2.3](https://github.com/KarinJS/Karin/compare/create-karin-v1.2.2...create-karin-v1.2.3) (2026-03-17)
 
 
