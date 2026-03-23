@@ -149,7 +149,7 @@ const initGroups = async (dir: string) => {
 
   const data = requireFileSync<Groups>(file, { type: 'json' })
   staticCache = isOld(data) ? migrate(file, data) : format(data)
-  dynamicCache = format(data)
+  dynamicCache = staticCache
 
   watch<Groups>(file, async (old, data) => {
     staticCache = isOld(data) ? migrate(file, data) : format(data)
