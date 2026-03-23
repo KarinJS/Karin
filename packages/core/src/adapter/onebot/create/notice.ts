@@ -1,6 +1,7 @@
 import { contactFriend, contactGroup, createPrivateFileUploadedNotice, senderFriend, senderGroup } from '@/event'
 import { AdapterOneBot } from '@/adapter/onebot/core/core'
 import {
+  createBotOfflineNotice,
   createFriendIncreaseNotice,
   createGroupAdminChangedNotice,
   createGroupCardChangedNotice,
@@ -411,6 +412,26 @@ export const createNotice = (event: OneBotNoticeEvent, bot: AdapterOneBot<OneBot
           const { file } = await getFileMessage(event.file, bot)
           return file
         },
+      },
+    })
+    return
+  }
+
+  // Bot下线
+  if (event.notice_type === NoticeType.BotOffline) {
+    const selfId = bot.selfId
+    const contact = contactFriend(selfId)
+    createBotOfflineNotice({
+      bot,
+      eventId: `notice:${selfId}.${event.time}`,
+      rawEvent: event,
+      time,
+      contact,
+      sender: senderFriend(selfId),
+      srcReply: (elements) => bot.sendMsg(contact, elements),
+      content: {
+        tag: event.tag,
+        message: event.message,
       },
     })
     return

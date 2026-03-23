@@ -27,6 +27,7 @@ import type {
   GroupMessageReactionNotice,
   GroupLuckKingNotice,
   GroupHonorChangedNotice,
+  BotOfflineNotice,
 } from '@/event/notice'
 import { GroupApplyRequest, GroupInviteRequest, PrivateApplyRequest } from '@/event/request'
 
@@ -48,6 +49,7 @@ export interface FriendNoticeEventMap {
   'notice.privatePoke': PrivatePokeNotice
   'notice.privateRecall': PrivateRecallNotice
   'notice.privateFileUploaded': PrivateFileUploadedNotice
+  'notice.botOffline': BotOfflineNotice
 }
 
 /** 群聊通知事件对应的对象类型 */
@@ -114,6 +116,7 @@ export type Notice = ReceiveLikeNotice
   | GroupMessageReactionNotice
   | GroupLuckKingNotice
   | GroupHonorChangedNotice
+  | BotOfflineNotice
 
 /**
  * @description 消息事件类型

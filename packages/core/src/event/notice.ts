@@ -24,6 +24,7 @@ import type {
   GroupMessageReactionOptions,
   GroupLuckKingOptions,
   GroupHonorChangedOptions,
+  BotOfflineOptions,
 } from '@/types/event'
 
 /**
@@ -1249,6 +1250,62 @@ export class GroupHonorChangedNotice extends GroupNotice {
 
   get isGroup (): true {
     return true
+  }
+
+  get isGuild (): false {
+    return false
+  }
+
+  get isDirect (): false {
+    return false
+  }
+
+  get isGroupTemp (): false {
+    return false
+  }
+}
+
+/**
+ * @description Bot下线事件
+ * @class BotOfflineNotice
+ */
+export class BotOfflineNotice extends NoticeBase {
+  #subEvent: 'botOffline'
+  #contact: BotOfflineOptions['contact']
+  #sender: BotOfflineOptions['sender']
+  content: BotOfflineOptions['content']
+
+  constructor (options: BotOfflineOptions) {
+    super(Object.assign(options, { subEvent: 'botOffline' as const }))
+
+    this.#subEvent = 'botOffline'
+    this.#contact = options.contact
+    this.#sender = options.sender
+    this.content = options.content
+  }
+
+  get subEvent () {
+    return this.#subEvent
+  }
+
+  get contact () {
+    return this.#contact
+  }
+
+  get sender () {
+    return this.#sender
+  }
+
+  get isPrivate (): true {
+    return true
+  }
+
+  get isFriend (): true {
+    return true
+  }
+
+  get isGroup (): false {
+    return false
   }
 
   get isGuild (): false {

@@ -25,6 +25,7 @@ import type {
   GroupMessageReactionType,
   GroupLuckKingType,
   GroupHonorChangedType,
+  BotOfflineType,
   PrivateApplyType,
   GroupApply,
   GroupInvite,
@@ -56,6 +57,7 @@ export type MessageEventSub = 'group' | 'friend' | 'guild' | 'direct' | 'groupTe
  * - `privateFileUploaded`: 好友发送文件
  * - `friendIncrease`: 好友增加
  * - `friendDecrease`: 好友减少
+ * - `botOffline`: Bot下线
  *
  * - `groupPoke`: 群聊戳一戳
  * - `groupCardChanged`: 群聊名片变动
@@ -116,6 +118,8 @@ export type NoticeEventSub =
   | 'groupLuckyKing'
   /** 群聊荣誉变更事件 */
   | 'groupHonorChange'
+  /** Bot下线 */
+  | 'botOffline'
 
 // /** 机器人被加入某个频道 */
 // | 'botJoinGuild'
@@ -469,6 +473,16 @@ export type GroupHonorChangedOptions = Omit<NoticeOptions, 'subEvent'> & {
   sender: Sender<'group'>
   /** 请求内容 */
   content: GroupHonorChangedType
+}
+
+/** 创建Bot下线通知事件 */
+export type BotOfflineOptions = Omit<NoticeOptions, 'subEvent'> & {
+  /** 事件来源信息 */
+  contact: Contact<'friend'>
+  /** 事件创建者信息 */
+  sender: Sender<'friend'>
+  /** 请求内容 */
+  content: BotOfflineType
 }
 
 /** 创建请求事件类所需参数类型 */
