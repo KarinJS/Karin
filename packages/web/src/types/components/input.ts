@@ -119,7 +119,7 @@ export interface InputProps extends ComponentProps {
   /** 结束内容 */
   endContent?: string
   /** 标签位置 */
-  labelPlacement?: 'inside' | 'outside' | 'outside-left'
+  labelPlacement?: 'inside' | 'outside' | 'outside-left' | 'outside-top'
   /** 是否全宽 */
   fullWidth?: boolean
   /** 是否可清除 */
