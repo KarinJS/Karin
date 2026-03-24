@@ -36,6 +36,7 @@ import {
   GroupMessageReactionNotice,
   GroupLuckKingNotice,
   GroupHonorChangedNotice,
+  BotOfflineNotice,
 } from '../notice'
 import {
   GroupApplyRequest,
@@ -69,6 +70,7 @@ import type {
   GroupMessageReactionOptions,
   GroupLuckKingOptions,
   GroupHonorChangedOptions,
+  BotOfflineOptions,
   PrivateApplyRequestOptions,
   GroupApplyRequestOptions,
   GroupInviteRequestOptions,
@@ -331,6 +333,16 @@ export const createGroupLuckKingNotice = (options: GroupLuckKingOptions) => {
 export const createGroupHonorChangedNotice = (options: GroupHonorChangedOptions) => {
   const event = new GroupHonorChangedNotice(options)
   groupNoticeHandler(event)
+  return event
+}
+
+/**
+ * @description 创建Bot下线通知事件
+ * @param options Bot下线通知事件所需参数
+ */
+export const createBotOfflineNotice = (options: BotOfflineOptions) => {
+  const event = new BotOfflineNotice(options)
+  friendNoticeHandler(event)
   return event
 }
 

@@ -33,6 +33,8 @@ export enum NoticeType {
   GroupCard = 'group_card',
   /** 好友离线文件 Lagrange.OneBot */
   Lgl_FriendOfflineFile = 'offline_file',
+  /** Bot下线 */
+  BotOffline = 'bot_offline',
 }
 
 /**
@@ -412,6 +414,20 @@ export interface LglFriendOfflineFileNoticeEvent extends EventBase {
   }
 }
 
+/**
+ * Bot下线通知事件
+ */
+export interface BotOfflineNoticeEvent extends EventBase {
+  /** 通知事件 */
+  post_type: EventPostType.Notice
+  /** 通知类型 */
+  notice_type: NoticeType.BotOffline
+  /** 下线标签（原因） */
+  tag: string
+  /** 下线消息 */
+  message: string
+}
+
 /** OneBot 通知事件类型 */
 export type OneBotNoticeEvent =
   | GroupUploadNoticeEvent
@@ -430,3 +446,4 @@ export type OneBotNoticeEvent =
   | GroupEssenceNoticeEvent
   | GroupCardNoticeEvent
   | LglFriendOfflineFileNoticeEvent
+  | BotOfflineNoticeEvent

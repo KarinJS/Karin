@@ -99,6 +99,9 @@ export const initTips = (
       }
       break
     }
+    case 'botOffline':
+      ctx.tips = `Bot下线: ${ctx.content.tag}`
+      break
     default:
     // ctx.tips = `未知子事件: ${JSON.stringify(ctx)}`
   }
