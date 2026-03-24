@@ -1,5 +1,19 @@
 # 更新日志
 
+## [1.15.0](https://github.com/KarinJS/Karin/compare/core-v1.14.4...core-v1.15.0) (2026-03-24)
+
+
+### ✨ Features
+
+* add `outside-top` labelPlacement support for Input (HeroUI v2.8.0) ([#626](https://github.com/KarinJS/Karin/issues/626)) ([e762c57](https://github.com/KarinJS/Karin/commit/e762c573bd943944b530e6c67fc98753a1e4dfad))
+* handle bot_offline notice event in OneBot adapter ([#623](https://github.com/KarinJS/Karin/issues/623)) ([61b5a7d](https://github.com/KarinJS/Karin/commit/61b5a7d7b7b6059f040de6bd9c8704422aa04a8a))
+
+
+### 🐛 Bug Fixes
+
+* debug log level from .env not applied on startup ([#624](https://github.com/KarinJS/Karin/issues/624)) ([df39819](https://github.com/KarinJS/Karin/commit/df39819777975fba925ad30bd90b22aab62d25ec))
+* TypeError: data.find is not a function on first startup after npx karin init ([#625](https://github.com/KarinJS/Karin/issues/625)) ([96e85d8](https://github.com/KarinJS/Karin/commit/96e85d8a47e7f90fc8e97dc58e50d7de2f11f518))
+
 ## [1.14.4](https://github.com/KarinJS/Karin/compare/core-v1.14.3...core-v1.14.4) (2026-02-23)
 
 

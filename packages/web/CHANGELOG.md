@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/KarinJS/Karin/compare/web-v1.10.0...web-v1.11.0) (2026-03-24)
+
+
+### ✨ Features
+
+* add `outside-top` labelPlacement support for Input (HeroUI v2.8.0) ([#626](https://github.com/KarinJS/Karin/issues/626)) ([e762c57](https://github.com/KarinJS/Karin/commit/e762c573bd943944b530e6c67fc98753a1e4dfad))
+
 ## [1.10.0](https://github.com/KarinJS/Karin/compare/web-v1.9.10...web-v1.10.0) (2025-10-15)
 
 
