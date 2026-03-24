@@ -137,7 +137,7 @@ const initPrivates = async (dir: string) => {
 
   const data = requireFileSync<Privates>(file, { type: 'json' })
   staticCache = isOld(data) ? migrate(file, data) : format(data)
-  dynamicCache = format(data)
+  dynamicCache = staticCache
 
   watch<Privates>(file, async (old, data) => {
     staticCache = isOld(data) ? migrate(file, data) : format(data)
