@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.15.1](https://github.com/KarinJS/Karin/compare/core-v1.15.0...core-v1.15.1) (2026-03-24)
+
+
+### 🐛 Bug Fixes
+
+* ffmpeg initialization priority order ([#629](https://github.com/KarinJS/Karin/issues/629)) ([5510219](https://github.com/KarinJS/Karin/commit/5510219de2dc199d1dfe71dd024524b9cf45ff87))
+
 ## [1.15.0](https://github.com/KarinJS/Karin/compare/core-v1.14.4...core-v1.15.0) (2026-03-24)
 
 
