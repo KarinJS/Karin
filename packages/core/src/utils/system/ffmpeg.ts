@@ -7,29 +7,26 @@ let ffplayPath = 'ffplay'
 
 /** 延迟1秒 不然会阻塞 */
 setTimeout(async () => {
-  // 系统环境变量 → @karinjs/plugin-ffmpeg → 配置文件
-  const env = await exec('ffmpeg -version', { booleanResult: true })
-  if (!env) {
-    try {
-      const name = '@karinjs/plugin-ffmpeg'
-      const plugin = await import(name)
-      const ffmpeg = plugin.default.ffmpegPath
-      const ffprobe = plugin.default.ffprobePath
-      const ffplay = plugin.default.ffplayPath
+  // @karinjs/plugin-ffmpeg → 用户配置 → 系统环境变量(默认值隐式回退)
+  try {
+    const name = '@karinjs/plugin-ffmpeg'
+    const plugin = await import(name)
+    const ffmpeg = plugin.default.ffmpegPath
+    const ffprobe = plugin.default.ffprobePath
+    const ffplay = plugin.default.ffplayPath
 
-      ffmpegPath = ffmpeg ? `"${ffmpeg}"` : ffmpegPath
-      ffprobePath = ffprobe ? `"${ffprobe}"` : ffprobePath
-      ffplayPath = ffplay ? `"${ffplay}"` : ffplayPath
-    } catch {
-      const cfg = await import('@/utils/config')
-      const ffmpeg = cfg.ffmpegPath()
-      const ffprobe = cfg.ffprobePath()
-      const ffplay = cfg.ffplayPath()
+    ffmpegPath = ffmpeg ? `"${ffmpeg}"` : ffmpegPath
+    ffprobePath = ffprobe ? `"${ffprobe}"` : ffprobePath
+    ffplayPath = ffplay ? `"${ffplay}"` : ffplayPath
+  } catch {
+    const cfg = await import('@/utils/config')
+    const ffmpeg = cfg.ffmpegPath()
+    const ffprobe = cfg.ffprobePath()
+    const ffplay = cfg.ffplayPath()
 
-      ffmpegPath = ffmpeg ? `"${ffmpeg}"` : ffmpegPath
-      ffprobePath = ffprobe ? `"${ffprobe}"` : ffprobePath
-      ffplayPath = ffplay ? `"${ffplay}"` : ffplayPath
-    }
+    ffmpegPath = ffmpeg ? `"${ffmpeg}"` : ffmpegPath
+    ffprobePath = ffprobe ? `"${ffprobe}"` : ffprobePath
+    ffplayPath = ffplay ? `"${ffplay}"` : ffplayPath
   }
 }, 1000)
 
