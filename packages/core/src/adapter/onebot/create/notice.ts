@@ -419,7 +419,7 @@ export const createNotice = (event: OneBotNoticeEvent, bot: AdapterOneBot<OneBot
 
   // Bot下线
   if (event.notice_type === NoticeType.BotOffline) {
-    const selfId = bot.selfId
+    const selfId = String(event.self_id)
     const contact = contactFriend(selfId)
     createBotOfflineNotice({
       bot,
