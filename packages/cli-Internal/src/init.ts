@@ -357,7 +357,21 @@ const createConfigFile = (dir: string) => {
     /** 如果已存在 则合并一下配置 */
     const defData = fs.readFileSync(filePath, 'utf-8')
     const targetData = fs.readFileSync(targetFile, 'utf-8')
-    const mergedData = { ...JSON.parse(defData), ...JSON.parse(targetData) }
+    const defParsed = JSON.parse(defData)
+    const targetParsed = JSON.parse(targetData)
+
+    /**
+     * 如果默认配置是数组类型 (如 privates.json、groups.json)
+     * 直接保留用户的现有配置，避免使用 spread 运算符将数组转换为对象
+     */
+    if (Array.isArray(defParsed)) {
+      if (!Array.isArray(targetParsed)) {
+        fs.writeFileSync(targetFile, JSON.stringify(defParsed, null, 2))
+      }
+      return
+    }
+
+    const mergedData = { ...defParsed, ...targetParsed }
     if (file.includes('pm2.json')) {
       mergedData.apps[0].script = 'index.mjs'
     }

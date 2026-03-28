@@ -226,6 +226,14 @@ export interface GroupHonorChangedType {
   honorType: 'talkative' | 'performer' | 'emotion'
 }
 
+/** 通知事件: Bot下线 */
+export interface BotOfflineType {
+  /** 下线标签（原因） */
+  tag: string
+  /** 下线消息 */
+  message: string
+}
+
 /** 请求事件: 好友申请 */
 export interface PrivateApplyType {
   /** 申请者id */

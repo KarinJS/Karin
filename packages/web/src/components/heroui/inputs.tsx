@@ -69,7 +69,7 @@ export const createInput = (
         }
         className={componentClassName || 'w-full max-w-[300px]'}
         autoFocus={false}
-        ref={(el) => {
+        ref={(el: HTMLInputElement | null) => {
           el && setInputRef(el) // 防止键盘弹出
           registerOptions.ref?.(el) // 怪怪的...
         }}

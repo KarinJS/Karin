@@ -33,7 +33,7 @@ export const createProject = async (
   const { error, stderr } = await exec(cmd, { cwd: dir })
 
   if (error) throw error
-  if (stderr) throw new Error(stderr)
+  if (stderr) console.log(stderr)
   spinner.succeed(green(`✨ node-karin@${karinVersion} 安装成功`))
 
   spinner.start('正在执行初始化...')
@@ -91,7 +91,7 @@ export const createPlugin = async (
   const karinCmd = `pnpm install -D node-karin@${karinVersion}${registrySuffix}`
   const { error: karinError, stderr: karinStderr } = await exec(karinCmd, { cwd: dir })
   if (karinError) throw karinError
-  if (karinStderr) throw new Error(karinStderr)
+  if (karinStderr) console.log(karinStderr)
   spinner.succeed(green(`✨ node-karin@${karinVersion} 安装成功`))
 
   spinner.start('正在执行初始化...')

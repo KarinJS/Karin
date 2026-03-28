@@ -12,6 +12,7 @@ import { initRender } from '@/adapter/render'
 import { initOneBotAdapter } from '@/adapter/onebot'
 import { initTaskSystem } from '@/service/task'
 import { listeners } from './core/internal/listeners'
+import type { LoggerLevel } from '@/service/logger/types'
 
 export * from '@/service/debug'
 export * from '@/root'
@@ -65,8 +66,11 @@ export const start = async () => {
    * 2. 初始化日志模块
    * - 创建日志目录
    * - 初始化日志模块
+   * - 同步日志等级: logger 在模块加载时创建, 此时 env 文件尚未解析
+   *   dotenv.config() 完成后需要显式同步 LOG_LEVEL, 否则等级在首次文件变更前不会生效
    */
   // createInnerLogger(root.logsPath)
+  logger.level = (process.env.LOG_LEVEL || 'info') as LoggerLevel
 
   /**
    * 3. 初始化配置文件

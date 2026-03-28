@@ -446,7 +446,7 @@ const installPnpmDependency = async (registrySuffix: string) => {
   const cmd = `npm install -g pnpm@^9${registrySuffix}`
   const { error, stderr } = await exec(cmd)
   if (error) throw error
-  if (stderr) throw new Error(stderr)
+  if (stderr) console.log(stderr)
 
   const { stdout: version } = await exec('pnpm -v')
   spinner.succeed(`pnpm v${version.trim()} 安装成功`)
@@ -460,7 +460,7 @@ const installPm2Dependency = async (registrySuffix: string) => {
   const cmd = `npm install -g pm2${registrySuffix}`
   const { error, stderr } = await exec(cmd)
   if (error) throw error
-  if (stderr) throw new Error(stderr)
+  if (stderr) console.log(stderr)
 
   const { stdout: version } = await exec('pm2 -v')
   spinner.succeed(`pm2 v${version.trim()} 安装成功`)
