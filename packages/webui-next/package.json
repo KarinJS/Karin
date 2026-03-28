@@ -1,0 +1,17 @@
+{
+  "name": "karin-webui-next",
+  "version": "1.0.0",
+  "description": "",
+  "author": "ikenxuan、KarinJS",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -r build",
+    "build:web": "pnpm --filter @karinjs/plugin-webui-next run build",
+    "build:native": "pnpm --filter @karinjs/native-app",
+    "dev": "pnpm --filter web run dev",
+    "openapi:types": "pnpm --filter @karinjs/types run openapi"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "packageManager": "pnpm@10.32.1"
+}

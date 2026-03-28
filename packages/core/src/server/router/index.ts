@@ -51,6 +51,24 @@ import {
   GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER,
   GET_PLUGIN_MARKET_LIST_ROUTER,
   GET_LOCAL_PLUGIN_FRONTEND_LIST_ROUTER,
+  // 2.0 WebUI 路由
+  WEBUI2_LOGIN_ROUTER,
+  WEBUI2_REFRESH_TOKEN_ROUTER,
+  WEBUI2_DASHBOARD_TREND_ROUTER,
+  WEBUI2_DASHBOARD_REALTIME_STREAM_ROUTER,
+  WEBUI2_LOGS_STREAM_ROUTER,
+  WEBUI2_FILES_LIST_ROUTER,
+  WEBUI2_FILES_CONTENT_ROUTER,
+  WEBUI2_FILES_DELETE_ROUTER,
+  WEBUI2_FILES_SAVE_ROUTER,
+  WEBUI2_FILES_DIRECTORY_SIZE_ROUTER,
+  WEBUI2_FILES_SELECTION_SIZE_ROUTER,
+  WEBUI2_FILES_DELETE_SELECTION_ROUTER,
+  WEBUI2_FILES_RENAME_ROUTER,
+  WEBUI2_FILES_COPY_ROUTER,
+  WEBUI2_FILES_PASTE_ROUTER,
+  WEBUI2_PLUGINS_STORE_LIST_ROUTER,
+  WEBUI2_PLUGINS_STORE_DETAIL_ROUTER,
 } from './router'
 import { logMiddleware } from '../log'
 import { authMiddleware } from '../auth/middleware'
@@ -106,6 +124,35 @@ import { taskListRouter, taskRunRouter, taskLogsRouter, taskDeleteRouter } from 
 import { getNpmBaseConfigRouter, getNpmrcContentRouter, getNpmrcListRouter, saveNpmrcRouter } from '../dependencies/config'
 import { getFrontendInstalledPluginList, getLoadedCommandPluginCacheList, getPluginListPluginAdmin } from '../plugins/detail'
 import { getPluginMarketList } from '../plugins/market'
+// 2.0 WebUI 兼容接口
+import {
+  loginRouter as webui2LoginRouter,
+  refreshTokenRouter as webui2RefreshTokenRouter,
+  verifyTokenMiddleware as webui2VerifyTokenMiddleware,
+} from '../webui2/auth'
+import {
+  getDashboardTrendRouter,
+  getDashboardRealtimeStreamRouter,
+} from '../webui2/dashboard'
+import {
+  getLogsStreamRouter,
+} from '../webui2/logs'
+import {
+  getFilesListRouter,
+  getFilesContentRouter,
+  deleteFileRouter,
+  saveFileRouter,
+  getDirectorySizeRouter,
+  getSelectionSizeRouter,
+  deleteSelectionRouter,
+  renameFileRouter,
+  copyFileRouter,
+  pasteFileRouter,
+} from '../webui2/files'
+import {
+  getPluginStoreListRouter,
+  getPluginStoreDetailRouter,
+} from '../webui2/plugins'
 
 /**
  * karin内部路由
@@ -233,3 +280,44 @@ router.post(GET_LOADED_COMMAND_PLUGIN_CACHE_LIST_ROUTER, getLoadedCommandPluginC
 router.post(GET_PLUGIN_MARKET_LIST_ROUTER, getPluginMarketList)
 /** @version 1.8.0 获取本地插件列表 用于插件索引页面渲染简约列表 */
 router.post(GET_LOCAL_PLUGIN_FRONTEND_LIST_ROUTER, getFrontendInstalledPluginList)
+
+/**
+ * 2.0 WebUI 兼容接口路由注册
+ * 这些接口用于支持 2.0 WebUI 的前端设计验证
+ * 所有接口都在 /api/v2 路径下
+ */
+
+export const v2Router: Router = Router()
+
+// 添加 JSON 中间件，用于解析请求体
+v2Router.use(express.json())
+
+/** 2.0 WebUI - 登录 */
+v2Router.post(WEBUI2_LOGIN_ROUTER, webui2LoginRouter)
+/** 2.0 WebUI - 刷新 Token */
+v2Router.post(WEBUI2_REFRESH_TOKEN_ROUTER, webui2RefreshTokenRouter)
+
+/** 2.0 WebUI - 仪表盘趋势 */
+v2Router.get(WEBUI2_DASHBOARD_TREND_ROUTER, webui2VerifyTokenMiddleware, getDashboardTrendRouter)
+/** 2.0 WebUI - 仪表盘实时流 */
+v2Router.get(WEBUI2_DASHBOARD_REALTIME_STREAM_ROUTER, webui2VerifyTokenMiddleware, getDashboardRealtimeStreamRouter)
+
+/** 2.0 WebUI - 日志流 */
+v2Router.get(WEBUI2_LOGS_STREAM_ROUTER, webui2VerifyTokenMiddleware, getLogsStreamRouter)
+
+/** 2.0 WebUI - 文件管理 */
+const fileBaseDir = process.cwd() // 使用当前工作目录作为文件根目录
+v2Router.get(WEBUI2_FILES_LIST_ROUTER, webui2VerifyTokenMiddleware, getFilesListRouter(fileBaseDir))
+v2Router.get(WEBUI2_FILES_CONTENT_ROUTER, webui2VerifyTokenMiddleware, getFilesContentRouter(fileBaseDir))
+v2Router.post(WEBUI2_FILES_DELETE_ROUTER, webui2VerifyTokenMiddleware, deleteFileRouter())
+v2Router.post(WEBUI2_FILES_SAVE_ROUTER, webui2VerifyTokenMiddleware, saveFileRouter())
+v2Router.get(WEBUI2_FILES_DIRECTORY_SIZE_ROUTER, webui2VerifyTokenMiddleware, getDirectorySizeRouter(fileBaseDir))
+v2Router.post(WEBUI2_FILES_SELECTION_SIZE_ROUTER, webui2VerifyTokenMiddleware, getSelectionSizeRouter(fileBaseDir))
+v2Router.post(WEBUI2_FILES_DELETE_SELECTION_ROUTER, webui2VerifyTokenMiddleware, deleteSelectionRouter())
+v2Router.post(WEBUI2_FILES_RENAME_ROUTER, webui2VerifyTokenMiddleware, renameFileRouter())
+v2Router.post(WEBUI2_FILES_COPY_ROUTER, webui2VerifyTokenMiddleware, copyFileRouter())
+v2Router.post(WEBUI2_FILES_PASTE_ROUTER, webui2VerifyTokenMiddleware, pasteFileRouter())
+
+/** 2.0 WebUI - 插件商店 */
+v2Router.get(WEBUI2_PLUGINS_STORE_LIST_ROUTER, webui2VerifyTokenMiddleware, getPluginStoreListRouter)
+v2Router.get(WEBUI2_PLUGINS_STORE_DETAIL_ROUTER, webui2VerifyTokenMiddleware, getPluginStoreDetailRouter)

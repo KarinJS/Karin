@@ -1,0 +1,55 @@
+.markdown-theme-adaptive.markdown-body {
+  background-color: transparent !important;
+  color: var(--foreground) !important;
+}
+
+.light .markdown-theme-adaptive.markdown-body {
+  color-scheme: light;
+}
+
+.dark .markdown-theme-adaptive.markdown-body {
+  color-scheme: dark;
+}
+
+.markdown-theme-adaptive.markdown-body h1,
+.markdown-theme-adaptive.markdown-body h2,
+.markdown-theme-adaptive.markdown-body h3,
+.markdown-theme-adaptive.markdown-body h4,
+.markdown-theme-adaptive.markdown-body h5,
+.markdown-theme-adaptive.markdown-body h6,
+.markdown-theme-adaptive.markdown-body p,
+.markdown-theme-adaptive.markdown-body li,
+.markdown-theme-adaptive.markdown-body td,
+.markdown-theme-adaptive.markdown-body th,
+.markdown-theme-adaptive.markdown-body blockquote {
+  color: var(--foreground) !important;
+}
+
+.markdown-theme-adaptive.markdown-body a {
+  color: var(--accent) !important;
+}
+
+.markdown-theme-adaptive.markdown-body pre,
+.markdown-theme-adaptive.markdown-body code {
+  background-color: color-mix(in oklch, var(--surface-secondary) 88%, transparent) !important;
+  color: var(--foreground) !important;
+}
+
+.markdown-theme-adaptive.markdown-body table tr {
+  background-color: transparent !important;
+  border-top: 1px solid var(--border) !important;
+}
+
+.markdown-theme-adaptive.markdown-body table tr:nth-child(2n) {
+  background-color: color-mix(in oklch, var(--surface-secondary) 65%, transparent) !important;
+}
+
+.markdown-theme-adaptive.markdown-body table th,
+.markdown-theme-adaptive.markdown-body table td,
+.markdown-theme-adaptive.markdown-body hr {
+  border-color: var(--border) !important;
+}
+
+.markdown-theme-adaptive.markdown-body blockquote {
+  border-left-color: var(--border) !important;
+}

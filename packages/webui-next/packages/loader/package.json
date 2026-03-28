@@ -1,0 +1,50 @@
+{
+  "name": "@karinjs/plugin-webui-next",
+  "version": "0.0.0",
+  "author": "ikenxuan、KarinJS",
+  "type": "module",
+  "description": "为 Karin v2 提供新的 WebUI",
+  "homepage": "https://github.com/KarinJS/karin",
+  "bugs": {
+    "url": "https://github.com/KarinJS/karin/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarinJS/karin.git"
+  },
+  "scripts": {
+    "build": "tsdown && pnpm --filter web run build",
+    "dev": "cross-env EBV_FILE=\"development.env\" tsx watch src/app.ts",
+    "pub": "npm publish --access public"
+  },
+  "main": "dist/index.js",
+  "dependencies": {
+    "@karinjs/types": "workspace:*",
+    "@types/connect-history-api-fallback": "^1.5.4",
+    "connect-history-api-fallback": "^2.0.0",
+    "http-proxy-middleware": "^3.0.5",
+    "web": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/lodash": "^4.17.16",
+    "@types/node": "^25.5.0",
+    "cross-env": "^10.1.00",
+    "eslint": "^10.1.0",
+    "neostandard": "^0.13.0",
+    "node-karin": "^1.15.1",
+    "tsdown": "^0.21.5",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.2"
+  },
+  "karin": {
+    "main": "src/index.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
+}

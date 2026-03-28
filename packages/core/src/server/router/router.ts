@@ -124,3 +124,40 @@ export const GET_PLUGIN_MARKET_LIST_ROUTER = '/plugin/market'
 
 /** @version 1.8.0 获取本地插件列表 用于插件索引页面渲染简约列表 */
 export const GET_LOCAL_PLUGIN_FRONTEND_LIST_ROUTER = '/plugin/local/frontend'
+
+/** 基本路由 */
+export const WEBUI2_BASE_ROUTER = '/api/v2'
+/** 2.0 WebUI - 登录 */
+export const WEBUI2_LOGIN_ROUTER = '/login'
+/** 2.0 WebUI - 刷新 Token */
+export const WEBUI2_REFRESH_TOKEN_ROUTER = '/refresh'
+/** 2.0 WebUI - 仪表盘趋势 */
+export const WEBUI2_DASHBOARD_TREND_ROUTER = '/dashboard/trend'
+/** 2.0 WebUI - 仪表盘实时流 */
+export const WEBUI2_DASHBOARD_REALTIME_STREAM_ROUTER = '/dashboard/realtime-stream'
+/** 2.0 WebUI - 日志流 */
+export const WEBUI2_LOGS_STREAM_ROUTER = '/logs/stream'
+/** 2.0 WebUI - 文件列表 */
+export const WEBUI2_FILES_LIST_ROUTER = '/files/list'
+/** 2.0 WebUI - 文件内容 */
+export const WEBUI2_FILES_CONTENT_ROUTER = '/files/content'
+/** 2.0 WebUI - 删除文件 */
+export const WEBUI2_FILES_DELETE_ROUTER = '/files/delete'
+/** 2.0 WebUI - 保存文件 */
+export const WEBUI2_FILES_SAVE_ROUTER = '/files/save'
+/** 2.0 WebUI - 获取目录大小 */
+export const WEBUI2_FILES_DIRECTORY_SIZE_ROUTER = '/files/directory-size'
+/** 2.0 WebUI - 计算选中项大小 */
+export const WEBUI2_FILES_SELECTION_SIZE_ROUTER = '/files/selection-size'
+/** 2.0 WebUI - 批量删除 */
+export const WEBUI2_FILES_DELETE_SELECTION_ROUTER = '/files/delete-selection'
+/** 2.0 WebUI - 重命名 */
+export const WEBUI2_FILES_RENAME_ROUTER = '/files/rename'
+/** 2.0 WebUI - 复制 */
+export const WEBUI2_FILES_COPY_ROUTER = '/files/copy'
+/** 2.0 WebUI - 粘贴 */
+export const WEBUI2_FILES_PASTE_ROUTER = '/files/paste'
+/** 2.0 WebUI - 插件商店列表 */
+export const WEBUI2_PLUGINS_STORE_LIST_ROUTER = '/plugins/store'
+/** 2.0 WebUI - 插件商店详情 */
+export const WEBUI2_PLUGINS_STORE_DETAIL_ROUTER = '/plugins/detail'

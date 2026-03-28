@@ -2,11 +2,11 @@ import fs from 'node:fs'
 import path from 'node:path'
 import express from 'express'
 import { ONLINE } from '@/env'
-import { router } from '../router'
+import { router, v2Router } from '../router'
 import { createServer } from 'node:http'
 import { rootRouter } from '../system/root'
 import getMimeType from '../utils/getMimeType'
-import { BASE_ROUTER } from '../router/router'
+import { BASE_ROUTER, WEBUI2_BASE_ROUTER } from '../router/router'
 import { createBrotliDecompress } from 'node:zlib'
 import { listeners } from '@/core/internal/listeners'
 
@@ -66,17 +66,17 @@ const web = (dir: typeof root) => {
     })
   })
 
-  listeners.once(ONLINE, () => {
-    setTimeout(() => {
-      /**
-       * 5秒后将所有根路径请求重定向到 /web
-       * 等5秒是因为插件可能也使用了部分路由
-       */
-      app.all('/{*splat}', (_, res) => {
-        res.redirect('/web')
-      })
-    }, 5000)
-  })
+  // listeners.once(ONLINE, () => {
+  //   setTimeout(() => {
+  //     /**
+  //      * 5秒后将所有根路径请求重定向到 /web
+  //      * 等5秒是因为插件可能也使用了部分路由
+  //      */
+  //     app.all('/{*splat}', (_, res) => {
+  //       res.redirect('/web')
+  //     })
+  //   }, 5000)
+  // })
 }
 
 /**
@@ -127,6 +127,7 @@ export const initExpress = async (
   await import('./ws')
 
   app.use(BASE_ROUTER, router)
+  app.use(WEBUI2_BASE_ROUTER, v2Router)
   app.get('/', rootRouter)
   web(dir)
   listen(port, host)

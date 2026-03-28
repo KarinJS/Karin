@@ -1,0 +1,20 @@
+{
+  "name": "@karinjs/types",
+  "version": "1.0.0",
+  "description": "Shared API contracts for Karin WebUI.",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "openapi": "tsx scripts/generate-openapi.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.32.1",
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "ts-json-schema-generator": "^2.9.0",
+    "tsx": "^4.21.0",
+    "typescript": "6.0.2"
+  }
+}

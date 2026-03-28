@@ -1,0 +1,45 @@
+name: Release and Publish # 发布和发布的工作流程名称
+on:
+  push:
+    branches:
+      - main # 仅当推送到 main 分支时触发
+permissions:
+  contents: write # 设置内容的权限为写
+  pull-requests: write # 设置拉取请求的权限为写
+  issues: write # 设置问题的权限为写
+jobs:
+  release-please:
+    # 设置工作流程运行环境为 Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      # 使用 release-please-action@v3 动作
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          # 设置发布类型为 Node.js
+          release-type: node
+      # 检出代码
+      - uses: actions/checkout@v4
+        if: ${{ steps.release.outputs.release_created }}
+      # 设置 Node.js 环境
+      - uses: actions/setup-node@v4
+        with:
+          # 设置 Node.js 版本
+          node-version: 20
+          # 设置 npm 注册表 URL
+          registry-url: https://registry.npmjs.org
+        if: ${{ steps.release.outputs.release_created }}
+      # 安装依赖
+      - run: npm install
+        if: ${{ steps.release.outputs.release_created }}
+      # 编译
+      - run: npm run build
+        if: ${{ steps.release.outputs.release_created }}
+      # 删除开发依赖
+      - run: npm pkg delete devDependencies
+        if: ${{ steps.release.outputs.release_created }}
+      # 发布带npm
+      - run: npm run pub
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        if: ${{ steps.release.outputs.release_created }}

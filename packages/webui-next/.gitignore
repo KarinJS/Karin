@@ -1,0 +1,18 @@
+# heroui-agents-md
+.heroui-docs/
+
+# IDE files
+.vscode/
+.idea/
+.trae/
+
+# Node modules
+node_modules/
+
+# AI/Skills/Agents files
+.codex/
+.kiro/
+.skills/
+.agents/
+.figma/
+skills-lock.json
