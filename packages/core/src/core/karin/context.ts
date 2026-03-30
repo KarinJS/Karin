@@ -34,6 +34,7 @@ export const ctx = async <T = Message> (e: Event, options?: {
         /** 移除监听器 */
         listeners.removeAllListeners(`ctx:${key}`)
         if (options?.throwOnTimeout === false) {
+          logger.debug(`接收下文事件超时，已取消下文监听: ${key}`)
           resolve(null as T)
         } else {
           reject(new Error(`接收下文事件超时，已取消下文监听: ${key}`))
