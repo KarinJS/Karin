@@ -17,6 +17,8 @@ export const ctx = async <T = Message> (e: Event, options?: {
   reply?: boolean
   /** 超时回复文本 默认为'操作超时已取消' */
   replyMsg?: string
+  /** 超时后是否抛出错误 默认为 `true` */
+  throwOnTimeout?: boolean
 }): Promise<T> => {
   const time = options?.time || 120
   const userId = options?.userId || e.userId || e.user_id
@@ -31,7 +33,11 @@ export const ctx = async <T = Message> (e: Event, options?: {
         if (options?.reply) e.reply(options.replyMsg || '操作超时已取消')
         /** 移除监听器 */
         listeners.removeAllListeners(`ctx:${key}`)
-        reject(new Error(`接收下文事件超时，已取消下文监听: ${key}`))
+        if (options?.throwOnTimeout === false) {
+          resolve(null as T)
+        } else {
+          reject(new Error(`接收下文事件超时，已取消下文监听: ${key}`))
+        }
         return true
       }
     }, time * 1000)
