@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.15.2](https://github.com/KarinJS/Karin/compare/core-v1.15.1...core-v1.15.2) (2026-03-30)
+
+
+### 🐛 Bug Fixes
+
+* 上下文(ctx)方法添加 `超时后是否抛出错误` 选项，默认 true ([#634](https://github.com/KarinJS/Karin/issues/634)) ([9f2ac76](https://github.com/KarinJS/Karin/commit/9f2ac7679770878495825e7d450fff31857a9c51))
+
 ## [1.15.1](https://github.com/KarinJS/Karin/compare/core-v1.15.0...core-v1.15.1) (2026-03-24)
 
 
