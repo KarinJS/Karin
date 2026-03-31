@@ -52,7 +52,7 @@ export type AdapterStandard = 'onebot11'
  * - `gocq-http`: https://docs.go-cqhttp.org/
  * - `napcat`: https://napneko.github.io/zh-CN/
  * - `oicq`: https://github.com/takayama-lily/oicq
- * - `llbot`: https://llonebot.github.io/zh-CN/
+ * - `llonebot`: https://llonebot.github.io/zh-CN/
  * - `conwechat`: https://justundertaker.github.io/ComWeChatBotClient/
  * - `lagrange`: https://lagrangedev.github.io/Lagrange.Doc/Lagrange.OneBot/
  * - `yogurt`: https://acidify.ntqqrev.org/
@@ -62,7 +62,7 @@ export type AdapterProtocol = 'qqbot'
   | 'gocq-http'
   | 'napcat'
   | 'oicq'
-  | 'llbot'
+  | 'llonebot'
   | 'conwechat'
   | 'lagrange'
   | 'console'
