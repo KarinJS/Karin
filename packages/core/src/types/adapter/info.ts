@@ -2,9 +2,14 @@
  * 适配器所属平台
  * - `qq`: QQ
  * - `wechat`: 微信
+ * - `wecom`: 企业微信
  * - `telegram`: Telegram
  * - `discord`: Discord
  * - `koko`: 开黑吧
+ * - `dingtalk`: 钉钉
+ * - `feishu`: 飞书
+ * - `slack`: Slack
+ * - `whatsapp`: WhatsApp
  * - `other`: 其他
  */
 export type AdapterPlatform = 'qq'
@@ -12,7 +17,13 @@ export type AdapterPlatform = 'qq'
   | 'telegram'
   | 'discord'
   | 'koko'
+  | 'dingtalk'
+  | 'feishu'
+  | 'slack'
+  | 'wecom'
+  | 'whatsapp'
   | 'other'
+  | (string & {})
 
 /**
  * 适配器所使用的标准接口协议
@@ -20,13 +31,18 @@ export type AdapterPlatform = 'qq'
  * - `onebot12`: OneBot v12 标准
  * - `oicq`: OICQ 标准
  * - `icqq`: OICQ fork 标准
+ * - `milky`: Milky 标准
+ * - `satori`: Satori 标准
  * - `other`: 其他标准
  */
 export type AdapterStandard = 'onebot11'
   | 'onebot12'
   | 'oicq'
   | 'icqq'
+  | 'milky'
+  | 'satori'
   | 'other'
+  | (string & {})
 
 /**
  * 适配器协议实现名称
@@ -36,21 +52,23 @@ export type AdapterStandard = 'onebot11'
  * - `gocq-http`: https://docs.go-cqhttp.org/
  * - `napcat`: https://napneko.github.io/zh-CN/
  * - `oicq`: https://github.com/takayama-lily/oicq
- * - `llonebot`: https://llonebot.github.io/zh-CN/
+ * - `llbot`: https://llonebot.github.io/zh-CN/
  * - `conwechat`: https://justundertaker.github.io/ComWeChatBotClient/
  * - `lagrange`: https://lagrangedev.github.io/Lagrange.Doc/Lagrange.OneBot/
+ * - `yogurt`: https://acidify.ntqqrev.org/
  */
-export type AdapterProtocol =
-  'qqbot'
+export type AdapterProtocol = 'qqbot'
   | 'icqq'
   | 'gocq-http'
   | 'napcat'
   | 'oicq'
-  | 'llonebot'
+  | 'llbot'
   | 'conwechat'
   | 'lagrange'
   | 'console'
+  | 'yogurt'
   | 'other'
+  | (string & {})
 
 /**
  * 适配器通信方式
@@ -58,13 +76,16 @@ export type AdapterProtocol =
  * - `webSocketServer`: WebSocket 服务端
  * - `webSocketClient`: WebSocket 客户端
  * - `grpc`: gRPC 通信
+ * - `sse`: Server-Sent Events 通信
  * - `other`: 其他通信方式
  */
 export type AdapterCommunication = 'http'
   | 'webSocketServer'
   | 'webSocketClient'
   | 'grpc'
+  | 'sse'
   | 'other'
+  | (string & {})
 
 /**
  * 适配器基本信息
