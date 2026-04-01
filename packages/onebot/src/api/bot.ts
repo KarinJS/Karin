@@ -279,14 +279,12 @@ export interface OneBotBotApi {
   [OneBotBotApiAction.getRkey]: {
     action: 'get_rkey',
     params: Record<string, never>,
-    response: {
-      rkeys: Array<{
-        type: 'private' | 'group',
-        rkey: string,
-        created_at: number,
-        ttl: number
-      }>
-    }
+    response: Array<{
+      type: 'private' | 'group',
+      rkey: string,
+      created_at: number,
+      ttl: number
+    }>
   }
 
   /** NapCat扩展: 获取NC版rkey */
