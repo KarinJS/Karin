@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.15.4](https://github.com/KarinJS/Karin/compare/core-v1.15.3...core-v1.15.4) (2026-04-01)
+
+
+### 🐛 Bug Fixes
+
+* getRkey returns undefined due to missing backward compatibility ([#639](https://github.com/KarinJS/Karin/issues/639)) ([87f1184](https://github.com/KarinJS/Karin/commit/87f1184e6c005e6dbe5283180b5a256378066967))
+
 ## [1.15.3](https://github.com/KarinJS/Karin/compare/core-v1.15.2...core-v1.15.3) (2026-04-01)
 
 
