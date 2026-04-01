@@ -284,7 +284,14 @@ export interface OneBotBotApi {
       rkey: string,
       created_at: number,
       ttl: number
-    }>
+    }> | {
+      rkeys: Array<{
+        type: 'private' | 'group',
+        rkey: string,
+        created_at: number,
+        ttl: number
+      }>
+    }
   }
 
   /** NapCat扩展: 获取NC版rkey */

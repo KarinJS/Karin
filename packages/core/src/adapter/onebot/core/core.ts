@@ -1285,6 +1285,6 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
    */
   async getRkey () {
     const result = await this._onebot.getRkey()
-    return result
+    return Array.isArray(result) ? result : result.rkeys
   }
 }
