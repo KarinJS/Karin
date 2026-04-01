@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.15.3](https://github.com/KarinJS/Karin/compare/core-v1.15.2...core-v1.15.3) (2026-04-01)
+
+
+### 🐛 Bug Fixes
+
+* 更新适配器平台、标准、协议和通信方式的类型定义，添加新选项 ([#636](https://github.com/KarinJS/Karin/issues/636)) ([295dc1a](https://github.com/KarinJS/Karin/commit/295dc1a6def09014815d38b7bac115fd0c39e62a))
+
 ## [1.15.2](https://github.com/KarinJS/Karin/compare/core-v1.15.1...core-v1.15.2) (2026-03-30)
 
 
