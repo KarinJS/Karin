@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.15.5](https://github.com/KarinJS/Karin/compare/core-v1.15.4...core-v1.15.5) (2026-04-25)
+
+
+### 🐛 Bug Fixes
+
+* 插件开发调用checkPkgUpdate判xxx插件未安装 ([#645](https://github.com/KarinJS/Karin/issues/645)) ([cb7dfbf](https://github.com/KarinJS/Karin/commit/cb7dfbfbe68a5b7ceda26ff829c606b908df7970))
+
 ## [1.15.4](https://github.com/KarinJS/Karin/compare/core-v1.15.3...core-v1.15.4) (2026-04-01)
 
 
