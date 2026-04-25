@@ -229,11 +229,17 @@ export const getPkgVersion = async (name: string): Promise<string> => {
    * 2) 优先从 `npm list` 输出中解析完整语义化版本
    * 3) 若未安装或解析失败，兜底从 package.json 的依赖约束中提取语义化版本
    */
-  const pkg = await getPkg()
+  let pkg: Package | undefined
+  try {
+    pkg = await getPkg()
+  } catch {
+    pkg = undefined
+  }
+
   // 如果查询的就是当前项目自身，直接返回版本号
   // npm list 不会将项目自身视为已安装的依赖，会返回 (empty)，因此必须提前处理
   if (pkg?.name === name) {
-    return pkg.version || ''
+    return pkg?.version || ''
   }
 
   const { stdout, error } = await exec(`npm list ${name} --depth=0`)
@@ -249,6 +255,12 @@ export const getPkgVersion = async (name: string): Promise<string> => {
     }
   }
 
+  /** 兜底：使用 package.json 中的版本约束，提取语义化版本 */
+  const spec = pkg?.dependencies?.[name] || pkg?.devDependencies?.[name] || pkg?.peerDependencies?.[name]
+  if (spec) {
+    return extractSemver(spec) || spec
+  }
+
   if (error) {
     const stack = error?.stack?.toString() || ''
     if (stack.includes('empty')) {
@@ -257,10 +269,7 @@ export const getPkgVersion = async (name: string): Promise<string> => {
     throw error
   }
 
-  /** 兜底：使用 package.json 中的版本约束，提取语义化版本 */
-  const spec = pkg?.dependencies?.[name] || pkg?.devDependencies?.[name] || pkg?.peerDependencies?.[name]
-  if (!spec) return ''
-  return extractSemver(spec) || spec
+  return ''
 }
 
 /**
