@@ -192,7 +192,8 @@
     "dotenv": "npm:@karinjs/dotenv@^1.1.2"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22",
+    "pnpm": ">=9"
   },
   "publishConfig": {
     "access": "public",

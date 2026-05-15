@@ -20,9 +20,15 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
+      # 先装 Node，让 pnpm/action-setup 的 run_install 跑在 Node 22 下
+      - name: 安装Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       # 安装pnpm
       - name: 配置pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
           version: 9
           run_install: true

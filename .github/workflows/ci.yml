@@ -1,0 +1,65 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (node ${{ matrix.node }}, pnpm ${{ matrix.pnpm }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22', '24', '25', '26']
+        pnpm: ['9', '10', '11']
+        exclude:
+          # 矩阵裁剪：非 LTS Node 只配最新 pnpm，控制总作业数。
+          # pnpm 9 作为 baseline 跟 Node 22 / 24 配对足够。
+          - node: '25'
+            pnpm: '9'
+          - node: '25'
+            pnpm: '10'
+          - node: '26'
+            pnpm: '9'
+          - node: '26'
+            pnpm: '10'
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 安装pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ matrix.pnpm }}
+
+      - name: 安装Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+
+      - name: 安装依赖
+        # 矩阵跨 pnpm 9/10/11，锁文件需要可重写。
+        # --ignore-scripts: pnpm 11 默认对未批准的构建脚本报 ERR_PNPM_IGNORED_BUILDS，
+        # 单测路径用不到 native 模块（sqlite3/node-pty 之类），直接跳过 postinstall。
+        run: pnpm install --no-frozen-lockfile --ignore-scripts
+
+      - name: 单元测试
+        run: pnpm test
+
+      - name: 构建 create-karin
+        run: pnpm --filter create-karin run build
+
+      - name: create-karin 烟测 (--help)
+        # 验证打包后的 dist/index.mjs 在当前 Node 版本下能加载所有依赖
+        # (ora / prompts / kolorist / strip-json-comments) 并正常退出。
+        # 用于在合并前挡住 import 级别的 Node 兼容性回归。
+        run: node packages/create-karin/dist/index.mjs --help
