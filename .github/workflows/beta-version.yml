@@ -23,17 +23,16 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
           repository: ${{ github.event.pull_request.head.repo.full_name || '' }}
 
-      - name: 安装pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-          run_install: true
-
       - name: 安装Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
+
+      - name: 安装pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: true
 
       - name: 获取当前提交哈希
         run: |

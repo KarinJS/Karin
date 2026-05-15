@@ -19,11 +19,16 @@ jobs:
       fail-fast: false
       matrix:
         node: ['22', '24', '25', '26']
-        pnpm: ['10', '11']
+        pnpm: ['9', '10', '11']
         exclude:
-          # Trim matrix: only pair non-LTS Node versions with the newest pnpm.
+          # 矩阵裁剪：非 LTS Node 只配最新 pnpm，控制总作业数。
+          # pnpm 9 作为 baseline 跟 Node 22 / 24 配对足够。
+          - node: '25'
+            pnpm: '9'
           - node: '25'
             pnpm: '10'
+          - node: '26'
+            pnpm: '9'
           - node: '26'
             pnpm: '10'
     steps:
@@ -42,7 +47,8 @@ jobs:
           cache: pnpm
 
       - name: 安装依赖
-        run: pnpm install --frozen-lockfile=false
+        # 矩阵跨 pnpm 9/10/11，锁文件需要可重写
+        run: pnpm install --no-frozen-lockfile
 
       - name: 单元测试
         run: pnpm test
