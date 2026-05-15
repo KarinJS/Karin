@@ -18,10 +18,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ['22', '24', '26']
+        node: ['22', '24', '25', '26']
         pnpm: ['10', '11']
         exclude:
-          # node 26 is only paired with the newest pnpm to keep the matrix small
+          # Trim matrix: only pair non-LTS Node versions with the newest pnpm.
+          - node: '25'
+            pnpm: '10'
           - node: '26'
             pnpm: '10'
     steps:
@@ -44,3 +46,12 @@ jobs:
 
       - name: 单元测试
         run: pnpm test
+
+      - name: 构建 create-karin
+        run: pnpm --filter create-karin run build
+
+      - name: create-karin 烟测 (--help)
+        # 验证打包后的 dist/index.mjs 在当前 Node 版本下能加载所有依赖
+        # (ora / prompts / kolorist / strip-json-comments) 并正常退出。
+        # 用于在合并前挡住 import 级别的 Node 兼容性回归。
+        run: node packages/create-karin/dist/index.mjs --help
