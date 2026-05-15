@@ -47,8 +47,10 @@ jobs:
           cache: pnpm
 
       - name: 安装依赖
-        # 矩阵跨 pnpm 9/10/11，锁文件需要可重写
-        run: pnpm install --no-frozen-lockfile
+        # 矩阵跨 pnpm 9/10/11，锁文件需要可重写。
+        # --ignore-scripts: pnpm 11 默认对未批准的构建脚本报 ERR_PNPM_IGNORED_BUILDS，
+        # 单测路径用不到 native 模块（sqlite3/node-pty 之类），直接跳过 postinstall。
+        run: pnpm install --no-frozen-lockfile --ignore-scripts
 
       - name: 单元测试
         run: pnpm test
