@@ -225,18 +225,28 @@ export const checkPkgUpdate = async (
 export const getPkgVersion = async (name: string): Promise<string> => {
   /**
    * 获取指定包的本地版本号：
-   * 1) 优先从 `npm list` 输出中解析完整语义化版本
-   * 2) 若未安装或解析失败，兜底从 package.json 中提取语义化版本
+   * 1) 若查询的就是当前项目自身，直接读取 package.json 的 version
+   * 2) 优先从 `npm list` 输出中解析完整语义化版本
+   * 3) 若未安装或解析失败，兜底从 package.json 的依赖约束中提取语义化版本
    */
+  let pkg: Package | undefined
+  try {
+    pkg = await getPkg()
+  } catch {
+    pkg = undefined
+  }
+
+  // 如果查询的就是当前项目自身，直接返回版本号
+  // npm list 不会将项目自身视为已安装的依赖，会返回 (empty)，因此必须提前处理
+  if (pkg?.name === name) {
+    return pkg?.version || ''
+  }
+
   const { stdout, error } = await exec(`npm list ${name} --depth=0`)
   if (stdout) {
     const data = stdout.toString()
-    // node-karin@1.4.1 D:\\Github\\Karin-dev\\packages\\core\n└── @karinjs/plugin-basic@ extraneous
-    if (data.includes('empty') || data.includes('extraneous')) {
-      throw new Error(`获取失败，${name} 未安装`)
-    }
-
     // 精确从 npm list 中抓取 <name>@<version>，version 支持完整语义化格式
+    // extraneous/empty 仅代表 npm 依赖树中的状态，只要输出中有版本号就应提取
     const esc = escapeRegex(name)
     const reg = new RegExp(`${esc}@([0-9A-Za-z-.+]+)`, 'gm')
     const match = reg.exec(data)
@@ -245,19 +255,21 @@ export const getPkgVersion = async (name: string): Promise<string> => {
     }
   }
 
+  /** 兜底：使用 package.json 中的版本约束，提取语义化版本 */
+  const spec = pkg?.dependencies?.[name] || pkg?.devDependencies?.[name] || pkg?.peerDependencies?.[name]
+  if (spec) {
+    return extractSemver(spec) || spec
+  }
+
   if (error) {
     const stack = error?.stack?.toString() || ''
-    if (stack.includes('empty') || stack.includes('extraneous')) {
+    if (stack.includes('empty')) {
       throw new Error(`获取失败，${name} 未安装`)
     }
     throw error
   }
 
-  /** 兜底：使用 package.json 中的版本约束，提取语义化版本 */
-  const pkg = await getPkg()
-  const spec = pkg?.dependencies?.[name] || pkg?.devDependencies?.[name] || pkg?.peerDependencies?.[name]
-  if (!spec) return ''
-  return extractSemver(spec) || spec
+  return ''
 }
 
 /**

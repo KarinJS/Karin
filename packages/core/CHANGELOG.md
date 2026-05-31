@@ -1,5 +1,33 @@
 # 更新日志
 
+## [1.15.5](https://github.com/KarinJS/Karin/compare/core-v1.15.4...core-v1.15.5) (2026-04-25)
+
+
+### 🐛 Bug Fixes
+
+* 插件开发调用checkPkgUpdate判xxx插件未安装 ([#645](https://github.com/KarinJS/Karin/issues/645)) ([cb7dfbf](https://github.com/KarinJS/Karin/commit/cb7dfbfbe68a5b7ceda26ff829c606b908df7970))
+
+## [1.15.4](https://github.com/KarinJS/Karin/compare/core-v1.15.3...core-v1.15.4) (2026-04-01)
+
+
+### 🐛 Bug Fixes
+
+* getRkey returns undefined due to missing backward compatibility ([#639](https://github.com/KarinJS/Karin/issues/639)) ([87f1184](https://github.com/KarinJS/Karin/commit/87f1184e6c005e6dbe5283180b5a256378066967))
+
+## [1.15.3](https://github.com/KarinJS/Karin/compare/core-v1.15.2...core-v1.15.3) (2026-04-01)
+
+
+### 🐛 Bug Fixes
+
+* 更新适配器平台、标准、协议和通信方式的类型定义，添加新选项 ([#636](https://github.com/KarinJS/Karin/issues/636)) ([295dc1a](https://github.com/KarinJS/Karin/commit/295dc1a6def09014815d38b7bac115fd0c39e62a))
+
+## [1.15.2](https://github.com/KarinJS/Karin/compare/core-v1.15.1...core-v1.15.2) (2026-03-30)
+
+
+### 🐛 Bug Fixes
+
+* 上下文(ctx)方法添加 `超时后是否抛出错误` 选项，默认 true ([#634](https://github.com/KarinJS/Karin/issues/634)) ([9f2ac76](https://github.com/KarinJS/Karin/commit/9f2ac7679770878495825e7d450fff31857a9c51))
+
 ## [1.15.1](https://github.com/KarinJS/Karin/compare/core-v1.15.0...core-v1.15.1) (2026-03-24)
 
 

@@ -17,9 +17,11 @@ export const ctx = async <T = Message> (e: Event, options?: {
   reply?: boolean
   /** 超时回复文本 默认为'操作超时已取消' */
   replyMsg?: string
-}): Promise<T> => {
-  const time = options?.time || 120
-  const userId = options?.userId || e.userId || e.user_id
+  /** 超时后是否抛出错误 默认为 true */
+  throwOnTimeout?: boolean
+}): Promise<T | null> => {
+  const { time = 120, userId: optionUserId, reply, replyMsg, throwOnTimeout = true } = options ?? {}
+  const userId = optionUserId || e.userId || e.user_id
   const key = e.contact.subPeer ? `${e.contact.peer}:${e.contact.subPeer}:${userId}` : `${e.contact.peer}:${userId}`
   context.set(key, e)
 
@@ -28,10 +30,15 @@ export const ctx = async <T = Message> (e: Event, options?: {
       const data = context.get(key)
       if (data?.eventId === e.eventId) {
         context.delete(key)
-        if (options?.reply) e.reply(options.replyMsg || '操作超时已取消')
+        if (reply) e.reply(replyMsg || '操作超时已取消')
         /** 移除监听器 */
         listeners.removeAllListeners(`ctx:${key}`)
-        reject(new Error(`接收下文事件超时，已取消下文监听: ${key}`))
+        if (throwOnTimeout) {
+          reject(new Error(`接收下文事件超时，已取消下文监听: ${key}`))
+        } else {
+          logger.debug(`接收下文事件超时，已取消下文监听: ${key}`)
+          resolve(null)
+        }
         return true
       }
     }, time * 1000)

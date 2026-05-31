@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import lodash from 'lodash'
-import YAML, { isMap, isSeq, isPair } from 'yaml'
+import { Document, parse, parseDocument, stringify, YAMLMap, YAMLSeq, isMap, isSeq, isPair } from 'yaml'
 
 export type YamlValue = string | boolean | number | object | any[]
 export type YamlComment = Record<string, string>
@@ -38,11 +38,11 @@ type Save = {
 /** YAML 编辑器 */
 export class YamlEditor {
   filePath: string
-  doc: YAML.Document
-  document: YAML.Document
+  doc: Document
+  document: Document
   constructor (file: string) {
     this.filePath = file
-    const data = YAML.parseDocument(fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : file)
+    const data = parseDocument(fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : file)
     this.doc = data
     this.document = data
   }
@@ -125,9 +125,9 @@ export class YamlEditor {
       const _path = typeof path === 'string' ? (isSplit ? path.split('.') : [path]) : path
       let current = this.document.getIn(_path)
       if (!current) {
-        current = new YAML.YAMLSeq()
+        current = new YAMLSeq()
         this.document.setIn(_path, current)
-      } else if (!(current instanceof YAML.YAMLSeq)) {
+      } else if (!(current instanceof YAMLSeq)) {
         logger.error('[YamlEditor] 指定的路径不是数组')
         return false
       } else {
@@ -155,7 +155,7 @@ export class YamlEditor {
         logger.error('[YamlEditor] 指定的路径不存在')
         return false
       }
-      if (!(current instanceof YAML.YAMLSeq)) {
+      if (!(current instanceof YAMLSeq)) {
         logger.error('[YamlEditor] 指定的路径不是数组')
         return false
       }
@@ -201,10 +201,10 @@ export class YamlEditor {
       if (!current) return false
 
       /** 检查当前节点是否包含指定的值 */
-      if (current instanceof YAML.YAMLSeq) {
+      if (current instanceof YAMLSeq) {
         /** 如果是序列，遍历序列查找值 */
         return current.items.some(item => lodash.isEqual(item.toJSON(), value))
-      } else if (current instanceof YAML.YAMLMap) {
+      } else if (current instanceof YAMLMap) {
         /** 如果是映射，检查每个值 */
         return Array.from((current as any).values()).some((v: any) => lodash.isEqual(v.toJSON(), value))
       } else {
@@ -233,9 +233,9 @@ export class YamlEditor {
    */
   pusharr (value: YamlValue): boolean {
     try {
-      if (!(this.document.contents instanceof YAML.YAMLSeq)) {
+      if (!(this.document.contents instanceof YAMLSeq)) {
         // 如果根节点不是数组，则将其转换为数组
-        this.document.contents = new YAML.YAMLSeq()
+        this.document.contents = new YAMLSeq()
         logger.debug('[YamlEditor] 根节点已转换为数组')
       }
       this.document.contents.add(value)
@@ -253,7 +253,7 @@ export class YamlEditor {
    */
   delarr (index: number): boolean {
     try {
-      if (!(this.document.contents instanceof YAML.YAMLSeq)) {
+      if (!(this.document.contents instanceof YAMLSeq)) {
         throw new Error('[YamlEditor] 根节点不是数组')
       }
       if (index < 0 || index >= this.document.contents.items.length) {
@@ -386,7 +386,7 @@ interface ReadFunction {
  * @returns 解析后的数据
  */
 export const read: ReadFunction = (path: string) => {
-  const data = YAML.parse(fs.readFileSync(path, 'utf-8'))
+  const data = parse(fs.readFileSync(path, 'utf-8'))
   /**
    * 保存数据并写入注释
    * @param options json路径或注释配置对象
@@ -411,7 +411,7 @@ export const read: ReadFunction = (path: string) => {
  */
 export const write = (path: string, value: any) => {
   try {
-    fs.writeFileSync(path, YAML.stringify(value))
+    fs.writeFileSync(path, stringify(value))
     return true
   } catch {
     return false
@@ -426,11 +426,11 @@ export const write = (path: string, value: any) => {
  */
 export const save: Save = (path: string, value: Record<string, any>, options?: string | YamlComment) => {
   if (!options) {
-    fs.writeFileSync(path, YAML.stringify(value))
+    fs.writeFileSync(path, stringify(value))
     return
   }
 
-  const editor = new YamlEditor(YAML.stringify(value))
+  const editor = new YamlEditor(stringify(value))
   const comment = typeof options === 'string'
     ? JSON.parse(fs.readFileSync(options, 'utf8')) as YamlComment
     : options
@@ -476,7 +476,16 @@ export const applyComments = (editor: YamlEditor, comments: YamlComment) => {
 }
 
 /** YAML 工具 */
-export const yaml = Object.assign(YAML, {
+export const yaml = {
+  parse,
+  stringify,
+  parseDocument,
+  Document,
+  YAMLSeq,
+  YAMLMap,
+  isMap,
+  isSeq,
+  isPair,
   /** 读取并解析 YAML 文件 */
   read,
   /** 保存数据并写入注释 */
@@ -485,4 +494,4 @@ export const yaml = Object.assign(YAML, {
   comment,
   /** 批量添加注释 */
   applyComments,
-})
+}

@@ -279,7 +279,12 @@ export interface OneBotBotApi {
   [OneBotBotApiAction.getRkey]: {
     action: 'get_rkey',
     params: Record<string, never>,
-    response: {
+    response: Array<{
+      type: 'private' | 'group',
+      rkey: string,
+      created_at: number,
+      ttl: number
+    }> | {
       rkeys: Array<{
         type: 'private' | 'group',
         rkey: string,
