@@ -25,13 +25,14 @@
     "app": "node dist/index.mjs",
     "cp": "node index.mjs",
     "dev": "tsx src/index.ts",
-    "build": "pnpm cp && tsc && vite build --configLoader native && tsdown",
-    "build:core": "pnpm cp && tsc && vite build --mode core --configLoader native && tsdown --config tsdown.core.config.ts",
-    "build:dev": "pnpm cp && tsc && vite build --mode development --configLoader native && tsdown"
+    "build": "pnpm cp && tsc && tsdown",
+    "build:core": "pnpm cp && tsc && tsdown --config tsdown.core.config.ts",
+    "build:dev": "pnpm cp && tsc && tsdown --config tsdown.dev.config.ts"
   },
   "devDependencies": {
     "commander": "^13.1.0",
-    "tsdown": "^0.22.2"
+    "tsdown": "^0.22.2",
+    "yaml": "2.7.0"
   },
   "engines": {
     "node": ">=18"
@@ -40,8 +41,5 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
-  "time": "2025-04-10T19:55:45.123Z",
-  "dependencies": {
-    "yaml": "2.7.0"
-  }
+  "time": "2025-04-10T19:55:45.123Z"
 }

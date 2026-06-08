@@ -70,10 +70,6 @@ importers:
   packages/cli: {}
 
   packages/cli-Internal:
-    dependencies:
-      yaml:
-        specifier: 2.7.0
-        version: 2.7.0
     devDependencies:
       commander:
         specifier: ^13.1.0
@@ -81,6 +77,9 @@ importers:
       tsdown:
         specifier: ^0.22.2
         version: 0.22.2(tsx@4.19.3)(typescript@5.8.2)
+      yaml:
+        specifier: 2.7.0
+        version: 2.7.0
 
   packages/core:
     dependencies:

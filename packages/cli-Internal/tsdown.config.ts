@@ -2,9 +2,10 @@ import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: ['src/index.ts'],
-  format: ['esm'],
+  format: ['esm', 'cjs'],
+  target: 'node18',
+  platform: 'node',
   dts: {
-    emitDtsOnly: true,
     build: false,
     compilerOptions: {
       declarationMap: false,
@@ -12,11 +13,16 @@ export default defineConfig({
     },
   },
   sourcemap: false,
+  minify: false,
   outDir: 'dist',
-  clean: false,
-  outExtensions () {
+  clean: true,
+  deps: {
+    alwaysBundle: ['commander', 'yaml'],
+    onlyBundle: false,
+  },
+  outExtensions ({ format }) {
     return {
-      js: '.mjs',
+      js: format === 'cjs' ? '.cjs' : '.mjs',
       dts: '.d.ts',
     }
   },
