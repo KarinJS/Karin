@@ -3,6 +3,10 @@
   "version": "0.12.24",
   "main": "",
   "types": "index.d.ts",
+  "files": [
+    "index.d.ts",
+    "LICENSE"
+  ],
   "scripts": {
     "pub": "npm publish --access public"
   },
@@ -11,6 +15,7 @@
     "registry": "https://registry.npmjs.org",
     "files": [
       "index.d.ts",
+      "LICENSE",
       "package.json"
     ]
   }

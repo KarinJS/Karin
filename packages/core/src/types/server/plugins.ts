@@ -108,6 +108,8 @@ export interface PluginAdminListResponse {
     customComponent: boolean
     /** 是否存在默认组件配置函数 一般用于插件的配置文件管理 */
     defaultComponent: boolean
+    /** 是否存在自定义配置页面 */
+    page: boolean
     /** 插件图标 */
     icon: Icon
   }

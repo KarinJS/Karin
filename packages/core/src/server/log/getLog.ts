@@ -116,7 +116,7 @@ export const getLogRouter: RequestHandler = async (req, res) => {
         })
 
         /** 监听数据流 */
-        stream.on('data', (data: string) => {
+        stream.on('data', (data) => {
           const lines = data.toString().split('\n')
           for (const line of lines) {
             if (line) {

@@ -2,9 +2,8 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
-    "baseUrl": ".",
     "declaration": true,
-    "declarationMap": true,
+    "declarationMap": false,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
@@ -17,7 +16,7 @@
     "noUnusedParameters": true,
     "resolveJsonModule": true,
     "skipLibCheck": false,
-    "sourceMap": true,
+    "sourceMap": false,
     "strict": true,
     "target": "ES2022",
     "types": [

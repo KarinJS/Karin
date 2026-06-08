@@ -6,8 +6,12 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "type": "module",
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
   "scripts": {
-    "build": "tsc && tsup"
+    "build": "tsc && tsdown"
   },
   "keywords": [],
   "author": "shijin",
@@ -17,7 +21,7 @@
     "@types/ws": "^8.18.1",
     "eslint": "^9.29.0",
     "neostandard": "^0.12.1",
-    "tsup": "^8.5.0",
+    "tsdown": "^0.22.2",
     "ws": "^8.18.2"
   },
   "peerDependencies": {

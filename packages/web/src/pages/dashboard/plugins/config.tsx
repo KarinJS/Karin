@@ -114,5 +114,11 @@ export default function PluginConfigPage () {
     )
   }
 
-  return <DashboardPage options={config.options} info={{ ...config.info, id: config.info.id || name }} key={config.info.id || name} />
+  return (
+    <DashboardPage
+      {...config}
+      info={{ ...config.info, id: config.info.id || name }}
+      key={config.info.id || name}
+    />
+  )
 }

@@ -7,10 +7,9 @@
     "outDir": "./lib",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
       ],
     },
     "rootDir": "./src",

@@ -17,7 +17,7 @@
     "dev": "cross-env EBV_FILE=\"development.env\" node index.mjs",
     "pub": "npm publish --access public"
   },
-  "main": "lib/index.js",
+  "main": "index.js",
   "devDependencies": {
     "@types/express": "^5.0.1",
     "@types/lodash": "^4.17.16",
@@ -42,10 +42,12 @@
     ]
   },
   "files": [
-    "/lib/**/*.js",
+    "index.js",
+    "apps",
     "/config/*.json",
     "resources",
-    "!lib/app.js"
+    "utils",
+    "LICENSE"
   ],
   "publishConfig": {
     "access": "public",

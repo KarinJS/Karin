@@ -13,15 +13,15 @@ export default defineConfig({
     },
     emptyOutDir: true,
     outDir: 'dist',
-    rollupOptions: {
+    sourcemap: false,
+    rolldownOptions: {
       external: [
         ...builtinModules,
         ...builtinModules.map((mod) => `node:${mod}`),
       ],
       output: {
-        inlineDynamicImports: true,
+        codeSplitting: false,
       },
-      cache: false,
     },
     minify: false,
     commonjsOptions: {

@@ -20,7 +20,8 @@
   },
   "files": [
     "index.js",
-    "REAME.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "pub": "npm publish --access public"

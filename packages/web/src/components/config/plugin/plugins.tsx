@@ -12,17 +12,22 @@ import { RenderComponent } from './render'
 import { FormProvider, useForm } from 'react-hook-form'
 import { ConfigDetailModal, BUTTON_COMMON_STYLES } from './printConfig'
 import { DefaultValues, getComponentResult, getComponentValue } from './values'
+import { PluginWebConfigPage } from './webPage'
 
-import type { GetConfigResponse } from 'node-karin'
+import type { GetConfigResponse, WebConfigPage } from 'node-karin'
 import { IoSave } from 'react-icons/io5'
 import clsx from 'clsx'
 import { useLiquidGlassCard, useLiquidGlassButton } from '@/hooks/useLiquidGlass'
+
+type DashboardPageProps = GetConfigResponse & {
+  page?: WebConfigPage
+}
 
 /**
  * 动态渲染插件配置组件
  * @param props - 组件属性
  */
-export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) => {
+export const DashboardPage: React.FC<DashboardPageProps> = ({ options, info, page }) => {
   const [showJsonModal, setShowJsonModal] = React.useState(false)
   const [isPluginModalOpen, setIsPluginModalOpen] = React.useState(false)
   const methods = useForm({ defaultValues: getComponentValue(options) })
@@ -85,6 +90,10 @@ export const DashboardPage: React.FC<GetConfigResponse> = ({ options, info }) =>
     scale: 20,
     transparency: 0.3,
   })
+
+  if (page) {
+    return <PluginWebConfigPage page={page} info={info} />
+  }
 
   return (
     <div className='space-y-4' key={info.id}>

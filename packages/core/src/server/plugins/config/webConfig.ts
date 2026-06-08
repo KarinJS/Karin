@@ -31,6 +31,7 @@ export const defaultWebConfig = (
   path?: string,
   customComponent?: boolean,
   defaultComponent?: boolean,
+  page?: boolean,
   icon?: Icon
 ): PluginAdminListResponse['webConfig'] => {
   return {
@@ -38,6 +39,7 @@ export const defaultWebConfig = (
     path: path || '',
     customComponent: customComponent ?? false,
     defaultComponent: defaultComponent ?? false,
+    page: page ?? false,
     icon: icon || {
       color: '',
       name: 'star',
@@ -79,7 +81,8 @@ const getWebConfigMore = async (filepath: string) => {
       filepath,
       typeof web?.customComponent === 'function',
       typeof web?.components === 'function',
-      web?.icon
+      typeof web?.page === 'function' || typeof web?.page?.url === 'string',
+      web?.info?.icon || web?.icon
     )
   } catch (error) {
     logger.error(new Error('获取插件web.config文件失败', { cause: error }))
