@@ -96,6 +96,9 @@ importers:
       chokidar:
         specifier: 4.0.3
         version: 4.0.3
+      dotenv:
+        specifier: npm:@karinjs/dotenv@^1.1.2
+        version: '@karinjs/dotenv@1.1.2'
       express:
         specifier: npm:@karinjs/express@1.0.3
         version: '@karinjs/express@1.0.3'
@@ -151,9 +154,6 @@ importers:
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
-      dotenv:
-        specifier: npm:@karinjs/dotenv@^1.1.2
-        version: '@karinjs/dotenv@1.1.2'
       tsdown:
         specifier: ^0.22.2
         version: 0.22.2(tsx@4.19.3)(typescript@5.8.2)

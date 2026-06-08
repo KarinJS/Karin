@@ -169,6 +169,7 @@
     "axios": "npm:@karinjs/axios@1.13.2",
     "chalk": "5.6.2",
     "chokidar": "4.0.3",
+    "dotenv": "npm:@karinjs/dotenv@^1.1.2",
     "express": "npm:@karinjs/express@1.0.3",
     "lodash": "npm:@karinjs/lodash@1.1.1",
     "log4js": "npm:@karinjs/log4js@1.5.6",
@@ -189,7 +190,6 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/lodash": "^4.17.16",
     "cross-env": "^7.0.3",
-    "dotenv": "npm:@karinjs/dotenv@^1.1.2",
     "tsdown": "^0.22.2"
   },
   "engines": {
