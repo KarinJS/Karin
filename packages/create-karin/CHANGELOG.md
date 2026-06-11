@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/KarinJS/Karin/compare/create-karin-v1.3.1...create-karin-v1.3.2) (2026-06-11)
+
+
+### 🐛 Bug Fixes
+
+* ci ([#659](https://github.com/KarinJS/Karin/issues/659)) ([f3f169f](https://github.com/KarinJS/Karin/commit/f3f169fa896427f70e4dbaaaa580598ca76c8dd3))
+
 ## [1.3.1](https://github.com/KarinJS/Karin/compare/create-karin-v1.3.0...create-karin-v1.3.1) (2026-06-11)
 
 
