@@ -189,8 +189,7 @@
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/lodash": "^4.17.16",
-    "cross-env": "^7.0.3",
-    "tsdown": "^0.22.2"
+    "cross-env": "^7.0.3"
   },
   "engines": {
     "node": ">=18"
@@ -199,5 +198,5 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
-  "time": "2025-10-08T06:35:20.005Z"
+  "time": "2026-06-11T07:00:35.219Z"
 }

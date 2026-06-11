@@ -40,7 +40,6 @@
     "@types/strip-json-comments": "^3.0.0",
     "ora": "^8.2.0",
     "strip-json-comments": "^5.0.1",
-    "tsdown": "^0.22.2",
     "typescript": "^5.3.3"
   },
   "engines": {

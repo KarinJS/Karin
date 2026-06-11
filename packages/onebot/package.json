@@ -21,7 +21,6 @@
     "@types/ws": "^8.18.1",
     "eslint": "^9.29.0",
     "neostandard": "^0.12.1",
-    "tsdown": "^0.22.2",
     "ws": "^8.18.2"
   },
   "peerDependencies": {
