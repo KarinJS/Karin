@@ -1,5 +1,13 @@
 import { exec as execCmd, execSync as execSyncCmd } from 'node:child_process'
 
+import type {
+  ExecException,
+  ExecOptionsWithStringEncoding,
+  ExecSyncOptionsWithStringEncoding,
+} from 'node:child_process'
+
+type ExecResult = { status: boolean; error: ExecException | Error | null; stdout: string; stderr: string }
+
 /**
  * 执行命令
  * @param cmd - 命令
@@ -7,13 +15,19 @@ import { exec as execCmd, execSync as execSyncCmd } from 'node:child_process'
  */
 const execSync = (
   cmd: string,
-  options: import('node:child_process').ExecOptions = {}
-): { status: boolean; error: Error | null; stdout: string; stderr: string } => {
+  options: Partial<ExecSyncOptionsWithStringEncoding> = {}
+): ExecResult => {
   try {
-    const result = execSyncCmd(cmd, options)
-    return { status: true, error: null, stdout: result.toString(), stderr: '' }
+    const result = execSyncCmd(cmd, { encoding: 'utf8', ...options })
+    return { status: true, error: null, stdout: result, stderr: '' }
   } catch (error) {
-    return { status: false, error: error as Error, stdout: '', stderr: '' }
+    const err = error as any
+    return {
+      status: false,
+      error: err,
+      stdout: err.stdout || '',
+      stderr: err.stderr || '',
+    }
   }
 }
 
@@ -24,8 +38,8 @@ const execSync = (
  */
 const exec = (
   cmd: string,
-  options: import('node:child_process').ExecOptions = {}
-): Promise<{ status: boolean; error: Error | null; stdout: string; stderr: string }> => {
+  options: ExecOptionsWithStringEncoding = {}
+): Promise<ExecResult> => {
   return new Promise(resolve => {
     execCmd(cmd, options, (error, stdout, stderr) => {
       const status = !error

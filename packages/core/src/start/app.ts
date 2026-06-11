@@ -7,7 +7,8 @@ let isStart = false;
 (async () => {
   if (isStart) return
   isStart = true
-  const index = import.meta.url.includes('.ts') ? '../index.ts' : '../index.mjs'
+  const entry = import.meta.url.includes('.ts') ? '../index.ts' : '../index.mjs'
+  const index = new URL(entry, import.meta.url).href
   const { start } = await import(index)
   start()
 })()

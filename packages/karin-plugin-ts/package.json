@@ -53,7 +53,8 @@
     "/lib/**/*.d.ts",
     "/config/*.json",
     "resources",
-    "!lib/app.js"
+    "!lib/app.js",
+    "LICENSE"
   ],
   "publishConfig": {
     "access": "public",

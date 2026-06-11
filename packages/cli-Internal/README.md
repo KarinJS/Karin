@@ -58,4 +58,4 @@
 
 - `app`: `node dist/index.mjs` (通常用于测试生产环境构建的启动)
 - `dev`: `tsx src/index.ts` (用于本包的开发，使用 tsx 实时编译和运行 TypeScript)
-- `build`: `pnpm cp && tsc && vite build && tsup` (构建本包，用于发布)
+- `build`: `pnpm cp && tsc && tsdown` (构建本包，用于发布)

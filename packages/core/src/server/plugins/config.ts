@@ -2,14 +2,14 @@ import fs from 'node:fs'
 import path from 'node:path'
 import util from 'node:util'
 import { isDev, isTs } from '@/env'
-import { pathToFileURL } from 'node:url'
+import { URL, pathToFileURL } from 'node:url'
 import { requireFileSync } from '@/utils/fs/require'
 import { createServerErrorResponse, createSuccessResponse } from '@/server/utils/response'
 
 import type { Apps } from '@/types/plugin'
 import type { RequestHandler } from 'express'
 import type { PkgData } from '@/utils/fs/pkg'
-import type { DefineConfig, GetConfigResponse } from '@/types/server/local'
+import type { DefineConfig, GetConfigResponse, WebConfigPage } from '@/types/server/local'
 import { getPlugins } from '@/plugin/system/list'
 
 /**
@@ -243,6 +243,54 @@ export const normalizeAuthor = (author: DefineConfig['info']['author']) => {
 }
 
 /**
+ * 解析自定义配置页面
+ * @param config 插件web配置
+ */
+const resolveConfigPage = async (config: DefineConfig): Promise<WebConfigPage | undefined> => {
+  if (!('page' in config) || !config.page) return undefined
+
+  // @see https://github.com/KarinJS/Karin/pull/654#discussion_r3374184645
+  // const result = typeof config.page === 'function'
+  //   ? config.page()
+  //   : config.page
+  // const page = util.types.isPromise(result) ? await result : result
+  const page = await (typeof config.page === 'function' ? config.page() : config.page)
+
+  if (!page || typeof page.url !== 'string' || !page.url.trim()) {
+    throw new Error('插件自定义配置页面缺少有效的 url')
+  }
+
+  return {
+    ...page,
+    url: normalizeConfigPageUrl(page.url),
+  }
+}
+
+/**
+ * 标准化自定义配置页面地址。
+ * @param rawUrl 页面地址
+ * @returns 标准化后的页面地址
+ */
+const normalizeConfigPageUrl = (rawUrl: string) => {
+  const url = rawUrl.trim()
+
+  if (url.startsWith('/') && !url.startsWith('//')) {
+    return url
+  }
+
+  try {
+    const parsed = new URL(url)
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return parsed.toString()
+    }
+  } catch {
+    // ignore
+  }
+
+  throw new Error('插件自定义配置页面 url 仅支持以 / 开头的同源路径或 http(s) 外部地址')
+}
+
+/**
  * 获取插件配置 不存在则返回null
  * @param req 请求
  * @param res 响应
@@ -266,26 +314,35 @@ export const pluginGetConfig: RequestHandler = async (req, res) => {
     return createServerErrorResponse(res, '参数错误')
   }
 
-  if (typeof config.components !== 'function') {
-    return createServerErrorResponse(res, '该插件未提供默认组件配置函数')
+  let page: WebConfigPage | undefined
+  try {
+    page = await resolveConfigPage(config)
+  } catch (error) {
+    return createServerErrorResponse(res, (error as Error).message)
   }
 
   const list: Record<string, any>[] = []
-  let result = config.components()
-  result = util.types.isPromise(result) ? await result : result
 
-  result.forEach((item: any) => {
-    if (typeof item?.toJSON === 'function') {
-      list.push(item.toJSON())
-    } else {
-      if (typeof item === 'object' && item !== null) {
-        list.push(item)
+  if (typeof config.components === 'function') {
+    let result = config.components()
+    result = util.types.isPromise(result) ? await result : result
+
+    result.forEach((item: any) => {
+      if (typeof item?.toJSON === 'function') {
+        list.push(item.toJSON())
+      } else {
+        if (typeof item === 'object' && item !== null) {
+          list.push(item)
+        }
       }
-    }
-  })
+    })
+  } else if (!page) {
+    return createServerErrorResponse(res, '该插件未提供默认组件配置函数或自定义配置页面')
+  }
 
   const data: GetConfigResponse = {
     options: list as GetConfigResponse['options'],
+    page,
     info: {
       ...config.info,
       author: normalizeAuthor(config.info.author),
@@ -307,9 +364,14 @@ export const pluginSaveConfig: RequestHandler = async (req, res) => {
   const configPath = getConfigPath(type, name)
   if (!configPath) return createServerErrorResponse(res, '参数错误')
 
-  const { save } = await loadConfig(configPath)
+  const webConfig = await loadConfig(configPath)
+  if ('page' in webConfig && webConfig.page) {
+    return createServerErrorResponse(res, '自定义配置页面不支持 Karin 通用保存接口')
+  }
+
+  const { save } = webConfig
   if (typeof save !== 'function') {
-    return createServerErrorResponse(res, '该插件未提供默认组件保存完成')
+    return createServerErrorResponse(res, '该插件未提供默认组件保存函数')
   }
   const result = save(config)
   const response = util.types.isPromise(result) ? await result : result

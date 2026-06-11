@@ -44,6 +44,8 @@ const PluginRow = memo(({
   const statusConfig = getUpdateStatusConfig(plugin.type, plugin.version, plugin.latestVersion)
   /** 插件类型配置 */
   const typeConfig = getTypeConfig(plugin.type)
+  /** 是否存在配置入口 */
+  const hasConfigEntry = plugin.webConfig.defaultComponent || !!plugin.webConfig.page
 
   /** 处理选择状态变更 */
   const handleSelectionChange = useCallback(() => {
@@ -262,7 +264,7 @@ const PluginRow = memo(({
               }}
             >
               {/* 配置选项 - 只有git类型才显示 */}
-              {plugin.webConfig.defaultComponent
+              {hasConfigEntry
                 ? (
                   <DropdownItem key='settings' description='调整插件配置' className='text-default-600'>
                     <div className='flex items-center gap-2'>

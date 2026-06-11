@@ -77,7 +77,7 @@ const getPrivateComponent = (
   }
 
   // 添加自定义 Radio 组件
-  const CustomRadio = (props: RadioProps) => {
+  const CustomRadio = (props: Omit<RadioProps, 'ref'>) => {
     const { children, description, ...otherProps } = props
 
     return (

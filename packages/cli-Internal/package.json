@@ -14,23 +14,25 @@
   "license": "MIT",
   "author": "shijin",
   "type": "module",
-  "main": "./index.mjs",
+  "main": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "CHANGELOG.md",
-    "LICENSE",
-    "REAME.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "app": "node dist/index.mjs",
     "cp": "node index.mjs",
     "dev": "tsx src/index.ts",
-    "build": "pnpm cp && tsc && vite build&& tsup ",
-    "build:dev": "pnpm cp && tsc && vite build --mode development && tsup --development"
+    "build": "pnpm cp && tsc && tsdown",
+    "build:core": "pnpm cp && tsc && tsdown --config tsdown.core.config.ts",
+    "build:dev": "pnpm cp && tsc && tsdown --config tsdown.dev.config.ts"
   },
   "devDependencies": {
-    "commander": "^13.1.0"
+    "commander": "^13.1.0",
+    "tsdown": "^0.22.2",
+    "yaml": "2.7.0"
   },
   "engines": {
     "node": ">=18"
@@ -39,8 +41,5 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
-  "time": "2025-04-10T19:55:45.123Z",
-  "dependencies": {
-    "yaml": "2.7.0"
-  }
+  "time": "2025-04-10T19:55:45.123Z"
 }

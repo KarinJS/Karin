@@ -1,7 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
@@ -10,10 +9,10 @@
         "./src/utils/fs/main"
       ],
       "events": [
-        "node_modules/@types/node/events.d.ts"
+        "./node_modules/@types/node/events.d.ts"
       ],
       "node:events": [
-        "node_modules/@types/node/events.d.ts"
+        "./node_modules/@types/node/events.d.ts"
       ]
     },
     "rootDir": "./src",

@@ -147,12 +147,12 @@
     ".": "pnpm app",
     "app": "node dist/start/index.mjs",
     "app:bun": "bun dist/start/index.mjs",
-    "build": "pnpm build:main && pnpm build:module",
+    "build": "pnpm build:main && pnpm --filter node-karin-cli run build:core && pnpm build:locale",
     "build:dev": "pnpm build:main",
     "build:locale": "node cli/locale.js",
-    "build:main": "tsc && tsup",
-    "build:module": "tsc && tsup --config tsup.config.module.ts && pnpm build:locale",
-    "build:types": "tsc && tsup --config tsup.config.types.ts",
+    "build:main": "tsc && tsdown",
+    "build:module": "pnpm build:main && pnpm build:locale",
+    "build:types": "pnpm build:main",
     "cli": "node dist/cli/index.mjs",
     "cli:dev": "tsx exports/cli/index.ts",
     "dev": "cross-env EBV_FILE=\"development.env\" node --conditions=development --import tsx src/start/index.ts",
@@ -169,6 +169,7 @@
     "axios": "npm:@karinjs/axios@1.13.2",
     "chalk": "5.6.2",
     "chokidar": "4.0.3",
+    "dotenv": "npm:@karinjs/dotenv@^1.1.2",
     "express": "npm:@karinjs/express@1.0.3",
     "lodash": "npm:@karinjs/lodash@1.1.1",
     "log4js": "npm:@karinjs/log4js@1.5.6",
@@ -189,7 +190,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/lodash": "^4.17.16",
     "cross-env": "^7.0.3",
-    "dotenv": "npm:@karinjs/dotenv@^1.1.2"
+    "tsdown": "^0.22.2"
   },
   "engines": {
     "node": ">=18"

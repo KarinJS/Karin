@@ -1,7 +1,11 @@
 import { cron } from './cron'
 import { defineConfig } from './defineConfig'
 
-export default defineConfig({
+interface DemoConfig {
+  cron: string
+}
+
+export const componentConfig = defineConfig<DemoConfig>({
   info: {
     id: 'demo',
     name: 'demo',
@@ -19,10 +23,24 @@ export default defineConfig({
       }),
     ]
   },
-  save: (_: Record<string, any>) => {
+  save: (config) => {
     return {
-      success: true,
+      success: typeof config.cron === 'string',
       message: '保存成功',
     }
   },
 })
+
+export const pageConfig = defineConfig({
+  info: {
+    id: 'demo-page',
+    name: 'demo-page',
+  },
+  page: {
+    url: '/demo-page/',
+    title: '自定义配置页',
+    description: '使用插件自带页面渲染配置',
+  },
+})
+
+export default componentConfig

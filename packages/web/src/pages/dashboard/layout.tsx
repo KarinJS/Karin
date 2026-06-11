@@ -129,7 +129,7 @@ export default function DashboardLayout () {
               isConfigPage && !isMediumOrLargeScreen ? 'static' : 'sticky top-0',
               'z-40 w-full bg-opacity-50 backdrop-blur-md',
               'border-b border-divider shadow-sm flex items-center justify-between',
-              'px-4 py-2'
+              'min-h-10 px-2 py-1'
             )}
             initial={{ y: -50 }}
             animate={{ y: 0 }}
@@ -139,17 +139,17 @@ export default function DashboardLayout () {
               duration: 0.3,
             }}
           >
-            <div className='flex items-center gap-3'>
+            <div className='flex min-w-0 items-center'>
               <motion.button
                 onClick={() => setIsOpen(!isOpen)}
-                className={clsx('p-2 rounded-lg text-xs')}
+                className={clsx('min-w-0 rounded-md px-2 py-1.5 text-xs active:bg-default-100 dark:active:bg-default-100/10')}
               >
-                <div className='flex items-center gap-4'>
+                <div className='flex min-w-0 items-center gap-2'>
                   {isOpen
-                    ? <RiMenuUnfold2Line className='w-5 h-5' />
-                    : <IoMenu className='w-5 h-5' />}
+                    ? <RiMenuUnfold2Line className='h-4.5 w-4.5 shrink-0' />
+                    : <IoMenu className='h-4.5 w-4.5 shrink-0' />}
                   {/* 标题 */}
-                  <motion.h1 className='text-lg'>
+                  <motion.h1 className='truncate text-sm font-medium leading-5'>
                     {title}
                   </motion.h1>
                 </div>

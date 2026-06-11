@@ -15,7 +15,13 @@ export const execSync = (
     const result = execSyncCmd(cmd, { ...options, shell })
     return { status: true, error: null, stdout: result.toString(), stderr: '' }
   } catch (error) {
-    return { status: false, error: error as Error, stdout: '', stderr: '' }
+    const err = error as any
+    return {
+      status: false,
+      error: err,
+      stdout: err.stdout || '',
+      stderr: err.stderr || '',
+    }
   }
 }
 

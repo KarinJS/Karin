@@ -8,7 +8,6 @@ import { Controller } from 'react-hook-form'
 import { PluginSelectorDialog } from './PluginSelectorDialog'
 
 import type { JSX } from 'react'
-import type { Control } from 'react-hook-form'
 
 /**
  * 输入框组组件
@@ -25,7 +24,7 @@ export const createInputGroup = (
   defaultValue: string[],
   label: string,
   description: string,
-  control: Control<any>,
+  control: any,
   showPluginSelector = false
 ): JSX.Element => {
   const InputGroupComponent = () => {

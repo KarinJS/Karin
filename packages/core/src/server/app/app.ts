@@ -1,13 +1,10 @@
-import fs from 'node:fs'
 import path from 'node:path'
 import express from 'express'
 import { ONLINE } from '@/env'
 import { router } from '../router'
 import { createServer } from 'node:http'
 import { rootRouter } from '../system/root'
-import getMimeType from '../utils/getMimeType'
 import { BASE_ROUTER } from '../router/router'
-import { createBrotliDecompress } from 'node:zlib'
 import { listeners } from '@/core/internal/listeners'
 
 import type root from '@/root'
@@ -66,17 +63,11 @@ const web = (dir: typeof root) => {
     })
   })
 
-  listeners.once(ONLINE, () => {
-    setTimeout(() => {
-      /**
-       * 5秒后将所有根路径请求重定向到 /web
-       * 等5秒是因为插件可能也使用了部分路由
-       */
-      app.all('/{*splat}', (_, res) => {
-        res.redirect('/web')
-      })
-    }, 5000)
-  })
+  /**
+   * 不注册全局兜底重定向。
+   * 插件可能会在启动后挂载自己的 Web 路由，例如 /my-plugin。
+   * 如果这里把所有未命中的路径重定向到 /web，会导致插件 WebUI 被 Karin WebUI 吞掉。
+   */
 }
 
 /**
@@ -91,39 +82,6 @@ export const initExpress = async (
   port: number,
   host: string
 ) => {
-  const webDir = path.join(dir.karinDir, 'dist/web')
-  app.use('/web', (req, res, next) => {
-    const filePath = path.join(webDir, req.path)
-    const brPath = `${filePath}.br`
-    const acceptEncoding = req.headers['accept-encoding'] || ''
-
-    if (fs.existsSync(brPath)) {
-      if (acceptEncoding.includes('br')) {
-        // 客户端支持 Brotli，直接返回 br 文件
-        res.set({
-          'Content-Encoding': 'br',
-          'Content-Type': getMimeType(req.path),
-          'Cache-Control': 'public, max-age=604800',
-        })
-        req.url = `${req.url}.br`
-        return express.static(webDir)(req, res, next)
-      } else {
-        // 客户端不支持 Brotli，动态解压后返回原始内容（异步）
-        res.set({
-          'Content-Encoding': 'identity',
-          'Content-Type': getMimeType(req.path),
-          'Cache-Control': 'public, max-age=604800',
-        })
-        const readStream = fs.createReadStream(brPath)
-        const decompressStream = createBrotliDecompress()
-        readStream.pipe(decompressStream).pipe(res)
-        return
-      }
-    }
-
-    next()
-  })
-
   await import('./ws')
 
   app.use(BASE_ROUTER, router)
