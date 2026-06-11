@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.3.0](https://github.com/KarinJS/Karin/compare/create-karin-v1.2.4...create-karin-v1.3.0) (2026-06-11)
+
+
+### ✨ Features
+
+* **cli-Internal:** add LICENSE and tsdown configuration files ([faa725b](https://github.com/KarinJS/Karin/commit/faa725b36300a400c137ed9f625c34321a2198a0))
+* **cli:** add LICENSE file ([faa725b](https://github.com/KarinJS/Karin/commit/faa725b36300a400c137ed9f625c34321a2198a0))
+* **core:** add LICENSE and tsdown configuration files ([faa725b](https://github.com/KarinJS/Karin/commit/faa725b36300a400c137ed9f625c34321a2198a0))
+* **create-karin:** add LICENSE and tsdown configuration files ([faa725b](https://github.com/KarinJS/Karin/commit/faa725b36300a400c137ed9f625c34321a2198a0))
+* **karin-plugin-js:** add LICENSE file ([faa725b](https://github.com/KarinJS/Karin/commit/faa725b36300a400c137ed9f625c34321a2198a0))
+* **karin-plugin-ts:** add LICENSE file ([faa725b](https://github.com/KarinJS/Karin/commit/faa725b36300a400c137ed9f625c34321a2198a0))
+* **onebot:** add LICENSE and tsdown configuration files ([faa725b](https://github.com/KarinJS/Karin/commit/faa725b36300a400c137ed9f625c34321a2198a0))
+* **pm2:** add LICENSE file ([faa725b](https://github.com/KarinJS/Karin/commit/faa725b36300a400c137ed9f625c34321a2198a0))
+* **types:** add LICENSE file ([faa725b](https://github.com/KarinJS/Karin/commit/faa725b36300a400c137ed9f625c34321a2198a0))
+* **web:** add PluginWebConfigPage component for custom plugin configuration ([faa725b](https://github.com/KarinJS/Karin/commit/faa725b36300a400c137ed9f625c34321a2198a0))
+* **web:** add PluginWebConfigPage component for custom plugin configuration ([#654](https://github.com/KarinJS/Karin/issues/654)) ([faa725b](https://github.com/KarinJS/Karin/commit/faa725b36300a400c137ed9f625c34321a2198a0))
+* 为PluginWebConfigPage添加sandbox属性以增强安全性 ([faa725b](https://github.com/KarinJS/Karin/commit/faa725b36300a400c137ed9f625c34321a2198a0))
+* 更新resolveConfigPage逻辑，确保正确处理页面配置 ([faa725b](https://github.com/KarinJS/Karin/commit/faa725b36300a400c137ed9f625c34321a2198a0))
+
+
+### 🐛 Bug Fixes
+
+* 优化PluginRow组件配置入口判断逻辑 ([faa725b](https://github.com/KarinJS/Karin/commit/faa725b36300a400c137ed9f625c34321a2198a0))
+
 ## [1.2.4](https://github.com/KarinJS/Karin/compare/create-karin-v1.2.3...create-karin-v1.2.4) (2026-03-17)
 
 
