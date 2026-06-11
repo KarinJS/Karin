@@ -25,7 +25,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "vite build --configLoader native && tsdown",
+    "build": "tsdown",
     "dev": "tsx src/index.ts",
     "pub": "npm publish --access public"
   },
