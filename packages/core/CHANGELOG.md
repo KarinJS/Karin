@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.16.1](https://github.com/KarinJS/Karin/compare/core-v1.16.0...core-v1.16.1) (2026-06-11)
+
+
+### 🐛 Bug Fixes
+
+* ci ([#659](https://github.com/KarinJS/Karin/issues/659)) ([f3f169f](https://github.com/KarinJS/Karin/commit/f3f169fa896427f70e4dbaaaa580598ca76c8dd3))
+
 ## [1.16.0](https://github.com/KarinJS/Karin/compare/core-v1.15.5...core-v1.16.0) (2026-06-11)
 
 
