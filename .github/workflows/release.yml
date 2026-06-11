@@ -44,15 +44,7 @@ jobs:
       - uses: pnpm/action-setup@v2
         with:
           version: 9
-
-      - name: 安装依赖
-        run: |
-          for i in 1 2 3; do
-            pnpm install && break || {
-              echo "安装失败，重试 $i/3"
-              sleep 2
-            }
-          done
+          run_install: true
 
       - name: 构建
         run: pnpm build

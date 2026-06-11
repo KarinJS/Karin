@@ -21,13 +21,15 @@
     "lint:fix": "eslint --fix \"packages/**/*.ts\"",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@types/node": "^24.12.4",
     "@vitest/coverage-v8": "^4.1.8",
     "eslint": "^9.7.0",
     "eslint-plugin-prettier": "^5.2.5",
+    "husky": "^9.1.7",
     "neostandard": "^0.12.1",
     "prettier": "^3.5.3",
     "sort-json": "^2.0.1",

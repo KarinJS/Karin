@@ -31,7 +31,6 @@
   },
   "devDependencies": {
     "commander": "^13.1.0",
-    "tsdown": "^0.22.2",
     "yaml": "2.7.0"
   },
   "engines": {

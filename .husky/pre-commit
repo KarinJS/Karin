@@ -1,0 +1,2 @@
+node -e "const fs = require('node:fs'); const file = 'packages/core/package.json'; const pkg = JSON.parse(fs.readFileSync(file, 'utf8')); pkg.time = new Date().toISOString(); fs.writeFileSync(file, JSON.stringify(pkg, null, 2) + '\n');"
+git add packages/core/package.json
