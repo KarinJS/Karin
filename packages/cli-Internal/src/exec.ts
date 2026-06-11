@@ -21,7 +21,13 @@ const execSync = (
     const result = execSyncCmd(cmd, { encoding: 'utf8', ...options })
     return { status: true, error: null, stdout: result, stderr: '' }
   } catch (error) {
-    return { status: false, error: error as Error, stdout: '', stderr: '' }
+    const err = error as any
+    return {
+      status: false,
+      error: err,
+      stdout: err.stdout || '',
+      stderr: err.stderr || '',
+    }
   }
 }
 

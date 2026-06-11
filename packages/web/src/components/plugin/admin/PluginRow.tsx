@@ -45,8 +45,7 @@ const PluginRow = memo(({
   /** 插件类型配置 */
   const typeConfig = getTypeConfig(plugin.type)
   /** 是否存在配置入口 */
-  const hasConfigEntry = plugin.webConfig.defaultComponent ||
-    ('page' in plugin.webConfig && Boolean(plugin.webConfig.page))
+  const hasConfigEntry = plugin.webConfig.defaultComponent || !!plugin.webConfig.page
 
   /** 处理选择状态变更 */
   const handleSelectionChange = useCallback(() => {

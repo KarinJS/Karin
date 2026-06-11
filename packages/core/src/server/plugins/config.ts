@@ -249,10 +249,12 @@ export const normalizeAuthor = (author: DefineConfig['info']['author']) => {
 const resolveConfigPage = async (config: DefineConfig): Promise<WebConfigPage | undefined> => {
   if (!('page' in config) || !config.page) return undefined
 
-  const result = typeof config.page === 'function'
-    ? config.page()
-    : config.page
-  const page = util.types.isPromise(result) ? await result : result
+  // @see https://github.com/KarinJS/Karin/pull/654#discussion_r3374184645
+  // const result = typeof config.page === 'function'
+  //   ? config.page()
+  //   : config.page
+  // const page = util.types.isPromise(result) ? await result : result
+  const page = await (typeof config.page === 'function' ? config.page() : config.page)
 
   if (!page || typeof page.url !== 'string' || !page.url.trim()) {
     throw new Error('插件自定义配置页面缺少有效的 url')
@@ -369,7 +371,7 @@ export const pluginSaveConfig: RequestHandler = async (req, res) => {
 
   const { save } = webConfig
   if (typeof save !== 'function') {
-    return createServerErrorResponse(res, '该插件未提供默认组件保存完成')
+    return createServerErrorResponse(res, '该插件未提供默认组件保存函数')
   }
   const result = save(config)
   const response = util.types.isPromise(result) ? await result : result
