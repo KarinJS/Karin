@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/KarinJS/Karin/compare/create-karin-v1.3.0...create-karin-v1.3.1) (2026-06-11)
+
+
+### 🐛 Bug Fixes
+
+* 更新构建脚本以简化构建过程，移除不必要的配置 ([#657](https://github.com/KarinJS/Karin/issues/657)) ([6caa72f](https://github.com/KarinJS/Karin/commit/6caa72f6c84aa926affed1389fa519c0fe12e13c))
+
 ## [1.3.0](https://github.com/KarinJS/Karin/compare/create-karin-v1.2.4...create-karin-v1.3.0) (2026-06-11)
 
 
