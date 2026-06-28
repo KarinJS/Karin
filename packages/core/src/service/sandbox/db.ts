@@ -18,7 +18,7 @@ import type { SandBoxAccountInfo } from '@/types/sandbox/account'
 /** 默认用户、群成员头像 */
 export const DEFAULT_USER_AVATAR = 'https://q1.qlogo.cn/g?b=qq&nk=1812868335&s=0'
 /** 默认群头像 */
-export const DEFAULT_GROUP_AVATAR = 'https://p.qlogo.cn/gh/967068507/967068507/0'
+export const DEFAULT_GROUP_AVATAR = 'https://p.qlogo.cn/gh/850541480/850541480/0'
 
 /** 沙盒db根目录 */
 export const root = path.join(sandboxDataPath, 'db')

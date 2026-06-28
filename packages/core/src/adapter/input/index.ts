@@ -38,7 +38,7 @@ class AdapterConsole extends AdapterBase implements AdapterType {
     this.account.uid = botID
     this.account.uin = botID
     this.account.selfId = botID
-    this.account.avatar = 'https://p.qlogo.cn/gh/967068507/967068507/0'
+    this.account.avatar = 'https://p.qlogo.cn/gh/850541480/850541480/0'
     listeners.emit('karin:adapter:open')
   }
 
@@ -178,13 +178,13 @@ class AdapterConsole extends AdapterBase implements AdapterType {
 
   async getAvatarUrl (userId: string, _?: 0 | 40 | 100 | 140) {
     if (userId === botID) {
-      return process.env.ADAPTER_CONSOLE_AVATAR || 'https://p.qlogo.cn/gh/967068507/967068507/0'
+      return process.env.ADAPTER_CONSOLE_AVATAR || 'https://p.qlogo.cn/gh/850541480/850541480/0'
     }
     return ''
   }
 
   async getGroupAvatarUrl (_: string, __?: 0 | 40 | 100 | 140, ___?: number) {
-    return 'https://p.qlogo.cn/gh/967068507/967068507/0'
+    return 'https://p.qlogo.cn/gh/850541480/850541480/0'
   }
 
   async recallMsg (_: Contact, messageId: string) {

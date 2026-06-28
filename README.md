@@ -28,7 +28,7 @@
 
 一键初始化：`pnpm create karin`
 
-> 当前文档可能存在滞后性，欢迎加入交流群（967068507）一起玩耍、提建议！
+> 当前文档可能存在滞后性，欢迎加入交流群（850541480）一起玩耍、提建议！
 
 ## 温馨提示
 
@@ -78,7 +78,7 @@ Thanks to [valqelyan](https://github.com/valqelyan) for transferring the `karin`
 
 ## 常见问题
 
-- 文档没看懂？[点我提问](https://github.com/KarinJS/Karin/issues) 或加群 967068507
+- 文档没看懂？[点我提问](https://github.com/KarinJS/Karin/issues) 或加群 850541480
 - 插件不会写？欢迎参考[插件开发文档](https://karinjs.com/guide/index/)
 - 遇到 bug？大胆提 Issue，我们超快响应！
 
