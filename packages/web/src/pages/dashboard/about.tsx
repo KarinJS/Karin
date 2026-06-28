@@ -817,7 +817,7 @@ const AboutUs = () => {
                     </Button>
                     <Button
                       as='a'
-                      href='http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=kDN3vwVj8Qozw94TWX69r24vxrWqkgMy&authKey=NxnqHYmo8037jCeDkO9yIFPOdQxkKa4JlxC%2FAV6UNxwGc%2FwKEVoogi44syB3BWuC&noverify=0&group_code=967068507'
+                      href='https://qm.qq.com/q/SgP7WaLTag'
                       size='sm'
                       variant='shadow'
                       radius='full'
