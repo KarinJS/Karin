@@ -1,5 +1,13 @@
 # 更新日志
 
+## [1.16.2](https://github.com/KarinJS/Karin/compare/core-v1.16.1...core-v1.16.2) (2026-07-04)
+
+
+### 🐛 Bug Fixes
+
+* fix ([#661](https://github.com/KarinJS/Karin/issues/661)) ([ab4c96d](https://github.com/KarinJS/Karin/commit/ab4c96d7b951f14028ab64c628088b12a5b6d3eb))
+* 优化获取web.config路径的逻辑，简化代码结构 ([#663](https://github.com/KarinJS/Karin/issues/663)) ([6ce06d5](https://github.com/KarinJS/Karin/commit/6ce06d536f9e86250ef9b8fe448da21fe2de94ac))
+
 ## [1.16.1](https://github.com/KarinJS/Karin/compare/core-v1.16.0...core-v1.16.1) (2026-06-11)
 
 

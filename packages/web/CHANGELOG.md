@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.2](https://github.com/KarinJS/Karin/compare/web-v1.12.1...web-v1.12.2) (2026-07-04)
+
+
+### 🐛 Bug Fixes
+
+* fix ([#661](https://github.com/KarinJS/Karin/issues/661)) ([ab4c96d](https://github.com/KarinJS/Karin/commit/ab4c96d7b951f14028ab64c628088b12a5b6d3eb))
+
 ## [1.12.1](https://github.com/KarinJS/Karin/compare/web-v1.12.0...web-v1.12.1) (2026-06-11)
 
 
