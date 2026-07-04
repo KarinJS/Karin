@@ -54,7 +54,7 @@ export const defaultWebConfig = (
 const getWebConfigPath = (plugin: PkgInfo) => {
   const pkg = plugin.pkgData
 
-  if (!pkg.karin) return null
+  if (!pkg?.karin) return null
 
   const getPath = (value?: string) => {
     if (!value) return null
