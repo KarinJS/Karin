@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { isDev } from '@/env'
+import { isDev, isTs } from '@/env'
 import { imports } from '@/utils'
 import { getPlugins } from '@/plugin/system/list'
 import type { Icon, PkgInfo, PluginAdminListResponse } from '@/types'
@@ -52,21 +52,28 @@ export const defaultWebConfig = (
  * 获取web.config文件绝对路径
  */
 const getWebConfigPath = (plugin: PkgInfo) => {
-  const dev = isDev()
   const pkg = plugin.pkgData
 
-  if (!pkg.karin?.web) return null
+  if (!pkg?.karin) return null
 
-  if (dev) {
-    if (!pkg.karin['ts-web']) return null
-    const filepath = path.join(plugin.dir, pkg.karin['ts-web'])
-    if (!fs.existsSync(filepath)) return null
-    return filepath
+  const getPath = (value?: string) => {
+    if (typeof value !== 'string' || !value) return null
+    const filepath = path.join(plugin.dir, value)
+    return fs.existsSync(filepath) ? filepath : null
   }
 
-  const filepath = path.join(plugin.dir, pkg.karin.web)
-  if (!fs.existsSync(filepath)) return null
-  return filepath
+  /** npm插件处于安装态，即使开发环境也应读取发布产物 */
+  if (plugin.type === 'npm' || plugin.dir.includes('node_modules')) {
+    return getPath(pkg.karin.web)
+  }
+
+  /** 本地源码插件在TS运行时优先读取ts-web */
+  if (isTs()) {
+    const filepath = getPath(pkg.karin['ts-web'])
+    if (filepath) return filepath
+  }
+
+  return getPath(pkg.karin.web)
 }
 
 /**
