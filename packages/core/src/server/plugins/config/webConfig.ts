@@ -57,7 +57,7 @@ const getWebConfigPath = (plugin: PkgInfo) => {
   if (!pkg?.karin) return null
 
   const getPath = (value?: string) => {
-    if (!value) return null
+    if (typeof value !== 'string' || !value) return null
     const filepath = path.join(plugin.dir, value)
     return fs.existsSync(filepath) ? filepath : null
   }
