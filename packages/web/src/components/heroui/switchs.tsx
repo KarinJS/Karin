@@ -1,19 +1,22 @@
 import { Switch as HeroSwitch } from '@heroui/switch'
 import { cn } from '@/lib/utils'
+import { Controller } from 'react-hook-form'
 import type { JSX } from 'react'
 import type { SwitchProps } from 'node-karin'
-import type { FormRegister } from '../config/plugin/render'
+import type { FormControl } from '../config/plugin/render'
 import { useState } from 'react'
 
 /**
  * 渲染开关组件
  * @param props - 输入框属性
- * @param register - 表单注册器
+ * @param control - 表单控制器
+ * @param basePath - 基础路径
  * @returns 渲染后的输入框组件
  */
 export const createSwitch = (
   props: SwitchProps,
-  register: FormRegister
+  control: FormControl,
+  basePath?: string
 ): JSX.Element => {
   const {
     componentType: _,
@@ -25,6 +28,7 @@ export const createSwitch = (
     ...options
   } = props
 
+  const name = basePath ? `${basePath}.${key}.value` : `${key}.value`
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false)
 
   const handleContainerClick = (e: React.MouseEvent) => {
@@ -32,7 +36,9 @@ export const createSwitch = (
     if (isDisabled) return
     // 如果点击的是描述区域，不触发开关切换
     if ((e.target as HTMLElement).closest('.description-area')) return
-    const switchElement = document.querySelector(`[data-switch-key="${key}"]`) as HTMLElement
+    // 如果点击的是开关本体，交给开关组件自己处理，避免重复切换
+    if ((e.target as HTMLElement).closest('.switch-control-area')) return
+    const switchElement = document.querySelector(`[data-switch-key="${name}"]`) as HTMLElement
     switchElement?.click()
   }
 
@@ -93,19 +99,29 @@ export const createSwitch = (
         </div>
 
         {/* 开关控件位于右侧中间 */}
-        <div className='absolute right-3 top-1/2 -translate-y-1/2 sm:right-4'>
-          <HeroSwitch
-            key={key}
-            {...options}
-            isDisabled={isDisabled}
-            data-switch-key={key}
-            className={cn(
-              isDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
-              `data-[selected=true]:border-${options.color || 'primary'}`,
-              componentClassName
+        <div className='switch-control-area absolute right-3 top-1/2 -translate-y-1/2 sm:right-4'>
+          <Controller
+            name={name}
+            control={control}
+            defaultValue={(defaultSelected ?? false) as never}
+            render={({ field: { value, onChange, onBlur, name, ref } }) => (
+              <HeroSwitch
+                key={key}
+                {...options}
+                isDisabled={isDisabled}
+                data-switch-key={name}
+                className={cn(
+                  isDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
+                  `data-[selected=true]:border-${options.color || 'primary'}`,
+                  componentClassName
+                )}
+                isSelected={(value as unknown) === true}
+                onValueChange={onChange}
+                onBlur={onBlur}
+                name={name}
+                ref={ref}
+              />
             )}
-            defaultSelected={defaultSelected ?? false}
-            {...register(`${key}.value`)}
           />
         </div>
       </div>
