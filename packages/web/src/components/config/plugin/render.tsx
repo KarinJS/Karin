@@ -51,7 +51,7 @@ export const RenderComponent: React.FC<{
       }
 
       if (option.componentType === 'switch') {
-        list.push(createSwitch(option, register))
+        list.push(createSwitch(option, control, basePath))
         return
       }
 
