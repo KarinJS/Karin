@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.16.3](https://github.com/KarinJS/Karin/compare/core-v1.16.2...core-v1.16.3) (2026-07-07)
+
+
+### 🐛 Bug Fixes
+
+* web配置组件，手风琴子项内部分配置组件无法正常渲染嵌套字段 ([#664](https://github.com/KarinJS/Karin/issues/664)) ([03ff932](https://github.com/KarinJS/Karin/commit/03ff932e9f901e4a95cbb08b4ebc34aad9051215))
+
 ## [1.16.2](https://github.com/KarinJS/Karin/compare/core-v1.16.1...core-v1.16.2) (2026-07-04)
 
 
