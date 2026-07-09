@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 适配器所属平台
  * - `qq`: QQ
  * - `wechat`: 微信
@@ -87,8 +87,11 @@ export type AdapterCommunication = 'http'
   | 'other'
   | (string & {})
 
+// TODO: 太乱了，后续需要重新设计适配器信息结构，分为适配器基本信息和协议实现（或者协议SDK）信息两部分
 /**
  * 适配器基本信息
+ *
+ * TODO: 太乱了，后续需要重新设计适配器信息结构，分为适配器基本信息和协议实现（或者协议SDK）信息两部分
  */
 export interface AdapterInfo {
   /** 适配器索引 默认为-1 在注册适配器时会自动更改为对应的索引 */
@@ -103,6 +106,8 @@ export interface AdapterInfo {
   standard: AdapterStandard
   /** 适配器协议实现 如gocq、napcat */
   protocol: AdapterProtocol
+  /** 适配器协议实现版本 */
+  protocolVersion: string
   /** 适配器通信方式 */
   communication: AdapterCommunication
   /**
