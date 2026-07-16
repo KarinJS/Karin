@@ -7,5 +7,9 @@ import type { RequestHandler } from 'express'
  * 获取所有bot列表
  */
 export const getBotsRouter: RequestHandler = async (_, res) => {
-  createSuccessResponse(res, getAllBotList())
+  const bots = getAllBotList().map(bot => ({
+    index: bot.index,
+    selfId: bot.bot.selfId,
+  }))
+  createSuccessResponse(res, bots)
 }
