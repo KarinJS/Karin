@@ -9,7 +9,8 @@ import type { RequestHandler } from 'express'
 export const getBotsRouter: RequestHandler = async (_, res) => {
   const bots = getAllBotList().map(bot => ({
     index: bot.index,
-    selfId: bot.bot.selfId,
+    account: bot.bot.account,
+    adapter: bot.bot.adapter,
   }))
   createSuccessResponse(res, bots)
 }

@@ -215,7 +215,7 @@ function Status ({ statusData, statusError, onGlobalUpdateStart, onGlobalUpdateE
   const error = statusError
 
   const localPluginsList = useRequest(() => request.serverPost<LocalApiResponse[], {}>('/api/v1/plugin/local'))
-  const botList = useRequest(() => request.serverGet<number>('/api/v1/system/get/bots'), {
+  const botList = useRequest(() => request.serverGet<Array<Object>>('/api/v1/system/get/bots'), {
     pollingInterval: 5000,
   })
 
@@ -344,7 +344,7 @@ function Status ({ statusData, statusError, onGlobalUpdateStart, onGlobalUpdateE
         <MemoizedStatusItem title='PID' value={data.pid} />
         <MemoizedStatusItem title='PM2 ID' value={data.pm2_id} />
         <MemoizedStatusItem title='插件数量' value={localPluginsList.data?.length || '--'} />
-        <MemoizedStatusItem title='适配器数量' value={botList.data} />
+        <MemoizedStatusItem title='适配器数量' value={botList.data?.length || 0} />
         <MemoizedStatusItem
           title='版本'
           value={versionCardValue}
