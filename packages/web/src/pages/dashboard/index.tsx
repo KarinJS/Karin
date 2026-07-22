@@ -681,7 +681,7 @@ function StatusItem ({ title, value }: StatusItemProps) {
           <IconComponent className='w-4 h-4 lg:w-5 lg:h-5 text-primary' />
           <p className='text-sm text-primary select-none'>{title}</p>
         </div>
-        <div className='mt-1 md:mt-2 lg:mt-3 text-lg md:text-xl lg:text-2xl text-default-800 font-medium w-full'>{value || '--'}</div>
+        <div className='mt-1 md:mt-2 lg:mt-3 text-lg md:text-xl lg:text-2xl text-default-800 font-medium w-full'>{value ?? '--'}</div>
       </CardHeader>
     </Card>
   )
