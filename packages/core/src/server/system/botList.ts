@@ -1,4 +1,4 @@
-import { getBotCount } from '@/service/bot'
+import { getAllBotList } from '@/service/bot'
 import { createSuccessResponse } from '@/server/utils/response'
 
 import type { RequestHandler } from 'express'
@@ -7,5 +7,10 @@ import type { RequestHandler } from 'express'
  * 获取所有bot列表
  */
 export const getBotsRouter: RequestHandler = async (_, res) => {
-  createSuccessResponse(res, getBotCount())
+  const bots = getAllBotList().map(bot => ({
+    index: bot.index,
+    account: bot.bot.account,
+    adapter: bot.bot.adapter,
+  }))
+  createSuccessResponse(res, bots)
 }
