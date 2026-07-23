@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.16.4](https://github.com/KarinJS/Karin/compare/core-v1.16.3...core-v1.16.4) (2026-07-23)
+
+
+### 🐛 Bug Fixes
+
+* 修复获取所有bot列表接口返回Bot数量的问题 ([#666](https://github.com/KarinJS/Karin/issues/666)) ([5c095ef](https://github.com/KarinJS/Karin/commit/5c095efa2cba8b2e4018fe7276a5b9a62cfd3fa1))
+
 ## [1.16.3](https://github.com/KarinJS/Karin/compare/core-v1.16.2...core-v1.16.3) (2026-07-07)
 
 
