@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.16.5](https://github.com/KarinJS/Karin/compare/core-v1.16.4...core-v1.16.5) (2026-07-25)
+
+
+### 🐛 Bug Fixes
+
+* **core:** support SnowLuma message reactions ([#668](https://github.com/KarinJS/Karin/issues/668)) ([a50823c](https://github.com/KarinJS/Karin/commit/a50823c7730c62a8439baf3807600860e086644e))
+
 ## [1.16.4](https://github.com/KarinJS/Karin/compare/core-v1.16.3...core-v1.16.4) (2026-07-23)
 
 
