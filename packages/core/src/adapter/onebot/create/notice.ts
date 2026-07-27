@@ -19,7 +19,7 @@ import {
   createPrivateRecallNotice,
 } from '@/event/create'
 import { getFileMessage } from '../core/convert'
-import { NoticeType } from '@karinjs/onebot'
+import { NoticeType, OneBotMessageApiAction } from '@karinjs/onebot'
 import type { OneBotNoticeEvent, OneBotType } from '@karinjs/onebot'
 
 /**
@@ -300,24 +300,35 @@ export const createNotice = (event: OneBotNoticeEvent, bot: AdapterOneBot<OneBot
 
   // 群表情回应
   if (event.notice_type === NoticeType.Nc_EmojiLike) {
-    const userId = event.user_id + ''
-    const groupId = event.group_id + ''
-    const contact = contactGroup(groupId)
-    createGroupMessageReactionNotice({
-      bot,
-      eventId: `notice:${groupId}.${event.time}`,
-      rawEvent: event,
-      time,
-      contact,
-      sender: senderGroup(userId),
-      srcReply: (elements) => bot.sendMsg(contact, elements),
-      content: {
-        count: event.likes[0].count,
-        faceId: event.likes[0].emoji_id,
-        isSet: true,
-        messageId: event.message_id + '',
-      },
-    })
+    (async () => {
+      const like = event.likes?.[0]
+      if (!like) return
+      const userId = event.user_id + ''
+      const groupId = event.group_id + ''
+      const contact = contactGroup(groupId)
+      let isSet = true
+      try {
+        const msg = await bot.sendApi(OneBotMessageApiAction.getMsg, { message_id: event.message_id })
+        if (Array.isArray(msg.emoji_likes_list)) {
+          isSet = msg.emoji_likes_list.some(item => String(item.emoji_id) === String(like.emoji_id))
+        }
+      } catch { }
+      createGroupMessageReactionNotice({
+        bot,
+        eventId: `notice:${groupId}.${event.time}`,
+        rawEvent: event,
+        time,
+        contact,
+        sender: senderGroup(userId),
+        srcReply: (elements) => bot.sendMsg(contact, elements),
+        content: {
+          count: like.count,
+          faceId: like.emoji_id,
+          isSet,
+          messageId: event.message_id + '',
+        },
+      })
+    })()
     return
   }
 

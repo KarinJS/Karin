@@ -103,6 +103,8 @@ export interface OneBotMessageApi {
       sender: SenderGroup,
       message: OneBotMessage[]
       group_id: number
+      /** NapCat扩展: 消息表情回应列表（贴/取消判断用：仍包含该表情即为贴） */
+      emoji_likes_list?: Array<{ emoji_id: number | string, count?: number }>
     } | {
       time: number,
       message_type: 'private',
@@ -110,6 +112,8 @@ export interface OneBotMessageApi {
       real_id: number,
       sender: SenderPrivate,
       message: OneBotMessage[]
+      /** NapCat扩展: 消息表情回应列表 */
+      emoji_likes_list?: Array<{ emoji_id: number | string, count?: number }>
     }
   }
 
