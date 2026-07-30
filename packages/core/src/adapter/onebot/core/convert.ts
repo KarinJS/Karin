@@ -66,6 +66,7 @@ export const convertOneBotMessageToKarin = async (
     reply: () => segment.reply(message.data.id),
     json: () => segment.json(message.data.data),
     xml: () => segment.xml(message.data.data),
+    markdown: () => segment.markdown(message.data.content),
     file: async () => await getFileMessage(message.data, onebot),
   }
 
