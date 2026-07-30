@@ -386,7 +386,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
       const messageSeq = (v as any).message_seq || v.message_id
 
       const data = {
-        time: Date.now(),
+        time: v.time,
         messageId,
         messageSeq,
         message_id: messageId,
