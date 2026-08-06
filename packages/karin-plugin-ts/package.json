@@ -13,12 +13,12 @@
     "url": "git+https://github.com/KarinJS/karin.git"
   },
   "scripts": {
-    "app": "node lib/app.js",
-    "build": "tsup",
+    "app": "node dist/app.js",
+    "build": "tsdown",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts",
     "pub": "npm publish --access public"
   },
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "devDependencies": {
     "@types/express": "^5.0.1",
     "@types/lodash": "^4.17.16",
@@ -27,14 +27,14 @@
     "eslint": "^9.7.0",
     "neostandard": "^0.11.9",
     "node-karin": "workspace:*",
-    "tsup": "^8.5.0",
+    "tsdown": "^0.22.2",
     "tsx": "^4.19.2",
     "typescript": "^5.5.3"
   },
   "karin": {
     "main": "src/index.ts",
     "apps": [
-      "lib/apps"
+      "dist/apps"
     ],
     "ts-apps": [
       "src/apps"
@@ -49,11 +49,11 @@
     ]
   },
   "files": [
-    "/lib/**/*.js",
-    "/lib/**/*.d.ts",
+    "/dist/**/*.js",
+    "/dist/**/*.d.ts",
     "/config/*.json",
     "resources",
-    "!lib/app.js",
+    "!dist/app.js",
     "LICENSE"
   ],
   "publishConfig": {

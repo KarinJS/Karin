@@ -19,7 +19,7 @@ lerna-debug.log*
 /temp/
 
 # 配置
-/lib
+/dist
 
 # 依赖
 node_modules/
