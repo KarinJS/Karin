@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.17.0](https://github.com/KarinJS/Karin/compare/core-v1.16.5...core-v1.17.0) (2026-08-06)
+
+
+### ✨ Features
+
+* 更新构建配置，迁移至 tsdown，调整输出目录至 dist ([#672](https://github.com/KarinJS/Karin/issues/672)) ([3da44b3](https://github.com/KarinJS/Karin/commit/3da44b3ab958f95fa2519a105db531cb3b1aa1c1))
+
 ## [1.16.5](https://github.com/KarinJS/Karin/compare/core-v1.16.4...core-v1.16.5) (2026-07-25)
 
 
