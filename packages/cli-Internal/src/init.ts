@@ -32,6 +32,7 @@ const getIsDev = (dir: string) => {
     'eslint.config.js',
     '.prettierrc',
     'vite.config.ts',
+    'tsdown.config.ts',
     'tsup.config.ts',
   ]
 
