@@ -44,6 +44,7 @@ export abstract class AdapterBase<T = any> implements AdapterType<T> {
       platform: 'qq',
       standard: 'other',
       protocol: 'console',
+      protocolVersion: '',
       communication: 'other',
       address: '',
       secret: null,
