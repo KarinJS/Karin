@@ -40,6 +40,9 @@ export const exec = (
       if (typeof stdout !== 'string') {
         stdout = String(stdout)
       }
+      if (typeof stderr !== 'string') {
+        stderr = String(stderr)
+      }
       resolve({ status, error, stdout, stderr })
     })
   })
