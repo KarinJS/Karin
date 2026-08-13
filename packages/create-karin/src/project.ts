@@ -42,7 +42,7 @@ export const createProject = async (
   if (pkg.devEngines) {
     delete pkg.devEngines
     fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify(pkg, null, 2))
-    console.log('检测到package.json包含 devEngines 字段,已移除')
+    spinner.info('检测到package.json包含 devEngines 字段,已移除')
   }
 
   await exec('npx karin init', { cwd: dir })
