@@ -24,8 +24,8 @@ jobs:
       # 设置 Node.js 环境
       - uses: actions/setup-node@v4
         with:
-          # 设置 Node.js 版本
-          node-version: 20
+          # 设置 Node.js 版本（tsdown 构建要求 >= 22.18）
+          node-version: 22
           # 设置 npm 注册表 URL
           registry-url: https://registry.npmjs.org
         if: ${{ steps.release.outputs.release_created }}
