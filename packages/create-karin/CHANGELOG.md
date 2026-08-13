@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.3](https://github.com/KarinJS/Karin/compare/create-karin-v1.3.2...create-karin-v1.3.3) (2026-08-13)
+
+
+### 🐛 Bug Fixes
+
+* 修复pnpmv11版本下脚本无法使用的问题 ([#674](https://github.com/KarinJS/Karin/issues/674)) ([bf601ab](https://github.com/KarinJS/Karin/commit/bf601ab28a006c4b2812c10b1a9a290be8a8f2cc))
+
 ## [1.3.2](https://github.com/KarinJS/Karin/compare/create-karin-v1.3.1...create-karin-v1.3.2) (2026-06-11)
 
 
