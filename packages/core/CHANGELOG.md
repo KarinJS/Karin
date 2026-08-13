@@ -1,5 +1,17 @@
 # 更新日志
 
+## [1.17.0](https://github.com/KarinJS/Karin/compare/core-v1.16.5...core-v1.17.0) (2026-08-13)
+
+
+### ✨ Features
+
+* 更新构建配置，迁移至 tsdown，调整输出目录至 dist ([#672](https://github.com/KarinJS/Karin/issues/672)) ([3da44b3](https://github.com/KarinJS/Karin/commit/3da44b3ab958f95fa2519a105db531cb3b1aa1c1))
+
+
+### 🐛 Bug Fixes
+
+* 修复nc适配器中，表情回应事件中isSet强制为true的问题 ([#671](https://github.com/KarinJS/Karin/issues/671)) ([66fa9a2](https://github.com/KarinJS/Karin/commit/66fa9a295a90459b17f02d861cc174daad398daf))
+
 ## [1.16.5](https://github.com/KarinJS/Karin/compare/core-v1.16.4...core-v1.16.5) (2026-07-25)
 
 
