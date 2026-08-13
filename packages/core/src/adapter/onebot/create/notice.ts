@@ -314,7 +314,7 @@ export const createNotice = (event: OneBotNoticeEvent, bot: AdapterOneBot<OneBot
       content: {
         count: event.likes[0].count,
         faceId: event.likes[0].emoji_id,
-        isSet: true,
+        isSet: event.is_add,
         messageId: event.message_id + '',
       },
     })

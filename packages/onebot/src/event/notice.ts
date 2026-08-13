@@ -323,6 +323,8 @@ export interface NcGroupEmojiLikeNoticeEvent extends EventBase {
     /** 表情ID参考: https://bot.q.qq.com/wiki/develop/api-v2/openapi/emoji/model.html#EmojiType */
     emoji_id: number
   }>
+  /** 是否回应表情 */
+  is_add: boolean
 }
 
 /**
