@@ -64,7 +64,8 @@ const installNpm = async (
       /** 自定义版本版本 */
       if (data.version) pkg += `@${data.version}`
 
-      const args = ['add', pkg, '--save']
+      /** tips: pnpm v12 起不再接受 --save、-f 等参数 add 默认就会写入 dependencies */
+      const args = ['add', pkg]
       if (isWorkspace()) args.push('-w')
       if (data.registry) args.push(`--registry=${data.registry}`)
       if (Array.isArray(data.allowBuild) && data.allowBuild.length && isPnpm10()) {
@@ -74,21 +75,26 @@ const installNpm = async (
       /** 处理 ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF 错误 */
       let IS_ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF = false
 
-      await spawnProcess('pnpm', args, {}, emitLog, () => {
+      let code = await spawnProcess('pnpm', args, {}, emitLog, () => {
         IS_ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF = true
       })
 
       if (IS_ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF) {
         emitLog('检测到 ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF 错误，尝试修复...')
-        emitLog('执行 pnpm install -f 强制重建模块目录')
-        /** 先执行 pnpm install -f 强制重建模块目录 */
-        await spawnProcess('pnpm', ['install', '-f'], {}, emitLog)
+        emitLog('执行 pnpm install --force 强制重建模块目录')
+        /** 先执行 pnpm install --force 强制重建模块目录 */
+        await spawnProcess('pnpm', ['install', '--force'], {}, emitLog)
         emitLog('模块目录重建完成，重新尝试安装插件')
         /** 重新尝试安装 */
-        await spawnProcess('pnpm', args, {}, emitLog)
-        emitLog('安装完成，尝试加载插件')
+        code = await spawnProcess('pnpm', args, {}, emitLog)
       }
 
+      if (code !== 0) {
+        emitLog(`安装失败: pnpm ${args.join(' ')} 退出码 ${code}`)
+        return false
+      }
+
+      emitLog('安装完成，尝试加载插件')
       await pkgHotReload('npm', data.target)
       return true
     }

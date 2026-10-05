@@ -94,7 +94,7 @@ export const updateAll = async (force?: boolean, parallel: boolean = false) => {
     if (packagesToUpdate.length > 0) {
       console.log('\n开始更新包:')
       try {
-        const { status, error } = await exec(`pnpm update ${packagesToUpdate.join(' ')} --save`)
+        const { status, error } = await exec(`pnpm update ${packagesToUpdate.join(' ')}`)
         if (status) {
           console.log('npm包更新完成')
 
@@ -358,7 +358,7 @@ export const updateDependencies = async (packagePath: string) => {
   if (packagesToUpdate.length > 0) {
     console.log('开始更新包:')
     try {
-      const { status, error } = await exec(`pnpm update ${packagesToUpdate.join(' ')} --save`)
+      const { status, error } = await exec(`pnpm update ${packagesToUpdate.join(' ')}`)
       if (status) {
         console.log('所有包更新完成')
 
