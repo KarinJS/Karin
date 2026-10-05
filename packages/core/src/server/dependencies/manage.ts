@@ -111,7 +111,13 @@ const installDependencies = async (
         const args = ['install', ...packagesToInstall.split(' ')]
         if (isWorkspace()) args.push('-w')
 
-        await spawnProcess('pnpm', args, {}, emitLog)
+        const code = await spawnProcess('pnpm', args, {}, emitLog)
+        if (code !== 0) {
+          emitLog(`安装失败: pnpm ${args.join(' ')} 退出码 ${code}`)
+          logger.mark(`安装依赖 ${logger.red(packagesToInstall)} 失败`)
+          return false
+        }
+
         logger.mark(`安装依赖 ${logger.green(packagesToInstall)} 完成`)
         return true
       }
@@ -152,7 +158,13 @@ const removeDependencies = async (
         const args = ['remove', ...packagesToRemove.split(' ')]
         if (isWorkspace()) args.push('-w')
 
-        await spawnProcess('pnpm', args, {}, emitLog)
+        const code = await spawnProcess('pnpm', args, {}, emitLog)
+        if (code !== 0) {
+          emitLog(`删除失败: pnpm ${args.join(' ')} 退出码 ${code}`)
+          logger.mark(`删除依赖 ${logger.red(packagesToRemove)} 失败`)
+          return false
+        }
+
         logger.mark(`删除依赖 ${logger.yellow(packagesToRemove)} 完成`)
         return true
       }
@@ -207,7 +219,13 @@ const addDependencies = async (
 
         if (isWorkspace()) args.push('-w')
 
-        await spawnProcess('pnpm', args, {}, emitLog)
+        const code = await spawnProcess('pnpm', args, {}, emitLog)
+        if (code !== 0) {
+          emitLog(`新增失败: pnpm ${args.join(' ')} 退出码 ${code}`)
+          logger.mark(`新增依赖 ${logger.red(dependencies.name)} 失败`)
+          return false
+        }
+
         /**
          * @version 1.9.9
          * 如果新增的依赖存在对等依赖 需要再执行一次pnpm install

@@ -46,9 +46,9 @@ export const update = async (
         operatorIp: ip,
       },
       async (options, emitLog) => {
-        await updateAll(options, emitLog, data.isAll)
-        await task.update.logs(options.id, '任务执行成功')
-        return true
+        const success = await updateAll(options, emitLog, data.isAll)
+        await task.update.logs(options.id, success ? '任务执行成功' : '任务执行失败')
+        return success
       }
     )
 
@@ -82,9 +82,16 @@ export const update = async (
       notExist.push(item.name)
     }
 
+    /** npm 插件是否更新成功 */
+    let success = true
+
     if (npm.length > 0) {
       const args = npm.map(item => `${item.name}@${item.version}`)
-      await spawnProcess('pnpm', ['update', ...args], { timeout: 60 * 1000 }, log)
+      const code = await spawnProcess('pnpm', ['update', ...args], { timeout: 60 * 1000 }, log)
+      if (code !== 0) {
+        log(`更新 npm 插件失败: pnpm update ${args.join(' ')} 退出码 ${code}`)
+        success = false
+      }
     }
 
     for (const item of git) {
@@ -99,7 +106,7 @@ export const update = async (
       }
     }
 
-    return true
+    return success
   }
 
   const id = await task.add(
@@ -111,9 +118,9 @@ export const update = async (
     },
     async (options, emitLog) => {
       try {
-        await performUpdate(options, emitLog)
-        await task.update.logs(options.id, '任务执行成功')
-        return true
+        const success = await performUpdate(options, emitLog)
+        await task.update.logs(options.id, success ? '任务执行成功' : '任务执行失败')
+        return success
       } catch (error) {
         await task.update.logs(options.id, `任务执行失败: ${(error as Error).message}`)
         return false
@@ -165,15 +172,20 @@ const updateAll = async (
   /**
    * 更新所有NPM插件
    * @param npmPlugins - NPM插件列表
+   * @returns 是否更新成功
    */
   const updateNpmPlugins = async (npmPlugins: string[]) => {
-    if (npmPlugins.length === 0) return
+    if (npmPlugins.length === 0) return true
 
     log(`* 开始更新NPM插件，共${npmPlugins.length}个`)
     const args = ['update', ...npmPlugins.map(name => `${name}@latest`)]
     if (isWorkspace()) args.push('-w')
 
-    await spawnProcess('pnpm', args, {}, log)
+    const code = await spawnProcess('pnpm', args, {}, log)
+    if (code === 0) return true
+
+    log(`* NPM插件更新失败: pnpm ${args.join(' ')} 退出码 ${code}`)
+    return false
   }
 
   /**
@@ -219,11 +231,11 @@ const updateAll = async (
   // 主流程执行
   const { npm, git } = await categorizePlugins()
   try {
-    await updateNpmPlugins(npm)
+    const success = await updateNpmPlugins(npm)
     await updateGitPlugins(git)
+    return success
   } catch (error) {
     log(`* 发生错误: ${error instanceof Error ? error.message : String(error)}`)
+    return false
   }
-
-  return true
 }
