@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.17.2](https://github.com/KarinJS/Karin/compare/core-v1.17.1...core-v1.17.2) (2026-10-05)
+
+
+### 🐛 Bug Fixes
+
+* **core:** skip node forward options for SnowLuma ([#670](https://github.com/KarinJS/Karin/issues/670)) ([638bcdb](https://github.com/KarinJS/Karin/commit/638bcdb963e4f581ec270df744b7e93ed335ff97))
+
 ## [1.17.1](https://github.com/KarinJS/Karin/compare/core-v1.17.0...core-v1.17.1) (2026-10-05)
 
 
