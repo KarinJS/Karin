@@ -1,5 +1,12 @@
 # 更新日志
 
+## [1.17.1](https://github.com/KarinJS/Karin/compare/core-v1.17.0...core-v1.17.1) (2026-10-05)
+
+
+### 🐛 Bug Fixes
+
+* 修复 pnpm v12 下 webui 安装、更新插件失败的问题 ([#677](https://github.com/KarinJS/Karin/issues/677)) ([e42e746](https://github.com/KarinJS/Karin/commit/e42e746eb4a4a53efffbcac672c93d92021d7101))
+
 ## [1.17.0](https://github.com/KarinJS/Karin/compare/core-v1.16.5...core-v1.17.0) (2026-08-13)
 
 
