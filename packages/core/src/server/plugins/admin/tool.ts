@@ -46,7 +46,7 @@ export const validatePluginRequest = (
  * @param args - 命令参数数组
  * @param options - 进程选项，包括工作目录和环境变量
  * @param emitLog - 日志回调函数，用于处理进程的输出信息
- * @returns 创建的子进程对象
+ * @returns 进程退出码 启动失败时为 -1
  */
 export const spawnProcess = (
   command: string,
@@ -56,7 +56,7 @@ export const spawnProcess = (
   /** 兼容ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF */
   pnpm?: () => void
 ) => {
-  return new Promise((resolve) => {
+  return new Promise<number>((resolve) => {
     const proc = spawn(command, args, {
       shell: true,
       cwd: options.cwd || process.cwd(),
@@ -85,14 +85,14 @@ export const spawnProcess = (
     proc.on('close', (code) => {
       proc.kill()
       emitLog(`执行完成，退出码: ${code}`)
-      resolve(true)
+      resolve(code ?? -1)
     })
 
     proc.on('error', (error) => {
       logger.debug(error)
       emitLog(`执行失败: ${error.message}`)
       logger.error(error)
-      resolve(error)
+      resolve(-1)
     })
 
     return proc

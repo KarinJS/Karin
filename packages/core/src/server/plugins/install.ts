@@ -69,7 +69,7 @@ const installNpmPlugin = async (task: InstallTask) => {
   task.logs.push(`开始安装 NPM 插件: ${task.name}`)
   task.logs.push('正在解析依赖...')
 
-  const command = ['add', task.name, '--save']
+  const command = ['add', task.name]
   await spawnCommand('pnpm', command, task)
 }
 

@@ -84,7 +84,7 @@ export const update = async (
 
     if (npm.length > 0) {
       const args = npm.map(item => `${item.name}@${item.version}`)
-      await spawnProcess('pnpm', ['update', ...args, '--save'], { timeout: 60 * 1000 }, log)
+      await spawnProcess('pnpm', ['update', ...args], { timeout: 60 * 1000 }, log)
     }
 
     for (const item of git) {
@@ -170,7 +170,7 @@ const updateAll = async (
     if (npmPlugins.length === 0) return
 
     log(`* 开始更新NPM插件，共${npmPlugins.length}个`)
-    const args = ['update', npmPlugins.join('@latest '), '--save']
+    const args = ['update', ...npmPlugins.map(name => `${name}@latest`)]
     if (isWorkspace()) args.push('-w')
 
     await spawnProcess('pnpm', args, {}, log)

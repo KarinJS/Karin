@@ -500,7 +500,7 @@ export const init = async (force?: boolean) => {
 
   /** 删掉pnpm-lock.yaml */
   if (fs.existsSync(path.join(dir, 'pnpm-lock.yaml'))) {
-    execSync('pnpm install -f', {
+    execSync('pnpm install --force', {
       stdio: 'inherit',
       cwd: dir,
     })
