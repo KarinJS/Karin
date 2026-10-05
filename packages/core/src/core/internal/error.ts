@@ -51,7 +51,7 @@ export const printMissing = () => {
     msg.push(...[
       '温馨提示:',
       `1. 如果是新安装的插件，请尝试执行 ${logger.red('pnpm install -P')} 自动安装依赖`,
-      `2. 如果执行第一步无效，请尝试执行 ${logger.red('pnpm imstall 依赖名称 -w')} 手动安装依赖`,
+      `2. 如果执行第一步无效，请尝试执行 ${logger.red('pnpm install 依赖名称 -w')} 手动安装依赖`,
       `举例: ${logger.red(`pnpm add ${one!.depend} -w`)}`,
       logger.yellow('对于手动安装的依赖，如果对应插件未在使用，请进行及时卸载: pnpm rm 依赖名称'),
     ])

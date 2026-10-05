@@ -1,7 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import util from 'node:util'
-import { isPnpm10, isWorkspace } from '@/env'
+import { isWorkspace } from '@/env'
+import { addWorkspaceAllowBuilds, isPnpmAllowBuildSupported } from '@/utils/pnpm'
 import { taskSystem as task } from '@/service/task'
 import { handleReturn, spawnProcess } from '../plugins/admin/tool'
 
@@ -108,7 +109,7 @@ const installDependencies = async (
         operatorIp: ip,
       },
       async (_: TaskEntity, emitLog: (message: string) => void) => {
-        const args = ['install', ...packagesToInstall.split(' ')]
+        const args = ['add', ...packagesToInstall.split(' ')]
         if (isWorkspace()) args.push('-w')
 
         const code = await spawnProcess('pnpm', args, {}, emitLog)
@@ -207,8 +208,13 @@ const addDependencies = async (
       async (_: TaskEntity, emitLog: (message: string) => void) => {
         const args = ['add', name]
 
-        if (Array.isArray(dependencies.allowBuild) && dependencies.allowBuild.length && isPnpm10()) {
-          dependencies.allowBuild.forEach(pkg => args.unshift(`--allow-build=${pkg}`))
+        if (Array.isArray(dependencies.allowBuild) && dependencies.allowBuild.length) {
+          /** 持久化到 pnpm-workspace.yaml 兼容 pnpm v10~v12 的构建脚本白名单 */
+          await addWorkspaceAllowBuilds(dependencies.allowBuild)
+          /** --allow-build 参数仅 pnpm 10.4+ 支持 */
+          if (isPnpmAllowBuildSupported()) {
+            dependencies.allowBuild.forEach(pkg => args.unshift(`--allow-build=${pkg}`))
+          }
         }
 
         if (dependencies.location === 'devDependencies') {

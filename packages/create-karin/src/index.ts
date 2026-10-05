@@ -11,6 +11,7 @@ import { green, red, yellow, blue, magenta } from 'kolorist'
 import { getBestRegistry, getRegistry, getRegistryList, setRegistry, getCurrentRegistryName } from './utils/registry'
 import { exec } from './utils/exec'
 import { createPlugin, createProject } from './project'
+import { cleanPkgAfterPnpmInit, writeWorkspaceConfig } from './utils/workspace'
 import stripJsonComments from 'strip-json-comments'
 
 // 解析命令行参数
@@ -97,6 +98,14 @@ const checkEnvironment = async () => {
   pnpmVersion
     ? spinner.succeed(`pnpm: ${green(pnpmVersion)}`)
     : spinner.fail(`pnpm: ${red('未安装')}`)
+
+  /** pnpm 11+ 要求 Node.js >= 22 低版本Node无法运行新版pnpm */
+  const pnpmMajor = parseInt((pnpmVersion || '').split('.')[0], 10)
+  const nodeMajor = parseInt(process.versions.node.split('.')[0], 10)
+  if (!isNaN(pnpmMajor) && pnpmMajor >= 11 && nodeMajor < 22) {
+    console.log(yellow(`⚠️ 检测到 pnpm v${pnpmMajor} 要求 Node.js >= 22，当前 Node.js v${process.versions.node} 可能无法正常运行`))
+    console.log(yellow('   建议执行 npm install -g pnpm@9 或升级 Node.js'))
+  }
 
   spinner.start('正在检查pm2安装状态...')
   /** pm2版本 */
@@ -341,12 +350,17 @@ const handleFixEnvironment = async () => {
     }
   }
 
+  /** 移除 pnpm init 写入的 devEngines/packageManager (pnpm 10+) 并预写跨版本兼容配置 */
+  cleanPkgAfterPnpmInit(cwd)
+  const pnpmMajor = parseInt(((await getPnpmVersion()) || '').split('.')[0], 10) || -1
+  writeWorkspaceConfig(cwd, pnpmMajor)
+
   /** 安装最新版本的node-karin */
   spinner.start(`正在安装 node-karin@${karinVersion}...`)
   try {
     const { registry } = await checkEnvironment()
     const registrySuffix = registry ? ` --registry=${registry}` : ''
-    await exec(`pnpm install node-karin@${karinVersion}${registrySuffix}`, { cwd })
+    await exec(`pnpm add node-karin@${karinVersion}${registrySuffix}`, { cwd })
     spinner.succeed(`node-karin@${karinVersion} 安装成功`)
   } catch (error) {
     spinner.fail('node-karin安装失败: ' + String(error))

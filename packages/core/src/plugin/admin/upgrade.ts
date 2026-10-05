@@ -103,7 +103,7 @@ export const updateNpmPackage = async (
 ) => {
   const tag = options.tag || 'latest'
   const registry = options.registry ? ` --registry=${options.registry}` : ''
-  const cmd = `pnpm install ${name}@${tag}${registry}`
+  const cmd = `pnpm add ${name}@${tag}${registry}`
   const result = await exec(cmd, options)
   return result
 }
@@ -121,7 +121,7 @@ export const updateNpmPackages = async (
   const registry = options.registry ? ` --registry=${options.registry}` : ''
 
   const cmd = packages.length
-    ? `pnpm install ${packages.map(pkg => `${pkg}@latest`).join(' ')}${registry}`
+    ? `pnpm add ${packages.map(pkg => `${pkg}@latest`).join(' ')}${registry}`
     : `pnpm up${registry}`
 
   const result = await exec(cmd, options)

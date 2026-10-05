@@ -58,7 +58,7 @@ export const installWebui: RequestHandler = async (req, res) => {
       return createServerErrorResponse(res, '非法插件')
     }
 
-    const result = await exec(`pnpm install ${name}${isWorkspace() ? ' -w' : ''}`)
+    const result = await exec(`pnpm add ${name}${isWorkspace() ? ' -w' : ''}`)
     if (name === '@karinjs/node-pty') {
       await initialize()
     }
@@ -225,7 +225,7 @@ export const updateWebuiPluginVersion: RequestHandler = async (req, res) => {
       return createServerErrorResponse(res, '非法插件')
     }
 
-    const result = await exec(`pnpm install ${name}@${version}${isWorkspace() ? ' -w' : ''}`)
+    const result = await exec(`pnpm add ${name}@${version}${isWorkspace() ? ' -w' : ''}`)
     return createSuccessResponse(res, {
       status: result.status,
       data: result.status ? '更新成功' : result.error?.message || '更新失败',

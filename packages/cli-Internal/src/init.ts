@@ -16,6 +16,25 @@ import { URL, fileURLToPath } from 'node:url'
 import { execSync } from 'node:child_process'
 import { MAIN } from './main'
 
+/** 缓存的pnpm主版本号 -1表示获取失败 */
+let PNPM_MAJOR_VERSION: number | null = null
+
+/**
+ * 获取pnpm主版本号
+ * @returns 主版本号 获取失败返回-1
+ */
+export const getPnpmMajorVersion = (): number => {
+  if (PNPM_MAJOR_VERSION !== null) return PNPM_MAJOR_VERSION
+  try {
+    const version = execSync('pnpm -v', { stdio: ['pipe', 'pipe', 'pipe'] }).toString().trim()
+    const major = parseInt(version.split('.')[0], 10)
+    PNPM_MAJOR_VERSION = isNaN(major) ? -1 : major
+  } catch {
+    PNPM_MAJOR_VERSION = -1
+  }
+  return PNPM_MAJOR_VERSION
+}
+
 /**
  * 判断是否处于插件开发环境
  * @param dir 目标目录
@@ -238,7 +257,27 @@ const createOrUpdateEnv = (dir: string) => {
 }
 
 /**
+ * 构建依赖列表
+ * pnpm 10 起默认不再执行依赖的安装脚本 这些包需要显式声明才会执行
+ */
+const BUILD_DEPENDENCIES = [
+  '@karinjs/node-pty',
+  '@karinjs/sqlite3-cjs',
+  'canvas',
+  'sqlite3',
+  'sharp',
+  'puppeteer',
+  'classic-level',
+]
+
+/**
  * 创建 pnpm-workspace.yaml 文件
+ *
+ * 写入 pnpm v9 ~ v12 的通用兼容配置：
+ * - pnpm 9 无法识别的配置项会被忽略 不影响原有行为
+ * - pnpm 10 依赖 onlyBuiltDependencies 白名单才会执行构建脚本
+ * - pnpm 10.26+/11+ 改用 allowBuilds 并默认开启 strictDepBuilds (存在未声明的构建脚本会直接报错)
+ * - pnpm 11+ 默认 minimumReleaseAge=1440 (发布未满24h的版本无法安装)、blockExoticSubdeps=true (子依赖禁止git/tarball来源)
  * @param isDev - 是否处于开发环境
  * @param dir - 目标目录
  */
@@ -250,8 +289,12 @@ const createWorkspace = (isDev: boolean, dir: string) => {
   let data: {
     lockfile?: boolean
     packages?: string[]
-    onlyBuiltDependencies?: string[]
     publicHoistPattern?: string[]
+    onlyBuiltDependencies?: string[]
+    allowBuilds?: Record<string, boolean>
+    strictDepBuilds?: boolean
+    minimumReleaseAge?: number
+    blockExoticSubdeps?: boolean
   } = {}
   try {
     data = fs.existsSync(workspace) ? yaml.parse(fs.readFileSync(workspace, 'utf-8')) : {}
@@ -282,25 +325,47 @@ const createWorkspace = (isDev: boolean, dir: string) => {
   }
 
   /**
-   * pnpm 10.x
-   * 允许执行构建命令的包
+   * pnpm 10.26+/11+ 允许执行构建命令的包 (取代 onlyBuiltDependencies)
+   * 已被用户显式设为 false 的保持不变
    */
-  if (!data.onlyBuiltDependencies || !Array.isArray(data.onlyBuiltDependencies)) {
-    data.onlyBuiltDependencies = []
+  if (!data.allowBuilds || typeof data.allowBuilds !== 'object' || Array.isArray(data.allowBuilds)) {
+    data.allowBuilds = {}
   }
 
-  const onlyBuiltDependencies = [
-    '@karinjs/node-pty',
-    '@karinjs/sqlite3-cjs',
-    'canvas',
-    'sqlite3',
-    'sharp',
-    'puppeteer',
-    'classic-level',
-    ...data.onlyBuiltDependencies,
-  ]
+  BUILD_DEPENDENCIES.forEach((dep) => {
+    if (data.allowBuilds![dep] !== false) data.allowBuilds![dep] = true
+  })
 
-  data.onlyBuiltDependencies = dedupe(onlyBuiltDependencies)
+  /**
+   * pnpm 10.x 依赖此白名单才会执行构建脚本
+   * 10.26 起被 allowBuilds 取代 11+ 不再读取
+   * 仅在 pnpm 主版本 <= 10 时写入 避免 12+ 的未知配置项警告
+   */
+  const major = getPnpmMajorVersion()
+  if (major <= 10) {
+    if (!data.onlyBuiltDependencies || !Array.isArray(data.onlyBuiltDependencies)) {
+      data.onlyBuiltDependencies = []
+    }
+    data.onlyBuiltDependencies = dedupe([...BUILD_DEPENDENCIES, ...data.onlyBuiltDependencies])
+  }
+
+  /**
+   * pnpm 11+ 默认 true 存在未声明的构建脚本会直接中断安装
+   * 关闭后与 pnpm 9/10 行为一致：仅提示警告
+   */
+  data.strictDepBuilds = false
+
+  /**
+   * pnpm 11+ 默认 1440 分钟 发布未满24h的版本无法安装
+   * 置 0 保持与 pnpm 9 一致：新版本立即可安装
+   */
+  data.minimumReleaseAge = 0
+
+  /**
+   * pnpm 10.26+/11+ 默认 true 会阻止子依赖使用 git/tarball 来源
+   * 部分插件存在 git 子依赖 关闭以保持与 pnpm 9 一致
+   */
+  data.blockExoticSubdeps = false
 
   /**
    * pnpm 10.x
@@ -318,16 +383,18 @@ const createWorkspace = (isDev: boolean, dir: string) => {
 
   data.publicHoistPattern = dedupe(publicHoistPattern)
   /** 保证写入顺序 */
-  fs.writeFileSync(workspace, yaml.stringify(
-    Object.assign(
-      {
-        lockfile: false,
-        packages: [],
-        publicHoistPattern: [],
-        onlyBuiltDependencies: [],
-      },
-      data
-    )), 'utf-8')
+  const defaults: Record<string, any> = {
+    lockfile: false,
+    packages: [],
+    publicHoistPattern: [],
+    allowBuilds: {},
+    strictDepBuilds: false,
+    minimumReleaseAge: 0,
+    blockExoticSubdeps: false,
+  }
+  /** 仅 pnpm <= 10 时写入onlyBuiltDependencies 11+ 会将其视为未知配置项 */
+  if (major <= 10) defaults.onlyBuiltDependencies = []
+  fs.writeFileSync(workspace, yaml.stringify(Object.assign(defaults, data)), 'utf-8')
 }
 
 /**
@@ -422,6 +489,13 @@ const modifyPackageJson = (isDev: boolean, dir: string) => {
 
   /** pnpm10无力适配... */
   if (pkg.pnpm) delete pkg.pnpm
+  /**
+   * pnpm 10+ 的 pnpm init 会写入 devEngines (托管node版本)
+   * pnpm 12 的 pnpm init 还会写入 packageManager (锁定pnpm版本)
+   * 二者都会让 pnpm 自动下载/切换运行时版本 与 karin 的部署方式冲突 统一移除
+   */
+  if (pkg.devEngines) delete pkg.devEngines
+  if (typeof pkg.packageManager === 'string' && pkg.packageManager.startsWith('pnpm@')) delete pkg.packageManager
   fs.writeFileSync(pkgDir, JSON.stringify(pkg, null, 2))
   return pkg
 }

@@ -2,6 +2,8 @@ import ora from 'ora'
 import fs from 'node:fs'
 import path from 'node:path'
 import { exec } from './utils/exec'
+import { cleanPkgAfterPnpmInit, writeWorkspaceConfig } from './utils/workspace'
+import { getPnpmVersion } from './utils/pnpm'
 import { fileURLToPath } from 'node:url'
 import { green, magenta, yellow } from 'kolorist'
 
@@ -29,7 +31,12 @@ export const createProject = async (
 
   spinner.start(`正在安装 node-karin@${karinVersion}...`)
   await exec('pnpm init', { cwd: dir })
-  const cmd = `pnpm install node-karin@${karinVersion}${registrySuffix}`
+  /** 移除 pnpm init 写入的 devEngines/packageManager (pnpm 10+) 避免pnpm托管node或pnpm版本 */
+  cleanPkgAfterPnpmInit(dir)
+  /** 预写入跨版本兼容配置 pnpm 11+ 默认阻止未声明构建脚本的依赖安装、拦截发布未满24h的版本 */
+  const pnpmMajor = parseInt((await getPnpmVersion()).split('.')[0], 10) || -1
+  writeWorkspaceConfig(dir, pnpmMajor)
+  const cmd = `pnpm add node-karin@${karinVersion}${registrySuffix}`
   const { error, stderr } = await exec(cmd, { cwd: dir })
 
   if (error) throw error
@@ -37,14 +44,6 @@ export const createProject = async (
   spinner.succeed(green(`✨ node-karin@${karinVersion} 安装成功`))
 
   spinner.start('正在执行初始化...')
-  const content = fs.readFileSync(path.join(dir, 'package.json'), 'utf-8')
-  const pkg = JSON.parse(content)
-  if (pkg.devEngines) {
-    delete pkg.devEngines
-    fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify(pkg, null, 2))
-    console.log('检测到package.json包含 devEngines 字段,已移除')
-  }
-
   await exec('npx karin init', { cwd: dir })
   setAuthKey(dir, httpAuthKey, wsAuthKey)
   spinner.succeed(green('✨ 初始化完成'))
@@ -96,7 +95,10 @@ export const createPlugin = async (
   createGitignore(dir, spinner)
 
   spinner.start(`正在安装 node-karin@${karinVersion}...`)
-  const karinCmd = `pnpm install -D node-karin@${karinVersion}${registrySuffix}`
+  /** 预写入跨版本兼容配置 pnpm 11+ 默认阻止未声明构建脚本的依赖安装、拦截发布未满24h的版本 */
+  const pnpmMajor = parseInt((await getPnpmVersion()).split('.')[0], 10) || -1
+  writeWorkspaceConfig(dir, pnpmMajor)
+  const karinCmd = `pnpm add -D node-karin@${karinVersion}${registrySuffix}`
   const { error: karinError, stderr: karinStderr } = await exec(karinCmd, { cwd: dir })
   if (karinError) throw karinError
   if (karinStderr) console.log(karinStderr)
