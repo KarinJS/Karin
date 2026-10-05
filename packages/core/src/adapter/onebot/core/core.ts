@@ -1096,7 +1096,7 @@ export class AdapterOneBot<T extends OneBotType> extends AdapterBase {
           if (elem.options.source) node.data.source = elem.options.source
         }
 
-        if (options && messages.length === 0) {
+        if (this.adapter.name !== 'SnowLuma' && options && messages.length === 0) {
           node.data.news = options.news
           node.data.prompt = options.prompt
           node.data.summary = options.summary
