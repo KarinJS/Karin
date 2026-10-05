@@ -6,12 +6,11 @@ import path from 'node:path'
 import prompts from 'prompts'
 import { getPm2Version } from './utils/pm2'
 import { getStr, sleep } from './utils/tools'
-import { getPnpmVersion } from './utils/pnpm'
+import { detectPnpm, getPnpmNodeWarning } from './utils/pnpm'
 import { green, red, yellow, blue, magenta } from 'kolorist'
 import { getBestRegistry, getRegistry, getRegistryList, setRegistry, getCurrentRegistryName } from './utils/registry'
-import { exec } from './utils/exec'
-import { createPlugin, createProject } from './project'
-import { cleanPkgAfterPnpmInit, writeWorkspaceConfig } from './utils/workspace'
+import { exec, getExecErrorMessage } from './utils/exec'
+import { createPlugin, createProject, fixProject } from './project'
 import stripJsonComments from 'strip-json-comments'
 
 // 解析命令行参数
@@ -94,16 +93,18 @@ const checkEnvironment = async () => {
 
   spinner.start('正在获取pnpm安装状态...')
   /** pnpm版本 */
-  const pnpmVersion = await getPnpmVersion()
-  pnpmVersion
-    ? spinner.succeed(`pnpm: ${green(pnpmVersion)}`)
-    : spinner.fail(`pnpm: ${red('未安装')}`)
+  const pnpm = await detectPnpm()
+  const pnpmVersion = pnpm.version
+  if (pnpmVersion) {
+    spinner.succeed(`pnpm: ${green(pnpmVersion)}`)
+  } else {
+    spinner.fail(`pnpm: ${red(pnpm.requiredNode ? '当前 Node.js 版本无法运行' : '未安装')}`)
+  }
 
-  /** pnpm 11+ 要求 Node.js >= 22 低版本Node无法运行新版pnpm */
-  const pnpmMajor = parseInt((pnpmVersion || '').split('.')[0], 10)
-  const nodeMajor = parseInt(process.versions.node.split('.')[0], 10)
-  if (!isNaN(pnpmMajor) && pnpmMajor >= 11 && nodeMajor < 22) {
-    console.log(yellow(`⚠️ 检测到 pnpm v${pnpmMajor} 要求 Node.js >= 22，当前 Node.js v${process.versions.node} 可能无法正常运行`))
+  /** pnpm 11 要求 Node.js >= 22.13 低版本Node无法运行 */
+  const pnpmNodeWarning = getPnpmNodeWarning(pnpm)
+  if (pnpmNodeWarning) {
+    console.log(yellow(`⚠️ ${pnpmNodeWarning}`))
     console.log(yellow('   建议执行 npm install -g pnpm@9 或升级 Node.js'))
   }
 
@@ -117,6 +118,7 @@ const checkEnvironment = async () => {
   return {
     registry,
     bestRegistry,
+    pnpm,
     pnpmVersion,
     pm2Version,
   }
@@ -338,44 +340,27 @@ const handleFixEnvironment = async () => {
     spinner.info('当前目录没有package.json，将创建新的环境')
   }
 
+  /** 检查环境 获取registry与pnpm版本 */
+  const { registry, pnpm } = await checkEnvironment()
+  if (!pnpm.version) {
+    console.log(red('未检测到可用的pnpm，请先安装pnpm后重试: npm install -g pnpm@9'))
+    return
+  }
+
   /** 如果没有package.json，创建新的 */
   if (!hasPackageJson) {
     spinner.start('正在初始化新的package.json...')
-    try {
-      await exec('pnpm init', { cwd })
-      spinner.succeed('package.json创建成功')
-    } catch (error) {
-      spinner.fail('创建 package.json 失败: ' + String(error))
+    const result = await exec('pnpm init', { cwd })
+    if (result.error) {
+      spinner.fail('创建 package.json 失败: ' + getExecErrorMessage(result))
       return
     }
+    spinner.succeed('package.json创建成功')
   }
 
-  /** 移除 pnpm init 写入的 devEngines/packageManager (pnpm 10+) 并预写跨版本兼容配置 */
-  cleanPkgAfterPnpmInit(cwd)
-  const pnpmMajor = parseInt(((await getPnpmVersion()) || '').split('.')[0], 10) || -1
-  writeWorkspaceConfig(cwd, pnpmMajor)
-
-  /** 安装最新版本的node-karin */
-  spinner.start(`正在安装 node-karin@${karinVersion}...`)
-  try {
-    const { registry } = await checkEnvironment()
-    const registrySuffix = registry ? ` --registry=${registry}` : ''
-    await exec(`pnpm add node-karin@${karinVersion}${registrySuffix}`, { cwd })
-    spinner.succeed(`node-karin@${karinVersion} 安装成功`)
-  } catch (error) {
-    spinner.fail('node-karin安装失败: ' + String(error))
-    return
-  }
-
-  /** 执行karin初始化 */
-  spinner.start('正在初始化Karin环境...')
-  try {
-    await exec('npx karin init', { cwd })
-    spinner.succeed('Karin环境初始化完成')
-  } catch (error) {
-    spinner.fail('Karin初始化失败: ' + String(error))
-    return
-  }
+  /** 合并 pnpm-workspace.yaml 兼容配置 → 安装 node-karin → karin init */
+  const registrySuffix = registry ? ` --registry=${registry}` : ''
+  if (!await fixProject(cwd, karinVersion, registrySuffix, pnpm.parsed)) return
 
   /** 获取并显示node-karin版本 */
   try {

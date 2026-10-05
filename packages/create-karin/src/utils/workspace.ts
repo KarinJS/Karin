@@ -1,84 +1,22 @@
 import fs from 'node:fs'
 import path from 'node:path'
+/** 与 karin init 共用同一份实现 (打包时内联) 避免两处维护构建依赖列表与兼容配置 */
+import { applyKarinWorkspace, updateYamlFile } from '../../../cli-Internal/src/workspace'
+import type { Version, WorkspaceData } from '../../../cli-Internal/src/workspace'
 
 /**
- * 构建依赖列表
- * pnpm 10 起默认不再执行依赖的安装脚本 这些包需要显式声明才会执行
- */
-export const BUILD_DEPENDENCIES = [
-  '@karinjs/node-pty',
-  '@karinjs/sqlite3-cjs',
-  'canvas',
-  'sqlite3',
-  'sharp',
-  'puppeteer',
-  'classic-level',
-]
-
-/**
- * 序列化 allowBuilds 键值对
- * @param deps - 依赖列表
- */
-const serializeAllowBuilds = (deps: string[]) => {
-  return deps.map(dep => `  '${dep}': true`).join('\n')
-}
-
-/**
- * 生成 pnpm v9 ~ v12 通用兼容的 pnpm-workspace.yaml 内容
+ * 在首次 pnpm add 之前写入 pnpm-workspace.yaml 已存在时与原有配置合并
  *
- * - pnpm 9 无法识别的配置项会被忽略 不影响原有行为
- * - pnpm 10 依赖 onlyBuiltDependencies 白名单才会执行构建脚本
- * - pnpm 10.26+/11+ 改用 allowBuilds 并默认开启 strictDepBuilds (存在未声明的构建脚本会直接报错)
- * - pnpm 11+ 默认 minimumReleaseAge=1440 (发布未满24h的版本无法安装)、blockExoticSubdeps=true (子依赖禁止git/tarball来源)
- * 注意：不写入 packages 键 避免项目被识别为工作区导致 pnpm add 需要追加 -w 参数
- * packages 由后续 karin init 合并写入
- *
- * @param pnpmMajor - 当前pnpm主版本号 传-1或未传时视为无法确定 (会同时写入 onlyBuiltDependencies)
+ * - 内容与 karin init 生成的一致：构建脚本白名单、pnpm 11+ 的 strictDepBuilds/minimumReleaseAge/blockExoticSubdeps 兼容项
+ * - 始终包含 packages 字段：pnpm 10.5 以下缺少该字段时任何命令都会报错 因此后续 pnpm add 需要追加 -w
+ * - 用户已有的配置 (包括显式设为 false 的 allowBuilds 条目) 保持不变
+ * @param dir - 项目目录
+ * @param version - 当前pnpm版本 未知时传null
+ * @param isDev - 是否为插件开发项目 生产项目会加入 plugins/*
  */
-export const buildWorkspaceYaml = (pnpmMajor = -1): string => {
-  const lines: string[] = [
-    '# Karin pnpm v9 ~ v12 兼容配置 旧版本pnpm会忽略无法识别的配置项',
-    '# pnpm 10 起默认不执行依赖构建脚本 allowBuilds/onlyBuiltDependencies 为构建脚本白名单',
-    'lockfile: false',
-  ]
-
-  lines.push(
-    'publicHoistPattern:',
-    "  - '*sqlite3*'",
-    "  - '*express*'"
-  )
-
-  /** pnpm 10.x 专用 10.26 起被 allowBuilds 取代 11+ 不再读取 */
-  if (pnpmMajor <= 10) {
-    lines.push('onlyBuiltDependencies:')
-    BUILD_DEPENDENCIES.forEach(dep => lines.push(`  - '${dep}'`))
-  }
-
-  lines.push('allowBuilds:')
-  BUILD_DEPENDENCIES.forEach(dep => lines.push(serializeAllowBuilds([dep])))
-  lines.push(
-    '# pnpm 11+ 默认开启 存在未声明的构建脚本会直接中断安装 关闭以保持与 pnpm 9 一致',
-    'strictDepBuilds: false',
-    '# pnpm 11+ 默认1440分钟 发布未满24h的版本无法安装 置0保持与 pnpm 9 一致',
-    'minimumReleaseAge: 0',
-    '# pnpm 10.26+/11+ 默认开启 会阻止子依赖使用git/tarball来源 关闭以保持与 pnpm 9 一致',
-    'blockExoticSubdeps: false'
-  )
-
-  return lines.join('\n') + '\n'
-}
-
-/**
- * 在目标目录写入 pnpm-workspace.yaml (已存在则跳过)
- * @param dir - 目标目录
- * @param pnpmMajor - 当前pnpm主版本号
- * @returns 是否写入
- */
-export const writeWorkspaceConfig = (dir: string, pnpmMajor = -1): boolean => {
+export const prepareWorkspace = (dir: string, version: Version | null, isDev = false) => {
   const file = path.join(dir, 'pnpm-workspace.yaml')
-  if (fs.existsSync(file)) return false
-  fs.writeFileSync(file, buildWorkspaceYaml(pnpmMajor))
-  return true
+  return updateYamlFile<WorkspaceData>(file, data => applyKarinWorkspace(data, { isDev, version }))
 }
 
 /**

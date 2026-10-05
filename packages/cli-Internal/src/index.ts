@@ -59,9 +59,9 @@ program.command('init')
 
 program.command('b')
   .alias('allow-build')
-  .description('构建依赖管理 (pnpm v10.x)')
+  .description('构建依赖管理 (pnpm v10+)')
   .argument('<action>', '操作类型: add, rm, ls')
-  .argument('[dependency]', '依赖包名称 (add/rm操作需要 多个使用,分割)')
+  .argument('[dependency]', '依赖包名称 (add/rm操作需要 多个使用,或空格分割)')
   .action((action, dependency) => {
     if (action === 'add' && dependency) {
       buildDep.add(dependency)

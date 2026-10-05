@@ -1,20 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import * as yaml from 'yaml'
-import { getPnpmMajorVersion, isPnpmAtLeast } from '@/env'
-
-/**
- * pnpm 10 起默认不再执行依赖的安装脚本 这些包需要显式声明才会执行
- */
-export const KARIN_BUILD_DEPENDENCIES = [
-  '@karinjs/node-pty',
-  '@karinjs/sqlite3-cjs',
-  'canvas',
-  'sqlite3',
-  'sharp',
-  'puppeteer',
-  'classic-level',
-]
+import { isPnpmAtLeast } from '@/env'
 
 /**
  * @description pnpm 是否支持 --allow-build 参数 (v10.4+)
@@ -22,46 +9,68 @@ export const KARIN_BUILD_DEPENDENCIES = [
 export const isPnpmAllowBuildSupported = () => isPnpmAtLeast(10, 4)
 
 /**
- * @description 将包持久化到 pnpm-workspace.yaml 的构建脚本白名单
- *
- * pnpm 10.26+/11+ 使用 allowBuilds 10.x 使用 onlyBuiltDependencies
- * 同时写入两份 旧版本会忽略无法识别的配置项 以保证 pnpm v9 ~ v12 行为一致
- * @param packages - 包名列表
- * @returns 是否写入成功 文件不存在或解析失败返回false
+ * @description 获取 pnpm-workspace.yaml 路径
  */
-export const addWorkspaceAllowBuilds = async (packages: string[]): Promise<boolean> => {
-  const list = Array.isArray(packages) ? packages.filter(p => typeof p === 'string' && p.trim()) : []
-  if (!list.length) return false
+const getWorkspaceFile = () => path.join(process.cwd(), 'pnpm-workspace.yaml')
 
-  const file = path.join(process.cwd(), 'pnpm-workspace.yaml')
-  if (!fs.existsSync(file)) return false
-
-  let data: Record<string, any> = {}
+/**
+ * @description 获取用户在 allowBuilds 中显式设为 false 的包
+ */
+const getDeniedBuilds = (): Set<string> => {
   try {
-    data = yaml.parse(fs.readFileSync(file, 'utf-8')) || {}
+    const file = getWorkspaceFile()
+    if (!fs.existsSync(file)) return new Set()
+    const allowBuilds = yaml.parse(fs.readFileSync(file, 'utf-8'))?.allowBuilds
+    if (!allowBuilds || typeof allowBuilds !== 'object' || Array.isArray(allowBuilds)) return new Set()
+    return new Set(Object.keys(allowBuilds).filter(key => allowBuilds[key] === false))
   } catch {
-    return false
+    return new Set()
+  }
+}
+
+/**
+ * @description 备份 pnpm-workspace.yaml
+ * @returns 还原函数 将文件恢复为备份时的内容 (备份时不存在则删除)
+ */
+export const backupWorkspaceFile = () => {
+  const file = getWorkspaceFile()
+  const content = fs.existsSync(file) ? fs.readFileSync(file, 'utf-8') : null
+
+  return () => {
+    try {
+      if (content === null) {
+        if (fs.existsSync(file)) fs.rmSync(file)
+        return
+      }
+
+      if (!fs.existsSync(file) || fs.readFileSync(file, 'utf-8') !== content) {
+        fs.writeFileSync(file, content, 'utf-8')
+      }
+    } catch (error) {
+      logger.error('[pnpm] 还原 pnpm-workspace.yaml 失败', error)
+    }
+  }
+}
+
+/**
+ * @description 生成安装时允许执行构建脚本的参数
+ *
+ * - pnpm 10.4 以下不支持 --allow-build (pnpm 9 默认执行构建脚本 无需声明)
+ * - pnpm 会自行将这些包写入 pnpm-workspace.yaml 的白名单 (10.5~10.25 为 onlyBuiltDependencies 10.26+ 为 allowBuilds) 无需手动写入
+ * - 跳过用户在 allowBuilds 中显式设为 false 的包 否则 pnpm 会以 ERR_PNPM_OVERRIDING_IGNORED_BUILT_DEPENDENCIES 中断安装
+ * - pnpm 在安装失败时同样会写入白名单 安装失败后需调用 restore 还原 避免未安装成功的包被永久授权
+ * @param packages - 允许执行构建脚本的包名列表
+ */
+export const prepareAllowBuild = (packages: unknown) => {
+  const list = Array.isArray(packages)
+    ? Array.from(new Set(packages.filter((p): p is string => typeof p === 'string').map(p => p.trim()).filter(Boolean)))
+    : []
+
+  if (!list.length || !isPnpmAllowBuildSupported()) {
+    return { args: [] as string[], restore: () => { } }
   }
 
-  /** allowBuilds: pnpm 10.26+/11+/12+ 用户显式设为 false 的不覆盖 */
-  const allowBuilds: Record<string, boolean> = (
-    data.allowBuilds && typeof data.allowBuilds === 'object' && !Array.isArray(data.allowBuilds)
-  )
-    ? { ...data.allowBuilds }
-    : {}
-
-  list.forEach((pkg) => {
-    if (allowBuilds[pkg] !== false) allowBuilds[pkg] = true
-  })
-
-  const major = getPnpmMajorVersion()
-  if (major <= 10) {
-    /** onlyBuiltDependencies: pnpm 10.x 专用 */
-    const onlyBuilt: string[] = Array.isArray(data.onlyBuiltDependencies) ? data.onlyBuiltDependencies : []
-    data.onlyBuiltDependencies = Array.from(new Set([...list, ...onlyBuilt]))
-  }
-
-  data.allowBuilds = allowBuilds
-  fs.writeFileSync(file, yaml.stringify(data), 'utf-8')
-  return true
+  const denied = getDeniedBuilds()
+  const args = list.filter(pkg => !denied.has(pkg)).map(pkg => `--allow-build=${pkg}`)
+  return { args, restore: args.length ? backupWorkspaceFile() : () => { } }
 }

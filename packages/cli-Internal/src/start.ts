@@ -1,28 +1,23 @@
 import fs from 'fs'
 import path from 'node:path'
-import * as yaml from 'yaml'
 import { MAIN } from './main'
 import { pathToFileURL } from 'node:url'
 import { execSync } from 'node:child_process'
+import { isWorkspaceCompatible, readYamlFile } from './workspace'
 
 /**
- * @description 启动项目
- */
-/**
  * 检查 pnpm-workspace.yaml 是否已包含 pnpm v10~v12 的兼容配置
- * 旧版本项目缺少 allowBuilds 时会触发重新初始化以补全配置
+ * 旧版本项目缺少 allowBuilds 或旧白名单未迁移时会触发重新初始化以补全配置
  */
 const isCompatibleWorkspace = (): boolean => {
   const file = path.join(process.cwd(), 'pnpm-workspace.yaml')
   if (!fs.existsSync(file)) return false
-  try {
-    const data = yaml.parse(fs.readFileSync(file, 'utf-8'))
-    return !!data?.allowBuilds
-  } catch {
-    return false
-  }
+  return isWorkspaceCompatible(readYamlFile(file))
 }
 
+/**
+ * @description 启动项目
+ */
 export const start = async () => {
   const indexPath = path.join(process.cwd(), MAIN)
   if (

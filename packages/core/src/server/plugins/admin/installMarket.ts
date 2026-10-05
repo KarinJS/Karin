@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { AxiosError } from 'axios'
 import { isWorkspace } from '@/env'
-import { addWorkspaceAllowBuilds, isPnpmAllowBuildSupported } from '@/utils/pnpm'
+import { prepareAllowBuild } from '@/utils/pnpm'
 import { handleReturn, spawnProcess } from './tool'
 import { karinPathPlugins } from '@/root'
 import { getFastGithub, raceRequest } from '@/utils/request'
@@ -81,14 +81,9 @@ const installNpm = async (
       /** tips: pnpm v12 起不再接受 --save、-f 等参数 add 默认就会写入 dependencies */
       const args = ['add', data.target]
       if (isWorkspace()) args.push('-w')
-      if (Array.isArray(data.allowBuild) && data.allowBuild.length) {
-        /** 持久化到 pnpm-workspace.yaml 兼容 pnpm v10~v12 的构建脚本白名单 */
-        await addWorkspaceAllowBuilds(data.allowBuild)
-        /** --allow-build 参数仅 pnpm 10.4+ 支持 */
-        if (isPnpmAllowBuildSupported()) {
-          data.allowBuild.forEach(pkg => args.unshift(`--allow-build=${pkg}`))
-        }
-      }
+      /** --allow-build 仅 pnpm 10.4+ 支持 pnpm 会自行写入构建脚本白名单 */
+      const allowBuild = prepareAllowBuild(data.allowBuild)
+      args.unshift(...allowBuild.args)
 
       /** 处理 ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF 错误 */
       let IS_ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF = false
@@ -108,6 +103,8 @@ const installNpm = async (
       }
 
       if (code !== 0) {
+        /** pnpm 安装失败时也会写入 --allow-build 的白名单 需要还原 */
+        allowBuild.restore()
         emitLog(`安装失败: pnpm ${args.join(' ')} 退出码 ${code}`)
         return false
       }

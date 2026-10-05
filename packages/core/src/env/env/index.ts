@@ -21,14 +21,6 @@ export const getPnpmVersion = (): string => {
 }
 
 /**
- * @description 获取pnpm主版本号 获取失败返回0
- */
-export const getPnpmMajorVersion = (): number => {
-  const major = parseInt(getPnpmVersion().split('.')[0], 10)
-  return isNaN(major) ? 0 : major
-}
-
-/**
  * @description 当前pnpm版本是否 >= 指定版本
  * @param major - 主版本号
  * @param minor - 次版本号
@@ -104,7 +96,7 @@ export const isWorkspace = () => {
   const workspace = fs.existsSync(`${process.cwd()}/pnpm-workspace.yaml`)
   if (!workspace) return false
   const data = yaml.parse(fs.readFileSync(`${process.cwd()}/pnpm-workspace.yaml`, 'utf-8'))
-  return Array.isArray(data.packages) && data.packages.length > 0
+  return Array.isArray(data?.packages) && data.packages.length > 0
 }
 
 /**

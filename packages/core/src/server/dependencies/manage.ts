@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import util from 'node:util'
 import { isWorkspace } from '@/env'
-import { addWorkspaceAllowBuilds, isPnpmAllowBuildSupported } from '@/utils/pnpm'
+import { prepareAllowBuild } from '@/utils/pnpm'
 import { taskSystem as task } from '@/service/task'
 import { handleReturn, spawnProcess } from '../plugins/admin/tool'
 
@@ -206,16 +206,9 @@ const addDependencies = async (
         operatorIp: ip,
       },
       async (_: TaskEntity, emitLog: (message: string) => void) => {
-        const args = ['add', name]
-
-        if (Array.isArray(dependencies.allowBuild) && dependencies.allowBuild.length) {
-          /** 持久化到 pnpm-workspace.yaml 兼容 pnpm v10~v12 的构建脚本白名单 */
-          await addWorkspaceAllowBuilds(dependencies.allowBuild)
-          /** --allow-build 参数仅 pnpm 10.4+ 支持 */
-          if (isPnpmAllowBuildSupported()) {
-            dependencies.allowBuild.forEach(pkg => args.unshift(`--allow-build=${pkg}`))
-          }
-        }
+        /** --allow-build 仅 pnpm 10.4+ 支持 pnpm 会自行写入构建脚本白名单 */
+        const allowBuild = prepareAllowBuild(dependencies.allowBuild)
+        const args = [...allowBuild.args, 'add', name]
 
         if (dependencies.location === 'devDependencies') {
           args.push('-D')
@@ -227,6 +220,8 @@ const addDependencies = async (
 
         const code = await spawnProcess('pnpm', args, {}, emitLog)
         if (code !== 0) {
+          /** pnpm 安装失败时也会写入 --allow-build 的白名单 需要还原 */
+          allowBuild.restore()
           emitLog(`新增失败: pnpm ${args.join(' ')} 退出码 ${code}`)
           logger.mark(`新增依赖 ${logger.red(dependencies.name)} 失败`)
           return false

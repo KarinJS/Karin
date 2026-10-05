@@ -50,6 +50,15 @@ export const exec = (
 }
 
 /**
+ * 获取命令执行失败的原因
+ * exec 失败时不会抛出错误 而是返回 error 调用方需自行检查
+ * @param result - exec 的返回值
+ */
+export const getExecErrorMessage = (result: { error: Error | null, stdout: string, stderr: string }) => {
+  return (result.stderr || result.stdout || result.error?.message || '').trim()
+}
+
+/**
  * 安装依赖
  * @param cwd - 工作目录
  * @param packageManager - 包管理器

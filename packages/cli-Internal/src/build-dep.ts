@@ -1,149 +1,187 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import * as yaml from 'yaml'
+import { getPnpmVersion } from './pnpm'
+import { BUILD_DEPENDENCIES, dedupe, isPlainObject, readYamlFile, updateYamlFile } from './workspace'
+import type { WorkspaceData } from './workspace'
+
+/**
+ * 构建脚本白名单说明
+ * - allowBuilds: pnpm 10.26+/11+ 读取 值为 false 表示显式禁止
+ * - onlyBuiltDependencies: pnpm 10.x 读取 11+ 已移除 因此仅在 pnpm <= 10 或版本未知时维护
+ */
 
 /**
  * 获取当前工作目录的 pnpm-workspace.yaml 文件路径
  * @returns pnpm-workspace.yaml 文件的绝对路径
  */
 const getWorkspaceFilePath = (): string => {
-  const cwd = process.cwd()
-  return path.join(cwd, 'pnpm-workspace.yaml')
-}
-
-/**
- * 读取 pnpm-workspace.yaml 文件
- * @returns 解析后的 YAML 文件内容
- */
-const readWorkspaceFile = (): any => {
-  const filePath = getWorkspaceFilePath()
+  const filePath = path.join(process.cwd(), 'pnpm-workspace.yaml')
   if (!fs.existsSync(filePath)) {
     throw new Error('pnpm-workspace.yaml 文件不存在')
   }
-
-  const fileContent = fs.readFileSync(filePath, 'utf-8')
-  return yaml.parse(fileContent)
+  return filePath
 }
 
 /**
- * 写入 pnpm-workspace.yaml 文件
- * @param content 要写入的内容
+ * 解析依赖名称 支持空格或逗号分隔
+ * @param dependencies 依赖名称
  */
-const writeWorkspaceFile = (content: any): void => {
-  const filePath = getWorkspaceFilePath()
-  const yamlStr = yaml.stringify(content)
-  fs.writeFileSync(filePath, yamlStr, 'utf-8')
+const parseDependencies = (dependencies: string) => {
+  return dedupe(dependencies.split(/[\s,]+/).filter(Boolean))
+}
+
+/**
+ * 当前pnpm是否需要维护 onlyBuiltDependencies
+ */
+const useOnlyBuilt = () => {
+  const version = getPnpmVersion()
+  return !version || version.major <= 10
+}
+
+/**
+ * 读取白名单
+ * @param data pnpm-workspace.yaml 内容
+ */
+const getLists = (data: WorkspaceData) => {
+  const allowBuilds: Record<string, boolean> = isPlainObject(data.allowBuilds) ? data.allowBuilds : {}
+  const onlyBuilt: string[] = Array.isArray(data.onlyBuiltDependencies) ? data.onlyBuiltDependencies : []
+  return { allowBuilds, onlyBuilt }
 }
 
 /**
  * 添加构建依赖
- * @param dependencies 依赖包名称，可以是单个依赖或以空格分隔的多个依赖
+ * @param dependencies 依赖包名称，可以是单个依赖或以空格、逗号分隔的多个依赖
  */
-const addBuildDependency = (dependencies: string): void => {
+const addBuildDependency = (dependencies: string) => {
+  const result = { added: [] as string[], existed: [] as string[] }
   try {
-    const content = readWorkspaceFile()
-    const depList = dependencies.split(' ').filter(dep => dep.trim() !== '')
+    const filePath = getWorkspaceFilePath()
+    const depList = parseDependencies(dependencies)
 
     if (depList.length === 0) {
       console.log('提示：请提供有效的依赖名称')
-      return
+      return result
     }
 
-    if (!content.onlyBuiltDependencies) {
-      content.onlyBuiltDependencies = []
-    }
+    const withOnlyBuilt = useOnlyBuilt()
+    updateYamlFile<WorkspaceData>(filePath, (data) => {
+      const { allowBuilds, onlyBuilt } = getLists(data)
 
-    let addedCount = 0
-    let existCount = 0
+      depList.forEach(dependency => {
+        const exists = allowBuilds[dependency] === true && (!withOnlyBuilt || onlyBuilt.includes(dependency))
+        if (exists) {
+          result.existed.push(dependency)
+        } else {
+          result.added.push(dependency)
+        }
 
-    depList.forEach(dependency => {
-      if (!content.onlyBuiltDependencies.includes(dependency)) {
-        content.onlyBuiltDependencies.push(dependency)
-        addedCount++
-      } else {
-        existCount++
-      }
+        /** 显式添加会覆盖之前设为 false 的条目 */
+        allowBuilds[dependency] = true
+        if (withOnlyBuilt && !onlyBuilt.includes(dependency)) onlyBuilt.push(dependency)
+      })
+
+      data.allowBuilds = allowBuilds
+      if (withOnlyBuilt) data.onlyBuiltDependencies = onlyBuilt
+      return data
     })
 
-    if (addedCount > 0) {
-      writeWorkspaceFile(content)
-      console.log(`成功：已添加 ${addedCount} 个依赖到 onlyBuiltDependencies 中`)
+    if (result.added.length > 0) {
+      console.log(`成功：已添加 ${result.added.length} 个依赖到构建脚本白名单中`)
     }
 
-    if (existCount > 0) {
-      console.log(`提示：${existCount} 个依赖已存在于 onlyBuiltDependencies 中，无需添加`)
+    if (result.existed.length > 0) {
+      console.log(`提示：${result.existed.length} 个依赖已存在于构建脚本白名单中，无需添加`)
     }
   } catch (error) {
     console.error(`错误：添加构建依赖失败 - ${(error as Error).message}`)
   }
+  return result
 }
 
 /**
  * 删除构建依赖
- * @param dependencies 依赖包名称，可以是单个依赖或以空格分隔的多个依赖
+ *
+ * karin 内置的构建依赖会在 allowBuilds 中设为 false (否则 karin init 会重新加入)
+ * 其他依赖直接从白名单中移除
+ * @param dependencies 依赖包名称，可以是单个依赖或以空格、逗号分隔的多个依赖
  */
-const removeBuildDependency = (dependencies: string): void => {
+const removeBuildDependency = (dependencies: string) => {
+  const result = { removed: [] as string[], notExist: [] as string[] }
   try {
-    const content = readWorkspaceFile()
-    const depList = dependencies.split(' ').filter(dep => dep.trim() !== '')
+    const filePath = getWorkspaceFilePath()
+    const depList = parseDependencies(dependencies)
 
     if (depList.length === 0) {
       console.log('提示：请提供有效的依赖名称')
-      return
+      return result
     }
 
-    if (!content.onlyBuiltDependencies) {
-      console.log('提示：onlyBuiltDependencies 列表为空或不存在，无需删除')
-      return
-    }
+    updateYamlFile<WorkspaceData>(filePath, (data) => {
+      const { allowBuilds, onlyBuilt } = getLists(data)
+      const hasOnlyBuilt = Array.isArray(data.onlyBuiltDependencies)
 
-    let removedCount = 0
-    let notExistCount = 0
+      depList.forEach(dependency => {
+        if (allowBuilds[dependency] !== true && !onlyBuilt.includes(dependency)) {
+          result.notExist.push(dependency)
+          return
+        }
 
-    depList.forEach(dependency => {
-      const originalLength = content.onlyBuiltDependencies.length
-      content.onlyBuiltDependencies = content.onlyBuiltDependencies.filter((dep: string) => dep !== dependency)
+        result.removed.push(dependency)
+        if (BUILD_DEPENDENCIES.includes(dependency)) {
+          allowBuilds[dependency] = false
+        } else {
+          delete allowBuilds[dependency]
+        }
+      })
 
-      if (content.onlyBuiltDependencies.length !== originalLength) {
-        removedCount++
-      } else {
-        notExistCount++
-      }
+      data.allowBuilds = allowBuilds
+      if (hasOnlyBuilt) data.onlyBuiltDependencies = onlyBuilt.filter(dep => !result.removed.includes(dep))
+      return data
     })
 
-    if (removedCount > 0) {
-      writeWorkspaceFile(content)
-      console.log(`成功：已从 onlyBuiltDependencies 中删除 ${removedCount} 个依赖`)
+    if (result.removed.length > 0) {
+      console.log(`成功：已从构建脚本白名单中删除 ${result.removed.length} 个依赖`)
     }
 
-    if (notExistCount > 0) {
-      console.log(`提示：${notExistCount} 个依赖不存在于 onlyBuiltDependencies 中，无需删除`)
+    if (result.notExist.length > 0) {
+      console.log(`提示：${result.notExist.length} 个依赖不存在于构建脚本白名单中，无需删除`)
     }
   } catch (error) {
     console.error(`错误：删除构建依赖失败 - ${(error as Error).message}`)
   }
+  return result
 }
 
 /**
  * 列出所有构建依赖
  */
-const listBuildDependencies = (): void => {
+const listBuildDependencies = () => {
+  const result = { allowed: [] as string[], denied: [] as string[] }
   try {
-    const content = readWorkspaceFile()
+    const { allowBuilds, onlyBuilt } = getLists(readYamlFile(getWorkspaceFilePath()))
+    const entries = Object.entries(allowBuilds)
+    result.denied = entries.filter(([, value]) => value === false).map(([dep]) => dep)
+    result.allowed = dedupe([
+      ...entries.filter(([, value]) => value === true).map(([dep]) => dep),
+      ...(useOnlyBuilt() ? onlyBuilt : []),
+    ]).filter(dep => !result.denied.includes(dep))
 
-    if (!content.onlyBuiltDependencies || content.onlyBuiltDependencies.length === 0) {
-      console.log('提示：onlyBuiltDependencies 列表为空，没有构建依赖')
-      return
+    if (result.allowed.length === 0) {
+      console.log('提示：构建脚本白名单为空，没有构建依赖')
+    } else {
+      console.log('==== 构建脚本白名单 ====')
+      result.allowed.forEach(dep => console.log(dep))
+      console.log('==== 共 ' + result.allowed.length + ' 个依赖 ====')
     }
 
-    console.log('==== onlyBuiltDependencies 列表 ====')
-    content.onlyBuiltDependencies.forEach((dep: string) => {
-      console.log(dep)
-    })
-    console.log('==== 共 ' + content.onlyBuiltDependencies.length + ' 个依赖 ====')
+    if (result.denied.length > 0) {
+      console.log('==== 已禁止执行构建脚本 ====')
+      result.denied.forEach(dep => console.log(dep))
+    }
   } catch (error) {
     console.error(`错误：列出构建依赖失败 - ${(error as Error).message}`)
   }
+  return result
 }
 
 /**
