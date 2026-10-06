@@ -39,6 +39,16 @@ export type CompareMode = {
    * @default 'xyz'
    */
   compare?: 'xyz' | 'semver'
+
+  /**
+   * 要检查的 dist-tag，默认 `latest`
+   *
+   * 传给 npm 的 dist-tag 名称，如 `beta`、`rc`；
+   * 指定的 tag 不存在时 `npm show` 会失败，返回 `status: 'error'`
+   *
+   * @default 'latest'
+   */
+  tag?: string
 }
 
 /**
@@ -178,7 +188,7 @@ export const checkPkgUpdate = async (
   const logger = global?.logger || console
   try {
     const local = await getPkgVersion(name)
-    const remote = await getRemotePkgVersion(name)
+    const remote = await getRemotePkgVersion(name, opts?.tag)
 
     const mode = opts?.compare ?? 'xyz'
     let noUpdate = false
