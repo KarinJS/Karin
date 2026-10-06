@@ -1,3 +1,4 @@
+import { cleanPkgAfterPnpmInit } from './workspace'
 import { exec as execCmd, execSync as execSyncCmd } from 'node:child_process'
 
 const shell = process.platform === 'win32' ? 'cmd' : '/bin/sh'
@@ -49,6 +50,15 @@ export const exec = (
 }
 
 /**
+ * 获取命令执行失败的原因
+ * exec 失败时不会抛出错误 而是返回 error 调用方需自行检查
+ * @param result - exec 的返回值
+ */
+export const getExecErrorMessage = (result: { error: Error | null, stdout: string, stderr: string }) => {
+  return (result.stderr || result.stdout || result.error?.message || '').trim()
+}
+
+/**
  * 安装依赖
  * @param cwd - 工作目录
  * @param packageManager - 包管理器
@@ -75,7 +85,7 @@ export const installDependencies = async (cwd: string, packageManager = 'pnpm') 
  */
 export const initKarinProject = async (targetDir: string) => {
   console.log('targetDir: ', targetDir)
-  execSync('pnpm install node-karin@latest && npx karin init ', {
+  execSync('pnpm add node-karin@latest && npx karin init ', {
     cwd: targetDir,
     stdio: 'inherit',
   })
@@ -86,6 +96,9 @@ export const initKarinProject = async (targetDir: string) => {
  * @param puppeteerDir - Puppeteer目录
  */
 export const setupPuppeteer = async (puppeteerDir: string) => {
-  execSync('pnpm init && pnpm install @karinjs/puppeteer', { cwd: puppeteerDir, stdio: 'inherit' })
+  execSync('pnpm init', { cwd: puppeteerDir, stdio: 'inherit' })
+  /** 移除 pnpm init 写入的 devEngines/packageManager (pnpm 10+) */
+  cleanPkgAfterPnpmInit(puppeteerDir)
+  execSync('pnpm add @karinjs/puppeteer', { cwd: puppeteerDir, stdio: 'inherit' })
   execSync('npx init', { cwd: puppeteerDir, stdio: 'inherit' })
 }

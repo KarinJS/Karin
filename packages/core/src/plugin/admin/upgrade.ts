@@ -1,4 +1,5 @@
 import { exec as execChild } from 'node:child_process'
+import { isWorkspace } from '@/env'
 import type { ExecException } from 'node:child_process'
 
 /** 更新npm插件参数 */
@@ -95,7 +96,7 @@ export const getNpmPackageVersion = async (name: string, tag = 'latest') => {
  * 更新指定的npm包
  * @param name 包名
  * @param options 更新选项
- * @description 相对于旧版本 此方法不会检查本地版本是否存在 并且使用兼容性更好的`install`命令
+ * @description 相对于旧版本 此方法不会检查本地版本是否存在 使用 `pnpm add` 安装指定版本 (pnpm v12 起 `install <pkg>` 不再可用)
  */
 export const updateNpmPackage = async (
   name: string,
@@ -103,7 +104,9 @@ export const updateNpmPackage = async (
 ) => {
   const tag = options.tag || 'latest'
   const registry = options.registry ? ` --registry=${options.registry}` : ''
-  const cmd = `pnpm install ${name}@${tag}${registry}`
+  /** 工作区根目录需要 -w 否则 pnpm 会以 ERR_PNPM_ADDING_TO_ROOT 拒绝安装 */
+  const workspace = isWorkspace() ? ' -w' : ''
+  const cmd = `pnpm add ${name}@${tag}${registry}${workspace}`
   const result = await exec(cmd, options)
   return result
 }
@@ -121,7 +124,7 @@ export const updateNpmPackages = async (
   const registry = options.registry ? ` --registry=${options.registry}` : ''
 
   const cmd = packages.length
-    ? `pnpm install ${packages.map(pkg => `${pkg}@latest`).join(' ')}${registry}`
+    ? `pnpm add ${packages.map(pkg => `${pkg}@latest`).join(' ')}${registry}${isWorkspace() ? ' -w' : ''}`
     : `pnpm up${registry}`
 
   const result = await exec(cmd, options)

@@ -2,6 +2,7 @@ packages:
   - packages/*
   - "!packages/karin-plugin-ts"
   - "!packages/karin-plugin-js"
+# pnpm 10.x 构建脚本白名单 (10.26+/11+ 由 allowBuilds 接管)
 onlyBuiltDependencies:
   - "@heroui/shared-utils"
   - "@karinjs/node-pty"
@@ -9,3 +10,19 @@ onlyBuiltDependencies:
   - "@parcel/watcher"
   - "@swc/core"
   - esbuild
+  - unrs-resolver
+# pnpm 10.26+/11+ 构建脚本白名单 与上面保持一致
+allowBuilds:
+  "@heroui/shared-utils": true
+  "@karinjs/node-pty": true
+  "@karinjs/sqlite3-cjs": true
+  "@parcel/watcher": true
+  "@swc/core": true
+  esbuild: true
+  "unrs-resolver": true
+# pnpm 11+ 默认 true 存在未声明的构建脚本会直接中断安装
+strictDepBuilds: false
+# pnpm 11+ 默认1440分钟 发布未满24h的版本无法安装
+minimumReleaseAge: 0
+# pnpm 10.26+/11+ 默认 true 会阻止子依赖使用git/tarball来源
+blockExoticSubdeps: false

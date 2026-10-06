@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { AxiosError } from 'axios'
-import { isPnpm10, isWorkspace } from '@/env'
+import { isWorkspace } from '@/env'
+import { prepareAllowBuild } from '@/utils/pnpm'
 import { handleReturn, spawnProcess } from './tool'
 import { karinPathPlugins } from '@/root'
 import { mkdirSync } from '@/utils/fs/fsSync'
@@ -68,9 +69,9 @@ const installNpm = async (
       const args = ['add', pkg]
       if (isWorkspace()) args.push('-w')
       if (data.registry) args.push(`--registry=${data.registry}`)
-      if (Array.isArray(data.allowBuild) && data.allowBuild.length && isPnpm10()) {
-        data.allowBuild.forEach(pkg => args.unshift(`--allow-build=${pkg}`))
-      }
+      /** --allow-build 仅 pnpm 10.4+ 支持 pnpm 会自行写入构建脚本白名单 */
+      const allowBuild = prepareAllowBuild(data.allowBuild)
+      args.unshift(...allowBuild.args)
 
       /** 处理 ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF 错误 */
       let IS_ERR_PNPM_PUBLIC_HOIST_PATTERN_DIFF = false
@@ -90,6 +91,8 @@ const installNpm = async (
       }
 
       if (code !== 0) {
+        /** pnpm 安装失败时也会写入 --allow-build 的白名单 需要还原 */
+        allowBuild.restore()
         emitLog(`安装失败: pnpm ${args.join(' ')} 退出码 ${code}`)
         return false
       }

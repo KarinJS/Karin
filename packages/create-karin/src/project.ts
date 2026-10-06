@@ -1,9 +1,12 @@
 import ora from 'ora'
 import fs from 'node:fs'
 import path from 'node:path'
-import { exec } from './utils/exec'
+import { exec, getExecErrorMessage } from './utils/exec'
+import { cleanPkgAfterPnpmInit, prepareWorkspace } from './utils/workspace'
+import { detectPnpm } from './utils/pnpm'
 import { fileURLToPath } from 'node:url'
 import { green, magenta, yellow } from 'kolorist'
+import type { Version } from '../../cli-Internal/src/workspace'
 
 /**
  * 创建生产环境项目
@@ -29,7 +32,12 @@ export const createProject = async (
 
   spinner.start(`正在安装 node-karin@${karinVersion}...`)
   await exec('pnpm init', { cwd: dir })
-  const cmd = `pnpm install node-karin@${karinVersion}${registrySuffix}`
+  /** 移除 pnpm init 写入的 devEngines/packageManager (pnpm 10+) 避免pnpm托管node或pnpm版本 */
+  cleanPkgAfterPnpmInit(dir)
+  /** 预写入跨版本兼容配置 pnpm 11+ 默认阻止未声明构建脚本的依赖安装、拦截发布未满24h的版本 */
+  prepareWorkspace(dir, (await detectPnpm()).parsed)
+  /** pnpm-workspace.yaml 含 packages 字段 需要 -w 才能安装到根目录 */
+  const cmd = `pnpm add node-karin@${karinVersion}${registrySuffix} -w`
   const { error, stderr } = await exec(cmd, { cwd: dir })
 
   if (error) throw error
@@ -37,15 +45,7 @@ export const createProject = async (
   spinner.succeed(green(`✨ node-karin@${karinVersion} 安装成功`))
 
   spinner.start('正在执行初始化...')
-  const content = fs.readFileSync(path.join(dir, 'package.json'), 'utf-8')
-  const pkg = JSON.parse(content)
-  if (pkg.devEngines) {
-    delete pkg.devEngines
-    fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify(pkg, null, 2))
-    console.log('检测到package.json包含 devEngines 字段,已移除')
-  }
-
-  await exec('npx karin init', { cwd: dir })
+  await runKarinInit(dir)
   setAuthKey(dir, httpAuthKey, wsAuthKey)
   spinner.succeed(green('✨ 初始化完成'))
 
@@ -96,14 +96,17 @@ export const createPlugin = async (
   createGitignore(dir, spinner)
 
   spinner.start(`正在安装 node-karin@${karinVersion}...`)
-  const karinCmd = `pnpm install -D node-karin@${karinVersion}${registrySuffix}`
+  /** 预写入跨版本兼容配置 pnpm 11+ 默认阻止未声明构建脚本的依赖安装、拦截发布未满24h的版本 */
+  prepareWorkspace(dir, (await detectPnpm()).parsed, true)
+  /** pnpm-workspace.yaml 含 packages 字段 需要 -w 才能安装到根目录 */
+  const karinCmd = `pnpm add -D node-karin@${karinVersion}${registrySuffix} -w`
   const { error: karinError, stderr: karinStderr } = await exec(karinCmd, { cwd: dir })
   if (karinError) throw karinError
   if (karinStderr) console.log(karinStderr)
   spinner.succeed(green(`✨ node-karin@${karinVersion} 安装成功`))
 
   spinner.start('正在执行初始化...')
-  await exec('npx karin init', { cwd: dir })
+  await runKarinInit(dir)
   setAuthKey(dir, httpAuthKey, wsAuthKey)
   spinner.succeed(green('✨ 初始化完成'))
 
@@ -119,6 +122,56 @@ export const createPlugin = async (
     '点个star吧：https://github.com/Karinjs/Karin',
     '🚀 开始愉快的开发吧！',
   ].join('\n'))
+}
+
+/**
+ * 修复当前目录的生产环境：合并 pnpm-workspace.yaml 兼容配置 → 安装 node-karin → karin init
+ * @param cwd - 项目目录
+ * @param karinVersion - node-karin版本，可以是版本号或URL
+ * @param registrySuffix - 镜像源后缀
+ * @param version - 当前pnpm版本 未知时传null
+ * @returns 是否修复成功
+ */
+export const fixProject = async (
+  cwd: string,
+  karinVersion: string,
+  registrySuffix: string,
+  version: Version | null
+) => {
+  const spinner = ora()
+
+  /** 移除 pnpm init 写入的 devEngines/packageManager (pnpm 10+) 并合并跨版本兼容配置 已存在的 pnpm-workspace.yaml 同样需要补全 */
+  cleanPkgAfterPnpmInit(cwd)
+  prepareWorkspace(cwd, version)
+
+  spinner.start(`正在安装 node-karin@${karinVersion}...`)
+  /** pnpm-workspace.yaml 含 packages 字段 需要 -w 才能安装到根目录 */
+  const install = await exec(`pnpm add node-karin@${karinVersion}${registrySuffix} -w`, { cwd })
+  if (install.error) {
+    spinner.fail('node-karin安装失败: ' + getExecErrorMessage(install))
+    return false
+  }
+  spinner.succeed(`node-karin@${karinVersion} 安装成功`)
+
+  spinner.start('正在初始化Karin环境...')
+  try {
+    await runKarinInit(cwd)
+  } catch (error) {
+    spinner.fail('Karin初始化失败: ' + (error as Error).message)
+    return false
+  }
+  spinner.succeed('Karin环境初始化完成')
+  return true
+}
+
+/**
+ * 执行 karin init
+ * @param cwd - 项目目录
+ * @throws 执行失败时抛出错误 (exec 本身不会抛出)
+ */
+const runKarinInit = async (cwd: string) => {
+  const result = await exec('npx karin init', { cwd })
+  if (result.error) throw new Error(getExecErrorMessage(result))
 }
 
 /**

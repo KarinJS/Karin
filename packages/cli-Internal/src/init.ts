@@ -9,12 +9,14 @@
  * 7. 创建基本配置文件
  */
 
-import * as yaml from 'yaml'
 import fs from 'node:fs'
 import path from 'node:path'
 import { URL, fileURLToPath } from 'node:url'
 import { execSync } from 'node:child_process'
 import { MAIN } from './main'
+import { getPnpmVersion } from './pnpm'
+import { applyKarinWorkspace, updateYamlFile } from './workspace'
+import type { WorkspaceData } from './workspace'
 
 /**
  * 判断是否处于插件开发环境
@@ -238,96 +240,16 @@ const createOrUpdateEnv = (dir: string) => {
 }
 
 /**
- * 创建 pnpm-workspace.yaml 文件
+ * 创建或更新 pnpm-workspace.yaml 文件
+ * 写入 pnpm v9 ~ v12 的通用兼容配置 详见 ./workspace
+ * 只改动需要变化的键 保留用户自定义的配置与注释
  * @param isDev - 是否处于开发环境
  * @param dir - 目标目录
  */
-const createWorkspace = (isDev: boolean, dir: string) => {
-  const dedupe = <T> (arr: T[]) => Array.from(new Set(arr))
-
+export const createWorkspace = (isDev: boolean, dir: string) => {
   const workspace = path.join(dir, 'pnpm-workspace.yaml')
-
-  let data: {
-    lockfile?: boolean
-    packages?: string[]
-    onlyBuiltDependencies?: string[]
-    publicHoistPattern?: string[]
-  } = {}
-  try {
-    data = fs.existsSync(workspace) ? yaml.parse(fs.readFileSync(workspace, 'utf-8')) : {}
-  } catch {
-    data = {}
-  }
-
-  if (typeof data.lockfile !== 'boolean') {
-    data.lockfile = false
-  }
-
-  if (!isDev) {
-    if (!data.packages || !Array.isArray(data.packages)) {
-      data.packages = []
-    }
-
-    data.packages.forEach((v, index) => {
-      if (v === 'plugins/**') {
-        data.packages![index] = 'plugins/*'
-      }
-    })
-
-    if (!data.packages?.includes('plugins/*')) {
-      data.packages.push('plugins/*')
-    }
-
-    data.packages = dedupe(data.packages)
-  }
-
-  /**
-   * pnpm 10.x
-   * 允许执行构建命令的包
-   */
-  if (!data.onlyBuiltDependencies || !Array.isArray(data.onlyBuiltDependencies)) {
-    data.onlyBuiltDependencies = []
-  }
-
-  const onlyBuiltDependencies = [
-    '@karinjs/node-pty',
-    '@karinjs/sqlite3-cjs',
-    'canvas',
-    'sqlite3',
-    'sharp',
-    'puppeteer',
-    'classic-level',
-    ...data.onlyBuiltDependencies,
-  ]
-
-  data.onlyBuiltDependencies = dedupe(onlyBuiltDependencies)
-
-  /**
-   * pnpm 10.x
-   * 依赖提升
-   */
-  if (!data.publicHoistPattern || !Array.isArray(data.publicHoistPattern)) {
-    data.publicHoistPattern = []
-  }
-
-  const publicHoistPattern = [
-    '*sqlite3*',
-    '*express*',
-    ...data.publicHoistPattern,
-  ]
-
-  data.publicHoistPattern = dedupe(publicHoistPattern)
-  /** 保证写入顺序 */
-  fs.writeFileSync(workspace, yaml.stringify(
-    Object.assign(
-      {
-        lockfile: false,
-        packages: [],
-        publicHoistPattern: [],
-        onlyBuiltDependencies: [],
-      },
-      data
-    )), 'utf-8')
+  const version = getPnpmVersion()
+  updateYamlFile<WorkspaceData>(workspace, data => applyKarinWorkspace(data, { isDev, version }))
 }
 
 /**
@@ -422,6 +344,13 @@ const modifyPackageJson = (isDev: boolean, dir: string) => {
 
   /** pnpm10无力适配... */
   if (pkg.pnpm) delete pkg.pnpm
+  /**
+   * pnpm 10+ 的 pnpm init 会写入 devEngines (托管node版本)
+   * pnpm 12 的 pnpm init 还会写入 packageManager (锁定pnpm版本)
+   * 二者都会让 pnpm 自动下载/切换运行时版本 与 karin 的部署方式冲突 统一移除
+   */
+  if (pkg.devEngines) delete pkg.devEngines
+  if (typeof pkg.packageManager === 'string' && pkg.packageManager.startsWith('pnpm@')) delete pkg.packageManager
   fs.writeFileSync(pkgDir, JSON.stringify(pkg, null, 2))
   return pkg
 }
