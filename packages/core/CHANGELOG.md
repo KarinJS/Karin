@@ -1,5 +1,17 @@
 # 更新日志
 
+## [1.18.0](https://github.com/KarinJS/Karin/compare/core-v1.17.2...core-v1.18.0) (2026-10-06)
+
+
+### ✨ Features
+
+* **core:** support checking a specified dist-tag in checkPkgUpdate ([#681](https://github.com/KarinJS/Karin/issues/681)) ([df7dcc0](https://github.com/KarinJS/Karin/commit/df7dcc0404447a739595753da372cb0e179e24b3))
+
+
+### 🐛 Bug Fixes
+
+* 适配 pnpm v10~v12 兼容性 ([#680](https://github.com/KarinJS/Karin/issues/680)) ([d7f4343](https://github.com/KarinJS/Karin/commit/d7f4343c90f0e05d4eb328dd82d4d21e6ebc5802))
+
 ## [1.17.2](https://github.com/KarinJS/Karin/compare/core-v1.17.1...core-v1.17.2) (2026-10-05)
 
 

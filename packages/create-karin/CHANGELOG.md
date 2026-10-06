@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.4](https://github.com/KarinJS/Karin/compare/create-karin-v1.3.3...create-karin-v1.3.4) (2026-10-06)
+
+
+### 🐛 Bug Fixes
+
+* 适配 pnpm v10~v12 兼容性 ([#680](https://github.com/KarinJS/Karin/issues/680)) ([d7f4343](https://github.com/KarinJS/Karin/commit/d7f4343c90f0e05d4eb328dd82d4d21e6ebc5802))
+
 ## [1.3.3](https://github.com/KarinJS/Karin/compare/create-karin-v1.3.2...create-karin-v1.3.3) (2026-08-13)
 
 
