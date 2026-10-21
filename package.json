@@ -42,7 +42,7 @@
     "typedoc-vitepress-theme": "^1.1.2",
     "typescript": "^5.8.2",
     "unrun": "^0.3.1",
-    "vite": "8.0.16",
+    "vite": "8.1.6",
     "vite-plugin-dts": "^4.5.4",
     "vitest": "^4.1.8"
   },
